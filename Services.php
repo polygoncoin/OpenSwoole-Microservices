@@ -132,11 +132,11 @@ class Services
             
             // Requires HTTP auth username and password
             case $this->c->httpRequest->ROUTE === '/reload':
-                $envUsername = 'HttpAuthenticationUser';
-                $envPassword = 'HttpAuthenticationPassword';
-                if ($this->httpAuthentication($envUsername, $envPassword)) {
-                    $class = __NAMESPACE__ . '\\App\\Reload';
+                if ($this->c->httpRequest->REMOTE_ADDR !== Env::$cronRestrictedIp) {
+                    $this->c->httpResponse->return4xx(404, 'Source IP is not supported');
+                    return;
                 }
+                $class = __NAMESPACE__ . '\\App\\Reload';
                 break;
             
             // Generates auth token
