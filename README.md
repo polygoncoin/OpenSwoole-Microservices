@@ -40,9 +40,6 @@ Below are the configuration settings details in .env
 | dbDatabaseClient001 | Client MySQL database | client\_001 / as\_per\_your\_use |
 |  | The Client details can be same as all Default MySQL settings also depending on situation |  |
 | r=/reload |  |  |
-| HttpAuthenticationRestrictedIp | For reloading global DB changes allowed IP | 127.0.0.1 |
-| HttpAuthenticationUser | HTTP Authentication Username | reload\_username |
-| HttpAuthenticationPassword | HTTP Authentication Password | reload\_password |
 
 ## Folders
  
