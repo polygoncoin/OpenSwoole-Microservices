@@ -449,3 +449,34 @@ This lists down all allowed routes for HTTP methods respectively.
 ### r=/check
  
 Perform basic checks on Config folder.
+
+
+## Javascript - HTTP request example
+
+```
+var handlerUrl = "/ajax-handler";
+var xmlhttp = new XMLHttpRequest();
+
+xmlhttp . open( "POST", handlerUrl );
+xmlhttp . setRequestHeader('Content-type', ‘application/x-www-form-urlencoded');
+
+xmlhttp . onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        var responseJson = this.responseText;
+        var responseArr = JSON.parse(responseJson);
+        console.log(responseArr);
+   }
+};
+
+// Payload data which is to be made available on the server for the "/ajax-handler".
+var Payload = {
+  "key1": "value1",
+  "key2": "value2",
+};
+
+var jsonString = JSON.stringify(Payload);
+var urlencodeJsonString = encodeURIComponent(jsonString);
+var params = "Payload="+urlencodeJsonString;
+
+xmlhttp . send( params );
+```
