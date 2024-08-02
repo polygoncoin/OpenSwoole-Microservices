@@ -143,7 +143,7 @@ class JsonDecode
 
         if (isset($this->request->post['Payload'])) {
             $this->tempStream = fopen("php://memory", "rw+b");
-            fwrite($this->tempStream, urldecode($this->request->post['Payload']));
+            fwrite($this->tempStream, $this->request->post['Payload']);
         }
     }
 
