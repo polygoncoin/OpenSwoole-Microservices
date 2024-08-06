@@ -39,7 +39,6 @@ Below are the configuration settings details in .env
 | dbPasswordClient001 | Client MySQL password | password |
 | dbDatabaseClient001 | Client MySQL database | client\_001 / as\_per\_your\_use |
 |  | The Client details can be same as all Default MySQL settings also depending on situation |  |
-| r=/reload |  |  |
 
 ## Folders
  
@@ -453,25 +452,56 @@ Perform basic checks on Config folder.
 
 ## Javascript - HTTP request example
 
+### Login
 ```
-var handlerUrl = "/ajax-handler";
+var handlerUrl = "http://127.0.0.1:9501?r=/login";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "POST", handlerUrl );
-xmlhttp . setRequestHeader('Content-type', ‘application/x-www-form-urlencoded');
+xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
 xmlhttp . onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         var responseJson = this.responseText;
         var responseArr = JSON.parse(responseJson);
         console.log(responseArr);
-   }
+    }
 };
 
 // Payload data which is to be made available on the server for the "/ajax-handler".
 var Payload = {
-  "key1": "value1",
-  "key2": "value2",
+    "username":"client_1_user_1",
+    "password":"shames11"
+};
+
+var jsonString = JSON.stringify(Payload);
+var urlencodeJsonString = encodeURIComponent(jsonString);
+var params = "Payload="+urlencodeJsonString;
+
+xmlhttp . send( params );
+```
+
+### For other API's
+```
+var handlerUrl = "http://127.0.0.1:9501?r=/ajax-handler-route";
+var xmlhttp = new XMLHttpRequest();
+
+xmlhttp . open( "POST", handlerUrl );
+xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
+
+xmlhttp . onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        var responseJson = this.responseText;
+        var responseArr = JSON.parse(responseJson);
+        console.log(responseArr);
+    }
+};
+
+// Payload data which is to be made available on the server for the "/ajax-handler".
+var Payload = {
+    "key1": "value1",
+    "key2": "value2",
 };
 
 var jsonString = JSON.stringify(Payload);
