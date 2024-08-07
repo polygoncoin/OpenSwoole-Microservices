@@ -42,11 +42,11 @@ $server->on("start", function (Server $server) {
 
 $server->on("request", function (Request $request, Response $response) {
     // Code to Initialize / Start the service.
-    $Microservices = new Services();
-    if ($Microservices->init($request, $response)) {
-        $Microservices->process();
+    $services = new Services();
+    if ($services->init($request, $response)) {
+        $services->process();
+        $services->outputResults();
     }
-    $Microservices->outputResults();
 });
 
 $server->start();

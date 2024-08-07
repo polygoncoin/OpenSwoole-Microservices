@@ -72,13 +72,15 @@ class Services
         $this->request = $request;
         $this->response = $response;
 
+        if (!$this->setCors()) {
+            return false;
+        }
+
         Constants::init();
         Env::init();
 
         $this->c = new Common();
         $this->c->init($request, $response);
-
-        $this->setCors();
 
         if (!isset($this->c->request->get[Constants::$ROUTE_URL_PARAM])) {
             $this->c->response->end('Missing route');
@@ -262,7 +264,11 @@ class Services
             
             // may also be using PUT, PATCH, HEAD etc
             $this->response->header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+            $this->response->end();
+
+            return false;
         }
+        return true;
     }
 
     /**
