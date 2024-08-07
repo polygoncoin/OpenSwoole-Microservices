@@ -465,6 +465,8 @@ xmlhttp . onreadystatechange = function() {
         var responseJson = this.responseText;
         var responseArr = JSON.parse(responseJson);
         console.log(responseArr);
+        var token = responseArr['Output']['Results']['Token'];
+        console.log(token);
     }
 };
 
@@ -489,7 +491,7 @@ xmlhttp . send( params );
   var xmlhttp = new XMLHttpRequest();
 
   xmlhttp . open( "GET", handlerUrl );
-  xmlhttp . setRequestHeader('Authorization', 'Bearer ' + token);
+  xmlhttp . setRequestHeader('Authorization', 'Bearer <Token-from-login-api>');
 
   xmlhttp . onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
