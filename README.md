@@ -482,6 +482,28 @@ xmlhttp . send( params );
 ```
 
 ### For other API's
+
+- GET Request
+```
+  var handlerUrl = "http://127.0.0.1:9501?r=/routes";
+  var xmlhttp = new XMLHttpRequest();
+
+  xmlhttp . open( "GET", handlerUrl );
+  xmlhttp . setRequestHeader('Authorization', 'Bearer ' + token);
+
+  xmlhttp . onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+          var responseJson = this.responseText;
+          var responseArr = JSON.parse(responseJson);
+          console.log(responseArr);
+      }
+  };
+
+  xmlhttp . send();
+
+```
+
+- POST Request
 ```
 var handlerUrl = "http://127.0.0.1:9501?r=/ajax-handler-route";
 var xmlhttp = new XMLHttpRequest();

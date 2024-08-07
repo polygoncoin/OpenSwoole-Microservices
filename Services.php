@@ -255,14 +255,13 @@ class Services
     private function setCors()
     {
         $this->response->header('Access-Control-Allow-Origin', '*');
-        
+        $this->response->header('Access-Control-Allow-Headers', '*');
+
         // Access-Control headers are received during OPTIONS requests
         if ($this->request->server['request_method'] == 'OPTIONS') {
             
             // may also be using PUT, PATCH, HEAD etc
             $this->response->header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-        
-            exit(0);
         }
     }
 
