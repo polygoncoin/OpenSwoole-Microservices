@@ -42,10 +42,15 @@ $server->on("start", function (Server $server) {
 
 $server->on("request", function (Request $request, Response $response) {
     // Code to Initialize / Start the service.
-    $services = new Services();
-    if ($services->init($request, $response)) {
-        $services->process();
-        $services->outputResults();
+    try {
+        $services = new Services();
+        if ($services->init($request, $response)) {
+            $services->process();
+            $services->outputResults();
+        }    
+    } catch (\Swoole\ExitException $e) {
+        echo 'Caught ExitException: ',  $e->getMessage(), "\n";
+        $response->end($e->getMessage());
     }
 });
 

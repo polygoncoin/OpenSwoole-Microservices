@@ -122,11 +122,9 @@ class MySQL extends AbstractCache
                 // 'input' => $this->c->httpRequest->input,
                 'error' => 'Unable to connect to MySQL as cache server'
             ];
-            Logs::log('error', json_encode($log));
+            (new Logs)->log('error', json_encode($log));
 
-            die('Unable to connect to cache server');
-            
-            return;
+            throw new \Swoole\ExitException('Unable to connect to cache server');
         }
     }
 

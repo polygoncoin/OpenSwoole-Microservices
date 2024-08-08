@@ -302,7 +302,7 @@ class Read
         }
 
         $stmt->execute($sqlParams);
-        for ($i=0;$row=$stmt->fetch(\PDO::FETCH_ASSOC);) {
+        for ($i = 0; $row = $stmt->fetch(\PDO::FETCH_ASSOC);) {
             if ($i===0) {
                 if (count($row) === 1) {
                     $singleColumn = true;

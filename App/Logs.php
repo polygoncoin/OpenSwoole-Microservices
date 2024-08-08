@@ -2,7 +2,6 @@
 namespace Microservices\App;
 
 use Microservices\App\Constants;
-use Microservices\App\Common;
 use Microservices\App\Env;
 
 /**
@@ -32,11 +31,13 @@ class Logs
 
     public function log($logType, $logContent)
     {
-        if (!in_array($logType, array_keys($logTypes))) {
-            $this->c->httpResponse->return5xx(501, 'Invalid log type');
-            return;
+        if (!in_array($logType, array_keys($this->logTypes))) {
+            throw new \Swoole\ExitException('Invalid log type');
         }
-        $logFile = Constants::$DOC_ROOT . $this->logTypes[$logType];
+        $logFile = Constants::$DOC_ROOT . $this->logTypes[$logType] . '-' . date('Y-m');
+        if (!file_exists($logFile)) {
+            touch($logFile);
+        }
         file_put_contents($logFile.'-'.date('Y-m'), $logContent . PHP_EOL, FILE_APPEND);
     }
 }

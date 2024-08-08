@@ -567,8 +567,7 @@ class JsonDecode
     {
         $str = trim($str);
         if (!empty($str)) {
-            $this->response->end('Invalid JSON: ' . $str);
-            die;
+            throw new \Swoole\ExitException('Invalid JSON: ' . $str);
         }
     }
 
@@ -783,8 +782,7 @@ class JsonDecode
             $start = $streamIndex['_s_'];
             $end = $streamIndex['_e_'];
         } else {
-            $this->response->end("Invalid keys '{$keys}'");
-            die;
+            throw new \Swoole\ExitException("Invalid keys '{$keys}'");
         }
 
         $length = $end - $start + 1;
@@ -825,8 +823,7 @@ class JsonDecode
             $this->_e_ = $streamIndex['_e_'];
             $this->keys = $keys;
         } else {
-            $this->response->end("Invalid keys '{$keys}'");
-            die;
+            throw new \Swoole\ExitException("Invalid keys '{$keys}'");
         }
     }
 }

@@ -116,8 +116,7 @@ class Redis extends AbstractCache
             }
 
             if (!$this->cache->ping()) {
-                die('Unable to ping cache server');
-                return;
+                throw new \Swoole\ExitException('Unable to ping cache server');
             }
         } catch (\Exception $e) {
             $log = [
@@ -125,11 +124,9 @@ class Redis extends AbstractCache
                 // 'input' => $this->c->httpRequest->input,
                 'error' => 'Unable to connect to cache server'
             ];
-            Logs::log('error', json_encode($log));
+            (new Logs)->log('error', json_encode($log));
 
-            die('Unable to connect to cache server');
-
-            return;
+            throw new \Swoole\ExitException('Unable to connect to cache server');
         }
     }
 

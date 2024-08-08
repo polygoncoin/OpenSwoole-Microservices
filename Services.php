@@ -270,41 +270,4 @@ class Services
         }
         return true;
     }
-
-    /**
-     * HTTP Authentication
-     *
-     * @param string $envUsername env variable to match username
-     * @param string $envPassword env variable to match password
-     * @return boolean
-     */
-    private function httpAuthentication($envUsername, $envPassword)
-    {
-        // Check request not from proxy.
-        if (
-            !isset($this->c->request->server['remote_addr']) ||
-            $this->c->request->server['remote_addr'] !== getenv('HttpAuthenticationRestrictedIp')
-        ) {
-            http_response_code(404);
-        }
-        if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
-            header('WWW-Authenticate: Basic realm="Test Authentication System"');
-            header('HTTP/1.0 401 Unauthorized');
-            echo "You must enter a valid login ID and password to access this resource\n";
-            return false;
-        } else {
-            $username = $_SERVER['PHP_AUTH_USER'];
-            $password = $_SERVER['PHP_AUTH_PW'];
-    
-            $validated = ($username === getenv($envUsername)) && ($password === getenv($envPassword));
-    
-            if (!$validated) {
-                header('WWW-Authenticate: Basic realm="My Realm"');
-                header('HTTP/1.0 401 Unauthorized');
-                die ("Not authorized");
-            } else {
-                return true;
-            }
-        }
-    }
 }
