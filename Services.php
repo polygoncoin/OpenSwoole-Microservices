@@ -4,6 +4,7 @@ namespace Microservices;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\App\Logs;
 
 use OpenSwoole\Http\Request;
 use OpenSwoole\Http\Response;
@@ -170,13 +171,17 @@ class Services
         }
 
         // Class found
-        if (!is_null($class)) {
-            $api = new $class($this->c);
-            if ($api->init()) {
-                $api->process();
-            }
+        try {
+            if (!is_null($class)) {
+                $api = new $class($this->c);
+                if ($api->init()) {
+                    $api->process();
+                }
+            }    
+        } catch (\Swoole\ExitException $e) {
+            $this->log($e->getMessage());
         }
-
+    
         return $this->c->httpResponse->isSuccess();
     }
 
@@ -269,5 +274,25 @@ class Services
             return false;
         }
         return true;
+    }
+
+    /**
+     * Log error
+     *
+     * @return void
+     */
+    private function log($logsJson)
+    {
+        $logs = json_decode($logsJson, true); // logType, msg
+
+        $log = [
+            'datetime' => date('Y-m-d H:i:s'),
+            'logType' => $logs['logType'],
+            'input' => $this->c->httpRequest->input,
+            "msg" => $logs['msg']
+        ];
+        (new Logs)->log($logs['logType'], json_encode($log));
+
+        throw new \Swoole\ExitException($logs['msg']);
     }
 }

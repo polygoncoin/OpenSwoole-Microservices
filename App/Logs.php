@@ -38,6 +38,6 @@ class Logs
         if (!file_exists($logFile)) {
             touch($logFile);
         }
-        file_put_contents($logFile.'-'.date('Y-m'), $logContent . PHP_EOL, FILE_APPEND);
+        file_put_contents($logFile, $logContent . PHP_EOL, FILE_APPEND);
     }
 }

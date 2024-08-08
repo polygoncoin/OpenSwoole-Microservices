@@ -4,7 +4,6 @@ namespace Microservices\App\Servers\Cache;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
-use Microservices\App\Logs;
 use Microservices\App\Servers\Cache\AbstractCache;
 
 /**
@@ -116,17 +115,18 @@ class Redis extends AbstractCache
             }
 
             if (!$this->cache->ping()) {
-                throw new \Swoole\ExitException('Unable to ping cache server');
+                $logs = [
+                    'logType' => 'error',
+                    'msg' => 'Unable to ping cache server'
+                ];    
+                throw new \Swoole\ExitException(json_encode($logs));
             }
         } catch (\Exception $e) {
-            $log = [
-                'datetime' => date('Y-m-d H:i:s'),
-                // 'input' => $this->c->httpRequest->input,
-                'error' => 'Unable to connect to cache server'
-            ];
-            (new Logs)->log('error', json_encode($log));
-
-            throw new \Swoole\ExitException('Unable to connect to cache server');
+            $logs = [
+                'logType' => 'error',
+                'msg' => 'Unable to connect to cache server'
+            ];    
+            throw new \Swoole\ExitException(json_encode($logs));
         }
     }
 

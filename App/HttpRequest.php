@@ -6,7 +6,6 @@ use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\HttpResponse;
 use Microservices\App\JsonDecode;
-use Microservices\App\Logs;
 
 use OpenSwoole\Http\Request;
 use OpenSwoole\Http\Response;

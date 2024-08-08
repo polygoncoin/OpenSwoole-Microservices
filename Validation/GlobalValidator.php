@@ -4,7 +4,6 @@ namespace Microservices\Validation;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
-use Microservices\App\Logs;
 use Microservices\Validation\ValidatorTrait;
 
 /**

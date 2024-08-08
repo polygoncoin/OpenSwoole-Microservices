@@ -4,7 +4,6 @@ namespace Microservices\App;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
-use Microservices\App\Logs;
 
 use OpenSwoole\Http\Request;
 use OpenSwoole\Http\Response;

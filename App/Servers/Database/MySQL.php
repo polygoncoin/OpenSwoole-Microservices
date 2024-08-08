@@ -1,10 +1,6 @@
 <?php
 namespace Microservices\App\Servers\Database;
 
-use Microservices\App\Constants;
-use Microservices\App\Common;
-use Microservices\App\Env;
-use Microservices\App\Logs;
 use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
@@ -131,8 +127,6 @@ class MySQL extends AbstractDatabase
             if ((int)$this->db->errorCode()) {
                 $this->logError();
             }
-
-            throw new \Swoole\ExitException('Unable to connect to database server');
         }
     }
 
@@ -153,7 +147,6 @@ class MySQL extends AbstractDatabase
                 $this->logError();
                 $this->rollback();
             }
-            throw new \Swoole\ExitException('DB Issue with change database');
         }
     }
 
@@ -173,7 +166,6 @@ class MySQL extends AbstractDatabase
             if ((int)$this->db->errorCode()) {
                 $this->logError();
             }
-            throw new \Swoole\ExitException('DB Issue with ' . __FUNCTION__);
         }
     }
     
@@ -193,7 +185,6 @@ class MySQL extends AbstractDatabase
             if ((int)$this->db->errorCode()) {
                 $this->logError();
             }
-            throw new \Swoole\ExitException('DB Issue with ' . __FUNCTION__);
         }
     }
     
@@ -213,7 +204,6 @@ class MySQL extends AbstractDatabase
             if ((int)$this->db->errorCode()) {
                 $this->logError();
             }
-            throw new \Swoole\ExitException('DB Issue with ' . __FUNCTION__);
         }
     }
     
@@ -237,7 +227,6 @@ class MySQL extends AbstractDatabase
             if ((int)$this->db->errorCode()) {
                 $this->logError();
             }
-            throw new \Swoole\ExitException('DB Issue with ' . __FUNCTION__);
         }
     }
     
@@ -257,7 +246,6 @@ class MySQL extends AbstractDatabase
             if ((int)$this->db->errorCode()) {
                 $this->logError();
             }
-            throw new \Swoole\ExitException('DB Issue with ' . __FUNCTION__);
         }
     }
 
@@ -282,7 +270,6 @@ class MySQL extends AbstractDatabase
             if ((int)$this->db->errorCode()) {
                 $this->logError();
             }
-            throw new \Swoole\ExitException('DB Issue with ' . __FUNCTION__);
         }
     }
 
@@ -305,7 +292,6 @@ class MySQL extends AbstractDatabase
             if ((int)$this->db->errorCode()) {
                 $this->logError();
             }
-            throw new \Swoole\ExitException('DB Issue with ' . __FUNCTION__);
         }
         return $stmt;
     }
@@ -327,7 +313,6 @@ class MySQL extends AbstractDatabase
             if ((int)$this->db->errorCode()) {
                 $this->logError();
             }
-            throw new \Swoole\ExitException('DB Issue with ' . __FUNCTION__);
         }
     }
 
@@ -348,7 +333,6 @@ class MySQL extends AbstractDatabase
             if ((int)$this->db->errorCode()) {
                 $this->logError();
             }
-            throw new \Swoole\ExitException('DB Issue with ' . __FUNCTION__);
         }
     }
 
@@ -367,7 +351,6 @@ class MySQL extends AbstractDatabase
             if ((int)$this->db->errorCode()) {
                 $this->logError();
             }
-            throw new \Swoole\ExitException('DB Issue with ' . __FUNCTION__);
         }
     }
 
@@ -378,11 +361,10 @@ class MySQL extends AbstractDatabase
      */
     private function logError()
     {
-        $log = [
-            'datetime' => date('Y-m-d H:i:s'),
-            // 'input' => $this->c->httpRequest->input,
-            'error' =>$this->db->errorInfo()
+        $logs = [
+            'logType' => 'error',
+            'msg' => $this->db->errorInfo()
         ];
-        (new Logs)->log('error', json_encode($log));
+        throw new \Swoole\ExitException(json_encode($logs));
     }
 }

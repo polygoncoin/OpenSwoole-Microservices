@@ -4,7 +4,6 @@ namespace Microservices\App;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
-use Microservices\App\Logs;
 
 use OpenSwoole\Http\Request;
 use OpenSwoole\Http\Response;
@@ -567,7 +566,11 @@ class JsonDecode
     {
         $str = trim($str);
         if (!empty($str)) {
-            throw new \Swoole\ExitException('Invalid JSON: ' . $str);
+            $logs = [
+                'logType' => 'error',
+                'msg' => 'Invalid JSON: ' . $str
+            ];    
+            throw new \Swoole\ExitException(json_encode($logs));
         }
     }
 
@@ -782,7 +785,11 @@ class JsonDecode
             $start = $streamIndex['_s_'];
             $end = $streamIndex['_e_'];
         } else {
-            throw new \Swoole\ExitException("Invalid keys '{$keys}'");
+            $logs = [
+                'logType' => 'error',
+                'msg' => "Invalid keys '{$keys}'"
+            ];    
+            throw new \Swoole\ExitException(json_encode($logs));
         }
 
         $length = $end - $start + 1;
@@ -823,7 +830,11 @@ class JsonDecode
             $this->_e_ = $streamIndex['_e_'];
             $this->keys = $keys;
         } else {
-            throw new \Swoole\ExitException("Invalid keys '{$keys}'");
+            $logs = [
+                'logType' => 'error',
+                'msg' => "Invalid keys '{$keys}'"
+            ];    
+            throw new \Swoole\ExitException(json_encode($logs));
         }
     }
 }
