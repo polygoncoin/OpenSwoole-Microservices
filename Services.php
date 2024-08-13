@@ -292,7 +292,7 @@ class Services
             "msg" => $logs['msg']
         ];
         (new Logs)->log($logs['logType'], json_encode($log));
-var_dump($logs['msg']);
+
         throw new \Swoole\ExitException($logs['msg']);
     }
 }
