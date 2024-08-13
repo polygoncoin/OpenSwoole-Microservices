@@ -534,3 +534,33 @@ var params = "Payload="+urlencodeJsonString;
 
 xmlhttp . send( params );
 ```
+
+- PUT Request
+```
+var handlerUrl = "http://127.0.0.1:9501?r=/custom/password";
+var xmlhttp = new XMLHttpRequest();
+
+xmlhttp . open( "PUT", handlerUrl );
+xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
+
+xmlhttp . onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        var responseJson = this.responseText;
+        var responseArr = JSON.parse(responseJson);
+        console.log(responseArr);
+    }
+};
+
+// Payload data which is to be made available on the server for the "/ajax-handler".
+var Payload = {
+    "old_password": "shames11",
+    "new_password": "ramesh",
+};
+
+var jsonString = JSON.stringify(Payload);
+var urlencodeJsonString = encodeURIComponent(jsonString);
+var params = "Payload="+urlencodeJsonString;
+
+xmlhttp . send( params );
+```
