@@ -46,12 +46,18 @@ DROP TABLE IF EXISTS `m003_master_connection`;
 CREATE TABLE `m003_master_connection` (
   `connection_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255),
-  `db_server_type` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `db_hostname` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `db_port` int NOT NULL,
-  `db_username` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `db_password` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  `db_database` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `write_db_server_type` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `write_db_hostname` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `write_db_port` int NOT NULL,
+  `write_db_username` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `write_db_password` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `write_db_database` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `read_db_server_type` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `read_db_hostname` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `read_db_port` int NOT NULL,
+  `read_db_username` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `read_db_password` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `read_db_database` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `comments` varchar(255) DEFAULT NULL,
   `created_by` int DEFAULT NULL,
   `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -105,9 +111,9 @@ UNLOCK TABLES;
 LOCK TABLES `m003_master_connection` WRITE;
 /*!40000 ALTER TABLE `m003_master_connection` DISABLE KEYS */;
 INSERT INTO `m003_master_connection` VALUES
-(1,'admin','defaultDbType','defaultDbHostname','defaultDbPort','defaultDbUsername','defaultDbPassword','defaultDbDatabase','',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-05-02 14:48:16','Yes','No','No'),
-(2,'clientOneConnectionName','defaultDbType','defaultDbHostname','defaultDbPort','defaultDbUsername','defaultDbPassword','dbDatabaseClient001','',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-05-02 14:50:41','Yes','No','No'),
-(3,'clientTwoConnectionName','defaultDbType','dbHostnameClient002','defaultDbPort','dbUsernameClient002','dbPasswordClient002','dbDatabaseClient002','',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-05-02 14:50:41','Yes','No','No');
+(1,'admin','defaultDbType','defaultDbHostname','defaultDbPort','defaultDbUsername','defaultDbPassword','defaultDbDatabase','defaultDbType','defaultDbHostname','defaultDbPort','defaultDbUsername','defaultDbPassword','defaultDbDatabase','',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-05-02 14:48:16','Yes','No','No'),
+(2,'clientOneConnectionName','defaultDbType','defaultDbHostname','defaultDbPort','defaultDbUsername','defaultDbPassword','dbDatabaseClient001','defaultDbType','defaultDbHostname','defaultDbPort','defaultDbUsername','defaultDbPassword','dbDatabaseClient001','',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-05-02 14:50:41','Yes','No','No'),
+(3,'clientTwoConnectionName','defaultDbType','dbHostnameClient002','defaultDbPort','dbUsernameClient002','dbPasswordClient002','dbDatabaseClient002','defaultDbType','dbHostnameClient002','defaultDbPort','dbUsernameClient002','dbPasswordClient002','dbDatabaseClient002','',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-05-02 14:50:41','Yes','No','No');
 /*!40000 ALTER TABLE `m003_master_connection` ENABLE KEYS */;
 UNLOCK TABLES;
 

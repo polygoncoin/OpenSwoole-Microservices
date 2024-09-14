@@ -240,12 +240,21 @@ class HttpRequest
         $groupInfoArr = json_decode($this->cache->getCache($key), true);
 
         // Set Database credentials
-        Env::$dbType = getenv($groupInfoArr['db_server_type']);
-        Env::$dbHostname = getenv($groupInfoArr['db_hostname']);
-        Env::$dbPort = getenv($groupInfoArr['db_port']);
-        Env::$dbUsername = getenv($groupInfoArr['db_username']);
-        Env::$dbPassword = getenv($groupInfoArr['db_password']);
-        Env::$dbDatabase = getenv($groupInfoArr['db_database']);
+        if ($this->REQUEST_METHOD === 'GET') {
+            Env::$dbType = getenv($groupInfoArr['read_db_server_type']);
+            Env::$dbHostname = getenv($groupInfoArr['read_db_hostname']);
+            Env::$dbPort = getenv($groupInfoArr['read_db_port']);
+            Env::$dbUsername = getenv($groupInfoArr['read_db_username']);
+            Env::$dbPassword = getenv($groupInfoArr['read_db_password']);
+            Env::$dbDatabase = getenv($groupInfoArr['read_db_database']);
+        } else {
+            Env::$dbType = getenv($groupInfoArr['write_db_server_type']);
+            Env::$dbHostname = getenv($groupInfoArr['write_db_hostname']);
+            Env::$dbPort = getenv($groupInfoArr['write_db_port']);
+            Env::$dbUsername = getenv($groupInfoArr['write_db_username']);
+            Env::$dbPassword = getenv($groupInfoArr['write_db_password']);
+            Env::$dbDatabase = getenv($groupInfoArr['write_db_database']);
+        }
 
         $this->setDb();
     }

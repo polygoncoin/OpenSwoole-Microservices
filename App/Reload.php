@@ -87,7 +87,7 @@ class Reload
                 case 'user':
                     $this->processUser($ids);
                     break;
-                case 'user':
+                case 'group':
                     $this->processGroup($ids);
                     break;
                 case 'groupIp':
@@ -148,12 +148,18 @@ class Reload
                 G.group_id,
                 G.name,
                 G.client_id,
-                C.db_server_type,
-                C.db_hostname,
-                C.db_port,
-                C.db_username,
-                C.db_password,
-                C.db_database                
+                C.write_db_server_type,
+                C.write_db_hostname,
+                C.write_db_port,
+                C.write_db_username,
+                C.write_db_password,
+                C.write_db_database,
+                C.read_db_server_type,
+                C.read_db_hostname,
+                C.read_db_port,
+                C.read_db_username,
+                C.read_db_password,
+                C.read_db_database
             FROM
                 `{$this->execPhpFunc(getenv('groups'))}` G
             LEFT JOIN
