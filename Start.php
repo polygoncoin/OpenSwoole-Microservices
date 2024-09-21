@@ -75,4 +75,17 @@ $server->on("request", function (Request $request, Response $response) {
     }
 });
 
+/**
+ *  https://openswoole.com/docs/modules/swoole-server/configuration
+ */
+$server->set([
+    // HTTP Server max execution time, since v4.8.0
+    'max_request_execution_time' => 10, // 10s
+
+    // Compression
+    'http_compression' => true,
+    'http_compression_level' => 3, // 1 - 9
+    'compression_min_length' => 20,
+]);
+
 $server->start();
