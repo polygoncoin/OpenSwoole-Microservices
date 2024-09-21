@@ -124,7 +124,6 @@ class MySQL extends AbstractDatabase
                 $this->useDatabase();
             }
         } catch (\PDOException $e) {
-            echo $e->getMessage();
             if ((int)$this->db->errorCode()) {
                 $this->logError($e);
             }
