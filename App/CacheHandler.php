@@ -53,7 +53,7 @@ class CacheHandler
      */
     public function __construct(Common &$common)
     {
-        $this->c = $common;
+        $this->c = &$common;
     }
 
     /**

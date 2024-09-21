@@ -5,7 +5,7 @@ namespace Microservices\Config\Queries\ClientDB\GET;
 use Microservices\App\Constants;
 
 return [
-    'query' => "SELECT * FROM `{$Env::$clientDB}`.`category` WHERE `name` like CONCAT ('%', :name, '%');",
+    'query' => "SELECT * FROM `{$this->clientDB}`.`category` WHERE `name` like CONCAT ('%', :name, '%');",
     '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
         ['payload', 'name', Constants::$REQUIRED],
     ],

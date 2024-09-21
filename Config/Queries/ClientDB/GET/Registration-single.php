@@ -4,7 +4,7 @@ namespace Microservices\Config\Queries\ClientDB\GET;
 use Microservices\App\Constants;
 
 return [
-    'query' => "SELECT * FROM `{$Env::$clientDB}`.`registration` WHERE __WHERE__",
+    'query' => "SELECT * FROM `{$this->clientDB}`.`registration` WHERE __WHERE__",
     '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
         ['uriParams', 'id', Constants::$REQUIRED],
     ],

@@ -4,7 +4,7 @@ namespace Microservices\Config\Queries\GlobalDB\PATCH\approve;
 use Microservices\App\Constants;
 
 return [
-    'query' => "UPDATE `{$Env::$globalDB}`.`{$Env::$connections}` SET __SET__ WHERE __WHERE__",
+    'query' => "UPDATE `{$this->globalDB}`.`{$Env::$connections}` SET __SET__ WHERE __WHERE__",
     '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
         ['uriParams', 'connection_id', Constants::$REQUIRED],
     ],

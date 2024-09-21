@@ -50,7 +50,7 @@ class MySQL extends AbstractDatabase
      *
      * @var string
      */
-    private $database = null;
+    public $database = null;
 
     /**
      * Database connection
@@ -121,11 +121,12 @@ class MySQL extends AbstractDatabase
             );
 
             if (!is_null($this->database)) {
-                $this->useDatabase($this->database);
+                $this->useDatabase();
             }
         } catch (\PDOException $e) {
+            echo $e->getMessage();
             if ((int)$this->db->errorCode()) {
-                $this->logError();
+                $this->logError($e);
             }
         }
     }
@@ -133,18 +134,19 @@ class MySQL extends AbstractDatabase
     /**
      * Use Database
      *
-     * @param string $database Database .env string
      * @return void
      */
-    public function useDatabase($database)
+    public function useDatabase()
     {
         $this->connect();
 
         try {
-           $this->db->exec("USE `{$database}`");
+            if (!is_null($this->database)) {
+                $this->db->exec("USE `{$this->database}`");
+            }
         } catch (\PDOException $e) {
             if ((int)$this->db->errorCode()) {
-                $this->logError();
+                $this->logError($e);
                 $this->rollback();
             }
         }
@@ -157,14 +159,14 @@ class MySQL extends AbstractDatabase
      */
     public function begin()
     {
-        $this->connect();
+        $this->useDatabase();
 
         $this->beganTransaction = true;
         try {
            $this->db->beginTransaction();
         } catch (\PDOException $e) {
             if ((int)$this->db->errorCode()) {
-                $this->logError();
+                $this->logError($e);
             }
         }
     }
@@ -183,7 +185,7 @@ class MySQL extends AbstractDatabase
             }
         } catch (\PDOException $e) {
             if ((int)$this->db->errorCode()) {
-                $this->logError();
+                $this->logError($e);
             }
         }
     }
@@ -202,7 +204,7 @@ class MySQL extends AbstractDatabase
             }
         } catch (\PDOException $e) {
             if ((int)$this->db->errorCode()) {
-                $this->logError();
+                $this->logError($e);
             }
         }
     }
@@ -225,7 +227,7 @@ class MySQL extends AbstractDatabase
                 $this->rollback();
             }
             if ((int)$this->db->errorCode()) {
-                $this->logError();
+                $this->logError($e);
             }
         }
     }
@@ -244,7 +246,7 @@ class MySQL extends AbstractDatabase
                 $this->rollback();
             }
             if ((int)$this->db->errorCode()) {
-                $this->logError();
+                $this->logError($e);
             }
         }
     }
@@ -258,7 +260,7 @@ class MySQL extends AbstractDatabase
      */
     public function execDbQuery($sql, $params = [])
     {
-        $this->connect();
+        $this->useDatabase();
 
         try {
             $this->stmt = $this->db->prepare($sql, [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]);
@@ -268,7 +270,7 @@ class MySQL extends AbstractDatabase
                 $this->rollback();
             }
             if ((int)$this->db->errorCode()) {
-                $this->logError();
+                $this->logError($e);
             }
         }
     }
@@ -281,7 +283,7 @@ class MySQL extends AbstractDatabase
      */
     public function prepare($sql)
     {
-        $this->connect();
+        $this->useDatabase();
 
         try {
             $stmt = $this->db->prepare($sql, [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]);
@@ -290,7 +292,7 @@ class MySQL extends AbstractDatabase
                 $this->rollback();
             }
             if ((int)$this->db->errorCode()) {
-                $this->logError();
+                $this->logError($e);
             }
         }
         return $stmt;
@@ -311,7 +313,7 @@ class MySQL extends AbstractDatabase
             }
         } catch (\PDOException $e) {
             if ((int)$this->db->errorCode()) {
-                $this->logError();
+                $this->logError($e);
             }
         }
     }
@@ -331,7 +333,7 @@ class MySQL extends AbstractDatabase
             }
         } catch (\PDOException $e) {
             if ((int)$this->db->errorCode()) {
-                $this->logError();
+                $this->logError($e);
             }
         }
     }
@@ -349,7 +351,7 @@ class MySQL extends AbstractDatabase
             }
         } catch (\PDOException $e) {
             if ((int)$this->db->errorCode()) {
-                $this->logError();
+                $this->logError($e);
             }
         }
     }
@@ -359,12 +361,12 @@ class MySQL extends AbstractDatabase
      *
      * @return void
      */
-    private function logError()
+    private function logError($e)
     {
         $logs = [
             'logType' => 'error',
-            'msg' => $this->db->errorInfo()
+            'msg' => $e->getMessage()
         ];
-        throw new \Swoole\ExitException(json_encode($logs));
+        throw new \Exception(json_encode($logs));
     }
 }

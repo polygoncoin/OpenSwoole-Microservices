@@ -24,6 +24,16 @@ class Read
     use AppTrait;
 
     /**
+     * Global DB
+     */
+    private $globalDB = null;
+
+    /**
+     * Global DB
+     */
+    private $clientDB = null;
+    
+    /**
      * Microservices Collection of Common Objects
      * 
      * @var Microservices\App\Common
@@ -37,7 +47,7 @@ class Read
      */
     public function __construct(Common &$common)
     {
-        $this->c = $common;
+        $this->c = &$common;
     }
 
     /**
@@ -47,8 +57,8 @@ class Read
      */
     public function init()
     {
-        Env::$globalDB = Env::$defaultDbDatabase;
-        Env::$clientDB = Env::$dbDatabase;
+        $this->globalDB = $this->c->httpRequest->globalDB;
+        $this->clientDB = $this->c->httpRequest->clientDB;
 
         return $this->c->httpResponse->isSuccess();
     }

@@ -36,7 +36,7 @@ class Reload
      */
     public function __construct(Common &$common)
     {
-        $this->c = $common;
+        $this->c = &$common;
     }
 
     /**
@@ -46,14 +46,14 @@ class Reload
      */
     public function init()
     {
-        Env::$dbType = getenv('defaultDbType');
-        Env::$dbHostname = getenv('defaultDbHostname');
-        Env::$dbPort = getenv('defaultDbPort');
-        Env::$dbUsername = getenv('defaultDbUsername');
-        Env::$dbPassword = getenv('defaultDbPassword');
-        Env::$dbDatabase = getenv('defaultDbDatabase');
-
-        $this->c->httpRequest->setDb();
+        $this->c->httpRequest->setDb(
+            getenv('globalType'),
+            getenv('globalHostname'),
+            getenv('globalPort'),
+            getenv('globalUsername'),
+            getenv('globalPassword'),
+            getenv('globalDatabase')
+        );
 
         return $this->c->httpResponse->isSuccess();
     }

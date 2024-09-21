@@ -4,7 +4,7 @@ namespace Microservices\Config\Queries\GlobalDB\POST;
 use Microservices\App\Constants;
 
 return [
-    'query' => "INSERT INTO `{$Env::$globalDB}`.`{$Env::$clients}` SET __SET__",
+    'query' => "INSERT INTO `{$this->globalDB}`.`{$Env::$clients}` SET __SET__",
     '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
         ['payload', 'name', Constants::$REQUIRED],
         ['payload', 'comments']

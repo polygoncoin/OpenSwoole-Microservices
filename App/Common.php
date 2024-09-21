@@ -7,9 +7,6 @@ use Microservices\App\Env;
 use Microservices\App\HttpRequest;
 use Microservices\App\HttpResponse;
 
-use OpenSwoole\Http\Request;
-use OpenSwoole\Http\Response;
-
 /**
  * Common Class
  *
@@ -39,35 +36,33 @@ class Common
     public $httpResponse = null;
 
     /**
-     * OpenSwoole Http Request
+     * Microservices Request Details
      * 
-     * @var OpenSwoole\Http\Request
+     * @var array
      */
-    public $request = null;
+    public $inputs = null;
 
     /**
-     * OpenSwoole Http Response
-     * 
-     * @var OpenSwoole\Http\Response
+     * Constructor
+     *
+     * @param array $inputs
      */
-    public $response = null;
+    public function __construct(&$inputs)
+    {
+        $this->inputs = &$inputs;
+    }
 
     /**
      * Initialize
      *
-     * @param OpenSwoole\Http\Request  $request
-     * @param OpenSwoole\Http\Response $response
      * @return boolean
      */
-    public function init(Request &$request, Response &$response)
+    public function init()
     {
-        $this->request = $request;
-        $this->response = $response;
+        $this->httpRequest = new HttpRequest($this->inputs);
+        $this->httpRequest->init();
 
-        $this->httpResponse = new HttpResponse();
-        $this->httpResponse->init($request, $response);
-
-        $this->httpRequest = new HttpRequest($this->httpResponse);
-        $this->httpRequest->init($request, $response);
+        $this->httpResponse = new HttpResponse($this->inputs);
+        $this->httpResponse->init();
     }
 }

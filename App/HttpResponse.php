@@ -6,9 +6,6 @@ use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\JsonEncode;
 
-use OpenSwoole\Http\Request;
-use OpenSwoole\Http\Response;
-
 /**
  * HTTP Error Response
  *
@@ -45,45 +42,31 @@ class HttpResponse
     public $jsonEncode = null;
 
     /**
-     * OpenSwoole Http Request
+     * Microservices Request Details
      * 
-     * @var OpenSwoole\Http\Request
+     * @var array
      */
-    private $request = null;
+    public $inputs = null;
 
     /**
-     * OpenSwoole Http Response
-     * 
-     * @var OpenSwoole\Http\Response
+     * Constructor
+     *
+     * @param array $inputs
      */
-    private $response = null;
+    public function __construct(&$inputs)
+    {
+        $this->inputs = &$inputs;
+    }
 
     /**
      * Initialize
      *
-     * @param OpenSwoole\Http\Request  $request
-     * @param OpenSwoole\Http\Response $response
      * @return boolean
      */
-    public function init(Request &$request, Response &$response)
+    public function init()
     {
-        $this->request = $request;
-        $this->response = $response;
-
-        $this->jsonEncode = new JsonEncode();
-        $this->jsonEncode->init($request, $response);
-    }
-
-    /**
-     * Set Headers
-     *
-     * @return void
-     */
-    public function setHeaders()
-    {
-        $this->response->header('Content-Type', 'application/json;charset=utf-8');
-        $this->response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
-        $this->response->header('Pragma', 'no-cache');
+        $this->jsonEncode = new JsonEncode($this->inputs);
+        $this->jsonEncode->init();
     }
 
     /**

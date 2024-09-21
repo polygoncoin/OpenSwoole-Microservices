@@ -82,7 +82,7 @@ class Login
      */
     public function __construct(Common &$common)
     {
-        $this->c = $common;
+        $this->c = &$common;
     }
 
     /**
@@ -92,14 +92,6 @@ class Login
      */
     public function init()
     {
-        // Set Database credentials
-        Env::$dbType = getenv('defaultDbType');
-        Env::$dbHostname = getenv('defaultDbHostname');
-        Env::$dbPort = getenv('defaultDbPort');
-        Env::$dbUsername = getenv('defaultDbUsername');
-        Env::$dbPassword = getenv('defaultDbPassword');
-        Env::$dbDatabase = getenv('defaultDbDatabase');
-
         return $this->c->httpResponse->isSuccess();
     }
 
@@ -269,7 +261,14 @@ class Login
     {
         $userTable = Env::$users;
 
-        $this->c->httpRequest->setDb();
+        $this->c->httpRequest->setDb(
+            getenv('globalType'),
+            getenv('globalHostname'),
+            getenv('globalPort'),
+            getenv('globalUsername'),
+            getenv('globalPassword'),
+            getenv('globalDatabase')
+        );
 
         $this->c->httpRequest->db->execDbQuery("
         UPDATE

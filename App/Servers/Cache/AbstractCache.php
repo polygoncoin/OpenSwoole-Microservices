@@ -25,10 +25,9 @@ abstract class AbstractCache
     /**
      * Use Cache Database
      *
-     * @param string $database Database .env string
      * @return void
      */
-    abstract public function useDatabase($database);
+    abstract public function useDatabase();
 
     /**
      * Checks if cache key exist

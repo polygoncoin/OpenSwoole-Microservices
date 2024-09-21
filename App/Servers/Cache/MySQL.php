@@ -120,20 +120,21 @@ class MySQL extends AbstractCache
                 'logType' => 'error',
                 'msg' => 'Unable to connect to MySQL as cache server'
             ];    
-            throw new \Swoole\ExitException(json_encode($logs));
+            throw new \Exception(json_encode($logs));
         }
     }
 
     /**
      * Use Database
      *
-     * @param string $database Database .env string
      * @return void
      */
-    public function useDatabase($database)
+    public function useDatabase()
     {
         $this->connect();
-        $this->cache->useDatabase($this->database);
+        if (!is_null($this->database)) {
+            $this->cache->useDatabase();
+        }
     }
 
     /**
@@ -144,7 +145,7 @@ class MySQL extends AbstractCache
      */
     public function cacheExists($key)
     {
-        $this->connect();
+        $this->useDatabase();
         $keyDetails = $this->getTableAndKey($key);
         return $keyDetails['count'] === 1;
     }
@@ -157,7 +158,7 @@ class MySQL extends AbstractCache
      */
     public function getCache($key)
     {
-        $this->connect();
+        $this->useDatabase();
 
         $keyDetails = $this->getTableAndKey($key);
         
@@ -183,7 +184,7 @@ class MySQL extends AbstractCache
      */
     public function setCache($key, $value, $expire = null)
     {
-        $this->connect();
+        $this->useDatabase();
 
         $keyDetails = $this->getTableAndKey($key);
         
@@ -219,7 +220,7 @@ class MySQL extends AbstractCache
      */
     public function deleteCache($key)
     {
-        $this->connect();
+        $this->useDatabase();
 
         $keyDetails = $this->getTableAndKey($key);
         
@@ -239,7 +240,7 @@ class MySQL extends AbstractCache
      */
     public function isSetMember($set, $member)
     {
-        $this->connect();
+        $this->useDatabase();
         // return $this->cache->sIsMember($set, $member);
     }
 
@@ -252,7 +253,7 @@ class MySQL extends AbstractCache
      */
     public function setSetMembers($key, $valueArray)
     {
-        $this->connect();
+        $this->useDatabase();
         // $this->deleteCache($key);
         // foreach ($valueArray as $value) {
         //     $this->cache->sAdd($key, $value);

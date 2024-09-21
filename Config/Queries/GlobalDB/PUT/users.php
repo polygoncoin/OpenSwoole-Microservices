@@ -4,7 +4,7 @@ namespace Microservices\Config\Queries\GlobalDB\PUT;
 use Microservices\App\Constants;
 
 return [
-    'query' => "UPDATE `{$Env::$globalDB}`.`{$Env::$users}` SET __SET__ WHERE __WHERE__",
+    'query' => "UPDATE `{$this->globalDB}`.`{$Env::$users}` SET __SET__ WHERE __WHERE__",
     '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
         ['payload', 'name'],
         ['payload', 'comments'],

@@ -33,7 +33,7 @@ class Password
      */
     public function __construct(Common &$common)
     {
-        $this->c = $common;
+        $this->c = &$common;
     }
 
     /**
@@ -69,7 +69,7 @@ class Password
             $newPassword = $this->c->httpRequest->input['payload']['new_password'];
             $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
 
-            $database = getenv('defaultDbDatabase');
+            $database = getenv('globalDatabase');
             $table = getenv('users');
             $sql = "Update `{$database}`.`{$table}` SET password_hash = :password_hash WHERE username = :username AND is_deleted = :is_deleted";
             $sqlParams = [

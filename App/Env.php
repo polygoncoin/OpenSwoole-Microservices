@@ -15,21 +15,8 @@ namespace Microservices\App;
  */
 class Env
 {
-    static public $defaultDbDatabase = null;
-
-    static public $cacheType = null;
-    static public $cacheHostname = null;
-    static public $cachePort = null;
-    static public $cacheUsername = null;
-    static public $cachePassword = null;
+    static public $globalDatabase = null;
     static public $cacheDatabase = null;
-
-    static public $dbType = null;
-    static public $dbHostname = null;
-    static public $dbPort = null;
-    static public $dbUsername = null;
-    static public $dbPassword = null;
-    static public $dbDatabase = null;
 
     static public $ENVIRONMENT = null;
     static public $OUTPUT_PERFORMANCE_STATS = null;
@@ -45,9 +32,6 @@ class Env
     static public $maxPerpage = null;
     static public $cronRestrictedIp = null;
 
-    static public $globalDB = null;
-    static public $clientDB = null;
-
     static private $initialized = null;
 
     static public function init()
@@ -60,7 +44,9 @@ class Env
             putenv("{$key}={$value}");
         }
 
-        self::$defaultDbDatabase = getenv('defaultDbDatabase');
+        self::$globalDatabase = getenv('globalDatabase');
+        self::$cacheDatabase = getenv('cacheDatabase');
+
         self::$ENVIRONMENT = getenv('ENVIRONMENT');
         self::$OUTPUT_PERFORMANCE_STATS = getenv('OUTPUT_PERFORMANCE_STATS');
         self::$allowConfigRequest = getenv('allowConfigRequest');

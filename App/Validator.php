@@ -40,9 +40,9 @@ class Validator
      */
     public function __construct(Common &$common)
     {
-        $this->c = $common;
+        $this->c = &$common;
 
-        if (Env::$dbDatabase === Env::$defaultDbDatabase) {
+        if ($this->c->httpRequest->db->database === Env::$globalDatabase) {
             $this->v = new GlobalValidator($this->c);
         } else {
             $this->v = new ClientValidator($this->c);

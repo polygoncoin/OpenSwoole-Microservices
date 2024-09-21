@@ -36,7 +36,7 @@ class ClientValidator
      */
     public function __construct(Common &$common)
     {
-        $this->c = $common;
+        $this->c = &$common;
     }
 
     /**
@@ -90,7 +90,7 @@ class ClientValidator
      */
     private function getPrimaryCount($table, $primary, $id)
     {
-        $db = Env::$defaultDbDatabase;
+        $db = $this->c->httpRequest->db->database;
         $sql = "SELECT count(1) as `count` FROM `{$db}`.`{$table}` WHERE `{$primary}` = ?";
         $params = [$id];
         $this->c->httpRequest->db->execDbQuery($sql, $params);

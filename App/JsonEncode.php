@@ -5,9 +5,6 @@ use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
 
-use OpenSwoole\Http\Request;
-use OpenSwoole\Http\Response;
-
 /**
  * Creates JSON
  *
@@ -48,39 +45,30 @@ class JsonEncode
     private $currentObject = null;
 
     /**
-     * OpenSwoole Http Request
+     * Microservices Request Details
      * 
-     * @var OpenSwoole\Http\Request
+     * @var array
      */
-    private $request = null;
-
-    /**
-     * OpenSwoole Http Response
-     * 
-     * @var OpenSwoole\Http\Response
-     */
-    private $response = null;
+    public $inputs = null;
 
     /**
      * JsonEncode constructor
+     *
+     * @param array $inputs
      */
-    public function __construct()
+    public function __construct(&$inputs)
     {
+        $this->inputs = &$inputs;
     }
 
     /**
      * Initialize
      *
-     * @param OpenSwoole\Http\Request  $request
-     * @param OpenSwoole\Http\Response $response
      * @return boolean
      */
-    public function init(Request &$request, Response &$response)
+    public function init()
     {
-        $this->request = $request;
-        $this->response = $response;
-
-        if ($this->request->server['request_method'] === 'GET') {
+        if ($this->inputs['server']['request_method'] === 'GET') {
             $this->tempStream = fopen("php://temp", "rw+b");
         } else {
             $this->tempStream = fopen("php://memory", "rw+b");
@@ -142,7 +130,7 @@ class JsonEncode
     public function addValue($value)
     {
         if ($this->currentObject->mode !== 'Array') {
-            throw new Exception('Mode should be Array');
+            throw new \Exception('Mode should be Array');
         }
         $this->encode($value);
     }
@@ -157,7 +145,7 @@ class JsonEncode
     public function addKeyValue($key, $value)
     {
         if ($this->currentObject->mode !== 'Object') {
-            throw new Exception('Mode should be Object');
+            throw new \Exception('Mode should be Object');
         }
         $this->write($this->currentObject->comma);
         $this->write($this->escape($key) . ':');
@@ -209,7 +197,7 @@ class JsonEncode
     {
         if ($this->currentObject) {
             if ($this->currentObject->mode === 'Object' && is_null($key)) {
-                throw new Exception('Object inside an Object should be supported with a Key');
+                throw new \Exception('Object inside an Object should be supported with a Key');
             }
             $this->write($this->currentObject->comma);
             array_push($this->objects, $this->currentObject);
@@ -263,8 +251,9 @@ class JsonEncode
     public function streamJson()
     {
         rewind($this->tempStream);
-        $this->response->end(stream_get_contents($this->tempStream));
+        $json = stream_get_contents($this->tempStream);
         fclose($this->tempStream);
+        return $json;
     }
 
     /** 

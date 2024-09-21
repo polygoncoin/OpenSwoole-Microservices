@@ -4,7 +4,7 @@ namespace Microservices\Config\Queries\GlobalDB\PATCH\disable;
 use Microservices\App\Constants;
 
 return [
-    'query' => "UPDATE `{$Env::$globalDB}`.`{$Env::$users}` SET __SET__ WHERE __WHERE__",
+    'query' => "UPDATE `{$this->globalDB}`.`{$Env::$users}` SET __SET__ WHERE __WHERE__",
     '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
         ['uriParams', 'user_id', Constants::$REQUIRED],
     ],

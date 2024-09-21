@@ -6,9 +6,6 @@ use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\Logs;
 
-use OpenSwoole\Http\Request;
-use OpenSwoole\Http\Response;
-
 /**
  * Microservices Class
  *
@@ -34,18 +31,11 @@ class Services
     private $tsEnd = null;
 
     /**
-     * OpenSwoole Http Request
+     * Microservices Request Details
      * 
-     * @var OpenSwoole\Http\Request
+     * @var array
      */
-    private $request = null;
-
-    /**
-     * OpenSwoole Http Response
-     * 
-     * @var OpenSwoole\Http\Response
-     */
-    private $response = null;
+    public $inputs = null;
 
     /**
      * Microservices Collection of Common Objects
@@ -56,35 +46,29 @@ class Services
 
     /**
      * Constructor
+     *
+     * @param array $inputs
      */
-    public function __construct()
+    public function __construct(&$inputs)
     {
+        $this->inputs = &$inputs;
+
+        Constants::init();
+        Env::init();
     }
     
     /**
      * Initialize
      *
-     * @param OpenSwoole\Http\Request  $request
-     * @param OpenSwoole\Http\Response $response
      * @return boolean
      */
-    public function init(Request &$request, Response &$response)
+    public function init()
     {
-        $this->request = $request;
-        $this->response = $response;
+        $this->c = new Common($this->inputs);
+        $this->c->init();
 
-        if (!$this->setCors()) {
-            return false;
-        }
-
-        Constants::init();
-        Env::init();
-
-        $this->c = new Common();
-        $this->c->init($request, $response);
-
-        if (!isset($this->c->request->get[Constants::$ROUTE_URL_PARAM])) {
-            $this->c->response->end('Missing route');
+        if (!isset($this->inputs['get'][Constants::$ROUTE_URL_PARAM])) {
+            throw new \Exception('Missing route');
         }
 
         if (Env::$OUTPUT_PERFORMANCE_STATS) {
@@ -178,7 +162,7 @@ class Services
                     $api->process();
                 }
             }    
-        } catch (\Swoole\ExitException $e) {
+        } catch (\Exception $e) {
             $this->log($e->getMessage());
         }
     
@@ -230,28 +214,17 @@ class Services
     }
 
     /**
-     * End Json
-     *
-     * @return void
-     */
-    public function streamJson()
-    {
-        $this->c->httpResponse->setHeaders();
-        if (!is_null($this->c->httpResponse->output)) {
-            $this->c->response->end($this->c->httpResponse->output);
-        } else {
-            $this->c->httpResponse->jsonEncode->streamJson();
-        }
-    }
-
-    /**
      * Output
      *
      * @return void
      */
     public function outputResults()
     {
-        $this->streamJson();
+        if (!is_null($this->c->httpResponse->output)) {
+            return $this->c->httpResponse->output;
+        } else {
+            return $this->c->httpResponse->jsonEncode->streamJson();
+        }
     }
 
     /**
@@ -259,21 +232,24 @@ class Services
      * 
      * @return void
      */
-    private function setCors()
+    public function getCors()
     {
-        $this->response->header('Access-Control-Allow-Origin', '*');
-        $this->response->header('Access-Control-Allow-Headers', '*');
+        $headers = [];
+        $headers['Access-Control-Allow-Origin'] = '*';
+        $headers['Access-Control-Allow-Headers'] = '*';
 
         // Access-Control headers are received during OPTIONS requests
-        if ($this->request->server['request_method'] == 'OPTIONS') {
-            
+        if ($this->inputs['server']['request_method'] == 'OPTIONS') {
             // may also be using PUT, PATCH, HEAD etc
-            $this->response->header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-            $this->response->end();
-
-            return false;
+            $headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
+        } else {
+            // JSON headers
+            $headers['Content-Type'] = 'application/json;charset=utf-8';
+            $headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0';
+            $headers['Pragma'] = 'no-cache';
         }
-        return true;
+
+        return $headers;
     }
 
     /**
@@ -281,18 +257,15 @@ class Services
      *
      * @return void
      */
-    private function log($logsJson)
+    private function log($logMsg)
     {
-        $logs = json_decode($logsJson, true); // logType, msg
-
         $log = [
             'datetime' => date('Y-m-d H:i:s'),
-            'logType' => $logs['logType'],
             'input' => $this->c->httpRequest->input,
-            "msg" => $logs['msg']
+            "msg" => $logMsg
         ];
-        (new Logs)->log($logs['logType'], json_encode($log));
+        (new Logs)->log('error', json_encode($log));
 
-        throw new \Swoole\ExitException($logs['msg']);
+        throw new \Exception($logMsg);
     }
 }

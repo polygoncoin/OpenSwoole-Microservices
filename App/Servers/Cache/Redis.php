@@ -111,7 +111,7 @@ class Redis extends AbstractCache
             );
 
             if (!is_null($this->database)) {
-                $this->useDatabase($this->database);
+                $this->useDatabase();
             }
 
             if (!$this->cache->ping()) {
@@ -119,27 +119,28 @@ class Redis extends AbstractCache
                     'logType' => 'error',
                     'msg' => 'Unable to ping cache server'
                 ];    
-                throw new \Swoole\ExitException(json_encode($logs));
+                throw new \Exception(json_encode($logs));
             }
         } catch (\Exception $e) {
             $logs = [
                 'logType' => 'error',
                 'msg' => 'Unable to connect to cache server'
             ];    
-            throw new \Swoole\ExitException(json_encode($logs));
+            throw new \Exception(json_encode($logs));
         }
     }
 
     /**
      * Use Database
      *
-     * @param string $database Database .env string
      * @return void
      */
-    public function useDatabase($database)
+    public function useDatabase()
     {
         $this->connect();
-        $this->cache->select($this->database);
+        if (!is_null($this->database)) {
+            $this->cache->select($this->database);
+        }
     }
 
     /**
@@ -150,7 +151,7 @@ class Redis extends AbstractCache
      */
     public function cacheExists($key)
     {
-        $this->connect();
+        $this->useDatabase();
         return $this->cache->exists($key);
     }
 
@@ -162,7 +163,7 @@ class Redis extends AbstractCache
      */
     public function getCache($key)
     {
-        $this->connect();
+        $this->useDatabase();
         return $this->cache->get($key);
     }
 
@@ -176,7 +177,7 @@ class Redis extends AbstractCache
      */
     public function setCache($key, $value, $expire = null)
     {
-        $this->connect();
+        $this->useDatabase();
 
         if (is_null($expire)) {
             return $this->cache->set($key, $value);
@@ -193,7 +194,7 @@ class Redis extends AbstractCache
      */
     public function deleteCache($key)
     {
-        $this->connect();
+        $this->useDatabase();
         return $this->cache->del($key);
     }
     
@@ -206,7 +207,7 @@ class Redis extends AbstractCache
      */
     public function isSetMember($set, $member)
     {
-        $this->connect();
+        $this->useDatabase();
         return $this->cache->sIsMember($set, $member);
     }
 
@@ -219,7 +220,7 @@ class Redis extends AbstractCache
      */
     public function setSetMembers($key, $valueArray)
     {
-        $this->connect();
+        $this->useDatabase();
 
         $this->deleteCache($key);
         foreach ($valueArray as $value) {

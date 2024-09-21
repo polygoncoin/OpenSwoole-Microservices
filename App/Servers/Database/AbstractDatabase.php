@@ -25,10 +25,9 @@ abstract class AbstractDatabase
     /**
      * Use Database
      *
-     * @param string $database Database .env string
      * @return void
      */
-    abstract public function useDatabase($database);
+    abstract public function useDatabase();
 
     /**
      * Affected Rows by PDO

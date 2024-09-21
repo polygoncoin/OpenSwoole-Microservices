@@ -7,9 +7,6 @@ use Microservices\App\Env;
 use Microservices\App\HttpResponse;
 use Microservices\App\JsonDecode;
 
-use OpenSwoole\Http\Request;
-use OpenSwoole\Http\Response;
-
 /*
  * Class handling details of HTTP request
  *
@@ -88,27 +85,6 @@ class HttpRequest
     public $jsonDecode = null;
 
     /**
-     * Microservices HTTP Response
-     * 
-     * @var Microservices\App\HttpResponse
-     */
-    public $httpResponse = null;
-
-    /**
-     * OpenSwoole Http Request
-     * 
-     * @var OpenSwoole\Http\Request
-     */
-    private $request = null;
-
-    /**
-     * OpenSwoole Http Response
-     * 
-     * @var OpenSwoole\Http\Response
-     */
-    private $response = null;
-
-    /**
      * Details var from $request.
      */
     public $REQUEST_METHOD = null;
@@ -117,43 +93,58 @@ class HttpRequest
     public $ROUTE = null;
 
     /**
-     * Constructor
+     * Global DB
      */
-    public function __construct(&$httpResponse)
+    public $globalDB = null;
+
+    /**
+     * Global DB
+     */
+    public $clientDB = null;
+    
+    /**
+     * Microservices Request Details
+     * 
+     * @var array
+     */
+    public $inputs = null;
+
+    /**
+     * Constructor
+     *
+     * @param array $inputs
+     */
+    public function __construct(&$inputs)
     {
-        $this->httpResponse = $httpResponse;
+        $this->inputs = &$inputs;
+        $this->globalDB = Env::$globalDatabase;
     }
     
     /**
      * Initialize
      *
-     * @param OpenSwoole\Http\Request  $request
-     * @param OpenSwoole\Http\Response $response
      * @return boolean
      */
-    public function init(Request &$request, Response &$response)
+    public function init()
     {
-        $this->request = $request;
-        $this->response = $response;
-
-        $this->REQUEST_METHOD = $this->request->server['request_method'];
-        if (isset($this->request->header['authorization'])) {
-            $this->HTTP_AUTHORIZATION = $this->request->header['authorization'];
+        $this->REQUEST_METHOD = $this->inputs['server']['request_method'];
+        if (isset($this->inputs['header']['authorization'])) {
+            $this->HTTP_AUTHORIZATION = $this->inputs['header']['authorization'];
         }
-        $this->REMOTE_ADDR = $this->request->server['remote_addr'];
-        $this->ROUTE = '/' . trim($this->request->get[Constants::$ROUTE_URL_PARAM], '/');
+        $this->REMOTE_ADDR = $this->inputs['server']['remote_addr'];
+        $this->ROUTE = '/' . trim($this->inputs['get'][Constants::$ROUTE_URL_PARAM], '/');
         
-        $this->jsonDecode = new JsonDecode();
-        $this->jsonDecode->init($request, $response);
+        $this->jsonDecode = new JsonDecode($this->inputs);
+        $this->jsonDecode->init();
 
-        Env::$cacheType = getenv('cacheType');
-        Env::$cacheHostname = getenv('cacheHostname');
-        Env::$cachePort = getenv('cachePort');
-        Env::$cacheUsername = getenv('cacheUsername');
-        Env::$cachePassword = getenv('cachePassword');
-        Env::$cacheDatabase = getenv('cacheDatabase');
-
-        $this->setCache();
+        $this->setCache(
+            getenv('cacheType'),
+            getenv('cacheHostname'),
+            getenv('cachePort'),
+            getenv('cacheUsername'),
+            getenv('cachePassword'),
+            getenv('cacheDatabase')
+        );
     }
 
     /**
@@ -161,15 +152,22 @@ class HttpRequest
      *
      * @return void
      */
-    public function setCache()
+    public function setCache(
+        $cacheType,
+        $cacheHostname,
+        $cachePort,
+        $cacheUsername,
+        $cachePassword,
+        $cacheDatabase
+    )
     {
-        $cacheNS = 'Microservices\\App\\Servers\\Cache\\'.Env::$cacheType;
+        $cacheNS = 'Microservices\\App\\Servers\\Cache\\'.$cacheType;
         $this->cache = new $cacheNS(
-            Env::$cacheHostname,
-            Env::$cachePort,
-            Env::$cacheUsername,
-            Env::$cachePassword,
-            Env::$cacheDatabase
+            $cacheHostname,
+            $cachePort,
+            $cacheUsername,
+            $cachePassword,
+            $cacheDatabase
         );
     }
 
@@ -178,16 +176,24 @@ class HttpRequest
      *
      * @return void
      */
-    public function setDb()
+    public function setDb(
+        $dbType,
+        $dbHostname,
+        $dbPort,
+        $dbUsername,
+        $dbPassword,
+        $dbDatabase
+    )
     {
-        $dbNS = 'Microservices\\App\\Servers\\Database\\'.Env::$dbType;
+        $dbNS = 'Microservices\\App\\Servers\\Database\\'.$dbType;
         $this->db = new $dbNS(
-            Env::$dbHostname,
-            Env::$dbPort,
-            Env::$dbUsername,
-            Env::$dbPassword,
-            Env::$dbDatabase
+            $dbHostname,
+            $dbPort,
+            $dbUsername,
+            $dbPassword,
+            $dbDatabase
         );
+        $this->clientDB = $this->db->database;
     }
 
     /**
@@ -201,21 +207,18 @@ class HttpRequest
             $this->input['token'] = $matches[1];
             $token = $this->input['token'];
             if (!$this->cache->cacheExists($token)) {
-                $this->httpResponse->return5xx(501, 'Token expired');
-                return;
+                throw new \Exception('Token expired');
             }
             $this->input['readOnlySession'] = json_decode($this->cache->getCache($token), true);
             $this->userId = $this->input['readOnlySession']['user_id'];
             $this->groupId = $this->input['readOnlySession']['group_id'];    
             $this->checkRemoteIp();
         } else {
-            $this->httpResponse->return4xx(404, 'Missing token in authorization header');
-            return;
+            throw new \Exception('Token missing');
         }
 
         if (empty($this->input['token'])) {
-            $this->httpResponse->return4xx(404, 'Missing token');
-            return;
+            throw new \Exception('Token missing');
         }
     }
 
@@ -227,36 +230,36 @@ class HttpRequest
     public function initSession()
     {
         if (empty($this->input['readOnlySession']['user_id']) || empty($this->input['readOnlySession']['group_id'])) {
-            $this->httpResponse->return4xx(404, 'Invalid session');
-            return;
+            throw new \Exception('Invalid session');
         }
 
         $key = 'group:'.$this->groupId;
         if (!$this->cache->cacheExists($key)) {
-            $this->httpResponse->return5xx(501, "Cache '{$key}' missing.");
-            return;
+            throw new \Exception("Cache '{$key}' missing.");
         }
 
         $groupInfoArr = json_decode($this->cache->getCache($key), true);
 
         // Set Database credentials
         if ($this->REQUEST_METHOD === 'GET') {
-            Env::$dbType = getenv($groupInfoArr['read_db_server_type']);
-            Env::$dbHostname = getenv($groupInfoArr['read_db_hostname']);
-            Env::$dbPort = getenv($groupInfoArr['read_db_port']);
-            Env::$dbUsername = getenv($groupInfoArr['read_db_username']);
-            Env::$dbPassword = getenv($groupInfoArr['read_db_password']);
-            Env::$dbDatabase = getenv($groupInfoArr['read_db_database']);
+            $this->setDb(
+                getenv($groupInfoArr['read_db_server_type']),
+                getenv($groupInfoArr['read_db_hostname']),
+                getenv($groupInfoArr['read_db_port']),
+                getenv($groupInfoArr['read_db_username']),
+                getenv($groupInfoArr['read_db_password']),
+                getenv($groupInfoArr['read_db_database'])
+            );    
         } else {
-            Env::$dbType = getenv($groupInfoArr['write_db_server_type']);
-            Env::$dbHostname = getenv($groupInfoArr['write_db_hostname']);
-            Env::$dbPort = getenv($groupInfoArr['write_db_port']);
-            Env::$dbUsername = getenv($groupInfoArr['write_db_username']);
-            Env::$dbPassword = getenv($groupInfoArr['write_db_password']);
-            Env::$dbDatabase = getenv($groupInfoArr['write_db_database']);
+            $this->setDb(
+                getenv($groupInfoArr['write_db_server_type']),
+                getenv($groupInfoArr['write_db_hostname']),
+                getenv($groupInfoArr['write_db_port']),
+                getenv($groupInfoArr['write_db_username']),
+                getenv($groupInfoArr['write_db_password']),
+                getenv($groupInfoArr['write_db_database'])
+            );
         }
-
-        $this->setDb();
     }
 
     /**
@@ -280,8 +283,7 @@ class HttpRequest
                 }
             }
             if (!$isValidIp) {
-                $this->httpResponse->return4xx(404, 'IP not supported');
-                return;
+                throw new \Exception('IP not supported');
             }
         }
     }
@@ -301,8 +303,7 @@ class HttpRequest
         if (file_exists($routeFileLocation)) {
             $routes = include $routeFileLocation;
         } else {
-            $this->httpResponse->return5xx(501, 'Missing route file for ' . $this->REQUEST_METHOD . ' method');
-            return;
+            throw new \Exception('Missing route file for ' . $this->REQUEST_METHOD . ' method');
         }
 
         $this->routeElements = explode('/', trim($this->ROUTE, '/'));
@@ -343,12 +344,10 @@ class HttpRequest
                         $configuredUri[] = $foundStringRoute;
                         $this->input['uriParams'][$paramName] = urldecode($element);
                     } else {
-                        $this->httpResponse->return4xx(404, 'Route not supported');
-                        return;
+                        throw new \Exception('Route not supported');
                     }
                 } else {
-                    $this->httpResponse->return4xx(404, 'Route not supported');
-                    return;
+                    throw new \Exception('Route not supported');
                 }
                 $routes = &$routes[(($foundIntRoute) ? $foundIntRoute : $foundStringRoute)];
             }
@@ -384,19 +383,16 @@ class HttpRequest
 
         list($paramName, $paramDataType) = explode(':', $dynamicRoute);
         if (!in_array($paramDataType, ['int','string'])) {
-            $this->httpResponse->return5xx(501, 'Invalid datatype set for Route');
-            return;
+            throw new \Exception('Invalid datatype set for Route');
         }
 
         if (count($preferredValues) > 0 && !in_array($element, $preferredValues)) {
-            $this->httpResponse->return4xx(404, $routeElement);
-            return;
+            throw new \Exception($routeElement);
         }
 
         if ($paramDataType === 'int') {
             if (!ctype_digit($element)) {
-                $this->httpResponse->return4xx(404, "Invalid {$paramName}");
-                return;
+                throw new \Exception("Invalid {$paramName}");
             } else {
                 $foundIntRoute = $routeElement;
             }
@@ -417,8 +413,7 @@ class HttpRequest
     {
         // Set route code file.
         if (!(isset($routes['__file__']) && ($routes['__file__'] === false || file_exists($routes['__file__'])))) {
-            $this->httpResponse->return5xx(501, 'Missing route configuration file for ' . $this->REQUEST_METHOD . ' method');
-            return;
+            throw new \Exception('Missing route configuration file for ' . $this->REQUEST_METHOD . ' method');
         }
 
         $this->__file__ = $routes['__file__'];

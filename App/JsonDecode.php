@@ -5,9 +5,6 @@ use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
 
-use OpenSwoole\Http\Request;
-use OpenSwoole\Http\Response;
-
 /**
  * Creates Objects from JSON String.
  *
@@ -106,43 +103,32 @@ class JsonDecode
     private $charCounter = null;
 
     /**
-     * OpenSwoole Http Request
+     * Microservices Request Details
      * 
-     * @var OpenSwoole\Http\Request
+     * @var array
      */
-    public $request = null;
+    public $inputs = null;
 
     /**
-     * OpenSwoole Http Response
-     * 
-     * @var OpenSwoole\Http\Response
+     * JsonDecode constructor
+     *
+     * @param array $inputs
      */
-    public $response = null;
-
-    /**
-     * JsonEncode constructor
-     * 
-     * @return void
-     */
-    public function __construct()
+    public function __construct(&$inputs)
     {
+        $this->inputs = &$inputs;
     }
 
     /**
      * Initialize
      *
-     * @param OpenSwoole\Http\Request  $request
-     * @param OpenSwoole\Http\Response $response
      * @return boolean
      */
-    public function init(Request &$request, Response &$response)
+    public function init()
     {
-        $this->request = $request;
-        $this->response = $response;
-
-        if (isset($this->request->post['Payload'])) {
+        if (isset($this->inputs['post']['Payload'])) {
             $this->tempStream = fopen("php://memory", "rw+b");
-            fwrite($this->tempStream, $this->request->post['Payload']);
+            fwrite($this->tempStream, $this->inputs['post']['Payload']);
         }
     }
 
@@ -570,7 +556,7 @@ class JsonDecode
                 'logType' => 'error',
                 'msg' => 'Invalid JSON: ' . $str
             ];    
-            throw new \Swoole\ExitException(json_encode($logs));
+            throw new \Exception(json_encode($logs));
         }
     }
 
@@ -719,7 +705,7 @@ class JsonDecode
                 if (isset($streamIndex[$key])) {
                     $streamIndex = &$streamIndex[$key];
                 } else {
-                    $this->response->end("Invalid key {$key}");
+                    throw new \Exception("Invalid key {$key}");
                     return;
                 }
             }    
@@ -748,7 +734,7 @@ class JsonDecode
                 if (isset($streamIndex[$key])) {
                     $streamIndex = &$streamIndex[$key];
                 } else {
-                    $this->response->end("Invalid key {$key}");
+                    throw new \Exception("Invalid key {$key}");
                     return;
                 }
             }    
@@ -773,7 +759,7 @@ class JsonDecode
                 if (isset($streamIndex[$key])) {
                     $streamIndex = &$streamIndex[$key];
                 } else {
-                    $this->response->end("Invalid key {$key}");
+                    throw new \Exception("Invalid key {$key}");
                     return;
                 }
             }    
@@ -789,7 +775,7 @@ class JsonDecode
                 'logType' => 'error',
                 'msg' => "Invalid keys '{$keys}'"
             ];    
-            throw new \Swoole\ExitException(json_encode($logs));
+            throw new \Exception(json_encode($logs));
         }
 
         $length = $end - $start + 1;
@@ -818,7 +804,7 @@ class JsonDecode
             if (isset($streamIndex[$key])) {
                 $streamIndex = &$streamIndex[$key];
             } else {
-                $this->response->end("Invalid key {$key}");
+                throw new \Exception("Invalid key {$key}");
                 return;
             }
         }
@@ -834,7 +820,7 @@ class JsonDecode
                 'logType' => 'error',
                 'msg' => "Invalid keys '{$keys}'"
             ];    
-            throw new \Swoole\ExitException(json_encode($logs));
+            throw new \Exception(json_encode($logs));
         }
     }
 }

@@ -41,14 +41,35 @@ $server->on("start", function (Server $server) {
 });
 
 $server->on("request", function (Request $request, Response $response) {
+
+    $inputs = [];
+
+    $inputs['server']['request_method'] = $request->server['request_method'];
+    $inputs['server']['remote_addr'] = $request->server['remote_addr'];
+    if (isset($request->header['authorization'])) {
+        $inputs['header']['authorization'] = $request->header['authorization'];
+    }
+    $inputs['get'] = &$request->get;
+    $inputs['post'] = &$request->post;
+
     // Code to Initialize / Start the service.
     try {
-        $services = new Services();
-        if ($services->init($request, $response)) {
+        $services = new Services($inputs);
+        
+        // Setting CORS
+        foreach ($services->getCors() as $k => $v) {
+            $response->header($k, $v);
+        }
+        if ($inputs['server']['request_method'] == 'OPTIONS') {
+            $response->end();
+            return;
+        }
+
+        if ($services->init()) {
             $services->process();
-            $services->outputResults();
+            $response->end($services->outputResults());
         }    
-    } catch (\Swoole\ExitException $e) {
+    } catch (\Exception $e) {
         echo 'Caught ExitException: ',  $e->getMessage(), "\n";
         $response->end($e->getMessage());
     }
