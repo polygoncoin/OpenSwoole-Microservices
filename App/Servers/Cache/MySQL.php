@@ -116,11 +116,7 @@ class MySQL extends AbstractCache
                 $this->database
             );
         } catch (\Exception $e) {
-            $logs = [
-                'logType' => 'error',
-                'msg' => 'Unable to connect to MySQL as cache server'
-            ];    
-            throw new \Exception(json_encode($logs));
+            throw new \Exception($e->getMessage(), 501);
         }
     }
 

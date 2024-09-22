@@ -130,7 +130,7 @@ class JsonEncode
     public function addValue($value)
     {
         if ($this->currentObject->mode !== 'Array') {
-            throw new \Exception('Mode should be Array');
+            throw new \Exception('Mode should be Array', 501);
         }
         $this->encode($value);
     }
@@ -145,7 +145,7 @@ class JsonEncode
     public function addKeyValue($key, $value)
     {
         if ($this->currentObject->mode !== 'Object') {
-            throw new \Exception('Mode should be Object');
+            throw new \Exception('Mode should be Object', 501);
         }
         $this->write($this->currentObject->comma);
         $this->write($this->escape($key) . ':');
@@ -197,7 +197,7 @@ class JsonEncode
     {
         if ($this->currentObject) {
             if ($this->currentObject->mode === 'Object' && is_null($key)) {
-                throw new \Exception('Object inside an Object should be supported with a Key');
+                throw new \Exception('Object inside an Object should be supported with a Key', 501);
             }
             $this->write($this->currentObject->comma);
             array_push($this->objects, $this->currentObject);

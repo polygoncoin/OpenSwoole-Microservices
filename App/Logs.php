@@ -32,7 +32,7 @@ class Logs
     public function log($logType, $logContent)
     {
         if (!in_array($logType, array_keys($this->logTypes))) {
-            throw new \Exception('Invalid log type');
+            throw new \Exception('Invalid log type', 501);
         }
         $logFile = Constants::$DOC_ROOT . $this->logTypes[$logType] . '-' . date('Y-m');
         if (!file_exists($logFile)) {

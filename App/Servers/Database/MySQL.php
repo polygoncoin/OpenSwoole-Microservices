@@ -362,10 +362,6 @@ class MySQL extends AbstractDatabase
      */
     private function logError($e)
     {
-        $logs = [
-            'logType' => 'error',
-            'msg' => $e->getMessage()
-        ];
-        throw new \Exception(json_encode($logs));
+        throw new \Exception($e->getMessage(), 501);
     }
 }

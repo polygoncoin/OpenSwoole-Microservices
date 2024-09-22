@@ -48,6 +48,7 @@ class Services
      * Constructor
      *
      * @param array $inputs
+     * @return void
      */
     public function __construct(&$inputs)
     {
@@ -68,7 +69,7 @@ class Services
         $this->c->init();
 
         if (!isset($this->inputs['get'][Constants::$ROUTE_URL_PARAM])) {
-            throw new \Exception('Missing route');
+            throw new \Exception('Missing route', 404);
         }
 
         if (Env::$OUTPUT_PERFORMANCE_STATS) {
@@ -163,7 +164,7 @@ class Services
                 }
             }    
         } catch (\Exception $e) {
-            $this->log($e->getMessage());
+            $this->log($e);
         }
     
         return $this->c->httpResponse->isSuccess();
@@ -255,17 +256,20 @@ class Services
     /**
      * Log error
      *
+     * @param object $e Exception
      * @return void
      */
-    private function log($logMsg)
+    private function log($e)
     {
         $log = [
             'datetime' => date('Y-m-d H:i:s'),
             'input' => $this->c->httpRequest->input,
-            "msg" => $logMsg
+            "code" => $e->getCode(),
+            "msg" => $e->getMessage(),
+            "e" => json_encode($e)
         ];
         (new Logs)->log('error', json_encode($log));
 
-        throw new \Exception($logMsg);
+        throw new \Exception($e->getMessage(), $e->getCode());
     }
 }

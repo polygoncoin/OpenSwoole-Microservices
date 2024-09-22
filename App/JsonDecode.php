@@ -552,11 +552,7 @@ class JsonDecode
     {
         $str = trim($str);
         if (!empty($str)) {
-            $logs = [
-                'logType' => 'error',
-                'msg' => 'Invalid JSON: ' . $str
-            ];    
-            throw new \Exception(json_encode($logs));
+            throw new \Exception('Invalid JSON: ' . $str, 400);
         }
     }
 
@@ -705,7 +701,7 @@ class JsonDecode
                 if (isset($streamIndex[$key])) {
                     $streamIndex = &$streamIndex[$key];
                 } else {
-                    throw new \Exception("Invalid key {$key}");
+                    throw new \Exception("Invalid key {$key}", 400);
                     return;
                 }
             }    
@@ -734,7 +730,7 @@ class JsonDecode
                 if (isset($streamIndex[$key])) {
                     $streamIndex = &$streamIndex[$key];
                 } else {
-                    throw new \Exception("Invalid key {$key}");
+                    throw new \Exception("Invalid key {$key}", 400);
                     return;
                 }
             }    
@@ -759,7 +755,7 @@ class JsonDecode
                 if (isset($streamIndex[$key])) {
                     $streamIndex = &$streamIndex[$key];
                 } else {
-                    throw new \Exception("Invalid key {$key}");
+                    throw new \Exception("Invalid key {$key}", 400);
                     return;
                 }
             }    
@@ -771,11 +767,7 @@ class JsonDecode
             $start = $streamIndex['_s_'];
             $end = $streamIndex['_e_'];
         } else {
-            $logs = [
-                'logType' => 'error',
-                'msg' => "Invalid keys '{$keys}'"
-            ];    
-            throw new \Exception(json_encode($logs));
+            throw new \Exception("Invalid keys '{$keys}'", 400);
         }
 
         $length = $end - $start + 1;
@@ -804,7 +796,7 @@ class JsonDecode
             if (isset($streamIndex[$key])) {
                 $streamIndex = &$streamIndex[$key];
             } else {
-                throw new \Exception("Invalid key {$key}");
+                throw new \Exception("Invalid key {$key}", 400);
                 return;
             }
         }
@@ -816,11 +808,7 @@ class JsonDecode
             $this->_e_ = $streamIndex['_e_'];
             $this->keys = $keys;
         } else {
-            $logs = [
-                'logType' => 'error',
-                'msg' => "Invalid keys '{$keys}'"
-            ];    
-            throw new \Exception(json_encode($logs));
+            throw new \Exception("Invalid keys '{$keys}'", 400);
         }
     }
 }

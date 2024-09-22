@@ -207,18 +207,18 @@ class HttpRequest
             $this->input['token'] = $matches[1];
             $token = $this->input['token'];
             if (!$this->cache->cacheExists($token)) {
-                throw new \Exception('Token expired');
+                throw new \Exception('Token expired', 400);
             }
             $this->input['readOnlySession'] = json_decode($this->cache->getCache($token), true);
             $this->userId = $this->input['readOnlySession']['user_id'];
             $this->groupId = $this->input['readOnlySession']['group_id'];    
             $this->checkRemoteIp();
         } else {
-            throw new \Exception('Token missing');
+            throw new \Exception('Token missing', 400);
         }
 
         if (empty($this->input['token'])) {
-            throw new \Exception('Token missing');
+            throw new \Exception('Token missing', 400);
         }
     }
 
@@ -230,12 +230,12 @@ class HttpRequest
     public function initSession()
     {
         if (empty($this->input['readOnlySession']['user_id']) || empty($this->input['readOnlySession']['group_id'])) {
-            throw new \Exception('Invalid session');
+            throw new \Exception('Invalid session', 501);
         }
 
         $key = 'group:'.$this->groupId;
         if (!$this->cache->cacheExists($key)) {
-            throw new \Exception("Cache '{$key}' missing.");
+            throw new \Exception("Cache '{$key}' missing.", 501);
         }
 
         $groupInfoArr = json_decode($this->cache->getCache($key), true);
@@ -283,7 +283,7 @@ class HttpRequest
                 }
             }
             if (!$isValidIp) {
-                throw new \Exception('IP not supported');
+                throw new \Exception('IP not supported', 400);
             }
         }
     }
@@ -303,7 +303,7 @@ class HttpRequest
         if (file_exists($routeFileLocation)) {
             $routes = include $routeFileLocation;
         } else {
-            throw new \Exception('Missing route file for ' . $this->REQUEST_METHOD . ' method');
+            throw new \Exception('Missing route file for ' . $this->REQUEST_METHOD . ' method', 501);
         }
 
         $this->routeElements = explode('/', trim($this->ROUTE, '/'));
@@ -344,10 +344,10 @@ class HttpRequest
                         $configuredUri[] = $foundStringRoute;
                         $this->input['uriParams'][$paramName] = urldecode($element);
                     } else {
-                        throw new \Exception('Route not supported');
+                        throw new \Exception('Route not supported', 400);
                     }
                 } else {
-                    throw new \Exception('Route not supported');
+                    throw new \Exception('Route not supported', 400);
                 }
                 $routes = &$routes[(($foundIntRoute) ? $foundIntRoute : $foundStringRoute)];
             }
@@ -383,16 +383,16 @@ class HttpRequest
 
         list($paramName, $paramDataType) = explode(':', $dynamicRoute);
         if (!in_array($paramDataType, ['int','string'])) {
-            throw new \Exception('Invalid datatype set for Route');
+            throw new \Exception('Invalid datatype set for Route', 501);
         }
 
         if (count($preferredValues) > 0 && !in_array($element, $preferredValues)) {
-            throw new \Exception($routeElement);
+            throw new \Exception($routeElement, 501);
         }
 
         if ($paramDataType === 'int') {
             if (!ctype_digit($element)) {
-                throw new \Exception("Invalid {$paramName}");
+                throw new \Exception("Invalid {$paramName}", 400);
             } else {
                 $foundIntRoute = $routeElement;
             }
@@ -413,7 +413,7 @@ class HttpRequest
     {
         // Set route code file.
         if (!(isset($routes['__file__']) && ($routes['__file__'] === false || file_exists($routes['__file__'])))) {
-            throw new \Exception('Missing route configuration file for ' . $this->REQUEST_METHOD . ' method');
+            throw new \Exception('Missing route configuration file for ' . $this->REQUEST_METHOD . ' method', 501);
         }
 
         $this->__file__ = $routes['__file__'];

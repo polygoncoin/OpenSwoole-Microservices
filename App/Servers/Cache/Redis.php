@@ -115,18 +115,10 @@ class Redis extends AbstractCache
             }
 
             if (!$this->cache->ping()) {
-                $logs = [
-                    'logType' => 'error',
-                    'msg' => 'Unable to ping cache server'
-                ];    
-                throw new \Exception(json_encode($logs));
+                throw new \Exception($e->getMessage(), 501);
             }
         } catch (\Exception $e) {
-            $logs = [
-                'logType' => 'error',
-                'msg' => 'Unable to connect to cache server'
-            ];    
-            throw new \Exception(json_encode($logs));
+            throw new \Exception($e->getMessage(), 501);
         }
     }
 

@@ -68,10 +68,13 @@ $server->on("request", function (Request $request, Response $response) {
         if ($services->init()) {
             $services->process();
             $response->end($services->outputResults());
-        }    
+        }
     } catch (\Exception $e) {
-        echo 'Caught ExitException: ',  $e->getMessage(), "\n";
-        $response->end($e->getMessage());
+        $arr = [
+            'Status' => $e->getCode(),
+            'Message' => $e->getMessage()
+        ];
+        $response->end(json_encode($arr));
     }
 });
 
