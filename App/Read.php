@@ -60,7 +60,7 @@ class Read
         $this->globalDB = $this->c->httpRequest->globalDB;
         $this->clientDB = $this->c->httpRequest->clientDB;
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -88,7 +88,7 @@ class Read
             $this->processRead($readSqlConfig, $useHierarchy);
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -100,7 +100,7 @@ class Read
      */
     private function processReadConfig(&$readSqlConfig, $useHierarchy)
     {
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }    
 
     /**
@@ -120,7 +120,7 @@ class Read
         $keys = [];
         $this->readDB($readSqlConfig, true, $keys, $useHierarchy);
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -134,10 +134,6 @@ class Read
      */
     private function readDB(&$readSqlConfig, $start, &$keys, $useHierarchy)
     {
-        if (!($success = $this->c->httpResponse->isSuccess())) {
-            return $success;
-        }
-
         $isAssoc = $this->isAssoc($readSqlConfig);
         if ($isAssoc) {
             switch ($readSqlConfig['mode']) {
@@ -174,7 +170,7 @@ class Read
             }
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -187,15 +183,10 @@ class Read
      */
     private function fetchSingleRow(&$readSqlConfig, &$keys, $useHierarchy)
     {
-        if (!($success = $this->c->httpResponse->isSuccess())) {
-            return $success;
-        }
-
         $isAssoc = $this->isAssoc($readSqlConfig);
         list($sql, $sqlParams, $errors) = $this->getSqlAndParams($readSqlConfig);
         if (!empty($errors)) {
-            $this->c->httpResponse->return5xx(501, $errors);
-            return;
+            throw new \Exception($errors, 501);
         }
 
         $this->c->httpRequest->db->execDbQuery($sql, $sqlParams);
@@ -205,8 +196,7 @@ class Read
                 $subQueryKeys = array_keys($readSqlConfig['subQuery']);
                 foreach($row as $key => $value) {
                     if (in_array($key, $subQueryKeys)) {
-                        $this->c->httpResponse->return5xx(501, 'Invalid configuration: Conflicting column names');
-                        return;
+                        throw new \Exception('Invalid configuration: Conflicting column names', 501);
                     }
                 }
             }
@@ -222,7 +212,7 @@ class Read
             $this->callReadDB($readSqlConfig, $keys, $row, $useHierarchy);
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -233,10 +223,6 @@ class Read
      */
     private function fetchRowsCount($readSqlConfig)
     {
-        if (!($success = $this->c->httpResponse->isSuccess())) {
-            return $success;
-        }
-
         $readSqlConfig['query'] = $readSqlConfig['countQuery'];
         unset($readSqlConfig['countQuery']);
 
@@ -244,16 +230,14 @@ class Read
         $this->c->httpRequest->input['payload']['perpage']  = $_GET['perpage'] ?? 10;
 
         if ($this->c->httpRequest->input['payload']['perpage'] > Env::$maxPerpage) {
-            $this->c->httpResponse->return4xx(403, 'perpage exceeds max perpage value of '.Env::$maxPerpage);
-            return;
+            throw new \Exception('perpage exceeds max perpage value of '.Env::$maxPerpage, 403);
         }
 
         $this->c->httpRequest->input['payload']['start']  = ($this->c->httpRequest->input['payload']['page'] - 1) * $this->c->httpRequest->input['payload']['perpage'];
         list($sql, $sqlParams, $errors) = $this->getSqlAndParams($readSqlConfig);
         
         if (!empty($errors)) {
-            $this->c->httpResponse->return5xx(501, $errors);
-            return;
+            throw new \Exception($errors, 501);
         }
         
         $this->c->httpRequest->db->execDbQuery($sql, $sqlParams);
@@ -268,7 +252,7 @@ class Read
         $this->c->httpResponse->jsonEncode->addKeyValue('totalPages', $totalPages);
         $this->c->httpResponse->jsonEncode->addKeyValue('totalRecords', $totalRowsCount);
         
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
     
     /**
@@ -281,21 +265,15 @@ class Read
      */
     private function fetchMultipleRows(&$readSqlConfig, &$keys, $useHierarchy)
     {
-        if (!($success = $this->c->httpResponse->isSuccess())) {
-            return $success;
-        }
-
         $isAssoc = $this->isAssoc($readSqlConfig);
         if (!$useHierarchy && isset($readSqlConfig['subQuery'])) {
-            $this->c->httpResponse->return5xx(501, 'Invalid Configuration: multipleRowFormat can\'t have sub query');
-            return;
+            throw new \Exception('Invalid Configuration: multipleRowFormat can\'t have sub query', 501);
         }
         $isAssoc = $this->isAssoc($readSqlConfig);
         
         list($sql, $sqlParams, $errors) = $this->getSqlAndParams($readSqlConfig);
         if (!empty($errors)) {
-            $this->c->httpResponse->return5xx(501, $errors);
-            return;
+            throw new \Exception($errors, 501);
         }
         
         if (isset($readSqlConfig['countQuery'])) {
@@ -307,8 +285,7 @@ class Read
         $singleColumn = false;
         $stmt = $this->c->httpRequest->db->prepare($sql);
         if (!$stmt) {
-            $this->c->httpResponse->return5xx(501, 'Invalid database query');
-            return;
+            throw new \Exception('Invalid database query', 501);
         }
 
         $stmt->execute($sqlParams);
@@ -336,7 +313,7 @@ class Read
         }
         $stmt->closeCursor();
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }    
 
     /**
@@ -349,10 +326,6 @@ class Read
      */
     private function resetFetchData(&$keys, $row, $useHierarchy)
     {
-        if (!($success = $this->c->httpResponse->isSuccess())) {
-            return $success;
-        }
-
         if ($useHierarchy) {
             if (count($keys) === 0) {
                 $this->c->httpRequest->input['hierarchyData'] = [];
@@ -368,7 +341,7 @@ class Read
             $httpReq = $row;
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -382,10 +355,6 @@ class Read
      */
     private function callReadDB(&$readSqlConfig, &$keys, &$row, $useHierarchy)
     {
-        if (!($success = $this->c->httpResponse->isSuccess())) {
-            return $success;
-        }
-
         if ($useHierarchy) {
             $this->resetFetchData($keys, $row, $useHierarchy);
         }
@@ -398,6 +367,6 @@ class Read
             }
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 }

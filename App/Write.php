@@ -67,7 +67,7 @@ class Write
         $this->globalDB = $this->c->httpRequest->globalDB;
         $this->clientDB = $this->c->httpRequest->clientDB;
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -95,7 +95,7 @@ class Write
             $this->processWrite($writeSqlConfig, $useHierarchy);
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -107,10 +107,6 @@ class Write
      */
     private function processWriteConfig(&$writeSqlConfig, $useHierarchy)
     {
-        if (!($success = $this->c->httpResponse->isSuccess())) {
-            return $success;
-        }
-
         $response = [];
         $response['Route'] = $this->c->httpRequest->configuredUri;
         $response['Payload'] = $this->getConfigParams($writeSqlConfig, true, $useHierarchy);
@@ -120,7 +116,7 @@ class Write
         $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $response['Payload']);
         $this->c->httpResponse->jsonEncode->endObject();
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }    
 
     /**
@@ -132,10 +128,6 @@ class Write
      */
     private function processWrite(&$writeSqlConfig, $useHierarchy)
     {
-        if (!($success = $this->c->httpResponse->isSuccess())) {
-            return $success;
-        }
-
         // Set required fields.
         $this->c->httpRequest->input['requiredArr'] = $this->getRequired($writeSqlConfig, true, $useHierarchy);
 
@@ -190,7 +182,7 @@ class Write
             $this->c->httpResponse->jsonEncode->endArray();
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }    
 
     /**
@@ -205,10 +197,6 @@ class Write
      */
     private function writeDB(&$writeSqlConfig, &$payloads, $useHierarchy, &$response, &$required)
     {
-        if (!($success = $this->c->httpResponse->isSuccess())) {
-            return $success;
-        }
-
         $isAssoc = $this->isAssoc($payloads);
 
         $counter = 0;
@@ -263,8 +251,7 @@ class Write
                             $_payload = &$payload[$module];
                             $_required = &$required[$module] ?? [];
                         } else {
-                            $this->c->httpResponse->return4xx(404, "Invalid payload: Module '{$module}' missing.");
-                            return;
+                            throw new \Exception("Invalid payload: Module '{$module}' missing.", 404);
                         }
                     } else {
                         $_payload = &$payload;
@@ -286,7 +273,7 @@ class Write
             }
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**

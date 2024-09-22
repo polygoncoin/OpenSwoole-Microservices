@@ -50,11 +50,11 @@ class Api
      */
     public function init()
     {
-        if ($this->c->httpResponse->isSuccess()) $this->c->httpRequest->loadToken();
-        if ($this->c->httpResponse->isSuccess()) $this->c->httpRequest->initSession();
-        if ($this->c->httpResponse->isSuccess()) $this->c->httpRequest->parseRoute();
+        $this->c->httpRequest->loadToken();
+        $this->c->httpRequest->initSession();
+        $this->c->httpRequest->parseRoute();
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -65,14 +65,10 @@ class Api
     public function process()
     {
         // Check & Process Upload
-        if ($this->c->httpResponse->isSuccess()) {
+        {
             if ($this->processBeforePayload()) {
-                return $this->c->httpResponse->isSuccess();
+                return true;
             }    
-        }
-
-        if (!($success = $this->c->httpResponse->isSuccess())) {
-            return $success;
         }
 
         // Load Payloads
@@ -93,7 +89,7 @@ class Api
                 break;
         }
 
-        if ($this->c->httpResponse->isSuccess() && !is_null($class)) {
+        if (!is_null($class)) {
             $api = new $class($this->c);
             if ($api->init()) {
                 $api->process();
@@ -101,11 +97,11 @@ class Api
         }
 
         // Check & Process Cron / ThirdParty calls.
-        if ($this->c->httpResponse->isSuccess()) {
+        {
             $this->processAfterPayload();
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -159,6 +155,6 @@ class Api
      */
     private function processAfterPayload()
     {
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 }

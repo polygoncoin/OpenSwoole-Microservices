@@ -43,7 +43,7 @@ class Category
      */
     public function init()
     {
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -62,6 +62,6 @@ class Category
         $rows = $this->c->httpRequest->db->fetchAll();
         $this->c->httpRequest->db->closeCursor();
         $this->c->httpResponse->jsonEncode->addKeyValue('Results', $rows);
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 }

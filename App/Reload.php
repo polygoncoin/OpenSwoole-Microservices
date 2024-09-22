@@ -55,7 +55,7 @@ class Reload
             getenv('globalDatabase')
         );
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -72,7 +72,7 @@ class Reload
                 if (ctype_digit($value = trim($value))) {
                     $ids[] = (int)$value;
                 } else {
-                    $this->c->httpResponse->return4xx(404, 'Only integer values supported for ids.');
+                    throw new \Exception('Only integer values supported for ids.', 404);
                     return;
                 }
             }
@@ -99,7 +99,7 @@ class Reload
             }
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**

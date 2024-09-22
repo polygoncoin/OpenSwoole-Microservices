@@ -68,8 +68,7 @@ trait AppTrait
             foreach ($sqlConfig['__WHERE__'] as $var => $where) {
                 list($type, $typeKey) = $where;
                 if ($first && $type === 'hierarchyData') {
-                    $this->c->httpResponse->return5xx(501, 'Invalid config: First query can not have hierarchyData config');
-                    return;
+                    throw new \Exception('Invalid config: First query can not have hierarchyData config', 501);
                 }
                 if ($type === 'hierarchyData') {
                     $foundHierarchy = true;
@@ -77,15 +76,14 @@ trait AppTrait
                 }
             }
             if (!$first && $useHierarchy && !$foundHierarchy) {
-                $this->c->httpResponse->return5xx(501, 'Invalid config: missing hierarchyData');
-                return;
+                throw new \Exception('Invalid config: missing hierarchyData', 501);
             }
         }
 
         // Check in subQuery
         if (isset($sqlConfig['subQuery'])) {
             if (!$this->isAssoc($sqlConfig['subQuery'])) {
-                $this->c->httpResponse->return5xx(501, 'Invalid Configuration: subQuery should be an associative array');
+                throw new \Exception('Invalid Configuration: subQuery should be an associative array', 501);
                 return;
             }
             foreach ($sqlConfig['subQuery'] as $module => &$sqlDetails) {
@@ -208,8 +206,7 @@ trait AppTrait
                 $value = $this->c->httpRequest->input['hierarchyData'];
                 foreach($typeKeys as $key) {
                     if (!isset($value[$key])) {
-                        $this->c->httpResponse->return5xx(501, 'Invalid hierarchy:  Missing hierarchy data');
-                        return;
+                        throw new \Exception('Invalid hierarchy:  Missing hierarchy data', 501);
                     }
                     $value = $value[$key];
                 }
@@ -318,8 +315,7 @@ trait AppTrait
                 }
             }
             if (!$first && $useHierarchy && !$foundHierarchy) {
-                $this->c->httpResponse->return5xx(501, 'Invalid config: missing hierarchyData');
-                return;
+                throw new \Exception('Invalid config: missing hierarchyData', 501);
             }
         }
 

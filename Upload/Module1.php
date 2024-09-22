@@ -46,7 +46,7 @@ class Module1
      */
     public function init()
     {
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -59,7 +59,7 @@ class Module1
         $absFilePath = $this->getLocation();
         $this->saveFile($absFilePath);
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**

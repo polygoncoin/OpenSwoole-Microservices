@@ -42,7 +42,7 @@ class Custom
      */
     public function init()
     {
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -57,6 +57,6 @@ class Custom
             $api->process();
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 }

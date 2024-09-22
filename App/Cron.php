@@ -42,12 +42,12 @@ class Cron
      */
     public function init()
     {
-        if ($this->c->httpResponse->isSuccess()) $this->c->httpRequest->init();
+        $this->c->httpRequest->init();
 
         $routeFileLocation = Constants::$DOC_ROOT . '/Config/Routes/Common/Cron/' . $this->c->httpRequest->REQUEST_METHOD . 'routes.php';
-        if ($this->c->httpResponse->isSuccess()) $this->c->httpRequest->parseRoute($routeFileLocation);
+        $this->c->httpRequest->parseRoute($routeFileLocation);
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -62,6 +62,6 @@ class Cron
             $api->process();
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 }

@@ -46,7 +46,7 @@ class Category
      */
     public function init()
     {
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -62,7 +62,7 @@ class Category
 
         // End the calls with json response with jsonEncode Object.
         $this->endProcess();
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -72,7 +72,6 @@ class Category
      */
     private function endProcess()
     {
-        $this->c->httpResponse->return2xx(200, 'message as desired.');
-        return;
+        throw new \Exception('message as desired.', 200);
     }
 }

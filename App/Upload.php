@@ -44,7 +44,7 @@ class Upload
      */
     public function init()
     {
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -59,6 +59,6 @@ class Upload
             $api->process();
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 }

@@ -46,7 +46,7 @@ class Google
      */
     public function init()
     {
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -73,7 +73,7 @@ class Google
         // End the calls with json response with jsonEncode Object.
         $this->endProcess($output);
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**

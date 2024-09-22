@@ -67,7 +67,7 @@ class Check
         Env::$globalDB = Env::$defaultDbDatabase;
         Env::$clientDB = Env::$dbDatabase;
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -103,7 +103,7 @@ class Check
             }
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**

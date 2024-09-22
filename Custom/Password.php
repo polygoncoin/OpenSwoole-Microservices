@@ -44,7 +44,7 @@ class Password
     public function init()
     {
         $this->c->httpRequest->loadPayload();
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -91,6 +91,6 @@ class Password
             $this->c->httpResponse->jsonEncode->addKeyValue('Results', 'Password changed successfully');
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 }

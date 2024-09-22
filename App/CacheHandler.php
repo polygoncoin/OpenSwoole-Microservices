@@ -68,7 +68,7 @@ class CacheHandler
         $this->validateFileRequest();
         $this->fileLocation = $this->cacheLocation . $this->filePath;
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**

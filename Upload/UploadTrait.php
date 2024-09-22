@@ -35,6 +35,6 @@ trait UploadTrait
         fclose($dest);
         fclose($src);
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 }

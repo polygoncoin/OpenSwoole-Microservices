@@ -76,7 +76,7 @@ class Services
             $this->tsStart = microtime(true);
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -86,14 +86,14 @@ class Services
      */
     public function process()
     {
-        if ($this->c->httpResponse->isSuccess()) $this->startJson();
-        if ($this->c->httpResponse->isSuccess()) $this->startOutputJson();
-        if ($this->c->httpResponse->isSuccess()) $this->processApi();
-        if ($this->c->httpResponse->isSuccess()) $this->endOutputJson();
-        if ($this->c->httpResponse->isSuccess()) $this->addPerformance();
-        if ($this->c->httpResponse->isSuccess()) $this->endJson();
+        $this->startJson();
+        $this->startOutputJson();
+        $this->processApi();
+        $this->endOutputJson();
+        $this->addPerformance();
+        $this->endJson();
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -129,8 +129,7 @@ class Services
 
             case strpos($this->c->httpRequest->ROUTE, '/cron') === 0:
                 if ($this->c->httpRequest->REMOTE_ADDR !== Env::$cronRestrictedIp) {
-                    $this->c->httpResponse->return4xx(404, 'Source IP is not supported');
-                    return;
+                    throw new \Exception('Source IP is not supported', 404);
                 }
                 $class = __NAMESPACE__ . '\\App\\Cron';
                 break;
@@ -138,8 +137,7 @@ class Services
             // Requires HTTP auth username and password
             case $this->c->httpRequest->ROUTE === '/reload':
                 if ($this->c->httpRequest->REMOTE_ADDR !== Env::$cronRestrictedIp) {
-                    $this->c->httpResponse->return4xx(404, 'Source IP is not supported');
-                    return;
+                    throw new \Exception('Source IP is not supported', 404);
                 }
                 $class = __NAMESPACE__ . '\\App\\Reload';
                 break;
@@ -167,7 +165,7 @@ class Services
             $this->log($e);
         }
     
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -221,11 +219,7 @@ class Services
      */
     public function outputResults()
     {
-        if (!is_null($this->c->httpResponse->output)) {
-            return $this->c->httpResponse->output;
-        } else {
-            return $this->c->httpResponse->jsonEncode->streamJson();
-        }
+        return $this->c->httpResponse->jsonEncode->streamJson();
     }
 
     /**

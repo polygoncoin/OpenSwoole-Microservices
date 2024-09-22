@@ -43,7 +43,7 @@ class ThirdPartyApi
      */
     public function init()
     {
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -59,6 +59,6 @@ class ThirdPartyApi
             $api->process();
         }
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 }

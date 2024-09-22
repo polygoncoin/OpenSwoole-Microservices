@@ -92,7 +92,7 @@ class Login
      */
     public function init()
     {
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -102,13 +102,13 @@ class Login
      */
     public function process()
     {
-        if ($this->c->httpResponse->isSuccess()) $this->performBasicCheck();
-        if ($this->c->httpResponse->isSuccess()) $this->loadUser();
-        if ($this->c->httpResponse->isSuccess()) $this->validateRequestIp();
-        if ($this->c->httpResponse->isSuccess()) $this->validatePassword();
-        if ($this->c->httpResponse->isSuccess()) $this->outputTokenDetails();
+        $this->performBasicCheck();
+        $this->loadUser();
+        $this->validateRequestIp();
+        $this->validatePassword();
+        $this->outputTokenDetails();
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -120,8 +120,7 @@ class Login
     {
         // Check request method is POST.
         if ($this->c->httpRequest->REQUEST_METHOD !== Constants::$POST) {
-            $this->c->httpResponse->return4xx(404, 'Invalid request method');
-            return;
+            throw new \Exception('Invalid request method', 404);
         }
 
         if ($this->c->httpRequest->REQUEST_METHOD === Constants::$POST) {
@@ -133,8 +132,7 @@ class Login
         // Check for required input variables
         foreach (array('username','password') as $value) {
             if (!isset($this->payload[$value]) || empty($this->payload[$value])) {
-                $this->c->httpResponse->return4xx(404, 'Missing required parameters');
-                return;
+                throw new \Exception('Missing required parameters', 404);
             } else {
                 $this->$value = $this->payload[$value];
             }
@@ -154,12 +152,10 @@ class Login
             $this->userId = $this->userDetails['user_id'];
             $this->groupId = $this->userDetails['group_id'];
             if (empty($this->userId) || empty($this->groupId)) {
-                $this->c->httpResponse->return4xx(404, 'Invalid credentials');
-                return;
+                throw new \Exception('Invalid credentials', 401);
             }            
         } else {
-            $this->c->httpResponse->return4xx(404, 'Invalid credentials.');
-            return;
+            throw new \Exception('Invalid credentials.', 401);
         }
     }
 
@@ -182,8 +178,7 @@ class Login
                 }
             }
             if (!$isValidIp) {
-                $this->c->httpResponse->return4xx(404, 'IP not supported');
-                return;
+                throw new \Exception('IP not supported', 401);
             }
         }
     }
@@ -197,8 +192,7 @@ class Login
     {
         // get hash from cache and compares with password
         if (!password_verify($this->password, $this->userDetails['password_hash'])) {
-            $this->c->httpResponse->return4xx(404, 'Invalid credentials');
-            return;
+            throw new \Exception('Invalid credentials', 401);
         }
     }
 

@@ -70,7 +70,7 @@ class Routes
      */
     public function init()
     {
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
@@ -95,7 +95,7 @@ class Routes
         }
         $this->c->httpResponse->jsonEncode->addKeyValue('Results', $httpRoutes);
 
-        return $this->c->httpResponse->isSuccess();
+        return true;
     }
 
     /**
