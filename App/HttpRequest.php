@@ -64,6 +64,13 @@ class HttpRequest
     public $groupId = null;
     
     /**
+     * Group Info
+     *
+     * @var array
+     */
+    public $groupInfoArr = null;
+
+    /**
      * Json Decode Object
      *
      * @var Microservices\App\Servers\Cache\Cache
@@ -238,27 +245,46 @@ class HttpRequest
             throw new \Exception("Cache '{$key}' missing.", 501);
         }
 
-        $groupInfoArr = json_decode($this->cache->getCache($key), true);
+        $this->groupInfoArr = json_decode($this->cache->getCache($key), true);
+    }
+
+
+    /**
+     * Init server connection based on $serverMode
+     *
+     * @param string $serverMode Read/Write
+     * @return void
+     */
+    public function setConnection($serverMode)
+    {
+        if (is_null($this->groupInfoArr)) {
+            throw new \Exception('Yet to set connection params', 501);
+        }
 
         // Set Database credentials
-        if ($this->REQUEST_METHOD === 'GET') {
-            $this->setDb(
-                getenv($groupInfoArr['read_db_server_type']),
-                getenv($groupInfoArr['read_db_hostname']),
-                getenv($groupInfoArr['read_db_port']),
-                getenv($groupInfoArr['read_db_username']),
-                getenv($groupInfoArr['read_db_password']),
-                getenv($groupInfoArr['read_db_database'])
-            );    
-        } else {
-            $this->setDb(
-                getenv($groupInfoArr['write_db_server_type']),
-                getenv($groupInfoArr['write_db_hostname']),
-                getenv($groupInfoArr['write_db_port']),
-                getenv($groupInfoArr['write_db_username']),
-                getenv($groupInfoArr['write_db_password']),
-                getenv($groupInfoArr['write_db_database'])
-            );
+        switch ($serverMode) {
+            case 'Read':
+                $this->setDb(
+                    getenv($this->groupInfoArr['read_db_server_type']),
+                    getenv($this->groupInfoArr['read_db_hostname']),
+                    getenv($this->groupInfoArr['read_db_port']),
+                    getenv($this->groupInfoArr['read_db_username']),
+                    getenv($this->groupInfoArr['read_db_password']),
+                    getenv($this->groupInfoArr['read_db_database'])
+                );
+                break;
+            case 'Write':
+                $this->setDb(
+                    getenv($this->groupInfoArr['write_db_server_type']),
+                    getenv($this->groupInfoArr['write_db_hostname']),
+                    getenv($this->groupInfoArr['write_db_port']),
+                    getenv($this->groupInfoArr['write_db_username']),
+                    getenv($this->groupInfoArr['write_db_password']),
+                    getenv($this->groupInfoArr['write_db_database'])
+                );
+                break;
+            default:
+                throw new \Exception("Invalid serverMode value '{$serverMode}'", 501);
         }
     }
 
