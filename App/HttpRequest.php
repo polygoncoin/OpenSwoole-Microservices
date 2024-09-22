@@ -250,41 +250,41 @@ class HttpRequest
 
 
     /**
-     * Init server connection based on $serverMode
+     * Init server connection based on $fetchFrom
      *
-     * @param string $serverMode Read/Write
+     * @param string $fetchFrom Master/Slave
      * @return void
      */
-    public function setConnection($serverMode)
+    public function setConnection($fetchFrom)
     {
         if (is_null($this->groupInfoArr)) {
             throw new \Exception('Yet to set connection params', 501);
         }
 
         // Set Database credentials
-        switch ($serverMode) {
-            case 'Read':
+        switch ($fetchFrom) {
+            case 'Master':
                 $this->setDb(
-                    getenv($this->groupInfoArr['read_db_server_type']),
-                    getenv($this->groupInfoArr['read_db_hostname']),
-                    getenv($this->groupInfoArr['read_db_port']),
-                    getenv($this->groupInfoArr['read_db_username']),
-                    getenv($this->groupInfoArr['read_db_password']),
-                    getenv($this->groupInfoArr['read_db_database'])
+                    getenv($this->groupInfoArr['master_db_server_type']),
+                    getenv($this->groupInfoArr['master_db_hostname']),
+                    getenv($this->groupInfoArr['master_db_port']),
+                    getenv($this->groupInfoArr['master_db_username']),
+                    getenv($this->groupInfoArr['master_db_password']),
+                    getenv($this->groupInfoArr['master_db_database'])
                 );
                 break;
-            case 'Write':
+            case 'Slave':
                 $this->setDb(
-                    getenv($this->groupInfoArr['write_db_server_type']),
-                    getenv($this->groupInfoArr['write_db_hostname']),
-                    getenv($this->groupInfoArr['write_db_port']),
-                    getenv($this->groupInfoArr['write_db_username']),
-                    getenv($this->groupInfoArr['write_db_password']),
-                    getenv($this->groupInfoArr['write_db_database'])
+                    getenv($this->groupInfoArr['slave_db_server_type']),
+                    getenv($this->groupInfoArr['slave_db_hostname']),
+                    getenv($this->groupInfoArr['slave_db_port']),
+                    getenv($this->groupInfoArr['slave_db_username']),
+                    getenv($this->groupInfoArr['slave_db_password']),
+                    getenv($this->groupInfoArr['slave_db_database'])
                 );
                 break;
             default:
-                throw new \Exception("Invalid serverMode value '{$serverMode}'", 501);
+                throw new \Exception("Invalid fetchFrom value '{$fetchFrom}'", 501);
         }
     }
 

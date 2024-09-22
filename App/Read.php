@@ -77,8 +77,8 @@ class Read
         $readSqlConfig = include $this->c->httpRequest->__file__;
 
         // Set Server mode to execute query on - Read / Write Server.
-        $serverMode = (isset($readSqlConfig['serverMode'])) ? $readSqlConfig['serverMode'] : 'Read';
-        $this->c->httpRequest->setConnection($serverMode);
+        $fetchFrom = (isset($readSqlConfig['fetchFrom'])) ? $readSqlConfig['fetchFrom'] : 'Slave';
+        $this->c->httpRequest->setConnection($fetchFrom);
 
         // Use results in where clause of sub queries recursively.
         $useHierarchy = $this->getUseHierarchy($readSqlConfig);

@@ -148,18 +148,18 @@ class Reload
                 G.group_id,
                 G.name,
                 G.client_id,
-                C.write_db_server_type,
-                C.write_db_hostname,
-                C.write_db_port,
-                C.write_db_username,
-                C.write_db_password,
-                C.write_db_database,
-                C.read_db_server_type,
-                C.read_db_hostname,
-                C.read_db_port,
-                C.read_db_username,
-                C.read_db_password,
-                C.read_db_database
+                C.master_db_server_type,
+                C.master_db_hostname,
+                C.master_db_port,
+                C.master_db_username,
+                C.master_db_password,
+                C.master_db_database,
+                C.slave_db_server_type,
+                C.slave_db_hostname,
+                C.slave_db_port,
+                C.slave_db_username,
+                C.slave_db_password,
+                C.slave_db_database
             FROM
                 `{$this->execPhpFunc(getenv('groups'))}` G
             LEFT JOIN
