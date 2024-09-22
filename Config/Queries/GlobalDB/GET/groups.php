@@ -5,7 +5,7 @@ use Microservices\App\Constants;
 
 return [
     'all' => [
-        'query' => "SELECT * FROM `{$this->globalDB}`.`{$Env::$groups}` WHERE __WHERE__ ORDER BY group_id ASC",
+        'query' => "SELECT * FROM `{$Env::$groups}` WHERE __WHERE__ ORDER BY group_id ASC",
         '__WHERE__' => [
             'is_approved' => ['custom', 'Yes'],
             'is_disabled' => ['custom', 'No'],
@@ -14,7 +14,7 @@ return [
         'mode' => 'multipleRowFormat'//Multiple rows returned.
     ],
     'single' => [
-        'query' => "SELECT * FROM `{$this->globalDB}`.`{$Env::$groups}` WHERE __WHERE__",
+        'query' => "SELECT * FROM `{$Env::$groups}` WHERE __WHERE__",
         '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
             ['uriParams', 'group_id', Constants::$REQUIRED],
         ],

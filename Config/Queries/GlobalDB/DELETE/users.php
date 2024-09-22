@@ -4,7 +4,7 @@ namespace Microservices\Config\Queries\GlobalDB\DELETE;
 use Microservices\App\Constants;
 
 return [
-    'query' => "UPDATE `{$this->globalDB}`.`{$Env::$users}` SET __SET__ WHERE __WHERE__",
+    'query' => "UPDATE `{$Env::$users}` SET __SET__ WHERE __WHERE__",
     '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
         ['uriParams', 'user_id', Constants::$REQUIRED],
     ],

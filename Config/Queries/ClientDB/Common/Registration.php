@@ -4,7 +4,7 @@ namespace Microservices\Config\Queries\ClientDB\Common;
 use Microservices\App\Constants;
 
 return [
-    'query' => "UPDATE `{$this->clientDB}`.`registration` SET __SET__ WHERE __WHERE__",
+    'query' => "UPDATE `registration` SET __SET__ WHERE __WHERE__",
     'validate' => [
 		[
 			'fn' => 'primaryKeyExist',
