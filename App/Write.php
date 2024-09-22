@@ -84,8 +84,7 @@ class Write
         $writeSqlConfig = include $this->c->httpRequest->__file__;
 
         // Set Server mode to execute query on - Read / Write Server.
-        $serverMode = (isset($readSqlConfig['serverMode'])) ? $readSqlConfig['serverMode'] : 'Write';
-        $this->c->httpRequest->setConnection($serverMode);
+        $this->c->httpRequest->setConnection($serverMode = 'Write');
 
         // Use results in where clause of sub queries recursively.
         $useHierarchy = $this->getUseHierarchy($writeSqlConfig);
