@@ -14,9 +14,9 @@ This is a light & easy Openswoole based Microservices framework. It can be used 
 
 **Start.php** Start your application with a command on your console
 
-``
+````
 $ php Start.php
-``
+````
 
 > **Note**: One can import all three sql's in a single database to start with. Just configure the same details in the .env file.
 
@@ -75,7 +75,7 @@ Below are the configuration settings details in .env
 
 * For configuring route **/tableName/parts** GET method
 
-``
+````
     return [
       'tableName' => [
         'parts' => [
@@ -83,11 +83,11 @@ Below are the configuration settings details in .env
         ]
       ]
     ];
-``
+````
 
 * For configuring route **/tableName/{id}** where id is dynamic **integer** value to be collected.
   
-``
+````
     return [
       'tableName' => [
         '{id:int}' => [
@@ -95,11 +95,11 @@ Below are the configuration settings details in .env
         ]
       ]
     ];
-``
+````
 
 * Same dynamic variable but with a different data type, for e.g. **{id}** will be treated differently for **string** and **integer** values to be collected.
 
-``
+````
     return [
       'tableName' => [
         '{id:int}' => [
@@ -110,11 +110,11 @@ Below are the configuration settings details in .env
         ]
       ]
     ];
-``
+````
 
 * To restrict dynamic values to a certain set of values. One can do the same by appending comma-separated values after OR key.
 
-``
+````
     return [
       '{tableName:string|admin,group,client,routes}' => [
         '{id:int}' => [
@@ -122,7 +122,7 @@ Below are the configuration settings details in .env
         ]
       ]
     ];
-``
+````
 
 ## SQLs
 
@@ -162,7 +162,7 @@ Below are the configuration settings details in .env
 
 * GET method.
 
-``
+````
     <?php
     return [
       'query' => "SELECT * FROM {$this->globalDB}.TableName WHERE id = ? AND group_id = ? AND client_id = ?",
@@ -191,13 +191,13 @@ Below are the configuration settings details in .env
         ...
       ]
     ];
-``
+````
 
 > Here **query & mode** keys are required keys
 
 * For POST/PUT/PATCH/DELETE method.
 
-``
+````
     <?php
     return [
       'query' => "INSERT {$this->globalDB}.TableName SET SET WHERE WHERE ",
@@ -240,16 +240,16 @@ Below are the configuration settings details in .env
         ...
       ]
     ];
-``
+````
 
 > **Note**: If there are modules or configurations repeated. One can reuse them by palcing them in a separate file and including as below.
 
-``
+````
       'subQuery' => [
         //Here the module1 properties are reused for write operation.
         'module1' => include DOC_ROOT . 'Config/Queries/ClientDB/Common/reusefilename.php',
       ]
-``
+````
 
 > **Note**: For POST, PUT, PATCH, and DELETE methods we can configure both INSERT as well as UPDATE queries.
 
@@ -267,17 +267,17 @@ Below are the configuration settings details in .env
 
 * Single Payload
 
-``
+````
       {
         "key1": "value1",
         "key2": "value2",
         ...
       }
-``
+````
 
 * Multiple
 
-``
+````
       [
         {
           "key1": "value1",
@@ -291,7 +291,7 @@ Below are the configuration settings details in .env
         }
         ...
       ]
-``
+````
 
 ## Variables
 
@@ -321,13 +321,13 @@ For **GET** method, one can use previous query results if configured to use hier
 
 In this file one can confirm how previous select data is used recursively in subQuery select as indicated by useHierarchy flag.
 
-``
+````
     'parent_id' => ['hierarchyData', 'return:id'],
-``
+````
 
 * Config/Queries/ClientDB/POST/Category.php .Here a request can handle the hierarchy for write operations.
 
-``
+````
         // Configuration
         return [
           'query' => "INSERT INTO {$this->clientDB}.`category` SET SET",
@@ -354,22 +354,22 @@ In this file one can confirm how previous select data is used recursively in sub
           ],
           'useHierarchy' => true
         ];
-``
+````
 
 * Request - 1: Single object.
 
-``
+````
       {
         "name":"name",
         "module1":{
           "subname":"subname",
         }
       }
-``
+````
 
 * Request - 2: Array of module1
 
-``
+````
       {
         "name":"name",
         "module1":[
@@ -382,11 +382,11 @@ In this file one can confirm how previous select data is used recursively in sub
           ...
         ]
       }
-``
+````
 
 * Request - 3: Array of payload and arrays of module1
 
-``
+````
       [
         {
           "name":"name1",
@@ -414,7 +414,7 @@ In this file one can confirm how previous select data is used recursively in sub
         },
         ...
       ]
-``
+````
 
 ## Route ending with /config
 
@@ -444,7 +444,7 @@ Perform basic checks on Config folder.
 
 ### Login
 
-``
+````
 var handlerUrl = "[http://127.0.0.1:9501?r=/login](http://127.0.0.1:9501?r=/login)";
 var xmlhttp = new XMLHttpRequest();
 
@@ -472,13 +472,13 @@ var urlencodeJsonString = encodeURIComponent(jsonString);
 var params = "Payload="+urlencodeJsonString;
 
 xmlhttp . send( params );
-``
+````
 
 ### For other API's
 
 * GET Request
 
-``
+````
   var handlerUrl = "[http://127.0.0.1:9501?r=/routes](http://127.0.0.1:9501?r=/routes)";
   var xmlhttp = new XMLHttpRequest();
 
@@ -494,11 +494,11 @@ xmlhttp . send( params );
   };
 
   xmlhttp . send();
-``
+````
 
 * POST Request
 
-``
+````
 var handlerUrl = "[http://127.0.0.1:9501?r=/ajax-handler-route](http://127.0.0.1:9501?r=/ajax-handler-route)";
 var xmlhttp = new XMLHttpRequest();
 
@@ -525,11 +525,11 @@ var urlencodeJsonString = encodeURIComponent(jsonString);
 var params = "Payload="+urlencodeJsonString;
 
 xmlhttp . send( params );
-``
+````
 
 * PUT Request
 
-``
+````
 var handlerUrl = "[http://127.0.0.1:9501?r=/custom/password](http://127.0.0.1:9501?r=/custom/password)";
 var xmlhttp = new XMLHttpRequest();
 
@@ -556,4 +556,4 @@ var urlencodeJsonString = encodeURIComponent(jsonString);
 var params = "Payload="+urlencodeJsonString;
 
 xmlhttp . send( params );
-``
+````
