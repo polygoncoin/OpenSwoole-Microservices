@@ -41,5 +41,6 @@ return [
             ],
         ]
     ],
-    'useHierarchy' => true
+    'useHierarchy' => true,
+    'fetchFrom' => 'Master',
 ];
