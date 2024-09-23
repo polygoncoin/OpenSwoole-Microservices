@@ -1,31 +1,28 @@
 # OpenSwoole based Microservices
- 
+
 This is a light & easy Openswoole based Microservices framework. It can be used to create APIs in a very short time once you are done with your database.
 
-
 ## Important Files
- 
+
 **.env.example** Create a copy of this file as **.env**
- 
+
 **global.sql** Import this SQL file on your **MySQL global** instance
- 
+
 **client\_master.sql** Import this SQL file on your **MySQL client** instance
- 
+
 **cache.sql** Import this SQL file for cache in **MySQL cache** instance if Redis is not the choice (To be configured in .env)
- 
+
 **Start.php** Start your application with a command on your console
 
-```
+``
 $ php Start.php
-```
+``
 
 > **Note**: One can import all three sql's in a single database to start with. Just configure the same details in the .env file.
- 
 
 ## .env.example
- 
+
 Below are the configuration settings details in .env
- 
 
 | Variable | Description | Value Example |
 | -------- | ----------- | ------------- |
@@ -41,47 +38,44 @@ Below are the configuration settings details in .env
 |  | The Client details can be same as all Default MySQL settings also depending on situation |  |
 
 ## Folders
- 
-*    **App** Basic Microservices application folder
- 
-*    **Config** Basic Microservices configuration folder
- 
-*    **Crons** Contains classes for cron API's
 
-*    **Custom** Contains classes for custom API's
+* **App** Basic Microservices application folder
 
-*    **Dropbox** Folder for uploaded files.
- 
-*    **ThirdParty** Contains classes for third-party API's
+* **Config** Basic Microservices configuration folder
 
-*    **Upload** Contains classes for upload file API's
+* **Crons** Contains classes for cron API's
+
+* **Custom** Contains classes for custom API's
+
+* **Dropbox** Folder for uploaded files.
+
+* **ThirdParty** Contains classes for third-party API's
+
+* **Upload** Contains classes for upload file API's
   
-*    **Validation** Contains validation classes.
- 
+* **Validation** Contains validation classes.
 
 ## Route
- 
 
 ### Files
- 
-*    **Config/Routes/&lt;GroupName&gt;/GETroutes.php** for all GET method routes configuration.
- 
-*    **Config/Routes/&lt;GroupName&gt;/POSTroutes.php** for all POST method routes configuration.
- 
-*    **Config/Routes/&lt;GroupName&gt;/PUTroutes.php** for all PUT method routes configuration.
- 
-*    **Config/Routes/&lt;GroupName&gt;/PATCHroutes.php** for all PATCH method routes configuration.
- 
-*    **Config/Routes/&lt;GroupName&gt;/DELETEroutes.php** for all DELETE method routes configuration.
- 
+
+* **Config/Routes/&lt;GroupName&gt;/GETroutes.php** for all GET method routes configuration.
+
+* **Config/Routes/&lt;GroupName&gt;/POSTroutes.php** for all POST method routes configuration.
+
+* **Config/Routes/&lt;GroupName&gt;/PUTroutes.php** for all PUT method routes configuration.
+
+* **Config/Routes/&lt;GroupName&gt;/PATCHroutes.php** for all PATCH method routes configuration.
+
+* **Config/Routes/&lt;GroupName&gt;/DELETEroutes.php** for all DELETE method routes configuration.
+
 **&lt;GroupName&gt;** These are corresponding to the assigned group to a user for accessing the API's
- 
 
 ### Example
- 
-*    For configuring route **/tableName/parts** GET method
- 
 
+* For configuring route **/tableName/parts** GET method
+
+``
     return [
       'tableName' => [
         'parts' => [
@@ -89,10 +83,11 @@ Below are the configuration settings details in .env
         ]
       ]
     ];
+``
 
-*    For configuring route **/tableName/{id}** where id is dynamic **integer** value to be collected.
- 
-
+* For configuring route **/tableName/{id}** where id is dynamic **integer** value to be collected.
+  
+``
     return [
       'tableName' => [
         '{id:int}' => [
@@ -100,10 +95,11 @@ Below are the configuration settings details in .env
         ]
       ]
     ];
+``
 
-*    Same dynamic variable but with a different data type, for e.g. **{id}** will be treated differently for **string** and **integer** values to be collected.
- 
+* Same dynamic variable but with a different data type, for e.g. **{id}** will be treated differently for **string** and **integer** values to be collected.
 
+``
     return [
       'tableName' => [
         '{id:int}' => [
@@ -114,10 +110,11 @@ Below are the configuration settings details in .env
         ]
       ]
     ];
+``
 
-*    To restrict dynamic values to a certain set of values. One can do the same by appending comma-separated values after OR key.
- 
+* To restrict dynamic values to a certain set of values. One can do the same by appending comma-separated values after OR key.
 
+``
     return [
       '{tableName:string|admin,group,client,routes}' => [
         '{id:int}' => [
@@ -125,56 +122,51 @@ Below are the configuration settings details in .env
         ]
       ]
     ];
+``
 
 ## SQLs
- 
 
 ### Folder
- 
-*    **Config/Queries/GlobalDB** for global database.
- 
-*    **Config/Queries/ClientDB** for Clients (including all hosts and their databases).
- 
+
+* **Config/Queries/GlobalDB** for global database.
+
+* **Config/Queries/ClientDB** for Clients (including all hosts and their databases).
 
 ### Files - GlobalDB
- 
-*    **Config/Queries/GlobalDB/GET/&lt;filenames&gt;.php** GET method SQL.
- 
-*    **Config/Queries/GlobalDB/POST/&lt;filenames&gt;;.php** POST method SQL.
- 
-*    **Config/Queries/GlobalDB/PUT/&lt;filenames&gt;.php** PUT method SQL.
- 
-*    **Config/Queries/GlobalDB/PATCH/&lt;filenames&gt;.php** PATCH method SQL.
- 
-*    **Config/Queries/GlobalDB/DELETE/&lt;filenames&gt;.php** DELETE method SQL.
- 
+
+* **Config/Queries/GlobalDB/GET/&lt;filenames&gt;.php** GET method SQL.
+
+* **Config/Queries/GlobalDB/POST/&lt;filenames&gt;;.php** POST method SQL.
+
+* **Config/Queries/GlobalDB/PUT/&lt;filenames&gt;.php** PUT method SQL.
+
+* **Config/Queries/GlobalDB/PATCH/&lt;filenames&gt;.php** PATCH method SQL.
+
+* **Config/Queries/GlobalDB/DELETE/&lt;filenames&gt;.php** DELETE method SQL.
 
 ### Files - ClientDB
- 
-*    **Config/Queries/ClientDB/GET/&lt;filenames&gt;.php** GET method SQL.
- 
-*    **Config/Queries/ClientDB/POST/&lt;filenames&gt;.php** POST method SQL.
- 
-*    **Config/Queries/ClientDB/PUT/&lt;filenames&gt;.php** PUT method SQL.
- 
-*    **Config/Queries/ClientDB/PATCH/&lt;filenames&gt;.php** PATCH method SQL.
- 
-*    **Config/Queries/ClientDB/DELETE/&lt;filenames&gt;.php** DELETE method SQL.
- 
+
+* **Config/Queries/ClientDB/GET/&lt;filenames&gt;.php** GET method SQL.
+
+* **Config/Queries/ClientDB/POST/&lt;filenames&gt;.php** POST method SQL.
+
+* **Config/Queries/ClientDB/PUT/&lt;filenames&gt;.php** PUT method SQL.
+
+* **Config/Queries/ClientDB/PATCH/&lt;filenames&gt;.php** PATCH method SQL.
+
+* **Config/Queries/ClientDB/DELETE/&lt;filenames&gt;.php** DELETE method SQL.
 
 > One can replace **&lt;filenames&gt;** tag with desired name as per functionality.
- 
 
 ### Configuration
- 
 
-*    GET method.
- 
+* GET method.
 
+``
     <?php
     return [
       'query' => "SELECT * FROM {$this->globalDB}.TableName WHERE id = ? AND group_id = ? AND client_id = ?",
-      '__WHERE__' => [//column => [uriParams|payload|function|readOnlySession|{custom}, key|{value}]    
+      '__WHERE__' => [//column => [uriParams|payload|function|readOnlySession|{custom}, key|{value}]
         'id' => ['uriParams', 'id'],
         'group_id' => ['payload', 'group_id'],
         'client_id' => ['readOnlySession', 'client_id']
@@ -199,13 +191,13 @@ Below are the configuration settings details in .env
         ...
       ]
     ];
+``
 
 > Here **query & mode** keys are required keys
- 
 
-*    For POST/PUT/PATCH/DELETE method.
- 
+* For POST/PUT/PATCH/DELETE method.
 
+``
     <?php
     return [
       'query' => "INSERT {$this->globalDB}.TableName SET SET WHERE WHERE ",
@@ -248,45 +240,44 @@ Below are the configuration settings details in .env
         ...
       ]
     ];
+``
 
 > **Note**: If there are modules or configurations repeated. One can reuse them by palcing them in a separate file and including as below.
- 
 
+``
       'subQuery' => [
         //Here the module1 properties are reused for write operation.
         'module1' => include DOC_ROOT . 'Config/Queries/ClientDB/Common/reusefilename.php',
       ]
+``
 
 > **Note**: For POST, PUT, PATCH, and DELETE methods we can configure both INSERT as well as UPDATE queries.
- 
 
 ## HTTP Request
- 
 
 ### GET Request
- 
-*    [http://localhost:9501?r=/reload](http://localhost:9501?r=/reload) 
- 
-*    [http://localhost:9501?r=/tableName/1](http://localhost:9501?r=/tableName/1) 
- 
+
+* [http://localhost:9501?r=/reload](http://localhost:9501?r=/reload)
+
+* [http://localhost:9501?r=/tableName/1](http://localhost:9501?r=/tableName/1)
+
 > One can clean the URL by making the required changes in the web server .conf file.
- 
 
 ### POST, PUT, PATCH, and DELETE Request
- 
 
-*   Single Payload
-     
-```
+* Single Payload
+
+``
       {
         "key1": "value1",
         "key2": "value2",
         ...
       }
-```
-*   Multiple
-     
-```
+``
+
+* Multiple
+
+``
       [
         {
           "key1": "value1",
@@ -300,44 +291,43 @@ Below are the configuration settings details in .env
         }
         ...
       ]
-```
+``
+
 ## Variables
- 
-*    **httpRequest->input\['readOnlySession'\]** Session Data.
- 
+
+* **httpRequest->input\['readOnlySession'\]** Session Data.
+
 This remains same for every request and contains keys like id, group\_id, client\_id
- 
-*    **httpRequest->input\['uriParams'\]** Data passed in URI.
- 
+
+* **httpRequest->input\['uriParams'\]** Data passed in URI.
+
 Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $input\['uriParams'\] will hold these dynamic values as below.
- 
-*    **httpRequest->input\['payload'\]** Request data.
- 
+
+* **httpRequest->input\['payload'\]** Request data.
+
 For **GET** method, the **$\_GET** is the payload.
- 
-*    **httpRequest->input\['insertIdParams'\]** Insert ids Data as per configuration.
- 
+
+* **httpRequest->input\['insertIdParams'\]** Insert ids Data as per configuration.
+
 For **POST/PUT/PATCH/DELETE** we perform both INSERT as well as UPDATE operation. The insertIdParams contains the insert ids of the executed INSERT queries.
 
-*    **httpRequest->input\['hierarchyData'\]** Hierarchy data.
- 
+* **httpRequest->input\['hierarchyData'\]** Hierarchy data.
+
 For **GET** method, one can use previous query results if configured to use hierarchy.
- 
 
 ## Hierarchy
- 
 
-*   Config/Queries/ClientDB/GET/Category.php
-     
+* Config/Queries/ClientDB/GET/Category.php
 
 In this file one can confirm how previous select data is used recursively in subQuery select as indicated by useHierarchy flag.
- 
-```
+
+``
     'parent_id' => ['hierarchyData', 'return:id'],
-```
-*   Config/Queries/ClientDB/POST/Category.php .Here a request can handle the hierarchy for write operations.
-     
-```
+``
+
+* Config/Queries/ClientDB/POST/Category.php .Here a request can handle the hierarchy for write operations.
+
+``
         // Configuration
         return [
           'query' => "INSERT INTO {$this->clientDB}.`category` SET SET",
@@ -364,21 +354,22 @@ In this file one can confirm how previous select data is used recursively in sub
           ],
           'useHierarchy' => true
         ];
-```
+``
 
-*   Request - 1: Single object.
-     
-```
+* Request - 1: Single object.
+
+``
       {
         "name":"name",
         "module1":{
           "subname":"subname",
         }
       }
-```
-*   Request - 2: Array of module1
-     
-```
+``
+
+* Request - 2: Array of module1
+
+``
       {
         "name":"name",
         "module1":[
@@ -391,10 +382,11 @@ In this file one can confirm how previous select data is used recursively in sub
           ...
         ]
       }
-```
-*   Request - 3: Array of payload and arrays of module1
-     
-```
+``
+
+* Request - 3: Array of payload and arrays of module1
+
+``
       [
         {
           "name":"name1",
@@ -422,39 +414,38 @@ In this file one can confirm how previous select data is used recursively in sub
         },
         ...
       ]
-```
+``
+
 ## Route ending with /config
- 
-*    Adding keyword **config** at the end of route after a slash returns the payload information that should be supplied; both required and optional with desired format.
- 
+
+* Adding keyword **config** at the end of route after a slash returns the payload information that should be supplied; both required and optional with desired format.
+
 Examples:
- 
-*    r=/registration/config
- 
-*    r=/category/config
- 
+
+* r=/registration/config
+
+* r=/category/config
+
 One need to configure for same in route with a flag as **config => true**
- 
+
 Only these configured routes will be supported the config feature.
- 
-*    For controlling globally there is a flag in env file labled **allowConfigRequest**
- 
+
+* For controlling globally there is a flag in env file labled **allowConfigRequest**
 
 ### r=/routes
- 
+
 This lists down all allowed routes for HTTP methods respectively.
 
-
 ### r=/check
- 
-Perform basic checks on Config folder.
 
+Perform basic checks on Config folder.
 
 ## Javascript - HTTP request example
 
 ### Login
-```
-var handlerUrl = "http://127.0.0.1:9501?r=/login";
+
+``
+var handlerUrl = "[http://127.0.0.1:9501?r=/login](http://127.0.0.1:9501?r=/login)";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "POST", handlerUrl );
@@ -465,7 +456,7 @@ xmlhttp . onreadystatechange = function() {
         var responseJson = this.responseText;
         var responseArr = JSON.parse(responseJson);
         console.log(responseArr);
-        var token = responseArr['Output']['Results']['Token'];
+        var token = responseArr\['Output'\]\['Results'\]\['Token'\];
         console.log(token);
     }
 };
@@ -481,17 +472,18 @@ var urlencodeJsonString = encodeURIComponent(jsonString);
 var params = "Payload="+urlencodeJsonString;
 
 xmlhttp . send( params );
-```
+``
 
 ### For other API's
 
-- GET Request
-```
-  var handlerUrl = "http://127.0.0.1:9501?r=/routes";
+* GET Request
+
+``
+  var handlerUrl = "[http://127.0.0.1:9501?r=/routes](http://127.0.0.1:9501?r=/routes)";
   var xmlhttp = new XMLHttpRequest();
 
   xmlhttp . open( "GET", handlerUrl );
-  xmlhttp . setRequestHeader('Authorization', 'Bearer <Token-from-login-api>');
+  xmlhttp . setRequestHeader('Authorization', 'Bearer &lt;Token-from-login-api&gt;');
 
   xmlhttp . onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
@@ -502,17 +494,17 @@ xmlhttp . send( params );
   };
 
   xmlhttp . send();
+``
 
-```
+* POST Request
 
-- POST Request
-```
-var handlerUrl = "http://127.0.0.1:9501?r=/ajax-handler-route";
+``
+var handlerUrl = "[http://127.0.0.1:9501?r=/ajax-handler-route](http://127.0.0.1:9501?r=/ajax-handler-route)";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "POST", handlerUrl );
 xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
+xmlhttp . setRequestHeader('Authorization', ‘Bearer &lt;Token-from-login-api&gt;');
 
 xmlhttp . onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -533,16 +525,17 @@ var urlencodeJsonString = encodeURIComponent(jsonString);
 var params = "Payload="+urlencodeJsonString;
 
 xmlhttp . send( params );
-```
+``
 
-- PUT Request
-```
-var handlerUrl = "http://127.0.0.1:9501?r=/custom/password";
+* PUT Request
+
+``
+var handlerUrl = "[http://127.0.0.1:9501?r=/custom/password](http://127.0.0.1:9501?r=/custom/password)";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "PUT", handlerUrl );
 xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
+xmlhttp . setRequestHeader('Authorization', ‘Bearer &lt;Token-from-login-api&gt;');
 
 xmlhttp . onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -563,4 +556,4 @@ var urlencodeJsonString = encodeURIComponent(jsonString);
 var params = "Payload="+urlencodeJsonString;
 
 xmlhttp . send( params );
-```
+``
