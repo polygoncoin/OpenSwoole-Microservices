@@ -81,7 +81,7 @@ class Routes
     public function process()
     {
         $httpRoutes = [];
-        $userRoutesFolder = Constants::$DOC_ROOT . $this->routesFolder . '/' . $this->c->httpRequest->input['readOnlySession']['group_name'];
+        $userRoutesFolder = Constants::$DOC_ROOT . $this->routesFolder . '/' . $this->c->httpRequest->groupInfo['name'];
 
         foreach ($this->httpMethods as $method) {
             $httpRoutes[$method] = [];

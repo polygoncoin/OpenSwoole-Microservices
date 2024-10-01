@@ -44,6 +44,7 @@ $server->on("request", function (Request $request, Response $response) {
 
     $inputs = [];
 
+    $inputs['server']['host'] = 'localhost';
     $inputs['server']['request_method'] = $request->server['request_method'];
     $inputs['server']['remote_addr'] = $request->server['remote_addr'];
     if (isset($request->header['authorization'])) {

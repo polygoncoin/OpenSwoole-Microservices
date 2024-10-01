@@ -64,9 +64,6 @@ class Check
      */
     public function init()
     {
-        Env::$globalDB = Env::$defaultDbDatabase;
-        Env::$clientDB = Env::$dbDatabase;
-
         return true;
     }
 
@@ -186,7 +183,7 @@ class Check
                     }
                 }
                 if (!$foundHierarchyData) {
-                    $errors[] = 'Hierarchy usage not maintained.';
+                    $errors[] = 'Hierarchy usage not maintained';
                 }
             }
 
@@ -232,7 +229,7 @@ class Check
                     }
                 }
                 if (!$foundHierarchyData) {
-                    $errors[] = 'Hierarchy usage not maintained.';
+                    $errors[] = 'Hierarchy usage not maintained';
                 }
             }
 

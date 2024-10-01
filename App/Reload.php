@@ -2,6 +2,7 @@
 namespace Microservices\App;
 
 use Microservices\App\Constants;
+use Microservices\App\CacheKey;
 use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\AppTrait;
@@ -46,6 +47,29 @@ class Reload
      */
     public function init()
     {
+        return true;
+    }
+
+    /**
+     * Process
+     *
+     * @return boolean
+     */
+    public function process()
+    {
+        $this->processDomainAndUser();
+        $this->processGroup();
+
+        return true;
+    }
+
+    /**
+     * Adds user details to cache.
+     *
+     * @return void
+     */
+    private function processDomainAndUser()
+    {
         $this->c->httpRequest->setDb(
             getenv('globalType'),
             getenv('globalHostname'),
@@ -55,150 +79,75 @@ class Reload
             getenv('globalDatabase')
         );
 
-        return true;
-    }
-
-    /**
-     * Process
-     *
-     * @return boolean
-     */
-    public function process($refresh = 'all', $idsString = null)
-    {
-        $ids = [];
-
-        if (!is_null($idsString)) {
-            foreach (explode(',', trim($idsString)) as $value) {
-                if (ctype_digit($value = trim($value))) {
-                    $ids[] = (int)$value;
-                } else {
-                    throw new \Exception('Only integer values supported for ids.', 404);
-                    return;
-                }
-            }
-        }
-
-        if ($refresh === 'all') {
-            $this->processUser();
-            $this->processGroup();
-            $this->processGroupIps();
-        } else {
-            switch ($refresh) {
-                case 'user':
-                    $this->processUser($ids);
-                    break;
-                case 'group':
-                    $this->processGroup($ids);
-                    break;
-                case 'groupIp':
-                    $this->processGroupIps($ids);
-                    break;
-                case 'token':
-                    $this->processToken($idsString);
-                    break;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Adds user details to cache.
-     *
-     * @param array $ids Optional - provide ids are specific reload.
-     * @return void
-     */
-    private function processUser($ids = [])
-    {
-        $whereClause = count($ids) ? 'WHERE U.user_id IN (' . implode(', ',array_map(function ($id) { return '?';}, $ids)) . ');' : ';';
-
         $this->c->httpRequest->db->execDbQuery("
             SELECT
-                U.user_id,
-                U.username,
-                U.password_hash,
-                G.client_id,
-                G.name as group_name,
-                U.group_id
+                *
             FROM
-                `{$this->execPhpFunc(getenv('users'))}` U
-            LEFT JOIN
-                `{$this->execPhpFunc(getenv('groups'))}` G ON U.group_id = G.group_id
-            {$whereClause}", $ids);
-
-        while($row = $this->c->httpRequest->db->fetch(\PDO::FETCH_ASSOC)) {
-            $this->c->httpRequest->cache->setCache("user:{$row['username']}", json_encode($row));
-        }
-
+                `{$this->execPhpFunc(getenv('clients'))}` C
+            ", []);
+        $crows = $this->c->httpRequest->db->fetchAll();
         $this->c->httpRequest->db->closeCursor();
+        for ($ci = 0, $ci_count = count($crows); $ci < $ci_count; $ci++) {
+            $c_key = CacheKey::Client($crows[$ci]['api_domain']);
+            $this->c->httpRequest->cache->setCache($c_key, json_encode($crows[$ci]));
+            $this->c->httpRequest->setDb(
+                getenv($crows[$ci]['master_db_server_type']),
+                getenv($crows[$ci]['master_db_hostname']),
+                getenv($crows[$ci]['master_db_port']),
+                getenv($crows[$ci]['master_db_username']),
+                getenv($crows[$ci]['master_db_password']),
+                getenv($crows[$ci]['master_db_database'])
+            );
+            $this->c->httpRequest->db->execDbQuery("
+                SELECT
+                    *
+                FROM
+                    `{$this->execPhpFunc(getenv('client_users'))}` U
+                ", []);
+            $urows = $this->c->httpRequest->db->fetchAll();
+            $this->c->httpRequest->db->closeCursor();
+            for ($ui = 0, $ui_count = count($urows); $ui < $ui_count; $ui++) {
+                $cu_key = CacheKey::ClientUser($crows[$ci]['client_id'], $urows[$ui]['username']);
+                $this->c->httpRequest->cache->setCache($cu_key, json_encode($urows[$ui]));
+            }
+        }
     }
 
     /**
      * Adds group details to cache.
      *
-     * @param array $ids Optional - privide ids are specific reload.
      * @return void
      */
-    private function processGroup($ids = [])
+    private function processGroup()
     {
-        $whereClause = count($ids) ? 'WHERE G.group_id IN (' . implode(', ',array_map(function ($id) { return '?';}, $ids)) . ');' : ';';
-
-       $this->c->httpRequest->db->execDbQuery("
-            SELECT
-                G.group_id,
-                G.name,
-                G.client_id,
-                C.master_db_server_type,
-                C.master_db_hostname,
-                C.master_db_port,
-                C.master_db_username,
-                C.master_db_password,
-                C.master_db_database,
-                C.slave_db_server_type,
-                C.slave_db_hostname,
-                C.slave_db_port,
-                C.slave_db_username,
-                C.slave_db_password,
-                C.slave_db_database
-            FROM
-                `{$this->execPhpFunc(getenv('groups'))}` G
-            LEFT JOIN
-                `{$this->execPhpFunc(getenv('connections'))}` C on G.connection_id = C.connection_id
-            {$whereClause}", $ids);
-
-        while($row = $this->c->httpRequest->db->fetch(\PDO::FETCH_ASSOC)) {
-            $this->c->httpRequest->cache->setCache("group:{$row['group_id']}", json_encode($row));
-        }
-
-       $this->c->httpRequest->db->closeCursor();
-    }
-
-    /**
-     * Adds restricted ips for group members to cache.
-     *
-     * @param array $ids Optional - privide ids are specific reload.
-     * @return void
-     */
-    private function processGroupIps($ids = [])
-    {
-        $whereClause = count($ids) ? 'WHERE group_id IN (' . implode(', ',array_map(function ($id) { return '?';}, $ids)) . ');' : ';';
-
-       $this->c->httpRequest->db->execDbQuery(
-            "SELECT group_id, allowed_ips FROM `{$this->execPhpFunc(getenv('groups'))}` {$whereClause}",
-            $ids
+        $this->c->httpRequest->setDb(
+            getenv('globalType'),
+            getenv('globalHostname'),
+            getenv('globalPort'),
+            getenv('globalUsername'),
+            getenv('globalPassword'),
+            getenv('globalDatabase')
         );
 
-        $cidrArray = [];
+        $this->c->httpRequest->db->execDbQuery("
+            SELECT
+                *
+            FROM
+                `{$this->execPhpFunc(getenv('groups'))}` G
+            ", []);
+
         while($row = $this->c->httpRequest->db->fetch(\PDO::FETCH_ASSOC)) {
+            $g_key = CacheKey::Group($row['group_id']);
+            $this->c->httpRequest->cache->setCache($g_key, json_encode($row));
             if (!empty($row['allowed_ips'])) {
                 $cidrs = $this->c->httpRequest->cidrsIpNumber($row['allowed_ips']);
                 if (count($cidrs)>0) {
-                    $this->c->httpRequest->cache->setCache("cidr:{$row['group_id']}", json_encode($cidrs));
+                    $cidr_key = CacheKey::CIDR($row['group_id']);
+                    $this->c->httpRequest->cache->setCache($cidr_key, json_encode($cidrs));
                 }
             }
         }
-
-       $this->c->httpRequest->db->closeCursor();
+        $this->c->httpRequest->db->closeCursor();
     }
 
     /**
@@ -209,7 +158,7 @@ class Reload
      */
     private function processToken($token)
     {
-        $this->c->httpRequest->cache->deleteCache($token);
+        $this->c->httpRequest->cache->deleteCache("t:$token");
     }
 
     /**

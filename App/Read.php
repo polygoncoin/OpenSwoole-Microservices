@@ -24,16 +24,6 @@ class Read
     use AppTrait;
 
     /**
-     * Global DB
-     */
-    private $globalDB = null;
-
-    /**
-     * Global DB
-     */
-    private $clientDB = null;
-    
-    /**
      * Microservices Collection of Common Objects
      * 
      * @var Microservices\App\Common
@@ -57,9 +47,6 @@ class Read
      */
     public function init()
     {
-        $this->globalDB = $this->c->httpRequest->globalDB;
-        $this->clientDB = $this->c->httpRequest->clientDB;
-
         return true;
     }
 

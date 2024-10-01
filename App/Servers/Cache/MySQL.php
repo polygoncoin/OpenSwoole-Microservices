@@ -253,16 +253,30 @@ class MySQL extends AbstractCache
 
     public function getKeyDetails($key)
     {
-        $keyArr = explode(':',$key);
-        
-        if (count($keyArr) === 2) {
-            $table = $keyArr[0];
-            $key = $keyArr[1];
-        } else {
-            $table = 'token';
-            $key = $keyArr[0];
+        $pos = strpos($key, ':');
+        $tableKey = substr($key, 0, $pos);
+
+        switch ($tableKey) {
+            case 'c':
+                $table = 'client';
+                break;
+            case 'cu':
+                $table = 'user';
+                break;
+            case 'g':
+                $table = 'group';
+                break;
+            case 'cidr':
+                $table = 'cidr';
+                break;
+            case 'ut':
+                $table = 'usertoken';
+                break;
+            case 't':
+                $table = 'token';
+                break;
         }
-        
+
         $keyDetails = [
             'table' => $table,
             'key' => $key

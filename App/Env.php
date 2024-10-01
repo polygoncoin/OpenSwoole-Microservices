@@ -25,8 +25,7 @@ class Env
     static public $isConfigRequest = null;
 
     static public $groups = null;
-    static public $users = null;
-    static public $connections = null;
+    static public $client_users = null;
     static public $clients = null;
 
     static public $maxPerpage = null;
@@ -51,8 +50,7 @@ class Env
         self::$OUTPUT_PERFORMANCE_STATS = getenv('OUTPUT_PERFORMANCE_STATS');
         self::$allowConfigRequest = getenv('allowConfigRequest');
         self::$groups = getenv('groups');
-        self::$users = getenv('users');
-        self::$connections = getenv('connections');
+        self::$client_users = getenv('client_users');
         self::$clients = getenv('clients');
         self::$maxPerpage = getenv('maxPerpage');
         self::$cronRestrictedIp = getenv('cronRestrictedIp');

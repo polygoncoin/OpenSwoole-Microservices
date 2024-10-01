@@ -18,15 +18,17 @@ use Microservices\App\Env;
  */
 class Logs
 {
+    private $logsDir = '/Logs';
+
     private $logTypes = [
-        'debug'      => '/Logs/debug',
-        'info'       => '/Logs/info',
-        'error'      => '/Logs/error',
-        'notice'     => '/Logs/notice',
-        'warning'    => '/Logs/warning',
-        'critical'   => '/Logs/critical',
-        'alert'      => '/Logs/alert',
-        'emergency'  => '/Logs/emergency'
+        'debug'      => '/debug',
+        'info'       => '/info',
+        'error'      => '/error',
+        'notice'     => '/notice',
+        'warning'    => '/warning',
+        'critical'   => '/critical',
+        'alert'      => '/alert',
+        'emergency'  => '/emergency'
     ];
 
     public function log($logType, $logContent)
@@ -34,10 +36,17 @@ class Logs
         if (!in_array($logType, array_keys($this->logTypes))) {
             throw new \Exception('Invalid log type', 501);
         }
-        $logFile = Constants::$DOC_ROOT . $this->logTypes[$logType] . '-' . date('Y-m');
+        
+        $absLogsDir = Constants::$DOC_ROOT . $this->logsDir;
+        if (!is_dir($absLogsDir)) {
+            mkdir($absLogsDir, 0755, true);
+        }
+
+        $logFile = $absLogsDir . $this->logTypes[$logType] . '-' . date('Y-m');
         if (!file_exists($logFile)) {
             touch($logFile);
         }
+        
         file_put_contents($logFile, $logContent . PHP_EOL, FILE_APPEND);
     }
 }

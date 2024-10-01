@@ -24,16 +24,6 @@ class Write
     use AppTrait;
 
     /**
-     * Global DB
-     */
-    private $globalDB = null;
-
-    /**
-     * Global DB
-     */
-    private $clientDB = null;
-    
-    /**
      * Microservices Collection of Common Objects
      * 
      * @var Microservices\App\Common
@@ -64,9 +54,6 @@ class Write
      */
     public function init()
     {
-        $this->globalDB = $this->c->httpRequest->globalDB;
-        $this->clientDB = $this->c->httpRequest->clientDB;
-
         return true;
     }
 
@@ -254,7 +241,7 @@ class Write
                             $_payload = &$payload[$module];
                             $_required = &$required[$module] ?? [];
                         } else {
-                            throw new \Exception("Invalid payload: Module '{$module}' missing.", 404);
+                            throw new \Exception("Invalid payload: Module '{$module}' missing", 404);
                         }
                     } else {
                         $_payload = &$payload;

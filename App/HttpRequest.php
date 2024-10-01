@@ -2,6 +2,7 @@
 namespace Microservices\App;
 
 use Microservices\App\Constants;
+use Microservices\App\CacheKey;
 use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\HttpResponse;
@@ -50,25 +51,18 @@ class HttpRequest
     public $input = null;
 
     /**
-     * Logged-in User ID
+     * Client details
      *
-     * @var integer
+     * @var array
      */
-    public $userId = null;
+    public $clientInfo = null;
 
-    /**
-     * Logged-in user Group ID
-     *
-     * @var integer
-     */
-    public $groupId = null;
-    
     /**
      * Group Info
      *
      * @var array
      */
-    public $groupInfoArr = null;
+    public $groupInfo = null;
 
     /**
      * Json Decode Object
@@ -92,29 +86,34 @@ class HttpRequest
     public $jsonDecode = null;
 
     /**
+     * Microservices Request Details
+     * 
+     * @var array
+     */
+    public $inputs = null;
+
+    /**
      * Details var from $request.
      */
+    public $HOST = null;
     public $REQUEST_METHOD = null;
     public $HTTP_AUTHORIZATION = null;
     public $REMOTE_ADDR = null;
     public $ROUTE = null;
 
     /**
-     * Global DB
+     * ids
      */
-    public $globalDB = null;
+    public $userId = null;
+    public $groupId = null;
 
     /**
-     * Global DB
+     * Cache Keys
      */
-    public $clientDB = null;
-    
-    /**
-     * Microservices Request Details
-     * 
-     * @var array
-     */
-    public $inputs = null;
+    public $t_key = null;
+    public $c_key = null;
+    public $g_key = null;
+    public $cidr_key = null;
 
     /**
      * Constructor
@@ -124,7 +123,6 @@ class HttpRequest
     public function __construct(&$inputs)
     {
         $this->inputs = &$inputs;
-        $this->globalDB = Env::$globalDatabase;
     }
     
     /**
@@ -134,6 +132,7 @@ class HttpRequest
      */
     public function init()
     {
+        $this->HOST = $this->inputs['server']['host'];
         $this->REQUEST_METHOD = $this->inputs['server']['request_method'];
         if (isset($this->inputs['header']['authorization'])) {
             $this->HTTP_AUTHORIZATION = $this->inputs['header']['authorization'];
@@ -152,55 +151,22 @@ class HttpRequest
             getenv('cachePassword'),
             getenv('cacheDatabase')
         );
+
     }
 
     /**
-     * Set Cache
+     * Check Host request
      *
      * @return void
      */
-    public function setCache(
-        $cacheType,
-        $cacheHostname,
-        $cachePort,
-        $cacheUsername,
-        $cachePassword,
-        $cacheDatabase
-    )
+    public function checkHost()
     {
-        $cacheNS = 'Microservices\\App\\Servers\\Cache\\'.$cacheType;
-        $this->cache = new $cacheNS(
-            $cacheHostname,
-            $cachePort,
-            $cacheUsername,
-            $cachePassword,
-            $cacheDatabase
-        );
-    }
+        $this->c_key = "c:{$this->HOST}";
+        if (!$this->cache->cacheExists($this->c_key)) {
+            throw new \Exception("Invalid Host '{$this->HOST}'", 501);
+        }
 
-    /**
-     * Set DB
-     *
-     * @return void
-     */
-    public function setDb(
-        $dbType,
-        $dbHostname,
-        $dbPort,
-        $dbUsername,
-        $dbPassword,
-        $dbDatabase
-    )
-    {
-        $dbNS = 'Microservices\\App\\Servers\\Database\\'.$dbType;
-        $this->db = new $dbNS(
-            $dbHostname,
-            $dbPort,
-            $dbUsername,
-            $dbPassword,
-            $dbDatabase
-        );
-        $this->clientDB = $this->db->database;
+        $this->clientInfo = json_decode($this->cache->getCache($this->c_key), true);
     }
 
     /**
@@ -212,11 +178,11 @@ class HttpRequest
     {
         if (!is_null($this->HTTP_AUTHORIZATION) && preg_match('/Bearer\s(\S+)/', $this->HTTP_AUTHORIZATION, $matches)) {
             $this->input['token'] = $matches[1];
-            $token = $this->input['token'];
-            if (!$this->cache->cacheExists($token)) {
+            $this->t_key = CacheKey::Token($this->input['token']);
+            if (!$this->cache->cacheExists($this->t_key)) {
                 throw new \Exception('Token expired', 400);
             }
-            $this->input['readOnlySession'] = json_decode($this->cache->getCache($token), true);
+            $this->input['readOnlySession'] = json_decode($this->cache->getCache($this->t_key), true);
             $this->userId = $this->input['readOnlySession']['user_id'];
             $this->groupId = $this->input['readOnlySession']['group_id'];    
             $this->checkRemoteIp();
@@ -240,14 +206,13 @@ class HttpRequest
             throw new \Exception('Invalid session', 501);
         }
 
-        $key = 'group:'.$this->groupId;
-        if (!$this->cache->cacheExists($key)) {
-            throw new \Exception("Cache '{$key}' missing.", 501);
+        $this->g_key = CacheKey::Group($this->groupId);
+        if (!$this->cache->cacheExists($this->g_key)) {
+            throw new \Exception("Cache '{$this->g_key}' missing", 501);
         }
 
-        $this->groupInfoArr = json_decode($this->cache->getCache($key), true);
+        $this->groupInfo = json_decode($this->cache->getCache($this->g_key), true);
     }
-
 
     /**
      * Init server connection based on $fetchFrom
@@ -257,7 +222,7 @@ class HttpRequest
      */
     public function setConnection($fetchFrom)
     {
-        if (is_null($this->groupInfoArr)) {
+        if (is_null($this->clientInfo)) {
             throw new \Exception('Yet to set connection params', 501);
         }
 
@@ -265,22 +230,22 @@ class HttpRequest
         switch ($fetchFrom) {
             case 'Master':
                 $this->setDb(
-                    getenv($this->groupInfoArr['master_db_server_type']),
-                    getenv($this->groupInfoArr['master_db_hostname']),
-                    getenv($this->groupInfoArr['master_db_port']),
-                    getenv($this->groupInfoArr['master_db_username']),
-                    getenv($this->groupInfoArr['master_db_password']),
-                    getenv($this->groupInfoArr['master_db_database'])
+                    getenv($this->clientInfo['master_db_server_type']),
+                    getenv($this->clientInfo['master_db_hostname']),
+                    getenv($this->clientInfo['master_db_port']),
+                    getenv($this->clientInfo['master_db_username']),
+                    getenv($this->clientInfo['master_db_password']),
+                    getenv($this->clientInfo['master_db_database'])
                 );
                 break;
             case 'Slave':
                 $this->setDb(
-                    getenv($this->groupInfoArr['slave_db_server_type']),
-                    getenv($this->groupInfoArr['slave_db_hostname']),
-                    getenv($this->groupInfoArr['slave_db_port']),
-                    getenv($this->groupInfoArr['slave_db_username']),
-                    getenv($this->groupInfoArr['slave_db_password']),
-                    getenv($this->groupInfoArr['slave_db_database'])
+                    getenv($this->clientInfo['slave_db_server_type']),
+                    getenv($this->clientInfo['slave_db_hostname']),
+                    getenv($this->clientInfo['slave_db_port']),
+                    getenv($this->clientInfo['slave_db_username']),
+                    getenv($this->clientInfo['slave_db_password']),
+                    getenv($this->clientInfo['slave_db_database'])
                 );
                 break;
             default:
@@ -297,9 +262,9 @@ class HttpRequest
     {
         $groupId = $this->input['readOnlySession']['group_id'];
 
-        $key = 'cidr:'.$this->groupId;
-        if ($this->cache->cacheExists($key)) {
-            $cidrs = json_decode($this->cache->getCache($key), true);
+        $this->cidr_key = CacheKey::CIDR($this->groupId);
+        if ($this->cache->cacheExists($this->cidr_key)) {
+            $cidrs = json_decode($this->cache->getCache($this->cidr_key), true);
             $ipNumber = ip2long($this->REMOTE_ADDR);
             $isValidIp = false;
             foreach ($cidrs as $cidr) {
@@ -323,7 +288,7 @@ class HttpRequest
     public function parseRoute($routeFileLocation = null)
     {
         if (is_null($routeFileLocation)) {
-            $routeFileLocation = Constants::$DOC_ROOT . '/Config/Routes/' . $this->input['readOnlySession']['group_name'] . '/' . $this->REQUEST_METHOD . 'routes.php';
+            $routeFileLocation = Constants::$DOC_ROOT . '/Config/Routes/' . $this->groupInfo['name'] . '/' . $this->REQUEST_METHOD . 'routes.php';
         }
 
         if (file_exists($routeFileLocation)) {
@@ -531,5 +496,53 @@ class HttpRequest
         }
 
         return $response;
+    }
+
+    /**
+     * Set Cache
+     *
+     * @return void
+     */
+    public function setCache(
+        $cacheType,
+        $cacheHostname,
+        $cachePort,
+        $cacheUsername,
+        $cachePassword,
+        $cacheDatabase
+    )
+    {
+        $cacheNS = 'Microservices\\App\\Servers\\Cache\\'.$cacheType;
+        $this->cache = new $cacheNS(
+            $cacheHostname,
+            $cachePort,
+            $cacheUsername,
+            $cachePassword,
+            $cacheDatabase
+        );
+    }
+
+    /**
+     * Set DB
+     *
+     * @return void
+     */
+    public function setDb(
+        $dbType,
+        $dbHostname,
+        $dbPort,
+        $dbUsername,
+        $dbPassword,
+        $dbDatabase
+    )
+    {
+        $dbNS = 'Microservices\\App\\Servers\\Database\\'.$dbType;
+        $this->db = new $dbNS(
+            $dbHostname,
+            $dbPort,
+            $dbUsername,
+            $dbPassword,
+            $dbDatabase
+        );
     }
 }

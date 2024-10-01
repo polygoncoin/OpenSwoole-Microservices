@@ -2,6 +2,7 @@
 namespace Microservices\Custom;
 
 use Microservices\App\Constants;
+use Microservices\App\CacheKey;
 use Microservices\App\Common;
 use Microservices\App\Env;
 
@@ -69,9 +70,8 @@ class Password
             $newPassword = $this->c->httpRequest->input['payload']['new_password'];
             $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
 
-            $database = getenv('globalDatabase');
-            $table = getenv('users');
-            $sql = "Update `{$database}`.`{$table}` SET password_hash = :password_hash WHERE username = :username AND is_deleted = :is_deleted";
+            $table = getenv('client_users');
+            $sql = "Update `{$table}` SET password_hash = :password_hash WHERE username = :username AND is_deleted = :is_deleted";
             $sqlParams = [
                 ':password_hash' => $newPasswordHash,
                 ':username' => $userName,
@@ -81,11 +81,13 @@ class Password
             $this->c->httpRequest->db->execDbQuery($sql, $sqlParams);
             $this->c->httpRequest->db->closeCursor();
 
-            if ($this->c->httpRequest->cache->cacheExists("user:{$userName}")) {
-                $userDetails = json_decode($this->c->httpRequest->cache->getCache("user:{$userName}"), true);
+            $clientId = $this->c->httpRequest->clientInfo['client_id'];
+            $cu_key = CacheKey::ClientUser($clientId,$userName);
+            if ($this->c->httpRequest->cache->cacheExists($cu_key)) {
+                $userDetails = json_decode($this->c->httpRequest->cache->getCache($cu_key), true);
                 $userDetails['password_hash'] = $newPasswordHash;
-                $this->c->httpRequest->cache->setCache("user:{$userName}", json_encode($userDetails));
-                $this->c->httpRequest->cache->deleteCache($this->c->httpRequest->input['token']);
+                $this->c->httpRequest->cache->setCache($cu_key, json_encode($userDetails));
+                $this->c->httpRequest->cache->deleteCache(CacheKey::Token($this->c->httpRequest->input['token']));
             }
 
             $this->c->httpResponse->jsonEncode->addKeyValue('Results', 'Password changed successfully');
