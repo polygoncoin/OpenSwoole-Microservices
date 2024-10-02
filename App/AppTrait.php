@@ -200,7 +200,7 @@ trait AppTrait
         // Collect param values as per config respectively
         foreach ($sqlConfig as $var => [$type, $typeKey]) {
             if ($type === 'function') {
-                $sqlParams[$var] = $typeKey();
+                $sqlParams[$var] = $typeKey($this->c->httpRequest->input);
             } else if ($type === 'hierarchyData') {
                 $typeKeys = explode(':',$typeKey);
                 $value = $this->c->httpRequest->input['hierarchyData'];

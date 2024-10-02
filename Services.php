@@ -35,7 +35,7 @@ class Services
      * 
      * @var array
      */
-    public $inputs = null;
+    public $httpRequestDetails = null;
 
     /**
      * Microservices Collection of Common Objects
@@ -47,12 +47,12 @@ class Services
     /**
      * Constructor
      *
-     * @param array $inputs
+     * @param array $httpRequestDetails
      * @return void
      */
-    public function __construct(&$inputs)
+    public function __construct(&$httpRequestDetails)
     {
-        $this->inputs = &$inputs;
+        $this->httpRequestDetails = &$httpRequestDetails;
 
         Constants::init();
         Env::init();
@@ -65,10 +65,10 @@ class Services
      */
     public function init()
     {
-        $this->c = new Common($this->inputs);
+        $this->c = new Common($this->httpRequestDetails);
         $this->c->init();
 
-        if (!isset($this->inputs['get'][Constants::$ROUTE_URL_PARAM])) {
+        if (!isset($this->httpRequestDetails['get'][Constants::$ROUTE_URL_PARAM])) {
             throw new \Exception('Missing route', 404);
         }
 
@@ -234,7 +234,7 @@ class Services
         $headers['Access-Control-Allow-Headers'] = '*';
 
         // Access-Control headers are received during OPTIONS requests
-        if ($this->inputs['server']['request_method'] == 'OPTIONS') {
+        if ($this->httpRequestDetails['server']['request_method'] == 'OPTIONS') {
             // may also be using PUT, PATCH, HEAD etc
             $headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
         } else {

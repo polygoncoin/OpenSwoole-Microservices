@@ -40,16 +40,16 @@ class Common
      * 
      * @var array
      */
-    public $inputs = null;
+    public $httpRequestDetails = null;
 
     /**
      * Constructor
      *
-     * @param array $inputs
+     * @param array $httpRequestDetails
      */
-    public function __construct(&$inputs)
+    public function __construct(&$httpRequestDetails)
     {
-        $this->inputs = &$inputs;
+        $this->httpRequestDetails = &$httpRequestDetails;
     }
 
     /**
@@ -59,10 +59,10 @@ class Common
      */
     public function init()
     {
-        $this->httpRequest = new HttpRequest($this->inputs);
+        $this->httpRequest = new HttpRequest($this->httpRequestDetails);
         $this->httpRequest->init();
 
-        $this->httpResponse = new HttpResponse($this->inputs);
+        $this->httpResponse = new HttpResponse($this->httpRequestDetails);
         $this->httpResponse->init();
     }
 }

@@ -42,26 +42,26 @@ $server->on("start", function (Server $server) {
 
 $server->on("request", function (Request $request, Response $response) {
 
-    $inputs = [];
+    $httpRequestDetails = [];
 
-    $inputs['server']['host'] = 'localhost';
-    $inputs['server']['request_method'] = $request->server['request_method'];
-    $inputs['server']['remote_addr'] = $request->server['remote_addr'];
+    $httpRequestDetails['server']['host'] = 'localhost';
+    $httpRequestDetails['server']['request_method'] = $request->server['request_method'];
+    $httpRequestDetails['server']['remote_addr'] = $request->server['remote_addr'];
     if (isset($request->header['authorization'])) {
-        $inputs['header']['authorization'] = $request->header['authorization'];
+        $httpRequestDetails['header']['authorization'] = $request->header['authorization'];
     }
-    $inputs['get'] = &$request->get;
-    $inputs['post'] = &$request->post;
+    $httpRequestDetails['get'] = &$request->get;
+    $httpRequestDetails['post'] = &$request->post;
 
     // Code to Initialize / Start the service.
     try {
-        $services = new Services($inputs);
+        $services = new Services($httpRequestDetails);
         
         // Setting CORS
         foreach ($services->getCors() as $k => $v) {
             $response->header($k, $v);
         }
-        if ($inputs['server']['request_method'] == 'OPTIONS') {
+        if ($httpRequestDetails['server']['request_method'] == 'OPTIONS') {
             $response->end();
             return;
         }

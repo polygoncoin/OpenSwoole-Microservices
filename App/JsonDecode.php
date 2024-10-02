@@ -107,16 +107,16 @@ class JsonDecode
      * 
      * @var array
      */
-    public $inputs = null;
+    public $httpRequestDetails = null;
 
     /**
      * JsonDecode constructor
      *
-     * @param array $inputs
+     * @param array $httpRequestDetails
      */
-    public function __construct(&$inputs)
+    public function __construct(&$httpRequestDetails)
     {
-        $this->inputs = &$inputs;
+        $this->httpRequestDetails = &$httpRequestDetails;
     }
 
     /**
@@ -126,9 +126,9 @@ class JsonDecode
      */
     public function init()
     {
-        if (isset($this->inputs['post']['Payload'])) {
+        if (isset($this->httpRequestDetails['post']['Payload'])) {
             $this->tempStream = fopen("php://memory", "rw+b");
-            fwrite($this->tempStream, $this->inputs['post']['Payload']);
+            fwrite($this->tempStream, $this->httpRequestDetails['post']['Payload']);
         }
     }
 

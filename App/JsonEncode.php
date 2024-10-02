@@ -49,16 +49,16 @@ class JsonEncode
      * 
      * @var array
      */
-    public $inputs = null;
+    public $httpRequestDetails = null;
 
     /**
      * JsonEncode constructor
      *
-     * @param array $inputs
+     * @param array $httpRequestDetails
      */
-    public function __construct(&$inputs)
+    public function __construct(&$httpRequestDetails)
     {
-        $this->inputs = &$inputs;
+        $this->httpRequestDetails = &$httpRequestDetails;
     }
 
     /**
@@ -68,7 +68,7 @@ class JsonEncode
      */
     public function init()
     {
-        if ($this->inputs['server']['request_method'] === 'GET') {
+        if ($this->httpRequestDetails['server']['request_method'] === 'GET') {
             $this->tempStream = fopen("php://temp", "rw+b");
         } else {
             $this->tempStream = fopen("php://memory", "rw+b");

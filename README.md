@@ -223,8 +223,8 @@ return [
 		'__SET__' => [
 			//column => [uriParams|payload|readOnlySession|insertIdParams|{custom}|function, key|{value}|function()],
 			'group_id' => ['payload', 'group_id'],
-			'password' => ['function', function() {
-				return password_hash(HttpRequest::$input['payload']['password'], PASSWORD_DEFAULT);
+			'password' => ['function', function($input) {
+				return password_hash($input['payload']['password'], PASSWORD_DEFAULT);
 			}],
 			'client_id' => ['readOnlySession', 'client_id']
 		],

@@ -39,16 +39,16 @@ class HttpResponse
      * 
      * @var array
      */
-    public $inputs = null;
+    public $httpRequestDetails = null;
 
     /**
      * Constructor
      *
-     * @param array $inputs
+     * @param array $httpRequestDetails
      */
-    public function __construct(&$inputs)
+    public function __construct(&$httpRequestDetails)
     {
-        $this->inputs = &$inputs;
+        $this->httpRequestDetails = &$httpRequestDetails;
     }
 
     /**
@@ -58,7 +58,7 @@ class HttpResponse
      */
     public function init()
     {
-        $this->jsonEncode = new JsonEncode($this->inputs);
+        $this->jsonEncode = new JsonEncode($this->httpRequestDetails);
         $this->jsonEncode->init();
     }
 }

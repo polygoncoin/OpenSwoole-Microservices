@@ -90,7 +90,7 @@ class HttpRequest
      * 
      * @var array
      */
-    public $inputs = null;
+    public $httpRequestDetails = null;
 
     /**
      * Details var from $request.
@@ -118,11 +118,11 @@ class HttpRequest
     /**
      * Constructor
      *
-     * @param array $inputs
+     * @param array $httpRequestDetails
      */
-    public function __construct(&$inputs)
+    public function __construct(&$httpRequestDetails)
     {
-        $this->inputs = &$inputs;
+        $this->httpRequestDetails = &$httpRequestDetails;
     }
     
     /**
@@ -132,15 +132,15 @@ class HttpRequest
      */
     public function init()
     {
-        $this->HOST = $this->inputs['server']['host'];
-        $this->REQUEST_METHOD = $this->inputs['server']['request_method'];
-        if (isset($this->inputs['header']['authorization'])) {
-            $this->HTTP_AUTHORIZATION = $this->inputs['header']['authorization'];
+        $this->HOST = $this->httpRequestDetails['server']['host'];
+        $this->REQUEST_METHOD = $this->httpRequestDetails['server']['request_method'];
+        if (isset($this->httpRequestDetails['header']['authorization'])) {
+            $this->HTTP_AUTHORIZATION = $this->httpRequestDetails['header']['authorization'];
         }
-        $this->REMOTE_ADDR = $this->inputs['server']['remote_addr'];
-        $this->ROUTE = '/' . trim($this->inputs['get'][Constants::$ROUTE_URL_PARAM], '/');
+        $this->REMOTE_ADDR = $this->httpRequestDetails['server']['remote_addr'];
+        $this->ROUTE = '/' . trim($this->httpRequestDetails['get'][Constants::$ROUTE_URL_PARAM], '/');
         
-        $this->jsonDecode = new JsonDecode($this->inputs);
+        $this->jsonDecode = new JsonDecode($this->httpRequestDetails);
         $this->jsonDecode->init();
 
         $this->setCache(
