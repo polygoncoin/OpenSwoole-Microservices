@@ -267,9 +267,9 @@ return [
 
 ### GET Request
 
-- [http://localhost/Microservices/public\_html/index.php?r=/reload](http://localhost/Microservices/public_html/index.php?r=/reload)
+- [http://127.0.0.1:9501?r=/reload](http://127.0.0.1:9501?r=/reload)
 
-- [http://localhost/Microservices/public\_html/index.php?r=/tableName/1](http://localhost/Microservices/public_html/index.php?r=/tableName/1)
+- [http://127.0.0.1:9501?r=/tableName/1](http://127.0.0.1:9501?r=/tableName/1)
 
 > One can clean the URL by making the required changes in the web server .conf file.
 

@@ -24,6 +24,13 @@ use Microservices\App\Env;
 class JsonDecode
 {
     /**
+     * Payload key in JSON
+     *
+     * @var object
+     */
+    private $jsonPayloadKey = 'Payload';
+
+    /**
      * Temporary Stream
      *
      * @var object
@@ -128,7 +135,7 @@ class JsonDecode
     {
         if (isset($this->httpRequestDetails['post']['Payload'])) {
             $this->tempStream = fopen("php://memory", "rw+b");
-            fwrite($this->tempStream, $this->httpRequestDetails['post']['Payload']);
+            fwrite($this->tempStream, '{"Payload":' . $this->httpRequestDetails['post']['Payload'] . '}');
         }
     }
 
@@ -674,6 +681,7 @@ class JsonDecode
      */
     public function keysAreSet($keys)
     {
+        $keys = is_null($keys) ? $this->jsonPayloadKey : $this->jsonPayloadKey . ':' . $keys;
         $return = true;
         $streamIndex = &$this->streamIndex;
         foreach (explode(':', $keys) as $key) {
@@ -695,6 +703,7 @@ class JsonDecode
      */
     public function keysType($keys = null)
     {
+        $keys = is_null($keys) ? $this->jsonPayloadKey : $this->jsonPayloadKey . ':' . $keys;
         $streamIndex = &$this->streamIndex;
         if (!is_null($keys)) {
             foreach (explode(':', $keys) as $key) {
@@ -724,6 +733,7 @@ class JsonDecode
      */
     public function getCount($keys = null)
     {
+        $keys = is_null($keys) ? $this->jsonPayloadKey : $this->jsonPayloadKey . ':' . $keys;
         $streamIndex = &$this->streamIndex;
         if (!is_null($keys)) {
             foreach (explode(':', $keys) as $key) {
@@ -749,6 +759,7 @@ class JsonDecode
      */
     public function get($keys = null)
     {
+        $keys = is_null($keys) ? $this->jsonPayloadKey : $this->jsonPayloadKey . ':' . $keys;
         $streamIndex = &$this->streamIndex;
         if (!is_null($keys)) {
             foreach (explode(':', $keys) as $key) {
@@ -785,6 +796,7 @@ class JsonDecode
      */
     public function load($keys)
     {
+        $keys = is_null($keys) ? $this->jsonPayloadKey : $this->jsonPayloadKey . ':' . $keys;
         if (empty($keys)) {
             $this->_s_ = null;
             $this->_e_ = null;

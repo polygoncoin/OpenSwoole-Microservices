@@ -141,7 +141,7 @@ class HttpRequest
         $this->ROUTE = '/' . trim($this->httpRequestDetails['get'][Constants::$ROUTE_URL_PARAM], '/');
         
         $this->jsonDecode = new JsonDecode($this->httpRequestDetails);
-        $this->jsonDecode->init();
+        $this->jsonDecode->init();    
 
         $this->setCache(
             getenv('cacheType'),

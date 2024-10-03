@@ -156,11 +156,14 @@ class Write
             }
             if ($this->c->httpRequest->db->beganTransaction === true) {
                 $this->c->httpRequest->db->commit();
+                $this->c->httpResponse->jsonEncode->addKeyValue('Response', $response);
+                $this->c->httpResponse->jsonEncode->addKeyValue('Status', 200);
             } else {
                 $this->c->httpResponse->httpStatus = 400;
                 $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $payload);
+                $this->c->httpResponse->jsonEncode->addKeyValue('Response', $response);
+                $this->c->httpResponse->jsonEncode->addKeyValue('Status', 400);
             }
-            $this->c->httpResponse->jsonEncode->addKeyValue('Response', $response);
             if ($this->c->httpRequest->input['payloadType'] === 'Array') {
                 $this->c->httpResponse->jsonEncode->endObject();
             }
