@@ -56,14 +56,14 @@ class JsonDecode
     public function __construct(&$jsonFileHandle)
     {
         if (!$jsonFileHandle) {
-            die('Invalid file');
+            throw new \Exception('Invalid file', 501);
         }
         $this->jsonFileHandle = &$jsonFileHandle;
 
         // File Stats - Check for size
         $fileStats = fstat($this->jsonFileHandle);
         if (isset($fileStats['size']) && $fileStats['size'] > $this->allowedPayloadLength) {
-            die('File size greater than allowed size');
+            throw new \Exception('File size greater than allowed size', 501);
         }
     }
 
@@ -158,7 +158,7 @@ class JsonDecode
                 if (isset($jsonFileIndex[$key])) {
                     $jsonFileIndex = &$jsonFileIndex[$key];
                 } else {
-                    die("Invalid key {$key}");
+                    throw new \Exception("Invalid key {$key}", 501);
                 }
             }    
         }
@@ -189,7 +189,7 @@ class JsonDecode
                 if (isset($jsonFileIndex[$key])) {
                     $jsonFileIndex = &$jsonFileIndex[$key];
                 } else {
-                    die("Invalid key {$key}");
+                    throw new \Exception("Invalid key {$key}", 501);
                 }
             }    
         }
@@ -240,7 +240,7 @@ class JsonDecode
                 if (isset($jsonFileIndex[$key])) {
                     $jsonFileIndex = &$jsonFileIndex[$key];
                 } else {
-                    die("Invalid key {$key}");
+                    throw new \Exception("Invalid key {$key}", 501);
                 }
             }    
         }
@@ -704,7 +704,7 @@ class JsonDecodeEngine
     {
         $str =  !is_null($str) ? trim($str) : $str;
         if (!empty($str)) {
-            die("Invalid JSON: {$str}");
+            throw new \Exception("Invalid JSON: {$str}", 501);
         }
     }
 
