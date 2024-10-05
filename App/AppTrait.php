@@ -92,7 +92,7 @@ trait AppTrait
                 if ($_useHierarchy) {
                     $requiredFields[$module] = $sub_requiredFields;
                 } else {
-                    foreach ($sub_requiredFields as $field) {
+                    foreach ($sub_requiredFields['__required__'] as $field) {
                         if (!in_array($field, $requiredFields)) {
                             $requiredFields['__required__'][] = $field;
                         }
