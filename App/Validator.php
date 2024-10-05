@@ -58,7 +58,7 @@ class Validator
      */
     public function validate($input, $validationConfig)
     {
-        if (isset(($input['required'])) && count($input['required']) > 0) {
+        if (isset(($input['currentRequired'])) && count($input['currentRequired']) > 0) {
             if ((list($isValidData, $errors) = $this->validateRequired($input)) && !$isValidData) {
                 return [$isValidData, $errors];
             }
@@ -78,8 +78,8 @@ class Validator
         $isValidData = true;
         $errors = [];
         // Required fields payload validation
-        $payload = $input['payload'];
-        $required = $input['required'];
+        $payload = $input['currentPayload'];
+        $required = $input['currentRequired'];
         if (count($payload) >= count($required)) {
             foreach ($required as $column) {
                 if (!isset($payload[$column])) {

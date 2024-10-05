@@ -491,12 +491,12 @@ xmlhttp . onreadystatechange = function() {
 };
 
 // Payload data which is to be made available on the server for the "/ajax-handler".
-var Payload = {
+var payload = {
     "username":"client_1_user_1",
     "password":"shames11"
 };
 
-var jsonString = JSON.stringify(Payload);
+var jsonString = JSON.stringify(payload);
 var urlencodeJsonString = encodeURIComponent(jsonString);
 var params = "Payload="+urlencodeJsonString;
 
@@ -544,12 +544,12 @@ xmlhttp . onreadystatechange = function() {
 };
 
 // Payload data which is to be made available on the server for the "/ajax-handler".
-var Payload = {
+var payload = {
     "key1": "value1",
     "key2": "value2",
 };
 
-var jsonString = JSON.stringify(Payload);
+var jsonString = JSON.stringify(payload);
 var urlencodeJsonString = encodeURIComponent(jsonString);
 var params = "Payload="+urlencodeJsonString;
 
@@ -575,12 +575,12 @@ xmlhttp . onreadystatechange = function() {
 };
 
 // Payload data which is to be made available on the server for the "/ajax-handler".
-var Payload = {
+var payload = {
     "old_password": "shames11",
     "new_password": "ramesh",
 };
 
-var jsonString = JSON.stringify(Payload);
+var jsonString = JSON.stringify(payload);
 var urlencodeJsonString = encodeURIComponent(jsonString);
 var params = "Payload="+urlencodeJsonString;
 

@@ -93,7 +93,7 @@ class HttpRequest
     public $httpRequestDetails = null;
 
     /**
-     * Details var from $request.
+     * Details var from $httpRequestDetails.
      */
     public $HOST = null;
     public $REQUEST_METHOD = null;
@@ -114,6 +114,11 @@ class HttpRequest
     public $c_key = null;
     public $g_key = null;
     public $cidr_key = null;
+
+    /**
+     * Payload stream
+     */
+    private $payloadStream = null;
 
     /**
      * Constructor
@@ -139,9 +144,13 @@ class HttpRequest
         }
         $this->REMOTE_ADDR = $this->httpRequestDetails['server']['remote_addr'];
         $this->ROUTE = '/' . trim($this->httpRequestDetails['get'][Constants::$ROUTE_URL_PARAM], '/');
-        
-        $this->jsonDecode = new JsonDecode($this->httpRequestDetails);
-        $this->jsonDecode->init();    
+
+        if (isset($this->httpRequestDetails['post']['Payload'])) {
+            $this->payloadStream = fopen("php://memory", "rw+b");
+            fwrite($this->payloadStream, $this->httpRequestDetails['post']['Payload']);
+            $this->jsonDecode = new JsonDecode($this->payloadStream);
+            $this->jsonDecode->init();    
+        }
 
         $this->setCache(
             getenv('cacheType'),
@@ -428,7 +437,7 @@ class HttpRequest
             // Load Payload
             $this->jsonDecode->validate();
             $this->jsonDecode->indexJSON();
-            $this->input['payloadType'] = $this->jsonDecode->keysType();
+            $this->input['payloadType'] = $this->jsonDecode->jsonType();
         }
     }
 
