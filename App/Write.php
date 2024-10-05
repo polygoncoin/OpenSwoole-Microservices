@@ -207,7 +207,11 @@ class Write
             }
 
             $this->c->httpRequest->input['currentPayload'] = $this->c->httpRequest->jsonDecode->get($currentPayloadKey);
-            $this->c->httpRequest->input['currentRequired'] = $required['__required__'];
+            if (isset($required['__required__'])) {
+                $this->c->httpRequest->input['currentRequired'] = $required['__required__'];
+            } else {
+                $this->c->httpRequest->input['currentRequired'] = [];
+            }
     
             // Validation
             if (!$this->isValidPayload($writeSqlConfig)) {
@@ -262,6 +266,7 @@ class Write
                         }
                     } else {
                         $_payloadKey = $modulePayloadKey;
+                        $_required = [];
                     }
                     $_useHierarchy = $useHierarchy ?? $this->getUseHierarchy($_writeSqlConfig);
                     if ($isAssoc) {
