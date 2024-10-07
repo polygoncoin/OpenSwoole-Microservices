@@ -52,34 +52,34 @@ class Validator
     /**
      * Validate payload
      *
-     * @param array $input            Inputs
+     * @param array $conditions            Inputs
      * @param array $validationConfig Validation configuration.
      * @return array
      */
-    public function validate($input, $validationConfig)
+    public function validate($conditions, $validationConfig)
     {
-        if (isset(($input['required'])) && count($input['required']) > 0) {
-            if ((list($isValidData, $errors) = $this->validateRequired($input)) && !$isValidData) {
+        if (isset(($conditions['required'])) && count($conditions['required']) > 0) {
+            if ((list($isValidData, $errors) = $this->validateRequired($conditions)) && !$isValidData) {
                 return [$isValidData, $errors];
             }
         }
 
-        return $this->v->validate($input, $validationConfig);
+        return $this->v->validate($conditions, $validationConfig);
     }
 
     /**
      * Validate required payload
      *
-     * @param array $input Inputs
+     * @param array $conditions Inputs
      * @return array
      */
-    private function validateRequired($input)
+    private function validateRequired($conditions)
     {
         $isValidData = true;
         $errors = [];
         // Required fields payload validation
-        $payload = $input['payload'];
-        $required = $input['required'];
+        $payload = $conditions['payload'];
+        $required = $conditions['required'];
         if (count($payload) >= count($required)) {
             foreach ($required as $column) {
                 if (!isset($payload[$column])) {

@@ -130,7 +130,7 @@ class Login
         $this->c->httpRequest->jsonDecode->indexJSON();
         $this->payload = $this->c->httpRequest->jsonDecode->get();
 
-        // Check for required input variables
+        // Check for required conditions variables
         foreach (array('username','password') as $value) {
             if (!isset($this->payload[$value]) || empty($this->payload[$value])) {
                 throw new \Exception('Missing required parameters', 404);

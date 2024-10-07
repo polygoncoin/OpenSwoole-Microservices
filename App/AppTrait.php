@@ -116,7 +116,7 @@ trait AppTrait
             $this->validator = new Validator($this->c);
         }
 
-        return $this->validator->validate($this->c->httpRequest->input, $validationConfig);
+        return $this->validator->validate($this->c->httpRequest->conditions, $validationConfig);
     }
 
     /**
@@ -200,10 +200,10 @@ trait AppTrait
         // Collect param values as per config respectively
         foreach ($sqlConfig as $var => [$type, $typeKey]) {
             if ($type === 'function') {
-                $sqlParams[$var] = $typeKey($this->c->httpRequest->input);
+                $sqlParams[$var] = $typeKey($this->c->httpRequest->conditions);
             } else if ($type === 'hierarchyData') {
                 $typeKeys = explode(':',$typeKey);
-                $value = $this->c->httpRequest->input['hierarchyData'];
+                $value = $this->c->httpRequest->conditions['hierarchyData'];
                 foreach($typeKeys as $key) {
                     if (!isset($value[$key])) {
                         throw new \Exception('Invalid hierarchy:  Missing hierarchy data', 501);
@@ -213,17 +213,17 @@ trait AppTrait
                 $sqlParams[$var] = $value;
             } else if ($type === 'custom') {
                 $sqlParams[$var] = $typeKey;
-            } else if ($type === 'payload' && isset($this->c->httpRequest->input['payload'][$typeKey])) {
-                $sqlParams[$var] = $this->c->httpRequest->input['payload'][$typeKey];
-            } else if ($type === 'payload' && !in_array($typeKey, $this->c->httpRequest->input['required']) && !isset($this->c->httpRequest->input['payload'][$typeKey])) {
+            } else if ($type === 'payload' && isset($this->c->httpRequest->conditions['payload'][$typeKey])) {
+                $sqlParams[$var] = $this->c->httpRequest->conditions['payload'][$typeKey];
+            } else if ($type === 'payload' && !in_array($typeKey, $this->c->httpRequest->conditions['required']) && !isset($this->c->httpRequest->conditions['payload'][$typeKey])) {
                 continue;
-            } else if ($type === 'payload' && in_array($typeKey, $this->c->httpRequest->input['required']) && !isset($this->c->httpRequest->input['payload'][$typeKey])) {
+            } else if ($type === 'payload' && in_array($typeKey, $this->c->httpRequest->conditions['required']) && !isset($this->c->httpRequest->conditions['payload'][$typeKey])) {
                 $errors[] = "Missing required field of '{$type}' for '{$typeKey}'";
             } else {
-                if (!isset($this->c->httpRequest->input[$type][$typeKey])) {
+                if (!isset($this->c->httpRequest->conditions[$type][$typeKey])) {
                     $errors[] = "Invalid configuration of '{$type}' for '{$typeKey}'";
                 }
-                $sqlParams[$var] = $this->c->httpRequest->input[$type][$typeKey];
+                $sqlParams[$var] = $this->c->httpRequest->conditions[$type][$typeKey];
             }
         }
 

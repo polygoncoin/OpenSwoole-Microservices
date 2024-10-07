@@ -42,11 +42,11 @@ class GlobalValidator
     /**
      * Validate payload
      *
-     * @param array $input            Input's data
+     * @param array $conditions            Input's data
      * @param array $validationConfig Validation configuration.
      * @return array
      */
-    public function validate($input, $validationConfig)
+    public function validate($conditions, $validationConfig)
     {
         $isValidData = true;
         $errors = [];
@@ -56,7 +56,7 @@ class GlobalValidator
                 if ($mode === 'custom') {
                     $args[$attr] = $key;
                 } else {
-                    $args[$attr] = $input[$mode][$key];
+                    $args[$attr] = $conditions[$mode][$key];
                 }
             }
             $fn = $v['fn'];

@@ -103,8 +103,8 @@ class Read
      */
     private function processRead(&$readSqlConfig, $useHierarchy)
     {
-        $this->c->httpRequest->input['requiredArr'] = $this->getRequired($readSqlConfig, true, $useHierarchy);
-        $this->c->httpRequest->input['required'] = $this->c->httpRequest->input['requiredArr']['__required__'];
+        $this->c->httpRequest->conditions['requiredArr'] = $this->getRequired($readSqlConfig, true, $useHierarchy);
+        $this->c->httpRequest->conditions['required'] = $this->c->httpRequest->conditions['requiredArr']['__required__'];
 
         // Start Read operation.
         $keys = [];
@@ -216,14 +216,14 @@ class Read
         $readSqlConfig['query'] = $readSqlConfig['countQuery'];
         unset($readSqlConfig['countQuery']);
 
-        $this->c->httpRequest->input['payload']['page']  = $_GET['page'] ?? 1;
-        $this->c->httpRequest->input['payload']['perpage']  = $_GET['perpage'] ?? 10;
+        $this->c->httpRequest->conditions['payload']['page']  = $_GET['page'] ?? 1;
+        $this->c->httpRequest->conditions['payload']['perpage']  = $_GET['perpage'] ?? 10;
 
-        if ($this->c->httpRequest->input['payload']['perpage'] > Env::$maxPerpage) {
+        if ($this->c->httpRequest->conditions['payload']['perpage'] > Env::$maxPerpage) {
             throw new \Exception('perpage exceeds max perpage value of '.Env::$maxPerpage, 403);
         }
 
-        $this->c->httpRequest->input['payload']['start']  = ($this->c->httpRequest->input['payload']['page'] - 1) * $this->c->httpRequest->input['payload']['perpage'];
+        $this->c->httpRequest->conditions['payload']['start']  = ($this->c->httpRequest->conditions['payload']['page'] - 1) * $this->c->httpRequest->conditions['payload']['perpage'];
         list($sql, $sqlParams, $errors) = $this->getSqlAndParams($readSqlConfig);
         
         if (!empty($errors)) {
@@ -235,10 +235,10 @@ class Read
         $this->c->httpRequest->db->closeCursor();
         
         $totalRowsCount = $row['count'];
-        $totalPages = ceil($totalRowsCount/$this->c->httpRequest->input['payload']['perpage']);
+        $totalPages = ceil($totalRowsCount/$this->c->httpRequest->conditions['payload']['perpage']);
         
-        $this->c->httpResponse->jsonEncode->addKeyValue('page', $this->c->httpRequest->input['payload']['page']);
-        $this->c->httpResponse->jsonEncode->addKeyValue('perpage', $this->c->httpRequest->input['payload']['perpage']);
+        $this->c->httpResponse->jsonEncode->addKeyValue('page', $this->c->httpRequest->conditions['payload']['page']);
+        $this->c->httpResponse->jsonEncode->addKeyValue('perpage', $this->c->httpRequest->conditions['payload']['perpage']);
         $this->c->httpResponse->jsonEncode->addKeyValue('totalPages', $totalPages);
         $this->c->httpResponse->jsonEncode->addKeyValue('totalRecords', $totalRowsCount);
         
@@ -267,8 +267,8 @@ class Read
         }
         
         if (isset($readSqlConfig['countQuery'])) {
-            $start = $this->c->httpRequest->input['payload']['start'];
-            $offset = $this->c->httpRequest->input['payload']['perpage'];
+            $start = $this->c->httpRequest->conditions['payload']['start'];
+            $offset = $this->c->httpRequest->conditions['payload']['perpage'];
             $sql .= " LIMIT {$start}, {$offset}";
         }
 
@@ -318,10 +318,10 @@ class Read
     {
         if ($useHierarchy) {
             if (count($keys) === 0) {
-                $this->c->httpRequest->input['hierarchyData'] = [];
-                $this->c->httpRequest->input['hierarchyData']['return'] = [];
+                $this->c->httpRequest->conditions['hierarchyData'] = [];
+                $this->c->httpRequest->conditions['hierarchyData']['return'] = [];
             }
-            $httpReq = &$this->c->httpRequest->input['hierarchyData']['return'];
+            $httpReq = &$this->c->httpRequest->conditions['hierarchyData']['return'];
             foreach ($keys as $k) {
                 if (!isset($httpReq[$k])) {
                     $httpReq[$k] = [];

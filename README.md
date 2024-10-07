@@ -223,15 +223,15 @@ return [
 		'__SET__' => [
 			//column => [uriParams|payload|readOnlySession|insertIdParams|{custom}|function, key|{value}|function()],
 			'group_id' => ['payload', 'group_id'],
-			'password' => ['function', function($input) {
-				return password_hash($input['payload']['password'], PASSWORD_DEFAULT);
+			'password' => ['function', function($conditions) {
+				return password_hash($conditions['payload']['password'], PASSWORD_DEFAULT);
 			}],
 			'client_id' => ['readOnlySession', 'client_id']
 		],
 		'__WHERE__' => [// column => [uriParams|payload|function|readOnlySession|insertIdParams|{custom}, key|{value}
 			'id' => ['uriParams', 'id']
 		],
-		'insertId' => 'tablename1:id',// Last insert id key name in $input['insertIdParams'][<tableName>:id];
+		'insertId' => 'tablename1:id',// Last insert id key name in $conditions['insertIdParams'][<tableName>:id];
 		'subQuery' => [
 			'module1' => [
 				'query' => "MySQL Query here",
@@ -309,19 +309,19 @@ return [
 
 ### HttpRequest Variables
 
-- **$input\['readOnlySession'\]** Session Data.
+- **$conditions\['readOnlySession'\]** Session Data.
 > This remains same for every request and contains keys like id, group\_id, client\_id
 
-- **$input\['uriParams'\]** Data passed in URI.
-> Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $input\['uriParams'\] will hold these dynamic values as below.
+- **$conditions\['uriParams'\]** Data passed in URI.
+> Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $conditions\['uriParams'\] will hold these dynamic values as below.
 
-- **$input\['payload'\]** Request data.
+- **$conditions\['payload'\]** Request data.
 > For **GET** method, the **$\_GET** is the payload.
 
-* **$input\['insertIdParams'\]** Insert ids Data as per configuration.
+* **$conditions\['insertIdParams'\]** Insert ids Data as per configuration.
 >For **POST/PUT/PATCH/DELETE** we perform both INSERT as well as UPDATE operation. The insertIdParams contains the insert ids of the executed INSERT queries.
 
-* **$input\['hierarchyData'\]** Hierarchy data.
+* **$conditions\['hierarchyData'\]** Hierarchy data.
 >For **GET** method, one can use previous query results if configured to use hierarchy.
 
 ### Hierarchy

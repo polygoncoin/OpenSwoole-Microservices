@@ -257,7 +257,7 @@ class Services
     {
         $log = [
             'datetime' => date('Y-m-d H:i:s'),
-            'input' => $this->c->httpRequest->input,
+            'conditions' => $this->c->httpRequest->conditions,
             "code" => $e->getCode(),
             "msg" => $e->getMessage(),
             "e" => json_encode($e)

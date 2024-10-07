@@ -55,19 +55,19 @@ class Password
      */
     public function process()
     {
-        if ($this->c->httpRequest->input['payloadType'] === 'Object') {
+        if ($this->c->httpRequest->conditions['httprequestPayloadType'] === 'Object') {
             $payload = $this->c->httpRequest->jsonDecode->get();
         } else {
             $payload = $this->c->httpRequest->jsonDecode->get('0');
         }
-        $this->c->httpRequest->input['payload'] = $payload;
+        $this->c->httpRequest->conditions['payload'] = $payload;
 
-        $oldPassword = $this->c->httpRequest->input['payload']['old_password'];
-        $oldPasswordHash = $this->c->httpRequest->input['readOnlySession']['password_hash'];
+        $oldPassword = $this->c->httpRequest->conditions['payload']['old_password'];
+        $oldPasswordHash = $this->c->httpRequest->conditions['readOnlySession']['password_hash'];
 
         if (password_verify($oldPassword, $oldPasswordHash)) {
-            $userName = $this->c->httpRequest->input['readOnlySession']['username'];
-            $newPassword = $this->c->httpRequest->input['payload']['new_password'];
+            $userName = $this->c->httpRequest->conditions['readOnlySession']['username'];
+            $newPassword = $this->c->httpRequest->conditions['payload']['new_password'];
             $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
 
             $table = getenv('client_users');
@@ -87,7 +87,7 @@ class Password
                 $userDetails = json_decode($this->c->httpRequest->cache->getCache($cu_key), true);
                 $userDetails['password_hash'] = $newPasswordHash;
                 $this->c->httpRequest->cache->setCache($cu_key, json_encode($userDetails));
-                $this->c->httpRequest->cache->deleteCache(CacheKey::Token($this->c->httpRequest->input['token']));
+                $this->c->httpRequest->cache->deleteCache(CacheKey::Token($this->c->httpRequest->conditions['token']));
             }
 
             $this->c->httpResponse->jsonEncode->addKeyValue('Results', 'Password changed successfully');

@@ -63,7 +63,7 @@ class Module1
     }
 
     /**
-     * Function to get filename with location depending uplon $input
+     * Function to get filename with location depending uplon $conditions
      *
      * @return string
      */

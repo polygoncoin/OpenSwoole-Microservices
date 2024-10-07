@@ -87,7 +87,7 @@ class Check
         //     }
         // }
 
-        $groupFolder = $this->c->httpRequest->input['readOnlySession']['group_name'];
+        $groupFolder = $this->c->httpRequest->conditions['readOnlySession']['group_name'];
         $_routesFolder = $routesFolder . '/' . $groupFolder;
         $httpRoutes[$groupFolder] = $this->processRoutes($_routesFolder, $errors);
 

@@ -48,7 +48,7 @@ class HttpRequest
      *
      * @var array
      */
-    public $input = null;
+    public $conditions = null;
 
     /**
      * Client details
@@ -186,20 +186,20 @@ class HttpRequest
     public function loadToken()
     {
         if (!is_null($this->HTTP_AUTHORIZATION) && preg_match('/Bearer\s(\S+)/', $this->HTTP_AUTHORIZATION, $matches)) {
-            $this->input['token'] = $matches[1];
-            $this->t_key = CacheKey::Token($this->input['token']);
+            $this->conditions['token'] = $matches[1];
+            $this->t_key = CacheKey::Token($this->conditions['token']);
             if (!$this->cache->cacheExists($this->t_key)) {
                 throw new \Exception('Token expired', 400);
             }
-            $this->input['readOnlySession'] = json_decode($this->cache->getCache($this->t_key), true);
-            $this->userId = $this->input['readOnlySession']['user_id'];
-            $this->groupId = $this->input['readOnlySession']['group_id'];    
+            $this->conditions['readOnlySession'] = json_decode($this->cache->getCache($this->t_key), true);
+            $this->userId = $this->conditions['readOnlySession']['user_id'];
+            $this->groupId = $this->conditions['readOnlySession']['group_id'];    
             $this->checkRemoteIp();
         } else {
             throw new \Exception('Token missing', 400);
         }
 
-        if (empty($this->input['token'])) {
+        if (empty($this->conditions['token'])) {
             throw new \Exception('Token missing', 400);
         }
     }
@@ -211,7 +211,7 @@ class HttpRequest
      */
     public function initSession()
     {
-        if (empty($this->input['readOnlySession']['user_id']) || empty($this->input['readOnlySession']['group_id'])) {
+        if (empty($this->conditions['readOnlySession']['user_id']) || empty($this->conditions['readOnlySession']['group_id'])) {
             throw new \Exception('Invalid session', 501);
         }
 
@@ -269,7 +269,7 @@ class HttpRequest
      */
     public function checkRemoteIp()
     {
-        $groupId = $this->input['readOnlySession']['group_id'];
+        $groupId = $this->conditions['readOnlySession']['group_id'];
 
         $this->cidr_key = CacheKey::CIDR($this->groupId);
         if ($this->cache->cacheExists($this->cidr_key)) {
@@ -325,7 +325,7 @@ class HttpRequest
                 $routes = &$routes[$element];
                 if (strpos($element, '{') === 0) {
                     $param = substr($element, 1, strpos($element, ':') - 1);
-                    $this->input['uriParams'][$param] = $element;
+                    $this->conditions['uriParams'][$param] = $element;
                 }
                 continue;
             } else {
@@ -339,10 +339,10 @@ class HttpRequest
                     }
                     if ($foundIntRoute) {
                         $configuredUri[] = $foundIntRoute;
-                        $this->input['uriParams'][$paramName] = (int)$element;
+                        $this->conditions['uriParams'][$paramName] = (int)$element;
                     } else if ($foundStringRoute) {
                         $configuredUri[] = $foundStringRoute;
-                        $this->input['uriParams'][$paramName] = urldecode($element);
+                        $this->conditions['uriParams'][$paramName] = urldecode($element);
                     } else {
                         throw new \Exception('Route not supported', 400);
                     }
@@ -428,12 +428,12 @@ class HttpRequest
     {
         if ($this->REQUEST_METHOD === Constants::$GET) {
             $this->urlDecode($_GET);
-            $this->input['payloadType'] = 'Object';
-            $this->input['payload'] = !empty($_GET) ? $_GET : [];
+            $this->conditions['httprequestPayloadType'] = 'Object';
+            $this->conditions['payload'] = !empty($_GET) ? $_GET : [];
         } else {
             // Load Payload
             $this->jsonDecode->indexJSON();
-            $this->input['payloadType'] = $this->jsonDecode->jsonType();
+            $this->conditions['httprequestPayloadType'] = $this->jsonDecode->jsonType();
         }
     }
 

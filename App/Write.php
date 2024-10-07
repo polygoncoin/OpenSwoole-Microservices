@@ -119,20 +119,20 @@ class Write
     private function processWrite(&$writeSqlConfig, $useHierarchy)
     {
         // Set required fields.
-        $this->c->httpRequest->input['requiredArr'] = $this->getRequired($writeSqlConfig, true, $useHierarchy);
+        $this->c->httpRequest->conditions['requiredArr'] = $this->getRequired($writeSqlConfig, true, $useHierarchy);
 
-        if ($this->c->httpRequest->input['payloadType'] === 'Object') {
+        if ($this->c->httpRequest->conditions['httprequestPayloadType'] === 'Object') {
             $this->c->httpResponse->jsonEncode->startObject('Results');
         } else {
             $this->c->httpResponse->jsonEncode->startArray('Results');
         }
 
         // Perform action
-        $i_count = $this->c->httpRequest->input['payloadType'] === 'Object' ? 1 : $this->c->httpRequest->jsonDecode->count();
+        $i_count = $this->c->httpRequest->conditions['httprequestPayloadType'] === 'Object' ? 1 : $this->c->httpRequest->jsonDecode->count();
 
         for ($i=0; $i < $i_count; $i++) {
             if ($i === 0) {
-                if ($this->c->httpRequest->input['payloadType'] === 'Object') {
+                if ($this->c->httpRequest->conditions['httprequestPayloadType'] === 'Object') {
                     $payloadKey = '';
                 } else {
                     $payloadKey = "{$i}";
@@ -144,8 +144,8 @@ class Write
             // Begin DML operation
             $this->c->httpRequest->db->begin();
             $response = [];
-            $this->writeDB($writeSqlConfig, $payloadKey, $useHierarchy, $response, $this->c->httpRequest->input['requiredArr']);
-            if ($this->c->httpRequest->input['payloadType'] === 'Array') {
+            $this->writeDB($writeSqlConfig, $payloadKey, $useHierarchy, $response, $this->c->httpRequest->conditions['requiredArr']);
+            if ($this->c->httpRequest->conditions['httprequestPayloadType'] === 'Array') {
                 $this->c->httpResponse->jsonEncode->startObject();
             }
             if ($this->c->httpRequest->db->beganTransaction === true) {
@@ -156,12 +156,12 @@ class Write
                 $this->c->httpResponse->jsonEncode->addKeyValue('Status', 400);
             }
             $this->c->httpResponse->jsonEncode->addKeyValue('Response', $response);
-            if ($this->c->httpRequest->input['payloadType'] === 'Array') {
+            if ($this->c->httpRequest->conditions['httprequestPayloadType'] === 'Array') {
                 $this->c->httpResponse->jsonEncode->endObject();
             }
         }
 
-        if ($this->c->httpRequest->input['payloadType'] === 'Object') {
+        if ($this->c->httpRequest->conditions['httprequestPayloadType'] === 'Object') {
             $this->c->httpResponse->jsonEncode->endObject();
         } else {
             $this->c->httpResponse->jsonEncode->endArray();
@@ -206,11 +206,11 @@ class Write
                 throw new \Exception("Paylaod key '{$payloadKey}' not set", 404);
             }
 
-            $this->c->httpRequest->input['payload'] = $this->c->httpRequest->jsonDecode->get($payloadKey);
+            $this->c->httpRequest->conditions['payload'] = $this->c->httpRequest->jsonDecode->get($payloadKey);
             if (isset($required['__required__'])) {
-                $this->c->httpRequest->input['required'] = $required['__required__'];
+                $this->c->httpRequest->conditions['required'] = $required['__required__'];
             } else {
-                $this->c->httpRequest->input['required'] = [];
+                $this->c->httpRequest->conditions['required'] = [];
             }
     
             // Validation
@@ -242,7 +242,7 @@ class Write
                 } else {
                     $response[$counter][$writeSqlConfig['insertId']] = $insertId;
                 }
-                $this->c->httpRequest->input['insertIdParams'][$writeSqlConfig['insertId']] = $insertId;
+                $this->c->httpRequest->conditions['insertIdParams'][$writeSqlConfig['insertId']] = $insertId;
             } else {
                 $affectedRows = $this->c->httpRequest->db->affectedRows();
                 if ($isAssoc) {
@@ -303,7 +303,7 @@ class Write
             if ($isValidData !== true) {
                 $this->c->httpResponse->httpStatus = 400;
                 $this->c->httpResponse->jsonEncode->startObject();
-                $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $this->c->httpRequest->input['payload']);
+                $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $this->c->httpRequest->conditions['payload']);
                 $this->c->httpResponse->jsonEncode->addKeyValue('Error', $errors);
                 $this->c->httpResponse->jsonEncode->endObject();
                 $return = false;
