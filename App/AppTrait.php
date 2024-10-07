@@ -213,11 +213,11 @@ trait AppTrait
                 $sqlParams[$var] = $value;
             } else if ($type === 'custom') {
                 $sqlParams[$var] = $typeKey;
-            } else if ($type === 'payload' && isset($this->c->httpRequest->input['currentPayload'][$typeKey])) {
-                $sqlParams[$var] = $this->c->httpRequest->input['currentPayload'][$typeKey];
-            } else if ($type === 'payload' && !in_array($typeKey, $this->c->httpRequest->input['currentRequired']) && !isset($this->c->httpRequest->input['currentPayload'][$typeKey])) {
+            } else if ($type === 'payload' && isset($this->c->httpRequest->input['payload'][$typeKey])) {
+                $sqlParams[$var] = $this->c->httpRequest->input['payload'][$typeKey];
+            } else if ($type === 'payload' && !in_array($typeKey, $this->c->httpRequest->input['required']) && !isset($this->c->httpRequest->input['payload'][$typeKey])) {
                 continue;
-            } else if ($type === 'payload' && in_array($typeKey, $this->c->httpRequest->input['currentRequired']) && !isset($this->c->httpRequest->input['currentPayload'][$typeKey])) {
+            } else if ($type === 'payload' && in_array($typeKey, $this->c->httpRequest->input['required']) && !isset($this->c->httpRequest->input['payload'][$typeKey])) {
                 $errors[] = "Missing required field of '{$type}' for '{$typeKey}'";
             } else {
                 if (!isset($this->c->httpRequest->input[$type][$typeKey])) {

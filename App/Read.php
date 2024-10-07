@@ -104,8 +104,7 @@ class Read
     private function processRead(&$readSqlConfig, $useHierarchy)
     {
         $this->c->httpRequest->input['requiredArr'] = $this->getRequired($readSqlConfig, true, $useHierarchy);
-        $this->c->httpRequest->input['currentRequired'] = $this->c->httpRequest->input['requiredArr']['__required__'];
-        $this->c->httpRequest->input['currentPayload'] = $this->c->httpRequest->input['payloadArr'];
+        $this->c->httpRequest->input['required'] = $this->c->httpRequest->input['requiredArr']['__required__'];
 
         // Start Read operation.
         $keys = [];
@@ -217,14 +216,14 @@ class Read
         $readSqlConfig['query'] = $readSqlConfig['countQuery'];
         unset($readSqlConfig['countQuery']);
 
-        $this->c->httpRequest->input['currentPayload']['page']  = $_GET['page'] ?? 1;
-        $this->c->httpRequest->input['currentPayload']['perpage']  = $_GET['perpage'] ?? 10;
+        $this->c->httpRequest->input['payload']['page']  = $_GET['page'] ?? 1;
+        $this->c->httpRequest->input['payload']['perpage']  = $_GET['perpage'] ?? 10;
 
-        if ($this->c->httpRequest->input['currentPayload']['perpage'] > Env::$maxPerpage) {
+        if ($this->c->httpRequest->input['payload']['perpage'] > Env::$maxPerpage) {
             throw new \Exception('perpage exceeds max perpage value of '.Env::$maxPerpage, 403);
         }
 
-        $this->c->httpRequest->input['currentPayload']['start']  = ($this->c->httpRequest->input['currentPayload']['page'] - 1) * $this->c->httpRequest->input['currentPayload']['perpage'];
+        $this->c->httpRequest->input['payload']['start']  = ($this->c->httpRequest->input['payload']['page'] - 1) * $this->c->httpRequest->input['payload']['perpage'];
         list($sql, $sqlParams, $errors) = $this->getSqlAndParams($readSqlConfig);
         
         if (!empty($errors)) {
@@ -236,10 +235,10 @@ class Read
         $this->c->httpRequest->db->closeCursor();
         
         $totalRowsCount = $row['count'];
-        $totalPages = ceil($totalRowsCount/$this->c->httpRequest->input['currentPayload']['perpage']);
+        $totalPages = ceil($totalRowsCount/$this->c->httpRequest->input['payload']['perpage']);
         
-        $this->c->httpResponse->jsonEncode->addKeyValue('page', $this->c->httpRequest->input['currentPayload']['page']);
-        $this->c->httpResponse->jsonEncode->addKeyValue('perpage', $this->c->httpRequest->input['currentPayload']['perpage']);
+        $this->c->httpResponse->jsonEncode->addKeyValue('page', $this->c->httpRequest->input['payload']['page']);
+        $this->c->httpResponse->jsonEncode->addKeyValue('perpage', $this->c->httpRequest->input['payload']['perpage']);
         $this->c->httpResponse->jsonEncode->addKeyValue('totalPages', $totalPages);
         $this->c->httpResponse->jsonEncode->addKeyValue('totalRecords', $totalRowsCount);
         
@@ -268,8 +267,8 @@ class Read
         }
         
         if (isset($readSqlConfig['countQuery'])) {
-            $start = $this->c->httpRequest->input['currentPayload']['start'];
-            $offset = $this->c->httpRequest->input['currentPayload']['perpage'];
+            $start = $this->c->httpRequest->input['payload']['start'];
+            $offset = $this->c->httpRequest->input['payload']['perpage'];
             $sql .= " LIMIT {$start}, {$offset}";
         }
 

@@ -197,20 +197,20 @@ class Write
             }
 
             if ($isAssoc) {
-                $currentPayloadKey = $payloadKey;
+                $payloadKey = $payloadKey;
             } else {
-                $currentPayloadKey = (strlen($payloadKey) === 0) ? $i : "{$payloadKey}:{$i}";
+                $payloadKey = (strlen($payloadKey) === 0) ? $i : "{$payloadKey}:{$i}";
             }
 
-            if (!$this->c->httpRequest->jsonDecode->isset($currentPayloadKey)) {
-                throw new \Exception("Paylaod key '{$currentPayloadKey}' not set", 404);
+            if (!$this->c->httpRequest->jsonDecode->isset($payloadKey)) {
+                throw new \Exception("Paylaod key '{$payloadKey}' not set", 404);
             }
 
-            $this->c->httpRequest->input['currentPayload'] = $this->c->httpRequest->jsonDecode->get($currentPayloadKey);
+            $this->c->httpRequest->input['payload'] = $this->c->httpRequest->jsonDecode->get($payloadKey);
             if (isset($required['__required__'])) {
-                $this->c->httpRequest->input['currentRequired'] = $required['__required__'];
+                $this->c->httpRequest->input['required'] = $required['__required__'];
             } else {
-                $this->c->httpRequest->input['currentRequired'] = [];
+                $this->c->httpRequest->input['required'] = [];
             }
     
             // Validation
@@ -256,7 +256,7 @@ class Write
             // subQuery for payload.
             if (isset($writeSqlConfig['subQuery'])) {
                 foreach ($writeSqlConfig['subQuery'] as $module => &$_writeSqlConfig) {
-                    $modulePayloadKey = (strlen($currentPayloadKey) === 0) ? $module : "{$currentPayloadKey}:{$module}";
+                    $modulePayloadKey = (strlen($payloadKey) === 0) ? $module : "{$payloadKey}:{$module}";
                     if ($useHierarchy) { // use parent data of a payload.
                         if ($this->c->httpRequest->jsonDecode->isset($modulePayloadKey)) {
                             $_payloadKey = $modulePayloadKey;
@@ -303,7 +303,7 @@ class Write
             if ($isValidData !== true) {
                 $this->c->httpResponse->httpStatus = 400;
                 $this->c->httpResponse->jsonEncode->startObject();
-                $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $this->c->httpRequest->input['currentPayload']);
+                $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $this->c->httpRequest->input['payload']);
                 $this->c->httpResponse->jsonEncode->addKeyValue('Error', $errors);
                 $this->c->httpResponse->jsonEncode->endObject();
                 $return = false;
