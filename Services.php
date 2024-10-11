@@ -113,7 +113,7 @@ class Services
      */
     public function startOutputJson()
     {
-        $this->c->httpResponse->jsonEncode->startObject('Output');      
+        // $this->c->httpResponse->jsonEncode->startObject('Output');      
     }
 
     /**
@@ -175,7 +175,7 @@ class Services
      */
     public function endOutputJson()
     {
-        $this->c->httpResponse->jsonEncode->endObject();
+        // $this->c->httpResponse->jsonEncode->endObject();
         $this->c->httpResponse->jsonEncode->addKeyValue('Status', $this->c->httpResponse->httpStatus);
     }
 

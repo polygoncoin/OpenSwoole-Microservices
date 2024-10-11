@@ -121,18 +121,18 @@ class Write
         // Set required fields.
         $this->c->httpRequest->conditions['requiredArr'] = $this->getRequired($writeSqlConfig, true, $useHierarchy);
 
-        if ($this->c->httpRequest->conditions['httprequestPayloadType'] === 'Object') {
+        if ($this->c->httpRequest->conditions['httpRequestPayloadType'] === 'Object') {
             $this->c->httpResponse->jsonEncode->startObject('Results');
         } else {
             $this->c->httpResponse->jsonEncode->startArray('Results');
         }
 
         // Perform action
-        $i_count = $this->c->httpRequest->conditions['httprequestPayloadType'] === 'Object' ? 1 : $this->c->httpRequest->jsonDecode->count();
+        $i_count = $this->c->httpRequest->conditions['httpRequestPayloadType'] === 'Object' ? 1 : $this->c->httpRequest->jsonDecode->count();
 
         for ($i=0; $i < $i_count; $i++) {
             if ($i === 0) {
-                if ($this->c->httpRequest->conditions['httprequestPayloadType'] === 'Object') {
+                if ($this->c->httpRequest->conditions['httpRequestPayloadType'] === 'Object') {
                     $payloadKey = '';
                 } else {
                     $payloadKey = "{$i}";
@@ -145,23 +145,25 @@ class Write
             $this->c->httpRequest->db->begin();
             $response = [];
             $this->writeDB($writeSqlConfig, $payloadKey, $useHierarchy, $response, $this->c->httpRequest->conditions['requiredArr']);
-            if ($this->c->httpRequest->conditions['httprequestPayloadType'] === 'Array') {
-                $this->c->httpResponse->jsonEncode->startObject();
-            }
             if ($this->c->httpRequest->db->beganTransaction === true) {
                 $this->c->httpRequest->db->commit();
-                $this->c->httpResponse->jsonEncode->addKeyValue('Status', 200);
+                $arr = [
+                    'Status' => 200,
+                    'Payload' => $this->c->httpResponse->jsonEncode->getJsonArray($payloadKey),
+                    'Response' => &$response
+                ];
             } else {
                 $this->c->httpResponse->httpStatus = 400;
-                $this->c->httpResponse->jsonEncode->addKeyValue('Status', 400);
+                $arr = [
+                    'Status' => 400,
+                    'Payload' => $this->c->httpResponse->jsonEncode->getJsonArray($payloadKey),
+                    'Error' => &$response
+                ];
             }
-            $this->c->httpResponse->jsonEncode->addKeyValue('Response', $response);
-            if ($this->c->httpRequest->conditions['httprequestPayloadType'] === 'Array') {
-                $this->c->httpResponse->jsonEncode->endObject();
-            }
+            $this->c->httpResponse->jsonEncode->encode($arr);
         }
 
-        if ($this->c->httpRequest->conditions['httprequestPayloadType'] === 'Object') {
+        if ($this->c->httpRequest->conditions['httpRequestPayloadType'] === 'Object') {
             $this->c->httpResponse->jsonEncode->endObject();
         } else {
             $this->c->httpResponse->jsonEncode->endArray();

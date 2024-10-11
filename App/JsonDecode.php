@@ -224,6 +224,21 @@ class JsonDecode
     }
 
     /**
+     * Get complete JSON for Kays
+     *
+     * @param string $keys Key values seperated by colon
+     * @return array
+     */
+    public function getJsonArray($keys = '')
+    {
+        if (!$this->isset($keys)) {
+            return false;
+        }
+        $this->load($keys);
+        return json_decode($this->jsonDecodeEngine->getJsonString(), true);
+    }
+
+    /**
      * Start processing the JSON string for a keys
      * Perform search inside keys of JSON like $json['data'][0]['data1']
      *
@@ -482,6 +497,20 @@ class JsonDecodeEngine
         }
         $this->objects = [];
         $this->currentObject = null;
+    }
+
+    /**
+     * Get JSON string
+     *
+     * @param bool $index Index output
+     * @return string
+     */
+    public function getJsonString()
+    {
+        $offset = $this->_s_ !== null ? $this->_s_ : 0;
+        $length = $this->_e_ - $offset + 1;
+
+        return stream_get_contents($this->jsonFileHandle, $length, $offset);
     }
 
     /**
