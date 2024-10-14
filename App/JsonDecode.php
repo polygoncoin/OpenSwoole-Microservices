@@ -229,7 +229,7 @@ class JsonDecode
      * @param string $keys Key values seperated by colon
      * @return array
      */
-    public function getJsonArray($keys = '')
+    public function getCompleteArray($keys = '')
     {
         if (!$this->isset($keys)) {
             return false;
