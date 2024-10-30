@@ -247,7 +247,7 @@ class JsonDecode
      */
     public function load($keys)
     {
-        if (empty($keys)) {
+        if (empty($keys) && $keys != 0) {
             $this->jsonDecodeEngine->_s_ = null;
             $this->jsonDecodeEngine->_e_ = null;
             return;

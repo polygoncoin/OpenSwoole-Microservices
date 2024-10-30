@@ -149,14 +149,14 @@ class Write
                 $this->c->httpRequest->db->commit();
                 $arr = [
                     'Status' => 200,
-                    'Payload' => $this->c->httpResponse->jsonEncode->getCompleteArray($payloadKey),
+                    'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray($payloadKey),
                     'Response' => &$response
                 ];
             } else {
                 $this->c->httpResponse->httpStatus = 400;
                 $arr = [
                     'Status' => 400,
-                    'Payload' => $this->c->httpResponse->jsonEncode->getCompleteArray($payloadKey),
+                    'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray($payloadKey),
                     'Error' => &$response
                 ];
             }

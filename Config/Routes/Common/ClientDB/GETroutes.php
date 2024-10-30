@@ -9,6 +9,9 @@ return [
         'search' => [
             '__file__' => Constants::$DOC_ROOT . '/Config/Queries/ClientDB/GET/SearchCategory.php',
         ],
+        '{id:int|!0}' => [
+            '__file__' => Constants::$DOC_ROOT . '/Config/Queries/ClientDB/GET/Category-Single.php',
+        ]
     ],
     'registration' => [
         '__file__' => Constants::$DOC_ROOT . '/Config/Queries/ClientDB/GET/Registration-all.php',

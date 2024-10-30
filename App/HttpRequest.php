@@ -375,9 +375,14 @@ class HttpRequest
 
         // Check for compulsary values
         $dynamicRoute = trim($routeElement, '{}');
+        $mode = 'include';
         $preferredValues = [];
         if (strpos($routeElement, '|') !== false) {
             list($dynamicRoute, $preferredValuesString) = explode('|', $dynamicRoute);
+            if (strpos($preferredValuesString, '!') === 0) {
+                $mode = 'exclude';
+                $preferredValuesString = substr($preferredValuesString, 1);
+            }
             $preferredValues = ((strlen($preferredValuesString) > 0) ? explode(',', $preferredValuesString) : []);
         }
 
@@ -386,8 +391,19 @@ class HttpRequest
             throw new \Exception('Invalid datatype set for Route', 501);
         }
 
-        if (count($preferredValues) > 0 && !in_array($element, $preferredValues)) {
-            throw new \Exception($routeElement, 501);
+        if (count($preferredValues) > 0) {
+            switch ($mode) {
+                case 'include': // preferred values
+                    if (!in_array($element, $preferredValues)) {
+                        throw new \Exception("Element value '{$element}' not allowed in config {$routeElement}", 501);
+                    }
+                    break;
+                case 'exclude': // exclude set values
+                    if (in_array($element, $preferredValues)) {
+                        throw new \Exception("Element value '{$element}' restricted in config {$routeElement}", 501);
+                    }
+                    break;
+            }
         }
 
         if ($paramDataType === 'int') {

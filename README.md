@@ -158,6 +158,18 @@ return [
 ];
 ````
 
+* On other side; to exclude dynamic values. One can do the same by prefixing NOT(!) synbol to comma-separated values.
+```PHP
+return [
+    '{tableName:string}' => [
+        '{id:int|!0}' => [
+            '__file__' => 'SQL file location'
+        ]
+    ]
+];
+```
+> This '{id:int|!0}' means id is integer but can't be zero.
+
 ## Queries Folder
 
 - **Config/Queries/GlobalDB** for global database.

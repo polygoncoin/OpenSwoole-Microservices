@@ -27,7 +27,7 @@ trait UploadTrait
      */
     private function saveFile($absFilePath)
     {
-        $src = fopen("php://conditions", "rb");
+        $src = fopen("php://input", "rb");
         $dest = fopen($absFilePath, 'w+b');
 
         stream_copy_to_stream($src, $dest);
