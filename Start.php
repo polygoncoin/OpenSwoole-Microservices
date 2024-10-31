@@ -52,6 +52,7 @@ $server->on("request", function (Request $request, Response $response) {
     }
     $httpRequestDetails['get'] = &$request->get;
     $httpRequestDetails['post'] = &$request->post;
+    $httpRequestDetails['files'] = &$request->files;
 
     // Code to Initialize / Start the service.
     try {
