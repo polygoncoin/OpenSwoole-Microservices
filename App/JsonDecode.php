@@ -216,6 +216,7 @@ class JsonDecode
         if (!$this->isset($keys)) {
             return false;
         }
+        $valueArr = [];
         $this->load($keys);
         foreach ($this->jsonDecodeEngine->process() as $keyArr => $valueArr) {
             break;

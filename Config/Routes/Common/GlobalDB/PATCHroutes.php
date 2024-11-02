@@ -5,7 +5,7 @@ use Microservices\App\Constants;
 
 return [
     'groups' => [
-        '{group_id:int}'  => [
+        '{group_id:int|!0}'  => [
             '__file__' => Constants::$DOC_ROOT . '/Config/Queries/GlobalDB/PATCH/groups.php',
         ],
         'approve'  => [
@@ -19,7 +19,7 @@ return [
         ],
     ],
     'clients' => [
-        '{client_id:int}'  => [
+        '{client_id:int|!0}'  => [
             '__file__' => Constants::$DOC_ROOT . '/Config/Queries/GlobalDB/PATCH/clients.php',
         ],
         'approve'  => [

@@ -15,13 +15,13 @@ return [
     ],
     'registration' => [
         '__file__' => Constants::$DOC_ROOT . '/Config/Queries/ClientDB/GET/Registration-all.php',
-        '{id:int}'  => [
+        '{id:int|!0}'  => [
             '__file__' => Constants::$DOC_ROOT . '/Config/Queries/ClientDB/GET/Registration-single.php',
         ],
     ],
     'address' => [
         '__file__' => Constants::$DOC_ROOT . '/Config/Queries/ClientDB/GET/Address-all.php',
-        '{id:int}'  => [
+        '{id:int|!0}'  => [
             '__file__' => Constants::$DOC_ROOT . '/Config/Queries/ClientDB/GET/Address-single.php',
         ],
     ],

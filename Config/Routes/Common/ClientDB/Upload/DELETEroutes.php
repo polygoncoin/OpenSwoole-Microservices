@@ -5,8 +5,8 @@ use Microservices\App\Constants;
 
 return [
     'upload' => [
-        '{module}:string' => [
-            '{id:int}'  => [
+        '{module:string}' => [
+            '{id:int|!0}'  => [
                 '__file__' => false
             ]
         ]
