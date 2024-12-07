@@ -1,14 +1,12 @@
 <?php
 namespace Microservices\Config\Queries\ClientDB\PUT;
 
-use Microservices\App\Constants;
-
 return array_merge(
     include Constants::$DOC_ROOT . '/Config/Queries/ClientDB/Common/Address.php',
     [
-        '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
-            ['payload', 'address', Constants::$REQUIRED],
-            ['uriParams', 'id', Constants::$REQUIRED],
+        '__CONFIG__' => [// [{payload/uriParams}, key/index, {$Constants::$REQUIRED}]
+            ['payload', 'address', $Constants::$REQUIRED],
+            ['uriParams', 'id', $Constants::$REQUIRED],
         ],
         '__SET__' => [
             'address' => ['payload', 'address']

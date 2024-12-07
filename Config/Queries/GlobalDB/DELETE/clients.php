@@ -1,12 +1,10 @@
 <?php
 namespace Microservices\Config\Queries\GlobalDB\DELETE;
 
-use Microservices\App\Constants;
-
 return [
     'query' => "UPDATE `{$Env::$clients}` SET __SET__ WHERE __WHERE__",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
-        ['uriParams', 'client_id', Constants::$REQUIRED],
+    '__CONFIG__' => [// [{payload/uriParams}, key/index, {$Constants::$REQUIRED}]
+        ['uriParams', 'client_id', $Constants::$REQUIRED],
     ],
     '__SET__' => [
         //column => [payload|readOnlySession|uriParams|insertIdParams|{custom}, key|{value}],
@@ -22,7 +20,7 @@ return [
 		[
 			'fn' => 'primaryKeyExist',
 			'fnArgs' => [
-                'table' => ['custom', Env::$clients],
+                'table' => ['custom', $Env::$clients],
                 'primary' => ['custom', 'client_id'],
                 'id' => ['payload', 'client_id']
             ],
@@ -31,7 +29,7 @@ return [
 		[
 			'fn' => 'checkColumnValueExist',
 			'fnArgs' => [
-                'table' => ['custom', Env::$clients],
+                'table' => ['custom', $Env::$clients],
                 'column' => ['custom', 'is_deleted'],
                 'columnValue' => ['custom', 'No'],
                 'primary' => ['custom', 'client_id'],

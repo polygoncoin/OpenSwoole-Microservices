@@ -1,12 +1,10 @@
 <?php
 namespace Microservices\Config\Queries\GlobalDB\POST;
 
-use Microservices\App\Constants;
-
 return [
     'query' => "INSERT INTO `{$Env::$clients}` SET __SET__",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
-        ['payload', 'name', Constants::$REQUIRED],
+    '__CONFIG__' => [// [{payload/uriParams}, key/index, {$Constants::$REQUIRED}]
+        ['payload', 'name', $Constants::$REQUIRED],
         ['payload', 'comments']
     ],
     '__SET__' => [

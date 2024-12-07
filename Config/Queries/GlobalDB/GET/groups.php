@@ -1,8 +1,6 @@
 <?php
 namespace Microservices\Config\Queries\GlobalDB\GET;
 
-use Microservices\App\Constants;
-
 return [
     'all' => [
         'query' => "SELECT * FROM `{$Env::$groups}` WHERE __WHERE__ ORDER BY group_id ASC",
@@ -15,8 +13,8 @@ return [
     ],
     'single' => [
         'query' => "SELECT * FROM `{$Env::$groups}` WHERE __WHERE__",
-        '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
-            ['uriParams', 'group_id', Constants::$REQUIRED],
+        '__CONFIG__' => [// [{payload/uriParams}, key/index, {$Constants::$REQUIRED}]
+            ['uriParams', 'group_id', $Constants::$REQUIRED],
         ],
         '__WHERE__' => [
             'is_approved' => ['custom', 'Yes'],

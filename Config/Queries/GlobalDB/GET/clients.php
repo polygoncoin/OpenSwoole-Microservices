@@ -1,8 +1,6 @@
 <?php
 namespace Microservices\Config\Queries\GlobalDB\GET;
 
-use Microservices\App\Constants;
-
 return [
     'all' => [
         'countQuery' => "SELECT count(1) as `count` FROM `{$Env::$clients}` WHERE __WHERE__",
@@ -16,8 +14,8 @@ return [
     ],
     'single' => [
         'query' => "SELECT * FROM `{$Env::$clients}` WHERE __WHERE__",
-        '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
-            ['uriParams', 'client_id', Constants::$REQUIRED],
+        '__CONFIG__' => [// [{payload/uriParams}, key/index, {$Constants::$REQUIRED}]
+            ['uriParams', 'client_id', $Constants::$REQUIRED],
         ],
         '__WHERE__' => [
             'is_approved' => ['custom', 'Yes'],

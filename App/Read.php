@@ -71,8 +71,7 @@ class Read
         $useHierarchy = $this->getUseHierarchy($readSqlConfig);
 
         if (
-            Env::$allowConfigRequest &&
-            Env::$isConfigRequest
+            (Env::$allowConfigRequest && Env::$isConfigRequest)
         ) {
             $this->processReadConfig($readSqlConfig, $useHierarchy);
         } else {
@@ -91,7 +90,10 @@ class Read
      */
     private function processReadConfig(&$readSqlConfig, $useHierarchy)
     {
-        return true;
+        $this->c->httpResponse->jsonEncode->startObject('Config');
+        $this->c->httpResponse->jsonEncode->addKeyValue('Route', $this->c->httpRequest->configuredUri);
+        $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $this->getConfigParams($readSqlConfig, true, $useHierarchy));
+        $this->c->httpResponse->jsonEncode->endObject();
     }    
 
     /**

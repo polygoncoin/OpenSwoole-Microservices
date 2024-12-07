@@ -2,8 +2,6 @@
 namespace Microservices\Config\Queries\ClientDB\GET;
 
 //return represents root for hierarchyData
-use Microservices\App\Constants;
-
 return [
     'query' => "SELECT * FROM `registration` WHERE __WHERE__",
     '__WHERE__' => [

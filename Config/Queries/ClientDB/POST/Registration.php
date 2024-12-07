@@ -1,14 +1,12 @@
 <?php
 namespace Microservices\Config\Queries\ClientDB\POST;
 
-use Microservices\App\Constants;
-
 return [
     'query' => "INSERT INTO `registration` SET __SET__",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
-        ['payload', 'firstname', Constants::$REQUIRED],
-        ['payload', 'lastname', Constants::$REQUIRED],
-        ['payload', 'email', Constants::$REQUIRED]
+    '__CONFIG__' => [// [{payload/uriParams}, key/index, {$Constants::$REQUIRED}]
+        ['payload', 'firstname', $Constants::$REQUIRED],
+        ['payload', 'lastname', $Constants::$REQUIRED],
+        ['payload', 'email', $Constants::$REQUIRED]
     ],
     '__SET__' => [
         //column => [payload|readOnlySession|uriParams|insertIdParams|{custom}, key|{value}],
@@ -20,8 +18,8 @@ return [
     'subQuery' => [
         'address' => [
             'query' => "INSERT INTO `address` SET __SET__",
-            '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
-                ['payload', 'address', Constants::$REQUIRED]
+            '__CONFIG__' => [// [{payload/uriParams}, key/index, {$Constants::$REQUIRED}]
+                ['payload', 'address', $Constants::$REQUIRED]
             ],
             '__SET__' => [
                 'registration_id' => ['insertIdParams', 'registration:id'],

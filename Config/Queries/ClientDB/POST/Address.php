@@ -1,8 +1,6 @@
 <?php
 namespace Microservices\Config\Queries\ClientDB\POST;
 
-use Microservices\App\Constants;
-
 return [
     'query' => "INSERT INTO `address` SET __SET__",
     '__SET__' => [

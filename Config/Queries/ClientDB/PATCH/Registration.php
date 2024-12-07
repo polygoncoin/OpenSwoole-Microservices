@@ -1,13 +1,11 @@
 <?php
 namespace Microservices\Config\Queries\ClientDB\PUT;
 
-use Microservices\App\Constants;
-
 return [
     'query' => "UPDATE `registration` SET firstname = :firstname WHERE id = :id",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
-        ['payload', 'firstname', Constants::$REQUIRED],
-        ['uriParams', 'id', Constants::$REQUIRED],
+    '__CONFIG__' => [// [{payload/uriParams}, key/index, {$Constants::$REQUIRED}]
+        ['payload', 'firstname', $Constants::$REQUIRED],
+        ['uriParams', 'id', $Constants::$REQUIRED],
     ],
     '__SET__' => [
         'firstname' => ['payload', 'firstname'],

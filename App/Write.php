@@ -97,16 +97,10 @@ class Write
      */
     private function processWriteConfig(&$writeSqlConfig, $useHierarchy)
     {
-        $response = [];
-        $response['Route'] = $this->c->httpRequest->configuredUri;
-        $response['Payload'] = $this->getConfigParams($writeSqlConfig, true, $useHierarchy);
-
         $this->c->httpResponse->jsonEncode->startObject('Config');
-        $this->c->httpResponse->jsonEncode->addKeyValue('Route', $response['Route']);
-        $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $response['Payload']);
+        $this->c->httpResponse->jsonEncode->addKeyValue('Route', $this->c->httpRequest->configuredUri);
+        $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $this->getConfigParams($writeSqlConfig, true, $useHierarchy));
         $this->c->httpResponse->jsonEncode->endObject();
-
-        return true;
     }    
 
     /**

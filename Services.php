@@ -127,7 +127,7 @@ class Services
 
         switch (true) {
 
-            case strpos($this->c->httpRequest->ROUTE, '/cron') === 0:
+            case Env::$allowCronRequest && strpos($this->c->httpRequest->ROUTE, '/'.Env::$cronRequestUriPrefix) === 0:
                 if ($this->c->httpRequest->REMOTE_ADDR !== Env::$cronRestrictedIp) {
                     throw new \Exception('Source IP is not supported', 404);
                 }

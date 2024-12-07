@@ -80,6 +80,9 @@ class Routes
      */
     public function process()
     {
+        $Constants = __NAMESPACE__ . '\Constants';
+        $Env = __NAMESPACE__ . '\Env';
+
         $httpRoutes = [];
         $userRoutesFolder = Constants::$DOC_ROOT . $this->routesFolder . '/' . $this->c->httpRequest->groupInfo['name'];
 
@@ -108,13 +111,6 @@ class Routes
         foreach ($routes as $key => &$r) {
             if (in_array($key, $this->reservedKeys)) {
                 continue;
-            }
-            if (
-                Env::$allowConfigRequest &&
-                $key === 'config' &&
-                $r === true
-            ) {
-                $httpRoutes[] = $route . '/' . $key;
             }
             if ($key === '__file__') {
                 $httpRoutes[] = $route;

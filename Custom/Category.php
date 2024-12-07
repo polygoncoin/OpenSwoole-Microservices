@@ -34,6 +34,7 @@ class Category
     public function __construct(Common &$common)
     {
         $this->c = &$common;
+        $this->c->httpRequest->setConnection($fetchFrom = 'Slave');
     }
 
     /**

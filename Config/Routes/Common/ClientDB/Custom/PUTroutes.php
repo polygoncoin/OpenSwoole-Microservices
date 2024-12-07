@@ -1,10 +1,8 @@
 <?php
 namespace Microservices\Config\Routes\Common\ClientDB\Custom;
 
-use Microservices\App\Constants;
-
 return [
-    'custom' => [
+    $Env::$customRequestUriPrefix => [
         'password' => [
             '__file__' => false
         ]

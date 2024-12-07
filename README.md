@@ -451,26 +451,25 @@ return [
 
 ### Route ending with /config
 
-* Adding keyword **config** at the end of route after a slash returns the payload information that should be supplied; both required and optional with desired format.
+* Appending route with **/config** returns the payload information that should be supplied; both required and optional with desired format.
 
 Examples:
 
 - r=/registration/config
 - r=/category/config
 
-One need to configure for same in route with a flag as **config => true**
+One need to enable same in .env file as below
 
-Only these configured routes will be supported the config feature.
+```
+allowConfigRequest=1
+configRequestUriKeyword='config' ;for appending /config at end of URI
+```
 
 >For controlling globally there is a flag in env file labled **allowConfigRequest**
 
 #### r=/routes
 
 This lists down all allowed routes for HTTP methods respectively.
-
-#### r=/check
-
-Perform basic checks on Config folder.
 
 ## Database
 

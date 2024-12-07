@@ -1,10 +1,8 @@
 <?php
 namespace Microservices\Config\Routes\Common\ClientDB\Client;
 
-use Microservices\App\Constants;
-
 return [
-    'upload' => [
+    $Env::$uploadRequestUriPrefix => [
         '{module:string}' => [
             '__file__' => false
         ]

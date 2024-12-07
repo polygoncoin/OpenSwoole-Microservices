@@ -1,12 +1,10 @@
 <?php
 namespace Microservices\Config\Queries\ClientDB\Common;
 
-use Microservices\App\Constants;
-
 return [
     'query' => "UPDATE `address` SET __SET__ WHERE __WHERE__",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
-        ['uriParams', 'id', Constants::$REQUIRED],
+    '__CONFIG__' => [// [{payload/uriParams}, key/index, {$Constants::$REQUIRED}]
+        ['uriParams', 'id', $Constants::$REQUIRED],
     ],
     '__WHERE__' => [
         'is_deleted' => ['custom', 'No'],

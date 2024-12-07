@@ -114,24 +114,21 @@ class Api
     {
         $class = null;
 
-        switch ($this->c->httpRequest->routeElements[0]) {
+        switch (true) {
 
-            case 'routes':
+            case Env::$allowRoutesRequest && Env::$routesRequestUri === $this->c->httpRequest->routeElements[0]:
                 $class = __NAMESPACE__ . '\\Routes';
                 break;
-            case 'check':
-                $class = __NAMESPACE__ . '\\Check';
-                break;
-            case 'custom':
+            case Env::$allowCustomRequest && Env::$customRequestUriPrefix === $this->c->httpRequest->routeElements[0]:
                 $class = __NAMESPACE__ . '\\Custom';
                 break;
-            case 'upload':
+            case Env::$allowUploadRequest && Env::$uploadRequestUriPrefix === $this->c->httpRequest->routeElements[0]:
                 $class = __NAMESPACE__ . '\\Upload';
                 break;
-            case 'thirdParty':
+            case Env::$allowThirdPartyRequest && Env::$thirdPartyRequestUriPrefix === $this->c->httpRequest->routeElements[0]:
                 $class = __NAMESPACE__ . '\\ThirdParty';
                 break;
-            case 'cache':
+            case Env::$allowCacheRequest && Env::$cacheRequestUriPrefix === $this->c->httpRequest->routeElements[0]:
                 $class = __NAMESPACE__ . '\\CacheHandler';
                 break;
         }

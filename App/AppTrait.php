@@ -278,6 +278,10 @@ trait AppTrait
     {
         $result = [];
 
+        if (isset($sqlConfig['countQuery'])) {
+            $sqlConfig['__CONFIG__'][] = ['payload', 'page', Constants::$REQUIRED];
+            $sqlConfig['__CONFIG__'][] = ['payload', 'perpage'];
+        }
         // Get required and optional params for a route
         if (isset($sqlConfig['__CONFIG__'])) {
             foreach ($sqlConfig['__CONFIG__'] as $config) {

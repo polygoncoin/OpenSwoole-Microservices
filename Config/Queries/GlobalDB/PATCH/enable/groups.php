@@ -1,12 +1,10 @@
 <?php
 namespace Microservices\Config\Queries\GlobalDB\PATCH\enable;
 
-use Microservices\App\Constants;
-
 return [
     'query' => "UPDATE `{$Env::$groups}` SET __SET__ WHERE __WHERE__",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
-        ['uriParams', 'group_id', Constants::$REQUIRED],
+    '__CONFIG__' => [// [{payload/uriParams}, key/index, {$Constants::$REQUIRED}]
+        ['uriParams', 'group_id', $Constants::$REQUIRED],
     ],
     '__SET__' => [
         //column => [payload|readOnlySession|uriParams|insertIdParams|{custom}, key|{value}],
@@ -23,7 +21,7 @@ return [
 		[
 			'fn' => 'primaryKeyExist',
 			'fnArgs' => [
-                'table' => ['custom', Env::$groups],
+                'table' => ['custom', $Env::$groups],
                 'primary' => ['custom', 'group_id'],
                 'id' => ['payload', 'group_id']
             ],
@@ -32,7 +30,7 @@ return [
 		[
 			'fn' => 'checkColumnValueExist',
 			'fnArgs' => [
-                'table' => ['custom', Env::$groups],
+                'table' => ['custom', $Env::$groups],
                 'column' => ['custom', 'is_deleted'],
                 'columnValue' => ['custom', 'No'],
                 'primary' => ['custom', 'group_id'],
@@ -43,7 +41,7 @@ return [
 		[
 			'fn' => 'checkColumnValueExist',
 			'fnArgs' => [
-                'table' => ['custom', Env::$groups],
+                'table' => ['custom', $Env::$groups],
                 'column' => ['custom', 'is_disabled'],
                 'columnValue' => ['custom', 'Yes'],
                 'primary' => ['custom', 'group_id'],

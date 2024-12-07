@@ -1,14 +1,12 @@
 <?php
 namespace Microservices\Config\Queries\GlobalDB\PUT;
 
-use Microservices\App\Constants;
-
 return [
     'query' => "UPDATE `{$Env::$clients}` SET __SET__ WHERE __WHERE__",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+    '__CONFIG__' => [// [{payload/uriParams}, key/index, {$Constants::$REQUIRED}]
         ['payload', 'name'],
         ['payload', 'comments'],
-        ['uriParams', 'client_id', Constants::$REQUIRED]
+        ['uriParams', 'client_id', $Constants::$REQUIRED]
     ],
     '__SET__' => [
         //column => [payload|readOnlySession|uriParams|insertIdParams|{custom}, key|{value}],
@@ -27,7 +25,7 @@ return [
 		[
 			'fn' => 'primaryKeyExist',
 			'fnArgs' => [
-                'table' => ['custom', Env::$clients],
+                'table' => ['custom', $Env::$clients],
                 'primary' => ['custom', 'client_id'],
                 'id' => ['payload', 'client_id']
             ],
