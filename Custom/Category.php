@@ -4,6 +4,8 @@ namespace Microservices\Custom;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\Custom\CustomInterface;
+use Microservices\Custom\CustomTrait;
 
 /**
  * Class to initialize DB Read operation
@@ -17,21 +19,23 @@ use Microservices\App\Env;
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-class Category
+class Category implements CustomInterface
 {
+    use CustomTrait;
+
     /**
      * Microservices Collection of Common Objects
-     * 
-     * @var Microservices\App\Common
+     *
+     * @var null|Common
      */
     private $c = null;
 
     /**
      * Constructor
-     * 
-     * @param Microservices\App\Common $common
+     *
+     * @param Common $common
      */
-    public function __construct(Common &$common)
+    public function __construct(&$common)
     {
         $this->c = &$common;
         $this->c->httpRequest->setConnection($fetchFrom = 'Slave');

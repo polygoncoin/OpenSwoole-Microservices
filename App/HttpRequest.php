@@ -32,63 +32,63 @@ class HttpRequest
     /**
      * Array containing details of received route elements
      *
-     * @var array
+     * @var string[]
      */
     public $routeElements = [];
 
     /**
      * Locaton of File containing code for route
      *
-     * @var string
+     * @var null|string
      */
     public $__file__ = null;
 
     /**
      * Inputs detials of a request
      *
-     * @var array
+     * @var null|array
      */
     public $conditions = null;
 
     /**
      * Client details
      *
-     * @var array
+     * @var null|array
      */
     public $clientInfo = null;
 
     /**
      * Group Info
      *
-     * @var array
+     * @var null|array
      */
     public $groupInfo = null;
 
     /**
      * Json Decode Object
      *
-     * @var Microservices\App\Servers\Cache\Cache
+     * @var null|Cache
      */
     public $cache = null;
 
     /**
      * Json Decode Object
      *
-     * @var Microservices\App\Servers\Database\Database
+     * @var null|Database
      */
     public $db = null;
 
     /**
      * Json Decode Object
      *
-     * @var Microservices\App\JsonDecode
+     * @var null|JsonDecode
      */
     public $jsonDecode = null;
 
     /**
      * Microservices Request Details
-     * 
-     * @var array
+     *
+     * @var null|array
      */
     public $httpRequestDetails = null;
 
@@ -129,7 +129,7 @@ class HttpRequest
     {
         $this->httpRequestDetails = &$httpRequestDetails;
     }
-    
+
     /**
      * Initialize
      *
@@ -149,7 +149,7 @@ class HttpRequest
             $this->payloadStream = fopen("php://memory", "rw+b");
             fwrite($this->payloadStream, $this->httpRequestDetails['post']['Payload']);
             $this->jsonDecode = new JsonDecode($this->payloadStream);
-            $this->jsonDecode->init();    
+            $this->jsonDecode->init();
         }
 
         $this->setCache(
@@ -193,7 +193,7 @@ class HttpRequest
             }
             $this->conditions['readOnlySession'] = json_decode($this->cache->getCache($this->t_key), true);
             $this->userId = $this->conditions['readOnlySession']['user_id'];
-            $this->groupId = $this->conditions['readOnlySession']['group_id'];    
+            $this->groupId = $this->conditions['readOnlySession']['group_id'];
             $this->checkRemoteIp();
         } else {
             throw new \Exception('Token missing', 400);
@@ -515,7 +515,7 @@ class HttpRequest
                     $response[] = [
                         'start' => $ipNumber,
                         'end' => $ipNumber
-                    ];    
+                    ];
                 }
             }
         }

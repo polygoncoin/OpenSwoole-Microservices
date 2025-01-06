@@ -17,7 +17,7 @@ class CacheKey
 {
     /**
      * Get Client Key
-     * 
+     *
      * @param string $hostname
      * @return string
      */
@@ -28,7 +28,7 @@ class CacheKey
 
     /**
      * Get Client User Key
-     * 
+     *
      * @param integer $clientId
      * @param string  $username
      * @return string
@@ -40,7 +40,7 @@ class CacheKey
 
     /**
      * Get Group Key
-     * 
+     *
      * @param integer $clientId
      * @return string
      */
@@ -51,7 +51,7 @@ class CacheKey
 
     /**
      * Get Group CIDR Key
-     * 
+     *
      * @param integer $groupId
      * @return string
      */
@@ -62,7 +62,7 @@ class CacheKey
 
     /**
      * Get Token Key
-     * 
+     *
      * @param string $token
      * @return string
      */
@@ -73,7 +73,7 @@ class CacheKey
 
     /**
      * Get User Token Key
-     * 
+     *
      * @param integer $userId
      * @return string
      */

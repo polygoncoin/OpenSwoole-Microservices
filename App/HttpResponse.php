@@ -30,14 +30,14 @@ class HttpResponse
     /**
      * Json Encode Object
      *
-     * @var Microservices\App\JsonEncode
+     * @var null|JsonEncode
      */
     public $jsonEncode = null;
 
     /**
      * Microservices Request Details
-     * 
-     * @var array
+     *
+     * @var null|array
      */
     public $httpRequestDetails = null;
 

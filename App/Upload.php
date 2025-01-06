@@ -4,7 +4,7 @@ namespace Microservices\App;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
-use Microservices\Upload\UploadApi;
+use Microservices\Upload\UploadInterface;
 
 /**
  * Class is used for file uploads
@@ -21,18 +21,23 @@ use Microservices\Upload\UploadApi;
 class Upload
 {
     /**
+     * @var null|UploadInterface
+     */
+    private $api = null;
+
+    /**
      * Microservices Collection of Common Objects
-     * 
-     * @var Microservices\App\Common
+     *
+     * @var null|Common
      */
     private $c = null;
 
     /**
      * Constructor
-     * 
-     * @param Microservices\App\Common $common
+     *
+     * @param Common $common
      */
-    public function __construct(Common &$common)
+    public function __construct(&$common)
     {
         $this->c = &$common;
     }
@@ -54,9 +59,11 @@ class Upload
      */
     public function process()
     {
-        $api = new UploadApi($this->c);
-        if ($api->init()) {
-            $api->process();
+        $class = 'Microservices\\Upload\\' . ucfirst($this->c->httpRequest->routeElements[1]);
+
+        $this->api = new $class($this->c);
+        if ($this->api->init()) {
+            $this->api->process();
         }
 
         return true;

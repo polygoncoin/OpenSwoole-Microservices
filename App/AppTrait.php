@@ -22,6 +22,13 @@ use Microservices\App\Validator;
 trait AppTrait
 {
     /**
+     * Validator class object
+     *
+     * @var null|Validator
+     */
+    public $validator = null;
+
+    /**
      * Function to help execute PHP functions enclosed with double quotes.
      *
      * @param $param Returned values by PHP inbuilt functions.
@@ -50,7 +57,7 @@ trait AppTrait
                     case 3:
                         list($type, $typeKey, $required) = $config;
                         break;
-                    case 2: 
+                    case 2:
                         list($type, $typeKey) = $config;
                         break;
                 }
@@ -96,7 +103,7 @@ trait AppTrait
                         if (!in_array($field, $requiredFields)) {
                             $requiredFields['__required__'][] = $field;
                         }
-                    }    
+                    }
                 }
             }
         }
@@ -291,7 +298,7 @@ trait AppTrait
                     case 3:
                         list($type, $typeKey, $required) = $config;
                         break;
-                    case 2: 
+                    case 2:
                         list($type, $typeKey) = $config;
                         break;
                 }
@@ -336,7 +343,7 @@ trait AppTrait
                     foreach ($sub_requiredFields as $field => $required) {
                         if (!isset($result[$field])) {
                             $result[$field] = $required;
-                        }    
+                        }
                     }
                 }
             }

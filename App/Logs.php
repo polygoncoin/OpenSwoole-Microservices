@@ -36,7 +36,7 @@ class Logs
         if (!in_array($logType, array_keys($this->logTypes))) {
             throw new \Exception('Invalid log type', 501);
         }
-        
+
         $absLogsDir = Constants::$DOC_ROOT . $this->logsDir;
         if (!is_dir($absLogsDir)) {
             mkdir($absLogsDir, 0755, true);
@@ -46,7 +46,7 @@ class Logs
         if (!file_exists($logFile)) {
             touch($logFile);
         }
-        
+
         file_put_contents($logFile, $logContent . PHP_EOL, FILE_APPEND);
     }
 }

@@ -23,14 +23,14 @@ class Login
     /**
      * Username for login
      *
-     * @var string
+     * @var null|string
      */
     private $username = null;
 
     /**
      * Password for login
      *
-     * @var string
+     * @var null|string
      */
     private $password = null;
 
@@ -40,7 +40,7 @@ class Login
      * @var array
      */
     private $userDetails;
-    
+
     /**
      * IDs
      */
@@ -53,7 +53,7 @@ class Login
      * @var integer
      */
     private $timestamp;
-    
+
     /**
      * Payload
      *
@@ -63,8 +63,8 @@ class Login
 
     /**
      * Microservices Collection of Common Objects
-     * 
-     * @var Microservices\App\Common
+     *
+     * @var null|Common
      */
     private $c = null;
 
@@ -78,10 +78,10 @@ class Login
 
     /**
      * Constructor
-     * 
-     * @param Microservices\App\Common $common
+     *
+     * @param Common $common
      */
-    public function __construct(Common &$common)
+    public function __construct(&$common)
     {
         $this->c = &$common;
     }
@@ -156,7 +156,7 @@ class Login
             $this->groupId = $this->userDetails['group_id'];
             if (empty($this->userId) || empty($this->groupId)) {
                 throw new \Exception('Invalid credentials', 401);
-            }            
+            }
         } else {
             throw new \Exception('Invalid credentials', 401);
         }

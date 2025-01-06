@@ -4,6 +4,8 @@ namespace Microservices\Cron;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\Cron\CronInterface;
+use Microservices\Cron\CronTrait;
 
 /**
  * Class for a particular cron.
@@ -20,21 +22,23 @@ use Microservices\App\Env;
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-class Category
+class Category implements CronInterface
 {
+    use CronTrait;
+
     /**
      * Microservices Collection of Common Objects
-     * 
-     * @var Microservices\App\Common
+     *
+     * @var null|Common
      */
     private $c = null;
 
     /**
      * Constructor
-     * 
-     * @param Microservices\App\Common $common
+     *
+     * @param Common $common
      */
-    public function __construct(Common &$common)
+    public function __construct(&$common)
     {
         $this->c = &$common;
         $this->c->httpRequest->setConnection($fetchFrom = 'Slave');

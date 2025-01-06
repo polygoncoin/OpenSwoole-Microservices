@@ -21,7 +21,7 @@ class JsonDecode
     /**
      * Json File Handle
      *
-     * @var object
+     * @var resource
      */
     private $jsonFileHandle = null;
 
@@ -43,13 +43,13 @@ class JsonDecode
     /**
      * Json Decode Engine Object
      *
-     * @var object
+     * @var null|JsonDecodeEngine
      */
     private $jsonDecodeEngine = null;
 
     /**
      * JsonEncode constructor
-     * 
+     *
      * @param object $jsonFileHandle File handle
      * @return void
      */
@@ -79,7 +79,7 @@ class JsonDecode
     }
     /**
      * Validates JSON
-     * 
+     *
      * @return void
      */
     public function validate()
@@ -160,7 +160,7 @@ class JsonDecode
                 } else {
                     throw new \Exception("Invalid key {$key}", 501);
                 }
-            }    
+            }
         }
         $return = 'Object';
         if (
@@ -191,7 +191,7 @@ class JsonDecode
                 } else {
                     throw new \Exception("Invalid key {$key}", 501);
                 }
-            }    
+            }
         }
         if (
             !(
@@ -261,7 +261,7 @@ class JsonDecode
                 } else {
                     throw new \Exception("Invalid key {$key}", 501);
                 }
-            }    
+            }
         }
         if (
             isset($jsonFileIndex['_s_']) &&
@@ -295,49 +295,49 @@ class JsonDecodeEngine
     /**
      * File Handle
      *
-     * @var object
+     * @var resource
      */
     private $jsonFileHandle = null;
 
     /**
      * Array of JsonEncodeObject objects
      *
-     * @var array
+     * @var JsonEncodeObject[]
      */
     private $objects = [];
 
     /**
      * Current JsonEncodeObject object
      *
-     * @var object
+     * @var null|JsonEncodeObject
      */
     private $currentObject = null;
 
     /**
      * Characters that are escaped while creating JSON
      *
-     * @var array
+     * @var string[]
      */
     private $escapers = array("\\", "/", "\"", "\n", "\r", "\t", "\x08", "\x0c", ' ');
 
     /**
      * Characters that are escaped with for $escapers while creating JSON
      *
-     * @var array
+     * @var string[]
      */
     private $replacements = array("\\\\", "\\/", "\\\"", "\\n", "\\r", "\\t", "\\f", "\\b", ' ');
 
     /**
      * JSON file start position
      *
-     * @var integer
+     * @var null|integer
      */
     public $_s_ = null;
 
     /**
      * JSON file end position
      *
-     * @var integer
+     * @var null|integer
      */
     public $_e_ = null;
 
@@ -345,13 +345,14 @@ class JsonDecodeEngine
      * JSON char counter
      * Starts from $_s_ till $_e_
      *
-     * @var integer
+     * @var null|integer
      */
     private $charCounter = null;
 
     /**
      * JsonEncode constructor
-     * 
+     *
+     * @param resource $jsonFileHandle
      * @return void
      */
     public function __construct(&$jsonFileHandle)
@@ -362,7 +363,7 @@ class JsonDecodeEngine
     /**
      * Start processing the JSON string
      *
-     * @param bool $index Index output
+     * @param boolean $index Index output
      * @return void
      */
     public function process($index = false)
@@ -385,10 +386,10 @@ class JsonDecodeEngine
 
         $this->charCounter = $this->_s_ !== null ? $this->_s_ : 0;
         fseek($this->jsonFileHandle, $this->charCounter, SEEK_SET);
-        
+
         for(;
             (
-                ($char = fgetc($this->jsonFileHandle)) !== false && 
+                ($char = fgetc($this->jsonFileHandle)) !== false &&
                 (
                     ($this->_e_ === null) ||
                     ($this->_e_ !== null && $this->charCounter <= $this->_e_)
@@ -419,7 +420,7 @@ class JsonDecodeEngine
                             $keyValue = $valueValue = '';
                             $varMode = 'keyValue';
                             break;
-                    
+
                         // Check for null values
                         case $char === ',' && !is_null($nullStr):
                             $nullStr = $this->checkNullStr($nullStr);
@@ -448,7 +449,7 @@ class JsonDecodeEngine
                             break;
                     }
                     break;
-            
+
                 case $quote === true:
                     switch (true) {
                         // Collect string to be escaped
@@ -479,7 +480,7 @@ class JsonDecodeEngine
                                 case $varMode === 'keyValue':
                                     $varMode = 'valueValue';
                                     break;
-                                
+
                                 // Closing qoute of Value
                                 case $varMode === 'valueValue':
                                     $this->currentObject->assocValues[$keyValue] = $valueValue;
@@ -503,7 +504,7 @@ class JsonDecodeEngine
     /**
      * Get JSON string
      *
-     * @param bool $index Index output
+     * @param boolean $index Index output
      * @return string
      */
     public function getJsonString()
@@ -520,7 +521,7 @@ class JsonDecodeEngine
      * @param string $char     Character among any one "[" "]" "{" "}"
      * @param string $keyValue String value of key of an object
      * @param string $nullStr  String present in JSON without double quotes
-     * @param bool   $index    Index output
+     * @param boolean   $index    Index output
      * @return array
      */
     private function handleOpenClose($char, $keyValue, $nullStr, $index)
@@ -569,7 +570,7 @@ class JsonDecodeEngine
                         $arr = [
                             'key' => $this->getKeys(),
                             'value' => $this->currentObject->arrayValues
-                        ];    
+                        ];
                     }
                 }
                 $this->currentObject = null;
@@ -593,7 +594,7 @@ class JsonDecodeEngine
                         $arr = [
                             'key' => $this->getKeys(),
                             'value' => $this->currentObject->assocValues
-                        ];    
+                        ];
                     }
                 }
                 $this->currentObject = null;
@@ -601,10 +602,10 @@ class JsonDecodeEngine
                 break;
         }
         if (
-            $arr !== false && 
+            $arr !== false &&
             !empty($arr) &&
-            isset($arr['value']) && 
-            $arr['value'] !== false && 
+            isset($arr['value']) &&
+            $arr['value'] !== false &&
             count($arr['value']) > 0
         ) {
             return $arr;
@@ -718,8 +719,8 @@ class JsonDecodeEngine
     {
         $arr = false;
         if (
-            !is_null($this->currentObject) && 
-            $this->currentObject->mode === 'Assoc' && 
+            !is_null($this->currentObject) &&
+            $this->currentObject->mode === 'Assoc' &&
             count($this->currentObject->assocValues) > 0
         ) {
             $arr = $this->currentObject->assocValues;
@@ -730,7 +731,7 @@ class JsonDecodeEngine
 
     /**
      * Check for a valid JSON
-     * 
+     *
      * @return void
      */
     private function isBadJson($str)
@@ -743,8 +744,8 @@ class JsonDecodeEngine
 
     /**
      * Generated Array
-     * 
-     * @param bool $index true for normal array / false for associative array
+     *
+     * @param boolean $index true for normal array / false for associative array
      * @return array
      */
     private function getKeys()
@@ -790,7 +791,7 @@ class JsonDecodeEngine
 
     /**
      * Generated Assoc Array
-     * 
+     *
      * @return array
      */
     private function getAssocKeys()
@@ -857,17 +858,17 @@ class JsonDecodeObject
     /**
      * JSON file start position
      *
-     * @var integer
+     * @var null|integer
      */
     public $_s_ = null;
 
     /**
      * JSON file end position
      *
-     * @var integer
+     * @var null|integer
      */
     public $_e_ = null;
-    
+
     /**
      * Assoc / Array
      *
@@ -878,14 +879,14 @@ class JsonDecodeObject
     /**
      * Assoc key for parant object
      *
-     * @var string
+     * @var null|string
      */
     public $assocKey = null;
-    
+
     /**
      * Array key for parant object
      *
-     * @var string
+     * @var null|string
      */
     public $arrayKey = null;
 

@@ -24,42 +24,42 @@ class Redis extends AbstractCache
     /**
      * Cache hostname
      *
-     * @var string
+     * @var null|string
      */
     private $hostname = null;
 
     /**
      * Cache port
      *
-     * @var integer
+     * @var null|integer
      */
     private $port = null;
 
     /**
      * Cache password
      *
-     * @var string
+     * @var null|string
      */
     private $username = null;
 
     /**
      * Cache password
      *
-     * @var string
+     * @var null|string
      */
     private $password = null;
 
     /**
      * Cache database
      *
-     * @var string
+     * @var null|string
      */
     private $database = null;
 
     /**
      * Cache connection
      *
-     * @var object
+     * @var null|\Redis
      */
     private $cache = null;
 
@@ -79,7 +79,7 @@ class Redis extends AbstractCache
         $password,
         $database
     )
-    { 
+    {
         $this->hostname = $hostname;
         $this->port = $port;
         $this->username = $username;
@@ -189,7 +189,7 @@ class Redis extends AbstractCache
         $this->useDatabase();
         return $this->cache->del($key);
     }
-    
+
     /**
      * Checks member is present in set
      *

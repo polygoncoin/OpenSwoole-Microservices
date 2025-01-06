@@ -25,49 +25,49 @@ class MySQL extends AbstractCache
     /**
      * Cache hostname
      *
-     * @var string
+     * @var null|string
      */
     private $hostname = null;
 
     /**
      * Cache port
      *
-     * @var integer
+     * @var null|integer
      */
     private $port = null;
 
     /**
      * Cache password
      *
-     * @var string
+     * @var null|string
      */
     private $username = null;
 
     /**
      * Cache password
      *
-     * @var string
+     * @var null|string
      */
     private $password = null;
 
     /**
      * Cache database
      *
-     * @var string
+     * @var null|string
      */
     private $database = null;
 
     /**
      * Cache connection
      *
-     * @var object
+     * @var null|DB_MySQL
      */
     private $cache = null;
 
     /**
      * Current timestamp
      *
-     * @var integer
+     * @var null|integer
      */
     private $ts = null;
 
@@ -87,7 +87,7 @@ class MySQL extends AbstractCache
         $password,
         $database
     )
-    { 
+    {
         $this->ts = time();
         $this->hostname = $hostname;
         $this->port = $port;
@@ -163,8 +163,8 @@ class MySQL extends AbstractCache
             $params = [$keyDetails['key'], $this->ts];
             $this->cache->execDbQuery($sql, $params);
             $row = $this->cache->fetch();
-            $this->cache->closeCursor();  
-            return $row['value'];    
+            $this->cache->closeCursor();
+            return $row['value'];
         } else {
             return false;
         }
@@ -213,15 +213,15 @@ class MySQL extends AbstractCache
         $this->useDatabase();
 
         $keyDetails = $this->getKeyDetails($key);
-        
+
         if (isset($keyDetails['count']) && $keyDetails['count'] > 0) {
             $sql = "DELETE FROM `{$keyDetails['table']}` WHERE `key` = ?";
-            $params = [$keyDetails['key']];    
+            $params = [$keyDetails['key']];
             $this->cache->execDbQuery($sql, $params);
             $this->cache->closeCursor();
         }
     }
-    
+
     /**
      * Checks member is present in set
      *
@@ -284,11 +284,11 @@ class MySQL extends AbstractCache
 
         $sql = "SELECT count(1) as `count` FROM `{$keyDetails['table']}` WHERE `key` = ? AND (`ts` = 0 OR `ts` > ?)";
         $params = [$keyDetails['key'], $this->ts];
-        
+
         $this->cache->execDbQuery($sql, $params);
         $row = $this->cache->fetch();
         $this->cache->closeCursor();
-        
+
         $keyDetails['count'] = $row['count'];
 
         return $keyDetails;

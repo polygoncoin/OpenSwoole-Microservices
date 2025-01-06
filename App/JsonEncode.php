@@ -26,28 +26,28 @@ class JsonEncode
     /**
      * Temporary Stream
      *
-     * @var object
+     * @var resource
      */
     private $tempStream = null;
 
     /**
      * Array of JsonEncoderObject objects
      *
-     * @var array
+     * @var JsonEncoderObject[]
      */
     private $objects = [];
 
     /**
      * Current JsonEncoderObject object
      *
-     * @var Microservices\App\JsonEncoderObject
+     * @var null|JsonEncoderObject
      */
     private $currentObject = null;
 
     /**
      * Microservices Request Details
-     * 
-     * @var array
+     *
+     * @var null|array
      */
     public $httpRequestDetails = null;
 
@@ -77,7 +77,7 @@ class JsonEncode
 
     /**
      * Write to temporary stream
-     * 
+     *
      * @return void
      */
     public function write($str)
@@ -103,7 +103,7 @@ class JsonEncode
     /**
      * Encodes both simple and associative array to json
      *
-     * @param $arr string value escaped and array value json_encode function is applied.  
+     * @param $arr string value escaped and array value json_encode function is applied.
      * @return void
      */
     public function encode($arr)
@@ -156,7 +156,7 @@ class JsonEncode
     /**
      * Start simple array
      *
-     * @param string $key Used while creating simple array inside an associative array and $key is the key.
+     * @param null|string $key Used while creating simple array inside an associative array and $key is the key.
      * @return void
      */
     public function startArray($key = null)
@@ -190,7 +190,7 @@ class JsonEncode
     /**
      * Start simple array
      *
-     * @param string $key Used while creating associative array inside an associative array and $key is the key.
+     * @param null|string $key Used while creating associative array inside an associative array and $key is the key.
      * @return void
      */
     public function startObject($key = null)
@@ -256,10 +256,10 @@ class JsonEncode
         return $json;
     }
 
-    /** 
-     * destruct functipn 
-     */ 
-    public function __destruct() 
+    /**
+     * destruct functipn
+     */
+    public function __destruct()
     {
     }
 }

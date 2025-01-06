@@ -36,16 +36,16 @@ class Env
     static public $allowCronRequest = null;
     static public $cronRequestUriPrefix = null;
     static public $cronRestrictedIp = null;
-    
+
     static public $allowRoutesRequest = null;
     static public $routesRequestUri = null;
 
     static public $allowCustomRequest = null;
     static public $customRequestUriPrefix = null;
-    
+
     static public $allowUploadRequest = null;
     static public $uploadRequestUriPrefix = null;
-    
+
     static public $allowThirdPartyRequest = null;
     static public $thirdPartyRequestUriPrefix = null;
 
@@ -57,7 +57,7 @@ class Env
     static public function init()
     {
         if (!is_null(self::$initialized)) return;
-        
+
         // Load .env
         $env = parse_ini_file(__DIR__ . '/../.env');
         foreach ($env as $key => $value) {
@@ -72,7 +72,7 @@ class Env
 
         self::$allowConfigRequest = getenv('allowConfigRequest');
         self::$configRequestUriKeyword = getenv('configRequestUriKeyword');
-        
+
         self::$groups = getenv('groups');
         self::$client_users = getenv('client_users');
         self::$clients = getenv('clients');
@@ -83,16 +83,16 @@ class Env
         self::$allowCronRequest = getenv('allowCronRequest');
         self::$cronRequestUriPrefix = getenv('cronRequestUriPrefix');
         self::$cronRestrictedIp = getenv('cronRestrictedIp');
-        
+
         self::$allowRoutesRequest = getenv('allowRoutesRequest');
         self::$routesRequestUri = getenv('routesRequestUri');
-        
+
         self::$allowCustomRequest = getenv('allowCustomRequest');
         self::$customRequestUriPrefix = getenv('customRequestUriPrefix');
-        
+
         self::$allowUploadRequest = getenv('allowUploadRequest');
         self::$uploadRequestUriPrefix = getenv('uploadRequestUriPrefix');
-        
+
         self::$allowThirdPartyRequest = getenv('allowThirdPartyRequest');
         self::$thirdPartyRequestUriPrefix = getenv('thirdPartyRequestUriPrefix');
 

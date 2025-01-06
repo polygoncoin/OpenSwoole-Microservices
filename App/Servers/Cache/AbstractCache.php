@@ -62,7 +62,7 @@ abstract class AbstractCache
      * @return integer
      */
     abstract public function deleteCache($key);
-    
+
     /**
      * Checks member is present in set
      *

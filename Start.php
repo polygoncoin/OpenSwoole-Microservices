@@ -57,7 +57,7 @@ $server->on("request", function (Request $request, Response $response) {
     // Code to Initialize / Start the service.
     try {
         $services = new Services($httpRequestDetails);
-        
+
         // Setting CORS
         foreach ($services->getCors() as $k => $v) {
             $response->header($k, $v);

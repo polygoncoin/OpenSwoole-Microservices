@@ -4,6 +4,7 @@ namespace Microservices\Upload;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\Upload\UploadInterface;
 use Microservices\Upload\UploadTrait;
 
 /**
@@ -18,23 +19,23 @@ use Microservices\Upload\UploadTrait;
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-class Module1
+class Module1 implements UploadInterface
 {
     use UploadTrait;
 
     /**
      * Microservices Collection of Common Objects
-     * 
-     * @var Microservices\App\Common
+     *
+     * @var null|Common
      */
     private $c = null;
 
     /**
      * Constructor
-     * 
-     * @param Microservices\App\Common $common
+     *
+     * @param Common $common
      */
-    public function __construct(Common &$common)
+    public function __construct(&$common)
     {
         $this->c = &$common;
         $this->c->httpRequest->setConnection($fetchFrom = 'Master');

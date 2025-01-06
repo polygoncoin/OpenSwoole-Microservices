@@ -12,7 +12,7 @@ use Microservices\App\Env;
  * Helps browser avoid unwanted hits to un-modified content on the server
  * which are cached on client browser.
  * The headers in class helps fetch only the modified content.
- * 
+ *
  * @category   PHP File Cache handler
  * @package    Microservices
  * @author     Ramesh Narayan Jangid
@@ -24,34 +24,34 @@ class CacheHandler
 {
     /**
      * File Location
-     * 
-     * @var array
+     *
+     * @var string
      */
     private $fileLocation;
 
     /**
      * Cache Folder
-     * 
+     *
      * The folder location outside docroot
      * without a slash at the end
-     * 
+     *
      * @var string
      */
     private $cacheLocation = '/Dropbox';
 
     /**
      * Microservices Collection of Common Objects
-     * 
-     * @var Microservices\App\Common
+     *
+     * @var null|Common
      */
     private $c = null;
 
     /**
      * Constructor
-     * 
-     * @param Microservices\App\Common $common
+     *
+     * @param Common $common
      */
-    public function __construct(Common &$common)
+    public function __construct(&$common)
     {
         $this->c = &$common;
     }
@@ -110,7 +110,7 @@ class CacheHandler
                 isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) &&
                 @strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $modifiedTime
             )
-        ) { 
+        ) {
             header('HTTP/1.1 304 Not Modified');
             return true;
         }
