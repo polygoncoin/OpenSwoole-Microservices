@@ -14,13 +14,14 @@ trait UploadTrait
     /**
      * Saves file as stream
      *
-     * @param string $absFilePath Absolute file path
+     * @param string $srcFilePath
+     * @param string $destFilePath
      * @return boolean
      */
-    private function saveFile($absFilePath)
+    private function saveFile($srcFilePath, $destFilePath)
     {
-        $src = fopen("php://input", "rb");
-        $dest = fopen($absFilePath, 'wb');
+        $src = fopen($srcFilePath, "rb");
+        $dest = fopen($destFilePath, 'wb');
 
         stream_copy_to_stream($src, $dest);
 
