@@ -4,6 +4,8 @@ namespace Microservices\App;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\App\HttpStatus;
+use Microservices\App\Logs;
 
 /**
  * Creates JSON
@@ -26,7 +28,7 @@ class JsonEncode
     /**
      * Temporary Stream
      *
-     * @var resource
+     * @var null|resource
      */
     private $tempStream = null;
 
@@ -43,6 +45,20 @@ class JsonEncode
      * @var null|JsonEncoderObject
      */
     private $currentObject = null;
+
+    /**
+     * Characters that are escaped while creating JSON
+     *
+     * @var string[]
+     */
+    private $escapers = array("\\", "/", "\"", "\n", "\r", "\t", "\x08", "\x0c", ' ');
+
+    /**
+     * Characters that are escaped with for $escapers while creating JSON
+     *
+     * @var string[]
+     */
+    private $replacements = array("\\\\", "\\/", "\\\"", "\\n", "\\r", "\\t", "\\f", "\\b", ' ');
 
     /**
      * Microservices Request Details
@@ -94,9 +110,7 @@ class JsonEncode
     private function escape($str)
     {
         if (is_null($str)) return 'null';
-        $escapers = array("\\", "/", "\"", "\n", "\r", "\n", "\r", "\t", "\x08", "\x0c");
-        $replacements = array("\\\\", "\\/", "\\\"", "\\n", "\\r", "\\t", "\\f", "\\b");
-        $str = str_replace($escapers, $replacements, $str);
+        $str = str_replace($this->escapers, $this->replacements, $str);
         return "\"{$str}\"";
     }
 
@@ -126,11 +140,12 @@ class JsonEncode
      *
      * @param $value data type is string/array. This is used to add value/array in the current Array.
      * @return void
+     * @throws \Exception
      */
     public function addValue($value)
     {
         if ($this->currentObject->mode !== 'Array') {
-            throw new \Exception('Mode should be Array', 501);
+            throw new \Exception('Mode should be Array', HttpStatus::$InternalServerError);
         }
         $this->encode($value);
     }
@@ -141,11 +156,12 @@ class JsonEncode
      * @param string $key   key of associative array
      * @param        $value data type is string/array. This is used to add value/array in the current Array.
      * @return void
+     * @throws \Exception
      */
     public function addKeyValue($key, $value)
     {
         if ($this->currentObject->mode !== 'Object') {
-            throw new \Exception('Mode should be Object', 501);
+            throw new \Exception('Mode should be Object', HttpStatus::$InternalServerError);
         }
         $this->write($this->currentObject->comma);
         $this->write($this->escape($key) . ':');
@@ -156,7 +172,7 @@ class JsonEncode
     /**
      * Start simple array
      *
-     * @param null|string $key Used while creating simple array inside an associative array and $key is the key.
+     * @param string $key Used while creating simple array inside an associative array and $key is the key.
      * @return void
      */
     public function startArray($key = null)
@@ -190,14 +206,15 @@ class JsonEncode
     /**
      * Start simple array
      *
-     * @param null|string $key Used while creating associative array inside an associative array and $key is the key.
+     * @param string $key Used while creating associative array inside an associative array and $key is the key.
      * @return void
+     * @throws \Exception
      */
     public function startObject($key = null)
     {
         if ($this->currentObject) {
             if ($this->currentObject->mode === 'Object' && is_null($key)) {
-                throw new \Exception('Object inside an Object should be supported with a Key', 501);
+                throw new \Exception('Object inside an Object should be supported with a Key', HttpStatus::$InternalServerError);
             }
             $this->write($this->currentObject->comma);
             array_push($this->objects, $this->currentObject);
@@ -250,6 +267,17 @@ class JsonEncode
      */
     public function streamJson()
     {
+        // Log request details
+        rewind($this->tempStream);
+        $log = [
+            'datetime' => date('Y-m-d H:i:s'),
+            'GET' => $_GET,
+            'php:input' => @file_get_contents('php://input'),
+            'php:output' => stream_get_contents($this->tempStream)
+        ];
+        (new Logs)->log('info', json_encode($log));
+
+        // Stream JSON
         rewind($this->tempStream);
         $json = stream_get_contents($this->tempStream);
         fclose($this->tempStream);

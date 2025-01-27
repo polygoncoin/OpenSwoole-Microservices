@@ -4,6 +4,7 @@ namespace Microservices\App;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\App\HttpStatus;
 use Microservices\App\Validator;
 
 /**
@@ -42,6 +43,7 @@ trait AppTrait
      * @param boolean $first        true to represent the first call in recursion.
      * @param boolean $useHierarchy Use results in where clause of sub queries recursively.
      * @return void
+     * @throws \Exception
      */
     private function getRequired(&$sqlConfig, $first, $useHierarchy)
     {
@@ -75,7 +77,7 @@ trait AppTrait
             foreach ($sqlConfig['__WHERE__'] as $var => $where) {
                 list($type, $typeKey) = $where;
                 if ($first && $type === 'hierarchyData') {
-                    throw new \Exception('Invalid config: First query can not have hierarchyData config', 501);
+                    throw new \Exception('Invalid config: First query can not have hierarchyData config', HttpStatus::$InternalServerError);
                 }
                 if ($type === 'hierarchyData') {
                     $foundHierarchy = true;
@@ -83,14 +85,14 @@ trait AppTrait
                 }
             }
             if (!$first && $useHierarchy && !$foundHierarchy) {
-                throw new \Exception('Invalid config: missing hierarchyData', 501);
+                throw new \Exception('Invalid config: missing hierarchyData', HttpStatus::$InternalServerError);
             }
         }
 
         // Check in subQuery
         if (isset($sqlConfig['subQuery'])) {
             if (!$this->isAssoc($sqlConfig['subQuery'])) {
-                throw new \Exception('Invalid Configuration: subQuery should be an associative array', 501);
+                throw new \Exception('Invalid Configuration: subQuery should be an associative array', HttpStatus::$InternalServerError);
                 return;
             }
             foreach ($sqlConfig['subQuery'] as $module => &$sqlDetails) {
@@ -123,7 +125,7 @@ trait AppTrait
             $this->validator = new Validator($this->c);
         }
 
-        return $this->validator->validate($this->c->httpRequest->conditions, $validationConfig);
+        return $this->validator->validate($this->c->httpRequest->session, $validationConfig);
     }
 
     /**
@@ -198,6 +200,7 @@ trait AppTrait
      *
      * @param array $sqlConfig    Config from file
      * @return array
+     * @throws \Exception
      */
     private function getSqlParams(&$sqlConfig)
     {
@@ -207,30 +210,30 @@ trait AppTrait
         // Collect param values as per config respectively
         foreach ($sqlConfig as $var => [$type, $typeKey]) {
             if ($type === 'function') {
-                $sqlParams[$var] = $typeKey($this->c->httpRequest->conditions);
+                $sqlParams[$var] = $typeKey($this->c->httpRequest->session);
             } else if ($type === 'hierarchyData') {
                 $typeKeys = explode(':',$typeKey);
-                $value = $this->c->httpRequest->conditions['hierarchyData'];
+                $value = $this->c->httpRequest->session['hierarchyData'];
                 foreach($typeKeys as $key) {
                     if (!isset($value[$key])) {
-                        throw new \Exception('Invalid hierarchy:  Missing hierarchy data', 501);
+                        throw new \Exception('Invalid hierarchy:  Missing hierarchy data', HttpStatus::$InternalServerError);
                     }
                     $value = $value[$key];
                 }
                 $sqlParams[$var] = $value;
             } else if ($type === 'custom') {
                 $sqlParams[$var] = $typeKey;
-            } else if ($type === 'payload' && isset($this->c->httpRequest->conditions['payload'][$typeKey])) {
-                $sqlParams[$var] = $this->c->httpRequest->conditions['payload'][$typeKey];
-            } else if ($type === 'payload' && !in_array($typeKey, $this->c->httpRequest->conditions['required']) && !isset($this->c->httpRequest->conditions['payload'][$typeKey])) {
+            } else if ($type === 'payload' && isset($this->c->httpRequest->session['payload'][$typeKey])) {
+                $sqlParams[$var] = $this->c->httpRequest->session['payload'][$typeKey];
+            } else if ($type === 'payload' && !in_array($typeKey, $this->c->httpRequest->session['required']) && !isset($this->c->httpRequest->session['payload'][$typeKey])) {
                 continue;
-            } else if ($type === 'payload' && in_array($typeKey, $this->c->httpRequest->conditions['required']) && !isset($this->c->httpRequest->conditions['payload'][$typeKey])) {
+            } else if ($type === 'payload' && in_array($typeKey, $this->c->httpRequest->session['required']) && !isset($this->c->httpRequest->session['payload'][$typeKey])) {
                 $errors[] = "Missing required field of '{$type}' for '{$typeKey}'";
             } else {
-                if (!isset($this->c->httpRequest->conditions[$type][$typeKey])) {
+                if (!isset($this->c->httpRequest->session[$type][$typeKey])) {
                     $errors[] = "Invalid configuration of '{$type}' for '{$typeKey}'";
                 }
-                $sqlParams[$var] = $this->c->httpRequest->conditions[$type][$typeKey];
+                $sqlParams[$var] = $this->c->httpRequest->session[$type][$typeKey];
             }
         }
 
@@ -280,6 +283,7 @@ trait AppTrait
      * @param array   $first        Flag to check if this is first request in a recursive call
      * @param boolean $useHierarchy Use results in where clause of sub queries recursively.
      * @return array
+     * @throws \Exception
      */
     private function getConfigParams(&$sqlConfig, $first, $useHierarchy)
     {
@@ -326,7 +330,7 @@ trait AppTrait
                 }
             }
             if (!$first && $useHierarchy && !$foundHierarchy) {
-                throw new \Exception('Invalid config: missing hierarchyData', 501);
+                throw new \Exception('Invalid config: missing hierarchyData', HttpStatus::$InternalServerError);
             }
         }
 

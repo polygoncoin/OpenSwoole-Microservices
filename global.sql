@@ -36,6 +36,8 @@ CREATE TABLE `m002_master_groups` (
   `name` varchar(100) NOT NULL,
   `client_id` int DEFAULT NULL,
   `allowed_ips` text,
+  `rateLimiterMaxRequests` int DEFAULT NULL,
+  `rateLimiterSecondsWindow` int DEFAULT NULL,
   `comments` varchar(255) DEFAULT NULL,
   `created_by` int DEFAULT NULL,
   `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -59,7 +61,7 @@ UNLOCK TABLES;
 LOCK TABLES `m002_master_groups` WRITE;
 /*!40000 ALTER TABLE `m002_master_groups` DISABLE KEYS */;
 INSERT INTO `m002_master_groups` VALUES
-(1,'Client001UserGroup1',1,'127.0.0.1, 127.0.0.1/32','',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes','No','No'),
-(2,'Client001UserGroup2',1,'127.0.0.1, 127.0.0.1/32','',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes','No','No');
+(1,'Client001UserGroup1',1,'127.0.0.1, 127.0.0.1/32',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes','No','No'),
+(2,'Client001UserGroup2',1,'127.0.0.1, 127.0.0.1/32',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes','No','No');
 /*!40000 ALTER TABLE `m002_master_groups` ENABLE KEYS */;
 UNLOCK TABLES;

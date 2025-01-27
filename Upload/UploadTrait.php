@@ -1,15 +1,7 @@
 <?php
 namespace Microservices\Upload;
 
-use Microservices\App\Constants;
-use Microservices\App\Common;
-use Microservices\App\Env;
-
 /**
- * Class is used for file uploads
- *
- * This class supports POST & PUT HTTP request
- *
  * @category   Upload Trait
  * @package    Microservices
  * @author     Ramesh Narayan Jangid
@@ -22,14 +14,13 @@ trait UploadTrait
     /**
      * Saves file as stream
      *
-     * @param string $srcFilePath  Source file path
-     * @param string $destFilePath Destination file path
+     * @param string $absFilePath Absolute file path
      * @return boolean
      */
-    private function saveFile($srcFilePath, $destFilePath)
+    private function saveFile($absFilePath)
     {
-        $src = fopen($srcFilePath, "rb");
-        $dest = fopen($destFilePath, 'w+b');
+        $src = fopen("php://input", "rb");
+        $dest = fopen($absFilePath, 'wb');
 
         stream_copy_to_stream($src, $dest);
 

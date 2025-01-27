@@ -70,7 +70,10 @@ class Routes
      */
     public function init()
     {
-        return true;
+        if (Env::$allowRoutesRequest) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -84,7 +87,7 @@ class Routes
         $Env = __NAMESPACE__ . '\Env';
 
         $httpRoutes = [];
-        $userRoutesFolder = Constants::$DOC_ROOT . $this->routesFolder . '/' . $this->c->httpRequest->groupInfo['name'];
+        $userRoutesFolder = Constants::$DOC_ROOT . $this->routesFolder . '/' . $this->c->httpRequest->session['groupInfo']['name'];
 
         foreach ($this->httpMethods as $method) {
             $httpRoutes[$method] = [];

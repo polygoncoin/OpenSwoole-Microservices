@@ -62,22 +62,4 @@ abstract class AbstractCache
      * @return integer
      */
     abstract public function deleteCache($key);
-
-    /**
-     * Checks member is present in set
-     *
-     * @param string $set    Cache Set
-     * @param string $member Cache Set member
-     * @return boolean
-     */
-    abstract public function isSetMember($set, $member);
-
-    /**
-     * Set Set members
-     *
-     * @param string $key        Cache Set key
-     * @param array  $valueArray Cache values for Set
-     * @return void
-     */
-    abstract public function setSetMembers($key, $valueArray);
 }

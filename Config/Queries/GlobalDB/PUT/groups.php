@@ -12,13 +12,13 @@ return [
         ['uriParams', 'group_id', $Constants::$REQUIRED]
     ],
     '__SET__' => [
-        //column => [payload|readOnlySession|uriParams|insertIdParams|{custom}, key|{value}],
+        //column => [payload|userInfo|uriParams|insertIdParams|{custom}, key|{value}],
         'name' => ['payload', 'name'],
         'client_id' => ['payload', 'client_id'],
         'connection_id' => ['payload', 'connection_id'],
         'allowed_ips' => ['payload', 'allowed_ips'],
         'comments' => ['payload', 'comments'],
-        'updated_by' => ['readOnlySession', 'user_id'],
+        'updated_by' => ['userInfo', 'user_id'],
         'updated_on' => ['custom', date('Y-m-d H:i:s')]
     ],
     '__WHERE__' => [

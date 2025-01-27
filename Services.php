@@ -1,9 +1,11 @@
 <?php
 namespace Microservices;
 
+use Microservices\App\ApiGateway;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\App\HttpStatus;
 use Microservices\App\Logs;
 
 /**
@@ -49,6 +51,11 @@ class Services
     private $c = null;
 
     /**
+     * @var null|ApiGateway
+     */
+    private $apiGateway = null;
+
+    /**
      * Constructor
      *
      * @param array $httpRequestDetails
@@ -56,6 +63,7 @@ class Services
      */
     public function __construct(&$httpRequestDetails)
     {
+        $this->apiGateway = new ApiGateway($httpRequestDetails);
         $this->httpRequestDetails = &$httpRequestDetails;
 
         Constants::init();
@@ -153,9 +161,11 @@ class Services
 
             // Requires auth token
             default:
+                $this->apiGateway->init();
                 $class = __NAMESPACE__ . '\\App\\Api';
                 break;
         }
+        $this->apiGateway = null;
 
         // Class found
         try {

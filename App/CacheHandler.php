@@ -78,7 +78,7 @@ class CacheHandler
      */
     public function validateFileRequest()
     {
-        // check logic for user is allowed to access the file as per $this->c->httpRequest->conditions
+        // check logic for user is allowed to access the file as per $this->c->httpRequest->session
         // $this->filePath;
     }
 

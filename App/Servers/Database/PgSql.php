@@ -9,14 +9,14 @@ use Microservices\App\Servers\Database\AbstractDatabase;
  *
  * This class is built to handle MySql database operation.
  *
- * @category   Database - MySql
+ * @category   Database - PgSql
  * @package    Microservices
  * @author     Ramesh Narayan Jangid
  * @copyright  Ramesh Narayan Jangid
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-class MySql extends AbstractDatabase
+class PgSql extends AbstractDatabase
 {
     /**
      * Database hostname
@@ -56,14 +56,14 @@ class MySql extends AbstractDatabase
     /**
      * Database connection
      *
-     * @var null|\PDO
+     * @var null|\PgSql\Connection
      */
     private $db = null;
 
     /**
      * Executed query statement
      *
-     * @var null|\PDOStatement
+     * @var null|\PgSql\Result
      */
     private $stmt = null;
 
@@ -111,23 +111,13 @@ class MySql extends AbstractDatabase
         if (!is_null($this->db)) return;
 
         try {
-           $this->db = new \PDO(
-                "mysql:host={$this->hostname};port={$this->port}",
-                $this->username,
-                $this->password,
-                [
-                    \PDO::ATTR_EMULATE_PREPARES => false,
-//                    \PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false
-                ]
-            );
+            $this->db = pg_connect("host={$this->hostname} port={$this->port} user={$this->username} password={$this->password}");
 
             if (!is_null($this->database)) {
                 $this->useDatabase();
             }
-        } catch (\PDOException $e) {
-            if ((int)$this->db->errorCode()) {
-                $this->logError($e);
-            }
+        } catch (\Exception $e) {
+            $this->logError($e);
         }
     }
 
@@ -142,13 +132,11 @@ class MySql extends AbstractDatabase
 
         try {
             if (!is_null($this->database)) {
-                $this->db->exec("USE `{$this->database}`");
+                pg_query($this->db, "set schema '{$this->database}';");
             }
-        } catch (\PDOException $e) {
-            if ((int)$this->db->errorCode()) {
-                $this->logError($e);
-                $this->rollback();
-            }
+        } catch (\Exception $e) {
+            $this->rollback();
+            $this->logError($e);
         }
     }
 
@@ -163,11 +151,9 @@ class MySql extends AbstractDatabase
 
         $this->beganTransaction = true;
         try {
-           $this->db->beginTransaction();
-        } catch (\PDOException $e) {
-            if ((int)$this->db->errorCode()) {
-                $this->logError($e);
-            }
+            pg_query($this->db, 'BEGIN');
+        } catch (\Exception $e) {
+            $this->logError($e);
         }
     }
 
@@ -181,12 +167,10 @@ class MySql extends AbstractDatabase
         try {
             if ($this->beganTransaction) {
                 $this->beganTransaction = false;
-                $this->db->commit();
+                pg_query($this->db, 'COMMIT');
             }
-        } catch (\PDOException $e) {
-            if ((int)$this->db->errorCode()) {
-                $this->logError($e);
-            }
+        } catch (\Exception $e) {
+            $this->logError($e);
         }
     }
 
@@ -200,12 +184,10 @@ class MySql extends AbstractDatabase
         try {
             if ($this->beganTransaction) {
                 $this->beganTransaction = false;
-                $this->db->rollback();
+                pg_query($this->db, 'ROLLBACK');
             }
-        } catch (\PDOException $e) {
-            if ((int)$this->db->errorCode()) {
-                $this->logError($e);
-            }
+        } catch (\Exception $e) {
+            $this->logError($e);
         }
     }
 
@@ -218,17 +200,15 @@ class MySql extends AbstractDatabase
     {
         try {
             if ($this->stmt) {
-                return $this->stmt->rowCount();
+                return pg_affected_rows($this->stmt);
             } else {
                 return false;
             }
-        } catch (\PDOException $e) {
+        } catch (\Exception $e) {
             if ($this->beganTransaction) {
                 $this->rollback();
             }
-            if ((int)$this->db->errorCode()) {
-                $this->logError($e);
-            }
+            $this->logError($e);
         }
     }
 
@@ -240,14 +220,17 @@ class MySql extends AbstractDatabase
     public function lastInsertId()
     {
         try {
-            return$this->db->lastInsertId();
-        } catch (\PDOException $e) {
+            $stmt = $this->execDbQuery('SELECT lastval()');
+            if ($stmt) {
+                $row = pg_fetch_row($stmt);
+                return $row[0];
+            }
+            return false;
+        } catch (\Exception $e) {
             if ($this->beganTransaction) {
                 $this->rollback();
             }
-            if ((int)$this->db->errorCode()) {
-                $this->logError($e);
-            }
+            $this->logError($e);
         }
     }
 
@@ -263,17 +246,13 @@ class MySql extends AbstractDatabase
         $this->useDatabase();
 
         try {
-            $this->stmt = $this->db->prepare($sql, [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]);
-            if ($this->stmt) {
-                $this->stmt->execute($params);
-            }
-        } catch (\PDOException $e) {
+            pg_prepare($this->db, 'pg_query', $sql);
+            pg_execute($this->db, 'pg_query', $params);
+        } catch (\Exception $e) {
             if ($this->beganTransaction) {
                 $this->rollback();
             }
-            if ((int)$this->db->errorCode()) {
-                $this->logError($e);
-            }
+            $this->logError($e);
         }
     }
 
@@ -286,14 +265,12 @@ class MySql extends AbstractDatabase
     {
         try {
             if ($this->stmt) {
-                return $this->stmt->fetch(\PDO::FETCH_ASSOC);
+                return pg_fetch_assoc($this->stmt);
             } else {
                 return false;
             }
-        } catch (\PDOException $e) {
-            if ((int)$this->db->errorCode()) {
-                $this->logError($e);
-            }
+        } catch (\Exception $e) {
+            $this->logError($e);
         }
     }
 
@@ -306,14 +283,12 @@ class MySql extends AbstractDatabase
     {
         try {
             if ($this->stmt) {
-                return $this->stmt->fetchAll(\PDO::FETCH_ASSOC);
+                return pg_fetch_all($this->stmt);
             } else {
                 return false;
             }
-        } catch (\PDOException $e) {
-            if ((int)$this->db->errorCode()) {
-                $this->logError($e);
-            }
+        } catch (\Exception $e) {
+            $this->logError($e);
         }
     }
 
@@ -326,12 +301,13 @@ class MySql extends AbstractDatabase
     {
         try {
             if ($this->stmt) {
-                $this->stmt->closeCursor();
+                pg_free_result($this->stmt);
             }
-        } catch (\PDOException $e) {
-            if ((int)$this->db->errorCode()) {
-                $this->logError($e);
+            if ($this->db) {
+                pg_flush($this->db);
             }
+        } catch (\Exception $e) {
+            $this->logError($e);
         }
     }
 
@@ -344,6 +320,6 @@ class MySql extends AbstractDatabase
      */
     private function logError($e)
     {
-        throw new \Exception($e->getMessage(), HttpStatus::$InternalServerError);
+        throw new \Exception(pg_last_error($this->db), HttpStatus::$InternalServerError);
     }
 }

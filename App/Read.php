@@ -5,6 +5,7 @@ use Microservices\App\AppTrait;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\App\HttpStatus;
 use Microservices\App\Validator;
 
 /**
@@ -94,6 +95,8 @@ class Read
         $this->c->httpResponse->jsonEncode->addKeyValue('Route', $this->c->httpRequest->configuredUri);
         $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $this->getConfigParams($readSqlConfig, true, $useHierarchy));
         $this->c->httpResponse->jsonEncode->endObject();
+
+        return true;
     }
 
     /**
@@ -105,8 +108,8 @@ class Read
      */
     private function processRead(&$readSqlConfig, $useHierarchy)
     {
-        $this->c->httpRequest->conditions['requiredArr'] = $this->getRequired($readSqlConfig, true, $useHierarchy);
-        $this->c->httpRequest->conditions['required'] = $this->c->httpRequest->conditions['requiredArr']['__required__'];
+        $this->c->httpRequest->session['requiredArr'] = $this->getRequired($readSqlConfig, true, $useHierarchy);
+        $this->c->httpRequest->session['required'] = $this->c->httpRequest->session['requiredArr']['__required__'];
 
         // Start Read operation.
         $keys = [];
@@ -172,13 +175,14 @@ class Read
      * @param array   $keys          Module Keys in recursion.
      * @param boolean $useHierarchy  Use results in where clause of sub queries recursively.
      * @return boolean
+     * @throws \Exception
      */
     private function fetchSingleRow(&$readSqlConfig, &$keys, $useHierarchy)
     {
         $isAssoc = $this->isAssoc($readSqlConfig);
         list($sql, $sqlParams, $errors) = $this->getSqlAndParams($readSqlConfig);
         if (!empty($errors)) {
-            throw new \Exception($errors, 501);
+            throw new \Exception($errors, HttpStatus::$InternalServerError);
         }
 
         $this->c->httpRequest->db->execDbQuery($sql, $sqlParams);
@@ -188,7 +192,7 @@ class Read
                 $subQueryKeys = array_keys($readSqlConfig['subQuery']);
                 foreach($row as $key => $value) {
                     if (in_array($key, $subQueryKeys)) {
-                        throw new \Exception('Invalid configuration: Conflicting column names', 501);
+                        throw new \Exception('Invalid configuration: Conflicting column names', HttpStatus::$InternalServerError);
                     }
                 }
             }
@@ -212,24 +216,25 @@ class Read
      *
      * @param array  $readSqlConfig Read SQL configuration.
      * @return boolean
+     * @throws \Exception
      */
     private function fetchRowsCount($readSqlConfig)
     {
         $readSqlConfig['query'] = $readSqlConfig['countQuery'];
         unset($readSqlConfig['countQuery']);
 
-        $this->c->httpRequest->conditions['payload']['page']  = $_GET['page'] ?? 1;
-        $this->c->httpRequest->conditions['payload']['perpage']  = $_GET['perpage'] ?? 10;
+        $this->c->httpRequest->session['payload']['page']  = $_GET['page'] ?? 1;
+        $this->c->httpRequest->session['payload']['perpage']  = $_GET['perpage'] ?? Env::$defaultPerpage;
 
-        if ($this->c->httpRequest->conditions['payload']['perpage'] > Env::$maxPerpage) {
-            throw new \Exception('perpage exceeds max perpage value of '.Env::$maxPerpage, 403);
+        if ($this->c->httpRequest->session['payload']['perpage'] > Env::$maxPerpage) {
+            throw new \Exception('perpage exceeds max perpage value of '.Env::$maxPerpage, HttpStatus::$Forbidden);
         }
 
-        $this->c->httpRequest->conditions['payload']['start']  = ($this->c->httpRequest->conditions['payload']['page'] - 1) * $this->c->httpRequest->conditions['payload']['perpage'];
+        $this->c->httpRequest->session['payload']['start']  = ($this->c->httpRequest->session['payload']['page'] - 1) * $this->c->httpRequest->session['payload']['perpage'];
         list($sql, $sqlParams, $errors) = $this->getSqlAndParams($readSqlConfig);
 
         if (!empty($errors)) {
-            throw new \Exception($errors, 501);
+            throw new \Exception($errors, HttpStatus::$InternalServerError);
         }
 
         $this->c->httpRequest->db->execDbQuery($sql, $sqlParams);
@@ -237,10 +242,10 @@ class Read
         $this->c->httpRequest->db->closeCursor();
 
         $totalRowsCount = $row['count'];
-        $totalPages = ceil($totalRowsCount/$this->c->httpRequest->conditions['payload']['perpage']);
+        $totalPages = ceil($totalRowsCount/$this->c->httpRequest->session['payload']['perpage']);
 
-        $this->c->httpResponse->jsonEncode->addKeyValue('page', $this->c->httpRequest->conditions['payload']['page']);
-        $this->c->httpResponse->jsonEncode->addKeyValue('perpage', $this->c->httpRequest->conditions['payload']['perpage']);
+        $this->c->httpResponse->jsonEncode->addKeyValue('page', $this->c->httpRequest->session['payload']['page']);
+        $this->c->httpResponse->jsonEncode->addKeyValue('perpage', $this->c->httpRequest->session['payload']['perpage']);
         $this->c->httpResponse->jsonEncode->addKeyValue('totalPages', $totalPages);
         $this->c->httpResponse->jsonEncode->addKeyValue('totalRecords', $totalRowsCount);
 
@@ -254,34 +259,30 @@ class Read
      * @param array   $keys          Module Keys in recursion.
      * @param boolean $useHierarchy  Use results in where clause of sub queries recursively.
      * @return boolean
+     * @throws \Exception
      */
     private function fetchMultipleRows(&$readSqlConfig, &$keys, $useHierarchy)
     {
         $isAssoc = $this->isAssoc($readSqlConfig);
         if (!$useHierarchy && isset($readSqlConfig['subQuery'])) {
-            throw new \Exception('Invalid Configuration: multipleRowFormat can\'t have sub query', 501);
+            throw new \Exception('Invalid Configuration: multipleRowFormat can\'t have sub query', HttpStatus::$InternalServerError);
         }
         $isAssoc = $this->isAssoc($readSqlConfig);
 
         list($sql, $sqlParams, $errors) = $this->getSqlAndParams($readSqlConfig);
         if (!empty($errors)) {
-            throw new \Exception($errors, 501);
+            throw new \Exception($errors, HttpStatus::$InternalServerError);
         }
 
         if (isset($readSqlConfig['countQuery'])) {
-            $start = $this->c->httpRequest->conditions['payload']['start'];
-            $offset = $this->c->httpRequest->conditions['payload']['perpage'];
+            $start = $this->c->httpRequest->session['payload']['start'];
+            $offset = $this->c->httpRequest->session['payload']['perpage'];
             $sql .= " LIMIT {$start}, {$offset}";
         }
 
         $singleColumn = false;
-        $stmt = $this->c->httpRequest->db->prepare($sql);
-        if (!$stmt) {
-            throw new \Exception('Invalid database query', 501);
-        }
-
-        $stmt->execute($sqlParams);
-        for ($i = 0; $row = $stmt->fetch(\PDO::FETCH_ASSOC);) {
+        $this->c->httpRequest->db->execDbQuery($sql, $sqlParams);
+        for ($i = 0; $row = $this->c->httpRequest->db->fetch();) {
             if ($i===0) {
                 if (count($row) === 1) {
                     $singleColumn = true;
@@ -303,7 +304,7 @@ class Read
                 $this->callReadDB($readSqlConfig, $keys, $row, $useHierarchy);
             }
         }
-        $stmt->closeCursor();
+        $this->c->httpRequest->db->closeCursor();
 
         return true;
     }
@@ -320,10 +321,10 @@ class Read
     {
         if ($useHierarchy) {
             if (count($keys) === 0) {
-                $this->c->httpRequest->conditions['hierarchyData'] = [];
-                $this->c->httpRequest->conditions['hierarchyData']['return'] = [];
+                $this->c->httpRequest->session['hierarchyData'] = [];
+                $this->c->httpRequest->session['hierarchyData']['return'] = [];
             }
-            $httpReq = &$this->c->httpRequest->conditions['hierarchyData']['return'];
+            $httpReq = &$this->c->httpRequest->session['hierarchyData']['return'];
             foreach ($keys as $k) {
                 if (!isset($httpReq[$k])) {
                     $httpReq[$k] = [];

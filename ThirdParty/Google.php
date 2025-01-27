@@ -4,8 +4,10 @@ namespace Microservices\ThirdParty;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\App\HttpStatus;
 use Microservices\ThirdParty\ThirdPartyInterface;
 use Microservices\ThirdParty\ThirdPartyTrait;
+
 
 /**
  * Class for third party - Google.
@@ -41,7 +43,7 @@ class Google implements ThirdPartyInterface
     public function __construct(&$common)
     {
         $this->c = &$common;
-        $this->c->httpRequest->setConnection($fetchFrom = 'Master');
+        $this->c->httpRequest->setConnection($fetchFrom = 'Slave');
     }
 
     /**
@@ -71,7 +73,7 @@ class Google implements ThirdPartyInterface
         curl_close($curl_handle);
         if (empty($output)){
             $output = ['Error' => 'Nothing returned by ipify'];
-            $this->c->httpResponse->httpStatus = 501;
+            $this->c->httpResponse->httpStatus = HttpStatus::$InternalServerError;
         } else {
             $output = json_decode($output, true);
         }

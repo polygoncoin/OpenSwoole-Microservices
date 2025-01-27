@@ -3,6 +3,7 @@ namespace Microservices\App;
 
 use Microservices\App\Constants;
 use Microservices\App\Env;
+use Microservices\App\HttpStatus;
 
 /**
  * Constants
@@ -18,9 +19,9 @@ use Microservices\App\Env;
  */
 class Logs
 {
-    private $logsDir = '/Logs';
+    private string $logsDir = '/Logs';
 
-    private $logTypes = [
+    private array $logTypes = [
         'debug'      => '/debug',
         'info'       => '/info',
         'error'      => '/error',
@@ -31,10 +32,18 @@ class Logs
         'emergency'  => '/emergency'
     ];
 
+    /**
+     * Validates password from its hash present in cache
+     *
+     * @param string $logType
+     * @param string $logContent
+     * @return void
+     * @throws \Exception
+     */
     public function log($logType, $logContent)
     {
         if (!in_array($logType, array_keys($this->logTypes))) {
-            throw new \Exception('Invalid log type', 501);
+            throw new \Exception('Invalid log type', HttpStatus::$InternalServerError);
         }
 
         $absLogsDir = Constants::$DOC_ROOT . $this->logsDir;

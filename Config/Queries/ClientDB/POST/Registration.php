@@ -9,7 +9,7 @@ return [
         ['payload', 'email', $Constants::$REQUIRED]
     ],
     '__SET__' => [
-        //column => [payload|readOnlySession|uriParams|insertIdParams|{custom}, key|{value}],
+        //column => [payload|userInfo|uriParams|insertIdParams|{custom}, key|{value}],
         'firstname' => ['payload', 'firstname'],
         'lastname' => ['payload', 'lastname'],
         'email' => ['payload', 'email']

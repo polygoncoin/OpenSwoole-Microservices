@@ -6,6 +6,7 @@ use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\Validation\ClientValidator;
 use Microservices\Validation\GlobalValidator;
+use Microservices\Validation\ValidatorInterface;
 
 /**
  * Validator
@@ -52,34 +53,34 @@ class Validator
     /**
      * Validate payload
      *
-     * @param array $conditions            Inputs
+     * @param array $session            Inputs
      * @param array $validationConfig Validation configuration.
      * @return array
      */
-    public function validate($conditions, $validationConfig)
+    public function validate($session, $validationConfig)
     {
-        if (isset(($conditions['required'])) && count($conditions['required']) > 0) {
-            if ((list($isValidData, $errors) = $this->validateRequired($conditions)) && !$isValidData) {
+        if (isset(($session['required'])) && count($session['required']) > 0) {
+            if ((list($isValidData, $errors) = $this->validateRequired($session)) && !$isValidData) {
                 return [$isValidData, $errors];
             }
         }
 
-        return $this->v->validate($conditions, $validationConfig);
+        return $this->v->validate($session, $validationConfig);
     }
 
     /**
      * Validate required payload
      *
-     * @param array $conditions Inputs
+     * @param array $session Inputs
      * @return array
      */
-    private function validateRequired($conditions)
+    private function validateRequired($session)
     {
         $isValidData = true;
         $errors = [];
         // Required fields payload validation
-        $payload = $conditions['payload'];
-        $required = $conditions['required'];
+        $payload = $session['payload'];
+        $required = $session['required'];
         if (count($payload) >= count($required)) {
             foreach ($required as $column) {
                 if (!isset($payload[$column])) {

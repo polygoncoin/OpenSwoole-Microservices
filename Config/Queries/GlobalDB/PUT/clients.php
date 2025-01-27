@@ -9,10 +9,10 @@ return [
         ['uriParams', 'client_id', $Constants::$REQUIRED]
     ],
     '__SET__' => [
-        //column => [payload|readOnlySession|uriParams|insertIdParams|{custom}, key|{value}],
+        //column => [payload|userInfo|uriParams|insertIdParams|{custom}, key|{value}],
         'name' => ['payload', 'name'],
         'comments' => ['payload', 'comments'],
-        'updated_by' => ['readOnlySession', 'user_id'],
+        'updated_by' => ['userInfo', 'user_id'],
         'updated_on' => ['custom', date('Y-m-d H:i:s')]
     ],
     '__WHERE__' => [

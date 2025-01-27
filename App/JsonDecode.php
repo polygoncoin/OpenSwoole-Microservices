@@ -1,6 +1,8 @@
 <?php
 namespace Microservices\App;
 
+use Microservices\App\HttpStatus;
+
 /**
  * Creates Arrays from JSON String
  *
@@ -21,7 +23,7 @@ class JsonDecode
     /**
      * Json File Handle
      *
-     * @var resource
+     * @var null|resource
      */
     private $jsonFileHandle = null;
 
@@ -29,7 +31,7 @@ class JsonDecode
      * JSON file indexes
      * Contains start and end positions for requested indexes
      *
-     * @var array
+     * @var null|array
      */
     public $jsonFileIndex = null;
 
@@ -50,20 +52,20 @@ class JsonDecode
     /**
      * JsonEncode constructor
      *
-     * @param object $jsonFileHandle File handle
+     * @param resource $jsonFileHandle File handle
      * @return void
      */
     public function __construct(&$jsonFileHandle)
     {
         if (!$jsonFileHandle) {
-            throw new \Exception('Invalid file', 501);
+            die('Invalid file');
         }
         $this->jsonFileHandle = &$jsonFileHandle;
 
         // File Stats - Check for size
         $fileStats = fstat($this->jsonFileHandle);
         if (isset($fileStats['size']) && $fileStats['size'] > $this->allowedPayloadLength) {
-            throw new \Exception('File size greater than allowed size', 501);
+            die('File size greater than allowed size');
         }
     }
 
@@ -158,7 +160,7 @@ class JsonDecode
                 if (isset($jsonFileIndex[$key])) {
                     $jsonFileIndex = &$jsonFileIndex[$key];
                 } else {
-                    throw new \Exception("Invalid key {$key}", 501);
+                    die("Invalid key {$key}");
                 }
             }
         }
@@ -189,7 +191,7 @@ class JsonDecode
                 if (isset($jsonFileIndex[$key])) {
                     $jsonFileIndex = &$jsonFileIndex[$key];
                 } else {
-                    throw new \Exception("Invalid key {$key}", 501);
+                    die("Invalid key {$key}");
                 }
             }
         }
@@ -245,6 +247,7 @@ class JsonDecode
      *
      * @param string $keys Key values seperated by colon.
      * @return void
+     * @throws \Exception
      */
     public function load($keys)
     {
@@ -259,7 +262,7 @@ class JsonDecode
                 if (isset($jsonFileIndex[$key])) {
                     $jsonFileIndex = &$jsonFileIndex[$key];
                 } else {
-                    throw new \Exception("Invalid key {$key}", 501);
+                    die("Invalid key {$key}");
                 }
             }
         }
@@ -270,7 +273,7 @@ class JsonDecode
             $this->jsonDecodeEngine->_s_ = $jsonFileIndex['_s_'];
             $this->jsonDecodeEngine->_e_ = $jsonFileIndex['_e_'];
         } else {
-            throw new \Exception("Invalid keys '{$keys}'", 400);
+            throw new \Exception("Invalid keys '{$keys}'", HttpStatus::$BadRequest);
         }
     }
 }
@@ -295,21 +298,21 @@ class JsonDecodeEngine
     /**
      * File Handle
      *
-     * @var resource
+     * @var null|resource
      */
     private $jsonFileHandle = null;
 
     /**
      * Array of JsonEncodeObject objects
      *
-     * @var JsonEncodeObject[]
+     * @var JsonDecodeObject[]
      */
     private $objects = [];
 
     /**
      * Current JsonEncodeObject object
      *
-     * @var null|JsonEncodeObject
+     * @var JsonDecodeObject
      */
     private $currentObject = null;
 
@@ -352,7 +355,7 @@ class JsonDecodeEngine
     /**
      * JsonEncode constructor
      *
-     * @param resource $jsonFileHandle
+     * @param null|resource $jsonFileHandle
      * @return void
      */
     public function __construct(&$jsonFileHandle)
@@ -738,7 +741,7 @@ class JsonDecodeEngine
     {
         $str =  !is_null($str) ? trim($str) : $str;
         if (!empty($str)) {
-            throw new \Exception("Invalid JSON: {$str}", 501);
+            die("Invalid JSON: {$str}");
         }
     }
 

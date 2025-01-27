@@ -24,4 +24,4 @@ return [
         ],
         'mode' => 'singleRowFormat'//Single row returned.
     ]
-][isset($this->c->httpRequest->conditions['uriParams']['group_id'])?'single':'all'];
+][isset($this->c->httpRequest->session['uriParams']['group_id'])?'single':'all'];

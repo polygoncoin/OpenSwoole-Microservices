@@ -25,4 +25,4 @@ return [
         ],
         'mode' => 'singleRowFormat'//Single row returned.
     ],
-][isset($this->c->httpRequest->conditions['uriParams']['client_id'])?'single':'all'];
+][isset($this->c->httpRequest->session['uriParams']['client_id'])?'single':'all'];

@@ -6,14 +6,14 @@ use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\Servers\Cache\AbstractCache;
-use Microservices\App\Servers\Database\MySql as DB_MySql;
+use Microservices\App\Servers\Database\PgSql as DB_PgSQL;
 
 /**
  * Loading MySql server
  *
  * This class is built to handle cache operation.
  *
- * @category   Cache - MySql
+ * @category   Cache - PgSql
  * @package    Microservices
  * @author     Ramesh Narayan Jangid
  * @copyright  Ramesh Narayan Jangid
@@ -21,7 +21,7 @@ use Microservices\App\Servers\Database\MySql as DB_MySql;
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-class MySql extends AbstractCache
+class PgSql extends AbstractCache
 {
     /**
      * Cache hostname
@@ -61,7 +61,7 @@ class MySql extends AbstractCache
     /**
      * Cache connection
      *
-     * @var null|DB_MySql
+     * @var null|Pg_MySql
      */
     private $cache = null;
 
@@ -110,7 +110,7 @@ class MySql extends AbstractCache
     {
         if (!is_null($this->cache)) return;
         try {
-            $this->cache = new DB_MySql(
+            $this->cache = new DB_PgSql(
                 $this->hostname,
                 $this->port,
                 $this->username,

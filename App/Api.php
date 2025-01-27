@@ -22,7 +22,7 @@ class Api
     /**
      * Route matched for processing before payload was collected.
      *
-     * @var boolean
+     * @var null|boolean
      */
     private $beforePayload = null;
 
@@ -50,9 +50,9 @@ class Api
      */
     public function init()
     {
-        $this->c->httpRequest->checkHost();
-        $this->c->httpRequest->loadToken();
-        $this->c->httpRequest->initSession();
+        $this->c->httpRequest->loadClient();
+        $this->c->httpRequest->loadUser();
+        $this->c->httpRequest->loadGroup();
         $this->c->httpRequest->parseRoute();
 
         return true;
@@ -114,7 +114,7 @@ class Api
     {
         $class = null;
 
-        switch (true) {
+        switch ($this->c->httpRequest->routeElements[0]) {
 
             case Env::$allowRoutesRequest && Env::$routesRequestUri === $this->c->httpRequest->routeElements[0]:
                 $class = __NAMESPACE__ . '\\Routes';

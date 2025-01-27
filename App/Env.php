@@ -58,12 +58,6 @@ class Env
     {
         if (!is_null(self::$initialized)) return;
 
-        // Load .env
-        $env = parse_ini_file(__DIR__ . '/../.env');
-        foreach ($env as $key => $value) {
-            putenv("{$key}={$value}");
-        }
-
         self::$globalDatabase = getenv('globalDatabase');
         self::$cacheDatabase = getenv('cacheDatabase');
 

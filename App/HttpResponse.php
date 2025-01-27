@@ -4,6 +4,7 @@ namespace Microservices\App;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\App\HttpStatus;
 use Microservices\App\JsonEncode;
 
 /**
@@ -25,7 +26,7 @@ class HttpResponse
      *
      * @var integer
      */
-    public $httpStatus = 200;
+    public $httpStatus;
 
     /**
      * Json Encode Object
@@ -37,7 +38,7 @@ class HttpResponse
     /**
      * Microservices Request Details
      *
-     * @var null|array
+     * @var array
      */
     public $httpRequestDetails = null;
 
@@ -48,6 +49,7 @@ class HttpResponse
      */
     public function __construct(&$httpRequestDetails)
     {
+        $this->httpStatus = HttpStatus::$Ok;
         $this->httpRequestDetails = &$httpRequestDetails;
     }
 

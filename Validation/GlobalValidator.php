@@ -43,11 +43,11 @@ class GlobalValidator implements ValidatorInterface
     /**
      * Validate payload
      *
-     * @param array $conditions            Input's data
+     * @param array $session            Input's data
      * @param array $validationConfig Validation configuration.
      * @return array
      */
-    public function validate($conditions, $validationConfig)
+    public function validate($session, $validationConfig)
     {
         $isValidData = true;
         $errors = [];
@@ -57,7 +57,7 @@ class GlobalValidator implements ValidatorInterface
                 if ($mode === 'custom') {
                     $args[$attr] = $key;
                 } else {
-                    $args[$attr] = $conditions[$mode][$key];
+                    $args[$attr] = $session[$mode][$key];
                 }
             }
             $fn = $v['fn'];

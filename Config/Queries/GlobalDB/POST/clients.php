@@ -8,10 +8,10 @@ return [
         ['payload', 'comments']
     ],
     '__SET__' => [
-        //column => [payload|readOnlySession|uriParams|insertIdParams|{custom}, key|{value}],
+        //column => [payload|userInfo|uriParams|insertIdParams|{custom}, key|{value}],
         'name' => ['payload', 'name'],
         'comments' => ['payload', 'comments'],
-        'created_by' => ['readOnlySession', 'user_id'],
+        'created_by' => ['userInfo', 'user_id'],
         'created_on' => ['custom', date('Y-m-d H:i:s')],
         'is_approved' => ['custom', 'No'],
         'is_disabled' => ['custom', 'No'],

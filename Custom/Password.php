@@ -39,7 +39,6 @@ class Password implements CustomInterface
     public function __construct(&$common)
     {
         $this->c = &$common;
-        $this->c->httpRequest->setConnection($fetchFrom = 'Master');
     }
 
     /**
@@ -60,19 +59,19 @@ class Password implements CustomInterface
      */
     public function process()
     {
-        if ($this->c->httpRequest->conditions['httprequestPayloadType'] === 'Object') {
+        if ($this->c->httpRequest->session['payloadType'] === 'Object') {
             $payload = $this->c->httpRequest->jsonDecode->get();
         } else {
             $payload = $this->c->httpRequest->jsonDecode->get('0');
         }
-        $this->c->httpRequest->conditions['payload'] = $payload;
+        $this->c->httpRequest->session['payload'] = $payload;
 
-        $oldPassword = $this->c->httpRequest->conditions['payload']['old_password'];
-        $oldPasswordHash = $this->c->httpRequest->conditions['readOnlySession']['password_hash'];
+        $oldPassword = $this->c->httpRequest->session['payload']['old_password'];
+        $oldPasswordHash = $this->c->httpRequest->session['userInfo']['password_hash'];
 
         if (password_verify($oldPassword, $oldPasswordHash)) {
-            $userName = $this->c->httpRequest->conditions['readOnlySession']['username'];
-            $newPassword = $this->c->httpRequest->conditions['payload']['new_password'];
+            $userName = $this->c->httpRequest->session['userInfo']['username'];
+            $newPassword = $this->c->httpRequest->session['payload']['new_password'];
             $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
 
             $table = getenv('client_users');
@@ -86,13 +85,13 @@ class Password implements CustomInterface
             $this->c->httpRequest->db->execDbQuery($sql, $sqlParams);
             $this->c->httpRequest->db->closeCursor();
 
-            $clientId = $this->c->httpRequest->clientInfo['client_id'];
+            $clientId = $this->c->httpRequest->session['clientInfo']['client_id'];
             $cu_key = CacheKey::ClientUser($clientId,$userName);
             if ($this->c->httpRequest->cache->cacheExists($cu_key)) {
                 $userDetails = json_decode($this->c->httpRequest->cache->getCache($cu_key), true);
                 $userDetails['password_hash'] = $newPasswordHash;
                 $this->c->httpRequest->cache->setCache($cu_key, json_encode($userDetails));
-                $this->c->httpRequest->cache->deleteCache(CacheKey::Token($this->c->httpRequest->conditions['token']));
+                $this->c->httpRequest->cache->deleteCache(CacheKey::Token($this->c->httpRequest->session['token']));
             }
 
             $this->c->httpResponse->jsonEncode->addKeyValue('Results', 'Password changed successfully');

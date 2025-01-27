@@ -5,6 +5,7 @@ use Microservices\App\AppTrait;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\App\HttpStatus;
 use Microservices\App\Validator;
 
 /**
@@ -41,13 +42,6 @@ class Write
     }
 
     /**
-     * Validator class object
-     *
-     * @var object
-     */
-    public $validator = null;
-
-    /**
      * Initialize
      *
      * @return boolean
@@ -77,8 +71,7 @@ class Write
         $useHierarchy = $this->getUseHierarchy($writeSqlConfig);
 
         if (
-            Env::$allowConfigRequest &&
-            Env::$isConfigRequest
+            (Env::$allowConfigRequest && Env::$isConfigRequest)
         ) {
             $this->processWriteConfig($writeSqlConfig, $useHierarchy);
         } else {
@@ -113,20 +106,20 @@ class Write
     private function processWrite(&$writeSqlConfig, $useHierarchy)
     {
         // Set required fields.
-        $this->c->httpRequest->conditions['requiredArr'] = $this->getRequired($writeSqlConfig, true, $useHierarchy);
+        $this->c->httpRequest->session['requiredArr'] = $this->getRequired($writeSqlConfig, true, $useHierarchy);
 
-        if ($this->c->httpRequest->conditions['httpRequestPayloadType'] === 'Object') {
+        if ($this->c->httpRequest->session['payloadType'] === 'Object') {
             $this->c->httpResponse->jsonEncode->startObject('Results');
         } else {
             $this->c->httpResponse->jsonEncode->startArray('Results');
         }
 
         // Perform action
-        $i_count = $this->c->httpRequest->conditions['httpRequestPayloadType'] === 'Object' ? 1 : $this->c->httpRequest->jsonDecode->count();
+        $i_count = $this->c->httpRequest->session['payloadType'] === 'Object' ? 1 : $this->c->httpRequest->jsonDecode->count();
 
         for ($i=0; $i < $i_count; $i++) {
             if ($i === 0) {
-                if ($this->c->httpRequest->conditions['httpRequestPayloadType'] === 'Object') {
+                if ($this->c->httpRequest->session['payloadType'] === 'Object') {
                     $payloadKey = '';
                 } else {
                     $payloadKey = "{$i}";
@@ -138,18 +131,18 @@ class Write
             // Begin DML operation
             $this->c->httpRequest->db->begin();
             $response = [];
-            $this->writeDB($writeSqlConfig, $payloadKey, $useHierarchy, $response, $this->c->httpRequest->conditions['requiredArr']);
+            $this->writeDB($writeSqlConfig, $payloadKey, $useHierarchy, $response, $this->c->httpRequest->session['requiredArr']);
             if ($this->c->httpRequest->db->beganTransaction === true) {
                 $this->c->httpRequest->db->commit();
                 $arr = [
-                    'Status' => 200,
+                    'Status' => HttpStatus::$Created,
                     'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray($payloadKey),
                     'Response' => &$response
                 ];
             } else {
-                $this->c->httpResponse->httpStatus = 400;
+                $this->c->httpResponse->httpStatus = HttpStatus::$BadRequest;
                 $arr = [
-                    'Status' => 400,
+                    'Status' => HttpStatus::$BadRequest,
                     'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray($payloadKey),
                     'Error' => &$response
                 ];
@@ -157,7 +150,7 @@ class Write
             $this->c->httpResponse->jsonEncode->encode($arr);
         }
 
-        if ($this->c->httpRequest->conditions['httpRequestPayloadType'] === 'Object') {
+        if ($this->c->httpRequest->session['payloadType'] === 'Object') {
             $this->c->httpResponse->jsonEncode->endObject();
         } else {
             $this->c->httpResponse->jsonEncode->endArray();
@@ -175,6 +168,7 @@ class Write
      * @param array   $response       Response by reference.
      * @param array   $required       Required fields.
      * @return boolean
+     * @throws \Exception
      */
     private function writeDB(&$writeSqlConfig, $payloadKey, $useHierarchy, &$response, &$required)
     {
@@ -199,14 +193,14 @@ class Write
             }
 
             if (!$this->c->httpRequest->jsonDecode->isset($payloadKey)) {
-                throw new \Exception("Paylaod key '{$payloadKey}' not set", 404);
+                throw new \Exception("Paylaod key '{$payloadKey}' not set", HttpStatus::$NotFound);
             }
 
-            $this->c->httpRequest->conditions['payload'] = $this->c->httpRequest->jsonDecode->get($payloadKey);
+            $this->c->httpRequest->session['payload'] = $this->c->httpRequest->jsonDecode->get($payloadKey);
             if (isset($required['__required__'])) {
-                $this->c->httpRequest->conditions['required'] = $required['__required__'];
+                $this->c->httpRequest->session['required'] = $required['__required__'];
             } else {
-                $this->c->httpRequest->conditions['required'] = [];
+                $this->c->httpRequest->session['required'] = [];
             }
 
             // Validation
@@ -238,7 +232,7 @@ class Write
                 } else {
                     $response[$counter][$writeSqlConfig['insertId']] = $insertId;
                 }
-                $this->c->httpRequest->conditions['insertIdParams'][$writeSqlConfig['insertId']] = $insertId;
+                $this->c->httpRequest->session['insertIdParams'][$writeSqlConfig['insertId']] = $insertId;
             } else {
                 $affectedRows = $this->c->httpRequest->db->affectedRows();
                 if ($isAssoc) {
@@ -258,7 +252,7 @@ class Write
                             $_payloadKey = $modulePayloadKey;
                             $_required = &$required[$module] ?? [];
                         } else {
-                            throw new \Exception("Invalid payload: Module '{$module}' missing", 404);
+                            throw new \Exception("Invalid payload: Module '{$module}' missing", HttpStatus::$NotFound);
                         }
                     } else {
                         $_payloadKey = $modulePayloadKey;
@@ -297,9 +291,9 @@ class Write
         if (isset($writeSqlConfig['validate'])) {
             list($isValidData, $errors) = $this->validate($writeSqlConfig['validate']);
             if ($isValidData !== true) {
-                $this->c->httpResponse->httpStatus = 400;
+                $this->c->httpResponse->httpStatus = HttpStatus::$BadRequest;
                 $this->c->httpResponse->jsonEncode->startObject();
-                $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $this->c->httpRequest->conditions['payload']);
+                $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $this->c->httpRequest->session['payload']);
                 $this->c->httpResponse->jsonEncode->addKeyValue('Error', $errors);
                 $this->c->httpResponse->jsonEncode->endObject();
                 $return = false;

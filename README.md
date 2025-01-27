@@ -2,25 +2,32 @@
 
 This is a light & easy Openswoole based Microservices framework. It can be used to create APIs in a very short time once you are done with your database.
 
+## Contents
+
+- [Important Files](#important-files)
+- [Environment File](#environment-file)
+- [Folders](#folders)
+- [Routes Folder](#routes-folder)
+- [Queries Folder](#queries-folder)
+- [HTTP Request](#http-request)
+- [Hierarchy Data](#hierarchy-data)
+- [Configuration Route](#configuration-route)
+- [Database](#database)
+- [Javascript HTTP request example](#javascript-http-request-example)
+- [License](#license)
+
+***
+
 ## Important Files
 
-**.env.example** Create a copy of this file as **.env**
-
-**global.sql** Import this SQL file on your **MySQL global** instance
-
-**client\_master.sql** Import this SQL file on your **MySQL client** instance
-
-**cache.sql** Import this SQL file for cache in **MySQL cache** instance if Redis is not the choice (To be configured in .env)
-
-**Start.php** Start your application with a command on your console
-
-````
-$ php Start.php
-````
+- **.env.example** Create a copy of this file as **.env**
+- **global.sql** Import this SQL file on your **MySql global** instance
+- **client\_master.sql** Import this SQL file on your **MySql client** instance
+- **cache.sql** Import this SQL file for cache in **MySql cache** instance if Redis is not the choice (To be configured in .env)
 
 > **Note**: One can import all three sql's in a single database to start with. Just configure the same details in the .env file.
 
-## .env.example
+## Environment File
 
 Below are the configuration settings details in .env
 
@@ -37,7 +44,7 @@ Below are the configuration settings details in .env
 >Crons Details
 
 - maxPerpage=10000
->;Maximum value of perpage (records per page)
+>Maximum value of perpage (records per page)
 
 #### Cache Server Details (Redis)
 - cacheType='Redis'
@@ -48,7 +55,7 @@ Below are the configuration settings details in .env
 - cacheDatabase=0
 
 #### Global Database details - global.sql
-- globalType='MySQL'
+- globalType='MySql'
 - globalHostname='127.0.0.1'
 - globalPort=3306
 - globalUsername='root'
@@ -60,7 +67,7 @@ Below are the configuration settings details in .env
 - clients='m001_master_clients'
 
 #### Default application database/server for clients
-- defaultDbType='MySQL'
+- defaultDbType='MySql'
 - defaultDbHostname='127.0.0.1'
 - defaultDbPort=3306
 - defaultDbUsername='root'
@@ -98,11 +105,11 @@ Below are the configuration settings details in .env
 - **Upload** Contains classes for upload file API's
 - **Validation** Contains validation classes.
 
-### Route Folder
+## Route Folder
 
-- **Config/Routes/&lt;GroupName&gt;**
+- **/Config/Routes/&lt;GroupName&gt;**
 
-#### Files
+### Files
 
 - **/GETroutes.php** for all GET method routes configuration.
 - **/POSTroutes.php** for all POST method routes configuration.
@@ -112,51 +119,51 @@ Below are the configuration settings details in .env
 
 **&lt;GroupName&gt;** assigned group to a user for accessing the API's
 
-#### Example
+### Example
 
 * For configuring route **/tableName/parts** GET method
-````
+```PHP
 return [
-	'tableName' => [
-		'parts' => [
-			'__file__' => 'SQL file location'
-		]
-	]
+    'tableName' => [
+        'parts' => [
+            '__file__' => 'SQL file location'
+        ]
+    ]
 ];
-````
+```
 * For configuring route **/tableName/{id}** where id is dynamic **integer** value to be collected.
-````
+```PHP
 return [
-	'tableName' => [
-		'{id:int}' => [
-			'__file__' => 'SQL file location'
-		]
-	]
+    'tableName' => [
+        '{id:int}' => [
+            '__file__' => 'SQL file location'
+        ]
+    ]
 ];
-````
+```
 * Same dynamic variable but with a different data type, for e.g. **{id}** will be treated differently for **string** and **integer** values to be collected.
-````
+```PHP
 return [
-	'tableName' => [
-		'{id:int}' => [
-			'__file__' => 'SQL file location for integer data type'
-		],
-		'{id:string}' => [
-			'__file__' => 'SQL file location for string data type'
-		]
-	]
+    'tableName' => [
+        '{id:int}' => [
+            '__file__' => 'SQL file location for integer data type'
+        ],
+        '{id:string}' => [
+            '__file__' => 'SQL file location for string data type'
+        ]
+    ]
 ];
-````
+```
 * To restrict dynamic values to a certain set of values. One can do the same by appending comma-separated values after OR key.
-````
+```PHP
 return [
-	'{tableName:string|admin,group,client,routes}' => [
-		'{id:int}' => [
-			'__file__' => 'SQL file location'
-		]
-	]
+    '{tableName:string|admin,group,client,routes}' => [
+        '{id:int}' => [
+            '__file__' => 'SQL file location'
+        ]
+    ]
 ];
-````
+```
 
 * On other side; to exclude dynamic values. One can do the same by prefixing NOT(!) synbol to comma-separated values.
 ```PHP
@@ -172,8 +179,8 @@ return [
 
 ## Queries Folder
 
-- **Config/Queries/GlobalDB** for global database.
-- **Config/Queries/ClientDB** for Clients (including all hosts and their databases).
+- **/Config/Queries/GlobalDB** for global database.
+- **/Config/Queries/ClientDB** for Clients (including all hosts and their databases).
 
 ### Files
 
@@ -187,92 +194,124 @@ return [
 
 ### Example
 
-* GET method.
+####GET method.
 
-````
-<?php
-	return [
-		 'query' => "SELECT * FROM TableName WHERE id = ? AND group_id = ? AND client_id = ?",
-		'__WHERE__' => [//column => [uriParams|payload|function|readOnlySession|{custom}, key|{value}]
-		'id' => ['uriParams', 'id'],
-		'group_id' => ['payload', 'group_id'],
-		'client_id' => ['readOnlySession', 'client_id'],
-		'mode' => 'singleRowFormat',// Single row returned.
-		'subQuery' => [
-			'Clients' => [
-				'query' => "MySQL Query here",
-				'__WHERE__' => [],
-				'mode' => 'multipleRowFormat'// Multiple rows returned.
-			],
-			...
-		],
-		'validate' => [
-		[
-			'fn' => 'validateGroupId',
-			'fnArgs' => [
-				'group_id' => ['payload', 'group_id']
-			],
-			'errorMessage' => 'Invalid Group Id'
-		],
-		...
-	]
+* For Single row
+
+```PHP
+return [
+    'query' => "SELECT * FROM TableName WHERE id = ? AND group_id = ? AND client_id = ?",
+    '__WHERE__' => [
+        //column => [uriParams|payload|function|userInfo|{custom}, key|{value}]
+        'id' => ['uriParams', 'id'],
+        'group_id' => ['payload', 'group_id'],
+        'client_id' => ['userInfo', 'client_id'],
+    ],
+    'mode' => 'singleRowFormat'                // Single row is returned.
 ];
-````
+```
+* For Multiple rows
+
+```PHP
+return [
+    'query' => "SELECT * FROM TableName WHERE client_id = ?",
+    '__WHERE__' => [
+        //column => [uriParams|payload|function|userInfo|{custom}, key|{value}]
+        'client_id' => ['userInfo', 'client_id'],
+    ],
+    'mode' => 'multipleRowFormat'            // Multiple rows are returned.
+];
+```
+
+* For Mixed
+
+```PHP
+return [
+    'query' => "SELECT * FROM TableName WHERE id = ? AND group_id = ? AND client_id = ?",
+    '__WHERE__' => [
+        //column => [uriParams|payload|function|userInfo|{custom}, key|{value}]
+        'id' => ['uriParams', 'id'],
+        'group_id' => ['payload', 'group_id'],
+        'client_id' => ['userInfo', 'client_id'],
+    ],
+    'mode' => 'singleRowFormat',            // Single row is returned.
+    'subQuery' => [
+        'Clients' => [
+            'query' => "MySql Query here",
+            '__WHERE__' => [],
+            'mode' => 'multipleRowFormat'    // Multiple rows are returned.
+        ],
+        ...
+    ],
+    'validate' => [
+        [
+            'fn' => 'validateGroupId',
+            'fnArgs' => [
+                'group_id' => ['payload', 'group_id']
+            ],
+            'errorMessage' => 'Invalid Group Id'
+        ]
+    ],
+    ...
+];
+```
 > Here **query & mode** keys are required keys
 
 * For POST/PUT/PATCH/DELETE method.
 
-````
-<?php
-	return [
-		'query' => "INSERT TableName SET SET WHERE WHERE ",
-		// Fields present in below __CONFIG__ shall be supported for DB operation. Both Required and Optional
-		'__CONFIG__' => [// Set your payload/uriParams fields config here.
-			['payload', 'group_id', Constants::$REQUIRED], // Required field
-			['payload', 'password'], // Optional field
-			['payload', 'client_id'], // Optional field
-		],
-		'__SET__' => [
-			//column => [uriParams|payload|readOnlySession|insertIdParams|{custom}|function, key|{value}|function()],
-			'group_id' => ['payload', 'group_id'],
-			'password' => ['function', function($conditions) {
-				return password_hash($conditions['payload']['password'], PASSWORD_DEFAULT);
-			}],
-			'client_id' => ['readOnlySession', 'client_id']
-		],
-		'__WHERE__' => [// column => [uriParams|payload|function|readOnlySession|insertIdParams|{custom}, key|{value}
-			'id' => ['uriParams', 'id']
-		],
-		'insertId' => 'tablename1:id',// Last insert id key name in $conditions['insertIdParams'][<tableName>:id];
-		'subQuery' => [
-			'module1' => [
-				'query' => "MySQL Query here",
-				'__SET__' => [
-					'previous_table_id' => ['insertIdParams', '&lt;tableName&gt;:id'],
-				],
-				'__WHERE__' => [],
-			],
-			...
-		],
-		'validate' => [
-			[
-				'fn' => 'validateGroupId',
-				'fnArgs' => [
-					'group_id' => ['payload', 'group_id']
-				],
-				'errorMessage' => 'Invalid Group Id'
-			],
-			...
-		]
-	];
-````
+```PHP
+return [
+    'query' => "INSERT TableName SET SET WHERE WHERE ",
+    // Fields present in below __CONFIG__ shall be supported for DB operation. Both Required and Optional
+    '__CONFIG__' => [
+        // Set your payload/uriParams fields config here.
+        ['payload', 'group_id', Constants::$REQUIRED],    // Required field
+        ['payload', 'password'],                        // Optional field
+        ['payload', 'client_id'],                        // Optional field
+    ],
+    '__SET__' => [
+        //column => [uriParams|payload|userInfo|insertIdParams|{custom}|function, key|{value}|function($session)],
+        'group_id' => ['payload', 'group_id'],
+        'password' => ['function', function($session) {
+            return password_hash($session['payload']['password'], PASSWORD_DEFAULT);
+        }],
+        'client_id' => ['userInfo', 'client_id']
+    ],
+    '__WHERE__' => [
+        // column => [uriParams|payload|function|userInfo|insertIdParams|{custom}, key|{value}
+        'id' => ['uriParams', 'id']
+    ],
+    // Last insert id to be made available as $session['insertIdParams'][uniqueParamString];
+    'insertId' => '<keyName>:id',
+    'subQuery' => [
+        'module1' => [
+            'query' => "MySql Query here",
+            '__SET__' => [
+                'previous_table_id' => ['insertIdParams', '<keyName>:id'],
+            ],
+            '__WHERE__' => [],
+        ],
+        ...
+    ],
+    'validate' => [
+        [
+            'fn' => 'validateGroupId',
+            'fnArgs' => [
+                'group_id' => ['payload', 'group_id']
+            ],
+            'errorMessage' => 'Invalid Group Id'
+        ],
+        ...
+    ]
+];
+```
 > **Note**: If there are modules or configurations repeated. One can reuse them by palcing them in a separate file and including as below.
-````
+```PHP
 'subQuery' => [
-	//Here the module1 properties are reused for write operation.
-	'module1' => include DOC_ROOT . 'Config/Queries/ClientDB/Common/reusefilename.php',
+    //Here the module1 properties are reused for write operation.
+    'module1' => include DOC_ROOT . 'Config/Queries/ClientDB/Common/reusefilename.php',
 ]
-````
+```
 > **Note**: For POST, PUT, PATCH, and DELETE methods we can configure both INSERT as well as UPDATE queries.
 
 ## HTTP Request
@@ -288,168 +327,155 @@ return [
 ### POST, PUT, PATCH, and DELETE Request
 
 * Single
-````
-{
-	"Payload":
-	{
-		"key1": "value1",
-		"key2": "value2",
-		...
-	}
+
+```javascript
+var payload = {
+    "key1": "value1",
+    "key2": "value2",
+    ...
 };
-````
+```
 
 * Multiple
-````
-{
-	"Payload":
-	[
-		{
-			"key1": "value1",
-			"key2": "value2",
-			...
-		},
-		{
-			"key1": "value1",
-			"key2": "value2",
-			...
-		},
-		...
-	]
-};
-````
+
+```javascript
+var payload = [
+    {
+        "key1": "value1",
+        "key2": "value2",
+        ...
+    },
+    {
+        "key1": "value1",
+        "key2": "value2",
+        ...
+    },
+    ...
+];
+```
 
 ### HttpRequest Variables
 
-- **$conditions\['readOnlySession'\]** Session Data.
+- **$session\['userInfo'\]** Session Data.
 > This remains same for every request and contains keys like id, group\_id, client\_id
 
-- **$conditions\['uriParams'\]** Data passed in URI.
-> Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $conditions\['uriParams'\] will hold these dynamic values as below.
+- **$session\['uriParams'\]** Data passed in URI.
+> Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $session\['uriParams'\] will hold these dynamic values as below.
 
-- **$conditions\['payload'\]** Request data.
+- **$session\['payload'\]** Request data.
 > For **GET** method, the **$\_GET** is the payload.
 
-* **$conditions\['insertIdParams'\]** Insert ids Data as per configuration.
+* **$session\['insertIdParams'\]** Insert ids Data as per configuration.
 >For **POST/PUT/PATCH/DELETE** we perform both INSERT as well as UPDATE operation. The insertIdParams contains the insert ids of the executed INSERT queries.
 
-* **$conditions\['hierarchyData'\]** Hierarchy data.
+* **$session\['hierarchyData'\]** Hierarchy data.
 >For **GET** method, one can use previous query results if configured to use hierarchy.
 
-### Hierarchy
+## Hierarchy Data
 
 - Config/Queries/ClientDB/GET/Category.php
 >In this file one can confirm how previous select data is used recursively in subQuery select as indicated by useHierarchy flag.
-````
+
+```PHP
 'parent_id' => ['hierarchyData', 'return:id'],
-````
+```
 
 - Config/Queries/ClientDB/POST/Category.php .Here a request can handle the hierarchy for write operations.
 
-````
+```PHP
 return [
-	'query' => "INSERT INTO `category` SET SET",
-		'__CONFIG__' => [
-			['payload', 'name', Constants::$REQUIRED],
-		],
-		'__SET__' => [
-			'name' => ['payload', 'name'],
-			'parent_id' => ['custom', 0],
-		],
-		'insertId' => 'category:id',
-		'subQuery' => [
-			'module1' => [
-				query' => "INSERT INTO `category` SET SET",
-				'__CONFIG__' => [
-					['payload', 'subname', Constants::$REQUIRED],
-				],
-				'__SET__' => [
-					'name' => ['payload', 'subname'],
-					'parent_id' => ['insertIdParams', 'category:id'],
-				],
-				'insertId' => 'sub:id',
-			]
-		],
-	'useHierarchy' => true
+    'query' => "INSERT INTO `category` SET SET",
+    '__CONFIG__' => [
+        ['payload', 'name', Constants::$REQUIRED],
+    ],
+    '__SET__' => [
+        'name' => ['payload', 'name'],
+        'parent_id' => ['custom', 0],
+    ],
+    'insertId' => 'category:id',
+    'subQuery' => [
+        'module1' => [
+            'query' => "INSERT INTO `category` SET SET",
+            '__CONFIG__' => [
+                ['payload', 'subname', Constants::$REQUIRED],
+            ],
+            '__SET__' => [
+                'name' => ['payload', 'subname'],
+                'parent_id' => ['insertIdParams', 'category:id'],
+            ],
+            'insertId' => 'sub:id',
+        ]
+    ],
+    'useHierarchy' => true
 ];
-````
+```
 
-#### Hierarchy Request
+### Hierarchy Request
 
 - Request - 1: Single object.
 
-````
-{
-	"Payload":
-	{
-		"name":"name",
-		"module1": {
-			"subname":"subname",
-		}
-	}
+```javascript
+var payload = {
+    "name":"name",
+    "module1": {
+        "subname":"subname",
+    }
 }
-````
+```
 
 - Request - 2: Array of module1
 
-````
-{
-	"Payload":
-	{
-		"name":"name",
-		"module1":
-		[
-			{
-				"subname":"subname1",
-			},
-			{
-				"subname":"subname2",
-			},
-			...
-		]
-	}
+```javascript
+var payload = {
+    "name":"name",
+    "module1":
+    [
+        {
+            "subname":"subname1",
+        },
+        {
+            "subname":"subname2",
+        },
+        ...
+    ]
 }
-````
+```
 
 - Request - 3: Array of payload and arrays of module1
 
-````
-{
-	"Payload":
-	[
-		{
-			"name":"name1",
-			"module1":
-			[
-				{
-					"subname":"subname1",
-				},
-				{
-					"subname":"subname2",
-				},
-				...
-			]
-		},
-		{
-		{
-			"name":"name2",
-			"module1":
-			[
-				{
-					"subname":"subname21",
-				},
-				{
-					"subname":"subname22",
-				},
-				...
-			]
-		},
-		...
-	]
-}
-````
+```javascript
+var payload = [
+    {
+        "name":"name1",
+        "module1":
+        [
+            {
+                "subname":"subname1",
+            },
+            {
+                "subname":"subname2",
+            },
+            ...
+        ]
+    },
+    {
+        "name":"name2",
+        "module1":
+        [
+            {
+                "subname":"subname21",
+            },
+            {
+                "subname":"subname22",
+            },
+            ...
+        ]
+    },
+    ...
+]
+```
 
-### Route ending with /config
+## Configuration Route
 
 * Appending route with **/config** returns the payload information that should be supplied; both required and optional with desired format.
 
@@ -467,7 +493,7 @@ configRequestUriKeyword='config' ;for appending /config at end of URI
 
 >For controlling globally there is a flag in env file labled **allowConfigRequest**
 
-#### r=/routes
+### r=/routes
 
 This lists down all allowed routes for HTTP methods respectively.
 
@@ -480,7 +506,7 @@ This lists down all allowed routes for HTTP methods respectively.
 
 - **fetchFrom** is a SQL config feature where one can force the fetch from Master (Since usually it is Slave)
 
-## Javascript - HTTP request example
+## Javascript HTTP request example
 
 ### Login
 
@@ -597,3 +623,7 @@ var params = "Payload="+urlencodeJsonString;
 
 xmlhttp . send( params );
 ````
+
+## License
+
+[MIT](LICENSE)

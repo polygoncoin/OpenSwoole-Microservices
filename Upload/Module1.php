@@ -58,15 +58,14 @@ class Module1 implements UploadInterface
      */
     public function process()
     {
-        $srcFilePath = $this->c->httpRequestDetails['files']['input_key']['tmp_name'];
-        $destFilePath = $this->getLocation();
-        $this->saveFile($srcFilePath, $destFilePath);
+        $absFilePath = $this->getLocation();
+        $this->saveFile($absFilePath);
 
         return true;
     }
 
     /**
-     * Function to get filename with location depending uplon $conditions
+     * Function to get filename with location depending uplon $session
      *
      * @return string
      */

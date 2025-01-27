@@ -1,15 +1,7 @@
 <?php
 namespace Microservices\Validation;
 
-use Microservices\App\Constants;
-use Microservices\App\Common;
-use Microservices\App\Env;
-
 /**
- * Trait for common validator functions
- *
- * This trait constains common validator functions which doesn't require DB.
- *
  * @category   Validator Trait
  * @package    Microservices
  * @author     Ramesh Narayan Jangid
