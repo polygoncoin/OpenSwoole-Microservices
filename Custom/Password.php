@@ -67,10 +67,10 @@ class Password implements CustomInterface
         $this->c->httpRequest->session['payload'] = $payload;
 
         $oldPassword = $this->c->httpRequest->session['payload']['old_password'];
-        $oldPasswordHash = $this->c->httpRequest->session['userInfo']['password_hash'];
+        $oldPasswordHash = $this->c->httpRequest->session['userDetails']['password_hash'];
 
         if (password_verify($oldPassword, $oldPasswordHash)) {
-            $userName = $this->c->httpRequest->session['userInfo']['username'];
+            $userName = $this->c->httpRequest->session['userDetails']['username'];
             $newPassword = $this->c->httpRequest->session['payload']['new_password'];
             $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
 
@@ -85,7 +85,7 @@ class Password implements CustomInterface
             $this->c->httpRequest->db->execDbQuery($sql, $sqlParams);
             $this->c->httpRequest->db->closeCursor();
 
-            $clientId = $this->c->httpRequest->session['clientInfo']['client_id'];
+            $clientId = $this->c->httpRequest->session['clientDetails']['client_id'];
             $cu_key = CacheKey::ClientUser($clientId,$userName);
             if ($this->c->httpRequest->cache->cacheExists($cu_key)) {
                 $userDetails = json_decode($this->c->httpRequest->cache->getCache($cu_key), true);

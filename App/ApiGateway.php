@@ -59,14 +59,14 @@ class ApiGateway
      *
      * @var null|array
      */
-    private $userInfo = null;
+    private $userDetails = null;
 
     /**
      * Group Info
      *
      * @var null|array
      */
-    private $groupInfo = null;
+    private $groupDetails = null;
 
     /**
      * Constructor
@@ -134,45 +134,45 @@ class ApiGateway
             if (!$this->redis->exists($this->tokenKey)) {
                 throw new \Exception('Token expired', HttpStatus::$BadRequest);
             }
-            $this->userInfo = json_decode($this->redis->get($this->tokenKey), true);
+            $this->userDetails = json_decode($this->redis->get($this->tokenKey), true);
 
             // Check IP
             $this->checkRemoteIp();
 
-            // Load groupInfo
-            if (empty($this->userInfo['user_id']) || empty($this->userInfo['group_id'])) {
+            // Load groupDetails
+            if (empty($this->userDetails['user_id']) || empty($this->userDetails['group_id'])) {
                 throw new \Exception('Invalid session', HttpStatus::$InternalServerError);
             }
 
-            $this->groupKey = CacheKey::Group($this->userInfo['group_id']);
+            $this->groupKey = CacheKey::Group($this->userDetails['group_id']);
             if (!$this->redis->exists($this->groupKey)) {
                 throw new \Exception("Cache '{$this->groupKey}' missing", HttpStatus::$InternalServerError);
             }
 
-            $this->groupInfo = json_decode($this->redis->get($this->groupKey), true);
+            $this->groupDetails = json_decode($this->redis->get($this->groupKey), true);
 
             // Check Rate Limit
             if (
-                !empty($this->groupInfo['rateLimiterMaxRequests'])
-                && !empty($this->groupInfo['rateLimiterSecondsWindow'])
+                !empty($this->groupDetails['rateLimiterMaxRequests'])
+                && !empty($this->groupDetails['rateLimiterSecondsWindow'])
             ) {
                 $this-checkRateLimit(
-                    $RateLimiterMaxRequests = $this->groupInfo['rateLimiterMaxRequests'],
-                    $RateLimiterSecondsWindow = $this->groupInfo['rateLimiterSecondsWindow'],
+                    $RateLimiterMaxRequests = $this->groupDetails['rateLimiterMaxRequests'],
+                    $RateLimiterSecondsWindow = $this->groupDetails['rateLimiterSecondsWindow'],
                     $RateLimiterGroupPrefix = getenv('RateLimiterGroupPrefix'),
-                    $key = $this->userInfo['group_id'] . ':' . $this->userInfo['user_id']
+                    $key = $this->userDetails['group_id'] . ':' . $this->userDetails['user_id']
                 );
             }
 
             if (
-                !empty($this->userInfo['rateLimiterMaxRequests'])
-                && !empty($this->userInfo['rateLimiterSecondsWindow'])
+                !empty($this->userDetails['rateLimiterMaxRequests'])
+                && !empty($this->userDetails['rateLimiterSecondsWindow'])
             ) {
                 $this->checkRateLimit(
-                    $RateLimiterMaxRequests = $this->groupInfo['rateLimiterMaxRequests'],
-                    $RateLimiterSecondsWindow = $this->groupInfo['rateLimiterSecondsWindow'],
+                    $RateLimiterMaxRequests = $this->groupDetails['rateLimiterMaxRequests'],
+                    $RateLimiterSecondsWindow = $this->groupDetails['rateLimiterSecondsWindow'],
                     $RateLimiterUserPrefix = getenv('RateLimiterUserPrefix'),
-                    $key = $this->userInfo['group_id'] . ':' . $this->userInfo['user_id']
+                    $key = $this->userDetails['group_id'] . ':' . $this->userDetails['user_id']
                 );
             }
         }
@@ -190,9 +190,9 @@ class ApiGateway
      */
     public function checkRemoteIp()
     {
-        $groupId = $this->userInfo['group_id'];
+        $groupId = $this->userDetails['group_id'];
 
-        $this->cidr_key = CacheKey::CIDR($this->userInfo['group_id']);
+        $this->cidr_key = CacheKey::CIDR($this->userDetails['group_id']);
         if ($this->redis->exists($this->cidr_key)) {
             $cidrs = json_decode($this->redis->get($this->cidr_key), true);
             $ipNumber = ip2long($this->REMOTE_ADDR);

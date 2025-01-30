@@ -50,9 +50,9 @@ class Api
      */
     public function init()
     {
-        $this->c->httpRequest->loadClient();
-        $this->c->httpRequest->loadUser();
-        $this->c->httpRequest->loadGroup();
+        $this->c->httpRequest->loadClientDetails();
+        $this->c->httpRequest->loadUserDetails();
+        $this->c->httpRequest->loadGroupDetails();
         $this->c->httpRequest->parseRoute();
 
         return true;

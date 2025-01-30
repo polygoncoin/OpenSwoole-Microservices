@@ -56,7 +56,7 @@ class HttpRequest
      *
      * @var null|array
      */
-    public $clientInfo = null;
+    public $clientDetails = null;
 
     /**
      * Json Decode Object
@@ -157,14 +157,14 @@ class HttpRequest
      * @return void
      * @throws \Exception
      */
-    public function loadClient()
+    public function loadClientDetails()
     {
         $this->clientKey = CacheKey::Client($this->HOST);
         if (!$this->cache->cacheExists($this->clientKey)) {
             throw new \Exception("Invalid Host '{$this->HOST}'", HttpStatus::$InternalServerError);
         }
 
-        $this->session['clientInfo'] = json_decode($this->cache->getCache($this->clientKey), true);
+        $this->session['clientDetails'] = json_decode($this->cache->getCache($this->clientKey), true);
     }
 
     /**
@@ -173,7 +173,7 @@ class HttpRequest
      * @return void
      * @throws \Exception
      */
-    public function loadUser()
+    public function loadUserDetails()
     {
         if (preg_match('/Bearer\s(\S+)/', $this->HTTP_AUTHORIZATION, $matches)) {
             $this->session['token'] = $matches[1];
@@ -181,7 +181,7 @@ class HttpRequest
             if (!$this->cache->cacheExists($this->tokenKey)) {
                 throw new \Exception('Token expired', HttpStatus::$BadRequest);
             }
-            $this->session['userInfo'] = json_decode($this->cache->getCache($this->tokenKey), true);
+            $this->session['userDetails'] = json_decode($this->cache->getCache($this->tokenKey), true);
         }
         if (empty($this->session['token'])) {
             throw new \Exception('Token missing', HttpStatus::$BadRequest);
@@ -194,19 +194,19 @@ class HttpRequest
      * @return void
      * @throws \Exception
      */
-    public function loadGroup()
+    public function loadGroupDetails()
     {
-        // Load groupInfo
-        if (empty($this->session['userInfo']['user_id']) || empty($this->session['userInfo']['group_id'])) {
+        // Load groupDetails
+        if (empty($this->session['userDetails']['user_id']) || empty($this->session['userDetails']['group_id'])) {
             throw new \Exception('Invalid session', HttpStatus::$InternalServerError);
         }
 
-        $this->groupKey = CacheKey::Group($this->session['userInfo']['group_id']);
+        $this->groupKey = CacheKey::Group($this->session['userDetails']['group_id']);
         if (!$this->cache->cacheExists($this->groupKey)) {
             throw new \Exception("Cache '{$this->groupKey}' missing", HttpStatus::$InternalServerError);
         }
 
-        $this->session['groupInfo'] = json_decode($this->cache->getCache($this->groupKey), true);
+        $this->session['groupDetails'] = json_decode($this->cache->getCache($this->groupKey), true);
     }
 
     /**
@@ -222,7 +222,7 @@ class HttpRequest
         $Env = __NAMESPACE__ . '\Env';
 
         if (is_null($routeFileLocation)) {
-            $routeFileLocation = Constants::$DOC_ROOT . '/Config/Routes/' . $this->session['groupInfo']['name'] . '/' . $this->REQUEST_METHOD . 'routes.php';
+            $routeFileLocation = Constants::$DOC_ROOT . '/Config/Routes/' . $this->session['groupDetails']['name'] . '/' . $this->REQUEST_METHOD . 'routes.php';
         }
 
         if (file_exists($routeFileLocation)) {
@@ -471,7 +471,7 @@ class HttpRequest
      */
     public function setConnection($fetchFrom)
     {
-        if (is_null($this->session['clientInfo'])) {
+        if (is_null($this->session['clientDetails'])) {
             throw new \Exception('Yet to set connection params', HttpStatus::$InternalServerError);
         }
 
@@ -479,22 +479,22 @@ class HttpRequest
         switch ($fetchFrom) {
             case 'Master':
                 $this->setDb(
-                    getenv($this->session['clientInfo']['master_db_server_type']),
-                    getenv($this->session['clientInfo']['master_db_hostname']),
-                    getenv($this->session['clientInfo']['master_db_port']),
-                    getenv($this->session['clientInfo']['master_db_username']),
-                    getenv($this->session['clientInfo']['master_db_password']),
-                    getenv($this->session['clientInfo']['master_db_database'])
+                    getenv($this->session['clientDetails']['master_db_server_type']),
+                    getenv($this->session['clientDetails']['master_db_hostname']),
+                    getenv($this->session['clientDetails']['master_db_port']),
+                    getenv($this->session['clientDetails']['master_db_username']),
+                    getenv($this->session['clientDetails']['master_db_password']),
+                    getenv($this->session['clientDetails']['master_db_database'])
                 );
                 break;
             case 'Slave':
                 $this->setDb(
-                    getenv($this->session['clientInfo']['slave_db_server_type']),
-                    getenv($this->session['clientInfo']['slave_db_hostname']),
-                    getenv($this->session['clientInfo']['slave_db_port']),
-                    getenv($this->session['clientInfo']['slave_db_username']),
-                    getenv($this->session['clientInfo']['slave_db_password']),
-                    getenv($this->session['clientInfo']['slave_db_database'])
+                    getenv($this->session['clientDetails']['slave_db_server_type']),
+                    getenv($this->session['clientDetails']['slave_db_hostname']),
+                    getenv($this->session['clientDetails']['slave_db_port']),
+                    getenv($this->session['clientDetails']['slave_db_username']),
+                    getenv($this->session['clientDetails']['slave_db_password']),
+                    getenv($this->session['clientDetails']['slave_db_database'])
                 );
                 break;
             default:

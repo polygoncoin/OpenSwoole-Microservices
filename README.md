@@ -202,10 +202,10 @@ return [
 return [
     'query' => "SELECT * FROM TableName WHERE id = ? AND group_id = ? AND client_id = ?",
     '__WHERE__' => [
-        //column => [uriParams|payload|function|userInfo|{custom}, key|{value}]
+        //column => [uriParams|payload|function|userDetails|{custom}, key|{value}]
         'id' => ['uriParams', 'id'],
         'group_id' => ['payload', 'group_id'],
-        'client_id' => ['userInfo', 'client_id'],
+        'client_id' => ['userDetails', 'client_id'],
     ],
     'mode' => 'singleRowFormat'                // Single row is returned.
 ];
@@ -216,8 +216,8 @@ return [
 return [
     'query' => "SELECT * FROM TableName WHERE client_id = ?",
     '__WHERE__' => [
-        //column => [uriParams|payload|function|userInfo|{custom}, key|{value}]
-        'client_id' => ['userInfo', 'client_id'],
+        //column => [uriParams|payload|function|userDetails|{custom}, key|{value}]
+        'client_id' => ['userDetails', 'client_id'],
     ],
     'mode' => 'multipleRowFormat'            // Multiple rows are returned.
 ];
@@ -229,10 +229,10 @@ return [
 return [
     'query' => "SELECT * FROM TableName WHERE id = ? AND group_id = ? AND client_id = ?",
     '__WHERE__' => [
-        //column => [uriParams|payload|function|userInfo|{custom}, key|{value}]
+        //column => [uriParams|payload|function|userDetails|{custom}, key|{value}]
         'id' => ['uriParams', 'id'],
         'group_id' => ['payload', 'group_id'],
-        'client_id' => ['userInfo', 'client_id'],
+        'client_id' => ['userDetails', 'client_id'],
     ],
     'mode' => 'singleRowFormat',            // Single row is returned.
     'subQuery' => [
@@ -270,15 +270,15 @@ return [
         ['payload', 'client_id'],                        // Optional field
     ],
     '__SET__' => [
-        //column => [uriParams|payload|userInfo|insertIdParams|{custom}|function, key|{value}|function($session)],
+        //column => [uriParams|payload|userDetails|insertIdParams|{custom}|function, key|{value}|function($session)],
         'group_id' => ['payload', 'group_id'],
         'password' => ['function', function($session) {
             return password_hash($session['payload']['password'], PASSWORD_DEFAULT);
         }],
-        'client_id' => ['userInfo', 'client_id']
+        'client_id' => ['userDetails', 'client_id']
     ],
     '__WHERE__' => [
-        // column => [uriParams|payload|function|userInfo|insertIdParams|{custom}, key|{value}
+        // column => [uriParams|payload|function|userDetails|insertIdParams|{custom}, key|{value}
         'id' => ['uriParams', 'id']
     ],
     // Last insert id to be made available as $session['insertIdParams'][uniqueParamString];
@@ -356,7 +356,7 @@ var payload = [
 
 ### HttpRequest Variables
 
-- **$session\['userInfo'\]** Session Data.
+- **$session\['userDetails'\]** Session Data.
 > This remains same for every request and contains keys like id, group\_id, client\_id
 
 - **$session\['uriParams'\]** Data passed in URI.
