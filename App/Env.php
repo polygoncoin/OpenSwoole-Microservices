@@ -52,11 +52,11 @@ class Env
     static public $allowCacheRequest = null;
     static public $cacheRequestUriPrefix = null;
 
-    static private $initialized = null;
+    static private $initialized = false;
 
     static public function init()
     {
-        if (!is_null(self::$initialized)) return;
+        if (self::$initialized) return;
 
         self::$globalDatabase = getenv('globalDatabase');
         self::$cacheDatabase = getenv('cacheDatabase');

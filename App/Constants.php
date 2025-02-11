@@ -34,11 +34,11 @@ class Constants
     static public $DOC_ROOT = null;
     static public $ROUTE_URL_PARAM = 'r';
 
-    static private $initialized = null;
+    static private $initialized = false;
 
     static public function init()
     {
-        if (!is_null(self::$initialized)) return;
+        if (self::$initialized) return;
 
         self::$DOC_ROOT = dirname(__DIR__ . '../');
         self::$initialized = true;

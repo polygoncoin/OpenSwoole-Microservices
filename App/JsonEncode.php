@@ -51,14 +51,14 @@ class JsonEncode
      *
      * @var string[]
      */
-    private $escapers = array("\\", "/", "\"", "\n", "\r", "\t", "\x08", "\x0c", ' ');
+    private $escapers = array("\\", "\"", "\n", "\r", "\t", "\x08", "\x0c", ' ');
 
     /**
      * Characters that are escaped with for $escapers while creating JSON
      *
      * @var string[]
      */
-    private $replacements = array("\\\\", "\\/", "\\\"", "\\n", "\\r", "\\t", "\\f", "\\b", ' ');
+    private $replacements = array("\\\\", "\\\"", "\\n", "\\r", "\\t", "\\f", "\\b", ' ');
 
     /**
      * Microservices Request Details

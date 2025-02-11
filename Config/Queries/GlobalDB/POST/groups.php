@@ -1,20 +1,24 @@
 <?php
 namespace Microservices\Config\Queries\GlobalDB\POST;
 
+use Microservices\App\Constants;
+use Microservices\App\DatabaseDataTypes;
+use Microservices\App\Env;
+
 return [
     'query' => "INSERT INTO `{$Env::$groups}` SET __SET__",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {$Constants::$REQUIRED}]
-        ['payload', 'name', $Constants::$REQUIRED],
-        ['payload', 'client_id'],
-        ['payload', 'connection_id'],
+    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+        ['payload', 'name', DatabaseDataTypes::$Default, Constants::$REQUIRED],
+        ['payload', 'client_id', DatabaseDataTypes::$INT],
+        ['payload', 'connection_id', DatabaseDataTypes::$INT],
         ['payload', 'allowed_ips'],
         ['payload', 'comments'],
     ],
     '__SET__' => [
         //column => [payload|userDetails|uriParams|insertIdParams|{custom}, key|{value}],
         'name' => ['payload', 'name'],
-        'client_id' => ['payload', 'client_id'],
-        'connection_id' => ['payload', 'connection_id'],
+        'client_id' => ['payload', 'client_id', DatabaseDataTypes::$INT],
+        'connection_id' => ['payload', 'connection_id', DatabaseDataTypes::$INT],
         'allowed_ips' => ['payload', 'allowed_ips'],
         'comments' => ['payload', 'comments'],
         'created_by' => ['userDetails', 'user_id'],

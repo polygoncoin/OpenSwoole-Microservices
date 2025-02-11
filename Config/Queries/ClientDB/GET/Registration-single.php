@@ -1,10 +1,14 @@
 <?php
 namespace Microservices\Config\Queries\ClientDB\GET;
 
+use Microservices\App\Constants;
+use Microservices\App\DatabaseDataTypes;
+use Microservices\App\Env;
+
 return [
     'query' => "SELECT * FROM `registration` WHERE __WHERE__",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {$Constants::$REQUIRED}]
-        ['uriParams', 'id', $Constants::$REQUIRED],
+    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+        ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey, Constants::$REQUIRED],
     ],
     '__WHERE__' => [
         'is_deleted' => ['custom', 'No'],

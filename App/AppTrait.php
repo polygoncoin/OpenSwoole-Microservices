@@ -3,6 +3,7 @@ namespace Microservices\App;
 
 use Microservices\App\Constants;
 use Microservices\App\Common;
+use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\Validator;
@@ -48,25 +49,52 @@ trait AppTrait
     private function getRequired(&$sqlConfig, $first, $useHierarchy)
     {
         $requiredFields = [];
-        $requiredFields['__required__'] = [];
 
         // Get Required
         if (isset($sqlConfig['__CONFIG__'])) {
             foreach ($sqlConfig['__CONFIG__'] as $config) {
-                $required = false;
+                $require = false;
+                $dataTypeDetails = DatabaseDataTypes::$Default;
                 $count = count($config);
                 switch ($count) {
+                    case 4:
+                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails, $require) = $config;
+                        break;
                     case 3:
-                        list($type, $typeKey, $required) = $config;
+                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails) = $config;
                         break;
                     case 2:
-                        list($type, $typeKey) = $config;
+                        list($dataPaylaodType, $dataPaylaodTypeKey) = $config;
                         break;
                 }
-                if ($required && $type === 'payload') {
-                    if (!in_array($typeKey, $requiredFields['__required__'])) {
-                        $requiredFields['__required__'][] = $typeKey;
-                    }
+                if (!isset($requiredFields[$dataPaylaodType][$dataPaylaodTypeKey])) {
+                    $dataTypeDetails['dataKey'] = $dataPaylaodTypeKey;
+                    $dataTypeDetails['require'] = $require;
+                    $requiredFields[$dataPaylaodType][$dataPaylaodTypeKey] = $dataTypeDetails;
+                }
+            }
+        }
+
+        if (isset($sqlConfig['__SET__'])) {
+            foreach ($sqlConfig['__SET__'] as $config) {
+                $require = false;
+                $dataTypeDetails = DatabaseDataTypes::$Default;
+                $count = count($config);
+                switch ($count) {
+                    case 4:
+                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails, $require) = $config;
+                        break;
+                    case 3:
+                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails) = $config;
+                        break;
+                    case 2:
+                        list($dataPaylaodType, $dataPaylaodTypeKey) = $config;
+                        break;
+                }
+                if (!isset($requiredFields[$dataPaylaodType][$dataPaylaodTypeKey])) {
+                    $dataTypeDetails['dataKey'] = $dataPaylaodTypeKey;
+                    $dataTypeDetails['require'] = $require;
+                    $requiredFields[$dataPaylaodType][$dataPaylaodTypeKey] = $dataTypeDetails;
                 }
             }
         }
@@ -75,11 +103,11 @@ trait AppTrait
         $foundHierarchy = false;
         if (isset($sqlConfig['__WHERE__'])) {
             foreach ($sqlConfig['__WHERE__'] as $var => $where) {
-                list($type, $typeKey) = $where;
-                if ($first && $type === 'hierarchyData') {
+                list($dataPaylaodType, $dataPaylaodTypeKey) = $where;
+                if ($first && $dataPaylaodType === 'hierarchyData') {
                     throw new \Exception('Invalid config: First query can not have hierarchyData config', HttpStatus::$InternalServerError);
                 }
-                if ($type === 'hierarchyData') {
+                if ($dataPaylaodType === 'hierarchyData') {
                     $foundHierarchy = true;
                     break;
                 }
@@ -101,9 +129,14 @@ trait AppTrait
                 if ($_useHierarchy) {
                     $requiredFields[$module] = $sub_requiredFields;
                 } else {
-                    foreach ($sub_requiredFields['__required__'] as $field) {
-                        if (!in_array($field, $requiredFields)) {
-                            $requiredFields['__required__'][] = $field;
+                    foreach ($sub_requiredFields as $dataPaylaodType => &$fields) {
+                        if (!isset($requiredFields[$dataPaylaodType])) {
+                            $requiredFields[$dataPaylaodType] = [];
+                        }
+                        foreach ($fields as $dataPaylaodTypeKey => $field) {
+                            if (!isset($requiredFields[$dataPaylaodType][$dataPaylaodTypeKey])) {
+                                $requiredFields[$dataPaylaodType][$dataPaylaodTypeKey] = $field;
+                            }
                         }
                     }
                 }
@@ -208,32 +241,39 @@ trait AppTrait
         $errors = [];
 
         // Collect param values as per config respectively
-        foreach ($sqlConfig as $var => [$type, $typeKey]) {
-            if ($type === 'function') {
-                $sqlParams[$var] = $typeKey($this->c->httpRequest->session);
-            } else if ($type === 'hierarchyData') {
-                $typeKeys = explode(':',$typeKey);
+        foreach ($sqlConfig as $var => [$dataPaylaodType, $dataPaylaodTypeKey]) {
+            if ($dataPaylaodType === 'function') {
+                $function = $dataPaylaodTypeKey;
+                $value = $function($this->c->httpRequest->session);
+                $sqlParams[$var] = $value;
+                continue;
+            } else if ($dataPaylaodType === 'hierarchyData') {
+                $dataPaylaodTypeKeys = explode(':',$dataPaylaodTypeKey);
                 $value = $this->c->httpRequest->session['hierarchyData'];
-                foreach($typeKeys as $key) {
+                foreach($dataPaylaodTypeKeys as $key) {
                     if (!isset($value[$key])) {
                         throw new \Exception('Invalid hierarchy:  Missing hierarchy data', HttpStatus::$InternalServerError);
                     }
                     $value = $value[$key];
                 }
                 $sqlParams[$var] = $value;
-            } else if ($type === 'custom') {
-                $sqlParams[$var] = $typeKey;
-            } else if ($type === 'payload' && isset($this->c->httpRequest->session['payload'][$typeKey])) {
-                $sqlParams[$var] = $this->c->httpRequest->session['payload'][$typeKey];
-            } else if ($type === 'payload' && !in_array($typeKey, $this->c->httpRequest->session['required']) && !isset($this->c->httpRequest->session['payload'][$typeKey])) {
                 continue;
-            } else if ($type === 'payload' && in_array($typeKey, $this->c->httpRequest->session['required']) && !isset($this->c->httpRequest->session['payload'][$typeKey])) {
-                $errors[] = "Missing required field of '{$type}' for '{$typeKey}'";
+            } else if ($dataPaylaodType === 'custom') {
+                $value = $dataPaylaodTypeKey;
+                $sqlParams[$var] = $value;
+                continue;
+            } else if (isset($this->c->httpRequest->session[$dataPaylaodType][$dataPaylaodTypeKey])) {
+                $sqlParams[$var] = $this->getDataBasedOnDataType(
+                    $this->c->httpRequest->session[$dataPaylaodType][$dataPaylaodTypeKey],
+                    $this->c->httpRequest->session['required'][$dataPaylaodType][$dataPaylaodTypeKey]
+                );
+                continue;
+            } else if ($this->c->httpRequest->session['required'][$dataPaylaodType][$dataPaylaodTypeKey]['require']) {
+                $errors[] = "Missing required field of '{$dataPaylaodType}' for '{$dataPaylaodTypeKey}'";
+                continue;
             } else {
-                if (!isset($this->c->httpRequest->session[$type][$typeKey])) {
-                    $errors[] = "Invalid configuration of '{$type}' for '{$typeKey}'";
-                }
-                $sqlParams[$var] = $this->c->httpRequest->session[$type][$typeKey];
+                $errors[] = "Invalid configuration of '{$dataPaylaodType}' for '{$dataPaylaodTypeKey}'";
+                continue;
             }
         }
 
@@ -290,32 +330,57 @@ trait AppTrait
         $result = [];
 
         if (isset($sqlConfig['countQuery'])) {
-            $sqlConfig['__CONFIG__'][] = ['payload', 'page', Constants::$REQUIRED];
-            $sqlConfig['__CONFIG__'][] = ['payload', 'perpage'];
+            $sqlConfig['__CONFIG__'][] = ['payload', 'page', 'int', Constants::$REQUIRED];
+            $sqlConfig['__CONFIG__'][] = ['payload', 'perpage', 'int'];
         }
         // Get required and optional params for a route
         if (isset($sqlConfig['__CONFIG__'])) {
             foreach ($sqlConfig['__CONFIG__'] as $config) {
-                $required = false;
+                $require = false;
+                $dataTypeDetails = DatabaseDataTypes::$Default;
                 $count = count($config);
                 switch ($count) {
+                    case 4:
+                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails, $require) = $config;
+                        break;
                     case 3:
-                        list($type, $typeKey, $required) = $config;
+                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails) = $config;
                         break;
                     case 2:
-                        list($type, $typeKey) = $config;
+                        list($dataPaylaodType, $dataPaylaodTypeKey) = $config;
                         break;
                 }
-                if ($type === 'payload') {
-                    if ($required && !isset($result[$typeKey])) {
-                        $result[$typeKey] = 'Required';
-                        continue;
-                    }
-                    if (!isset($result[$typeKey])) {
-                        $result[$typeKey] = 'Optional';
-                        continue;
-                    }
+                if (!in_array($dataPaylaodType, ['payload'])) continue;
+                if (isset($result[$dataPaylaodTypeKey]) && $result[$dataPaylaodTypeKey]['dataMode'] === 'Required') {
+                    continue;
                 }
+                $dataTypeDetails['dataMode'] = $require ? 'Required' : 'Optional';
+                $result[$dataPaylaodTypeKey] = $dataTypeDetails;
+            }
+        }
+
+        if (isset($sqlConfig['__SET__'])) {
+            foreach ($sqlConfig['__SET__'] as $config) {
+                $require = false;
+                $dataTypeDetails = DatabaseDataTypes::$Default;
+                $count = count($config);
+                switch ($count) {
+                    case 4:
+                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails, $require) = $config;
+                        break;
+                    case 3:
+                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails) = $config;
+                        break;
+                    case 2:
+                        list($dataPaylaodType, $dataPaylaodTypeKey) = $config;
+                        break;
+                }
+                if (!in_array($dataPaylaodType, ['payload'])) continue;
+                if (isset($result[$dataPaylaodTypeKey]) && $result[$dataPaylaodTypeKey]['dataMode'] === 'Required') {
+                    continue;
+                }
+                $dataTypeDetails['dataMode'] = $require ? 'Required' : 'Optional';
+                $result[$dataPaylaodTypeKey] = $dataTypeDetails;
             }
         }
 
@@ -323,8 +388,8 @@ trait AppTrait
         $foundHierarchy = false;
         if (isset($sqlConfig['__WHERE__'])) {
             foreach ($sqlConfig['__WHERE__'] as $var => $payload) {
-                list($type, $typeKey) = $payload;
-                if ($type === 'hierarchyData') {
+                list($dataPaylaodType, $dataPaylaodTypeKey) = $payload;
+                if ($dataPaylaodType === 'hierarchyData') {
                     $foundHierarchy = true;
                     break;
                 }
@@ -344,9 +409,9 @@ trait AppTrait
                         $result[$module] = $sub_requiredFields;
                     }
                 } else {
-                    foreach ($sub_requiredFields as $field => $required) {
-                        if (!isset($result[$field])) {
-                            $result[$field] = $required;
+                    foreach ($sub_requiredFields as $dataPaylaodTypeKey => $field) {
+                        if (!isset($result[$dataPaylaodTypeKey])) {
+                            $result[$dataPaylaodTypeKey] = $field;
                         }
                     }
                 }
@@ -354,5 +419,68 @@ trait AppTrait
         }
 
         return $result;
+    }
+
+    /**
+     * Return data based on data-type
+     *
+     * @param string|array $data
+     * @param string       $dataTypeDetails
+     * @return mixed
+     * @throws \Exception
+     */
+    private function getDataBasedOnDataType($data, $dataTypeDetails)
+    {
+        switch ($dataTypeDetails['dataType']) {
+            case 'null':
+                $data = null;
+                break;
+            case 'bool':
+                $data = (bool)$data;
+                break;
+            case 'int':
+                $data = (int)$data;
+                break;
+            case 'float':
+                $data = (float)$data;
+                break;
+            case 'string':
+                $data = (string)$data;
+                break;
+            case 'json':
+                $data = (string)json_encode($data);
+                break;
+            default:
+                throw new \Exception('Invalid Data-type:'.$dataTypeDetails['dataType'], HttpStatus::$InternalServerError);
+        }
+
+        $returnFlag = true;
+        if ($returnFlag && isset($dataTypeDetails['minValue']) && $dataTypeDetails['minValue'] <= $data) {
+            $returnFlag = false;
+        }
+        if ($returnFlag && isset($dataTypeDetails['maxValue']) && $data <= $dataTypeDetails['maxValue']) {
+            $returnFlag = false;
+        }
+        if ($returnFlag && isset($dataTypeDetails['minLength']) && $dataTypeDetails['minLength'] <= strlen($data)) {
+            $returnFlag = false;
+        }
+        if ($returnFlag && isset($dataTypeDetails['maxLength']) && strlen($data) <= $dataTypeDetails['maxLength']) {
+            $returnFlag = false;
+        }
+        if ($returnFlag && isset($dataTypeDetails['enumValues']) && in_array($data, $dataTypeDetails['enumValues'])) {
+            $returnFlag = false;
+        }
+        if ($returnFlag && isset($dataTypeDetails['setValues']) && empty(array_diff($data, $dataTypeDetails['setValues']))) {
+            $returnFlag = false;
+        }
+        if ($returnFlag && isset($dataTypeDetails['regex']) && preg_match($dataTypeDetails['regex'], $data) === 0) {
+            $returnFlag = false;
+        }
+
+        if (!$returnFlag) {
+            throw new \Exception('Invalid data based on Data-type details', HttpStatus::$BadRequest);
+        }
+
+        return $data;
     }
 }

@@ -58,7 +58,6 @@ class Read
      */
     public function process()
     {
-        $Constants = __NAMESPACE__ . '\Constants';
         $Env = __NAMESPACE__ . '\Env';
 
         // Load Queries
@@ -109,7 +108,12 @@ class Read
     private function processRead(&$readSqlConfig, $useHierarchy)
     {
         $this->c->httpRequest->session['requiredArr'] = $this->getRequired($readSqlConfig, true, $useHierarchy);
-        $this->c->httpRequest->session['required'] = $this->c->httpRequest->session['requiredArr']['__required__'];
+
+        if (isset($this->c->httpRequest->session['requiredArr'])) {
+            $this->c->httpRequest->session['required'] = $this->c->httpRequest->session['requiredArr'];
+        } else {
+            $this->c->httpRequest->session['required'] = [];
+        }
 
         // Start Read operation.
         $keys = [];
@@ -281,8 +285,9 @@ class Read
         }
 
         $singleColumn = false;
-        $this->c->httpRequest->db->execDbQuery($sql, $sqlParams);
-        for ($i = 0; $row = $this->c->httpRequest->db->fetch();) {
+        $pushPop = true;
+        $this->c->httpRequest->db->execDbQuery($sql, $sqlParams, $pushPop);
+        for ($i = 0; $row = $this->c->httpRequest->db->fetch(\PDO::FETCH_ASSOC);) {
             if ($i===0) {
                 if (count($row) === 1) {
                     $singleColumn = true;
@@ -304,7 +309,7 @@ class Read
                 $this->callReadDB($readSqlConfig, $keys, $row, $useHierarchy);
             }
         }
-        $this->c->httpRequest->db->closeCursor();
+        $this->c->httpRequest->db->closeCursor($pushPop);
 
         return true;
     }

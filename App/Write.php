@@ -58,7 +58,6 @@ class Write
      */
     public function process()
     {
-        $Constants = __NAMESPACE__ . '\Constants';
         $Env = __NAMESPACE__ . '\Env';
 
         // Load Queries
@@ -197,8 +196,10 @@ class Write
             }
 
             $this->c->httpRequest->session['payload'] = $this->c->httpRequest->jsonDecode->get($payloadKey);
-            if (isset($required['__required__'])) {
-                $this->c->httpRequest->session['required'] = $required['__required__'];
+
+
+            if (count($required)) {
+                $this->c->httpRequest->session['required'] = $required;
             } else {
                 $this->c->httpRequest->session['required'] = [];
             }

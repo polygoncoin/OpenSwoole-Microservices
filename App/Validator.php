@@ -79,18 +79,11 @@ class Validator
         $isValidData = true;
         $errors = [];
         // Required fields payload validation
-        $payload = $session['payload'];
-        $required = $session['required'];
-        if (count($payload) >= count($required)) {
-            foreach ($required as $column) {
-                if (!isset($payload[$column])) {
-                    $errors[] = 'Invalid payload: '.$column;
-                    $isValidData = false;
-                }
+        foreach ($session['required']['payload'] as $column => &$arr) {
+            if ($arr['require'] && !isset($session['payload'][$column])) {
+                $errors[] = 'Missing required payload: '.$column;
+                $isValidData = false;
             }
-        } else {
-            $errors[] = 'Invalid payload';
-            $isValidData = false;
         }
 
         return [$isValidData, $errors];
