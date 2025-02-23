@@ -73,28 +73,32 @@ trait AppTrait
                     $requiredFields[$dataPaylaodType][$dataPaylaodTypeKey] = $dataTypeDetails;
                 }
             }
+            
+            return $requiredFields;
         }
 
-        if (isset($sqlConfig['__SET__'])) {
-            foreach ($sqlConfig['__SET__'] as $config) {
-                $require = false;
-                $dataTypeDetails = DatabaseDataTypes::$Default;
-                $count = count($config);
-                switch ($count) {
-                    case 4:
-                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails, $require) = $config;
-                        break;
-                    case 3:
-                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails) = $config;
-                        break;
-                    case 2:
-                        list($dataPaylaodType, $dataPaylaodTypeKey) = $config;
-                        break;
-                }
-                if (!isset($requiredFields[$dataPaylaodType][$dataPaylaodTypeKey])) {
-                    $dataTypeDetails['dataKey'] = $dataPaylaodTypeKey;
-                    $dataTypeDetails['require'] = $require;
-                    $requiredFields[$dataPaylaodType][$dataPaylaodTypeKey] = $dataTypeDetails;
+        foreach (['__SET__', '__WHERE__'] as $options) {
+            if (isset($sqlConfig[$options])) {
+                foreach ($sqlConfig[$options] as $config) {
+                    $require = false;
+                    $dataTypeDetails = DatabaseDataTypes::$Default;
+                    $count = count($config);
+                    switch ($count) {
+                        case 4:
+                            list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails, $require) = $config;
+                            break;
+                        case 3:
+                            list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails) = $config;
+                            break;
+                        case 2:
+                            list($dataPaylaodType, $dataPaylaodTypeKey) = $config;
+                            break;
+                    }
+                    if (!isset($requiredFields[$dataPaylaodType][$dataPaylaodTypeKey])) {
+                        $dataTypeDetails['dataKey'] = $dataPaylaodTypeKey;
+                        $dataTypeDetails['require'] = $require;
+                        $requiredFields[$dataPaylaodType][$dataPaylaodTypeKey] = $dataTypeDetails;
+                    }
                 }
             }
         }
@@ -103,7 +107,8 @@ trait AppTrait
         $foundHierarchy = false;
         if (isset($sqlConfig['__WHERE__'])) {
             foreach ($sqlConfig['__WHERE__'] as $var => $where) {
-                list($dataPaylaodType, $dataPaylaodTypeKey) = $where;
+                $dataPaylaodType = $where[0];
+                $dataPaylaodTypeKey = $where[1];
                 if ($first && $dataPaylaodType === 'hierarchyData') {
                     throw new \Exception('Invalid config: First query can not have hierarchyData config', HttpStatus::$InternalServerError);
                 }

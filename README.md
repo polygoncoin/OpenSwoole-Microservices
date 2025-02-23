@@ -252,9 +252,14 @@ return [
         ],
     ],
     '__SET__' => [
-        'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
+        'column' => [ // Fatch value from parsed route
+            'uriParams',                                // uriParams / payload
+            '<key-1>',                                  // key
+            DatabaseDataTypes::$PrimaryKey,             // key data type
+            Constants::$REQUIRED                        // Represents required field
+        ],
         'column' => ['payload', '<key>'],               // Fetch value from Payload
-        'column' => ['function', function($session) {       // Perform a function and use returned value
+        'column' => ['function', function($session) {   // Perform a function and use returned value
             return 'value';
         }],
         'column' => ['userDetails', '<key>'],           // From user session
@@ -263,7 +268,12 @@ return [
 
     ],
     '__WHERE__' => [
-        'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
+        'column' => [ // Fatch value from parsed route
+            'uriParams',                                // uriParams / payload
+            '<key-1>',                                  // key
+            DatabaseDataTypes::$PrimaryKey,             // key data type
+            Constants::$REQUIRED                        // Represents required field
+        ],
         'column' => ['payload', '<key>'],               // Fetch value from Payload
         'column' => ['function', function($session) {   // Perform a function and use returned value
             return 'value';
@@ -334,10 +344,9 @@ return [
 ];
 ```
 
-#### GET method configuration
+#### GET method configuration without Hierarchy
 
 ```PHP
-//return represents root for hierarchyData
 return [
     // Required to implementing pagination
     'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE __WHERE__",
@@ -362,6 +371,140 @@ return [
     ],
     '__WHERE__' => [
         'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
+        'column' => ['payload', '<key>'],               // Fetch value from Payload ($_GET)
+        'column' => ['function', function($session) {   // Perform a function and use returned value
+            return $session['payload']['password'];
+        }],
+        'column' => ['userDetails', '<key>'],           // From user session
+        'column' => ['custom', '<static-value>'],       // Static values
+    ],
+    // Indicator to generate JSON in Single(Object) row / Mulple(Array) rows format.
+    'mode' => 'singleRowFormat / multipleRowFormat',
+    // subQuery is a keyword to perform recursive operations
+    /** Supported configuration for recursive operations are :
+     * query,
+     * __WHERE__,
+     * mode,
+     * subQuery
+     */
+    'subQuery' => [
+        '<sub-key>' => [// Recursive
+            ...
+            ...
+        ]
+    ]
+    // Array of validation functions to be performed
+    'validate' => [
+        [
+            'fn' => 'validateGroupId',
+            'fnArgs' => [
+                'group_id' => ['payload', 'group_id']
+            ],
+            'errorMessage' => 'Invalid Group Id'
+        ]
+    ],
+];
+```
+
+#### POST/PUT/PATCH/DELETE method configuration without Hierarchy
+
+```PHP
+return [
+    // Query to perform task
+    'query' => "INSERT INTO `TableName` SET __SET__",
+    'query' => "INSERT INTO `TableName` SET column1 = :column1, column2 = :column2",
+    'query' => "UPDATE `TableName` SET __SET__ WHERE __WHERE__",
+    'query' => "UPDATE `TableName` SET column1 = :column1, column2 = :column2 WHERE column3 = :column3 AND column4 = :column4",
+    // Configure allowed uriParams & payload fields both Required & Optional to be used
+    // Rest supplied fields will be ignored
+    '__CONFIG__' => [
+        [
+            'uriParams',                                // uriParams / payload
+            '<key-1>',                                  // key
+            DatabaseDataTypes::$PrimaryKey,             // key data type
+            Constants::$REQUIRED                        // Represents required field
+        ],
+        [
+            'payload',                                  // uriParams / payload
+            '<key-1>',                                  // key
+            DatabaseDataTypes::$Default,                // key data type default to string
+        ],
+    ],
+    // Details of data to be set by Query to perform task
+    '__SET__' => [
+        'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
+        'column' => ['payload', '<key>'],               // Fetch value from Payload
+        'column' => ['function', function($session) {       // Perform a function and use returned value
+            return 'value';
+        }],
+        'column' => ['userDetails', '<key>'],           // From user session
+        'column' => ['insertIdParams', '<key>'],        // previous Insert ids
+        'column' => ['custom', '<static-value>'],       // Static values
+    ],
+    // Where clause of the Query to perform task
+    '__WHERE__' => [
+        'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
+        'column' => ['payload', '<key>'],               // Fetch value from Payload
+        'column' => ['function', function($session) {   // Perform a function and use returned value
+            return password_hash($session['payload']['password'], PASSWORD_DEFAULT);
+        }],
+        'column' => ['userDetails', '<key>'],           // From user session
+        'column' => ['custom', '<static-value>'],       // Static values
+    ],
+    // To be used only for INSERT queries
+    // Last insert id to be made available as $session['insertIdParams'][uniqueParamString];
+    'insertId' => '<keyName>:id',
+    // subQuery is a keyword to perform recursive operations
+    /** Supported configuration for recursive operations are :
+     * query,
+     * __SET__,
+     * __WHERE__,
+     * insertId,
+     * subQuery
+     */
+    'subQuery' => [
+        '<sub-key>' => [// Recursive
+            ...
+            ...
+            '__SET__' => [
+                ...
+                ...
+                'column' => ['insertIdParams', '<keyName>:id'], // previous Insert ids
+            ],
+        ]
+    ]
+    // Array of validation functions to be performed
+    'validate' => [
+        [
+            'fn' => 'validateGroupId',
+            'fnArgs' => [
+                'group_id' => ['payload', 'group_id']
+            ],
+            'errorMessage' => 'Invalid Group Id'
+        ]
+    ],
+];
+```
+
+#### GET method configuration with useHierarchy
+
+```PHP
+//return represents root for hierarchyData
+return [
+    // Required to implementing pagination
+    'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE __WHERE__",
+    'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE column1 = :column1 AND column2 = :column2",
+    // Query to perform task
+    'query' => "SELECT columns FROM TableName WHERE __WHERE__",
+    'query' => "SELECT columns FROM TableName WHERE column1 = :column1 AND column2 = :column2",
+    // Where clause of the Query to perform task
+    '__WHERE__' => [
+        'column' => [ // Fatch value from parsed route
+            'uriParams',                                // uriParams / payload
+            '<key-1>',                                  // key
+            DatabaseDataTypes::$PrimaryKey,             // key data type
+            Constants::$REQUIRED                        // Represents required field
+        ],
         'column' => ['payload', '<key>'],               // Fetch value from Payload ($_GET)
         'column' => ['function', function($session) {   // Perform a function and use returned value
             return $session['payload']['password'];
@@ -403,7 +546,7 @@ return [
 ];
 ```
 
-#### POST/PUT/PATCH/DELETE method configuration
+#### POST/PUT/PATCH/DELETE method configuration with useHierarchy
 
 ```PHP
 //return represents root for hierarchyData
@@ -413,23 +556,14 @@ return [
     'query' => "INSERT INTO `TableName` SET column1 = :column1, column2 = :column2",
     'query' => "UPDATE `TableName` SET __SET__ WHERE __WHERE__",
     'query' => "UPDATE `TableName` SET column1 = :column1, column2 = :column2 WHERE column3 = :column3 AND column4 = :column4",
-    // Configure allowed uriParams & payload fields both Required & Optional to be used
-    // Rest supplied fields will be ignored
-    '__CONFIG__' => [
-        [
+    // Details of data to be set by Query to perform task
+    '__SET__' => [
+        'column' => [ // Fatch value from parsed route
             'uriParams',                                // uriParams / payload
             '<key-1>',                                  // key
             DatabaseDataTypes::$PrimaryKey,             // key data type
             Constants::$REQUIRED                        // Represents required field
         ],
-        [
-            'payload',                                  // uriParams / payload
-            '<key-1>',                                  // key
-            DatabaseDataTypes::$Default,                // key data type default to string
-        ],
-    ],
-    '__SET__' => [
-        'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
         'column' => ['payload', '<key>'],               // Fetch value from Payload
         'column' => ['function', function($session) {       // Perform a function and use returned value
             return 'value';
@@ -438,8 +572,14 @@ return [
         'column' => ['insertIdParams', '<key>'],        // previous Insert ids
         'column' => ['custom', '<static-value>'],       // Static values
     ],
+    // Where clause of the Query to perform task
     '__WHERE__' => [
-        'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
+        'column' => [ // Fatch value from parsed route
+            'uriParams',                                // uriParams / payload
+            '<key-1>',                                  // key
+            DatabaseDataTypes::$PrimaryKey,             // key data type
+            Constants::$REQUIRED                        // Represents required field
+        ],
         'column' => ['payload', '<key>'],               // Fetch value from Payload
         'column' => ['function', function($session) {   // Perform a function and use returned value
             return password_hash($session['payload']['password'], PASSWORD_DEFAULT);
