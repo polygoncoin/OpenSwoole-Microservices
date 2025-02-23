@@ -288,9 +288,31 @@ return [
             ... // Recursive
             '__SET__' => [
                 ...
-                'column' => ['insertIdParams', '<keyName>:id'],        // previous Insert ids
+                ...
+                // Database DataTypes settings required when useHierarchy is true
+                // to validate each data set before procedding forward
+                'column' => [
+                    'uriParams',
+                    '<key>',
+                    DatabaseDataTypes::$PrimaryKey,             // key data type
+                    Constants::$REQUIRED                        // Represents required field            
+                ],
+                ...
+                ...
+                'column' => ['insertIdParams', '<keyName>:id'], // previous Insert ids
             ],
             '__WHERE__' => [
+                ...
+                ...
+                // Database DataTypes settings required when useHierarchy is true
+                // to validate each data set before procedding forward
+                'column' => [
+                    'uriParams',
+                    '<key>',
+                    DatabaseDataTypes::$PrimaryKey,             // key data type
+                    Constants::$REQUIRED                        // Represents required field            
+                ],
+                ...
                 ...
                 'column' => ['hierarchyData', '<return:keys>'], // Only for GET
             ],
@@ -306,9 +328,7 @@ return [
             'errorMessage' => 'Invalid Group Id'
         ]
     ],
-    // useHierarchy false represent data is in non recursive format
-    // In other words is in a simple key/value pair format
-    'useHierarchy' => true/false
+    'useHierarchy' => true
 ];
 ```
 
@@ -358,7 +378,7 @@ return [
             ... // Recursive
             '__WHERE__' => [
                 ...
-                'column' => ['hierarchyData', '<return:keys>'], // Only for GET
+                'column' => ['hierarchyData', '<return:keys>'],
             ],
         ]
     ]
@@ -372,6 +392,9 @@ return [
             'errorMessage' => 'Invalid Group Id'
         ]
     ],
+    // useHierarchy true represent data from higher hierarchy to be preserved
+    // to be used used in sub queries
+    'useHierarchy' => true
 ];
 ```
 
@@ -436,13 +459,27 @@ return [
                 // to validate each data set before procedding forward
                 'column' => [
                     'uriParams',
-                    '<key>'
+                    '<key>',
                     DatabaseDataTypes::$PrimaryKey,             // key data type
                     Constants::$REQUIRED                        // Represents required field            
                 ],
                 ...
                 ...
                 'column' => ['insertIdParams', '<keyName>:id'], // previous Insert ids
+                'column' => ['hierarchyData', '<return:keys>'],
+            ],
+            '__WHERE__' => [
+                ...
+                ...
+                // Database DataTypes settings required when useHierarchy is true
+                // to validate each data set before procedding forward
+                'column' => [
+                    'uriParams',
+                    '<key>',
+                    DatabaseDataTypes::$PrimaryKey,             // key data type
+                    Constants::$REQUIRED                        // Represents required field            
+                ],
+                'column' => ['hierarchyData', '<return:keys>'],
             ],
         ]
     ]
@@ -456,9 +493,10 @@ return [
             'errorMessage' => 'Invalid Group Id'
         ]
     ],
-    // useHierarchy false represent data is in non recursive format
-    // In other words is in a simple key/value pair format
-    'useHierarchy' => true/false
+    // useHierarchy true represent data is in recursive format
+    // In other words it is not presented in one simple key/value pair array
+    // Instead the data is served as per the configured hierarchy with sub arrays
+    'useHierarchy' => true
 ];
 ```
 
