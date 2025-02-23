@@ -431,7 +431,18 @@ return [
             ... // Recursive
             '__SET__' => [
                 ...
-                'column' => ['insertIdParams', '<keyName>:id'],        // previous Insert ids
+                ...
+                // Database DataTypes settings required when useHierarchy is true
+                // to validate each data set before procedding forward
+                'column' => [
+                    'uriParams',
+                    '<key>'
+                    DatabaseDataTypes::$PrimaryKey,             // key data type
+                    Constants::$REQUIRED                        // Represents required field            
+                ],
+                ...
+                ...
+                'column' => ['insertIdParams', '<keyName>:id'], // previous Insert ids
             ],
         ]
     ]
