@@ -199,14 +199,14 @@ return [
 
 ```PHP
 static public $CustomINT = [
-    
+
     // Required param
 
     // PHP data type (bool, int, float, string)
     'dataType' => 'int',
-    
+
     // Optional params
-    
+
     // Minimum value (int)
     'minValue' => false,
     // Maximum value (int)
@@ -230,9 +230,10 @@ static public $CustomINT = [
 #### Available configuration options
 
 ```PHP
+//return represents root for hierarchyData
 return [
     // Required to implementing pagination
-    'countQuery' => "Count SQL", 
+    'countQuery' => "Count SQL",
     // Query to perform task
     'query' => "SQL",
     // Configure allowed uriParams & payload fields both Required & Optional to be used
@@ -248,7 +249,7 @@ return [
             'payload',                                  // uriParams / payload
             '<key-1>',                                  // key
             DatabaseDataTypes::$Default,                // key data type default to string
-        ],                       
+        ],
     ],
     '__SET__' => [
         'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
@@ -259,7 +260,7 @@ return [
         'column' => ['userDetails', '<key>'],           // From user session
         'column' => ['insertIdParams', '<key>'],        // previous Insert ids
         'column' => ['custom', '<static-value>'],       // Static values
-        
+
     ],
     '__WHERE__' => [
         'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
@@ -275,12 +276,12 @@ return [
     // Indicator to generate JSON in Single(Object) row / Mulple(Array) rows format.
     'mode' => 'singleRowFormat/multipleRowFormat',
     // subQuery is a keyword to perform recursive operations
-    /** Supported configuration for recursive operations are : 
-     * query, 
-     * __SET__, 
-     * __WHERE__, 
-     * mode, 
-     * insertId, 
+    /** Supported configuration for recursive operations are :
+     * query,
+     * __SET__,
+     * __WHERE__,
+     * mode,
+     * insertId,
      * subQuery
      */
     'subQuery' => [
@@ -295,7 +296,7 @@ return [
                     'uriParams',
                     '<key>',
                     DatabaseDataTypes::$PrimaryKey,             // key data type
-                    Constants::$REQUIRED                        // Represents required field            
+                    Constants::$REQUIRED                        // Represents required field
                 ],
                 ...
                 ...
@@ -311,7 +312,7 @@ return [
                     'uriParams',
                     '<key>',
                     DatabaseDataTypes::$PrimaryKey,             // key data type
-                    Constants::$REQUIRED                        // Represents required field            
+                    Constants::$REQUIRED                        // Represents required field
                 ],
                 ...
                 ...
@@ -336,11 +337,14 @@ return [
 #### GET method configuration
 
 ```PHP
+//return represents root for hierarchyData
 return [
     // Required to implementing pagination
-    'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE __WHERE__", 
+    'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE __WHERE__",
+    'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE column1 = :column1 AND column2 = :column2",
     // Query to perform task
     'query' => "SELECT columns FROM TableName WHERE __WHERE__",
+    'query' => "SELECT columns FROM TableName WHERE column1 = :column1 AND column2 = :column2",
     // Configure allowed uriParams & payload fields both Required & Optional to be used
     // Rest supplied fields will be ignored
     '__CONFIG__' => [
@@ -354,7 +358,7 @@ return [
             'payload',                                  // $_GET
             '<key-1>',                                  // key
             DatabaseDataTypes::$Default,                // key data type default to string
-        ],                       
+        ],
     ],
     '__WHERE__' => [
         'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
@@ -368,10 +372,10 @@ return [
     // Indicator to generate JSON in Single(Object) row / Mulple(Array) rows format.
     'mode' => 'singleRowFormat/multipleRowFormat',
     // subQuery is a keyword to perform recursive operations
-    /** Supported configuration for recursive operations are : 
-     * query, 
-     * __WHERE__, 
-     * mode, 
+    /** Supported configuration for recursive operations are :
+     * query,
+     * __WHERE__,
+     * mode,
      * subQuery
      */
     'subQuery' => [
@@ -402,9 +406,13 @@ return [
 #### POST/PUT/PATCH/DELETE method configuration
 
 ```PHP
+//return represents root for hierarchyData
 return [
     // Query to perform task
-    'query' => "INSERT/UPDATE SQL",
+    'query' => "INSERT INTO `TableName` SET __SET__",
+    'query' => "INSERT INTO `TableName` SET column1 = :column1, column2 = :column2",
+    'query' => "UPDATE `TableName` SET __SET__ WHERE __WHERE__",
+    'query' => "UPDATE `TableName` SET column1 = :column1, column2 = :column2 WHERE column3 = :column3 AND column4 = :column4",
     // Configure allowed uriParams & payload fields both Required & Optional to be used
     // Rest supplied fields will be ignored
     '__CONFIG__' => [
@@ -418,7 +426,7 @@ return [
             'payload',                                  // uriParams / payload
             '<key-1>',                                  // key
             DatabaseDataTypes::$Default,                // key data type default to string
-        ],                       
+        ],
     ],
     '__SET__' => [
         'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
@@ -443,11 +451,11 @@ return [
     // Last insert id to be made available as $session['insertIdParams'][uniqueParamString];
     'insertId' => '<keyName>:id',
     // subQuery is a keyword to perform recursive operations
-    /** Supported configuration for recursive operations are : 
-     * query, 
-     * __SET__, 
-     * __WHERE__, 
-     * insertId, 
+    /** Supported configuration for recursive operations are :
+     * query,
+     * __SET__,
+     * __WHERE__,
+     * insertId,
      * subQuery
      */
     'subQuery' => [
@@ -462,7 +470,7 @@ return [
                     'uriParams',
                     '<key>',
                     DatabaseDataTypes::$PrimaryKey,             // key data type
-                    Constants::$REQUIRED                        // Represents required field            
+                    Constants::$REQUIRED                        // Represents required field
                 ],
                 ...
                 ...
@@ -478,7 +486,7 @@ return [
                     'uriParams',
                     '<key>',
                     DatabaseDataTypes::$PrimaryKey,             // key data type
-                    Constants::$REQUIRED                        // Represents required field            
+                    Constants::$REQUIRED                        // Represents required field
                 ],
                 'column' => ['hierarchyData', '<return:keys>'],
             ],

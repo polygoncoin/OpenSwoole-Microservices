@@ -1,7 +1,6 @@
 <?php
 namespace Microservices\Config\Queries\ClientDB\GET;
 
-//return represents root for hierarchyData
 use Microservices\App\Constants;
 use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
