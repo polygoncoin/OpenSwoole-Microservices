@@ -299,6 +299,7 @@ return [
                 ],
                 ...
                 ...
+                'column' => ['hierarchyData', '<return:keys>'], // Only for GET
                 'column' => ['insertIdParams', '<keyName>:id'], // previous Insert ids
             ],
             '__WHERE__' => [
