@@ -1,5 +1,5 @@
 <?php
-namespace Microservices\Config\Routes\Common\Global;
+namespace Microservices\Config\Routes\Common\GlobalDB;
 
 return [
     'groups' => [
