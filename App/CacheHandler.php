@@ -37,7 +37,7 @@ class CacheHandler
      *
      * @var string
      */
-    private $cacheLocation = '/Dropbox';
+    private $cacheLocation = DIRECTORY_SEPARATOR . 'Dropbox';
 
     /**
      * Microservices Collection of Common Objects
@@ -64,7 +64,7 @@ class CacheHandler
     public function init()
     {
         $this->cacheLocation = Constants::$DOC_ROOT . $this->cacheLocation;
-        $this->filePath = '/' . trim(str_replace('../','',urldecode($this->c->httpRequest->ROUTE)), './');
+        $this->filePath = DIRECTORY_SEPARATOR . trim(str_replace(['../', '..\\', '/', '\\'],['', '', DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR],urldecode($this->c->httpRequest->ROUTE)), './\\');
         $this->validateFileRequest();
         $this->fileLocation = $this->cacheLocation . $this->filePath;
 

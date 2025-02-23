@@ -12,7 +12,7 @@ return [
         'is_deleted' => ['custom', 'No'],
         'parent_id' => ['custom', 0]
     ],
-    'mode' => 'multipleRowFormat',//Multiple rows returned.
+    'mode' => 'multipleRowFormat',
     'subQuery' => [
         'sub' => [
             'query' => "SELECT * FROM `category` WHERE __WHERE__",
@@ -20,7 +20,7 @@ return [
                 'is_deleted' => ['custom', 'No'],
                 'parent_id' => ['hierarchyData', 'return:id'],
             ],
-            'mode' => 'multipleRowFormat',//Multiple rows returned.
+            'mode' => 'multipleRowFormat',
             'subQuery' => [
                 'subsub' => [
                     'query' => "SELECT * FROM `category` WHERE __WHERE__",
@@ -28,7 +28,7 @@ return [
                         'is_deleted' => ['custom', 'No'],
                         'parent_id' => ['hierarchyData', 'return:sub:id'],
                     ],
-                    'mode' => 'multipleRowFormat',//Multiple rows returned.
+                    'mode' => 'multipleRowFormat',
                     'subQuery' => [
                         'subsubsub' => [
                             'query' => "SELECT * FROM `category` WHERE __WHERE__",
@@ -36,7 +36,7 @@ return [
                                 'is_deleted' => ['custom', 'No'],
                                 'parent_id' => ['hierarchyData', 'return:sub:subsub:id'],//data:address:id
                             ],
-                            'mode' => 'multipleRowFormat',//Multiple rows returned.
+                            'mode' => 'multipleRowFormat',
                         ]
                     ]
                 ]

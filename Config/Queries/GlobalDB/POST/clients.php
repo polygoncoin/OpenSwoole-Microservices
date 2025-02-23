@@ -7,12 +7,11 @@ use Microservices\App\Env;
 
 return [
     'query' => "INSERT INTO `{$Env::$clients}` SET __SET__",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+    '__CONFIG__' => [
         ['payload', 'name', DatabaseDataTypes::$Default, Constants::$REQUIRED],
         ['payload', 'comments']
     ],
     '__SET__' => [
-        //column => [payload|userDetails|uriParams|insertIdParams|{custom}, key|{value}],
         'name' => ['payload', 'name'],
         'comments' => ['payload', 'comments'],
         'created_by' => ['userDetails', 'user_id'],

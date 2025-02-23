@@ -11,5 +11,5 @@ return [
     '__WHERE__' => [
         'is_deleted' => ['custom', 'No']
     ],
-    'mode' => 'multipleRowFormat'//Multiple rows returned.
+    'mode' => 'multipleRowFormat'
 ];

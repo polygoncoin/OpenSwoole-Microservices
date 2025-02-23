@@ -246,7 +246,7 @@ class Read
         $this->c->httpRequest->db->closeCursor();
 
         $totalRowsCount = $row['count'];
-        $totalPages = ceil($totalRowsCount/$this->c->httpRequest->session['payload']['perpage']);
+        $totalPages = ceil($totalRowsCount / $this->c->httpRequest->session['payload']['perpage']);
 
         $this->c->httpResponse->jsonEncode->addKeyValue('page', $this->c->httpRequest->session['payload']['page']);
         $this->c->httpResponse->jsonEncode->addKeyValue('perpage', $this->c->httpRequest->session['payload']['perpage']);

@@ -4,12 +4,12 @@ namespace Microservices\Config\Routes\Common\Client;
 return [
     'registration' => [
         '{id:int|!0}'  => [
-            '__file__' => $Constants::$DOC_ROOT . '/Config/Queries/ClientDB/DELETE/Registration.php',
+            '__file__' => $Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR . 'Queries' . DIRECTORY_SEPARATOR . 'ClientDB' . DIRECTORY_SEPARATOR . 'DELETE' . DIRECTORY_SEPARATOR . 'Registration.php',
         ],
     ],
     'address' => [
         '{id:int|!0}'  => [
-            '__file__' => $Constants::$DOC_ROOT . '/Config/Queries/ClientDB/DELETE/Address.php',
+            '__file__' => $Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR . 'Queries' . DIRECTORY_SEPARATOR . 'ClientDB' . DIRECTORY_SEPARATOR . 'DELETE' . DIRECTORY_SEPARATOR . 'Address.php',
         ],
     ]
 ];

@@ -2,9 +2,9 @@
 namespace Microservices\Config\Queries\ClientDB\PUT;
 
 return array_merge(
-    include Constants::$DOC_ROOT . '/Config/Queries/ClientDB/Common/Registration.php',
+    include Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR . 'Queries' . DIRECTORY_SEPARATOR . 'ClientDB' . DIRECTORY_SEPARATOR . 'Common' . DIRECTORY_SEPARATOR . 'Registration.php',
     [
-        '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+        '__CONFIG__' => [
             ['payload', 'firstname', DatabaseDataTypes::$Default, Constants::$REQUIRED],
             ['payload', 'lastname', DatabaseDataTypes::$Default, Constants::$REQUIRED],
             ['payload', 'email', DatabaseDataTypes::$Default, Constants::$REQUIRED],

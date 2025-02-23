@@ -7,13 +7,12 @@ use Microservices\App\Env;
 
 return [
     'query' => "INSERT INTO `registration` SET __SET__",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+    '__CONFIG__' => [
         ['payload', 'firstname', DatabaseDataTypes::$Default, Constants::$REQUIRED],
         ['payload', 'lastname', DatabaseDataTypes::$Default, Constants::$REQUIRED],
         ['payload', 'email', DatabaseDataTypes::$Default, Constants::$REQUIRED]
     ],
     '__SET__' => [
-        //column => [payload|userDetails|uriParams|insertIdParams|{custom}, key|{value}],
         'firstname' => ['payload', 'firstname'],
         'lastname' => ['payload', 'lastname'],
         'email' => ['payload', 'email']
@@ -22,7 +21,7 @@ return [
     'subQuery' => [
         'address' => [
             'query' => "INSERT INTO `address` SET __SET__",
-            '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+            '__CONFIG__' => [
                 ['payload', 'address', DatabaseDataTypes::$Default, Constants::$REQUIRED]
             ],
             '__SET__' => [

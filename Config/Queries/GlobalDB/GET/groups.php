@@ -13,11 +13,11 @@ return [
             'is_disabled' => ['custom', 'No'],
             'is_deleted' => ['custom', 'No'],
         ],
-        'mode' => 'multipleRowFormat'//Multiple rows returned.
+        'mode' => 'multipleRowFormat'
     ],
     'single' => [
         'query' => "SELECT * FROM `{$Env::$groups}` WHERE __WHERE__",
-        '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+        '__CONFIG__' => [
             ['uriParams', 'group_id', DatabaseDataTypes::$INT, Constants::$REQUIRED],
         ],
         '__WHERE__' => [
@@ -26,6 +26,6 @@ return [
             'is_deleted' => ['custom', 'No'],
             'group_id' => ['uriParams','group_id']
         ],
-        'mode' => 'singleRowFormat'//Single row returned.
+        'mode' => 'singleRowFormat'
     ]
 ][isset($this->c->httpRequest->session['uriParams']['group_id'])?'single':'all'];

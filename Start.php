@@ -43,7 +43,7 @@ $server->on("start", function (Server $server) {
 $server->on("request", function (Request $request, Response $response) {
 
     // Load .env
-    $env = parse_ini_file(__DIR__ . '/.env');
+    $env = parse_ini_file(__DIR__ . DIRECTORY_SEPARATOR . '.env');
     foreach ($env as $key => $value) {
         putenv("{$key}={$value}");
     }

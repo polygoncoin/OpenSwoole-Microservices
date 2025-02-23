@@ -7,12 +7,12 @@ use Microservices\App\Env;
 
 return [
     'query' => "SELECT * FROM `registration` WHERE __WHERE__",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+    '__CONFIG__' => [
         ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey, Constants::$REQUIRED],
     ],
     '__WHERE__' => [
         'is_deleted' => ['custom', 'No'],
         'id' => ['uriParams','id']
     ],
-    'mode' => 'singleRowFormat'//Single row returned.
+    'mode' => 'singleRowFormat'
 ];

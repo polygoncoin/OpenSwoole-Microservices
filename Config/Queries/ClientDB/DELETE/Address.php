@@ -2,9 +2,9 @@
 namespace Microservices\Config\Queries\ClientDB\DELETE;
 
 return array_merge(
-    include Constants::$DOC_ROOT . '/Config/Queries/ClientDB/Common/Address.php',
+    include Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR . 'Queries' . DIRECTORY_SEPARATOR . 'ClientDB' . DIRECTORY_SEPARATOR . 'Common' . DIRECTORY_SEPARATOR . 'Address.php',
     [
-        '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+        '__CONFIG__' => [
             ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey, Constants::$REQUIRED],
         ],
         '__SET__' => [

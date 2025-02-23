@@ -7,7 +7,7 @@ use Microservices\App\Env;
 
 return [
     'query' => "UPDATE `{$Env::$groups}` SET __SET__ WHERE __WHERE__",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+    '__CONFIG__' => [
         ['payload', 'name'],
         ['payload', 'client_id', DatabaseDataTypes::$INT],
         ['payload', 'connection_id', DatabaseDataTypes::$INT],
@@ -16,7 +16,6 @@ return [
         ['uriParams', 'group_id', DatabaseDataTypes::$INT, Constants::$REQUIRED]
     ],
     '__SET__' => [
-        //column => [payload|userDetails|uriParams|insertIdParams|{custom}, key|{value}],
         'name' => ['payload', 'name'],
         'client_id' => ['payload', 'client_id', DatabaseDataTypes::$INT],
         'connection_id' => ['payload', 'connection_id', DatabaseDataTypes::$INT],

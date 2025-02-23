@@ -222,7 +222,7 @@ class HttpRequest
         $Env = __NAMESPACE__ . '\Env';
 
         if (is_null($routeFileLocation)) {
-            $routeFileLocation = Constants::$DOC_ROOT . '/Config/Routes/' . $this->session['groupDetails']['name'] . '/' . $this->REQUEST_METHOD . 'routes.php';
+            $routeFileLocation = Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config'  . DIRECTORY_SEPARATOR . 'Routes'  . DIRECTORY_SEPARATOR . $this->session['groupDetails']['name'] . DIRECTORY_SEPARATOR . $this->REQUEST_METHOD . 'routes.php';
         }
 
         if (file_exists($routeFileLocation)) {

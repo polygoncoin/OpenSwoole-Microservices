@@ -8,11 +8,11 @@ use Microservices\App\Env;
 
 return [
     'query' => "SELECT * FROM `category` WHERE `name` like CONCAT ('%', :name, '%');",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+    '__CONFIG__' => [
         ['payload', 'name', DatabaseDataTypes::$Default, Constants::$REQUIRED],
     ],
     '__WHERE__' => [
         'name' => ['payload', 'name']
     ],
-    'mode' => 'multipleRowFormat',//Multiple rows returned.
+    'mode' => 'multipleRowFormat',
 ];

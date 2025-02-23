@@ -8,7 +8,6 @@ use Microservices\App\Env;
 return [
     'query' => "INSERT INTO `address` SET __SET__",
     '__SET__' => [
-        //column => [payload|userDetails|uriParams|insertIdParams|{custom}, key|{value}],
         'registration' => ['payload', 'registration_id', DatabaseDataTypes::$INT],
         'address' => ['payload', 'address'],
     ],

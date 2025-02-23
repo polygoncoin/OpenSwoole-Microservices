@@ -37,7 +37,7 @@ class Routes
      *
      * @var string
      */
-    private $routesFolder = '/Config/Routes';
+    private $routesFolder = DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR . 'Routes';
 
     /**
      * Route config ignore keys
@@ -87,11 +87,11 @@ class Routes
         $Env = __NAMESPACE__ . '\Env';
 
         $httpRoutes = [];
-        $userRoutesFolder = Constants::$DOC_ROOT . $this->routesFolder . '/' . $this->c->httpRequest->session['groupDetails']['name'];
+        $userRoutesFolder = Constants::$DOC_ROOT . $this->routesFolder . DIRECTORY_SEPARATOR . $this->c->httpRequest->session['groupDetails']['name'];
 
         foreach ($this->httpMethods as $method) {
             $httpRoutes[$method] = [];
-            $routeFileLocation =  $userRoutesFolder . '/' . $method . 'routes.php';
+            $routeFileLocation =  $userRoutesFolder . DIRECTORY_SEPARATOR . $method . 'routes.php';
             if (!file_exists($routeFileLocation)) {
                 continue;
             }

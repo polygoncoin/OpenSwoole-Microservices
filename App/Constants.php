@@ -40,7 +40,7 @@ class Constants
     {
         if (self::$initialized) return;
 
-        self::$DOC_ROOT = dirname(__DIR__ . '../');
+        self::$DOC_ROOT = dirname(__DIR__ . '..' . DIRECTORY_SEPARATOR);
         self::$initialized = true;
     }
 }

@@ -11,7 +11,7 @@ return [
     '__WHERE__' => [
         'is_deleted' => ['custom', 'No']
     ],
-    'mode' => 'multipleRowFormat',//Multiple rows returned.
+    'mode' => 'multipleRowFormat',
     'subQuery' => [
         'reg-address' => [
             'query' => "SELECT * FROM `address` WHERE __WHERE__",
@@ -19,7 +19,7 @@ return [
                 'is_deleted' => ['custom', 'No'],
                 'registration_id' => ['hierarchyData', 'return:id'],
             ],
-            'mode' => 'multipleRowFormat',//Multiple rows returned.
+            'mode' => 'multipleRowFormat',
         ]
     ],
     'useHierarchy' => true

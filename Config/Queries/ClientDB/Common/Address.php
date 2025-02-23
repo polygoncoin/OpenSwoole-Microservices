@@ -7,7 +7,7 @@ use Microservices\App\Env;
 
 return [
     'query' => "UPDATE `address` SET __SET__ WHERE __WHERE__",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+    '__CONFIG__' => [
         ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey, Constants::$REQUIRED],
     ],
     '__WHERE__' => [

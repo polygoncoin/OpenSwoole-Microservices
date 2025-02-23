@@ -7,7 +7,7 @@ use Microservices\App\Env;
 
 return [
     'query' => "UPDATE `registration` SET firstname = :firstname WHERE id = :id",
-    '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+    '__CONFIG__' => [
         ['payload', 'firstname', DatabaseDataTypes::$Default, Constants::$REQUIRED],
         ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey, Constants::$REQUIRED],
     ],

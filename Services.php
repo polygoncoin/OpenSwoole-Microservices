@@ -139,7 +139,7 @@ class Services
 
         switch (true) {
 
-            case Env::$allowCronRequest && strpos($this->c->httpRequest->ROUTE, '/'.Env::$cronRequestUriPrefix) === 0:
+            case Env::$allowCronRequest && strpos($this->c->httpRequest->ROUTE, '/' . Env::$cronRequestUriPrefix) === 0:
                 if ($this->c->httpRequest->REMOTE_ADDR !== Env::$cronRestrictedIp) {
                     throw new \Exception('Source IP is not supported', 404);
                 }
@@ -203,7 +203,7 @@ class Services
         if (Env::$OUTPUT_PERFORMANCE_STATS) {
             $this->tsEnd = microtime(true);
             $time = ceil(($this->tsEnd - $this->tsStart) * 1000);
-            $memory = ceil(memory_get_peak_usage()/1000);
+            $memory = ceil(memory_get_peak_usage() / 1000);
 
             $this->c->httpResponse->jsonEncode->startObject('Stats');
             $this->c->httpResponse->jsonEncode->startObject('Performance');

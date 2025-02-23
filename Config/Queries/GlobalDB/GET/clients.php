@@ -14,11 +14,11 @@ return [
             'is_disabled' => ['custom', 'No'],
             'is_deleted' => ['custom', 'No']
             ],
-        'mode' => 'multipleRowFormat'//Multiple rows returned.
+        'mode' => 'multipleRowFormat'
     ],
     'single' => [
         'query' => "SELECT * FROM `{$Env::$clients}` WHERE __WHERE__",
-        '__CONFIG__' => [// [{payload/uriParams}, key/index, {Constants::$REQUIRED}]
+        '__CONFIG__' => [
             ['uriParams', 'client_id', DatabaseDataTypes::$INT, Constants::$REQUIRED],
         ],
         '__WHERE__' => [
@@ -27,6 +27,6 @@ return [
             'is_deleted' => ['custom', 'No'],
             'client_id' => ['uriParams','client_id']
         ],
-        'mode' => 'singleRowFormat'//Single row returned.
+        'mode' => 'singleRowFormat'
     ],
 ][isset($this->c->httpRequest->session['uriParams']['client_id'])?'single':'all'];
