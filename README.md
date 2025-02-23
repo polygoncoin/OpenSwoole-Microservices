@@ -253,7 +253,7 @@ return [
     '__SET__' => [
         'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
         'column' => ['payload', '<key>'],               // Fetch value from Payload
-        'column' => ['function', function($arg) {       // Perform a function and use returned value
+        'column' => ['function', function($session) {       // Perform a function and use returned value
             return 'value';
         }],
         'column' => ['userDetails', '<key>'],           // From user session
@@ -399,7 +399,7 @@ return [
     '__SET__' => [
         'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
         'column' => ['payload', '<key>'],               // Fetch value from Payload
-        'column' => ['function', function($arg) {       // Perform a function and use returned value
+        'column' => ['function', function($session) {       // Perform a function and use returned value
             return 'value';
         }],
         'column' => ['userDetails', '<key>'],           // From user session
