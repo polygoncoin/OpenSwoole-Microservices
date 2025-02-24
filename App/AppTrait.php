@@ -50,33 +50,6 @@ trait AppTrait
     {
         $requiredFields = [];
 
-        // Get Required
-        if (isset($sqlConfig['__CONFIG__'])) {
-            foreach ($sqlConfig['__CONFIG__'] as $config) {
-                $require = false;
-                $dataTypeDetails = DatabaseDataTypes::$Default;
-                $count = count($config);
-                switch ($count) {
-                    case 4:
-                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails, $require) = $config;
-                        break;
-                    case 3:
-                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails) = $config;
-                        break;
-                    case 2:
-                        list($dataPaylaodType, $dataPaylaodTypeKey) = $config;
-                        break;
-                }
-                if (!isset($requiredFields[$dataPaylaodType][$dataPaylaodTypeKey])) {
-                    $dataTypeDetails['dataKey'] = $dataPaylaodTypeKey;
-                    $dataTypeDetails['require'] = $require;
-                    $requiredFields[$dataPaylaodType][$dataPaylaodTypeKey] = $dataTypeDetails;
-                }
-            }
-            
-            return $requiredFields;
-        }
-
         foreach (['__SET__', '__WHERE__'] as $options) {
             if (isset($sqlConfig[$options])) {
                 foreach ($sqlConfig[$options] as $config) {

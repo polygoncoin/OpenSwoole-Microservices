@@ -236,21 +236,7 @@ return [
     'countQuery' => "Count SQL",
     // Query to perform task
     'query' => "SQL",
-    // Configure allowed uriParams & payload fields both Required & Optional to be used
-    // Rest supplied fields will be ignored
-    '__CONFIG__' => [
-        [
-            'uriParams',                                // uriParams / payload
-            '<key-1>',                                  // key
-            DatabaseDataTypes::$PrimaryKey,             // key data type
-            Constants::$REQUIRED                        // Represents required field
-        ],
-        [
-            'payload',                                  // uriParams / payload
-            '<key-1>',                                  // key
-            DatabaseDataTypes::$Default,                // key data type default to string
-        ],
-    ],
+    // Details of data to be set by Query to perform task
     '__SET__' => [
         'column' => [ // Fatch value from parsed route
             'uriParams',                                // uriParams / payload
@@ -265,8 +251,8 @@ return [
         'column' => ['userDetails', '<key>'],           // From user session
         'column' => ['insertIdParams', '<key>'],        // previous Insert ids
         'column' => ['custom', '<static-value>'],       // Static values
-
     ],
+    // Where clause of the Query to perform task
     '__WHERE__' => [
         'column' => [ // Fatch value from parsed route
             'uriParams',                                // uriParams / payload
@@ -354,21 +340,7 @@ return [
     // Query to perform task
     'query' => "SELECT columns FROM TableName WHERE __WHERE__",
     'query' => "SELECT columns FROM TableName WHERE column1 = :column1 AND column2 = :column2",
-    // Configure allowed uriParams & payload fields both Required & Optional to be used
-    // Rest supplied fields will be ignored
-    '__CONFIG__' => [
-        [
-            'uriParams',                                // From parsed route
-            '<key-1>',                                  // key
-            DatabaseDataTypes::$PrimaryKey,             // key data type
-            Constants::$REQUIRED                        // Represents required field
-        ],
-        [
-            'payload',                                  // $_GET
-            '<key-1>',                                  // key
-            DatabaseDataTypes::$Default,                // key data type default to string
-        ],
-    ],
+    // Where clause of the Query to perform task
     '__WHERE__' => [
         'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
         'column' => ['payload', '<key>'],               // Fetch value from Payload ($_GET)
@@ -415,21 +387,6 @@ return [
     'query' => "INSERT INTO `TableName` SET column1 = :column1, column2 = :column2",
     'query' => "UPDATE `TableName` SET __SET__ WHERE __WHERE__",
     'query' => "UPDATE `TableName` SET column1 = :column1, column2 = :column2 WHERE column3 = :column3 AND column4 = :column4",
-    // Configure allowed uriParams & payload fields both Required & Optional to be used
-    // Rest supplied fields will be ignored
-    '__CONFIG__' => [
-        [
-            'uriParams',                                // uriParams / payload
-            '<key-1>',                                  // key
-            DatabaseDataTypes::$PrimaryKey,             // key data type
-            Constants::$REQUIRED                        // Represents required field
-        ],
-        [
-            'payload',                                  // uriParams / payload
-            '<key-1>',                                  // key
-            DatabaseDataTypes::$Default,                // key data type default to string
-        ],
-    ],
     // Details of data to be set by Query to perform task
     '__SET__' => [
         'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
