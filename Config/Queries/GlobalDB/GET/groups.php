@@ -17,9 +17,6 @@ return [
     ],
     'single' => [
         'query' => "SELECT * FROM `{$Env::$groups}` WHERE __WHERE__",
-        '__CONFIG__' => [
-            ['uriParams', 'group_id', DatabaseDataTypes::$INT, Constants::$REQUIRED],
-        ],
         '__WHERE__' => [
             'is_approved' => ['custom', 'Yes'],
             'is_disabled' => ['custom', 'No'],

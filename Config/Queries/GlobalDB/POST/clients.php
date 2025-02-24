@@ -7,10 +7,6 @@ use Microservices\App\Env;
 
 return [
     'query' => "INSERT INTO `{$Env::$clients}` SET __SET__",
-    '__CONFIG__' => [
-        ['payload', 'name', DatabaseDataTypes::$Default, Constants::$REQUIRED],
-        ['payload', 'comments']
-    ],
     '__SET__' => [
         'name' => ['payload', 'name'],
         'comments' => ['payload', 'comments'],

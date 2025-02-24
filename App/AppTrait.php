@@ -310,9 +310,7 @@ trait AppTrait
         if (isset($sqlConfig['countQuery'])) {
             $sqlConfig['__CONFIG__'][] = ['payload', 'page', 'int', Constants::$REQUIRED];
             $sqlConfig['__CONFIG__'][] = ['payload', 'perpage', 'int'];
-        }
-        // Get required and optional params for a route
-        if (isset($sqlConfig['__CONFIG__'])) {
+
             foreach ($sqlConfig['__CONFIG__'] as $config) {
                 $require = false;
                 $dataTypeDetails = DatabaseDataTypes::$Default;
@@ -337,28 +335,30 @@ trait AppTrait
             }
         }
 
-        if (isset($sqlConfig['__SET__'])) {
-            foreach ($sqlConfig['__SET__'] as $config) {
-                $require = false;
-                $dataTypeDetails = DatabaseDataTypes::$Default;
-                $count = count($config);
-                switch ($count) {
-                    case 4:
-                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails, $require) = $config;
-                        break;
-                    case 3:
-                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails) = $config;
-                        break;
-                    case 2:
-                        list($dataPaylaodType, $dataPaylaodTypeKey) = $config;
-                        break;
+        foreach (['__SET__', '__WHERE__'] as $options) {
+            if (isset($sqlConfig[$options])) {
+                foreach ($sqlConfig[$options] as $config) {
+                    $require = false;
+                    $dataTypeDetails = DatabaseDataTypes::$Default;
+                    $count = count($config);
+                    switch ($count) {
+                        case 4:
+                            list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails, $require) = $config;
+                            break;
+                        case 3:
+                            list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails) = $config;
+                            break;
+                        case 2:
+                            list($dataPaylaodType, $dataPaylaodTypeKey) = $config;
+                            break;
+                    }
+                    if (!in_array($dataPaylaodType, ['payload'])) continue;
+                    if (isset($result[$dataPaylaodTypeKey]) && $result[$dataPaylaodTypeKey]['dataMode'] === 'Required') {
+                        continue;
+                    }
+                    $dataTypeDetails['dataMode'] = $require ? 'Required' : 'Optional';
+                    $result[$dataPaylaodTypeKey] = $dataTypeDetails;
                 }
-                if (!in_array($dataPaylaodType, ['payload'])) continue;
-                if (isset($result[$dataPaylaodTypeKey]) && $result[$dataPaylaodTypeKey]['dataMode'] === 'Required') {
-                    continue;
-                }
-                $dataTypeDetails['dataMode'] = $require ? 'Required' : 'Optional';
-                $result[$dataPaylaodTypeKey] = $dataTypeDetails;
             }
         }
 
@@ -366,7 +366,8 @@ trait AppTrait
         $foundHierarchy = false;
         if (isset($sqlConfig['__WHERE__'])) {
             foreach ($sqlConfig['__WHERE__'] as $var => $payload) {
-                list($dataPaylaodType, $dataPaylaodTypeKey) = $payload;
+                $dataPaylaodType = $payload[0];
+                $dataPaylaodTypeKey = $payload[1];
                 if ($dataPaylaodType === 'hierarchyData') {
                     $foundHierarchy = true;
                     break;

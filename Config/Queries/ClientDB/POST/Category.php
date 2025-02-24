@@ -7,9 +7,6 @@ use Microservices\App\Env;
 
 return [
     'query' => "INSERT INTO `category` SET __SET__",
-    '__CONFIG__' => [
-        ['payload', 'name', DatabaseDataTypes::$Default, Constants::$REQUIRED],
-    ],
     '__SET__' => [
         'name' => ['payload', 'name'],
         'parent_id' => ['custom', 0],
@@ -18,9 +15,6 @@ return [
     'subQuery' => [
         'sub' => [
             'query' => "INSERT INTO `category` SET __SET__",
-            '__CONFIG__' => [
-                ['payload', 'subname', DatabaseDataTypes::$Default, Constants::$REQUIRED],
-            ],
             '__SET__' => [
                 'name' => ['payload', 'subname'],
                 'parent_id' => ['insertIdParams', 'category:id'],
@@ -29,9 +23,6 @@ return [
             'subQuery' => [
                 'subsub' => [
                     'query' => "INSERT INTO `category` SET __SET__",
-                    '__CONFIG__' => [
-                        ['payload', 'subsubname', DatabaseDataTypes::$Default, Constants::$REQUIRED],
-                    ],
                     '__SET__' => [
                         'name' => ['payload', 'subsubname'],
                         'parent_id' => ['insertIdParams', 'sub:id'],
