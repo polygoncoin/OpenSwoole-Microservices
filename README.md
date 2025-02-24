@@ -689,9 +689,6 @@ var payload = [
 ```PHP
 return [
     'query' => "INSERT INTO `category` SET __SET__",
-    '__CONFIG__' => [
-        ['payload', 'name', Constants::$REQUIRED],
-    ],
     '__SET__' => [
         'name' => ['payload', 'name'],
         'parent_id' => ['custom', 0],
@@ -700,9 +697,6 @@ return [
     'subQuery' => [
         'module1' => [
             'query' => "INSERT INTO `category` SET __SET__",
-            '__CONFIG__' => [
-                ['payload', 'subname', Constants::$REQUIRED],
-            ],
             '__SET__' => [
                 'name' => ['payload', 'subname'],
                 'parent_id' => ['insertIdParams', 'category:id'],
