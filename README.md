@@ -314,7 +314,11 @@ return [
                 ...
                 'column' => ['hierarchyData', '<return:keys>'], // Only for GET
             ],
-        ]
+        ],
+        '<sub-key>' => [
+            ...
+        ],
+        ...
     ]
     // Array of validation functions to be performed
     'validate' => [
@@ -362,73 +366,11 @@ return [
     'subQuery' => [
         '<sub-key>' => [// Recursive
             ...
+        ],
+        '<sub-key>' => [
             ...
-        ]
-    ]
-    // Array of validation functions to be performed
-    'validate' => [
-        [
-            'fn' => 'validateGroupId',
-            'fnArgs' => [
-                'group_id' => ['payload', 'group_id']
-            ],
-            'errorMessage' => 'Invalid Group Id'
-        ]
-    ],
-];
-```
-
-#### POST/PUT/PATCH/DELETE method configuration without Hierarchy
-
-```PHP
-return [
-    // Query to perform task
-    'query' => "INSERT INTO `TableName` SET __SET__",
-    'query' => "INSERT INTO `TableName` SET column1 = :column1, column2 = :column2",
-    'query' => "UPDATE `TableName` SET __SET__ WHERE __WHERE__",
-    'query' => "UPDATE `TableName` SET column1 = :column1, column2 = :column2 WHERE column3 = :column3 AND column4 = :column4",
-    // Details of data to be set by Query to perform task
-    '__SET__' => [
-        'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
-        'column' => ['payload', '<key>'],               // Fetch value from Payload
-        'column' => ['function', function($session) {       // Perform a function and use returned value
-            return 'value';
-        }],
-        'column' => ['userDetails', '<key>'],           // From user session
-        'column' => ['insertIdParams', '<key>'],        // previous Insert ids
-        'column' => ['custom', '<static-value>'],       // Static values
-    ],
-    // Where clause of the Query to perform task
-    '__WHERE__' => [
-        'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
-        'column' => ['payload', '<key>'],               // Fetch value from Payload
-        'column' => ['function', function($session) {   // Perform a function and use returned value
-            return password_hash($session['payload']['password'], PASSWORD_DEFAULT);
-        }],
-        'column' => ['userDetails', '<key>'],           // From user session
-        'column' => ['custom', '<static-value>'],       // Static values
-    ],
-    // To be used only for INSERT queries
-    // Last insert id to be made available as $session['insertIdParams'][uniqueParamString];
-    'insertId' => '<keyName>:id',
-    // subQuery is a keyword to perform recursive operations
-    /** Supported configuration for recursive operations are :
-     * query,
-     * __SET__,
-     * __WHERE__,
-     * insertId,
-     * subQuery
-     */
-    'subQuery' => [
-        '<sub-key>' => [// Recursive
-            ...
-            ...
-            '__SET__' => [
-                ...
-                ...
-                'column' => ['insertIdParams', '<keyName>:id'], // previous Insert ids
-            ],
-        ]
+        ],
+        ...
     ]
     // Array of validation functions to be performed
     'validate' => [
@@ -484,8 +426,12 @@ return [
             '__WHERE__' => [
                 ...
                 'column' => ['hierarchyData', '<return:keys>'],
-            ],
-        ]
+            ]
+        ],
+        '<sub-key>' => [
+            ...
+        ],
+        ...
     ]
     // Array of validation functions to be performed
     'validate' => [
@@ -500,6 +446,85 @@ return [
     // useHierarchy true represent data from higher hierarchy to be preserved
     // to be used used in sub queries
     'useHierarchy' => true
+];
+```
+
+#### POST/PUT/PATCH/DELETE method configuration without Hierarchy
+
+```PHP
+return [
+    // Query to perform task
+    'query' => "INSERT INTO `TableName` SET __SET__",
+    'query' => "INSERT INTO `TableName` SET column1 = :column1, column2 = :column2",
+    'query' => "UPDATE `TableName` SET __SET__ WHERE __WHERE__",
+    'query' => "UPDATE `TableName` SET column1 = :column1, column2 = :column2 WHERE column3 = :column3 AND column4 = :column4",
+    // Details of data to be set by Query to perform task
+    '__SET__' => [
+        'column' => [ // Fatch value from parsed route
+            'uriParams',                                // uriParams / payload
+            '<key-1>',                                  // key
+            DatabaseDataTypes::$PrimaryKey,             // key data type
+            Constants::$REQUIRED                        // Represents required field
+        ],
+        'column' => ['payload', '<key>'],               // Fetch value from Payload
+        'column' => ['function', function($session) {   // Perform a function and use returned value
+            return 'value';
+        }],
+        'column' => ['userDetails', '<key>'],           // From user session
+        'column' => ['insertIdParams', '<key>'],        // previous Insert ids
+        'column' => ['custom', '<static-value>'],       // Static values
+    ],
+    // Where clause of the Query to perform task
+    '__WHERE__' => [
+        'column' => [ // Fatch value from parsed route
+            'uriParams',                                // uriParams / payload
+            '<key-1>',                                  // key
+            DatabaseDataTypes::$PrimaryKey,             // key data type
+            Constants::$REQUIRED                        // Represents required field
+        ],
+        'column' => ['payload', '<key>'],               // Fetch value from Payload
+        'column' => ['function', function($session) {   // Perform a function and use returned value
+            return password_hash($session['payload']['password'], PASSWORD_DEFAULT);
+        }],
+        'column' => ['userDetails', '<key>'],           // From user session
+        'column' => ['custom', '<static-value>'],       // Static values
+    ],
+    // To be used only for INSERT queries
+    // Last insert id to be made available as $session['insertIdParams'][uniqueParamString];
+    'insertId' => '<keyName>:id',
+    // subQuery is a keyword to perform recursive operations
+    /** Supported configuration for recursive operations are :
+     * query,
+     * __SET__,
+     * __WHERE__,
+     * insertId,
+     * subQuery
+     */
+    'subQuery' => [
+        '<sub-key>' => [// Recursive
+            ...
+            ...
+            '__SET__' => [
+                ...
+                ...
+                'column' => ['insertIdParams', '<keyName>:id'], // previous Insert ids
+            ],
+        ],
+        '<sub-key>' => [
+            ...
+        ],
+        ...
+    ]
+    // Array of validation functions to be performed
+    'validate' => [
+        [
+            'fn' => 'validateGroupId',
+            'fnArgs' => [
+                'group_id' => ['payload', 'group_id']
+            ],
+            'errorMessage' => 'Invalid Group Id'
+        ]
+    ],
 ];
 ```
 
@@ -587,7 +612,11 @@ return [
                 ],
                 'column' => ['hierarchyData', '<return:keys>'],
             ],
-        ]
+        ],
+        '<sub-key>' => [
+            ...
+        ],
+        ...
     ]
     // Array of validation functions to be performed
     'validate' => [
