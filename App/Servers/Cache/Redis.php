@@ -101,6 +101,9 @@ class Redis extends AbstractCache
     {
         if (!is_null($this->cache)) return;
 
+        if (!extension_loaded('redis')) {
+            throw new \Exception("Unable to find Redis extension", HttpStatus::$InternalServerError);
+        }
         try {
             // https://github.com/phpredis/phpredis?tab=readme-ov-file#class-redis
             $this->cache = new \Redis(

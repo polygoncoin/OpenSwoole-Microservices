@@ -84,6 +84,9 @@ class ApiGateway
         }
         $this->REMOTE_ADDR = $this->httpRequestDetails['server']['remote_addr'];
 
+        if (!extension_loaded('redis')) {
+            throw new \Exception("Unable to find Redis extension", HttpStatus::$InternalServerError);
+        }
         $this->redis = new \Redis();
         $this->redis->connect(getenv('RateLimiterHost'), (int)getenv('RateLimiterHostPort'));
 
@@ -243,7 +246,7 @@ class ApiGateway
                 ]));
             }
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Handle connection errors
             die('Rate limiter error: ' . $e->getMessage());
         }
