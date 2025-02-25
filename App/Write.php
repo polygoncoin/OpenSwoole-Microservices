@@ -63,10 +63,10 @@ class Write
         // Load Queries
         $writeSqlConfig = include $this->c->httpRequest->__file__;
 
-        // Set Server mode to execute query on - Read / Write Server.
+        // Set Server mode to execute query on - Read / Write Server
         $this->c->httpRequest->setConnection('Master');
 
-        // Use results in where clause of sub queries recursively.
+        // Use results in where clause of sub queries recursively
         $useHierarchy = $this->getUseHierarchy($writeSqlConfig);
 
         if (
@@ -81,11 +81,11 @@ class Write
     }
 
     /**
-     * Process write function for configuration.
+     * Process write function for configuration
      *
      * @param array   $writeSqlConfig Config from file
-     * @param boolean $useHierarchy   Use results in where clause of sub queries recursively.
-     * @return boolean
+     * @param boolean $useHierarchy   Use results in where clause of sub queries recursively
+     * @return void
      */
     private function processWriteConfig(&$writeSqlConfig, $useHierarchy)
     {
@@ -96,15 +96,15 @@ class Write
     }
 
     /**
-     * Process Function to insert/update.
+     * Process Function to insert/update
      *
      * @param array   $writeSqlConfig Config from file
-     * @param boolean $useHierarchy   Use results in where clause of sub queries recursively.
-     * @return boolean
+     * @param boolean $useHierarchy   Use results in where clause of sub queries recursively
+     * @return void
      */
     private function processWrite(&$writeSqlConfig, $useHierarchy)
     {
-        // Set required fields.
+        // Set required fields
         $this->c->httpRequest->session['requiredArr'] = $this->getRequired($writeSqlConfig, true, $useHierarchy);
 
         if ($this->c->httpRequest->session['payloadType'] === 'Object') {
@@ -116,33 +116,37 @@ class Write
         // Perform action
         $i_count = $this->c->httpRequest->session['payloadType'] === 'Object' ? 1 : $this->c->httpRequest->jsonDecode->count();
 
+        $configKeys = [];
+        $payloadIndexes = [];
         for ($i=0; $i < $i_count; $i++) {
+            $_configKeys = $configKeys;
+            $_payloadIndexes = $payloadIndexes;
             if ($i === 0) {
                 if ($this->c->httpRequest->session['payloadType'] === 'Object') {
-                    $payloadKey = '';
+                    $_payloadIndexes[] = '';
                 } else {
-                    $payloadKey = "{$i}";
+                    $_payloadIndexes[] = "{$i}";
                 }
             } else {
-                $payloadKey = "{$i}";
+                $_payloadIndexes[] = "{$i}";
             }
 
             // Begin DML operation
             $this->c->httpRequest->db->begin();
             $response = [];
-            $this->writeDB($writeSqlConfig, $payloadKey, $useHierarchy, $response, $this->c->httpRequest->session['requiredArr']);
+            $this->writeDB($writeSqlConfig, $_payloadIndexes, $_configKeys, $useHierarchy, $response, $this->c->httpRequest->session['requiredArr']);
             if ($this->c->httpRequest->db->beganTransaction === true) {
                 $this->c->httpRequest->db->commit();
                 $arr = [
                     'Status' => HttpStatus::$Created,
-                    'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray($payloadKey),
+                    'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray(implode(':', $_payloadIndexes)),
                     'Response' => &$response
                 ];
             } else {
                 $this->c->httpResponse->httpStatus = HttpStatus::$BadRequest;
                 $arr = [
                     'Status' => HttpStatus::$BadRequest,
-                    'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray($payloadKey),
+                    'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray(implode(':', $_payloadIndexes)),
                     'Error' => &$response
                 ];
             }
@@ -154,48 +158,48 @@ class Write
         } else {
             $this->c->httpResponse->jsonEncode->endArray();
         }
-
-        return true;
     }
 
     /**
-     * Function to insert/update sub queries recursively.
+     * Function to insert/update sub queries recursively
      *
      * @param array   $writeSqlConfig Config from file
-     * @param boolean $payloadKey     Payload key.
-     * @param boolean $useHierarchy   Use results in where clause of sub queries recursively.
-     * @param array   $response       Response by reference.
-     * @param array   $required       Required fields.
-     * @return boolean
+     * @param array   $payloadIndexes Payload Indexes
+     * @param array   $configKeys     Config Keys
+     * @param boolean $useHierarchy   Use results in where clause of sub queries recursively
+     * @param array   $response       Response by reference
+     * @param array   $required       Required fields
+     * @return void
      * @throws \Exception
      */
-    private function writeDB(&$writeSqlConfig, $payloadKey, $useHierarchy, &$response, &$required)
+    private function writeDB(&$writeSqlConfig, $payloadIndexes, $configKeys, $useHierarchy, &$response, &$required)
     {
-        $isAssoc = $this->c->httpRequest->jsonDecode->jsonType($payloadKey) === 'Object';
-        $i_count = $isAssoc ? 1 : $this->c->httpRequest->jsonDecode->count($payloadKey);
+        $payloadIndex = implode(':', $payloadIndexes);
+        $isAssoc = $this->c->httpRequest->jsonDecode->jsonType($payloadIndex) === 'Object';
+        $i_count = $isAssoc ? 1 : $this->c->httpRequest->jsonDecode->count($payloadIndex);
 
         $counter = 0;
         for ($i=0; $i < $i_count; $i++) {
+            $_payloadIndexes = $payloadIndexes;
             if (!$this->c->httpRequest->db->beganTransaction) {
                 $response['Error'] = 'Transaction rolled back';
                 return;
             }
 
             if ($isAssoc && $i > 0) {
-                    return;
+                return;
             }
 
-            if ($isAssoc) {
-                $payloadKey = $payloadKey;
-            } else {
-                $payloadKey = (strlen($payloadKey) === 0) ? $i : "{$payloadKey}:{$i}";
+            if (!$isAssoc) {
+                array_push($_payloadIndexes, $i);
+            }
+            $payloadIndex = implode(':', $_payloadIndexes);
+
+            if (!$this->c->httpRequest->jsonDecode->isset($payloadIndex)) {
+                throw new \Exception("Paylaod key '{$payloadIndex}' not set", HttpStatus::$NotFound);
             }
 
-            if (!$this->c->httpRequest->jsonDecode->isset($payloadKey)) {
-                throw new \Exception("Paylaod key '{$payloadKey}' not set", HttpStatus::$NotFound);
-            }
-
-            $this->c->httpRequest->session['payload'] = $this->c->httpRequest->jsonDecode->get($payloadKey);
+            $this->c->httpRequest->session['payload'] = $this->c->httpRequest->jsonDecode->get($payloadIndex);
 
 
             if (count($required)) {
@@ -244,45 +248,69 @@ class Write
             }
             $this->c->httpRequest->db->closeCursor();
 
-            // subQuery for payload.
+            // subQuery for payload
             if (isset($writeSqlConfig['subQuery'])) {
-                foreach ($writeSqlConfig['subQuery'] as $module => &$_writeSqlConfig) {
-                    $modulePayloadKey = (strlen($payloadKey) === 0) ? $module : "{$payloadKey}:{$module}";
-                    if ($useHierarchy) { // use parent data of a payload.
-                        if ($this->c->httpRequest->jsonDecode->isset($modulePayloadKey)) {
-                            $_payloadKey = $modulePayloadKey;
-                            $_required = &$required[$module] ?? [];
-                        } else {
-                            throw new \Exception("Invalid payload: Module '{$module}' missing", HttpStatus::$NotFound);
-                        }
-                    } else {
-                        $_payloadKey = $modulePayloadKey;
-                        $_required = [];
-                    }
-                    $_useHierarchy = $useHierarchy ?? $this->getUseHierarchy($_writeSqlConfig);
-                    if ($isAssoc) {
-                        $response[$module] = [];
-                        $_response = &$response[$module];
-                    } else {
-                        $response[$counter][$module] = [];
-                        $_response = &$response[$counter][$module];
-                    }
-                    $this->writeDB($_writeSqlConfig, $_payloadKey, $_useHierarchy, $_response, $_required);
-                }
+                $this->callWriteDB($isAssoc, $writeSqlConfig, $_payloadIndexes, $configKeys, $useHierarchy, $response, $required);
             }
 
             if (!$isAssoc) {
                 $counter++;
             }
         }
+    }
 
-        return true;
+    /**
+     * Validate and call writeDB
+     *
+     * @param boolean $isAssoc        Is Associative array
+     * @param array   $writeSqlConfig Config from file
+     * @param array   $payloadIndexes Payload Indexes
+     * @param array   $configKeys     Config Keys
+     * @param boolean $useHierarchy   Use results in where clause of sub queries recursively
+     * @param array   $response       Response by reference
+     * @param array   $required       Required fields
+     * @return void
+     */
+    private function callWriteDB($isAssoc, &$writeSqlConfig, $payloadIndexes, $configKeys, $useHierarchy, &$response, &$required)
+    {
+        if ($useHierarchy) {
+            $row = $this->c->httpRequest->session['payload'];
+            $this->resetFetchData($configKeys, $row, $useHierarchy);
+        }
+
+        if (isset($writeSqlConfig['subQuery']) && $this->isAssoc($writeSqlConfig['subQuery'])) {
+            foreach ($writeSqlConfig['subQuery'] as $module => &$_writeSqlConfig) {
+                $_payloadIndexes = $payloadIndexes;
+                $_configKeys = $configKeys;
+                array_push($_payloadIndexes, $module);
+                array_push($_configKeys, $module);
+                $modulePayloadKey = implode(':', $_payloadIndexes);
+                if ($useHierarchy) { // use parent data of a payload
+                    if ($this->c->httpRequest->jsonDecode->isset($modulePayloadKey)) {
+                        $_required = &$required[$module] ?? [];
+                    } else {
+                        throw new \Exception("Invalid payload: Module '{$module}' missing", HttpStatus::$NotFound);
+                    }
+                } else {
+                    $_required = [];
+                }
+                $_useHierarchy = $useHierarchy ?? $this->getUseHierarchy($_writeSqlConfig);
+                if ($isAssoc) {
+                    $response[$module] = [];
+                    $_response = &$response[$module];
+                } else {
+                    $response[$counter][$module] = [];
+                    $_response = &$response[$counter][$module];
+                }
+                $this->writeDB($_writeSqlConfig, $_payloadIndexes, $_configKeys, $_useHierarchy, $_response, $_required);
+            }
+        }
     }
 
     /**
      * Checks if the payload is valid
      *
-     * @param array   $writeSqlConfig Config from file
+     * @param array $writeSqlConfig Config from file
      * @return boolean
      */
     private function isValidPayload($writeSqlConfig)
