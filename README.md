@@ -837,12 +837,12 @@ This lists down all allowed routes for HTTP methods respectively.
 
 ### Login
 
-````
+````javascript
 var handlerUrl = "http://127.0.0.1:9501?r=/login";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "POST", handlerUrl );
-xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
 
 xmlhttp . onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -871,11 +871,12 @@ xmlhttp . send( params );
 
 * GET Request
 
-````
+````javascript
   var handlerUrl = "http://127.0.0.1:9501?r=/routes";
   var xmlhttp = new XMLHttpRequest();
 
   xmlhttp . open( "GET", handlerUrl );
+  xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
   xmlhttp . setRequestHeader('Authorization', 'Bearer <Token-from-login-api>');
 
   xmlhttp . onreadystatechange = function() {
@@ -891,12 +892,12 @@ xmlhttp . send( params );
 
 * POST Request
 
-````
+````javascript
 var handlerUrl = "http://127.0.0.1:9501?r=/ajax-handler-route";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "POST", handlerUrl );
-xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
 xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
 
 xmlhttp . onreadystatechange = function() {
@@ -922,12 +923,12 @@ xmlhttp . send( params );
 
 * PUT Request
 
-````
+````javascript
 var handlerUrl = "http://127.0.0.1:9501?r=/custom/password";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "PUT", handlerUrl );
-xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
 xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
 
 xmlhttp . onreadystatechange = function() {

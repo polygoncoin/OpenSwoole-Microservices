@@ -42,6 +42,16 @@ $server->on("start", function (Server $server) {
 
 $server->on("request", function (Request $request, Response $response) {
 
+    if ($request->get['r'] === '/test') {
+        include __DIR__ . '/Tests.php';
+        $response->end(process());
+    }
+    
+    // Check Content-Type header
+    if (!in_array($request->header['content-type'], ['text/plain; charset=utf-8', 'application/x-www-form-urlencoded; charset=utf-8'])) {
+        $response->end('{"Status":400,"Message":"Bad Request"}');
+    }
+
     // Load .env
     $env = parse_ini_file(__DIR__ . DIRECTORY_SEPARATOR . '.env');
     foreach ($env as $key => $value) {
@@ -51,6 +61,7 @@ $server->on("request", function (Request $request, Response $response) {
     $httpRequestDetails = [];
 
     $httpRequestDetails['server']['host'] = 'localhost';
+    // $httpRequestDetails['server']['host'] = 'api.client001.localhost';
     $httpRequestDetails['server']['request_method'] = $request->server['request_method'];
     $httpRequestDetails['server']['remote_addr'] = $request->server['remote_addr'];
     if (isset($request->header['authorization'])) {
