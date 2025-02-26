@@ -253,7 +253,7 @@ class Services
             $headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
         } else {
             // JSON headers
-            $headers['Content-Type'] = 'application/json;charset=utf-8';
+            $headers['Content-Type'] = 'application/json; charset=utf-8';
             $headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0';
             $headers['Pragma'] = 'no-cache';
         }
