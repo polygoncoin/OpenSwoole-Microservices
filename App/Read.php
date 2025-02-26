@@ -59,6 +59,7 @@ class Read
     public function process()
     {
         $Env = __NAMESPACE__ . '\Env';
+        $session = &$this->c->httpRequest->session;
 
         // Load Queries
         $readSqlConfig = include $this->c->httpRequest->__file__;

@@ -59,6 +59,7 @@ class Write
     public function process()
     {
         $Env = __NAMESPACE__ . '\Env';
+        $session = &$this->c->httpRequest->session;
 
         // Load Queries
         $writeSqlConfig = include $this->c->httpRequest->__file__;
