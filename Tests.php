@@ -7,7 +7,7 @@ function getCurlConfig($method, $route, $header = [], $json = '')
     $curlConfig[CURLOPT_URL] = "{$homeURL}?r={$route}";
     $curlConfig[CURLOPT_HTTPHEADER] = $header;
     $curlConfig[CURLOPT_HTTPHEADER][] = "Cache-Control: no-cache";
-    
+
     $payload = http_build_query([
         "Payload" => $json
     ]);
@@ -70,13 +70,13 @@ function process()
 {
     $response = [];
     $response[] = trigger('GET', '/reload', [], '');
-    
+
     $res = trigger('POST', '/login', [], '{"username":"client_1_group_1_user_1", "password":"shames11"}');
     if ($res) {
         $response[] = $res;
         $token = $res['Results']['Token'];
-        $header = ["Authorization: Bearer {$token}"];    
-    
+        $header = ["Authorization: Bearer {$token}"];
+
         $response[] = trigger('GET', '/routes', $header, '');
         $response[] = trigger('POST', '/category', $header, '[{"name":"ramesh0","sub":{"subname":"ramesh1","subsub":{"subsubname":"ramesh"}}},{"name":"ramesh1","sub":{"subname":"ramesh1","subsub":{"subsubname":"ramesh"}}}]');
         $response[] = trigger('GET', '/category', $header, '');

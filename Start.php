@@ -46,7 +46,7 @@ $server->on("request", function (Request $request, Response $response) {
         include __DIR__ . '/Tests.php';
         $response->end(process());
     }
-    
+
     // Check Content-Type header
     if (!in_array($request->header['content-type'], ['text/plain; charset=utf-8', 'application/x-www-form-urlencoded; charset=utf-8'])) {
         $response->end('{"Status":400,"Message":"Bad Request"}');
