@@ -10,7 +10,7 @@ use Microservices\App\HttpResponse;
 /**
  * Common Class
  *
- * Common objects class.
+ * Common objects class
  *
  * @category   Common
  * @package    Microservices

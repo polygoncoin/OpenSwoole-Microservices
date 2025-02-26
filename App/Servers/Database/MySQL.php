@@ -7,7 +7,7 @@ use Microservices\App\Servers\Database\AbstractDatabase;
 /**
  * Loading database server
  *
- * This class is built to handle MySql database operation.
+ * This class is built to handle MySql database operation
  *
  * @category   Database - MySql
  * @package    Microservices

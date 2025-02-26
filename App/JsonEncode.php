@@ -14,7 +14,7 @@ use Microservices\App\Logs;
  * (which leads to memory limit issues for larger data set)
  * which are then converted to JSON. This class gives access to
  * create JSON in parts for what ever smallest part of data
- * we have of the large data set which are yet to be fetched.
+ * we have of the large data set which are yet to be fetched
  *
  * @category   JSON Encoder
  * @package    Microservices
@@ -104,7 +104,7 @@ class JsonEncode
     /**
      * Escape the json string key or value
      *
-     * @param string $str json key or value string.
+     * @param string $str json key or value string
      * @return string
      */
     private function escape($str)
@@ -117,7 +117,7 @@ class JsonEncode
     /**
      * Encodes both simple and associative array to json
      *
-     * @param $arr string value escaped and array value json_encode function is applied.
+     * @param $arr string value escaped and array value json_encode function is applied
      * @return void
      */
     public function encode($arr)
@@ -136,9 +136,9 @@ class JsonEncode
     }
 
     /**
-     * Add simple array/value as in the json format.
+     * Add simple array/value as in the json format
      *
-     * @param $value data type is string/array. This is used to add value/array in the current Array.
+     * @param $value data type is string/array. This is used to add value/array in the current Array
      * @return void
      * @throws \Exception
      */
@@ -151,10 +151,10 @@ class JsonEncode
     }
 
     /**
-     * Add simple array/value as in the json format.
+     * Add simple array/value as in the json format
      *
      * @param string $key   key of associative array
-     * @param        $value data type is string/array. This is used to add value/array in the current Array.
+     * @param        $value data type is string/array. This is used to add value/array in the current Array
      * @return void
      * @throws \Exception
      */
@@ -172,7 +172,7 @@ class JsonEncode
     /**
      * Start simple array
      *
-     * @param string $key Used while creating simple array inside an associative array and $key is the key.
+     * @param string $key Used while creating simple array inside an associative array and $key is the key
      * @return void
      */
     public function startArray($key = null)
@@ -206,7 +206,7 @@ class JsonEncode
     /**
      * Start simple array
      *
-     * @param string $key Used while creating associative array inside an associative array and $key is the key.
+     * @param string $key Used while creating associative array inside an associative array and $key is the key
      * @return void
      * @throws \Exception
      */
@@ -242,7 +242,7 @@ class JsonEncode
     }
 
     /**
-     * Checks json was properly closed.
+     * Checks json was properly closed
      *
      * @return void
      */
@@ -261,7 +261,7 @@ class JsonEncode
     }
 
     /**
-     * Stream Json String.
+     * Stream Json String
      *
      * @return void
      */

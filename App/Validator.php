@@ -54,7 +54,7 @@ class Validator
      * Validate payload
      *
      * @param array $session            Inputs
-     * @param array $validationConfig Validation configuration.
+     * @param array $validationConfig Validation configuration
      * @return array
      */
     public function validate($session, $validationConfig)

@@ -27,7 +27,7 @@ namespace Microservices\App;
         'maxLength' => 8
     ];
 
-    Equal to VARCHAR(), but stores binary byte strings. The size parameter specifies the maximum column length in bytes.
+    Equal to VARCHAR(), but stores binary byte strings. The size parameter specifies the maximum column length in bytes
     VARBINARY(size)
     static public $VARBINARY = [
         'dataType' => 'string',
@@ -112,7 +112,7 @@ namespace Microservices\App;
 
 /** Numeric Data Types */
 /*
-    A bit-value type. The number of bits per value is specified in size. The size parameter can hold a value from 1 to 64. The default value for size is 1.
+    A bit-value type. The number of bits per value is specified in size. The size parameter can hold a value from 1 to 64. The default value for size is 1
     BIT(size)
     static public $BIT = [
         'dataType' => 'string',
@@ -133,7 +133,7 @@ namespace Microservices\App;
         'maxValue' => 255
     ];
 
-    Zero is considered as false, nonzero values are considered as true.
+    Zero is considered as false, nonzero values are considered as true
     BOOL
     BOOLEAN
     static public $BOOL = [
@@ -207,14 +207,14 @@ namespace Microservices\App;
         'dataType' => 'string'
     ];
 
-    An exact fixed-point number. The total number of digits is specified in size. The number of digits after the decimal point is specified in the d parameter. The maximum number for size is 65. The maximum number for d is 30. The default value for size is 10. The default value for d is 0.
+    An exact fixed-point number. The total number of digits is specified in size. The number of digits after the decimal point is specified in the d parameter. The maximum number for size is 65. The maximum number for d is 30. The default value for size is 10. The default value for d is 0
     DECIMAL(size, d)
     DEC(size, d)
     static public $DECIMAL = [
         'dataType' => 'string'
     ];
 
-    Note: All the numeric data types may have an extra option: UNSIGNED or ZEROFILL. If you add the UNSIGNED option, MySQL disallows negative values for the column. If you add the ZEROFILL option, MySQL automatically also adds the UNSIGNED attribute to the column.
+    Note: All the numeric data types may have an extra option: UNSIGNED or ZEROFILL. If you add the UNSIGNED option, MySQL disallows negative values for the column. If you add the ZEROFILL option, MySQL automatically also adds the UNSIGNED attribute to the column
 */
 
 /** Date and Time Data Types */
@@ -246,7 +246,7 @@ namespace Microservices\App;
         'regex' => '/\d{2}:\d{2}:\d{2}/'
     ];
 
-    A year in four-digit format. Values allowed in four-digit format: 1901 to 2155, and 0000.
+    A year in four-digit format. Values allowed in four-digit format: 1901 to 2155, and 0000
     YEAR
     static public $YEAR = [
         'dataType' => 'int',
@@ -254,7 +254,7 @@ namespace Microservices\App;
         'maxValue' => 2155
     ];
 
-    MySQL 8.0 does not support year in two-digit format.
+    MySQL 8.0 does not support year in two-digit format
 */
 
 /**
@@ -272,15 +272,15 @@ namespace Microservices\App;
 class DatabaseDataTypes
 {
     /**
-     * Example to create custom data type.
+     * Example to create custom data type
      * You can configure them in /Config/Queries folder as a data type
-     * This will validate the received payload/uriParam/etc data where thisnis configured.
+     * This will validate the received payload/uriParam/etc data where thisnis configured
      * DatabaseDataTypes::$CustomINT
      *
      *  static public $CustomINT = [
      *      // PHP data type (null, bool, int, float, string)
      *      'dataType' => 'int',
-     *      // if needed append required options from below with values.
+     *      // if needed append required options from below with values
      *      'minValue' => false,
      *      'maxValue' => false,
      *      'minLength' => false,

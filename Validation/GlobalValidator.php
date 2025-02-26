@@ -44,7 +44,7 @@ class GlobalValidator implements ValidatorInterface
      * Validate payload
      *
      * @param array $session            Input's data
-     * @param array $validationConfig Validation configuration.
+     * @param array $validationConfig Validation configuration
      * @return array
      */
     public function validate($session, $validationConfig)

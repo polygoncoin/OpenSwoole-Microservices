@@ -4,7 +4,7 @@ namespace Microservices\App\Servers\Cache;
 /**
  * Loading database server
  *
- * This abstract class is built to handle the database server.
+ * This abstract class is built to handle the database server
  *
  * @category   Abstract Cache Class
  * @package    Microservices

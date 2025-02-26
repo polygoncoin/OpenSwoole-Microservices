@@ -71,7 +71,7 @@ $server->on("request", function (Request $request, Response $response) {
     $httpRequestDetails['post'] = &$request->post;
     $httpRequestDetails['files'] = &$request->files;
 
-    // Code to Initialize / Start the service.
+    // Code to Initialize / Start the service
     try {
         $services = new Services($httpRequestDetails);
 

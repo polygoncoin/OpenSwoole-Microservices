@@ -4,7 +4,7 @@ namespace Microservices\App;
 /**
  * Rate Limiter
  *
- * This class is built to handle Limit Rate of requests.
+ * This class is built to handle Limit Rate of requests
  *
  * @category   Rate Limiter
  * @package    Microservices

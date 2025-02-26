@@ -11,7 +11,7 @@ use Microservices\App\Servers\Database\MySql as DB_MySql;
 /**
  * Loading MySql server
  *
- * This class is built to handle cache operation.
+ * This class is built to handle cache operation
  *
  * @category   Cache - MySql
  * @package    Microservices

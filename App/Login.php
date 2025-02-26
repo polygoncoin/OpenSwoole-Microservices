@@ -36,7 +36,7 @@ class Login
     private $password = null;
 
     /**
-     * Details pertaining to user.
+     * Details pertaining to user
      *
      * @var array
      */
@@ -117,7 +117,7 @@ class Login
      */
     private function loadPayload()
     {
-        // Check request method is POST.
+        // Check request method is POST
         if ($this->c->httpRequest->REQUEST_METHOD !== Constants::$POST) {
             throw new \Exception('Invalid request method', HttpStatus::$NotFound);
         }
@@ -146,7 +146,7 @@ class Login
     {
         $clientId = $this->c->httpRequest->session['clientDetails']['client_id'];
         $this->clientUserKey = CacheKey::ClientUser($clientId, $this->payload['username']);
-        // Redis - one can find the userID from username.
+        // Redis - one can find the userID from username
         if ($this->c->httpRequest->cache->cacheExists($this->clientUserKey)) {
             $this->userDetails = json_decode($this->c->httpRequest->cache->getCache($this->clientUserKey), true);
             if (empty($this->userDetails['user_id']) || empty($this->userDetails['group_id'])) {
@@ -158,14 +158,14 @@ class Login
     }
 
     /**
-     * Function to validate source ip.
+     * Function to validate source ip
      *
      * @return void
      * @throws \Exception
      */
     private function validateRequestIp()
     {
-        // Redis - one can find the userID from username.
+        // Redis - one can find the userID from username
         $this->cidr_key = CacheKey::CIDR($this->userDetails['group_id']);
         if ($this->c->httpRequest->cache->cacheExists($this->cidr_key)) {
             $cidrs = json_decode($this->c->httpRequest->cache->getCache($this->cidr_key), true);
@@ -218,7 +218,7 @@ class Login
     }
 
     /**
-     * Outputs active/newly generated token details.
+     * Outputs active/newly generated token details
      *
      * @return void
      */
@@ -242,7 +242,7 @@ class Login
 
         if (!$tokenFound) {
             $tokenDetails = $this->generateToken();
-            // We set this to have a check first if multiple request/attack occurs.
+            // We set this to have a check first if multiple request/attack occurs
             $this->c->httpRequest->cache->setCache($this->userTokenKey, json_encode($tokenDetails), Constants::$TOKEN_EXPIRY_TIME);
             $this->tokenKey = CacheKey::Token($tokenDetails['token']);
             $this->c->httpRequest->cache->setCache($this->tokenKey, json_encode($this->userDetails), Constants::$TOKEN_EXPIRY_TIME);

@@ -11,7 +11,7 @@ use Microservices\App\Servers\Database\PgSql as DB_PgSQL;
 /**
  * Loading MySql server
  *
- * This class is built to handle cache operation.
+ * This class is built to handle cache operation
  *
  * @category   Cache - PgSql
  * @package    Microservices

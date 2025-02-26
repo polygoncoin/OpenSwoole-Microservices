@@ -6,12 +6,12 @@ use Microservices\App\Common;
 use Microservices\App\Env;
 
 /**
- * Class to reduce cache hits and save on bandwidth using ETags and cache headers.
+ * Class to reduce cache hits and save on bandwidth using ETags and cache headers
  *
  * HTTP etags header helps reduce the cache hits
  * Helps browser avoid unwanted hits to un-modified content on the server
- * which are cached on client browser.
- * The headers in class helps fetch only the modified content.
+ * which are cached on client browser
+ * The headers in class helps fetch only the modified content
  *
  * @category   PHP File Cache handler
  * @package    Microservices
@@ -72,7 +72,7 @@ class CacheHandler
     }
 
     /**
-     * Checks whether access to file is allowed.
+     * Checks whether access to file is allowed
      *
      * @return void
      */
@@ -97,7 +97,7 @@ class CacheHandler
         $mime = finfo_file($fileInfo, $fileLocation);
         finfo_close($fileInfo);
 
-        // Let Etag be last modified timestamp of file.
+        // Let Etag be last modified timestamp of file
         $modifiedTime = filemtime($this->fileLocation);
         $eTag = "{$modifiedTime}";
 

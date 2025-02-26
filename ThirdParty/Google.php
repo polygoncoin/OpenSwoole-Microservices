@@ -10,9 +10,9 @@ use Microservices\ThirdParty\ThirdPartyTrait;
 
 
 /**
- * Class for third party - Google.
+ * Class for third party - Google
  *
- * This class perform third party - Google operations.
+ * This class perform third party - Google operations
  * One can initiate third party calls via access to URL
  * https://domain.tld/client/thirdParty/className?queryString
  * All HTTP methods are supported
@@ -63,7 +63,7 @@ class Google implements ThirdPartyInterface
      */
     public function process()
     {
-        // Create and call functions to manage third party cURL calls here.
+        // Create and call functions to manage third party cURL calls here
 
         $curl_handle=curl_init();
         curl_setopt($curl_handle,CURLOPT_URL,'https://api.ipify.org?format=json');
@@ -77,14 +77,14 @@ class Google implements ThirdPartyInterface
         } else {
             $output = json_decode($output, true);
         }
-        // End the calls with json response with jsonEncode Object.
+        // End the calls with json response with jsonEncode Object
         $this->endProcess($output);
 
         return true;
     }
 
     /**
-     * Function to end process which outputs the results.
+     * Function to end process which outputs the results
      *
      * @param string $output
      * @return void

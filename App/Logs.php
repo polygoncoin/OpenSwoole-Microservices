@@ -8,7 +8,7 @@ use Microservices\App\HttpStatus;
 /**
  * Logs
  *
- * Logs contents in diffent modes.
+ * Logs contents in diffent modes
  *
  * @category   Logging
  * @package    Microservices

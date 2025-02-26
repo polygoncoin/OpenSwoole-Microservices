@@ -10,7 +10,7 @@ use Microservices\App\JsonEncode;
 /**
  * HTTP Error Response
  *
- * This class is built to handle HTTP error response.
+ * This class is built to handle HTTP error response
  *
  * @category   HttpError
  * @package    Microservices

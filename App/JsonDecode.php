@@ -245,7 +245,7 @@ class JsonDecode
      * Start processing the JSON string for a keys
      * Perform search inside keys of JSON like $json['data'][0]['data1']
      *
-     * @param string $keys Key values seperated by colon.
+     * @param string $keys Key values seperated by colon
      * @return void
      * @throws \Exception
      */

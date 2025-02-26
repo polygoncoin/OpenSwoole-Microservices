@@ -87,7 +87,7 @@ class HttpRequest
     public $httpRequestDetails = null;
 
     /**
-     * Details var from $httpRequestDetails.
+     * Details var from $httpRequestDetails
      */
     public $HOST = null;
     public $REQUEST_METHOD = null;
@@ -349,13 +349,13 @@ class HttpRequest
     /**
      * Validate config file
      *
-     * @param array $routes Routes config.
+     * @param array $routes Routes config
      * @return void
      * @throws \Exception
      */
     private function validateConfigFile(&$routes)
     {
-        // Set route code file.
+        // Set route code file
         if (!(isset($routes['__file__']) && ($routes['__file__'] === false || file_exists($routes['__file__'])))) {
             throw new \Exception('Missing route configuration file for ' . $this->REQUEST_METHOD . ' method', HttpStatus::$InternalServerError);
         }
@@ -384,7 +384,7 @@ class HttpRequest
     /**
      * Function to find payload is an object/array
      *
-     * @param array $arr Array vales to be decoded. Basically $_GET.
+     * @param array $arr Array vales to be decoded. Basically $_GET
      * @return void
      */
     public function urlDecode(&$arr)

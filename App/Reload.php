@@ -64,7 +64,7 @@ class Reload
     }
 
     /**
-     * Adds user details to cache.
+     * Adds user details to cache
      *
      * @return void
      */
@@ -114,7 +114,7 @@ class Reload
     }
 
     /**
-     * Adds group details to cache.
+     * Adds group details to cache
      *
      * @return void
      */
@@ -151,9 +151,9 @@ class Reload
     }
 
     /**
-     * Remove token from cache.
+     * Remove token from cache
      *
-     * @param string $token Token to be delete from cache.
+     * @param string $token Token to be delete from cache
      * @return void
      */
     private function processToken($token)

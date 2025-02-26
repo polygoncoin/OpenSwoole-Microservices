@@ -105,7 +105,7 @@ class Routes
     }
 
     /**
-     * Create Routes list.
+     * Create Routes list
      *
      * @return void
      */

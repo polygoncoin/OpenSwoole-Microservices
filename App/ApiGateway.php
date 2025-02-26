@@ -8,7 +8,7 @@ use Microservices\App\RateLimiter;
 /**
  * Microservices Class
  *
- * Class to start Services.
+ * Class to start Services
  *
  * @category   Api Gateway
  * @package    Microservices
@@ -20,7 +20,7 @@ use Microservices\App\RateLimiter;
 class ApiGateway
 {
     /**
-     * Details var from $httpRequestDetails.
+     * Details var from $httpRequestDetails
      */
     public $HOST = null;
     public $REQUEST_METHOD = null;

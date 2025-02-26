@@ -10,7 +10,7 @@ use Microservices\App\Servers\Cache\AbstractCache;
 /**
  * Loading Redis server
  *
- * This class is built to handle cache operation.
+ * This class is built to handle cache operation
  *
  * @category   Cache - Memcached
  * @package    Microservices

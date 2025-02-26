@@ -9,7 +9,7 @@ use Microservices\Cron\CronInterface;
 use Microservices\Cron\CronTrait;
 
 /**
- * Class for a particular cron.
+ * Class for a particular cron
  *
  * This class is meant for cron
  * One can initiate cron via access URL to this class
@@ -62,17 +62,15 @@ class Category implements CronInterface
      */
     public function process()
     {
-        // Create and call functions to manage cron functionality here.
+        // Create and call functions to manage cron functionality here
 
-        // ...
-
-        // End the calls with json response with jsonEncode Object.
+        // End the calls with json response with jsonEncode Object
         $this->endProcess();
         return true;
     }
 
     /**
-     * Function to end process which outputs the results.
+     * Function to end process which outputs the results
      *
      * @return void
      * @throws \Exception

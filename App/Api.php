@@ -20,7 +20,7 @@ use Microservices\App\Env;
 class Api
 {
     /**
-     * Route matched for processing before payload was collected.
+     * Route matched for processing before payload was collected
      *
      * @var null|boolean
      */
@@ -97,7 +97,7 @@ class Api
             }
         }
 
-        // Check & Process Cron / ThirdParty calls.
+        // Check & Process Cron / ThirdParty calls
         {
             $this->processAfterPayload();
         }
