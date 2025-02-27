@@ -48,7 +48,7 @@ class Services
      *
      * @var null|Common
      */
-    private $c = null;
+    public $c = null;
 
     /**
      * @var null|ApiGateway
@@ -99,7 +99,6 @@ class Services
     public function process()
     {
         $this->startJson();
-        $this->startOutputJson();
         $this->processApi();
         $this->endOutputJson();
         $this->addPerformance();
@@ -116,16 +115,6 @@ class Services
     public function startJson()
     {
         $this->c->httpResponse->jsonEncode->startObject();
-    }
-
-    /**
-     * Start Json Output Key
-     *
-     * @return void
-     */
-    public function startOutputJson()
-    {
-        // $this->c->httpResponse->jsonEncode->startObject('Output');
     }
 
     /**
@@ -189,7 +178,6 @@ class Services
      */
     public function endOutputJson()
     {
-        // $this->c->httpResponse->jsonEncode->endObject();
         $this->c->httpResponse->jsonEncode->addKeyValue('Status', $this->c->httpResponse->httpStatus);
     }
 

@@ -92,9 +92,16 @@ $server->on("request", function (Request $request, Response $response) {
 
         if ($services->init()) {
             $services->process();
+            $response->status($services->c->httpResponse->httpStatus);
             $response->end($services->outputResults());
         }
     } catch (\Exception $e) {
+        $response->status($e->getCode());
+
+        $response->header('Content-Type', 'application/json; charset=utf-8');
+        $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $response->header('Pragma', 'no-cache');
+
         $arr = [
             'Status' => $e->getCode(),
             'Message' => $e->getMessage()
