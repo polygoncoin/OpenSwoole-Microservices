@@ -24,14 +24,12 @@ return [
                 'subsub' => [
                     'query' => "INSERT INTO `category` SET __SET__",
                     '__SET__' => [
-                        // 'name' => ['payload', 'subsubname'],
-                        'name' => ['hierarchyData', 'return:sub:subname'],
+                        'name' => ['payload', 'subsubname'],
                         'parent_id' => ['insertIdParams', 'sub:id'],
                     ],
                     'insertId' => 'subsub:id',
                 ]
             ]
         ]
-    ],
-    'useHierarchy' => true
+    ]
 ];

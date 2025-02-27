@@ -191,7 +191,7 @@ class Write
                 return;
             }
 
-            if (!$isAssoc) {
+            if (!$isAssoc && !$useHierarchy) {
                 array_push($_payloadIndexes, $i);
             }
             $payloadIndex = implode(':', $_payloadIndexes);
@@ -283,17 +283,17 @@ class Write
             foreach ($writeSqlConfig['subQuery'] as $module => &$_writeSqlConfig) {
                 $_payloadIndexes = $payloadIndexes;
                 $_configKeys = $configKeys;
-                array_push($_payloadIndexes, $module);
-                array_push($_configKeys, $module);
                 $modulePayloadKey = implode(':', $_payloadIndexes);
                 if ($useHierarchy) { // use parent data of a payload
+                    array_push($_payloadIndexes, $module);
+                    array_push($_configKeys, $module);
                     if ($this->c->httpRequest->jsonDecode->isset($modulePayloadKey)) {
                         $_required = &$required[$module] ?? [];
                     } else {
                         throw new \Exception("Invalid payload: Module '{$module}' missing", HttpStatus::$NotFound);
                     }
                 } else {
-                    $_required = [];
+                    $_required = $required;
                 }
                 $_useHierarchy = $useHierarchy ?? $this->getUseHierarchy($_writeSqlConfig);
                 if ($isAssoc) {

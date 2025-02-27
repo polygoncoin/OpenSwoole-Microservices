@@ -252,10 +252,6 @@ class Read
     private function fetchMultipleRows(&$readSqlConfig, &$configKeys, $useHierarchy)
     {
         $isAssoc = $this->isAssoc($readSqlConfig);
-        if (!$useHierarchy && isset($readSqlConfig['subQuery'])) {
-            throw new \Exception('Invalid Configuration: multipleRowFormat can\'t have sub query', HttpStatus::$InternalServerError);
-        }
-        $isAssoc = $this->isAssoc($readSqlConfig);
 
         list($sql, $sqlParams, $errors) = $this->getSqlAndParams($readSqlConfig);
         if (!empty($errors)) {
