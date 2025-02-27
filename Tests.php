@@ -6,6 +6,7 @@ function getCurlConfig($method, $route, $header = [], $json = '')
 
     $curlConfig[CURLOPT_URL] = "{$homeURL}?r={$route}";
     $curlConfig[CURLOPT_HTTPHEADER] = $header;
+    $curlConfig[CURLOPT_HTTPHEADER][] = "X-API-Version: v1.0.0";
     $curlConfig[CURLOPT_HTTPHEADER][] = "Cache-Control: no-cache";
 
     $payload = http_build_query([

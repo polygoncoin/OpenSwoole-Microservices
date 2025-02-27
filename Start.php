@@ -48,7 +48,7 @@ $server->on("request", function (Request $request, Response $response) {
     }
 
     // Check Content-Type header
-    if (!in_array($request->header['content-type'], ['text/plain; charset=utf-8', 'application/x-www-form-urlencoded; charset=utf-8'])) {
+    if ($request->header['x-api-version'] !== 'v1.0.0') {
         $response->status(400);
 
         $response->header('Content-Type', 'application/json; charset=utf-8');
@@ -58,16 +58,10 @@ $server->on("request", function (Request $request, Response $response) {
         $response->end('{"Status":400,"Message":"Bad Request"}');
     }
 
-    // Load .env
-    $env = parse_ini_file(__DIR__ . DIRECTORY_SEPARATOR . '.env');
-    foreach ($env as $key => $value) {
-        putenv("{$key}={$value}");
-    }
-
     $httpRequestDetails = [];
 
-    $httpRequestDetails['server']['host'] = 'localhost';
-    // $httpRequestDetails['server']['host'] = 'api.client001.localhost';
+    // $httpRequestDetails['server']['host'] = 'localhost';
+    $httpRequestDetails['server']['host'] = 'api.client001.localhost';
     $httpRequestDetails['server']['request_method'] = $request->server['request_method'];
     $httpRequestDetails['server']['remote_addr'] = $request->server['remote_addr'];
     if (isset($request->header['authorization'])) {
@@ -88,6 +82,12 @@ $server->on("request", function (Request $request, Response $response) {
         if ($httpRequestDetails['server']['request_method'] == 'OPTIONS') {
             $response->end();
             return;
+        }
+
+        // Load .env
+        $env = parse_ini_file(__DIR__ . DIRECTORY_SEPARATOR . '.env');
+        foreach ($env as $key => $value) {
+            putenv("{$key}={$value}");
         }
 
         if ($services->init()) {
