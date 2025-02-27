@@ -10,6 +10,7 @@ This is a light & easy Openswoole based Microservices framework. It can be used 
 - [Routes Folder](#routes-folder)
 - [Queries Folder](#queries-folder)
 - [Queries Configuration Rules](#queries-configuration-rules)
+- [Rate Limiting](#rate-limiting)
 - [HTTP Request](#http-request)
 - [Hierarchy Data](#hierarchy-data)
 - [Configuration Route](#configuration-route)
@@ -106,7 +107,7 @@ Below are the configuration settings details in .env
 - **Upload** Contains classes for upload file API's
 - **Validation** Contains validation classes.
 
-## Route Folder
+## Routes Folder
 
 - **/Config/Routes/&lt;GroupName&gt;**
 
@@ -646,6 +647,27 @@ return [
 
 > For POST, PUT, PATCH, and DELETE methods one can configure both INSERT as well as UPDATE queries if required for sub modules.
 
+## Rate Limiting
+
+### Allowed IPs
+
+Classless Inter-Domain Routing (CIDR) is a method for assigning IP addresses to devices on the internet. Multiple CIDR seperated by comma can be set in (groups table) **m002_master_groups.allowed_ips** in **global** database.
+
+Similarly, one can rate limit request count at user / group level.
+
+### For respective group (global database)
+```SQL
+`m002_master_groups`.`rateLimiterMaxRequests` int DEFAULT NULL
+`m002_master_groups`.`rateLimiterSecondsWindow` int DEFAULT NULL
+```
+
+### For respective user (client database)
+```SQL
+`master_users`.`rateLimiterMaxRequests` int DEFAULT NULL
+`master_users`.`rateLimiterSecondsWindow` int DEFAULT NULL
+```
+
+> DEFAULT NULL represents "no restrictions"
 
 ## HTTP Request
 
