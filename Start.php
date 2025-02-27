@@ -67,6 +67,7 @@ $server->on("request", function (Request $request, Response $response) {
     if (isset($request->header['authorization'])) {
         $httpRequestDetails['header']['authorization'] = $request->header['authorization'];
     }
+    $httpRequestDetails['server']['api_version'] = $_SERVER["x-api-version"];
     $httpRequestDetails['get'] = &$request->get;
     $httpRequestDetails['post'] = &$request->post;
     $httpRequestDetails['files'] = &$request->files;
