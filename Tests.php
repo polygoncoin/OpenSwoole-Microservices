@@ -82,7 +82,8 @@ function process()
         $response[] = trigger('POST', '/category-1', $header, '[{"name":"ramesh0","subname":"ramesh1","subsubname":"ramesh2"},{"name":"ramesh0","subname":"ramesh1","subsubname":"ramesh2"}]');
         $response[] = trigger('GET', '/category-1', $header, '');
         $response[] = trigger('POST', '/category', $header, '[{"name":"ramesh0","sub":{"subname":"ramesh1","subsub":[{"subsubname":"ramesh"},{"subsubname":"ramesh"}]}},{"name":"ramesh1","sub":{"subname":"ramesh1","subsub":{"subsubname":"ramesh"}}}]');
-        $response[] = trigger('GET', '/category', $header, '');
+        $response[] = trigger('GET', '/category&orderby={"id":"DESC"}', $header, '');
+        $response[] = trigger('GET', '/category&orderby={"id":"ASC"}', $header, '');
         $response[] = trigger('POST', '/category/config', $header, '');
     }
     return '<pre>'.print_r($response, true);

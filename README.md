@@ -33,67 +33,71 @@ This is a light & easy Openswoole based Microservices framework. It can be used 
 
 Below are the configuration settings details in .env
 
-- ENVIRONMENT=0
->Environment PRODUCTION = 1 / DEVELOPMENT = 0
+```ini
+ENVIRONMENT=0                   ;Environment PRODUCTION = 1 / DEVELOPMENT = 0
+OUTPUT_PERFORMANCE_STATS=1      ;Add Performance Stats in Json output: 1 = true / 0 = false
+allowConfigRequest=1            ;Allow config request (global flag): 1 = true / 0 = false
+cronRestrictedIp='127.0.0.1'    ;Crons Details
+maxPerpage=10000                ;Maximum value of perpage (records per page)
+```
 
-- OUTPUT_PERFORMANCE_STATS=1
->Add Performance Stats in Json output: 1 = true / 0 = false
+### Cache Server Details (Redis)
+```ini
+cacheType='Redis'
+cacheHostname='127.0.0.1'
+cachePort=6379
+cacheUsername='ramesh'
+cachePassword='shames11'
+cacheDatabase=0
+```
 
-- allowConfigRequest=1
->Allow config request (global flag): 1 = true / 0 = false
+### Global Database details - global.sql
+```ini
+globalType='MySql'
+globalHostname='127.0.0.1'
+globalPort=3306
+globalUsername='root'
+globalPassword='shames11'
+globalDatabase='global'
+```
 
-- cronRestrictedIp='127.0.0.1'
->Crons Details
+### global Database tables details
+```ini
+groups='m002_master_groups'
+clients='m001_master_clients'
+```
 
-- maxPerpage=10000
->Maximum value of perpage (records per page)
+### Default application database/server for clients
+```ini
+defaultDbType='MySql'
+defaultDbHostname='127.0.0.1'
+defaultDbPort=3306
+defaultDbUsername='root'
+defaultDbPassword='shames11'
+defaultDbDatabase='global'
+```
 
-#### Cache Server Details (Redis)
-- cacheType='Redis'
-- cacheHostname='127.0.0.1'
-- cachePort=6379
-- cacheUsername='ramesh'
-- cachePassword='shames11'
-- cacheDatabase=0
+### Dedicated application database/server for client 1
+```ini
+dbHostnameClient001='127.0.0.1'
+dbUsernameClient001='root'
+dbPasswordClient001='shames11'
+dbDatabaseClient001='client_001'
+```
 
-#### Global Database details - global.sql
-- globalType='MySql'
-- globalHostname='127.0.0.1'
-- globalPort=3306
-- globalUsername='root'
-- globalPassword='shames11'
-- globalDatabase='global'
+### Dedicated application database/server for client 2
+```ini
+dbHostnameClient002='127.0.0.1'
+dbUsernameClient002='root'
+dbPasswordClient002='shames11'
+dbDatabaseClient002='client_002'
+```
 
-#### global Database tables details
-- groups='m002_master_groups'
-- clients='m001_master_clients'
-
-#### Default application database/server for clients
-- defaultDbType='MySql'
-- defaultDbHostname='127.0.0.1'
-- defaultDbPort=3306
-- defaultDbUsername='root'
-- defaultDbPassword='shames11'
-- defaultDbDatabase='global'
-
-####  Dedicated application database/server for client 1
-- dbHostnameClient001='127.0.0.1'
-- dbUsernameClient001='root'
-- dbPasswordClient001='shames11'
-- dbDatabaseClient001='client_001'
-
-####  Dedicated application database/server for client 2
-- dbHostnameClient002='127.0.0.1'
-- dbUsernameClient002='root'
-- dbPasswordClient002='shames11'
-- dbDatabaseClient002='client_002'
-
-#### Additional client database details
-- clientMasterDbName='client_master'
->contains all entities required for a new client.
-
-- client_users='master_users'
->Table in client database containing user details.
+### Additional client database details
+```ini
+clientMasterDbName='client_master'  ;contains all entities required for a new client.
+client_users='master_users'         ;Table in client database containing user details.
+```
 
 ## Folders
 
@@ -111,6 +115,8 @@ Below are the configuration settings details in .env
 
 - **/Config/Routes/&lt;GroupName&gt;**
 
+**&lt;GroupName&gt;** is the group user belongs to for accessing the API's
+
 ### Files
 
 - **GETroutes.php** for all GET method routes configuration.
@@ -118,8 +124,6 @@ Below are the configuration settings details in .env
 - **PUTroutes.php** for all PUT method routes configuration.
 - **PATCHroutes.php** for all PATCH method routes configuration.
 - **DELETEroutes.php** for all DELETE method routes configuration.
-
-**&lt;GroupName&gt;** assigned group to a user for accessing the API's
 
 ### Example
 
@@ -659,15 +663,33 @@ Classless Inter-Domain Routing (CIDR) is a method for assigning IP addresses to 
 
 ### Rate Limiting
 
-One can rate limit request count at user / group level.
+One can configure Rate Limiting server details in **.env** file.
 
-#### For respective group (global database)
+#### Rate Limit Server(Redis) Configuration in .env
+
+```ini
+RateLimiterHost='127.0.0.1'     ; Redis host dealing with Rate limit
+RateLimiterHostPort=6379        ; Redis host port
+RateLimiterIPMaxRequests=600    ; Max request allowed per IP
+RateLimiterIPSecondsWindow=300  ; Window in seconds of Max request allowed per IP
+RateLimiterIPPrefix='IPRL:'     ; IP based Rate Limitng (IPRL) key prefix used in Redis
+RateLimiterGroupPrefix='GRL:'   ; Group based Rate Limitng (GRL) key prefix used in Redis
+RateLimiterUserPrefix='URL:'    ; User based Rate Limitng (URL) key prefix used in Redis
+```
+
+#### Rate Limit at group level (global database)
+
+One can set these details for respective group in m002_master_groups table of global database
+
 ```SQL
 `m002_master_groups`.`rateLimiterMaxRequests` int DEFAULT NULL
 `m002_master_groups`.`rateLimiterSecondsWindow` int DEFAULT NULL
 ```
 
-#### For respective user (client database)
+#### Rate Limit at user account level (client database)
+
+One can set these details for respective user in master_users table of respective client database
+
 ```SQL
 `master_users`.`rateLimiterMaxRequests` int DEFAULT NULL
 `master_users`.`rateLimiterSecondsWindow` int DEFAULT NULL
@@ -684,6 +706,20 @@ One can rate limit request count at user / group level.
 - [http://127.0.0.1:9501?r=/tableName/1](http://127.0.0.1:9501?r=/tableName/1)
 
 > One can clean the URL by making the required changes in the web server .conf file.
+
+### Pagination in GET Request
+
+Requires **countQuery** SQL in the configuration for GET request
+```ini
+defaultPerpage=10
+maxPerpage=1000
+```
+
+- [http://localhost/Microservices/public\_html/index.php?r=/tableName?page=1](http://localhost/Microservices/public_html/index.php?r=/tableName/1?page=1)
+- [http://localhost/Microservices/public\_html/index.php?r=/tableName?page=1&perpage=25](http://localhost/Microservices/public_html/index.php?r=/tableName/1?page=1&perpage=25)
+- [http://localhost/Microservices/public\_html/index.php?r=/tableName?page=1&perpage=25&orderby={"field1":"ASC","field2":"DESC"}](http://localhost/Microservices/public_html/index.php?r=/tableName/1?page=1&perpage=25&orderby={"field1":"ASC","field2":"DESC"})
+
+>One need to urlencode orderby value
 
 ### POST, PUT, PATCH, and DELETE Request
 
@@ -841,7 +877,7 @@ Examples:
 
 One need to enable same in .env file as below
 
-```
+```ini
 allowConfigRequest=1
 configRequestUriKeyword='config' ;for appending /config at end of URI
 ```

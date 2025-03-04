@@ -238,17 +238,12 @@ class ApiGateway
                 return;
             } else {
                 // Return 429 Too Many Requests
-                http_response_code(429);
-                header('Retry-After: ' . ($result['resetAt'] - time()));
-                die(json_encode([
-                    'error' => 'Too Many Requests',
-                    'retryAfter' => $result['resetAt']
-                ]));
+                throw new \Exception($result['resetAt'] - time(), HttpStatus::$TooManyRequests);
             }
 
         } catch (\Exception $e) {
             // Handle connection errors
-            die('Rate limiter error: ' . $e->getMessage());
+            throw new \Exception($e->getMessage(), $e->getCode());
         }
     }
 }

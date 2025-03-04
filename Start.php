@@ -103,10 +103,19 @@ $server->on("request", function (Request $request, Response $response) {
         $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
         $response->header('Pragma', 'no-cache');
 
-        $arr = [
-            'Status' => $e->getCode(),
-            'Message' => $e->getMessage()
-        ];
+        if ($e->getCode() == 429) {
+            $response->header('Retry-After:', $e->getMessage());
+            $arr = [
+                'Status' => $e->getCode(),
+                'Message' => 'Too Many Requests',
+                'RetryAfter' => $e->getMessage()
+            ];
+        } else {
+            $arr = [
+                'Status' => $e->getCode(),
+                'Message' => $e->getMessage()
+            ];    
+        }
         $response->end(json_encode($arr));
     }
 });

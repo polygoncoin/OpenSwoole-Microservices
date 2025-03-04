@@ -153,7 +153,7 @@ class Read
                     } else {
                         $this->c->httpResponse->jsonEncode->startArray($configKeys[count($configKeys)-1]);
                     }
-                    $this->fetchMultipleRows($readSqlConfig, $configKeys, $useHierarchy);
+                    $this->fetchMultipleRows($readSqlConfig, $start, $configKeys, $useHierarchy);
                     $this->c->httpResponse->jsonEncode->endArray();
                     break;
             }
@@ -249,13 +249,26 @@ class Read
      * @return void
      * @throws \Exception
      */
-    private function fetchMultipleRows(&$readSqlConfig, &$configKeys, $useHierarchy)
+    private function fetchMultipleRows(&$readSqlConfig, $start, &$configKeys, $useHierarchy)
     {
         $isAssoc = $this->isAssoc($readSqlConfig);
 
         list($sql, $sqlParams, $errors) = $this->getSqlAndParams($readSqlConfig);
         if (!empty($errors)) {
             throw new \Exception($errors, HttpStatus::$InternalServerError);
+        }
+
+        if ($start) {
+            if (isset($this->c->httpRequest->session['payload']['orderby'])) {
+                $orderByStrArr = [];
+                $orderByArr = $this->c->httpRequest->session['payload']['orderby'];
+                foreach ($orderByArr as $k => $v) {
+                    $orderByStrArr[] = "`{$k}` {$v}";
+                }
+                if (count($orderByStrArr) > 0) {
+                    $sql .= ' ORDER BY '.implode(', ', $orderByStrArr);
+                }
+            }    
         }
 
         if (isset($readSqlConfig['countQuery'])) {
