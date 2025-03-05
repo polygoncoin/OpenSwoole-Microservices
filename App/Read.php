@@ -263,6 +263,7 @@ class Read
                 $orderByStrArr = [];
                 $orderByArr = $this->c->httpRequest->session['payload']['orderby'];
                 foreach ($orderByArr as $k => $v) {
+                    $k = str_replace(['`',' '], '', $k);
                     $v = strtoupper($v);
                     if (in_array($v,['ASC','DESC'])) {
                         $orderByStrArr[] = "`{$k}` {$v}";
