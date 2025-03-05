@@ -263,7 +263,9 @@ class Read
                 $orderByStrArr = [];
                 $orderByArr = $this->c->httpRequest->session['payload']['orderby'];
                 foreach ($orderByArr as $k => $v) {
-                    $orderByStrArr[] = "`{$k}` {$v}";
+                    if (in_array(strtolower($v),['asc','desc'])) {
+                        $orderByStrArr[] = "`{$k}` {$v}";
+                    }
                 }
                 if (count($orderByStrArr) > 0) {
                     $sql .= ' ORDER BY '.implode(', ', $orderByStrArr);
