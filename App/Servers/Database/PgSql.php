@@ -117,7 +117,7 @@ class PgSql extends AbstractDatabase
                 $this->useDatabase();
             }
         } catch (\Exception $e) {
-            $this->logError($e);
+            $this->log($e);
         }
     }
 
@@ -136,7 +136,7 @@ class PgSql extends AbstractDatabase
             }
         } catch (\Exception $e) {
             $this->rollback();
-            $this->logError($e);
+            $this->log($e);
         }
     }
 
@@ -153,7 +153,7 @@ class PgSql extends AbstractDatabase
         try {
             pg_query($this->db, 'BEGIN');
         } catch (\Exception $e) {
-            $this->logError($e);
+            $this->log($e);
         }
     }
 
@@ -170,7 +170,7 @@ class PgSql extends AbstractDatabase
                 pg_query($this->db, 'COMMIT');
             }
         } catch (\Exception $e) {
-            $this->logError($e);
+            $this->log($e);
         }
     }
 
@@ -187,7 +187,7 @@ class PgSql extends AbstractDatabase
                 pg_query($this->db, 'ROLLBACK');
             }
         } catch (\Exception $e) {
-            $this->logError($e);
+            $this->log($e);
         }
     }
 
@@ -208,7 +208,7 @@ class PgSql extends AbstractDatabase
             if ($this->beganTransaction) {
                 $this->rollback();
             }
-            $this->logError($e);
+            $this->log($e);
         }
     }
 
@@ -230,7 +230,7 @@ class PgSql extends AbstractDatabase
             if ($this->beganTransaction) {
                 $this->rollback();
             }
-            $this->logError($e);
+            $this->log($e);
         }
     }
 
@@ -252,7 +252,7 @@ class PgSql extends AbstractDatabase
             if ($this->beganTransaction) {
                 $this->rollback();
             }
-            $this->logError($e);
+            $this->log($e);
         }
     }
 
@@ -270,7 +270,7 @@ class PgSql extends AbstractDatabase
                 return false;
             }
         } catch (\Exception $e) {
-            $this->logError($e);
+            $this->log($e);
         }
     }
 
@@ -288,7 +288,7 @@ class PgSql extends AbstractDatabase
                 return false;
             }
         } catch (\Exception $e) {
-            $this->logError($e);
+            $this->log($e);
         }
     }
 
@@ -307,7 +307,7 @@ class PgSql extends AbstractDatabase
                 pg_flush($this->db);
             }
         } catch (\Exception $e) {
-            $this->logError($e);
+            $this->log($e);
         }
     }
 
@@ -318,7 +318,7 @@ class PgSql extends AbstractDatabase
      * @return void
      * @throws \Exception
      */
-    private function logError($e)
+    private function log($e)
     {
         throw new \Exception(pg_last_error($this->db), HttpStatus::$InternalServerError);
     }

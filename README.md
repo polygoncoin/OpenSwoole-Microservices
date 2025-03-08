@@ -235,7 +235,7 @@ static public $CustomINT = [
 #### Available configuration options
 
 ```PHP
-//return represents root for hierarchyData
+//return represents root for resultSetData
 return [
     // Required to implementing pagination
     'countQuery' => "Count SQL",
@@ -301,7 +301,7 @@ return [
                 ],
                 ...
                 ...
-                'column' => ['hierarchyData', '<return:keys>'], // Only for GET
+                'column' => ['resultSetData', '<return:keys>'], // Only for GET
                 'column' => ['insertIdParams', '<keyName>:id'], // previous Insert ids
             ],
             '__WHERE__' => [
@@ -317,7 +317,7 @@ return [
                 ],
                 ...
                 ...
-                'column' => ['hierarchyData', '<return:keys>'], // Only for GET
+                'column' => ['resultSetData', '<return:keys>'], // Only for GET
             ],
         ],
         '<sub-key>' => [
@@ -335,7 +335,16 @@ return [
             'errorMessage' => 'Invalid Group Id'
         ]
     ],
-    'useHierarchy' => true
+    'useHierarchy' => true,
+    'useResultSet' => true,
+    // Use cacheKey option to cache and reuse results (Optional)
+    'cacheKey' => '<unique-key-for-redis-to-cache-results>(e.g, key:1)',
+    // List down keys which effects configured cacheKey on DML operation
+    'affectedCacheKeys' => [
+        '<unique-key-for-redis-to-drop-cached-results>(key:1)',
+        '<unique-key-for-redis-to-drop-cached-results>(category etc.)',
+        ...
+    ]
 ];
 ```
 
@@ -387,13 +396,14 @@ return [
             'errorMessage' => 'Invalid Group Id'
         ]
     ],
+    'cacheKey' => 'key:1',
 ];
 ```
 
 #### GET method configuration with useHierarchy
 
 ```PHP
-//return represents root for hierarchyData
+//return represents root for resultSetData
 return [
     // Required to implementing pagination
     'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE __WHERE__",
@@ -430,7 +440,7 @@ return [
             ... // Recursive
             '__WHERE__' => [
                 ...
-                'column' => ['hierarchyData', '<return:keys>'],
+                'column' => ['resultSetData', '<return:keys>'],
             ]
         ],
         '<sub-key>' => [
@@ -448,9 +458,10 @@ return [
             'errorMessage' => 'Invalid Group Id'
         ]
     ],
-    // useHierarchy true represent data from higher hierarchy to be preserved
+    // useResultSet true represent data from higher hierarchy to be preserved
     // to be used used in sub queries
-    'useHierarchy' => true
+    'useResultSet' => true,
+    'cacheKey' => 'key:2',
 ];
 ```
 
@@ -530,13 +541,17 @@ return [
             'errorMessage' => 'Invalid Group Id'
         ]
     ],
+    'affectedCacheKeys' => [
+        'key:1',
+        'key:2'
+    ]
 ];
 ```
 
 #### POST/PUT/PATCH/DELETE method configuration with useHierarchy
 
 ```PHP
-//return represents root for hierarchyData
+//return represents root for resultSetData
 return [
     // Query to perform task
     'query' => "INSERT INTO `TableName` SET __SET__",
@@ -602,7 +617,7 @@ return [
                 ...
                 ...
                 'column' => ['insertIdParams', '<keyName>:id'], // previous Insert ids
-                'column' => ['hierarchyData', '<return:keys>'],
+                'column' => ['resultSetData', '<return:keys>'],
             ],
             '__WHERE__' => [
                 ...
@@ -615,7 +630,7 @@ return [
                     DatabaseDataTypes::$PrimaryKey,             // key data type
                     Constants::$REQUIRED                        // Represents required field
                 ],
-                'column' => ['hierarchyData', '<return:keys>'],
+                'column' => ['resultSetData', '<return:keys>'],
             ],
         ],
         '<sub-key>' => [
@@ -636,7 +651,11 @@ return [
     // useHierarchy true represent data is in recursive format
     // In other words it is not presented in one simple key/value pair array
     // Instead the data is served as per the configured hierarchy with sub arrays
-    'useHierarchy' => true
+    'useHierarchy' => true,
+    'affectedCacheKeys' => [
+        'key:1',
+        'key:2'
+    ]
 ];
 ```
 
@@ -765,7 +784,7 @@ var payload = [
 * **$session\['insertIdParams'\]** Insert ids Data as per configuration.
 >For **POST/PUT/PATCH/DELETE** we perform both INSERT as well as UPDATE operation. The insertIdParams contains the insert ids of the executed INSERT queries.
 
-* **$session\['hierarchyData'\]** Hierarchy data.
+* **$session\['resultSetData'\]** Hierarchy data.
 >For **GET** method, one can use previous query results if configured to use hierarchy.
 
 ## Hierarchy Data
@@ -774,7 +793,7 @@ var payload = [
 >In this file one can confirm how previous select data is used recursively in subQuery select as indicated by useHierarchy flag.
 
 ```PHP
-'parent_id' => ['hierarchyData', 'return:id'],
+'parent_id' => ['resultSetData', 'return:id'],
 ```
 
 - Config/Queries/ClientDB/POST/Category.php .Here a request can handle the hierarchy for write operations.

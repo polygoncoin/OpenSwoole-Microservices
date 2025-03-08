@@ -258,15 +258,6 @@ class Services
      */
     private function log($e)
     {
-        $log = [
-            'datetime' => date('Y-m-d H:i:s'),
-            'conditions' => $this->c->httpRequest->conditions,
-            "code" => $e->getCode(),
-            "msg" => $e->getMessage(),
-            "e" => json_encode($e)
-        ];
-        (new Logs)->log('error', json_encode($log));
-
         throw new \Exception($e->getMessage(), $e->getCode());
     }
 }

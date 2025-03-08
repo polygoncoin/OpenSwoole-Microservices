@@ -136,6 +136,23 @@ class JsonEncode
     }
 
     /**
+     * Encodes both simple and associative array to json
+     *
+     * @param $arr string value escaped and array value json_encode function is applied
+     * @return void
+     */
+    public function appendJson($json)
+    {
+        if ($this->currentObject) {
+            $this->write($this->currentObject->comma);
+        }
+        $this->write($json);
+        if ($this->currentObject) {
+            $this->currentObject->comma = ',';
+        }
+    }
+
+    /**
      * Add simple array/value as in the json format
      *
      * @param $value data type is string/array. This is used to add value/array in the current Array
@@ -268,19 +285,49 @@ class JsonEncode
     public function streamJson()
     {
         // Log request details
-        rewind($this->tempStream);
-        $log = [
-            'datetime' => date('Y-m-d H:i:s'),
-            'GET' => $_GET,
-            'php:input' => @file_get_contents('php://input'),
-            'php:output' => stream_get_contents($this->tempStream)
-        ];
-        (new Logs)->log('info', json_encode($log));
+        if ($this->httpRequestDetails['server']['request_method'] === 'GET') {
+            $logDetails = [
+                'LogType' => 'INFO',
+                'DateTime' => date('Y-m-d H:i:s'),
+                'Details' => [
+                    'httpMethod' => $this->httpRequestDetails['server']['request_method'],
+                    '$_GET' => $this->httpRequestDetails['get']
+                ]
+            ];
+        } else {
+            rewind($this->tempStream);
+            $logDetails = [
+                'LogType' => 'INFO',
+                'DateTime' => date('Y-m-d H:i:s'),
+                'Details' => [
+                    'httpMethod' => $this->httpRequestDetails['server']['request_method'],
+                    '$_GET' => $this->httpRequestDetails['get'],
+                    'php:input' => $this->httpRequestDetails['post'],
+                    'php:output' => stream_get_contents($this->tempStream)
+                ]
+            ];
+        }
+        (new Logs)->log($logDetails);
 
         // Stream JSON
         rewind($this->tempStream);
         $json = stream_get_contents($this->tempStream);
         fclose($this->tempStream);
+        return $json;
+    }
+
+    /**
+     * Return Json String
+     *
+     * @return void
+     */
+    public function getJson()
+    {
+        // Stream JSON
+        rewind($this->tempStream);
+        $json = stream_get_contents($this->tempStream);
+        fclose($this->tempStream);
+        
         return $json;
     }
 

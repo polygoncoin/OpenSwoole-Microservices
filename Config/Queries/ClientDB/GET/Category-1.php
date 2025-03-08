@@ -2,6 +2,7 @@
 namespace Microservices\Config\Queries\ClientDB\GET;
 
 use Microservices\App\Constants;
+use Microservices\App\DatabaseCacheKey;
 use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
@@ -22,4 +23,5 @@ return [
         ]
     ],
     'fetchFrom' => 'Master',
+    'cacheKey' => DatabaseCacheKey::$Category1
 ];

@@ -2,6 +2,7 @@
 namespace Microservices\Config\Queries\ClientDB\POST;
 
 use Microservices\App\Constants;
+use Microservices\App\DatabaseCacheKey;
 use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
@@ -24,8 +25,8 @@ return [
                 'subsub' => [
                     'query' => "INSERT INTO `category` SET __SET__",
                     '__SET__' => [
-                        // 'name' => ['payload', 'subsubname'],
-                        'name' => ['hierarchyData', 'return:sub:subname'],
+                        'name' => ['payload', 'subsubname'],
+                        // 'name' => ['useResultSet', 'return:sub:subname'],
                         'parent_id' => ['insertIdParams', 'sub:id'],
                     ],
                     'insertId' => 'subsub:id',
@@ -33,5 +34,9 @@ return [
             ]
         ]
     ],
-    'useHierarchy' => true
+    'useHierarchy' => true,
+    'affectedCacheKeys' => [
+        DatabaseCacheKey::$Category,
+        DatabaseCacheKey::$Category1
+    ]
 ];

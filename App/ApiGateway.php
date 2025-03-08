@@ -55,11 +55,11 @@ class ApiGateway
     private $cidr_key = null;
 
     /**
-     * User Info
+     * Client Info
      *
      * @var null|array
      */
-    private $userDetails = null;
+    private $clientDetails = null;
 
     /**
      * Group Info
@@ -67,6 +67,13 @@ class ApiGateway
      * @var null|array
      */
     private $groupDetails = null;
+
+    /**
+     * User Info
+     *
+     * @var null|array
+     */
+    private $userDetails = null;
 
     /**
      * Constructor
@@ -121,6 +128,7 @@ class ApiGateway
         if (!$this->redis->exists($this->clientKey)) {
             throw new \Exception("Invalid Host '{$this->HOST}'", HttpStatus::$InternalServerError);
         }
+        $this->clientDetails = json_decode($this->redis->get($this->clientKey), true);
     }
 
     /**
@@ -154,7 +162,20 @@ class ApiGateway
 
             $this->groupDetails = json_decode($this->redis->get($this->groupKey), true);
 
-            // Check Rate Limit
+            // Client Rate Limiting
+            if (
+                !empty($this->clientDetails['rateLimiterMaxRequests'])
+                && !empty($this->clientDetails['rateLimiterSecondsWindow'])
+            ) {
+                $this-checkRateLimit(
+                    $RateLimiterMaxRequests = $this->clientDetails['rateLimiterMaxRequests'],
+                    $RateLimiterSecondsWindow = $this->clientDetails['rateLimiterSecondsWindow'],
+                    $RateLimiterGroupPrefix = getenv('RateLimiterClientPrefix'),
+                    $key = $this->clientDetails['client_id']
+                );
+            }
+
+            // Group Rate Limiting
             if (
                 !empty($this->groupDetails['rateLimiterMaxRequests'])
                 && !empty($this->groupDetails['rateLimiterSecondsWindow'])
@@ -163,10 +184,11 @@ class ApiGateway
                     $RateLimiterMaxRequests = $this->groupDetails['rateLimiterMaxRequests'],
                     $RateLimiterSecondsWindow = $this->groupDetails['rateLimiterSecondsWindow'],
                     $RateLimiterGroupPrefix = getenv('RateLimiterGroupPrefix'),
-                    $key = $this->userDetails['group_id'] . ':' . $this->userDetails['user_id']
+                    $key = $this->clientDetails['client_id'] . ':' . $this->userDetails['group_id']
                 );
             }
 
+            // User Rate Limiting
             if (
                 !empty($this->userDetails['rateLimiterMaxRequests'])
                 && !empty($this->userDetails['rateLimiterSecondsWindow'])
@@ -175,7 +197,7 @@ class ApiGateway
                     $RateLimiterMaxRequests = $this->groupDetails['rateLimiterMaxRequests'],
                     $RateLimiterSecondsWindow = $this->groupDetails['rateLimiterSecondsWindow'],
                     $RateLimiterUserPrefix = getenv('RateLimiterUserPrefix'),
-                    $key = $this->userDetails['group_id'] . ':' . $this->userDetails['user_id']
+                    $key = $this->clientDetails['client_id'] . ':' . $this->userDetails['group_id'] . ':' . $this->userDetails['user_id']
                 );
             }
         }

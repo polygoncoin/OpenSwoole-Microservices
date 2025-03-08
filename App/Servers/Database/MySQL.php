@@ -133,7 +133,7 @@ class MySql extends AbstractDatabase
             }
         } catch (\PDOException $e) {
             if ((int)$this->pdo->errorCode()) {
-                $this->logError($e);
+                $this->log($e);
             }
         }
     }
@@ -153,7 +153,7 @@ class MySql extends AbstractDatabase
             }
         } catch (\PDOException $e) {
             if ((int)$this->pdo->errorCode()) {
-                $this->logError($e);
+                $this->log($e);
                 $this->rollback();
             }
         }
@@ -173,7 +173,7 @@ class MySql extends AbstractDatabase
            $this->pdo->beginTransaction();
         } catch (\PDOException $e) {
             if ((int)$this->pdo->errorCode()) {
-                $this->logError($e);
+                $this->log($e);
             }
         }
     }
@@ -192,7 +192,7 @@ class MySql extends AbstractDatabase
             }
         } catch (\PDOException $e) {
             if ((int)$this->pdo->errorCode()) {
-                $this->logError($e);
+                $this->log($e);
             }
         }
     }
@@ -211,7 +211,7 @@ class MySql extends AbstractDatabase
             }
         } catch (\PDOException $e) {
             if ((int)$this->pdo->errorCode()) {
-                $this->logError($e);
+                $this->log($e);
             }
         }
     }
@@ -234,7 +234,7 @@ class MySql extends AbstractDatabase
                 $this->rollback();
             }
             if ((int)$this->pdo->errorCode()) {
-                $this->logError($e);
+                $this->log($e);
             }
         }
     }
@@ -253,7 +253,7 @@ class MySql extends AbstractDatabase
                 $this->rollback();
             }
             if ((int)$this->pdo->errorCode()) {
-                $this->logError($e);
+                $this->log($e);
             }
         }
     }
@@ -282,7 +282,7 @@ class MySql extends AbstractDatabase
                 $this->rollback();
             }
             if ((int)$this->pdo->errorCode()) {
-                $this->logError($e);
+                $this->log($e);
             }
         }
     }
@@ -302,7 +302,7 @@ class MySql extends AbstractDatabase
             }
         } catch (\PDOException $e) {
             if ((int)$this->pdo->errorCode()) {
-                $this->logError($e);
+                $this->log($e);
             }
         }
     }
@@ -322,7 +322,7 @@ class MySql extends AbstractDatabase
             }
         } catch (\PDOException $e) {
             if ((int)$this->pdo->errorCode()) {
-                $this->logError($e);
+                $this->log($e);
             }
         }
     }
@@ -343,7 +343,7 @@ class MySql extends AbstractDatabase
             }
         } catch (\PDOException $e) {
             if ((int)$this->pdo->errorCode()) {
-                $this->logError($e);
+                $this->log($e);
             }
         }
     }
@@ -355,7 +355,7 @@ class MySql extends AbstractDatabase
      * @return void
      * @throws \Exception
      */
-    private function logError($e)
+    private function log($e)
     {
         throw new \Exception($e->getMessage(), HttpStatus::$InternalServerError);
     }

@@ -2,6 +2,7 @@
 namespace Microservices\Config\Queries\ClientDB\POST;
 
 use Microservices\App\Constants;
+use Microservices\App\DatabaseCacheKey;
 use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
@@ -31,5 +32,9 @@ return [
                 ]
             ]
         ]
+    ],
+    'affectedCacheKeys' => [
+        DatabaseCacheKey::$Category,
+        DatabaseCacheKey::$Category1
     ]
 ];

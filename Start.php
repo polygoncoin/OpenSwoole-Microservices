@@ -2,6 +2,7 @@
 namespace Microservices;
 
 use Microservices\Services;
+use Microservices\App\Logs;
 
 use OpenSwoole\Http\Server;
 use OpenSwoole\Http\Request;
@@ -45,6 +46,7 @@ $server->on("request", function (Request $request, Response $response) {
     if ($request->get['r'] === '/test') {
         include __DIR__ . '/Tests.php';
         $response->end(process());
+        return;
     }
 
     // Check Content-Type header
@@ -56,6 +58,7 @@ $server->on("request", function (Request $request, Response $response) {
         $response->header('Pragma', 'no-cache');
 
         $response->end('{"Status":400,"Message":"Bad Request"}');
+        return;
     }
 
     $httpRequestDetails = [];
@@ -67,7 +70,7 @@ $server->on("request", function (Request $request, Response $response) {
     if (isset($request->header['authorization'])) {
         $httpRequestDetails['header']['authorization'] = $request->header['authorization'];
     }
-    $httpRequestDetails['server']['api_version'] = $_SERVER["x-api-version"];
+    $httpRequestDetails['server']['api_version'] = $request->header['x-api-version'];
     $httpRequestDetails['get'] = &$request->get;
     $httpRequestDetails['post'] = &$request->post;
     $httpRequestDetails['files'] = &$request->files;
@@ -97,6 +100,21 @@ $server->on("request", function (Request $request, Response $response) {
             $response->end($services->outputResults());
         }
     } catch (\Exception $e) {
+        // Log request details
+        $logDetails = [
+            'LogType' => 'ERROR',
+            'DateTime' => date('Y-m-d H:i:s'),
+            'HttpDetails' => [
+                "HttpCode" => $e->getCode(),
+                "HttpMessage" => $e->getMessage()
+            ],
+            'Details' => [
+                'httpRequestDetails' => $httpRequestDetails,
+                'session' => $services->c->httpRequest->session
+            ]
+        ];
+        (new Logs)->log($logDetails);
+
         $response->status($e->getCode());
 
         $response->header('Content-Type', 'application/json; charset=utf-8');
@@ -117,6 +135,7 @@ $server->on("request", function (Request $request, Response $response) {
             ];    
         }
         $response->end(json_encode($arr));
+        return;
     }
 });
 

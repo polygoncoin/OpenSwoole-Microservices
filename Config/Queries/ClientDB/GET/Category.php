@@ -2,6 +2,7 @@
 namespace Microservices\Config\Queries\ClientDB\GET;
 
 use Microservices\App\Constants;
+use Microservices\App\DatabaseCacheKey;
 use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
@@ -17,7 +18,7 @@ return [
             'query' => "SELECT * FROM `category` WHERE __WHERE__",
             '__WHERE__' => [
                 'is_deleted' => ['custom', 'No'],
-                'parent_id' => ['hierarchyData', 'return:id'],
+                'parent_id' => ['resultSetData', 'return:id'],
             ],
             'mode' => 'multipleRowFormat',
             'subQuery' => [
@@ -25,7 +26,7 @@ return [
                     'query' => "SELECT * FROM `category` WHERE __WHERE__",
                     '__WHERE__' => [
                         'is_deleted' => ['custom', 'No'],
-                        'parent_id' => ['hierarchyData', 'return:sub:id'],
+                        'parent_id' => ['resultSetData', 'return:sub:id'],
                     ],
                     'mode' => 'multipleRowFormat',
                     'subQuery' => [
@@ -33,7 +34,7 @@ return [
                             'query' => "SELECT * FROM `category` WHERE __WHERE__",
                             '__WHERE__' => [
                                 'is_deleted' => ['custom', 'No'],
-                                'parent_id' => ['hierarchyData', 'return:sub:subsub:id'],//data:address:id
+                                'parent_id' => ['resultSetData', 'return:sub:subsub:id'],//data:address:id
                             ],
                             'mode' => 'multipleRowFormat',
                         ]
@@ -42,6 +43,7 @@ return [
             ],
         ]
     ],
-    'useHierarchy' => true,
+    'useResultSet' => true,
     'fetchFrom' => 'Master',
+    'cacheKey' => DatabaseCacheKey::$Category
 ];

@@ -65,10 +65,10 @@ class Write
         $writeSqlConfig = include $this->c->httpRequest->__file__;
 
         // Set Server mode to execute query on - Read / Write Server
-        $this->c->httpRequest->setConnection('Master');
+        $this->c->httpRequest->setDbConnection('Master');
 
         // Use results in where clause of sub queries recursively
-        $useHierarchy = $this->getUseHierarchy($writeSqlConfig);
+        $useHierarchy = $this->getUseHierarchy($writeSqlConfig, 'useHierarchy');
 
         if (
             (Env::$allowConfigRequest && Env::$isConfigRequest)
@@ -76,6 +76,13 @@ class Write
             $this->processWriteConfig($writeSqlConfig, $useHierarchy);
         } else {
             $this->processWrite($writeSqlConfig, $useHierarchy);
+        }
+
+        if (isset($writeSqlConfig['affectedCacheKeys'])) {
+            for ($i = 0, $iCount = count($writeSqlConfig['affectedCacheKeys']); $i < $iCount; $i++) {
+                $this->c->httpRequest->delDmlCache($writeSqlConfig['affectedCacheKeys'][$i]);
+                
+            }
         }
 
         return true;
@@ -295,7 +302,7 @@ class Write
                 } else {
                     $_required = $required;
                 }
-                $_useHierarchy = $useHierarchy ?? $this->getUseHierarchy($_writeSqlConfig);
+                $_useHierarchy = $useHierarchy ?? $this->getUseHierarchy($_writeSqlConfig, 'useHierarchy');
                 if ($isAssoc) {
                     $response[$module] = [];
                     $_response = &$response[$module];

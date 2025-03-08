@@ -16,10 +16,10 @@ return [
             'query' => "SELECT * FROM `address` WHERE __WHERE__",
             '__WHERE__' => [
                 'is_deleted' => ['custom', 'No'],
-                'registration_id' => ['hierarchyData', 'return:id'],
+                'registration_id' => ['resultSetData', 'return:id'],
             ],
             'mode' => 'multipleRowFormat',
         ]
     ],
-    'useHierarchy' => true
+    'useResultSet' => true
 ];

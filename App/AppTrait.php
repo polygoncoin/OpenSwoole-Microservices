@@ -40,13 +40,13 @@ trait AppTrait
     /**
      * Sets required payload
      *
-     * @param array   $sqlConfig    Config from file
-     * @param boolean $first        true to represent the first call in recursion
-     * @param boolean $useHierarchy Use results in where clause of sub queries recursively
+     * @param array   $sqlConfig Config from file
+     * @param boolean $first     true to represent the first call in recursion
+     * @param boolean $flag      useHierarchy/useResultSet flag
      * @return void
      * @throws \Exception
      */
-    private function getRequired(&$sqlConfig, $first, $useHierarchy)
+    private function getRequired(&$sqlConfig, $first, $flag)
     {
         $requiredFields = [];
 
@@ -82,16 +82,16 @@ trait AppTrait
             foreach ($sqlConfig['__WHERE__'] as $var => $where) {
                 $dataPaylaodType = $where[0];
                 $dataPaylaodTypeKey = $where[1];
-                if ($first && $dataPaylaodType === 'hierarchyData') {
-                    throw new \Exception('Invalid config: First query can not have hierarchyData config', HttpStatus::$InternalServerError);
+                if ($first && $dataPaylaodType === 'resultSetData') {
+                    throw new \Exception('Invalid config: First query can not have resultSetData config', HttpStatus::$InternalServerError);
                 }
-                if ($dataPaylaodType === 'hierarchyData') {
+                if ($dataPaylaodType === 'resultSetData') {
                     $foundHierarchy = true;
                     break;
                 }
             }
-            if (!$first && $useHierarchy && !$foundHierarchy) {
-                throw new \Exception('Invalid config: missing hierarchyData', HttpStatus::$InternalServerError);
+            if (!$first && $flag && !$foundHierarchy) {
+                throw new \Exception('Invalid config: missing resultSetData', HttpStatus::$InternalServerError);
             }
         }
 
@@ -102,9 +102,9 @@ trait AppTrait
                 return;
             }
             foreach ($sqlConfig['subQuery'] as $module => &$sqlDetails) {
-                $_useHierarchy = ($useHierarchy) ?? $this->getUseHierarchy($sqlDetails);
-                $sub_requiredFields = $this->getRequired($sqlDetails, false, $_useHierarchy);
-                if ($_useHierarchy) {
+                $_flag = ($flag) ?? $this->getUseHierarchy($sqlDetails);
+                $sub_requiredFields = $this->getRequired($sqlDetails, false, $_flag);
+                if ($_flag) {
                     $requiredFields[$module] = $sub_requiredFields;
                 } else {
                     foreach ($sub_requiredFields as $dataPaylaodType => &$fields) {
@@ -225,9 +225,9 @@ trait AppTrait
                 $value = $function($this->c->httpRequest->session);
                 $sqlParams[$var] = $value;
                 continue;
-            } else if ($dataPaylaodType === 'hierarchyData') {
+            } else if ($dataPaylaodType === 'resultSetData') {
                 $dataPaylaodTypeKeys = explode(':',$dataPaylaodTypeKey);
-                $value = $this->c->httpRequest->session['hierarchyData'];
+                $value = $this->c->httpRequest->session['resultSetData'];
                 foreach($dataPaylaodTypeKeys as $key) {
                     if (!isset($value[$key])) {
                         throw new \Exception('Invalid hierarchy:  Missing hierarchy data', HttpStatus::$InternalServerError);
@@ -282,28 +282,29 @@ trait AppTrait
     /**
      * Use results in where clause of sub queries recursively
      *
-     * @param array $sqlConfig Config from file
+     * @param array  $sqlConfig Config from file
+     * @param string $keyword   useHierarchy/useResultSet
      * @return boolean
      */
-    private function getUseHierarchy(&$sqlConfig)
+    private function getUseHierarchy(&$sqlConfig, $keyword)
     {
-        $useHierarchy = false;
-        if (isset($sqlConfig['useHierarchy']) && $sqlConfig['useHierarchy'] === true) {
-            $useHierarchy = true;
+        $flag = false;
+        if (isset($sqlConfig[$keyword]) && $sqlConfig[$keyword] === true) {
+            $flag = true;
         }
-        return $useHierarchy;
+        return $flag;
     }
 
     /**
      * Return config par recursively
      *
-     * @param array   $sqlConfig    Config from file
-     * @param array   $first        Flag to check if this is first request in a recursive call
-     * @param boolean $useHierarchy Use results in where clause of sub queries recursively
+     * @param array   $sqlConfig Config from file
+     * @param array   $first     Flag to check if this is first request in a recursive call
+     * @param boolean $flag      useHierarchy/useResultSet flag
      * @return array
      * @throws \Exception
      */
-    private function getConfigParams(&$sqlConfig, $first, $useHierarchy)
+    private function getConfigParams(&$sqlConfig, $first, $flag)
     {
         $result = [];
 
@@ -368,22 +369,22 @@ trait AppTrait
             foreach ($sqlConfig['__WHERE__'] as $var => $payload) {
                 $dataPaylaodType = $payload[0];
                 $dataPaylaodTypeKey = $payload[1];
-                if ($dataPaylaodType === 'hierarchyData') {
+                if ($dataPaylaodType === 'resultSetData') {
                     $foundHierarchy = true;
                     break;
                 }
             }
-            if (!$first && $useHierarchy && !$foundHierarchy) {
-                throw new \Exception('Invalid config: missing hierarchyData', HttpStatus::$InternalServerError);
+            if (!$first && $flag && !$foundHierarchy) {
+                throw new \Exception('Invalid config: missing resultSetData', HttpStatus::$InternalServerError);
             }
         }
 
         // Check in subQuery
         if (isset($sqlConfig['subQuery'])) {
             foreach ($sqlConfig['subQuery'] as $module => &$_sqlConfig) {
-                $_useHierarchy = ($useHierarchy) ?? $this->getUseHierarchy($_sqlConfig);
-                $sub_requiredFields = $this->getConfigParams($_sqlConfig, false, $_useHierarchy);
-                if ($useHierarchy) {
+                $_flag = ($flag) ?? $this->getUseHierarchy($_sqlConfig);
+                $sub_requiredFields = $this->getConfigParams($_sqlConfig, false, $_flag);
+                if ($flag) {
                     if (!empty($sub_requiredFields)) {
                         $result[$module] = $sub_requiredFields;
                     }
@@ -466,19 +467,19 @@ trait AppTrait
     /**
      * Function to reset data for module key wise
      *
-     * @param array   $keys         Module Keys in recursion
-     * @param array   $row          Row data fetched from DB
-     * @param boolean $useHierarchy Use results in where clause of sub queries recursively
+     * @param array   $keys Module Keys in recursion
+     * @param array   $row  Row data fetched from DB
+     * @param boolean $flag useHierarchy/useResultSet flag
      * @return void
      */
-    private function resetFetchData($keys, $row, $useHierarchy)
+    private function resetFetchData($keys, $row, $flag)
     {
-        if ($useHierarchy) {
+        if ($flag) {
             if (count($keys) === 0) {
-                $this->c->httpRequest->session['hierarchyData'] = [];
-                $this->c->httpRequest->session['hierarchyData']['return'] = [];
+                $this->c->httpRequest->session['resultSetData'] = [];
+                $this->c->httpRequest->session['resultSetData']['return'] = [];
             }
-            $httpReq = &$this->c->httpRequest->session['hierarchyData']['return'];
+            $httpReq = &$this->c->httpRequest->session['resultSetData']['return'];
             foreach ($keys as $k) {
                 if (!isset($httpReq[$k])) {
                     $httpReq[$k] = [];
