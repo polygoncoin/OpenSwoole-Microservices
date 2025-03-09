@@ -49,18 +49,6 @@ $server->on("request", function (Request $request, Response $response) {
         return;
     }
 
-    // Check Content-Type header
-    if ($request->header['x-api-version'] !== 'v1.0.0') {
-        $response->status(400);
-
-        $response->header('Content-Type', 'application/json; charset=utf-8');
-        $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
-        $response->header('Pragma', 'no-cache');
-
-        $response->end('{"Status":400,"Message":"Bad Request"}');
-        return;
-    }
-
     $httpRequestDetails = [];
 
     // $httpRequestDetails['server']['host'] = 'localhost';
@@ -77,6 +65,11 @@ $server->on("request", function (Request $request, Response $response) {
 
     // Code to Initialize / Start the service
     try {
+        // Check version
+        if (!isset($request->header['x-api-version']) || $request->header['x-api-version'] !== 'v1.0.0') {
+            throw new \Exception('Bad Request', 400);
+        }
+
         $services = new Services($httpRequestDetails);
 
         // Setting CORS
@@ -100,21 +93,23 @@ $server->on("request", function (Request $request, Response $response) {
             $response->end($services->outputResults());
         }
     } catch (\Exception $e) {
-        // Log request details
-        $logDetails = [
-            'LogType' => 'ERROR',
-            'DateTime' => date('Y-m-d H:i:s'),
-            'HttpDetails' => [
-                "HttpCode" => $e->getCode(),
-                "HttpMessage" => $e->getMessage()
-            ],
-            'Details' => [
-                'httpRequestDetails' => $httpRequestDetails,
-                'session' => $services->c->httpRequest->session
-            ]
-        ];
-        (new Logs)->log($logDetails);
-
+        if ($e->getCode() !== 400) {
+            // Log request details
+            $logDetails = [
+                'LogType' => 'ERROR',
+                'DateTime' => date('Y-m-d H:i:s'),
+                'HttpDetails' => [
+                    "HttpCode" => $e->getCode(),
+                    "HttpMessage" => $e->getMessage()
+                ],
+                'Details' => [
+                    'httpRequestDetails' => $httpRequestDetails,
+                    'session' => $services->c->httpRequest->session
+                ]
+            ];
+            (new Logs)->log($logDetails);
+        }
+    
         $response->status($e->getCode());
 
         $response->header('Content-Type', 'application/json; charset=utf-8');
