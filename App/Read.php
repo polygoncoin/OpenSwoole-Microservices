@@ -99,7 +99,7 @@ class Read
         $useResultSet = $this->getUseHierarchy($readSqlConfig, 'useResultSet');
 
         if (
-            (Env::$allowConfigRequest && Env::$isConfigRequest)
+            (Env::$allowConfigRequest && $this->c->httpRequest->isConfigRequest)
         ) {
             $this->processReadConfig($readSqlConfig, $useResultSet);
         } else {
@@ -246,8 +246,8 @@ class Read
         $readSqlConfig['query'] = $readSqlConfig['countQuery'];
         unset($readSqlConfig['countQuery']);
 
-        $this->c->httpRequest->session['payload']['page']  = $_GET['page'] ?? 1;
-        $this->c->httpRequest->session['payload']['perpage']  = $_GET['perpage'] ?? Env::$defaultPerpage;
+        $this->c->httpRequest->session['payload']['page']  = $this->httpRequestDetails['get']['page'] ?? 1;
+        $this->c->httpRequest->session['payload']['perpage']  = $this->httpRequestDetails['get']['perpage'] ?? Env::$defaultPerpage;
 
         if ($this->c->httpRequest->session['payload']['perpage'] > Env::$maxPerpage) {
             throw new \Exception('perpage exceeds max perpage value of '.Env::$maxPerpage, HttpStatus::$Forbidden);

@@ -31,8 +31,6 @@ class Env
     static public $maxPerpage = null;
     static public $defaultPerpage = null;
 
-    static public $isConfigRequest = null;
-
     static public $allowCronRequest = null;
     static public $cronRequestUriPrefix = null;
     static public $cronRestrictedIp = null;

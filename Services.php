@@ -222,7 +222,16 @@ class Services
      */
     public function outputResults()
     {
-        return $this->c->httpResponse->jsonEncode->streamJson();
+        if (!is_null($this->c->httpRequest->hashJson)) {
+            $json = $this->c->httpRequest->hashJson;
+        } else {
+            $json = $this->c->httpResponse->jsonEncode->streamJson();
+            if (!is_null($this->c->httpRequest->hashKey)) {
+                $this->c->httpRequest->cache->setCache($this->c->httpRequest->hashKey, $json, getenv('IdempotentWindow'));
+            }
+        }
+        
+        return $json;
     }
 
     /**

@@ -38,6 +38,13 @@ class HttpRequest
     public $routeElements = [];
 
     /**
+     * Is a config request flag
+     *
+     * @var boolean
+     */
+    public $isConfigRequest = false;
+
+    /**
      * Locaton of File containing code for route
      *
      * @var string
@@ -51,12 +58,20 @@ class HttpRequest
      */
     public $session = null;
 
-    /**
-     * Client details
-     *
-     * @var null|array
-     */
-    public $clientDetails = null;
+    /** @var null|integer */
+    public $clientId = null;
+
+    /** @var null|integer */
+    public $groupId = null;
+
+    /** @var null|integer */
+    public $userId = null;
+
+    /** @var null|string */
+    public $hashKey = null;
+
+    /** @var null|string */
+    public $hashJson = null;
 
     /**
      * Json Decode Object
@@ -172,6 +187,7 @@ class HttpRequest
         }
 
         $this->session['clientDetails'] = json_decode($this->cache->getCache($this->clientKey), true);
+        $this->clientId = $this->session['clientDetails']['client_id'];
     }
 
     /**
@@ -189,6 +205,9 @@ class HttpRequest
                 throw new \Exception('Token expired', HttpStatus::$BadRequest);
             }
             $this->session['userDetails'] = json_decode($this->cache->getCache($this->tokenKey), true);
+            $this->groupId = $this->session['userDetails']['group_id'];
+            $this->userId = $this->session['userDetails']['user_id'];
+
             $this->setDatabaseCacheKey();
         }
         if (empty($this->session['token'])) {
@@ -282,7 +301,7 @@ class HttpRequest
                     && Env::$allowConfigRequest == 1
                     && Env::$configRequestUriKeyword === $element
                 ) {
-                    Env::$isConfigRequest = true;
+                    $this->isConfigRequest = true;
                     break;
                 } else {
                     throw new \Exception('Route not supported', HttpStatus::$BadRequest);
@@ -379,20 +398,38 @@ class HttpRequest
     public function loadPayload()
     {
         if ($this->REQUEST_METHOD === Constants::$GET) {
-            $this->urlDecode($_GET);
+            $this->urlDecode($this->httpRequestDetails['get']);
             $this->session['payloadType'] = 'Object';
-            $this->session['payload'] = !empty($_GET) ? $_GET : [];
+            $this->session['payload'] = !empty($this->httpRequestDetails['get']) ? $this->httpRequestDetails['get'] : [];
         } else {
-            // Load Payload
-            $this->jsonDecode->indexJSON();
-            $this->session['payloadType'] = $this->jsonDecode->jsonType();
+            $payloadSignature = [
+                'IdempotentSecret' => getenv('IdempotentSecret'),
+                'IdempotentWindow' => getenv('IdempotentWindow'),
+                'httpMethod' => $this->REQUEST_METHOD,
+                '$_GET' => $this->httpRequestDetails['get'],
+                'clientId' => $this->clientId,
+                'groupId' => $this->groupId,
+                'userId' => $this->userId,
+                'payload' => $this->httpRequestDetails['post']
+            ];
+
+            $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
+            $this->hashKey = md5($hash);
+            if ($this->cache->cacheExists($this->hashKey)) {
+                $this->hashJson = $this->cache->getCache($this->hashKey);
+            } else {
+                // Load Payload
+                rewind($this->payloadStream);
+                $this->jsonDecode->indexJSON();
+                $this->session['payloadType'] = $this->jsonDecode->jsonType();
+            }
         }
     }
 
     /**
      * Function to find payload is an object/array
      *
-     * @param array $arr Array vales to be decoded. Basically $_GET
+     * @param array $arr Array vales to be decoded. Basically $this->httpRequestDetails['get']($_GET)
      * @return void
      */
     public function urlDecode(&$arr)
@@ -557,10 +594,7 @@ class HttpRequest
      */
     public function setDatabaseCacheKey()
     {
-        $clientId = $this->session['clientDetails']['client_id'];
-        $groupId = $this->session['userDetails']['group_id'];
-        $userId = $this->session['userDetails']['user_id'];
-        DatabaseCacheKey::init($clientId, $groupId, $userId);
+        DatabaseCacheKey::init($this->clientId, $this->groupId, $this->userId);
     }
     
     /**

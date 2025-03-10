@@ -71,7 +71,7 @@ class Write
         $useHierarchy = $this->getUseHierarchy($writeSqlConfig, 'useHierarchy');
 
         if (
-            (Env::$allowConfigRequest && Env::$isConfigRequest)
+            (Env::$allowConfigRequest && $this->c->httpRequest->isConfigRequest)
         ) {
             $this->processWriteConfig($writeSqlConfig, $useHierarchy);
         } else {
