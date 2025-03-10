@@ -416,7 +416,11 @@ class HttpRequest
             $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
             $this->hashKey = md5($hash);
             if ($this->cache->cacheExists($this->hashKey)) {
-                $this->hashJson = $this->cache->getCache($this->hashKey);
+                $this->hashJson = str_replace(
+                    'JSON',
+                    $this->cache->getCache($this->hashKey),
+                    '{"Idempotent": JSON, "Status": 200}'
+                );
             } else {
                 // Load Payload
                 rewind($this->payloadStream);
