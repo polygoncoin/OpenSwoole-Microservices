@@ -230,20 +230,28 @@ class Services
                 $this->c->httpRequest->cache->setCache($this->c->httpRequest->hashKey, $json, getenv('IdempotentWindow'));
             }
         }
-        
+
         return $json;
     }
 
     /**
-     * CORS-compliant method
+     * Headers / CORS
      *
      * @return void
      */
-    public function getCors()
+    public function getHeaders()
     {
         $headers = [];
-        $headers['Access-Control-Allow-Origin'] = '*';
+        $headers['Access-Control-Allow-Origin'] = $this->httpRequestDetails['server']['host'];
+        $headers['Vary'] = 'Origin';
         $headers['Access-Control-Allow-Headers'] = '*';
+
+        $headers['Referrer-Policy'] = 'origin';
+        $headers['X-Frame-Options'] = 'SAMEORIGIN';
+        $headers['X-Content-Type-Options'] = 'nosniff';
+        $headers['Cross-Origin-Resource-Policy'] = 'same-origin';
+        $headers['Cross-Origin-Embedder-Policy'] = 'unsafe-none';
+        $headers['Cross-Origin-Opener-Policy'] = 'unsafe-none';
 
         // Access-Control headers are received during OPTIONS requests
         if ($this->httpRequestDetails['server']['request_method'] == 'OPTIONS') {

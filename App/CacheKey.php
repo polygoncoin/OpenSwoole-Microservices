@@ -21,7 +21,7 @@ class CacheKey
      * @param string $hostname
      * @return string
      */
-    static public function Client($hostname)
+    static public function Client(&$hostname)
     {
         return "c:{$hostname}";
     }
@@ -33,7 +33,7 @@ class CacheKey
      * @param string  $username
      * @return string
      */
-    static public function ClientUser($clientId, $username)
+    static public function ClientUser(&$clientId, &$username)
     {
         return "cu:{$clientId}:u:{$username}";
     }
@@ -44,7 +44,7 @@ class CacheKey
      * @param integer $clientId
      * @return string
      */
-    static public function Group($groupId)
+    static public function Group(&$groupId)
     {
         return "g:{$groupId}";
     }
@@ -55,7 +55,7 @@ class CacheKey
      * @param integer $groupId
      * @return string
      */
-    static public function CIDR($groupId)
+    static public function CIDR(&$groupId)
     {
         return "cidr:{$groupId}";
     }
@@ -66,7 +66,7 @@ class CacheKey
      * @param string $token
      * @return string
      */
-    static public function Token($token)
+    static public function Token(&$token)
     {
         return "t:{$token}";
     }
@@ -77,7 +77,7 @@ class CacheKey
      * @param integer $userId
      * @return string
      */
-    static public function UserToken($userId)
+    static public function UserToken(&$userId)
     {
         return "ut:{$userId}";
     }

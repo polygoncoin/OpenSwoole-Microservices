@@ -4,16 +4,16 @@ if (!function_exists('getCurlConfig')) {
     function getCurlConfig($method, $route, $header = [], $json = '')
     {
         $homeURL = 'http://127.0.0.1:9501';
-    
+
         $curlConfig[CURLOPT_URL] = "{$homeURL}?r={$route}";
         $curlConfig[CURLOPT_HTTPHEADER] = $header;
         $curlConfig[CURLOPT_HTTPHEADER][] = "X-API-Version: v1.0.0";
         $curlConfig[CURLOPT_HTTPHEADER][] = "Cache-Control: no-cache";
-    
+
         $payload = http_build_query([
             "Payload" => $json
         ]);
-    
+
         switch ($method) {
             case 'GET':
                 $curlConfig[CURLOPT_HTTPHEADER][] = 'Content-Type: text/plain; charset=utf-8';
@@ -40,12 +40,12 @@ if (!function_exists('getCurlConfig')) {
                 break;
         }
         $curlConfig[CURLOPT_RETURNTRANSFER] = true;
-    
+
         return $curlConfig;
-    }    
+    }
 }
 if (!function_exists('trigger')) {
-    function trigger($method, $route, $header = [], $json = '')
+    function trigger(&$strArr, $method, $route, $header = [], $json = '')
     {
         $curl = curl_init();
         $curlConfig = getCurlConfig($method, $route, $header, $json);
@@ -55,14 +55,14 @@ if (!function_exists('trigger')) {
         curl_close($curl);
 
         if ($err) {
-            echo "cURL Error #:" . $err;
+            $strArr[] = "cURL Error #:" . $err;
         } else {
             $response = json_decode($responseJSON, true);
             if (!empty($response) && isset($response['Status']) && $response['Status'] == 200) {
-                echo 'Sucess:'.$route . PHP_EOL . PHP_EOL;
+                $strArr[] = 'Sucess:'.$route . PHP_EOL . PHP_EOL;
             } else {
-                echo 'Failed:'.$route . PHP_EOL;
-                echo 'O/P:' . $responseJSON . PHP_EOL . PHP_EOL;
+                $strArr[] = 'Failed:'.$route . PHP_EOL;
+                $strArr[] = 'O/P:' . $responseJSON . PHP_EOL . PHP_EOL;
                 $response = false;
             }
         }
@@ -72,23 +72,25 @@ if (!function_exists('trigger')) {
 if (!function_exists('process')) {
     function process()
     {
+        $strArr = [];
         $response = [];
-        $response[] = trigger('GET', '/reload', [], '');
 
-        $res = trigger('POST', '/login', [], '{"username":"client_1_group_1_user_1", "password":"shames11"}');
+        $response[] = trigger($strArr, 'GET', '/reload', [], '');
+
+        $res = trigger($strArr, 'POST', '/login', [], '{"username":"client_1_group_1_user_1", "password":"shames11"}');
         if ($res) {
             $response[] = $res;
             $token = $res['Results']['Token'];
             $header = ["Authorization: Bearer {$token}"];
 
-            $response[] = trigger('GET', '/routes', $header, '');
-            $response[] = trigger('POST', '/category-1', $header, '[{"name":"ramesh0","subname":"ramesh1","subsubname":"ramesh2"},{"name":"ramesh0","subname":"ramesh1","subsubname":"ramesh2"}]');
-            $response[] = trigger('GET', '/category-1', $header, '');
-            $response[] = trigger('POST', '/category', $header, '[{"name":"ramesh0","sub":{"subname":"ramesh1","subsub":[{"subsubname":"ramesh"},{"subsubname":"ramesh"}]}},{"name":"ramesh1","sub":{"subname":"ramesh1","subsub":{"subsubname":"ramesh"}}}]');
-            $response[] = trigger('GET', '/category&orderby={"id":"DESC"}', $header, '');
-            $response[] = trigger('GET', '/category&orderby={"id":"ASC"}', $header, '');
-            $response[] = trigger('POST', '/category/config', $header, '');
+            $response[] = trigger($strArr, 'GET', '/routes', $header, '');
+            $response[] = trigger($strArr, 'POST', '/category-1', $header, '[{"name":"ramesh0","subname":"ramesh1","subsubname":"ramesh2"},{"name":"ramesh0","subname":"ramesh1","subsubname":"ramesh2"}]');
+            $response[] = trigger($strArr, 'GET', '/category-1', $header, '');
+            $response[] = trigger($strArr, 'POST', '/category', $header, '[{"name":"ramesh0","sub":{"subname":"ramesh1","subsub":[{"subsubname":"ramesh"},{"subsubname":"ramesh"}]}},{"name":"ramesh1","sub":{"subname":"ramesh1","subsub":{"subsubname":"ramesh"}}}]');
+            $response[] = trigger($strArr, 'GET', '/category&orderby={"id":"DESC"}', $header, '');
+            $response[] = trigger($strArr, 'GET', '/category&orderby={"id":"ASC"}', $header, '');
+            $response[] = trigger($strArr, 'POST', '/category/config', $header, '');
         }
-        return '<pre>'.print_r($response, true);
+        return '<pre>'.print_r($strArr, true).print_r($response, true);
     }
 }

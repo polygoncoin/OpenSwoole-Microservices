@@ -94,6 +94,7 @@ class JsonEncode
     /**
      * Write to temporary stream
      *
+     * @param string $str
      * @return void
      */
     public function write($str)
@@ -136,12 +137,12 @@ class JsonEncode
     }
 
     /**
-     * Encodes both simple and associative array to json
+     * Append raw json string
      *
-     * @param $arr string value escaped and array value json_encode function is applied
+     * @param $json
      * @return void
      */
-    public function appendJson($json)
+    public function appendJson(&$json)
     {
         if ($this->currentObject) {
             $this->write($this->currentObject->comma);
@@ -309,11 +310,7 @@ class JsonEncode
         }
         (new Logs)->log($logDetails);
 
-        // Stream JSON
-        rewind($this->tempStream);
-        $json = stream_get_contents($this->tempStream);
-        fclose($this->tempStream);
-        return $json;
+        return $this->getJson();
     }
 
     /**
@@ -323,11 +320,12 @@ class JsonEncode
      */
     public function getJson()
     {
-        // Stream JSON
+        $this->end();
+
         rewind($this->tempStream);
         $json = stream_get_contents($this->tempStream);
         fclose($this->tempStream);
-        
+
         return $json;
     }
 

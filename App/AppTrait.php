@@ -33,20 +33,21 @@ trait AppTrait
     /**
      * Function to help execute PHP functions enclosed with double quotes
      *
-     * @param $param Returned values by PHP inbuilt functions
+     * @param mixed $param Returned values by PHP inbuilt functions
+     * @return mixed
      */
     function execPhpFunc($param) { return $param;}
 
     /**
      * Sets required payload
      *
-     * @param array   $sqlConfig Config from file
-     * @param boolean $first     true to represent the first call in recursion
-     * @param boolean $flag      useHierarchy/useResultSet flag
+     * @param array   $sqlConfig   Config from file
+     * @param boolean $isFirstCall true to represent the first call in recursion
+     * @param boolean $flag        useHierarchy/useResultSet flag
      * @return void
      * @throws \Exception
      */
-    private function getRequired(&$sqlConfig, $first, $flag)
+    private function getRequired(&$sqlConfig, $isFirstCall, $flag)
     {
         $requiredFields = [];
 
@@ -82,7 +83,7 @@ trait AppTrait
             foreach ($sqlConfig['__WHERE__'] as $var => $where) {
                 $dataPaylaodType = $where[0];
                 $dataPaylaodTypeKey = $where[1];
-                if ($first && $dataPaylaodType === 'resultSetData') {
+                if ($isFirstCall && $dataPaylaodType === 'resultSetData') {
                     throw new \Exception('Invalid config: First query can not have resultSetData config', HttpStatus::$InternalServerError);
                 }
                 if ($dataPaylaodType === 'resultSetData') {
@@ -90,7 +91,7 @@ trait AppTrait
                     break;
                 }
             }
-            if (!$first && $flag && !$foundHierarchy) {
+            if (!$isFirstCall && $flag && !$foundHierarchy) {
                 throw new \Exception('Invalid config: missing resultSetData', HttpStatus::$InternalServerError);
             }
         }
@@ -103,7 +104,7 @@ trait AppTrait
             }
             foreach ($sqlConfig['subQuery'] as $module => &$sqlDetails) {
                 $_flag = ($flag) ?? $this->getUseHierarchy($sqlDetails);
-                $sub_requiredFields = $this->getRequired($sqlDetails, false, $_flag);
+                $sub_requiredFields = $this->getRequired($sqlDetails, $isGetRequiredFirstCall = false, $_flag);
                 if ($_flag) {
                     $requiredFields[$module] = $sub_requiredFields;
                 } else {
@@ -136,7 +137,7 @@ trait AppTrait
             $this->validator = new Validator($this->c);
         }
 
-        return $this->validator->validate($this->c->httpRequest->session, $validationConfig);
+        return $this->validator->validate($validationConfig);
     }
 
     /**
@@ -298,13 +299,13 @@ trait AppTrait
     /**
      * Return config par recursively
      *
-     * @param array   $sqlConfig Config from file
-     * @param array   $first     Flag to check if this is first request in a recursive call
-     * @param boolean $flag      useHierarchy/useResultSet flag
+     * @param array   $sqlConfig   Config from file
+     * @param array   $isFirstCall Flag to check if this is first request in a recursive call
+     * @param boolean $flag        useHierarchy/useResultSet flag
      * @return array
      * @throws \Exception
      */
-    private function getConfigParams(&$sqlConfig, $first, $flag)
+    private function getConfigParams(&$sqlConfig, $isFirstCall, $flag)
     {
         $result = [];
 
@@ -374,7 +375,7 @@ trait AppTrait
                     break;
                 }
             }
-            if (!$first && $flag && !$foundHierarchy) {
+            if (!$isFirstCall && $flag && !$foundHierarchy) {
                 throw new \Exception('Invalid config: missing resultSetData', HttpStatus::$InternalServerError);
             }
         }
@@ -383,7 +384,7 @@ trait AppTrait
         if (isset($sqlConfig['subQuery'])) {
             foreach ($sqlConfig['subQuery'] as $module => &$_sqlConfig) {
                 $_flag = ($flag) ?? $this->getUseHierarchy($_sqlConfig);
-                $sub_requiredFields = $this->getConfigParams($_sqlConfig, false, $_flag);
+                $sub_requiredFields = $this->getConfigParams($_sqlConfig, $isGetConfigParamsFirstCall = false, $_flag);
                 if ($flag) {
                     if (!empty($sub_requiredFields)) {
                         $result[$module] = $sub_requiredFields;

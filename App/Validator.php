@@ -53,31 +53,31 @@ class Validator
     /**
      * Validate payload
      *
-     * @param array $session            Inputs
      * @param array $validationConfig Validation configuration
      * @return array
      */
-    public function validate($session, $validationConfig)
+    public function validate(&$validationConfig)
     {
+        $session = &$this->c->httpRequest->session;
         if (isset(($session['required'])) && count($session['required']) > 0) {
-            if ((list($isValidData, $errors) = $this->validateRequired($session)) && !$isValidData) {
+            if ((list($isValidData, $errors) = $this->validateRequired()) && !$isValidData) {
                 return [$isValidData, $errors];
             }
         }
 
-        return $this->v->validate($session, $validationConfig);
+        return $this->v->validate($validationConfig);
     }
 
     /**
      * Validate required payload
      *
-     * @param array $session Inputs
      * @return array
      */
-    private function validateRequired($session)
+    private function validateRequired()
     {
         $isValidData = true;
         $errors = [];
+        $session = &$this->c->httpRequest->session;
         // Required fields payload validation
         foreach ($session['required']['payload'] as $column => &$arr) {
             if ($arr['require'] && !isset($session['payload'][$column])) {

@@ -126,7 +126,7 @@ class Read
     {
         $this->jsonEncode->startObject('Config');
         $this->jsonEncode->addKeyValue('Route', $this->c->httpRequest->configuredUri);
-        $this->jsonEncode->addKeyValue('Payload', $this->getConfigParams($readSqlConfig, true, $useResultSet));
+        $this->jsonEncode->addKeyValue('Payload', $this->getConfigParams($readSqlConfig, $isFirstCall = true, $useResultSet));
         $this->jsonEncode->endObject();
     }
 
@@ -139,7 +139,7 @@ class Read
      */
     private function processRead(&$readSqlConfig, $useResultSet)
     {
-        $this->c->httpRequest->session['requiredArr'] = $this->getRequired($readSqlConfig, true, $useResultSet);
+        $this->c->httpRequest->session['requiredArr'] = $this->getRequired($readSqlConfig, $isFirstCall = true, $useResultSet);
 
         if (isset($this->c->httpRequest->session['requiredArr'])) {
             $this->c->httpRequest->session['required'] = $this->c->httpRequest->session['requiredArr'];
@@ -149,26 +149,26 @@ class Read
 
         // Start Read operation
         $configKeys = [];
-        $this->readDB($readSqlConfig, true, $configKeys, $useResultSet);
+        $this->readDB($readSqlConfig, $isFirstCall = true, $configKeys, $useResultSet);
     }
 
     /**
      * Function to select sub queries recursively
      *
      * @param array   $readSqlConfig Config from file
-     * @param boolean $start         true to represent the first call in recursion
+     * @param boolean $isFirstCall   true to represent the first call in recursion
      * @param array   $configKeys    Keys in recursion
      * @param boolean $useResultSet  Use result set recursively flag
      * @return void
      */
-    private function readDB(&$readSqlConfig, $start, &$configKeys, $useResultSet)
+    private function readDB(&$readSqlConfig, $isFirstCall, &$configKeys, $useResultSet)
     {
         $isAssoc = $this->isAssoc($readSqlConfig);
         if ($isAssoc) {
             switch ($readSqlConfig['mode']) {
                 // Query will return single row
                 case 'singleRowFormat':
-                    if ($start) {
+                    if ($isFirstCall) {
                         $this->jsonEncode->startObject('Results');
                     } else {
                         $this->jsonEncode->startObject();
@@ -178,7 +178,7 @@ class Read
                     break;
                 // Query will return multiple rows
                 case 'multipleRowFormat':
-                    if ($start) {
+                    if ($isFirstCall) {
                         if (isset($readSqlConfig['countQuery'])) {
                             $this->fetchRowsCount($readSqlConfig);
                         }
@@ -186,7 +186,7 @@ class Read
                     } else {
                         $this->jsonEncode->startArray($configKeys[count($configKeys)-1]);
                     }
-                    $this->fetchMultipleRows($readSqlConfig, $start, $configKeys, $useResultSet);
+                    $this->fetchMultipleRows($readSqlConfig, $isFirstCall, $configKeys, $useResultSet);
                     $this->jsonEncode->endArray();
                     break;
             }
@@ -246,8 +246,8 @@ class Read
         $readSqlConfig['query'] = $readSqlConfig['countQuery'];
         unset($readSqlConfig['countQuery']);
 
-        $this->c->httpRequest->session['payload']['page']  = $this->httpRequestDetails['get']['page'] ?? 1;
-        $this->c->httpRequest->session['payload']['perpage']  = $this->httpRequestDetails['get']['perpage'] ?? Env::$defaultPerpage;
+        $this->c->httpRequest->session['payload']['page']  = $_GET['page'] ?? 1;
+        $this->c->httpRequest->session['payload']['perpage']  = $_GET['perpage'] ?? Env::$defaultPerpage;
 
         if ($this->c->httpRequest->session['payload']['perpage'] > Env::$maxPerpage) {
             throw new \Exception('perpage exceeds max perpage value of '.Env::$maxPerpage, HttpStatus::$Forbidden);
@@ -277,12 +277,13 @@ class Read
      * Function to fetch multiple record
      *
      * @param array   $readSqlConfig Read SQL configuration
+     * @param boolean $isFirstCall   true to represent the first call in recursion
      * @param array   $configKeys    Config Keys
      * @param boolean $useResultSet  Use result set recursively flag
      * @return void
      * @throws \Exception
      */
-    private function fetchMultipleRows(&$readSqlConfig, $start, &$configKeys, $useResultSet)
+    private function fetchMultipleRows(&$readSqlConfig, $isFirstCall, &$configKeys, $useResultSet)
     {
         $isAssoc = $this->isAssoc($readSqlConfig);
 
@@ -291,7 +292,7 @@ class Read
             throw new \Exception($errors, HttpStatus::$InternalServerError);
         }
 
-        if ($start) {
+        if ($isFirstCall) {
             if (isset($this->c->httpRequest->session['payload']['orderby'])) {
                 $orderByStrArr = [];
                 $orderByArr = $this->c->httpRequest->session['payload']['orderby'];
@@ -305,7 +306,7 @@ class Read
                 if (count($orderByStrArr) > 0) {
                     $sql .= ' ORDER BY '.implode(', ', $orderByStrArr);
                 }
-            }    
+            }
         }
 
         if (isset($readSqlConfig['countQuery'])) {
@@ -361,7 +362,7 @@ class Read
                 $_configKeys = $configKeys;
                 $_configKeys[] = $subQuery_key;
                 $_useResultSet = ($useResultSet) ?? $this->getUseHierarchy($_readSqlConfig, 'useResultSet');
-                $this->readDB($_readSqlConfig, false, $_configKeys, $_useResultSet);
+                $this->readDB($_readSqlConfig, $isFirstCall = false, $_configKeys, $_useResultSet);
             }
         }
     }

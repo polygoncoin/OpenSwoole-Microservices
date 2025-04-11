@@ -20,6 +20,12 @@ use OpenSwoole\Http\Response;
  */
 class Autoload
 {
+    /**
+     * Autoload Register function
+     *
+     * @param string $className
+     * @return void
+     */
     static public function register($className)
     {
         $className = substr($className, strlen(__NAMESPACE__));
@@ -49,6 +55,11 @@ $server->on("request", function (Request $request, Response $response) {
         return;
     }
 
+    // Check version
+    if (!isset($request->header['x-api-version']) || $request->header['x-api-version'] !== 'v1.0.0') {
+        throw new \Exception('Bad Request', 400);
+    }
+
     $httpRequestDetails = [];
 
     // $httpRequestDetails['server']['host'] = 'localhost';
@@ -65,15 +76,10 @@ $server->on("request", function (Request $request, Response $response) {
 
     // Code to Initialize / Start the service
     try {
-        // Check version
-        if (!isset($request->header['x-api-version']) || $request->header['x-api-version'] !== 'v1.0.0') {
-            throw new \Exception('Bad Request', 400);
-        }
-
         $services = new Services($httpRequestDetails);
 
         // Setting CORS
-        foreach ($services->getCors() as $k => $v) {
+        foreach ($services->getHeaders() as $k => $v) {
             $response->header($k, $v);
         }
         if ($httpRequestDetails['server']['request_method'] == 'OPTIONS') {
@@ -109,7 +115,7 @@ $server->on("request", function (Request $request, Response $response) {
             ];
             (new Logs)->log($logDetails);
         }
-    
+
         $response->status($e->getCode());
 
         $response->header('Content-Type', 'application/json; charset=utf-8');
@@ -127,7 +133,7 @@ $server->on("request", function (Request $request, Response $response) {
             $arr = [
                 'Status' => $e->getCode(),
                 'Message' => $e->getMessage()
-            ];    
+            ];
         }
         $response->end(json_encode($arr));
         return;

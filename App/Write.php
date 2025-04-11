@@ -81,7 +81,7 @@ class Write
         if (isset($writeSqlConfig['affectedCacheKeys'])) {
             for ($i = 0, $iCount = count($writeSqlConfig['affectedCacheKeys']); $i < $iCount; $i++) {
                 $this->c->httpRequest->delDmlCache($writeSqlConfig['affectedCacheKeys'][$i]);
-                
+
             }
         }
 
@@ -99,7 +99,7 @@ class Write
     {
         $this->c->httpResponse->jsonEncode->startObject('Config');
         $this->c->httpResponse->jsonEncode->addKeyValue('Route', $this->c->httpRequest->configuredUri);
-        $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $this->getConfigParams($writeSqlConfig, true, $useHierarchy));
+        $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $this->getConfigParams($writeSqlConfig, $isFirstCall = true, $useHierarchy));
         $this->c->httpResponse->jsonEncode->endObject();
     }
 
@@ -113,7 +113,7 @@ class Write
     private function processWrite(&$writeSqlConfig, $useHierarchy)
     {
         // Set required fields
-        $this->c->httpRequest->session['requiredArr'] = $this->getRequired($writeSqlConfig, true, $useHierarchy);
+        $this->c->httpRequest->session['requiredArr'] = $this->getRequired($writeSqlConfig, $isFirstCall = true, $useHierarchy);
 
         if ($this->c->httpRequest->session['payloadType'] === 'Object') {
             $this->c->httpResponse->jsonEncode->startObject('Results');

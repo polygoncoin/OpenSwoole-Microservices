@@ -2,6 +2,7 @@
 namespace Microservices\App;
 
 use Microservices\App\CacheKey;
+use Microservices\App\DbFunctions;
 use Microservices\App\HttpStatus;
 use Microservices\App\RateLimiter;
 
@@ -17,7 +18,7 @@ use Microservices\App\RateLimiter;
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-class ApiGateway
+class ApiGateway extends DbFunctions
 {
     /**
      * Details var from $httpRequestDetails
@@ -35,11 +36,11 @@ class ApiGateway
     private $httpRequestDetails = null;
 
     /**
-     * Redis Object
+     * Caching Object
      *
-     * @var null|\Redis
+     * @var null|Cache
      */
-    private $redis = null;
+    public $cache = null;
 
     /**
      * Bearer token
@@ -47,12 +48,13 @@ class ApiGateway
     private $token = null;
 
     /**
-     * Redis Keys
+     * Cache Keys
      */
     private $tokenKey = null;
     private $clientKey = null;
     private $groupKey = null;
-    private $cidr_key = null;
+    private $cidrKey = null;
+    private $cidrChecked = false;
 
     /**
      * Client Info
@@ -76,13 +78,20 @@ class ApiGateway
     private $userDetails = null;
 
     /**
+     * Rate Limiter
+     *
+     * @var null|RateLimiter
+     */
+    private $rateLimiter = null;
+
+        /**
      * Constructor
      *
      * @param array $httpRequestDetails
      */
-    public function __construct($httpRequestDetails)
+    public function __construct(&$httpRequestDetails)
     {
-        $this->httpRequestDetails = $httpRequestDetails;
+        $this->httpRequestDetails = &$httpRequestDetails;
 
         $this->HOST = $this->httpRequestDetails['server']['host'];
         $this->REQUEST_METHOD = $this->httpRequestDetails['server']['request_method'];
@@ -91,17 +100,13 @@ class ApiGateway
         }
         $this->REMOTE_ADDR = $this->httpRequestDetails['server']['remote_addr'];
 
-        if (!extension_loaded('redis')) {
-            throw new \Exception("Unable to find Redis extension", HttpStatus::$InternalServerError);
-        }
-        $this->redis = new \Redis();
-        $this->redis->connect(getenv('RateLimiterHost'), (int)getenv('RateLimiterHostPort'));
-
-        $this->checkRateLimit(
-            $RateLimiterIPMaxRequests = getenv('RateLimiterIPMaxRequests'),
-            $RateLimiterIPSecondsWindow = getenv('RateLimiterIPSecondsWindow'),
-            $RateLimiterIPPrefix = getenv('RateLimiterIPPrefix'),
-            $key = $this->REMOTE_ADDR
+        $this->cache = $this->setCache(
+            getenv('cacheType'),
+            getenv('cacheHostname'),
+            getenv('cachePort'),
+            getenv('cacheUsername'),
+            getenv('cachePassword'),
+            getenv('cacheDatabase')
         );
     }
 
@@ -114,6 +119,8 @@ class ApiGateway
     {
         $this->checkHost();
         $this->checkToken();
+        $this->checkRemoteIp();
+        $this->checkRateLimits();
     }
 
     /**
@@ -125,10 +132,10 @@ class ApiGateway
     public function checkHost()
     {
         $this->clientKey = CacheKey::Client($this->HOST);
-        if (!$this->redis->exists($this->clientKey)) {
+        if (!$this->cache->cacheExists($this->clientKey)) {
             throw new \Exception("Invalid Host '{$this->HOST}'", HttpStatus::$InternalServerError);
         }
-        $this->clientDetails = json_decode($this->redis->get($this->clientKey), true);
+        $this->clientDetails = json_decode($this->cache->getCache($this->clientKey), true);
     }
 
     /**
@@ -141,14 +148,12 @@ class ApiGateway
     {
         if (!is_null($this->HTTP_AUTHORIZATION) && preg_match('/Bearer\s(\S+)/', $this->HTTP_AUTHORIZATION, $matches)) {
             $this->token = $matches[1];
+
             $this->tokenKey = CacheKey::Token($this->token);
-            if (!$this->redis->exists($this->tokenKey)) {
+            if (!$this->cache->cacheExists($this->tokenKey)) {
                 throw new \Exception('Token expired', HttpStatus::$BadRequest);
             }
-            $this->userDetails = json_decode($this->redis->get($this->tokenKey), true);
-
-            // Check IP
-            $this->checkRemoteIp();
+            $this->userDetails = json_decode($this->cache->getCache($this->tokenKey), true);
 
             // Load groupDetails
             if (empty($this->userDetails['user_id']) || empty($this->userDetails['group_id'])) {
@@ -156,50 +161,10 @@ class ApiGateway
             }
 
             $this->groupKey = CacheKey::Group($this->userDetails['group_id']);
-            if (!$this->redis->exists($this->groupKey)) {
+            if (!$this->cache->cacheExists($this->groupKey)) {
                 throw new \Exception("Cache '{$this->groupKey}' missing", HttpStatus::$InternalServerError);
             }
-
-            $this->groupDetails = json_decode($this->redis->get($this->groupKey), true);
-
-            // Client Rate Limiting
-            if (
-                !empty($this->clientDetails['rateLimiterMaxRequests'])
-                && !empty($this->clientDetails['rateLimiterSecondsWindow'])
-            ) {
-                $this-checkRateLimit(
-                    $RateLimiterMaxRequests = $this->clientDetails['rateLimiterMaxRequests'],
-                    $RateLimiterSecondsWindow = $this->clientDetails['rateLimiterSecondsWindow'],
-                    $RateLimiterGroupPrefix = getenv('RateLimiterClientPrefix'),
-                    $key = $this->clientDetails['client_id']
-                );
-            }
-
-            // Group Rate Limiting
-            if (
-                !empty($this->groupDetails['rateLimiterMaxRequests'])
-                && !empty($this->groupDetails['rateLimiterSecondsWindow'])
-            ) {
-                $this-checkRateLimit(
-                    $RateLimiterMaxRequests = $this->groupDetails['rateLimiterMaxRequests'],
-                    $RateLimiterSecondsWindow = $this->groupDetails['rateLimiterSecondsWindow'],
-                    $RateLimiterGroupPrefix = getenv('RateLimiterGroupPrefix'),
-                    $key = $this->clientDetails['client_id'] . ':' . $this->userDetails['group_id']
-                );
-            }
-
-            // User Rate Limiting
-            if (
-                !empty($this->userDetails['rateLimiterMaxRequests'])
-                && !empty($this->userDetails['rateLimiterSecondsWindow'])
-            ) {
-                $this->checkRateLimit(
-                    $RateLimiterMaxRequests = $this->groupDetails['rateLimiterMaxRequests'],
-                    $RateLimiterSecondsWindow = $this->groupDetails['rateLimiterSecondsWindow'],
-                    $RateLimiterUserPrefix = getenv('RateLimiterUserPrefix'),
-                    $key = $this->clientDetails['client_id'] . ':' . $this->userDetails['group_id'] . ':' . $this->userDetails['user_id']
-                );
-            }
+            $this->groupDetails = json_decode($this->cache->getCache($this->groupKey), true);
         }
 
         if (empty($this->token)) {
@@ -217,9 +182,10 @@ class ApiGateway
     {
         $groupId = $this->userDetails['group_id'];
 
-        $this->cidr_key = CacheKey::CIDR($this->userDetails['group_id']);
-        if ($this->redis->exists($this->cidr_key)) {
-            $cidrs = json_decode($this->redis->get($this->cidr_key), true);
+        $this->cidrKey = CacheKey::CIDR($this->userDetails['group_id']);
+        if ($this->cache->cacheExists($this->cidrKey)) {
+            $this->cidrChecked = true;
+            $cidrs = json_decode($this->cache->getCache($this->cidrKey), true);
             $ipNumber = ip2long($this->REMOTE_ADDR);
             $isValidIp = false;
             foreach ($cidrs as $cidr) {
@@ -235,9 +201,74 @@ class ApiGateway
     }
 
     /**
-     * Check Rate Limit
+     * Check Rate Limits
      *
      * @return void
+     */
+    private function checkRateLimits()
+    {
+        $this->rateLimiter = new RateLimiter();
+
+        $rateLimitChecked = false;
+        // Client Rate Limiting
+        if (
+            !empty($this->clientDetails['rateLimiterMaxRequests'])
+            && !empty($this->clientDetails['rateLimiterSecondsWindow'])
+        ) {
+            $rateLimitChecked = $this-checkRateLimit(
+                $RateLimiterMaxRequests = $this->clientDetails['rateLimiterMaxRequests'],
+                $RateLimiterSecondsWindow = $this->clientDetails['rateLimiterSecondsWindow'],
+                $RateLimiterGroupPrefix = getenv('RateLimiterClientPrefix'),
+                $key = $this->clientDetails['client_id']
+            );
+        }
+
+        // Group Rate Limiting
+        if (
+            !empty($this->groupDetails['rateLimiterMaxRequests'])
+            && !empty($this->groupDetails['rateLimiterSecondsWindow'])
+        ) {
+            $rateLimitChecked = $this-checkRateLimit(
+                $RateLimiterMaxRequests = $this->groupDetails['rateLimiterMaxRequests'],
+                $RateLimiterSecondsWindow = $this->groupDetails['rateLimiterSecondsWindow'],
+                $RateLimiterGroupPrefix = getenv('RateLimiterGroupPrefix'),
+                $key = $this->clientDetails['client_id'] . ':' . $this->userDetails['group_id']
+            );
+        }
+
+        // User Rate Limiting
+        if (
+            !empty($this->userDetails['rateLimiterMaxRequests'])
+            && !empty($this->userDetails['rateLimiterSecondsWindow'])
+        ) {
+            $rateLimitChecked = $this->checkRateLimit(
+                $RateLimiterMaxRequests = $this->groupDetails['rateLimiterMaxRequests'],
+                $RateLimiterSecondsWindow = $this->groupDetails['rateLimiterSecondsWindow'],
+                $RateLimiterUserPrefix = getenv('RateLimiterUserPrefix'),
+                $key = $this->clientDetails['client_id'] . ':' . $this->userDetails['group_id'] . ':' . $this->userDetails['user_id']
+            );
+        }
+
+        // Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to users)
+        if ($this->cidrChecked === false && $rateLimitChecked === false) {
+            $this->checkRateLimit(
+                $RateLimiterIPMaxRequests = getenv('RateLimiterIPMaxRequests'),
+                $RateLimiterIPSecondsWindow = getenv('RateLimiterIPSecondsWindow'),
+                $RateLimiterIPPrefix = getenv('RateLimiterIPPrefix'),
+                $key = $this->REMOTE_ADDR
+            );
+        }
+    }
+
+    /**
+     * Check Rate Limit
+     *
+     * @param string $RateLimiterPrefix
+     * @param int    $RateLimiterMaxRequests
+     * @param int    $RateLimiterSecondsWindow
+     * @param string $key
+     * @return void
+     * @throws \Exception
      */
     private function checkRateLimit(
         $RateLimiterPrefix,
@@ -246,18 +277,16 @@ class ApiGateway
         $key
     ) {
         try {
-            $rateLimiter = new RateLimiter(
-                $this->redis,
+            $result = $this->rateLimiter->check(
                 $RateLimiterPrefix,
                 $RateLimiterMaxRequests,
-                $RateLimiterSecondsWindow
+                $RateLimiterSecondsWindow,
+                $key
             );
-
-            $result = $rateLimiter->check($key);
 
             if ($result['allowed']) {
                 // Process the request
-                return;
+                return true;
             } else {
                 // Return 429 Too Many Requests
                 throw new \Exception($result['resetAt'] - time(), HttpStatus::$TooManyRequests);

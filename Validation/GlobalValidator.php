@@ -43,12 +43,12 @@ class GlobalValidator implements ValidatorInterface
     /**
      * Validate payload
      *
-     * @param array $session            Input's data
      * @param array $validationConfig Validation configuration
      * @return array
      */
-    public function validate($session, $validationConfig)
+    public function validate(&$validationConfig)
     {
+        $session = &$this->c->httpRequest->session;
         $isValidData = true;
         $errors = [];
         foreach ($validationConfig as &$v) {
@@ -75,7 +75,7 @@ class GlobalValidator implements ValidatorInterface
      * @param array $args Arguments
      * @return integer 0/1
      */
-    private function primaryKeyExist($args)
+    private function primaryKeyExist(&$args)
     {
         extract($args);
         $sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
@@ -92,7 +92,7 @@ class GlobalValidator implements ValidatorInterface
      * @param array $args Arguments
      * @return integer 0/1
      */
-    private function checkColumnValueExist($args)
+    private function checkColumnValueExist(&$args)
     {
         extract($args);
         $sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$column}` = ? AND`{$primary}` = ?";
