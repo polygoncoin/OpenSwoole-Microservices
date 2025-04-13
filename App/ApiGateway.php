@@ -216,9 +216,9 @@ class ApiGateway extends DbFunctions
             && !empty($this->clientDetails['rateLimiterSecondsWindow'])
         ) {
             $rateLimitChecked = $this-checkRateLimit(
+                $RateLimiterGroupPrefix = getenv('RateLimiterClientPrefix'),
                 $RateLimiterMaxRequests = $this->clientDetails['rateLimiterMaxRequests'],
                 $RateLimiterSecondsWindow = $this->clientDetails['rateLimiterSecondsWindow'],
-                $RateLimiterGroupPrefix = getenv('RateLimiterClientPrefix'),
                 $key = $this->clientDetails['client_id']
             );
         }
@@ -229,9 +229,9 @@ class ApiGateway extends DbFunctions
             && !empty($this->groupDetails['rateLimiterSecondsWindow'])
         ) {
             $rateLimitChecked = $this-checkRateLimit(
+                $RateLimiterGroupPrefix = getenv('RateLimiterGroupPrefix'),
                 $RateLimiterMaxRequests = $this->groupDetails['rateLimiterMaxRequests'],
                 $RateLimiterSecondsWindow = $this->groupDetails['rateLimiterSecondsWindow'],
-                $RateLimiterGroupPrefix = getenv('RateLimiterGroupPrefix'),
                 $key = $this->clientDetails['client_id'] . ':' . $this->userDetails['group_id']
             );
         }
@@ -242,9 +242,9 @@ class ApiGateway extends DbFunctions
             && !empty($this->userDetails['rateLimiterSecondsWindow'])
         ) {
             $rateLimitChecked = $this->checkRateLimit(
+                $RateLimiterUserPrefix = getenv('RateLimiterUserPrefix'),
                 $RateLimiterMaxRequests = $this->groupDetails['rateLimiterMaxRequests'],
                 $RateLimiterSecondsWindow = $this->groupDetails['rateLimiterSecondsWindow'],
-                $RateLimiterUserPrefix = getenv('RateLimiterUserPrefix'),
                 $key = $this->clientDetails['client_id'] . ':' . $this->userDetails['group_id'] . ':' . $this->userDetails['user_id']
             );
         }
@@ -252,9 +252,9 @@ class ApiGateway extends DbFunctions
         // Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to users)
         if ($this->cidrChecked === false && $rateLimitChecked === false) {
             $this->checkRateLimit(
+                $RateLimiterIPPrefix = getenv('RateLimiterIPPrefix'),
                 $RateLimiterIPMaxRequests = getenv('RateLimiterIPMaxRequests'),
                 $RateLimiterIPSecondsWindow = getenv('RateLimiterIPSecondsWindow'),
-                $RateLimiterIPPrefix = getenv('RateLimiterIPPrefix'),
                 $key = $this->REMOTE_ADDR
             );
         }
