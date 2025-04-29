@@ -51,9 +51,14 @@ class Api
     public function init()
     {
         $this->c->httpRequest->loadClientDetails();
-        $this->c->httpRequest->loadUserDetails();
-        $this->c->httpRequest->loadGroupDetails();
+
+        if (!$this->c->httpRequest->open) {
+            $this->c->httpRequest->loadUserDetails();
+            $this->c->httpRequest->loadGroupDetails();    
+        }
+
         $this->c->httpRequest->parseRoute();
+        $this->c->httpRequest->setDatabaseCacheKey();
 
         return true;
     }
@@ -75,9 +80,6 @@ class Api
         // Load Payloads
         if (!$this->c->httpRequest->isConfigRequest) {
             $this->c->httpRequest->loadPayload();
-        }
-        if (!is_null($this->c->httpRequest->hashJson)) {
-            return true;
         }
 
         $class = null;

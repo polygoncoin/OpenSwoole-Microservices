@@ -344,11 +344,12 @@ return [
         '<unique-key-for-redis-to-drop-cached-results>(key:1)',
         '<unique-key-for-redis-to-drop-cached-results>(category etc.)',
         ...
-    ]
+    ],
+    "idempotentWindow" => 3 // Idempotent Window for DML operartion (seconds)
 ];
 ```
 
-#### GET method configuration without Hierarchy
+#### GET method configuration without useResultSet
 
 ```PHP
 return [
@@ -400,7 +401,7 @@ return [
 ];
 ```
 
-#### GET method configuration with useHierarchy
+#### GET method configuration with useResultSet
 
 ```PHP
 //return represents root for resultSetData
@@ -465,7 +466,7 @@ return [
 ];
 ```
 
-#### POST/PUT/PATCH/DELETE method configuration without Hierarchy
+#### POST/PUT/PATCH/DELETE method configuration without useHierarchy
 
 ```PHP
 return [
@@ -659,6 +660,8 @@ return [
 ];
 ```
 
+> **Note**: 'useHierarchy' => true also includes 'useResultSet' => true feature.
+
 > If there are repeated modules or configurations; one can reuse them by palcing them in a separate file and including as below.
 
 ```PHP
@@ -737,9 +740,9 @@ maxPerpage=1000
 
 - [http://localhost/Microservices/public\_html/index.php?r=/tableName?page=1](http://localhost/Microservices/public_html/index.php?r=/tableName/1?page=1)
 - [http://localhost/Microservices/public\_html/index.php?r=/tableName?page=1&perpage=25](http://localhost/Microservices/public_html/index.php?r=/tableName/1?page=1&perpage=25)
-- [http://localhost/Microservices/public\_html/index.php?r=/tableName?page=1&perpage=25&orderby={"field1":"ASC","field2":"DESC"}](http://localhost/Microservices/public_html/index.php?r=/tableName/1?page=1&perpage=25&orderby={"field1":"ASC","field2":"DESC"})
+- [http://localhost/Microservices/public\_html/index.php?r=/tableName?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"}](http://localhost/Microservices/public_html/index.php?r=/tableName/1?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"})
 
->One need to urlencode orderby value
+>One need to urlencode orderBy value
 
 ### POST, PUT, PATCH, and DELETE Request
 

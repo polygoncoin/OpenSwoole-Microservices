@@ -3,7 +3,6 @@ namespace Microservices\App;
 
 use Microservices\App\Constants;
 use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\Cron\CronInterface;
 
 /**
@@ -49,7 +48,7 @@ class Cron
     {
         $this->c->httpRequest->init();
 
-        $routeFileLocation = Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'Common' . DIRECTORY_SEPARATOR . 'Cron' . DIRECTORY_SEPARATOR . $this->c->httpRequest->REQUEST_METHOD . 'routes.php';
+        $routeFileLocation = Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'Auth' . DIRECTORY_SEPARATOR . 'Common' . DIRECTORY_SEPARATOR . 'Cron' . DIRECTORY_SEPARATOR . $this->c->httpRequest->REQUEST_METHOD . 'routes.php';
         $this->c->httpRequest->parseRoute($routeFileLocation);
 
         return true;

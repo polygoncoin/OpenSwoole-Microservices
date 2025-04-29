@@ -44,6 +44,7 @@ if (!function_exists('getCurlConfig')) {
         return $curlConfig;
     }
 }
+
 if (!function_exists('trigger')) {
     function trigger(&$strArr, $method, $route, $header = [], $json = '')
     {
@@ -58,7 +59,13 @@ if (!function_exists('trigger')) {
             $strArr[] = "cURL Error #:" . $err;
         } else {
             $response = json_decode($responseJSON, true);
-            if (!empty($response) && isset($response['Status']) && $response['Status'] == 200) {
+            if (
+                !empty($response)
+                && (
+                    (isset($response['Status']) && $response['Status'] == 200)
+                    || (isset($response['Results']['Status']) && $response['Results']['Status'] == 200)
+                )
+            ) {
                 $strArr[] = 'Sucess:'.$route . PHP_EOL . PHP_EOL;
             } else {
                 $strArr[] = 'Failed:'.$route . PHP_EOL;
@@ -69,28 +76,43 @@ if (!function_exists('trigger')) {
         return $response;
     }
 }
-if (!function_exists('process')) {
-    function process()
+
+if (!function_exists('processAuth')) {
+    function processAuth()
     {
         $strArr = [];
         $response = [];
 
-        $response[] = trigger($strArr, 'GET', '/reload', [], '');
+        $response[] = trigger($strArr, 'GET', '/reload', [], $jsonPayload = '');
 
-        $res = trigger($strArr, 'POST', '/login', [], '{"username":"client_1_group_1_user_1", "password":"shames11"}');
+        $res = trigger($strArr, 'POST', '/login', [], $jsonPayload = '{"username":"client_1_group_1_user_1", "password":"shames11"}');
         if ($res) {
             $response[] = $res;
             $token = $res['Results']['Token'];
             $header = ["Authorization: Bearer {$token}"];
 
-            $response[] = trigger($strArr, 'GET', '/routes', $header, '');
-            $response[] = trigger($strArr, 'POST', '/category-1', $header, '[{"name":"ramesh0","subname":"ramesh1","subsubname":"ramesh2"},{"name":"ramesh0","subname":"ramesh1","subsubname":"ramesh2"}]');
-            $response[] = trigger($strArr, 'GET', '/category-1', $header, '');
-            $response[] = trigger($strArr, 'POST', '/category', $header, '[{"name":"ramesh0","sub":{"subname":"ramesh1","subsub":[{"subsubname":"ramesh"},{"subsubname":"ramesh"}]}},{"name":"ramesh1","sub":{"subname":"ramesh1","subsub":{"subsubname":"ramesh"}}}]');
-            $response[] = trigger($strArr, 'GET', '/category&orderby={"id":"DESC"}', $header, '');
-            $response[] = trigger($strArr, 'GET', '/category&orderby={"id":"ASC"}', $header, '');
-            $response[] = trigger($strArr, 'POST', '/category/config', $header, '');
+            $response[] = trigger($strArr, 'GET', '/routes', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'POST', '/category', $header, $jsonPayload = '[{"name":"ramesh0","sub":{"subname":"ramesh1","subsub":[{"subsubname":"ramesh"},{"subsubname":"ramesh"}]}},{"name":"ramesh1","sub":{"subname":"ramesh1","subsub":{"subsubname":"ramesh"}}}]');
+            $response[] = trigger($strArr, 'GET', '/category/1', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'GET', '/category', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'GET', '/category&orderBy={"id":"DESC"}', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'POST', '/category/config', $header, $jsonPayload = '');
         }
+        return '<pre>'.print_r($strArr, true).print_r($response, true);
+    }
+}
+
+if (!function_exists('processOpen')) {
+    function processOpen()
+    {
+        $strArr = [];
+        $response = [];
+        $header = [];
+
+        $response[] = trigger($strArr, 'GET', '/category/1', $header, $jsonPayload = '');
+        $response[] = trigger($strArr, 'GET', '/category', $header, $jsonPayload = '');
+        $response[] = trigger($strArr, 'GET', '/category&orderBy={"id":"DESC"}', $header, $jsonPayload = '');
+
         return '<pre>'.print_r($strArr, true).print_r($response, true);
     }
 }

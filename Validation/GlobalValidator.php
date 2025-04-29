@@ -4,6 +4,7 @@ namespace Microservices\Validation;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\App\Servers\Database\AbstractDatabase;
 use Microservices\Validation\ValidatorInterface;
 use Microservices\Validation\ValidatorTrait;
 
@@ -24,6 +25,13 @@ class GlobalValidator implements ValidatorInterface
     use ValidatorTrait;
 
     /**
+     * Database Object
+     *
+     * @var null|AbstractDatabase
+     */
+    public $db = null;
+
+    /**
      * Microservices Collection of Common Objects
      *
      * @var null|Common
@@ -38,6 +46,7 @@ class GlobalValidator implements ValidatorInterface
     public function __construct(&$common)
     {
         $this->c = &$common;
+        $this->db = &$this->c->httpRequest->db;
     }
 
     /**
@@ -80,9 +89,9 @@ class GlobalValidator implements ValidatorInterface
         extract($args);
         $sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
         $params = [$id];
-        $this->c->httpRequest->db->execDbQuery($sql, $params);
-        $row = $this->c->httpRequest->db->fetch();
-        $this->c->httpRequest->db->closeCursor();
+        $this->db->execDbQuery($sql, $params);
+        $row = $this->db->fetch();
+        $this->db->closeCursor();
         return ($row['count'] === 0) ? false : true;
     }
 
@@ -97,9 +106,9 @@ class GlobalValidator implements ValidatorInterface
         extract($args);
         $sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$column}` = ? AND`{$primary}` = ?";
         $params = [$columnValue, $id];
-        $this->c->httpRequest->db->execDbQuery($sql, $params);
-        $row = $this->c->httpRequest->db->fetch();
-        $this->c->httpRequest->db->closeCursor();
+        $this->db->execDbQuery($sql, $params);
+        $row = $this->db->fetch();
+        $this->db->closeCursor();
         return ($row['count'] === 0) ? false : true;
     }
 }

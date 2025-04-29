@@ -31,7 +31,11 @@ class RouteParser extends DbFunctions
         $Env = __NAMESPACE__ . '\Env';
 
         if (is_null($routeFileLocation)) {
-            $routeFileLocation = Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . $this->session['groupDetails']['name'] . DIRECTORY_SEPARATOR . $this->REQUEST_METHOD . 'routes.php';
+            if ($this->open) {
+                $routeFileLocation = Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'Open' . DIRECTORY_SEPARATOR . $this->REQUEST_METHOD . 'routes.php';
+            } else {
+                $routeFileLocation = Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'Auth' . DIRECTORY_SEPARATOR . $this->session['groupDetails']['name'] . DIRECTORY_SEPARATOR . $this->REQUEST_METHOD . 'routes.php';
+            }
         }
 
         if (file_exists($routeFileLocation)) {

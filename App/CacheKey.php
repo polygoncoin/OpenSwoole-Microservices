@@ -21,6 +21,17 @@ class CacheKey
      * @param string $hostname
      * @return string
      */
+    static public function ClientOpenToWeb(&$hostname)
+    {
+        return "c:otw:{$hostname}";
+    }
+
+    /**
+     * Get Client Key
+     *
+     * @param string $hostname
+     * @return string
+     */
     static public function Client(&$hostname)
     {
         return "c:{$hostname}";

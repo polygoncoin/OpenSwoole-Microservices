@@ -8,6 +8,7 @@ use Microservices\App\Env;
 use Microservices\App\JsonEncode;
 use Microservices\App\HttpStatus;
 use Microservices\App\Validator;
+use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
  * Class to initialize DB Read operation
@@ -24,6 +25,13 @@ use Microservices\App\Validator;
 class Read
 {
     use AppTrait;
+
+    /**
+     * Database Object
+     *
+     * @var null|AbstractDatabase
+     */
+    public $db = null;
 
     /**
      * Microservices Collection of Common Objects
@@ -74,9 +82,14 @@ class Read
 
         // Check for cache
         $tobeCached = false;
-        if (isset($readSqlConfig['cacheKey'])) {
+        if (
+            isset($readSqlConfig['cacheKey'])
+            && !isset($this->c->httpRequest->session['payload']['orderBy'])
+        ) {
             $json = $this->c->httpRequest->getDqlCache($readSqlConfig['cacheKey']);
             if (!is_null($json)) {
+                $cacheHitJson = '"cacheHit": true';
+                $this->c->httpResponse->jsonEncode->appendJson($cacheHitJson);
                 $this->c->httpResponse->jsonEncode->appendJson($json);
                 return true;
             } else {
@@ -93,7 +106,8 @@ class Read
 
         // Set Server mode to execute query on - Read / Write Server
         $fetchFrom = (isset($readSqlConfig['fetchFrom'])) ? $readSqlConfig['fetchFrom'] : 'Slave';
-        $this->c->httpRequest->setDbConnection($fetchFrom);
+        $this->c->httpRequest->db = $this->c->httpRequest->setDbConnection($fetchFrom);
+        $this->db = &$this->c->httpRequest->db;
 
         // Use result set recursively flag
         $useResultSet = $this->getUseHierarchy($readSqlConfig, 'useResultSet');
@@ -179,15 +193,19 @@ class Read
                 // Query will return multiple rows
                 case 'multipleRowFormat':
                     if ($isFirstCall) {
+                        $this->jsonEncode->startObject('Results');
                         if (isset($readSqlConfig['countQuery'])) {
                             $this->fetchRowsCount($readSqlConfig);
                         }
-                        $this->jsonEncode->startArray('Results');
+                        $this->jsonEncode->startArray('Data');
                     } else {
                         $this->jsonEncode->startArray($configKeys[count($configKeys)-1]);
                     }
                     $this->fetchMultipleRows($readSqlConfig, $isFirstCall, $configKeys, $useResultSet);
                     $this->jsonEncode->endArray();
+                    if ($isFirstCall && isset($readSqlConfig['countQuery'])) {
+                        $this->jsonEncode->endObject();
+                    }
                     break;
             }
         }
@@ -210,8 +228,8 @@ class Read
             throw new \Exception($errors, HttpStatus::$InternalServerError);
         }
 
-        $this->c->httpRequest->db->execDbQuery($sql, $sqlParams);
-        if ($row =  $this->c->httpRequest->db->fetch()) {
+        $this->db->execDbQuery($sql, $sqlParams);
+        if ($row =  $this->db->fetch()) {
             //check if selected column-name mismatches or confliects with configured module/submodule names
             if (isset($readSqlConfig['subQuery'])) {
                 $subQueryKeys = array_keys($readSqlConfig['subQuery']);
@@ -227,7 +245,7 @@ class Read
         foreach($row as $key => $value) {
             $this->jsonEncode->addKeyValue($key, $value);
         }
-        $this->c->httpRequest->db->closeCursor();
+        $this->db->closeCursor();
 
         if (isset($readSqlConfig['subQuery'])) {
             $this->callReadDB($readSqlConfig, $configKeys, $row, $useResultSet);
@@ -260,9 +278,9 @@ class Read
             throw new \Exception($errors, HttpStatus::$InternalServerError);
         }
 
-        $this->c->httpRequest->db->execDbQuery($sql, $sqlParams);
-        $row = $this->c->httpRequest->db->fetch();
-        $this->c->httpRequest->db->closeCursor();
+        $this->db->execDbQuery($sql, $sqlParams);
+        $row = $this->db->fetch();
+        $this->db->closeCursor();
 
         $totalRowsCount = $row['count'];
         $totalPages = ceil($totalRowsCount/$this->c->httpRequest->session['payload']['perpage']);
@@ -293,9 +311,9 @@ class Read
         }
 
         if ($isFirstCall) {
-            if (isset($this->c->httpRequest->session['payload']['orderby'])) {
+            if (isset($this->c->httpRequest->session['payload']['orderBy'])) {
                 $orderByStrArr = [];
-                $orderByArr = $this->c->httpRequest->session['payload']['orderby'];
+                $orderByArr = $this->c->httpRequest->session['payload']['orderBy'];
                 foreach ($orderByArr as $k => $v) {
                     $k = str_replace(['`',' '], '', $k);
                     $v = strtoupper($v);
@@ -317,8 +335,8 @@ class Read
 
         $singleColumn = false;
         $pushPop = true;
-        $this->c->httpRequest->db->execDbQuery($sql, $sqlParams, $pushPop);
-        for ($i = 0; $row = $this->c->httpRequest->db->fetch(\PDO::FETCH_ASSOC);) {
+        $this->db->execDbQuery($sql, $sqlParams, $pushPop);
+        for ($i = 0; $row = $this->db->fetch(\PDO::FETCH_ASSOC);) {
             if ($i===0) {
                 if (count($row) === 1) {
                     $singleColumn = true;
@@ -339,7 +357,7 @@ class Read
                 $this->jsonEncode->encode($row);
             }
         }
-        $this->c->httpRequest->db->closeCursor($pushPop);
+        $this->db->closeCursor($pushPop);
     }
 
     /**

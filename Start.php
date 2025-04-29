@@ -49,20 +49,34 @@ $server->on("start", function (Server $server) {
 
 $server->on("request", function (Request $request, Response $response) {
 
-    if ($request->get['r'] === '/test') {
+    if (in_array($request->get['r'], ['/auth-test', '/open-test'])) {
         include __DIR__ . '/Tests.php';
-        $response->end(process());
+        switch ($request->get['r']) {
+            case '/auth-test':
+                $response->end(processAuth());
+                break;        
+            case '/open-test':
+                $response->end(processOpen());
+                break;        
+        }
         return;
     }
 
     // Check version
     if (!isset($request->header['x-api-version']) || $request->header['x-api-version'] !== 'v1.0.0') {
-        throw new \Exception('Bad Request', 400);
+        // Set response headers
+        $response->header('Content-Type', 'application/json; charset=utf-8');
+        $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $response->header('Pragma', 'no-cache');
+
+        $response->end('{"Status": 400, "Message": "Bad Request"}');
+        return;
     }
 
     $httpRequestDetails = [];
 
     // $httpRequestDetails['server']['host'] = 'localhost';
+    // $httpRequestDetails['server']['host'] = 'public.localhost';
     $httpRequestDetails['server']['host'] = 'api.client001.localhost';
     $httpRequestDetails['server']['request_method'] = $request->server['request_method'];
     $httpRequestDetails['server']['remote_addr'] = $request->server['remote_addr'];
@@ -118,10 +132,6 @@ $server->on("request", function (Request $request, Response $response) {
 
         $response->status($e->getCode());
 
-        $response->header('Content-Type', 'application/json; charset=utf-8');
-        $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
-        $response->header('Pragma', 'no-cache');
-
         if ($e->getCode() == 429) {
             $response->header('Retry-After:', $e->getMessage());
             $arr = [
@@ -135,6 +145,7 @@ $server->on("request", function (Request $request, Response $response) {
                 'Message' => $e->getMessage()
             ];
         }
+
         $response->end(json_encode($arr));
         return;
     }

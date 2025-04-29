@@ -302,4 +302,67 @@ class DatabaseDataTypes
     static public $Default = [
         'dataType' => 'string'
     ];
+
+    /**
+     * Return data based on data-type
+     *
+     * @param mixed $data
+     * @param array $dataType
+     * @return mixed
+     * @throws \Exception
+     */
+    static public function validateDataType(&$data, &$dataType)
+    {
+        switch ($dataType['dataType']) {
+            case 'null':
+                $data = null;
+                break;
+            case 'bool':
+                $data = (bool)$data;
+                break;
+            case 'int':
+                $data = (int)$data;
+                break;
+            case 'float':
+                $data = (float)$data;
+                break;
+            case 'string':
+                $data = (string)$data;
+                break;
+            case 'json':
+                $data = (string)json_encode($data);
+                break;
+            default:
+                throw new \Exception('Invalid Data-type:'.$dataType['dataType'], HttpStatus::$InternalServerError);
+        }
+
+        $returnFlag = true;
+        if ($returnFlag && isset($dataType['minValue']) && $dataType['minValue'] <= $data) {
+            $returnFlag = false;
+        }
+        if ($returnFlag && isset($dataType['maxValue']) && $data <= $dataType['maxValue']) {
+            $returnFlag = false;
+        }
+        if ($returnFlag && isset($dataType['minLength']) && $dataType['minLength'] <= strlen($data)) {
+            $returnFlag = false;
+        }
+        if ($returnFlag && isset($dataType['maxLength']) && strlen($data) <= $dataType['maxLength']) {
+            $returnFlag = false;
+        }
+        if ($returnFlag && isset($dataType['enumValues']) && in_array($data, $dataType['enumValues'])) {
+            $returnFlag = false;
+        }
+        if ($returnFlag && isset($dataType['setValues']) && empty(array_diff($data, $dataType['setValues']))) {
+            $returnFlag = false;
+        }
+        if ($returnFlag && isset($dataType['regex']) && preg_match($dataType['regex'], $data) === 0) {
+            $returnFlag = false;
+        }
+
+        if (!$returnFlag) {
+            throw new \Exception('Invalid data based on Data-type details', HttpStatus::$BadRequest);
+        }
+
+        return $data;
+    }
 }

@@ -4,6 +4,7 @@ CREATE TABLE `m001_master_clients` (
   `client_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `api_domain` varchar(255) DEFAULT NULL,
+  `open_api_domain` varchar(255) DEFAULT NULL,
   `master_db_server_type` varchar(255) NOT NULL,
   `master_db_hostname` varchar(255) NOT NULL,
   `master_db_port` varchar(255) NOT NULL,
@@ -68,7 +69,7 @@ CREATE TABLE `m002_master_groups` (
 LOCK TABLES `m001_master_clients` WRITE;
 /*!40000 ALTER TABLE `m001_master_clients` DISABLE KEYS */;
 INSERT INTO `m001_master_clients` VALUES
-(1,'Client 001','localhost','dbTypeClient001','dbHostnameClient001','dbPortClient001','dbUsernameClient001','dbPasswordClient001','dbDatabaseClient001','dbTypeClient001','dbHostnameClient001','dbPortClient001','dbUsernameClient001','dbPasswordClient001','dbDatabaseClient001','dmlCacheType','dmlCacheHostname','dmlCachePort','dmlCacheUsername','dmlCachePassword','dmlCacheDatabase','dqlCacheType','dqlCacheHostname','dqlCachePort','dqlCacheUsername','dqlCachePassword','dqlCacheDatabase',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','No','No');
+(1,'Client 001','localhost','public.localhost','dbTypeClient001','dbHostnameClient001','dbPortClient001','dbUsernameClient001','dbPasswordClient001','dbDatabaseClient001','dbTypeClient001','dbHostnameClient001','dbPortClient001','dbUsernameClient001','dbPasswordClient001','dbDatabaseClient001','cacheType','cacheHostname','cachePort','cacheUsername','cachePassword','cacheDatabase','cacheType','cacheHostname','cachePort','cacheUsername','cachePassword','cacheDatabase',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','No','No');
 /*!40000 ALTER TABLE `m001_master_clients` ENABLE KEYS */;
 UNLOCK TABLES;
 

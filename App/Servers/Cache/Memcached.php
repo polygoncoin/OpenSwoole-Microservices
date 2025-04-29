@@ -74,6 +74,7 @@ class Memcached extends AbstractCache
         if (!extension_loaded('memcached')) {
             throw new \Exception("Unable to find Memcached extension", HttpStatus::$InternalServerError);
         }
+
         try {
             $this->cache = new \Memcached();
             $this->cache->addServer($this->hostname, $this->port);

@@ -6,6 +6,7 @@ use Microservices\App\CacheKey;
 use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
+use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
  * Login
@@ -21,6 +22,13 @@ use Microservices\App\HttpStatus;
  */
 class Login
 {
+    /**
+     * Database Object
+     *
+     * @var null|AbstractDatabase
+     */
+    public $db = null;
+
     /**
      * Username for login
      *
@@ -69,7 +77,7 @@ class Login
     private $clientUserKey = null;
     private $tokenKey = null;
     private $userTokenKey = null;
-    private $cidr_key = null;
+    private $cidrKey = null;
 
     /**
      * Constructor
@@ -122,8 +130,7 @@ class Login
             throw new \Exception('Invalid request method', HttpStatus::$NotFound);
         }
 
-        $this->c->httpRequest->jsonDecode->validate();
-        $this->c->httpRequest->jsonDecode->indexJSON();
+        $this->c->httpRequest->loadPayload();
         $this->payload = $this->c->httpRequest->jsonDecode->get();
 
         // Check for required conditions variables
@@ -166,9 +173,9 @@ class Login
     private function validateRequestIp()
     {
         // Redis - one can find the userID from username
-        $this->cidr_key = CacheKey::CIDR($this->userDetails['group_id']);
-        if ($this->c->httpRequest->cache->cacheExists($this->cidr_key)) {
-            $cidrs = json_decode($this->c->httpRequest->cache->getCache($this->cidr_key), true);
+        $this->cidrKey = CacheKey::CIDR($this->userDetails['group_id']);
+        if ($this->c->httpRequest->cache->cacheExists($this->cidrKey)) {
+            $cidrs = json_decode($this->c->httpRequest->cache->getCache($this->cidrKey), true);
             $ipNumber = ip2long($this->c->httpRequest->REMOTE_ADDR);
             $isValidIp = false;
             foreach ($cidrs as $cidr) {
@@ -265,10 +272,11 @@ class Login
      */
     private function updateDB(&$tokenDetails)
     {
-        $this->c->httpRequest->setConnection('Master');
+        $this->c->httpRequest->setDbConnection('Master');
+        $this->db = &$this->c->httpRequest->db;
 
         $userTable = Env::$client_users;
-        $this->c->httpRequest->db->execDbQuery("
+        $this->db->execDbQuery("
         UPDATE
             `{$userTable}`
         SET

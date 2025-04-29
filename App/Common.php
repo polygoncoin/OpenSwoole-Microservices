@@ -1,9 +1,6 @@
 <?php
 namespace Microservices\App;
 
-use Microservices\App\Constants;
-use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\App\HttpRequest;
 use Microservices\App\HttpResponse;
 

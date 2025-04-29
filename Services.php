@@ -1,12 +1,10 @@
 <?php
 namespace Microservices;
 
-use Microservices\App\ApiGateway;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
-use Microservices\App\Logs;
 
 /**
  * Microservices Class
@@ -51,11 +49,6 @@ class Services
     public $c = null;
 
     /**
-     * @var null|ApiGateway
-     */
-    private $apiGateway = null;
-
-    /**
      * Constructor
      *
      * @param array $httpRequestDetails
@@ -75,8 +68,6 @@ class Services
     {
         Constants::init();
         Env::init();
-
-        $this->apiGateway = new ApiGateway($this->httpRequestDetails);
 
         $this->c = new Common($this->httpRequestDetails);
         $this->c->init();
@@ -151,11 +142,10 @@ class Services
 
             // Requires auth token
             default:
-                $this->apiGateway->init();
+                $this->c->httpRequest->initGateway();
                 $class = __NAMESPACE__ . '\\App\\Api';
                 break;
         }
-        $this->apiGateway = null;
 
         // Class found
         try {
@@ -222,16 +212,7 @@ class Services
      */
     public function outputResults()
     {
-        if (!is_null($this->c->httpRequest->hashJson)) {
-            $json = $this->c->httpRequest->hashJson;
-        } else {
-            $json = $this->c->httpResponse->jsonEncode->streamJson();
-            if (!is_null($this->c->httpRequest->hashKey)) {
-                $this->c->httpRequest->cache->setCache($this->c->httpRequest->hashKey, $json, getenv('IdempotentWindow'));
-            }
-        }
-
-        return $json;
+        return $this->c->httpResponse->jsonEncode->streamJson();
     }
 
     /**

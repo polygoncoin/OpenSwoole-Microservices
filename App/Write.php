@@ -7,6 +7,7 @@ use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\Validator;
+use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
  * Class to initialize DB Write operation
@@ -23,6 +24,20 @@ use Microservices\App\Validator;
 class Write
 {
     use AppTrait;
+
+    /**
+     * Database Object
+     *
+     * @var null|AbstractDatabase
+     */
+    public $db = null;
+
+    /**
+     * Idempotent Window (Default 0 - Disabled)
+     *
+     * @var integer
+     */
+    private $idempotentWindow = 0;
 
     /**
      * Microservices Collection of Common Objects
@@ -64,8 +79,18 @@ class Write
         // Load Queries
         $writeSqlConfig = include $this->c->httpRequest->__file__;
 
+        // Check for Idempotent Window
+        if (
+            isset($writeSqlConfig['idempotentWindow'])
+            && is_numeric($writeSqlConfig['idempotentWindow'])
+            && $writeSqlConfig['idempotentWindow'] > 0
+        ) {
+            $this->idempotentWindow = (int)$writeSqlConfig['idempotentWindow'];
+        }
+
         // Set Server mode to execute query on - Read / Write Server
-        $this->c->httpRequest->setDbConnection('Master');
+        $this->c->httpRequest->db = $this->c->httpRequest->setDbConnection('Master');
+        $this->db = &$this->c->httpRequest->db;
 
         // Use results in where clause of sub queries recursively
         $useHierarchy = $this->getUseHierarchy($writeSqlConfig, 'useHierarchy');
@@ -139,24 +164,50 @@ class Write
                 $_payloadIndexes[] = "{$i}";
             }
 
-            // Begin DML operation
-            $this->c->httpRequest->db->begin();
-            $response = [];
-            $this->writeDB($writeSqlConfig, $_payloadIndexes, $_configKeys, $useHierarchy, $response, $this->c->httpRequest->session['requiredArr']);
-            if ($this->c->httpRequest->db->beganTransaction === true) {
-                $this->c->httpRequest->db->commit();
-                $arr = [
-                    'Status' => HttpStatus::$Created,
-                    'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray(implode(':', $_payloadIndexes)),
-                    'Response' => &$response
+            $hashJson = null;
+            if ($this->idempotentWindow) {
+                $payloadSignature = [
+                    'IdempotentSecret' => getenv('IdempotentSecret'),
+                    'idempotentWindow' => $this->idempotentWindow,
+                    'httpMethod' => $this->REQUEST_METHOD,
+                    '$_GET' => $this->httpRequestDetails['get'],
+                    'clientId' => $this->c->httpRequest->clientId,
+                    'groupId' => $this->c->httpRequest->groupId,
+                    'userId' => $this->c->httpRequest->userId,
+                    'payload' => $this->c->httpRequest->jsonDecode->get(implode(':', $_payloadIndexes))
                 ];
+                $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
+                $hashKey = md5($hash);
+                if ($this->cache->cacheExists($hashKey)) {
+                    $hashJson = str_replace('JSON', $this->cache->getCache($hashKey), '{"Idempotent": JSON, "Status": 200}');
+                }
+            }
+
+            if (is_null($hashJson)) {
+                // Begin DML operation
+                $this->db->begin();
+                $response = [];
+                $this->writeDB($writeSqlConfig, $_payloadIndexes, $_configKeys, $useHierarchy, $response, $this->c->httpRequest->session['requiredArr']);
+                if ($this->db->beganTransaction === true) {
+                    $this->db->commit();
+                    $arr = [
+                        'Status' => HttpStatus::$Created,
+                        'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray(implode(':', $_payloadIndexes)),
+                        'Response' => &$response
+                    ];
+                    if ($this->idempotentWindow) {
+                        $this->c->httpRequest->cache->setCache($hashKey, json_encode($arr), $this->idempotentWindow);
+                    }
+                } else {
+                    $this->c->httpResponse->httpStatus = HttpStatus::$BadRequest;
+                    $arr = [
+                        'Status' => HttpStatus::$BadRequest,
+                        'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray(implode(':', $_payloadIndexes)),
+                        'Error' => &$response
+                    ];
+                }
             } else {
-                $this->c->httpResponse->httpStatus = HttpStatus::$BadRequest;
-                $arr = [
-                    'Status' => HttpStatus::$BadRequest,
-                    'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray(implode(':', $_payloadIndexes)),
-                    'Error' => &$response
-                ];
+                $arr = json_decode($hashJson, true);
             }
             $this->c->httpResponse->jsonEncode->encode($arr);
         }
@@ -189,7 +240,7 @@ class Write
         $counter = 0;
         for ($i=0; $i < $i_count; $i++) {
             $_payloadIndexes = $payloadIndexes;
-            if (!$this->c->httpRequest->db->beganTransaction) {
+            if (!$this->db->beganTransaction) {
                 $response['Error'] = 'Transaction rolled back';
                 return;
             }
@@ -225,13 +276,13 @@ class Write
             list($sql, $sqlParams, $errors) = $this->getSqlAndParams($writeSqlConfig);
             if (!empty($errors)) {
                 $response['Error'] = $errors;
-                $this->c->httpRequest->db->rollback();
+                $this->db->rollback();
                 return;
             }
 
             // Execute Query
-            $this->c->httpRequest->db->execDbQuery($sql, $sqlParams);
-            if (!$this->c->httpRequest->db->beganTransaction) {
+            $this->db->execDbQuery($sql, $sqlParams);
+            if (!$this->db->beganTransaction) {
                 $response['Error'] = 'Something went wrong';
                 return;
             }
@@ -239,7 +290,7 @@ class Write
                 $response[$counter] = [];
             }
             if (isset($writeSqlConfig['insertId'])) {
-                $insertId = $this->c->httpRequest->db->lastInsertId();
+                $insertId = $this->db->lastInsertId();
                 if ($isAssoc) {
                     $response[$writeSqlConfig['insertId']] = $insertId;
                 } else {
@@ -247,14 +298,14 @@ class Write
                 }
                 $this->c->httpRequest->session['insertIdParams'][$writeSqlConfig['insertId']] = $insertId;
             } else {
-                $affectedRows = $this->c->httpRequest->db->affectedRows();
+                $affectedRows = $this->db->affectedRows();
                 if ($isAssoc) {
                     $response['affectedRows'] = $affectedRows;
                 } else {
                     $response[$counter]['affectedRows'] = $affectedRows;
                 }
             }
-            $this->c->httpRequest->db->closeCursor();
+            $this->db->closeCursor();
 
             // subQuery for payload
             if (isset($writeSqlConfig['subQuery'])) {

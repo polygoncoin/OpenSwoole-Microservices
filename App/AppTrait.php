@@ -55,23 +55,23 @@ trait AppTrait
             if (isset($sqlConfig[$options])) {
                 foreach ($sqlConfig[$options] as $config) {
                     $require = false;
-                    $dataTypeDetails = DatabaseDataTypes::$Default;
+                    $dataType = DatabaseDataTypes::$Default;
                     $count = count($config);
                     switch ($count) {
                         case 4:
-                            list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails, $require) = $config;
+                            list($dataPaylaodType, $dataPaylaodTypeKey, $dataType, $require) = $config;
                             break;
                         case 3:
-                            list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails) = $config;
+                            list($dataPaylaodType, $dataPaylaodTypeKey, $dataType) = $config;
                             break;
                         case 2:
                             list($dataPaylaodType, $dataPaylaodTypeKey) = $config;
                             break;
                     }
                     if (!isset($requiredFields[$dataPaylaodType][$dataPaylaodTypeKey])) {
-                        $dataTypeDetails['dataKey'] = $dataPaylaodTypeKey;
-                        $dataTypeDetails['require'] = $require;
-                        $requiredFields[$dataPaylaodType][$dataPaylaodTypeKey] = $dataTypeDetails;
+                        $dataType['dataKey'] = $dataPaylaodTypeKey;
+                        $dataType['require'] = $require;
+                        $requiredFields[$dataPaylaodType][$dataPaylaodTypeKey] = $dataType;
                     }
                 }
             }
@@ -242,7 +242,7 @@ trait AppTrait
                 $sqlParams[$var] = $value;
                 continue;
             } else if (isset($this->c->httpRequest->session[$dataPaylaodType][$dataPaylaodTypeKey])) {
-                $sqlParams[$var] = $this->getDataBasedOnDataType(
+                $sqlParams[$var] = DatabaseDataTypes::validateDataType(
                     $this->c->httpRequest->session[$dataPaylaodType][$dataPaylaodTypeKey],
                     $this->c->httpRequest->session['required'][$dataPaylaodType][$dataPaylaodTypeKey]
                 );
@@ -315,14 +315,14 @@ trait AppTrait
 
             foreach ($sqlConfig['__CONFIG__'] as $config) {
                 $require = false;
-                $dataTypeDetails = DatabaseDataTypes::$Default;
+                $dataType = DatabaseDataTypes::$Default;
                 $count = count($config);
                 switch ($count) {
                     case 4:
-                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails, $require) = $config;
+                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataType, $require) = $config;
                         break;
                     case 3:
-                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails) = $config;
+                        list($dataPaylaodType, $dataPaylaodTypeKey, $dataType) = $config;
                         break;
                     case 2:
                         list($dataPaylaodType, $dataPaylaodTypeKey) = $config;
@@ -332,8 +332,8 @@ trait AppTrait
                 if (isset($result[$dataPaylaodTypeKey]) && $result[$dataPaylaodTypeKey]['dataMode'] === 'Required') {
                     continue;
                 }
-                $dataTypeDetails['dataMode'] = $require ? 'Required' : 'Optional';
-                $result[$dataPaylaodTypeKey] = $dataTypeDetails;
+                $dataType['dataMode'] = $require ? 'Required' : 'Optional';
+                $result[$dataPaylaodTypeKey] = $dataType;
             }
         }
 
@@ -341,14 +341,14 @@ trait AppTrait
             if (isset($sqlConfig[$options])) {
                 foreach ($sqlConfig[$options] as $config) {
                     $require = false;
-                    $dataTypeDetails = DatabaseDataTypes::$Default;
+                    $dataType = DatabaseDataTypes::$Default;
                     $count = count($config);
                     switch ($count) {
                         case 4:
-                            list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails, $require) = $config;
+                            list($dataPaylaodType, $dataPaylaodTypeKey, $dataType, $require) = $config;
                             break;
                         case 3:
-                            list($dataPaylaodType, $dataPaylaodTypeKey, $dataTypeDetails) = $config;
+                            list($dataPaylaodType, $dataPaylaodTypeKey, $dataType) = $config;
                             break;
                         case 2:
                             list($dataPaylaodType, $dataPaylaodTypeKey) = $config;
@@ -358,8 +358,8 @@ trait AppTrait
                     if (isset($result[$dataPaylaodTypeKey]) && $result[$dataPaylaodTypeKey]['dataMode'] === 'Required') {
                         continue;
                     }
-                    $dataTypeDetails['dataMode'] = $require ? 'Required' : 'Optional';
-                    $result[$dataPaylaodTypeKey] = $dataTypeDetails;
+                    $dataType['dataMode'] = $require ? 'Required' : 'Optional';
+                    $result[$dataPaylaodTypeKey] = $dataType;
                 }
             }
         }
@@ -400,69 +400,6 @@ trait AppTrait
         }
 
         return $result;
-    }
-
-    /**
-     * Return data based on data-type
-     *
-     * @param string|array $data
-     * @param string       $dataTypeDetails
-     * @return mixed
-     * @throws \Exception
-     */
-    private function getDataBasedOnDataType($data, $dataTypeDetails)
-    {
-        switch ($dataTypeDetails['dataType']) {
-            case 'null':
-                $data = null;
-                break;
-            case 'bool':
-                $data = (bool)$data;
-                break;
-            case 'int':
-                $data = (int)$data;
-                break;
-            case 'float':
-                $data = (float)$data;
-                break;
-            case 'string':
-                $data = (string)$data;
-                break;
-            case 'json':
-                $data = (string)json_encode($data);
-                break;
-            default:
-                throw new \Exception('Invalid Data-type:'.$dataTypeDetails['dataType'], HttpStatus::$InternalServerError);
-        }
-
-        $returnFlag = true;
-        if ($returnFlag && isset($dataTypeDetails['minValue']) && $dataTypeDetails['minValue'] <= $data) {
-            $returnFlag = false;
-        }
-        if ($returnFlag && isset($dataTypeDetails['maxValue']) && $data <= $dataTypeDetails['maxValue']) {
-            $returnFlag = false;
-        }
-        if ($returnFlag && isset($dataTypeDetails['minLength']) && $dataTypeDetails['minLength'] <= strlen($data)) {
-            $returnFlag = false;
-        }
-        if ($returnFlag && isset($dataTypeDetails['maxLength']) && strlen($data) <= $dataTypeDetails['maxLength']) {
-            $returnFlag = false;
-        }
-        if ($returnFlag && isset($dataTypeDetails['enumValues']) && in_array($data, $dataTypeDetails['enumValues'])) {
-            $returnFlag = false;
-        }
-        if ($returnFlag && isset($dataTypeDetails['setValues']) && empty(array_diff($data, $dataTypeDetails['setValues']))) {
-            $returnFlag = false;
-        }
-        if ($returnFlag && isset($dataTypeDetails['regex']) && preg_match($dataTypeDetails['regex'], $data) === 0) {
-            $returnFlag = false;
-        }
-
-        if (!$returnFlag) {
-            throw new \Exception('Invalid data based on Data-type details', HttpStatus::$BadRequest);
-        }
-
-        return $data;
     }
 
     /**

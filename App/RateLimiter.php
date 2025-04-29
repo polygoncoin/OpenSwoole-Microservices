@@ -67,26 +67,26 @@ class RateLimiter
         $maxRequests = (int)$maxRequests;
         $secondsWindow = (int)$secondsWindow;
 
+        $remainder = $this->currentTimestamp % $secondsWindow;
+        $remainder = $remainder !== 0 ? $remainder : $secondsWindow;
+
         $key = $prefix . $key;
 
-        $windowStart = $this->currentTimestamp - $secondsWindow;
-
-        $this->redis->multi();
-        $this->redis->zRemRangeByScore($key, 0, $windowStart);
-        $this->redis->zAdd($key, $this->currentTimestamp, (string)microtime(true));
-        $this->redis->zCard($key);
-        $this->redis->expire($key, $secondsWindow);
-
-        $results = $this->redis->exec();
-
-        if ($results === false) {
-            throw new \Exception('Rate Limit transaction failed');
+        if ($this->redis->exists($key)) {
+            $requestCount = (int)$this->redis->get($key);
+        } else {
+            $requestCount = 0;
+            $this->redis->set($key, $requestCount, $remainder);
         }
+        $requestCount++;
 
-        $requestCount = $results[2];
         $allowed = $requestCount <= $maxRequests;
         $remaining = max(0, $maxRequests - $requestCount);
-        $resetAt = $this->currentTimestamp + $secondsWindow;
+        $resetAt = $this->currentTimestamp + $remainder;
+
+        if ($allowed) {
+            $this->redis->incr($key);
+        }
 
         return [
             'allowed' => $allowed,

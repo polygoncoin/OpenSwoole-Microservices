@@ -3,12 +3,11 @@ namespace Microservices\App;
 
 use Microservices\App\Constants;
 use Microservices\App\CacheKey;
-use Microservices\App\Common;
-use Microservices\App\Env;
-use Microservices\App\HttpResponse;
+use Microservices\App\Gateway;
 use Microservices\App\HttpStatus;
 use Microservices\App\JsonDecode;
-use Microservices\App\RouteParser;
+use Microservices\App\Servers\Cache\AbstractCache;
+use Microservices\App\Servers\Database\AbstractDatabase;
 
 /*
  * Class handling details of HTTP request
@@ -22,7 +21,7 @@ use Microservices\App\RouteParser;
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-class HttpRequest extends RouteParser
+class HttpRequest extends Gateway
 {
     /**
      * Raw route / Configured Uri
@@ -68,30 +67,24 @@ class HttpRequest extends RouteParser
     /** @var null|integer */
     public $userId = null;
 
-    /** @var null|string */
-    public $hashKey = null;
-
-    /** @var null|string */
-    public $hashJson = null;
-
     /**
-     * Json Decode Object
+     * Caching Object
      *
-     * @var null|Cache
+     * @var null|AbstractCache
      */
     public $cache = null;
 
     /**
      * Sql Data caching Object
      *
-     * @var null|Cache
+     * @var null|AbstractCache
      */
     public $sqlCache = null;
 
     /**
-     * Json Decode Object
+     * Database Object
      *
-     * @var null|Database
+     * @var null|AbstractDatabase
      */
     public $db = null;
 
@@ -110,6 +103,13 @@ class HttpRequest extends RouteParser
     public $httpRequestDetails = null;
 
     /**
+     * Open To World Request
+     *
+     * @var null|boolean
+     */
+    public $open = null;
+
+    /**
      * Details var from $httpRequestDetails
      */
     public $HOST = null;
@@ -124,12 +124,34 @@ class HttpRequest extends RouteParser
     public $tokenKey = null;
     public $clientKey = null;
     public $groupKey = null;
-    public $cidr_key = null;
+    public $cidrKey = null;
+    public $cidrChecked = false;
+
+    /**
+     * Client Info
+     *
+     * @var null|array
+     */
+    public $clientDetails = null;
+
+    /**
+     * Group Info
+     *
+     * @var null|array
+     */
+    public $groupDetails = null;
+
+    /**
+     * User Info
+     *
+     * @var null|array
+     */
+    public $userDetails = null;
 
     /**
      * Payload stream
      */
-    private $payloadStream = null;
+    public $payloadStream = null;
 
     /**
      * Constructor
@@ -139,39 +161,33 @@ class HttpRequest extends RouteParser
     public function __construct(&$httpRequestDetails)
     {
         $this->httpRequestDetails = &$httpRequestDetails;
+
+        $this->HOST = $this->httpRequestDetails['server']['host'];
+        $this->REQUEST_METHOD = $this->httpRequestDetails['server']['request_method'];
+        $this->REMOTE_ADDR = $this->httpRequestDetails['server']['remote_addr'];
+        $this->ROUTE = '/' . trim($this->httpRequestDetails['get'][Constants::$ROUTE_URL_PARAM], '/');
+
+        if (
+            isset($this->httpRequestDetails['header'])
+            && isset($this->httpRequestDetails['header']['authorization'])
+        ) {
+            $this->HTTP_AUTHORIZATION = $this->httpRequestDetails['header']['authorization'];
+            $this->open = false;
+        } elseif ($this->ROUTE === '/login') {
+            $this->open = false;
+        } else {
+            $this->open = true;
+        }
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return void
      */
     public function init()
     {
-        $this->HOST = $this->httpRequestDetails['server']['host'];
-        $this->REQUEST_METHOD = $this->httpRequestDetails['server']['request_method'];
-        if (isset($this->httpRequestDetails['header']['authorization'])) {
-            $this->HTTP_AUTHORIZATION = $this->httpRequestDetails['header']['authorization'];
-        }
-        $this->REMOTE_ADDR = $this->httpRequestDetails['server']['remote_addr'];
-        $this->ROUTE = '/' . trim($this->httpRequestDetails['get'][Constants::$ROUTE_URL_PARAM], '/');
-
-        if (isset($this->httpRequestDetails['post']['Payload'])) {
-            $this->payloadStream = fopen("php://memory", "rw+b");
-            fwrite($this->payloadStream, $this->httpRequestDetails['post']['Payload']);
-            $this->jsonDecode = new JsonDecode($this->payloadStream);
-            $this->jsonDecode->init();
-        }
-
-        $this->cache = $this->setCache(
-            getenv('cacheType'),
-            getenv('cacheHostname'),
-            getenv('cachePort'),
-            getenv('cacheUsername'),
-            getenv('cachePassword'),
-            getenv('cacheDatabase')
-        );
-
+        return true;
     }
 
     /**
@@ -182,13 +198,23 @@ class HttpRequest extends RouteParser
      */
     public function loadClientDetails()
     {
-        $this->clientKey = CacheKey::Client($this->HOST);
+        if (!is_null($this->clientDetails)) return;
+
+        $this->loadCache();
+
+        if ($this->open) {
+            $this->clientKey = CacheKey::ClientOpenToWeb($this->HOST);
+        } else {
+            $this->clientKey = CacheKey::Client($this->HOST);
+        }
         if (!$this->cache->cacheExists($this->clientKey)) {
             throw new \Exception("Invalid Host '{$this->HOST}'", HttpStatus::$InternalServerError);
         }
 
-        $this->session['clientDetails'] = json_decode($this->cache->getCache($this->clientKey), true);
-        $this->clientId = $this->session['clientDetails']['client_id'];
+        $this->clientDetails = json_decode($this->cache->getCache($this->clientKey), true);
+        $this->clientId = $this->clientDetails['client_id'];
+
+        $this->session['clientDetails'] = &$this->clientDetails;
     }
 
     /**
@@ -199,17 +225,25 @@ class HttpRequest extends RouteParser
      */
     public function loadUserDetails()
     {
-        if (preg_match('/Bearer\s(\S+)/', $this->HTTP_AUTHORIZATION, $matches)) {
+        if (!is_null($this->userDetails)) return;
+
+        $this->loadCache();
+
+        if (
+            !$this->open
+            && !is_null($this->HTTP_AUTHORIZATION)
+            && preg_match('/Bearer\s(\S+)/', $this->HTTP_AUTHORIZATION, $matches)
+        ) {
             $this->session['token'] = $matches[1];
             $this->tokenKey = CacheKey::Token($this->session['token']);
             if (!$this->cache->cacheExists($this->tokenKey)) {
                 throw new \Exception('Token expired', HttpStatus::$BadRequest);
             }
-            $this->session['userDetails'] = json_decode($this->cache->getCache($this->tokenKey), true);
-            $this->groupId = $this->session['userDetails']['group_id'];
-            $this->userId = $this->session['userDetails']['user_id'];
+            $this->userDetails = json_decode($this->cache->getCache($this->tokenKey), true);
+            $this->groupId = $this->userDetails['group_id'];
+            $this->userId = $this->userDetails['user_id'];
 
-            $this->setDatabaseCacheKey();
+            $this->session['userDetails'] = &$this->userDetails;
         }
         if (empty($this->session['token'])) {
             throw new \Exception('Token missing', HttpStatus::$BadRequest);
@@ -224,17 +258,23 @@ class HttpRequest extends RouteParser
      */
     public function loadGroupDetails()
     {
+        if (!is_null($this->groupDetails)) return;
+
+        $this->loadCache();
+
         // Load groupDetails
-        if (empty($this->session['userDetails']['user_id']) || empty($this->session['userDetails']['group_id'])) {
+        if (empty($this->userDetails['user_id']) || empty($this->userDetails['group_id'])) {
             throw new \Exception('Invalid session', HttpStatus::$InternalServerError);
         }
 
-        $this->groupKey = CacheKey::Group($this->session['userDetails']['group_id']);
+        $this->groupKey = CacheKey::Group($this->userDetails['group_id']);
         if (!$this->cache->cacheExists($this->groupKey)) {
             throw new \Exception("Cache '{$this->groupKey}' missing", HttpStatus::$InternalServerError);
         }
 
-        $this->session['groupDetails'] = json_decode($this->cache->getCache($this->groupKey), true);
+        $this->groupDetails = json_decode($this->cache->getCache($this->groupKey), true);
+
+        $this->session['groupDetails'] = &$this->groupDetails;
     }
 
     /**
@@ -244,43 +284,30 @@ class HttpRequest extends RouteParser
      */
     public function loadPayload()
     {
+        if (isset($this->session['payloadType'])) return;
+
         if ($this->REQUEST_METHOD === Constants::$GET) {
             $this->urlDecode($this->httpRequestDetails['get']);
             $this->session['payloadType'] = 'Object';
             $this->session['payload'] = !empty($this->httpRequestDetails['get']) ? $this->httpRequestDetails['get'] : [];
         } else {
-            $payloadSignature = [
-                'IdempotentSecret' => getenv('IdempotentSecret'),
-                'IdempotentWindow' => getenv('IdempotentWindow'),
-                'httpMethod' => $this->REQUEST_METHOD,
-                '$_GET' => $this->httpRequestDetails['get'],
-                'clientId' => $this->clientId,
-                'groupId' => $this->groupId,
-                'userId' => $this->userId,
-                'payload' => $this->httpRequestDetails['post']
-            ];
+            // $this->payloadStream = fopen('php://input', 'rb');
+            $this->payloadStream = fopen("php://memory", "rw+b");
+            fwrite($this->payloadStream, $this->httpRequestDetails['post']['Payload']);
+            
+            $this->jsonDecode = new JsonDecode($this->payloadStream);
+            $this->jsonDecode->init();
 
-            $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
-            $this->hashKey = md5($hash);
-            if ($this->cache->cacheExists($this->hashKey)) {
-                $this->hashJson = str_replace(
-                    'JSON',
-                    $this->cache->getCache($this->hashKey),
-                    '{"Idempotent": JSON, "Status": 200}'
-                );
-            } else {
-                // Load Payload
-                rewind($this->payloadStream);
-                $this->jsonDecode->indexJSON();
-                $this->session['payloadType'] = $this->jsonDecode->jsonType();
-            }
+            rewind($this->payloadStream);
+            $this->jsonDecode->indexJSON();
+            $this->session['payloadType'] = $this->jsonDecode->jsonType();
         }
     }
 
     /**
      * Function to find payload is an object/array
      *
-     * @param array $arr Array vales to be decoded. Basically $this->httpRequestDetails['get']($_GET)
+     * @param array $arr Array vales to be decoded. Basically $_GET
      * @return void
      */
     public function urlDecode(&$arr)
@@ -308,5 +335,21 @@ class HttpRequest extends RouteParser
                 $arr = $decodedVal;
             }
         }
+    }
+
+    private function loadCache()
+    {
+        if (!is_null($this->cache)) {
+            return;
+        }
+
+        $this->cache = $this->connectCache(
+            getenv('cacheType'),
+            getenv('cacheHostname'),
+            getenv('cachePort'),
+            getenv('cacheUsername'),
+            getenv('cachePassword'),
+            getenv('cacheDatabase')
+        );
     }
 }

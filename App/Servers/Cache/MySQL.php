@@ -1,9 +1,6 @@
 <?php
 namespace Microservices\App\Servers\Cache;
 
-use Microservices\App\Constants;
-use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\Servers\Cache\AbstractCache;
 use Microservices\App\Servers\Database\MySql as DB_MySql;
