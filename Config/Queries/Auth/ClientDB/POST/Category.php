@@ -16,7 +16,7 @@ return [
             'query' => "INSERT INTO `category` SET __SET__",
             '__SET__' => [
                 'name' => ['payload', 'subname'],
-                'parent_id' => ['insertIdParams', 'category:id'],
+                'parent_id' => ['insertId', 'category:id'],
             ],
             'insertId' => 'sub:id',
             'subQuery' => [
@@ -24,8 +24,8 @@ return [
                     'query' => "INSERT INTO `category` SET __SET__",
                     '__SET__' => [
                         'name' => ['payload', 'subsubname'],
-                        // 'name' => ['useResultSet', 'return:sub:subname'],
-                        'parent_id' => ['insertIdParams', 'sub:id'],
+                        // 'name' => ['sqlInputs', 'return:sub:name'],
+                        'parent_id' => ['insertId', 'sub:id'],
                     ],
                     'insertId' => 'subsub:id',
                 ]

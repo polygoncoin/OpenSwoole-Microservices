@@ -79,11 +79,13 @@ class Validator
         $errors = [];
         $session = &$this->c->httpRequest->session;
         // Required fields payload validation
-        foreach ($session['required']['payload'] as $column => &$arr) {
-            if ($arr['require'] && !isset($session['payload'][$column])) {
-                $errors[] = 'Missing required payload: '.$column;
-                $isValidData = false;
-            }
+        if (!empty($session['required']['payload'])) {
+            foreach ($session['required']['payload'] as $column => &$arr) {
+                if ($arr['require'] && !isset($session['payload'][$column])) {
+                    $errors[] = 'Missing required payload: '.$column;
+                    $isValidData = false;
+                }
+            }    
         }
 
         return [$isValidData, $errors];

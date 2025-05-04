@@ -76,8 +76,7 @@ $server->on("request", function (Request $request, Response $response) {
     $httpRequestDetails = [];
 
     // $httpRequestDetails['server']['host'] = 'localhost';
-    // $httpRequestDetails['server']['host'] = 'public.localhost';
-    $httpRequestDetails['server']['host'] = 'api.client001.localhost';
+    $httpRequestDetails['server']['host'] = 'public.localhost';
     $httpRequestDetails['server']['request_method'] = $request->server['request_method'];
     $httpRequestDetails['server']['remote_addr'] = $request->server['remote_addr'];
     if (isset($request->header['authorization'])) {
@@ -156,7 +155,7 @@ $server->on("request", function (Request $request, Response $response) {
  */
 $server->set([
     // HTTP Server max execution time, since v4.8.0
-    'max_request_execution_time' => 10, // 10s
+    // 'max_request_execution_time' => 10, // 10s
 
     // Compression
     'http_compression' => true,

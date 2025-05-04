@@ -1,7 +1,6 @@
 <?php
 namespace Microservices\Config\Queries\Open\GET;
 
-use Microservices\App\DatabaseDataTypes;
 
 return [
     'query' => "SELECT * FROM `category` WHERE __WHERE__",

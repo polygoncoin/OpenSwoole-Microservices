@@ -90,7 +90,7 @@ class Routes
         if ($this->c->httpRequest->open) {
             $userRoutesFolder = Constants::$DOC_ROOT . $this->routesFolder . DIRECTORY_SEPARATOR . 'Open';
         } else {
-            $userRoutesFolder = Constants::$DOC_ROOT . $this->routesFolder . DIRECTORY_SEPARATOR . 'Auth' . DIRECTORY_SEPARATOR . $this->c->httpRequest->session['groupDetails']['name'];
+            $userRoutesFolder = Constants::$DOC_ROOT . $this->routesFolder . DIRECTORY_SEPARATOR . 'Auth' . DIRECTORY_SEPARATOR . 'GroupRoutes' .  DIRECTORY_SEPARATOR . $this->c->httpRequest->session['groupDetails']['name'];
         }
 
         foreach ($this->httpMethods as $method) {

@@ -1,25 +1,19 @@
 <?php
 namespace Microservices\Config\Queries\Auth\ClientDB\PUT;
 
+use Microservices\App\Constants;
 use Microservices\App\DatabaseDataTypes;
 
-return [
-    'query' => "UPDATE `registration` SET firstname = :firstname WHERE id = :id",
-    '__SET__' => [
-        'firstname' => ['payload', 'firstname'],
-    ],
-    '__WHERE__' => [
-        'id' => ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey]
-    ],
-    'validate' => [
-		[
-			'fn' => 'primaryKeyExist',
-			'fnArgs' => [
-                'table' => ['custom', 'registration'],
-                'primary' => ['custom', 'id'],
-                'id' => ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey]
-            ],
-			'errorMessage' => 'Invalid registration id'
-		],
-	]
-];
+return array_merge(
+    include Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR . 'Queries' . DIRECTORY_SEPARATOR . 'Auth' . DIRECTORY_SEPARATOR . 'ClientDB' . DIRECTORY_SEPARATOR . 'Common' . DIRECTORY_SEPARATOR . 'Registration.php',
+    [
+        '__SET__' => [
+            'firstname' => ['payload', 'firstname'],
+            'lastname' => ['payload', 'lastname'],
+            'email' => ['payload', 'email'],
+        ],
+        '__WHERE__' => [
+            'user_id' => ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey]
+        ],
+    ]
+);

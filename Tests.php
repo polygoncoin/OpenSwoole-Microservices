@@ -85,6 +85,7 @@ if (!function_exists('processAuth')) {
 
         $response[] = trigger($strArr, 'GET', '/reload', [], $jsonPayload = '');
 
+        // Client User
         $res = trigger($strArr, 'POST', '/login', [], $jsonPayload = '{"username":"client_1_group_1_user_1", "password":"shames11"}');
         if ($res) {
             $response[] = $res;
@@ -92,12 +93,78 @@ if (!function_exists('processAuth')) {
             $header = ["Authorization: Bearer {$token}"];
 
             $response[] = trigger($strArr, 'GET', '/routes', $header, $jsonPayload = '');
+
             $response[] = trigger($strArr, 'POST', '/category', $header, $jsonPayload = '[{"name":"ramesh0","sub":{"subname":"ramesh1","subsub":[{"subsubname":"ramesh"},{"subsubname":"ramesh"}]}},{"name":"ramesh1","sub":{"subname":"ramesh1","subsub":{"subsubname":"ramesh"}}}]');
-            $response[] = trigger($strArr, 'GET', '/category/1', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'POST', '/registration', $header, $jsonPayload = '{"firstname":"12","lastname":"12","email":"12@test.com","username":"test","password":"shames11"}');
+            $response[] = trigger($strArr, 'POST', '/address', $header, $jsonPayload = '{"user_id":1,"address":"203"}');
+            $response[] = trigger($strArr, 'POST', '/registration-with-address', $header, $jsonPayload = '{"firstname":"12","lastname":"12","email":"12@test.com","username":"test","password":"shames11","address":{"address":"a203"}}');
+        
             $response[] = trigger($strArr, 'GET', '/category', $header, $jsonPayload = '');
+            // $response[] = trigger($strArr, 'GET', '/category/search', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'GET', '/category/1', $header, $jsonPayload = '');
             $response[] = trigger($strArr, 'GET', '/category&orderBy={"id":"DESC"}', $header, $jsonPayload = '');
+        
+            $response[] = trigger($strArr, 'GET', '/registration/1', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'GET', '/address/1', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'GET', '/registration-with-address/1', $header, $jsonPayload = '');
+        
+            $response[] = trigger($strArr, 'PUT', '/registration/1', $header, $jsonPayload = '{"firstname":"12","lastname":"12","email":"12@test.com","username":"test","password":"shames11"}');
+            $response[] = trigger($strArr, 'PUT', '/address/1', $header, $jsonPayload = '{"user_id":1,"address":"203"}');
+        
+            $response[] = trigger($strArr, 'PATCH', '/registration/1', $header, $jsonPayload = '{"firstname":"12","lastname":"12","email":"12@test.com"}');
+            $response[] = trigger($strArr, 'PATCH', '/address/1', $header, $jsonPayload = '{"address":"203"}');
+        
+            $response[] = trigger($strArr, 'DELETE', '/registration/1', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'DELETE', '/address/1', $header, $jsonPayload = '');
+        
             $response[] = trigger($strArr, 'POST', '/category/config', $header, $jsonPayload = '');
         }
+
+        // Admin User
+        $res = trigger($strArr, 'POST', '/login', [], $jsonPayload = '{"username":"client_1_admin_1", "password":"shames11"}');
+        if ($res) {
+            $response[] = $res;
+            $token = $res['Results']['Token'];
+            $header = ["Authorization: Bearer {$token}"];
+
+            $response[] = trigger($strArr, 'GET', '/routes', $header, $jsonPayload = '');
+
+            $response[] = trigger($strArr, 'DELETE', '/category/truncate', $header, $jsonPayload = '');
+            
+            $response[] = trigger($strArr, 'POST', '/category', $header, $jsonPayload = '[{"name":"ramesh0","sub":{"subname":"ramesh1","subsub":[{"subsubname":"ramesh"},{"subsubname":"ramesh"}]}},{"name":"ramesh1","sub":{"subname":"ramesh1","subsub":{"subsubname":"ramesh"}}}]');
+            $response[] = trigger($strArr, 'POST', '/registration', $header, $jsonPayload = '{"firstname":"12","lastname":"12","email":"12@test.com","username":"test","password":"shames11"}');
+            $response[] = trigger($strArr, 'POST', '/address', $header, $jsonPayload = '{"user_id":1,"address":"203"}');
+            $response[] = trigger($strArr, 'POST', '/registration-with-address', $header, $jsonPayload = '{"firstname":"12","lastname":"12","email":"12@test.com","username":"test","password":"shames11","address":{"address":"a203"}}');
+            
+            $response[] = trigger($strArr, 'GET', '/category', $header, $jsonPayload = '');
+            // $response[] = trigger($strArr, 'GET', '/category/search', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'GET', '/category/1', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'GET', '/category&orderBy={"id":"DESC"}', $header, $jsonPayload = '');
+
+            $response[] = trigger($strArr, 'GET', '/registration', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'GET', '/registration/1', $header, $jsonPayload = '');
+
+            $response[] = trigger($strArr, 'GET', '/address', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'GET', '/address/1', $header, $jsonPayload = '');
+
+            $response[] = trigger($strArr, 'GET', '/registration-with-address', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'GET', '/registration-with-address/1', $header, $jsonPayload = '');
+
+            $response[] = trigger($strArr, 'PUT', '/registration/1', $header, $jsonPayload = '{"firstname":"12","lastname":"12","email":"12@test.com","username":"test","password":"shames11"}');
+            $response[] = trigger($strArr, 'PUT', '/address/1', $header, $jsonPayload = '{"user_id":1,"address":"203"}');
+            $response[] = trigger($strArr, 'PUT', '/registration-with-address/1', $header, $jsonPayload = '{"firstname":"12","lastname":"12","email":"12@test.com","username":"test","password":"shames11","address":{"id":1,"address":"a203"}}');
+
+            $response[] = trigger($strArr, 'PATCH', '/registration/1', $header, $jsonPayload = '{"firstname":"12","lastname":"12","email":"12@test.com"}');
+            $response[] = trigger($strArr, 'PATCH', '/address/1', $header, $jsonPayload = '{"address":"203"}');
+            $response[] = trigger($strArr, 'PATCH', '/registration-with-address/1', $header, $jsonPayload = '{"firstname":"12","lastname":"12","email":"12@test.com","address":{"id":1,"address":"a203"}}');
+
+            $response[] = trigger($strArr, 'DELETE', '/registration/1', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'DELETE', '/address/1', $header, $jsonPayload = '');
+            $response[] = trigger($strArr, 'DELETE', '/registration-with-address/1', $header, $jsonPayload = '{"address": {"user_id":1}}');
+
+            $response[] = trigger($strArr, 'POST', '/category/config', $header, $jsonPayload = '');
+        }
+
         return '<pre>'.print_r($strArr, true).print_r($response, true);
     }
 }
@@ -109,7 +176,11 @@ if (!function_exists('processOpen')) {
         $response = [];
         $header = [];
 
+        $response[] = trigger($strArr, 'POST', '/registration', $header, $jsonPayload = '{"firstname":"12","lastname":"12","email":"12@test.com","username":"test","password":"shames11"}');
+        $response[] = trigger($strArr, 'POST', '/registration-with-address', $header, $jsonPayload = '{"firstname":"12","lastname":"12","email":"12@test.com","username":"test","password":"shames11", "address" : {"address":"a203"}}');
+
         $response[] = trigger($strArr, 'GET', '/category/1', $header, $jsonPayload = '');
+        // $response[] = trigger($strArr, 'GET', '/category/search', $header, $jsonPayload = '');
         $response[] = trigger($strArr, 'GET', '/category', $header, $jsonPayload = '');
         $response[] = trigger($strArr, 'GET', '/category&orderBy={"id":"DESC"}', $header, $jsonPayload = '');
 

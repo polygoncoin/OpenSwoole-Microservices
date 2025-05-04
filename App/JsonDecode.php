@@ -512,10 +512,14 @@ class JsonDecodeEngine
      */
     public function getJsonString()
     {
-        $offset = $this->_s_ !== null ? $this->_s_ : 0;
-        $length = $this->_e_ - $offset + 1;
-
-        return stream_get_contents($this->jsonFileHandle, $length, $offset);
+        if (is_null($this->_s_) && is_null($this->_e_)) {
+            rewind($this->jsonFileHandle);
+            return stream_get_contents($this->jsonFileHandle);
+        } else {
+            $offset = $this->_s_ !== null ? $this->_s_ : 0;
+            $length = $this->_e_ - $offset + 1;
+            return stream_get_contents($this->jsonFileHandle, $length, $offset);    
+        }
     }
 
     /**

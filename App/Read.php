@@ -187,7 +187,7 @@ class Read
                     } else {
                         $this->jsonEncode->startObject();
                     }
-                    $this->fetchSingleRow($readSqlConfig, $configKeys, $useResultSet);
+                    $this->fetchSingleRow($readSqlConfig, $isFirstCall, $configKeys, $useResultSet);
                     $this->jsonEncode->endObject();
                     break;
                 // Query will return multiple rows
@@ -215,15 +215,16 @@ class Read
      * Function to fetch single record
      *
      * @param array   $readSqlConfig Read SQL configuration
+     * @param boolean $isFirstCall   true to represent the first call in recursion
      * @param array   $configKeys    Config Keys
      * @param boolean $useResultSet  Use result set recursively flag
      * @return void
      * @throws \Exception
      */
-    private function fetchSingleRow(&$readSqlConfig, &$configKeys, $useResultSet)
+    private function fetchSingleRow(&$readSqlConfig, $isFirstCall, &$configKeys, $useResultSet)
     {
         $isAssoc = $this->isAssoc($readSqlConfig);
-        list($sql, $sqlParams, $errors) = $this->getSqlAndParams($readSqlConfig);
+        list($sql, $sqlParams, $errors) = $this->getSqlAndParams($readSqlConfig, $isFirstCall, $configKeys, $useResultSet);
         if (!empty($errors)) {
             throw new \Exception($errors, HttpStatus::$InternalServerError);
         }
@@ -305,7 +306,7 @@ class Read
     {
         $isAssoc = $this->isAssoc($readSqlConfig);
 
-        list($sql, $sqlParams, $errors) = $this->getSqlAndParams($readSqlConfig);
+        list($sql, $sqlParams, $errors) = $this->getSqlAndParams($readSqlConfig, $isFirstCall, $configKeys, $useResultSet);
         if (!empty($errors)) {
             throw new \Exception($errors, HttpStatus::$InternalServerError);
         }
@@ -371,8 +372,8 @@ class Read
      */
     private function callReadDB(&$readSqlConfig, &$configKeys, $row, $useResultSet)
     {
-        if ($useResultSet && $row !== false) {
-            $this->resetFetchData($configKeys, $row, $useResultSet);
+        if ($useResultSet && !empty($row)) {
+            $this->resetFetchData($dataPayloadType = 'sqlResults', $configKeys, $row);
         }
 
         if (isset($readSqlConfig['subQuery']) && $this->isAssoc($readSqlConfig['subQuery'])) {

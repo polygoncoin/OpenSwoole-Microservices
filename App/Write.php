@@ -106,7 +106,6 @@ class Write
         if (isset($writeSqlConfig['affectedCacheKeys'])) {
             for ($i = 0, $iCount = count($writeSqlConfig['affectedCacheKeys']); $i < $iCount; $i++) {
                 $this->c->httpRequest->delDmlCache($writeSqlConfig['affectedCacheKeys'][$i]);
-
             }
         }
 
@@ -169,8 +168,8 @@ class Write
                 $payloadSignature = [
                     'IdempotentSecret' => getenv('IdempotentSecret'),
                     'idempotentWindow' => $this->idempotentWindow,
-                    'httpMethod' => $this->REQUEST_METHOD,
-                    '$_GET' => $this->httpRequestDetails['get'],
+                    'httpMethod' => $this->c->httpRequest->REQUEST_METHOD,
+                    '$_GET' => $this->c->httpRequest->httpRequestDetails['get'],
                     'clientId' => $this->c->httpRequest->clientId,
                     'groupId' => $this->c->httpRequest->groupId,
                     'userId' => $this->c->httpRequest->userId,
@@ -178,8 +177,8 @@ class Write
                 ];
                 $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
                 $hashKey = md5($hash);
-                if ($this->cache->cacheExists($hashKey)) {
-                    $hashJson = str_replace('JSON', $this->cache->getCache($hashKey), '{"Idempotent": JSON, "Status": 200}');
+                if ($this->c->httpRequest->cache->cacheExists($hashKey)) {
+                    $hashJson = str_replace('JSON', $this->c->httpRequest->cache->getCache($hashKey), '{"Idempotent": JSON, "Status": 200}');
                 }
             }
 
@@ -209,7 +208,13 @@ class Write
             } else {
                 $arr = json_decode($hashJson, true);
             }
-            $this->c->httpResponse->jsonEncode->encode($arr);
+            if (isset($_payloadIndexes[$i]) && $_payloadIndexes[$i] === '') {
+                foreach ($arr as $k => $v) {
+                    $this->c->httpResponse->jsonEncode->addKeyValue($k, $v);
+                }
+            } else {
+                $this->c->httpResponse->jsonEncode->encode($arr);
+            }
         }
 
         if ($this->c->httpRequest->session['payloadType'] === 'Object') {
@@ -233,7 +238,12 @@ class Write
      */
     private function writeDB(&$writeSqlConfig, $payloadIndexes, $configKeys, $useHierarchy, &$response, &$required)
     {
-        $payloadIndex = implode(':', $payloadIndexes);
+        if (isset($payloadIndexes[0]) && $payloadIndexes[0] === '') {
+            $payloadIndexes = array_shift($payloadIndexes);
+        }
+        if (!is_array($payloadIndexes)) $payloadIndexes = [];
+
+        $payloadIndex = is_array($payloadIndexes) ? implode(':', $payloadIndexes) : '';
         $isAssoc = $this->c->httpRequest->jsonDecode->jsonType($payloadIndex) === 'Object';
         $i_count = $isAssoc ? 1 : $this->c->httpRequest->jsonDecode->count($payloadIndex);
 
@@ -252,14 +262,13 @@ class Write
             if (!$isAssoc && !$useHierarchy) {
                 array_push($_payloadIndexes, $i);
             }
-            $payloadIndex = implode(':', $_payloadIndexes);
+            $payloadIndex = is_array($_payloadIndexes) ? implode(':', $_payloadIndexes) : '';
 
             if (!$this->c->httpRequest->jsonDecode->isset($payloadIndex)) {
                 throw new \Exception("Paylaod key '{$payloadIndex}' not set", HttpStatus::$NotFound);
             }
 
             $this->c->httpRequest->session['payload'] = $this->c->httpRequest->jsonDecode->get($payloadIndex);
-
 
             if (count($required)) {
                 $this->c->httpRequest->session['required'] = $required;
@@ -296,7 +305,7 @@ class Write
                 } else {
                     $response[$counter][$writeSqlConfig['insertId']] = $insertId;
                 }
-                $this->c->httpRequest->session['insertIdParams'][$writeSqlConfig['insertId']] = $insertId;
+                $this->c->httpRequest->session['insertId'][$writeSqlConfig['insertId']] = $insertId;
             } else {
                 $affectedRows = $this->db->affectedRows();
                 if ($isAssoc) {
@@ -334,14 +343,19 @@ class Write
     {
         if ($useHierarchy) {
             $row = $this->c->httpRequest->session['payload'];
-            $this->resetFetchData($configKeys, $row, $useHierarchy);
+            $this->resetFetchData($dataPayloadType = 'sqlPayload', $configKeys, $row);
         }
+
+        if (isset($payloadIndexes[0]) && $payloadIndexes[0] === '') {
+            $payloadIndexes = array_shift($payloadIndexes);
+        }
+        if (!is_array($payloadIndexes)) $payloadIndexes = [];
 
         if (isset($writeSqlConfig['subQuery']) && $this->isAssoc($writeSqlConfig['subQuery'])) {
             foreach ($writeSqlConfig['subQuery'] as $module => &$_writeSqlConfig) {
                 $_payloadIndexes = $payloadIndexes;
                 $_configKeys = $configKeys;
-                $modulePayloadKey = implode(':', $_payloadIndexes);
+                $modulePayloadKey = is_array($_payloadIndexes) ? implode(':', $_payloadIndexes) : '';
                 if ($useHierarchy) { // use parent data of a payload
                     array_push($_payloadIndexes, $module);
                     array_push($_configKeys, $module);
