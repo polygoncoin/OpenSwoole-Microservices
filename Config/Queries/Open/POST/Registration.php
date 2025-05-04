@@ -17,5 +17,6 @@ return [
         'group_id' => ['custom', '1'],
     ],
     'insertId' => 'registration:id',
+    'payloadType' => 'Object',
     'idempotentWindow' => 10
 ];

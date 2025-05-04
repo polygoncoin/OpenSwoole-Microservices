@@ -28,6 +28,5 @@ return [
         ]
     ],
     'useHierarchy' => true,
-    'payloadType' => 'Object',
     'idempotentWindow' => 10
 ];

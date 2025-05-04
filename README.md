@@ -339,6 +339,7 @@ return [
         '<unique-key-for-redis-to-drop-cached-results>(category etc.)',
         ...
     ],
+    'payloadType' => 'Object', // Object / Array
     "idempotentWindow" => 3 // Idempotent Window for DML operartion (seconds)
 ];
 ```

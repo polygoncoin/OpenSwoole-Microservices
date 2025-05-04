@@ -79,6 +79,12 @@ class Write
         // Load Queries
         $writeSqlConfig = include $this->c->httpRequest->__file__;
 
+        if (isset($writeSqlConfig['payloadType'])) {
+            if ($this->c->httpRequest->session['payloadType'] !== $writeSqlConfig['payloadType']) {
+                throw new \Exception('Invalid paylaod type', HttpStatus::$BadRequest);
+            }
+        }
+
         // Check for Idempotent Window
         if (
             isset($writeSqlConfig['idempotentWindow'])

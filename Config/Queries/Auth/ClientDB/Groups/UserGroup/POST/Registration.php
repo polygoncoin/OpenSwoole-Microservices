@@ -17,17 +17,5 @@ return [
         'group_id' => ['custom', '1'],
     ],
     'insertId' => 'registration:id',
-    'subQuery' => [
-        'address' => [
-            'query' => "INSERT INTO `address` SET __SET__",
-            '__SET__' => [
-                'user_id' => ['insertId', 'registration:id'],
-                'address' => ['payload', 'address']
-            ],
-            'insertId' => 'address:id',
-        ]
-    ],
-    'useHierarchy' => true,
-    'payloadType' => 'Object',
     'idempotentWindow' => 10
 ];
