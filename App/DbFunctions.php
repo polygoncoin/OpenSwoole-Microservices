@@ -3,6 +3,7 @@ namespace Microservices\App;
 
 use Microservices\App\CacheKey;
 use Microservices\App\DatabaseCacheKey;
+use Microservices\App\DatabaseOpenCacheKey;
 use Microservices\App\HttpStatus;
 
 /*
@@ -152,7 +153,11 @@ class DbFunctions
      */
     public function setDatabaseCacheKey()
     {
-        DatabaseCacheKey::init($this->clientId, $this->groupId, $this->userId);
+        if ($this->open) {
+            DatabaseOpenCacheKey::init($this->clientId);
+        } else {
+            DatabaseCacheKey::init($this->clientId, $this->groupId, $this->userId);
+        }
     }
 
     /**
@@ -166,9 +171,9 @@ class DbFunctions
         if (is_null($this->sqlCache)) {
             $this->sqlCache = $this->setCacheConnection('Slave');
         }
-        $key = ($this->open) ? "open:$cacheKey" : $cacheKey;
-        if ($this->sqlCache->cacheExists($key)) {
-            return $json = $this->sqlCache->getCache($key);
+
+        if ($this->sqlCache->cacheExists($cacheKey)) {
+            return $json = $this->sqlCache->getCache($cacheKey);
         } else {
             return $json = null;
         }
@@ -186,8 +191,8 @@ class DbFunctions
         if (is_null($this->sqlCache)) {
             $this->sqlCache = $this->setCacheConnection('Master');
         }
-        $key = ($this->open) ? "open:$cacheKey" : $cacheKey;
-        $this->sqlCache->setCache($key, $json);
+
+        $this->sqlCache->setCache($cacheKey, $json);
     }
 
     /**
@@ -201,7 +206,7 @@ class DbFunctions
         if (is_null($this->sqlCache)) {
             $this->sqlCache = $this->setCacheConnection('Master');
         }
-        $key = ($this->open) ? "open:$cacheKey" : $cacheKey;
-        $this->sqlCache->deleteCache($key);
+
+        $this->sqlCache->deleteCache($cacheKey);
     }
 }

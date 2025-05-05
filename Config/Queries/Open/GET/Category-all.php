@@ -1,7 +1,7 @@
 <?php
 namespace Microservices\Config\Queries\Open\GET;
 
-use Microservices\App\DatabaseCacheKey;
+use Microservices\App\DatabaseOpenCacheKey;
 
 return [
     'countQuery' => "SELECT count(1) as `count` FROM `category` WHERE __WHERE__",
@@ -43,5 +43,5 @@ return [
     ],
     'useResultSet' => true,
     'fetchFrom' => 'Master',
-    // 'cacheKey' => DatabaseCacheKey::$Category
+    'cacheKey' => DatabaseOpenCacheKey::$Category
 ];

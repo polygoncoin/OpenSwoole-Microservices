@@ -13,15 +13,12 @@ namespace Microservices\App;
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-class DatabaseCacheKey
+class DatabaseOpenCacheKey
 {
     static public $App = null;
     static public $Client = null;
-    static public $Group = null;
-    static public $User = null;
 
     static public $Category = null;
-    static public $Category1 = null;
 
     /**
      * Get Database Cache Key
@@ -31,14 +28,11 @@ class DatabaseCacheKey
      * @param null|int $userId
      * @return string
      */
-    static public function init($clientId = null, $groupId = null, $userId = null)
+    static public function init($clientId)
     {
-        self::$App = 'app';
-        self::$Client = !is_null($clientId) ? ":c:{$clientId}" : '';
-        self::$Group = !is_null($groupId) ? ":g:{$groupId}" : '';
-        self::$User = !is_null($userId) ? ":u:{$userId}" : '';
+        self::$App = 'o:app';
+        self::$Client = ":c:{$clientId}";
 
-        self::$Category = self::$App . self::$Client . self::$Group . ':category';
-        self::$Category1 = self::$App . self::$Client . self::$Group . ':category:1';
+        self::$Category = self::$App . ':category';
     }
 }

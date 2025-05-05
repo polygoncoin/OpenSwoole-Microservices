@@ -44,5 +44,5 @@ return [
     ],
     'useResultSet' => true,
     'fetchFrom' => 'Master',
-    // 'cacheKey' => DatabaseCacheKey::$Category
+    'cacheKey' => DatabaseCacheKey::$Category
 ];
