@@ -205,13 +205,10 @@ class Write
                     && isset($writeSqlConfig['rateLimiterSecondsWindow'])
                 ) {
                     $payloadSignature = [
-                        'IdempotentSecret' => getenv('IdempotentSecret'),
-                        'idempotentWindow' => $this->idempotentWindow,
+                        'IP' => $this->c->httpRequest->REMOTE_ADDR,
+                        'clientId' => $this->c->httpRequest->clientId,
                         'httpMethod' => $this->c->httpRequest->REQUEST_METHOD,
                         'Route' => $this->c->httpRequest->configuredUri,
-                        'clientId' => $this->c->httpRequest->clientId,
-                        'IP' => $this->c->httpRequest->REMOTE_ADDR,
-                        'payload' => $this->c->httpRequest->jsonDecode->get(implode(':', $_payloadIndexes))
                     ];
                     $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
                     $hashKey = md5($hash);
