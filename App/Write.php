@@ -79,12 +79,6 @@ class Write
         // Load Queries
         $writeSqlConfig = include $this->c->httpRequest->__file__;
 
-        if (isset($writeSqlConfig['payloadType'])) {
-            if ($this->c->httpRequest->session['payloadType'] !== $writeSqlConfig['payloadType']) {
-                throw new \Exception('Invalid paylaod type', HttpStatus::$BadRequest);
-            }
-        }
-
         // Check for Idempotent Window
         if (
             isset($writeSqlConfig['idempotentWindow'])
@@ -142,6 +136,21 @@ class Write
      */
     private function processWrite(&$writeSqlConfig, $useHierarchy)
     {
+        // Check for payloadType
+        if (isset($writeSqlConfig['payloadType'])) {
+            if ($this->c->httpRequest->session['payloadType'] !== $writeSqlConfig['payloadType']) {
+                throw new \Exception('Invalid paylaod type', HttpStatus::$BadRequest);
+            }
+            // Check for maximum number of objects supported when payloadType is Array
+            if (
+                $writeSqlConfig['payloadType'] === 'Array'
+                && isset($writeSqlConfig['maxPayloadObjects'])
+                && ($this->c->httpRequest->jsonDecode->count() > $writeSqlConfig['maxPayloadObjects'])
+            ) {
+                throw new \Exception('Maximum supported paylaod count is ' . $writeSqlConfig['maxPayloadObjects'], HttpStatus::$BadRequest);
+            }
+        }
+
         // Set required fields
         $this->c->httpRequest->session['requiredArr'] = $this->getRequired($writeSqlConfig, $isFirstCall = true, $useHierarchy);
 
@@ -189,6 +198,33 @@ class Write
             }
 
             if (is_null($hashJson)) {
+
+                // Rate Limiting request if configured for Route Queries.
+                if (
+                    isset($writeSqlConfig['rateLimiterMaxRequests'])
+                    && isset($writeSqlConfig['rateLimiterSecondsWindow'])
+                ) {
+                    $payloadSignature = [
+                        'IdempotentSecret' => getenv('IdempotentSecret'),
+                        'idempotentWindow' => $this->idempotentWindow,
+                        'httpMethod' => $this->c->httpRequest->REQUEST_METHOD,
+                        'Route' => $this->c->httpRequest->configuredUri,
+                        'clientId' => $this->c->httpRequest->clientId,
+                        'IP' => $this->c->httpRequest->REMOTE_ADDR,
+                        'payload' => $this->c->httpRequest->jsonDecode->get(implode(':', $_payloadIndexes))
+                    ];
+                    $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
+                    $hashKey = md5($hash);
+                    
+                    // @throws \Exception
+                    $rateLimitChecked = $this->c->httpRequest->checkRateLimit(
+                        $RateLimiterUserPrefix = getenv('RateLimiterRoutePrefix'),
+                        $RateLimiterMaxRequests = $writeSqlConfig['rateLimiterMaxRequests'],
+                        $RateLimiterSecondsWindow = $writeSqlConfig['rateLimiterSecondsWindow'],
+                        $key = $hashKey
+                    );
+                }
+
                 // Begin DML operation
                 $this->db->begin();
                 $response = [];

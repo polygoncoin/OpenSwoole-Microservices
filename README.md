@@ -339,8 +339,11 @@ return [
         '<unique-key-for-redis-to-drop-cached-results>(category etc.)',
         ...
     ],
+    'rateLimiterMaxRequests' => 1,
+    'rateLimiterSecondsWindow' => 3600,
     'payloadType' => 'Object', // Object / Array
-    "idempotentWindow" => 3 // Idempotent Window for DML operartion (seconds)
+    'maxPayloadObjects' => 2 // for 'payloadType' => 'Array'
+    'idempotentWindow' => 3 // Idempotent Window for DML operartion (seconds)
 ];
 ```
 

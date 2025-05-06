@@ -144,7 +144,7 @@ class Gateway extends RouteParser
      * @return void
      * @throws \Exception
      */
-    private function checkRateLimit(
+    public function checkRateLimit(
         $RateLimiterPrefix,
         $RateLimiterMaxRequests,
         $RateLimiterSecondsWindow,

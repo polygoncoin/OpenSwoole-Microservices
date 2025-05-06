@@ -25,8 +25,12 @@ return [
                 'address' => ['payload', 'address']
             ],
             'insertId' => 'address:id',
+            'payloadType' => 'Array',
+            'maxPayloadObjects' => 2
         ]
     ],
+    'rateLimiterMaxRequests' => 1,
+    'rateLimiterSecondsWindow' => 3600,
     'useHierarchy' => true,
     'payloadType' => 'Object',
     'idempotentWindow' => 10
