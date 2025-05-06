@@ -329,20 +329,24 @@ return [
             'errorMessage' => 'Invalid Group Id'
         ]
     ],
-    'useHierarchy' => true,
-    'useResultSet' => true,
-    // Use cacheKey option to cache and reuse results (Optional)
-    'cacheKey' => '<unique-key-for-redis-to-cache-results>(e.g, key:1)',
-    // List down keys which effects configured cacheKey on DML operation
-    'affectedCacheKeys' => [
+    'useHierarchy' => true, // For DML
+    'useResultSet' => true, // For DQL
+    // Any among below can be used for DML operations (These are Optional keys)
+    // Caching
+    'cacheKey' => '<unique-key-for-redis-to-cache-results>(e.g, key:1)', // Use cacheKey to cache and reuse results (Optional)
+    'affectedCacheKeys' => [ // List down keys which effects configured cacheKey on DML operation
         '<unique-key-for-redis-to-drop-cached-results>(key:1)',
         '<unique-key-for-redis-to-drop-cached-results>(category etc.)',
         ...
     ],
-    'rateLimiterMaxRequests' => 1,
-    'rateLimiterSecondsWindow' => 3600,
-    'payloadType' => 'Object', // Object / Array
-    'maxPayloadObjects' => 2 // for 'payloadType' => 'Array'
+    // Rate Limiting Route access
+    'rateLimiterMaxRequests' => 1, // Allowed number of request in defined seconds window
+    'rateLimiterSecondsWindow' => 3600, // Seconds Window for restricting number of request
+    // Limiting payload mode
+    // Allow single "Object" / "Array" of Object
+    'payloadType' => 'Object', // Object / Array (if not set will accept both)
+    'maxPayloadObjects' => 2 // Max number of allowed Objects in Array type Payload
+    // Limiting duplicates
     'idempotentWindow' => 3 // Idempotent Window for DML operartion (seconds)
 ];
 ```
