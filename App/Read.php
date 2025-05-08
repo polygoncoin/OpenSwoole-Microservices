@@ -71,6 +71,7 @@ class Read
      * Process
      *
      * @return boolean
+     * @throws \Exception
      */
     public function process()
     {
@@ -79,6 +80,9 @@ class Read
 
         // Load Queries
         $readSqlConfig = include $this->c->httpRequest->__file__;
+
+        // Rate Limiting request if configured for Route Queries.
+        $this->rateLimitRoute($readSqlConfig);
 
         // Check for cache
         $tobeCached = false;

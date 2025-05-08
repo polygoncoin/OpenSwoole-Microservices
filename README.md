@@ -8,8 +8,8 @@ This is a light & easy Openswoole based Microservices framework. It can be used 
 - [Environment File](#environment-file)
 - [Folders](#folders)
 - [Routes Folder](#routes-folder)
-- [Queries Folder](#queries-folder)
-- [Queries Configuration Rules](#queries-configuration-rules)
+- [Params Data Types Configuration Rules](#params-data-types-configuration-rules)
+- [SQL Configuration Rules](#sql-configuration-rules)
 - [Security](#security)
 - [HTTP Request](#http-request)
 - [Hierarchy Data](#hierarchy-data)
@@ -190,7 +190,7 @@ return [
 
 > One can replace **&lt;filenames&gt;** tag with desired name as per functionality.
 
-## Queries Configuration Rules
+## Params Data Types Configuration Rules
 
 ### Database Field DataTypes Configuration in DatabaseDataTypes class
 
@@ -331,6 +331,9 @@ return [
     ],
     'useHierarchy' => true, // For DML
     'useResultSet' => true, // For DQL
+    // Rate Limiting Route access
+    'rateLimiterMaxRequests' => 1, // Allowed number of request in defined seconds window
+    'rateLimiterSecondsWindow' => 3600, // Seconds Window for restricting number of request
     // Any among below can be used for DML operations (These are Optional keys)
     // Caching
     'cacheKey' => '<unique-key-for-redis-to-cache-results>(e.g, key:1)', // Use cacheKey to cache and reuse results (Optional)
@@ -339,9 +342,6 @@ return [
         '<unique-key-for-redis-to-drop-cached-results>(category etc.)',
         ...
     ],
-    // Rate Limiting Route access
-    'rateLimiterMaxRequests' => 1, // Allowed number of request in defined seconds window
-    'rateLimiterSecondsWindow' => 3600, // Seconds Window for restricting number of request
     // Limiting payload mode
     // Allow single "Object" / "Array" of Object
     'payloadType' => 'Object', // Object / Array (if not set will accept both)

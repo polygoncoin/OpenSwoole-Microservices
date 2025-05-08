@@ -33,13 +33,6 @@ class Write
     public $db = null;
 
     /**
-     * Idempotent Window (Default 0 - Disabled)
-     *
-     * @var integer
-     */
-    private $idempotentWindow = 0;
-
-    /**
      * Microservices Collection of Common Objects
      *
      * @var null|Common
@@ -78,15 +71,6 @@ class Write
 
         // Load Queries
         $writeSqlConfig = include $this->c->httpRequest->__file__;
-
-        // Check for Idempotent Window
-        if (
-            isset($writeSqlConfig['idempotentWindow'])
-            && is_numeric($writeSqlConfig['idempotentWindow'])
-            && $writeSqlConfig['idempotentWindow'] > 0
-        ) {
-            $this->idempotentWindow = (int)$writeSqlConfig['idempotentWindow'];
-        }
 
         // Set Server mode to execute query on - Read / Write Server
         $this->c->httpRequest->db = $this->c->httpRequest->setDbConnection('Master');
@@ -133,6 +117,7 @@ class Write
      * @param array   $writeSqlConfig Config from file
      * @param boolean $useHierarchy   Use results in where clause of sub queries recursively
      * @return void
+     * @throws \Exception
      */
     private function processWrite(&$writeSqlConfig, $useHierarchy)
     {
@@ -178,65 +163,28 @@ class Write
                 $_payloadIndexes[] = "{$i}";
             }
 
-            $hashJson = null;
-            if ($this->idempotentWindow) {
-                $payloadSignature = [
-                    'IdempotentSecret' => getenv('IdempotentSecret'),
-                    'idempotentWindow' => $this->idempotentWindow,
-                    'httpMethod' => $this->c->httpRequest->REQUEST_METHOD,
-                    '$_GET' => $this->c->httpRequest->httpRequestDetails['get'],
-                    'clientId' => $this->c->httpRequest->clientId,
-                    'groupId' => $this->c->httpRequest->groupId,
-                    'userId' => $this->c->httpRequest->userId,
-                    'payload' => $this->c->httpRequest->jsonDecode->get(implode(':', $_payloadIndexes))
-                ];
-                $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
-                $hashKey = md5($hash);
-                if ($this->c->httpRequest->cache->cacheExists($hashKey)) {
-                    $hashJson = str_replace('JSON', $this->c->httpRequest->cache->getCache($hashKey), '{"Idempotent": JSON, "Status": 200}');
-                }
-            }
+            // Check for Idempotent Window
+            list($idempotentWindow, $hashKey, $hashJson) = $this->checkIdempotent($writeSqlConfig, $_payloadIndexes);
 
+            // Rate Limiting request if configured for Route Queries.
+            $this->rateLimitRoute($writeSqlConfig);
+
+            // Begin DML operation
             if (is_null($hashJson)) {
-
-                // Rate Limiting request if configured for Route Queries.
-                if (
-                    isset($writeSqlConfig['rateLimiterMaxRequests'])
-                    && isset($writeSqlConfig['rateLimiterSecondsWindow'])
-                ) {
-                    $payloadSignature = [
-                        'IP' => $this->c->httpRequest->REMOTE_ADDR,
-                        'clientId' => $this->c->httpRequest->clientId,
-                        'httpMethod' => $this->c->httpRequest->REQUEST_METHOD,
-                        'Route' => $this->c->httpRequest->configuredUri,
-                    ];
-                    $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
-                    $hashKey = md5($hash);
-                    
-                    // @throws \Exception
-                    $rateLimitChecked = $this->c->httpRequest->checkRateLimit(
-                        $RateLimiterUserPrefix = getenv('RateLimiterRoutePrefix'),
-                        $RateLimiterMaxRequests = $writeSqlConfig['rateLimiterMaxRequests'],
-                        $RateLimiterSecondsWindow = $writeSqlConfig['rateLimiterSecondsWindow'],
-                        $key = $hashKey
-                    );
-                }
-
-                // Begin DML operation
                 $this->db->begin();
                 $response = [];
                 $this->writeDB($writeSqlConfig, $_payloadIndexes, $_configKeys, $useHierarchy, $response, $this->c->httpRequest->session['requiredArr']);
-                if ($this->db->beganTransaction === true) {
+                if ($this->db->beganTransaction === true) { // Success
                     $this->db->commit();
                     $arr = [
                         'Status' => HttpStatus::$Created,
                         'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray(implode(':', $_payloadIndexes)),
                         'Response' => &$response
                     ];
-                    if ($this->idempotentWindow) {
-                        $this->c->httpRequest->cache->setCache($hashKey, json_encode($arr), $this->idempotentWindow);
+                    if ($idempotentWindow) {
+                        $this->c->httpRequest->cache->setCache($hashKey, json_encode($arr), $idempotentWindow);
                     }
-                } else {
+                } else { // Failure
                     $this->c->httpResponse->httpStatus = HttpStatus::$BadRequest;
                     $arr = [
                         'Status' => HttpStatus::$BadRequest,

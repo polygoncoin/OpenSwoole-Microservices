@@ -442,4 +442,117 @@ trait AppTrait
         }
         $httpReq = $row;
     }
+
+    /**
+     * Rate Limiting request if configured for Route Queries
+     * 
+     * @param array $sqlConfig Config from file
+     * @return void
+     * @throws \Exception
+     */
+    private function rateLimitRoute($sqlConfig)
+    {
+        // 
+        if (
+            isset($sqlConfig['rateLimiterMaxRequests'])
+            && isset($sqlConfig['rateLimiterSecondsWindow'])
+        ) {
+            $payloadSignature = [
+                'IP' => $this->c->httpRequest->REMOTE_ADDR,
+                'clientId' => $this->c->httpRequest->clientId,
+                'groupId' => (!is_null($this->c->httpRequest->groupId) ? $this->c->httpRequest->groupId : 0),
+                'userId' => (!is_null($this->c->httpRequest->userId) ? $this->c->httpRequest->userId : 0),
+                'httpMethod' => $this->c->httpRequest->REQUEST_METHOD,
+                'Route' => $this->c->httpRequest->ROUTE,
+            ];
+            $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
+            $hashKey = md5($hash);
+            
+            // @throws \Exception
+            $rateLimitChecked = $this->c->httpRequest->checkRateLimit(
+                $RateLimiterUserPrefix = getenv('RateLimiterRoutePrefix'),
+                $RateLimiterMaxRequests = $sqlConfig['rateLimiterMaxRequests'],
+                $RateLimiterSecondsWindow = $sqlConfig['rateLimiterSecondsWindow'],
+                $key = $hashKey
+            );
+        }
+    }
+
+    /**
+     * Check for Idempotent Window
+     * 
+     * @param array $sqlConfig       Config from file
+     * @param array $_payloadIndexes Payload Indexes
+     * @return array
+     */
+    private function checkIdempotent($sqlConfig, $_payloadIndexes)
+    {
+        $idempotentWindow = 0;
+        $hashKey = null;
+        $hashJson = null;
+        if (
+            isset($sqlConfig['idempotentWindow'])
+            && is_numeric($sqlConfig['idempotentWindow'])
+            && $sqlConfig['idempotentWindow'] > 0
+        ) {
+            $idempotentWindow = (int)$sqlConfig['idempotentWindow'];
+            if ($idempotentWindow) {
+                $payloadSignature = [
+                    'IdempotentSecret' => getenv('IdempotentSecret'),
+                    'idempotentWindow' => $idempotentWindow,
+                    'IP' => $this->c->httpRequest->REMOTE_ADDR,
+                    'clientId' => $this->c->httpRequest->clientId,
+                    'groupId' => (!is_null($this->c->httpRequest->groupId) ? $this->c->httpRequest->groupId : 0),
+                    'userId' => (!is_null($this->c->httpRequest->userId) ? $this->c->httpRequest->userId : 0),
+                    'httpMethod' => $this->c->httpRequest->REQUEST_METHOD,
+                    'Route' => $this->c->httpRequest->ROUTE,
+                    'payload' => $this->c->httpRequest->jsonDecode->get(implode(':', $_payloadIndexes))
+                ];
+                $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
+                $hashKey = md5($hash);
+                if ($this->c->httpRequest->cache->cacheExists($hashKey)) {
+                    $hashJson = str_replace('JSON', $this->c->httpRequest->cache->getCache($hashKey), '{"Idempotent": JSON, "Status": 200}');
+                }
+            }
+        }
+
+        return [$idempotentWindow, $hashKey, $hashJson];
+    }
+
+    /**
+     * Get Response Lag
+     *
+     * @param array $responseLag  Response Lag Configuration
+     * 'responseLag' => [
+     *     // No of Requests => Seconds Lag
+     *     0 => 0,
+     *     2 => 10,
+     * ]
+     * @param int   $noOfRequests Currently No Of Requests
+     * @return int
+     */
+    private function getResponseLag($responseLag, $noOfRequests)
+    {
+        $lag = 0;
+        if (is_array($responseLag)) {
+            foreach ($responseLag as $start => $newLag) {
+                if ($noOfRequests > $start) {
+                    $lag = $newLag;
+                }
+            }
+        }
+
+        return $lag;
+    }
+
+    /**
+     * Lag Response (Sleep Seconds)
+     *
+     * @param int $lag Lag request start by $lag seconds
+     * @return void
+     */
+    private function lagResponse($lag)
+    {
+        sleep($lag);
+    }
 }
