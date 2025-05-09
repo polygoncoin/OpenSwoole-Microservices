@@ -43,5 +43,10 @@ return [
     ],
     'useResultSet' => true,
     'fetchFrom' => 'Master',
-    'cacheKey' => DatabaseOpenCacheKey::$Category
+    'cacheKey' => DatabaseOpenCacheKey::$Category,
+    'responseLag' => [
+        // No of Requests => Seconds Lag
+        0 => 0,
+        2 => 10,
+    ]
 ];

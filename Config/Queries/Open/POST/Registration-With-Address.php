@@ -33,5 +33,10 @@ return [
     'rateLimiterSecondsWindow' => 3600,
     'useHierarchy' => true,
     'payloadType' => 'Object',
-    'idempotentWindow' => 10
+    'idempotentWindow' => 10,
+    'responseLag' => [
+        // No of Requests => Seconds Lag
+        0 => 0,
+        2 => 10,
+    ]
 ];

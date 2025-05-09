@@ -84,6 +84,9 @@ class Read
         // Rate Limiting request if configured for Route Queries.
         $this->rateLimitRoute($readSqlConfig);
 
+        // Lag Response
+        $this->lagResponse($readSqlConfig);
+
         // Check for cache
         $tobeCached = false;
         if (

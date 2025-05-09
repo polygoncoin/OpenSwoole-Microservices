@@ -169,6 +169,9 @@ class Write
             // Rate Limiting request if configured for Route Queries.
             $this->rateLimitRoute($writeSqlConfig);
 
+            // Lag Response
+            $this->lagResponse($writeSqlConfig);
+
             // Begin DML operation
             if (is_null($hashJson)) {
                 $this->db->begin();
