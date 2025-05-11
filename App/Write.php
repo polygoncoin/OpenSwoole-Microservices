@@ -288,14 +288,14 @@ class Write
             if (!$isAssoc && !isset($response[$counter])) {
                 $response[$counter] = [];
             }
-            if (isset($writeSqlConfig['insertId'])) {
+            if (isset($writeSqlConfig['__INSERT-ID__'])) {
                 $insertId = $this->db->lastInsertId();
                 if ($isAssoc) {
-                    $response[$writeSqlConfig['insertId']] = $insertId;
+                    $response[$writeSqlConfig['__INSERT-ID__']] = $insertId;
                 } else {
-                    $response[$counter][$writeSqlConfig['insertId']] = $insertId;
+                    $response[$counter][$writeSqlConfig['__INSERT-ID__']] = $insertId;
                 }
-                $this->c->httpRequest->session['insertId'][$writeSqlConfig['insertId']] = $insertId;
+                $this->c->httpRequest->session['__INSERT-ID__'][$writeSqlConfig['__INSERT-ID__']] = $insertId;
             } else {
                 $affectedRows = $this->db->affectedRows();
                 if ($isAssoc) {
@@ -307,7 +307,7 @@ class Write
             $this->db->closeCursor();
 
             // subQuery for payload
-            if (isset($writeSqlConfig['subQuery'])) {
+            if (isset($writeSqlConfig['__SUB-QUERY__'])) {
                 $this->callWriteDB($isAssoc, $writeSqlConfig, $_payloadIndexes, $configKeys, $useHierarchy, $response, $required);
             }
 
@@ -341,8 +341,8 @@ class Write
         }
         if (!is_array($payloadIndexes)) $payloadIndexes = [];
 
-        if (isset($writeSqlConfig['subQuery']) && $this->isAssoc($writeSqlConfig['subQuery'])) {
-            foreach ($writeSqlConfig['subQuery'] as $module => &$_writeSqlConfig) {
+        if (isset($writeSqlConfig['__SUB-QUERY__']) && $this->isAssoc($writeSqlConfig['__SUB-QUERY__'])) {
+            foreach ($writeSqlConfig['__SUB-QUERY__'] as $module => &$_writeSqlConfig) {
                 $_payloadIndexes = $payloadIndexes;
                 $_configKeys = $configKeys;
                 $modulePayloadKey = is_array($_payloadIndexes) ? implode(':', $_payloadIndexes) : '';
@@ -380,8 +380,8 @@ class Write
     {
         $return = true;
         $isValidData = true;
-        if (isset($writeSqlConfig['validate'])) {
-            list($isValidData, $errors) = $this->validate($writeSqlConfig['validate']);
+        if (isset($writeSqlConfig['__VALIDATE__'])) {
+            list($isValidData, $errors) = $this->validate($writeSqlConfig['__VALIDATE__']);
             if ($isValidData !== true) {
                 $this->c->httpResponse->httpStatus = HttpStatus::$BadRequest;
                 $this->c->httpResponse->jsonEncode->startObject();

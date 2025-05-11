@@ -4,7 +4,7 @@ namespace Microservices\Config\Queries\Auth\ClientDB\POST;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    'query' => "INSERT INTO `master_users` SET __SET__",
+    '__QUERY__' => "INSERT INTO `master_users` SET __SET__",
     '__SET__' => [
         'firstname' => ['payload', 'firstname'],
         'lastname' => ['payload', 'lastname'],
@@ -16,7 +16,7 @@ return [
         'ip' => ['custom', '127.0.0.1'],
         'group_id' => ['custom', '1'],
     ],
-    'insertId' => 'registration:id',
+    '__INSERT-ID__' => 'registration:id',
     'payloadType' => 'Object',
     'idempotentWindow' => 10
 ];

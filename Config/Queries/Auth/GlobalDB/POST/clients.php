@@ -6,7 +6,7 @@ use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
 return [
-    'query' => "INSERT INTO `{$Env::$clients}` SET __SET__",
+    '__QUERY__' => "INSERT INTO `{$Env::$clients}` SET __SET__",
     '__SET__' => [
         'name' => ['payload', 'name'],
         'comments' => ['payload', 'comments'],
@@ -16,5 +16,5 @@ return [
         'is_disabled' => ['custom', 'No'],
         'is_deleted' => ['custom', 'No']
     ],
-    'insertId' => 'client_id',
+    '__INSERT-ID__' => 'client_id',
 ];

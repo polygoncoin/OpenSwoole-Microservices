@@ -4,8 +4,8 @@ namespace Microservices\Config\Queries\Auth\ClientDB\Common;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    'query' => "UPDATE `master_users` SET __SET__ WHERE __WHERE__",
-    'validate' => [
+    '__QUERY__' => "UPDATE `master_users` SET __SET__ WHERE __WHERE__",
+    '__VALIDATE__' => [
 		[
 			'fn' => 'primaryKeyExist',
 			'fnArgs' => [

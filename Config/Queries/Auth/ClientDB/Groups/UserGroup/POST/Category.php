@@ -5,29 +5,29 @@ use Microservices\App\DatabaseCacheKey;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    'query' => "INSERT INTO `category` SET __SET__",
+    '__QUERY__' => "INSERT INTO `category` SET __SET__",
     '__SET__' => [
         'name' => ['payload', 'name'],
         'parent_id' => ['custom', 0],
     ],
-    'insertId' => 'category:id',
-    'subQuery' => [
+    '__INSERT-ID__' => 'category:id',
+    '__SUB-QUERY__' => [
         'sub' => [
-            'query' => "INSERT INTO `category` SET __SET__",
+            '__QUERY__' => "INSERT INTO `category` SET __SET__",
             '__SET__' => [
                 'name' => ['payload', 'subname'],
-                'parent_id' => ['insertId', 'category:id'],
+                'parent_id' => ['__INSERT-ID__', 'category:id'],
             ],
-            'insertId' => 'sub:id',
-            'subQuery' => [
+            '__INSERT-ID__' => 'sub:id',
+            '__SUB-QUERY__' => [
                 'subsub' => [
-                    'query' => "INSERT INTO `category` SET __SET__",
+                    '__QUERY__' => "INSERT INTO `category` SET __SET__",
                     '__SET__' => [
                         'name' => ['payload', 'subsubname'],
                         // 'name' => ['sqlInputs', 'return:sub:name'],
-                        'parent_id' => ['insertId', 'sub:id'],
+                        'parent_id' => ['__INSERT-ID__', 'sub:id'],
                     ],
-                    'insertId' => 'subsub:id',
+                    '__INSERT-ID__' => 'subsub:id',
                 ]
             ]
         ]

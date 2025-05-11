@@ -100,12 +100,12 @@ trait AppTrait
         }
 
         // Check in subQuery
-        if (isset($sqlConfig['subQuery'])) {
-            if (!$this->isAssoc($sqlConfig['subQuery'])) {
+        if (isset($sqlConfig['__SUB-QUERY__'])) {
+            if (!$this->isAssoc($sqlConfig['__SUB-QUERY__'])) {
                 throw new \Exception('Invalid Configuration: subQuery should be an associative array', HttpStatus::$InternalServerError);
                 return;
             }
-            foreach ($sqlConfig['subQuery'] as $module => &$sqlDetails) {
+            foreach ($sqlConfig['__SUB-QUERY__'] as $module => &$sqlDetails) {
                 $_flag = ($flag) ?? $this->getUseHierarchy($sqlDetails);
                 $sub_requiredFields = $this->getRequired($sqlDetails, $isGetRequiredFirstCall = false, $_flag);
                 if ($_flag) {
@@ -154,7 +154,7 @@ trait AppTrait
      */
     private function getSqlAndParams(&$sqlDetails, $isFirstCall = null, $configKeys = null, $flag = null)
     {
-        $sql = $sqlDetails['query'];
+        $sql = $sqlDetails['__QUERY__'];
         $sqlParams = [];
         $paramKeys = [];
         $errors = [];
@@ -396,8 +396,8 @@ trait AppTrait
         }
 
         // Check in subQuery
-        if (isset($sqlConfig['subQuery'])) {
-            foreach ($sqlConfig['subQuery'] as $module => &$_sqlConfig) {
+        if (isset($sqlConfig['__SUB-QUERY__'])) {
+            foreach ($sqlConfig['__SUB-QUERY__'] as $module => &$_sqlConfig) {
                 $_flag = ($flag) ?? $this->getUseHierarchy($_sqlConfig);
                 $sub_requiredFields = $this->getConfigParams($_sqlConfig, $isGetConfigParamsFirstCall = false, $_flag);
                 if ($flag) {

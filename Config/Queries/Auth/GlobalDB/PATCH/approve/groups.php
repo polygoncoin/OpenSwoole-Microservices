@@ -6,7 +6,7 @@ use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
 return [
-    'query' => "UPDATE `{$Env::$groups}` SET __SET__ WHERE __WHERE__",
+    '__QUERY__' => "UPDATE `{$Env::$groups}` SET __SET__ WHERE __WHERE__",
     '__SET__' => [
         'is_approved' => ['custom', 'Yes'],
         'updated_by' => ['userDetails', 'user_id'],
@@ -18,7 +18,7 @@ return [
         'is_deleted' => ['custom', 'No'],
         'group_id' => ['payload', 'group_id', DatabaseDataTypes::$INT]
     ],
-    'validate' => [
+    '__VALIDATE__' => [
 		[
 			'fn' => 'primaryKeyExist',
 			'fnArgs' => [

@@ -186,7 +186,7 @@ class Read
     {
         $isAssoc = $this->isAssoc($readSqlConfig);
         if ($isAssoc) {
-            switch ($readSqlConfig['mode']) {
+            switch ($readSqlConfig['__MODE__']) {
                 // Query will return single row
                 case 'singleRowFormat':
                     if ($isFirstCall) {
@@ -239,8 +239,8 @@ class Read
         $this->db->execDbQuery($sql, $sqlParams);
         if ($row =  $this->db->fetch()) {
             //check if selected column-name mismatches or confliects with configured module/submodule names
-            if (isset($readSqlConfig['subQuery'])) {
-                $subQueryKeys = array_keys($readSqlConfig['subQuery']);
+            if (isset($readSqlConfig['__SUB-QUERY__'])) {
+                $subQueryKeys = array_keys($readSqlConfig['__SUB-QUERY__']);
                 foreach($row as $key => $value) {
                     if (in_array($key, $subQueryKeys)) {
                         throw new \Exception('Invalid configuration: Conflicting column names', HttpStatus::$InternalServerError);
@@ -255,7 +255,7 @@ class Read
         }
         $this->db->closeCursor();
 
-        if (isset($readSqlConfig['subQuery'])) {
+        if (isset($readSqlConfig['__SUB-QUERY__'])) {
             $this->callReadDB($readSqlConfig, $configKeys, $row, $useResultSet);
         }
     }
@@ -269,7 +269,7 @@ class Read
      */
     private function fetchRowsCount($readSqlConfig)
     {
-        $readSqlConfig['query'] = $readSqlConfig['countQuery'];
+        $readSqlConfig['__QUERY__'] = $readSqlConfig['countQuery'];
         unset($readSqlConfig['countQuery']);
 
         $this->c->httpRequest->session['payload']['page']  = $_GET['page'] ?? 1;
@@ -349,12 +349,12 @@ class Read
                 if (count($row) === 1) {
                     $singleColumn = true;
                 }
-                $singleColumn = $singleColumn && !isset($readSqlConfig['subQuery']);
+                $singleColumn = $singleColumn && !isset($readSqlConfig['__SUB-QUERY__']);
                 $i++;
             }
             if ($singleColumn) {
                 $this->jsonEncode->encode($row[key($row)]);
-            } else if (isset($readSqlConfig['subQuery'])) {
+            } else if (isset($readSqlConfig['__SUB-QUERY__'])) {
                 $this->jsonEncode->startObject();
                 foreach($row as $key => $value) {
                     $this->jsonEncode->addKeyValue($key, $value);
@@ -383,8 +383,8 @@ class Read
             $this->resetFetchData($dataPayloadType = 'sqlResults', $configKeys, $row);
         }
 
-        if (isset($readSqlConfig['subQuery']) && $this->isAssoc($readSqlConfig['subQuery'])) {
-            foreach ($readSqlConfig['subQuery'] as $subQuery_key => &$_readSqlConfig) {
+        if (isset($readSqlConfig['__SUB-QUERY__']) && $this->isAssoc($readSqlConfig['__SUB-QUERY__'])) {
+            foreach ($readSqlConfig['__SUB-QUERY__'] as $subQuery_key => &$_readSqlConfig) {
                 $_configKeys = $configKeys;
                 $_configKeys[] = $subQuery_key;
                 $_useResultSet = ($useResultSet) ?? $this->getUseHierarchy($_readSqlConfig, 'useResultSet');

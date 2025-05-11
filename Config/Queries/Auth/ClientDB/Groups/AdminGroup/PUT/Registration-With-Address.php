@@ -4,7 +4,7 @@ namespace Microservices\Config\Queries\Auth\ClientDB\POST;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    'query' => "UPDATE `master_users` SET __SET__ WHERE __WHERE__",
+    '__QUERY__' => "UPDATE `master_users` SET __SET__ WHERE __WHERE__",
     '__SET__' => [
         'firstname' => ['payload', 'firstname'],
         'lastname' => ['payload', 'lastname'],
@@ -18,9 +18,9 @@ return [
         'is_deleted' => ['custom', 'No'],
         'user_id' => ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey]
     ],
-    'subQuery' => [
+    '__SUB-QUERY__' => [
         'address' => [
-            'query' => "UPDATE `address` SET __SET__ WHERE __WHERE__",
+            '__QUERY__' => "UPDATE `address` SET __SET__ WHERE __WHERE__",
             '__SET__' => [
                 'address' => ['payload', 'address']
             ],
@@ -30,7 +30,7 @@ return [
             ],
         ]
     ],
-    'validate' => [
+    '__VALIDATE__' => [
 		[
 			'fn' => 'primaryKeyExist',
 			'fnArgs' => [
