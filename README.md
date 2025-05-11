@@ -1,6 +1,6 @@
 # OpenSwoole based Low code API generator
 
-This is a light & easy Openswoole based Low code API generator. It can be used to create APIs in a very short time once you are done with your database.
+This is a light & easy Openswoole based low code API generator. It can be used to create APIs in a very short time once you are done with your database.
 
 ## Contents
 
