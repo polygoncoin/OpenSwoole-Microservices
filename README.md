@@ -1,6 +1,6 @@
-# OpenSwoole based Microservices
+# OpenSwoole based Low code API generator
 
-This is a light & easy Openswoole based Microservices framework. It can be used to create APIs in a very short time once you are done with your database.
+This is a light & easy Openswoole based Low code API generator. It can be used to create APIs in a very short time once you are done with your database.
 
 ## Contents
 
@@ -93,12 +93,12 @@ client_users='master_users'         ;Table in client database containing user de
 
 ## Folders
 
-- **App** Basic Microservices application folder
-- **Config** Basic Microservices configuration folder
+- **App** Basic application folder
+- **Config** Basic configuration folder
 - **Crons** Contains classes for cron API's
 - **Custom** Contains classes for custom API's
 - **Dropbox** Folder for uploaded files.
-- **public\_html** Microservices doc root folder
+- **public\_html** Application doc root folder
 - **ThirdParty** Contains classes for third-party API's
 - **Upload** Contains classes for upload file API's
 - **Validation** Contains validation classes.
