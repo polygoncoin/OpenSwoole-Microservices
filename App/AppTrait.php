@@ -86,10 +86,10 @@ trait AppTrait
             foreach ($sqlConfig['__WHERE__'] as $var => $where) {
                 $dataPayloadType = $where[0];
                 $dataPayloadTypeKey = $where[1];
-                if ($isFirstCall && in_array($dataPayloadType, ['sqlResults', 'sqlInputs', 'sqlPayload'])) {
+                if ($isFirstCall && in_array($dataPayloadType, ['sqlResults', 'sqlParams', 'sqlPayload'])) {
                     throw new \Exception('Invalid config: First query can not have ' . $dataPayloadType . ' config', HttpStatus::$InternalServerError);
                 }
-                if (in_array($dataPayloadType, ['sqlResults', 'sqlInputs', 'sqlPayload'])) {
+                if (in_array($dataPayloadType, ['sqlResults', 'sqlParams', 'sqlPayload'])) {
                     $foundHierarchy = true;
                     break;
                 }
@@ -216,7 +216,7 @@ trait AppTrait
         }
 
         if (!empty($row)) {
-            $this->resetFetchData($dataPayloadType = 'sqlInputs', $configKeys, $row);
+            $this->resetFetchData($dataPayloadType = 'sqlParams', $configKeys, $row);
         }
 
         return [$sql, $sqlParams, $errors];
@@ -241,7 +241,7 @@ trait AppTrait
                 $value = $function($this->c->httpRequest->session);
                 $sqlParams[$var] = $value;
                 continue;
-            } else if (in_array($dataPayloadType, ['sqlResults', 'sqlInputs', 'sqlPayload'])) {
+            } else if (in_array($dataPayloadType, ['sqlResults', 'sqlParams', 'sqlPayload'])) {
                 $dataPayloadTypeKeys = explode(':',$dataPayloadTypeKey);
                 $value = $this->c->httpRequest->session[$dataPayloadType];
                 foreach($dataPayloadTypeKeys as $key) {
@@ -385,7 +385,7 @@ trait AppTrait
             foreach ($sqlConfig['__WHERE__'] as $var => $payload) {
                 $dataPayloadType = $payload[0];
                 $dataPayloadTypeKey = $payload[1];
-                if (in_array($dataPayloadType, ['sqlResults', 'sqlInputs', 'sqlPayload'])) {
+                if (in_array($dataPayloadType, ['sqlResults', 'sqlParams', 'sqlPayload'])) {
                     $foundHierarchy = true;
                     break;
                 }
@@ -420,7 +420,7 @@ trait AppTrait
     /**
      * Function to reset data for module key wise
      *
-     * @param string  $dataPayloadType sqlResults / sqlInputs / sqlPayload
+     * @param string  $dataPayloadType sqlResults / sqlParams / sqlPayload
      * @param array   $keys            Module Keys in recursion
      * @param array   $row             Row data fetched from DB
      * @return void

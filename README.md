@@ -293,9 +293,9 @@ return [
                 ],
                 ...
                 ...
-                'column' => ['sqlInputs', '<return:keys>'], // Available for both DQL & DML operations
+                'column' => ['sqlParams', '<return:keys>'], // Available for both DQL & DML operations
                 'column' => ['sqlResults', '<return:keys>'], // Available for DQL operations
-                'column' => ['sqlPayload', '<return:keys>'], // Available for DML operations
+                'column' => ['sqlPayload', '<return:keys>'], // Available for both DQL & DML operations
                 'column' => ['__INSERT-IDs__', '<keyName>:id'], // SQL Insert id
             ],
             '__WHERE__' => [

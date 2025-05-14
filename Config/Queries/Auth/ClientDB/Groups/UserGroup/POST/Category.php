@@ -24,7 +24,7 @@ return [
                     '__QUERY__' => "INSERT INTO `category` SET __SET__",
                     '__SET__' => [
                         'name' => ['payload', 'subsubname'],
-                        // 'name' => ['sqlInputs', 'return:sub:name'],
+                        // 'name' => ['sqlParams', 'return:sub:name'],
                         'parent_id' => ['__INSERT-IDs__', 'sub:id'],
                     ],
                     '__INSERT-IDs__' => 'subsub:id',
