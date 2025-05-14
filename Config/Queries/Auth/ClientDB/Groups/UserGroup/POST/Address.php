@@ -9,5 +9,5 @@ return [
         'user_id' => ['payload', 'user_id', DatabaseDataTypes::$INT],
         'address' => ['payload', 'address'],
     ],
-    '__INSERT-ID__' => 'address:id'
+    '__INSERT-IDs__' => 'address:id'
 ];

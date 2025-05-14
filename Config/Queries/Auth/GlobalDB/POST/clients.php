@@ -16,5 +16,5 @@ return [
         'is_disabled' => ['custom', 'No'],
         'is_deleted' => ['custom', 'No']
     ],
-    '__INSERT-ID__' => 'client_id',
+    '__INSERT-IDs__' => 'client_id',
 ];

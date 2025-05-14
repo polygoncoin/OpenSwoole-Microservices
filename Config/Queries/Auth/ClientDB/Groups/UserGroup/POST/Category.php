@@ -10,24 +10,24 @@ return [
         'name' => ['payload', 'name'],
         'parent_id' => ['custom', 0],
     ],
-    '__INSERT-ID__' => 'category:id',
+    '__INSERT-IDs__' => 'category:id',
     '__SUB-QUERY__' => [
         'sub' => [
             '__QUERY__' => "INSERT INTO `category` SET __SET__",
             '__SET__' => [
                 'name' => ['payload', 'subname'],
-                'parent_id' => ['__INSERT-ID__', 'category:id'],
+                'parent_id' => ['__INSERT-IDs__', 'category:id'],
             ],
-            '__INSERT-ID__' => 'sub:id',
+            '__INSERT-IDs__' => 'sub:id',
             '__SUB-QUERY__' => [
                 'subsub' => [
                     '__QUERY__' => "INSERT INTO `category` SET __SET__",
                     '__SET__' => [
                         'name' => ['payload', 'subsubname'],
                         // 'name' => ['sqlInputs', 'return:sub:name'],
-                        'parent_id' => ['__INSERT-ID__', 'sub:id'],
+                        'parent_id' => ['__INSERT-IDs__', 'sub:id'],
                     ],
-                    '__INSERT-ID__' => 'subsub:id',
+                    '__INSERT-IDs__' => 'subsub:id',
                 ]
             ]
         ]

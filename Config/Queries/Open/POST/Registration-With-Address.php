@@ -16,15 +16,15 @@ return [
         'ip' => ['custom', '127.0.0.1'],
         'group_id' => ['custom', '1'],
     ],
-    '__INSERT-ID__' => 'registration:id',
+    '__INSERT-IDs__' => 'registration:id',
     '__SUB-QUERY__' => [
         'address' => [
             '__QUERY__' => "INSERT INTO `address` SET __SET__",
             '__SET__' => [
-                'user_id' => ['__INSERT-ID__', 'registration:id'],
+                'user_id' => ['__INSERT-IDs__', 'registration:id'],
                 'address' => ['payload', 'address']
             ],
-            '__INSERT-ID__' => 'address:id',
+            '__INSERT-IDs__' => 'address:id',
             'payloadType' => 'Array',
             'maxPayloadObjects' => 2
         ]

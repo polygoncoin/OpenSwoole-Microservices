@@ -16,7 +16,7 @@ return [
         'ip' => ['custom', '127.0.0.1'],
         'group_id' => ['custom', '1'],
     ],
-    '__INSERT-ID__' => 'registration:id',
+    '__INSERT-IDs__' => 'registration:id',
     'payloadType' => 'Object',
     'idempotentWindow' => 10
 ];

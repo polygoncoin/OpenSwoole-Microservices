@@ -288,14 +288,14 @@ class Write
             if (!$isAssoc && !isset($response[$counter])) {
                 $response[$counter] = [];
             }
-            if (isset($writeSqlConfig['__INSERT-ID__'])) {
+            if (isset($writeSqlConfig['__INSERT-IDs__'])) {
                 $insertId = $this->db->lastInsertId();
                 if ($isAssoc) {
-                    $response[$writeSqlConfig['__INSERT-ID__']] = $insertId;
+                    $response[$writeSqlConfig['__INSERT-IDs__']] = $insertId;
                 } else {
-                    $response[$counter][$writeSqlConfig['__INSERT-ID__']] = $insertId;
+                    $response[$counter][$writeSqlConfig['__INSERT-IDs__']] = $insertId;
                 }
-                $this->c->httpRequest->session['__INSERT-ID__'][$writeSqlConfig['__INSERT-ID__']] = $insertId;
+                $this->c->httpRequest->session['__INSERT-IDs__'][$writeSqlConfig['__INSERT-IDs__']] = $insertId;
             } else {
                 $affectedRows = $this->db->affectedRows();
                 if ($isAssoc) {
