@@ -244,6 +244,9 @@ class HttpRequest extends Gateway
             $this->session['payload'] = !empty($_GET) ? $_GET : [];
         } else {
             $this->payloadStream = fopen("php://memory", "rw+b");
+            if (empty($this->httpRequestDetails['post']['Payload'])) {
+                $this->httpRequestDetails['post']['Payload'] = '{}';
+            }
             fwrite($this->payloadStream, $this->httpRequestDetails['post']['Payload']);
             
             $this->jsonDecode = new JsonDecode($this->payloadStream);

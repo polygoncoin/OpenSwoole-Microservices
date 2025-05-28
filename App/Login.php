@@ -153,13 +153,12 @@ class Login
     {
         $clientId = $this->c->httpRequest->session['clientDetails']['client_id'];
         $this->clientUserKey = CacheKey::ClientUser($clientId, $this->payload['username']);
-        // Redis - one can find the userID from username
-        if ($this->c->httpRequest->cache->cacheExists($this->clientUserKey)) {
-            $this->userDetails = json_decode($this->c->httpRequest->cache->getCache($this->clientUserKey), true);
-            if (empty($this->userDetails['user_id']) || empty($this->userDetails['group_id'])) {
-                throw new \Exception('Invalid credentials', HttpStatus::$Unauthorized);
-            }
-        } else {
+        // Redis - one can find the userID from client username
+        if (!$this->c->httpRequest->cache->cacheExists($this->clientUserKey)) {
+            throw new \Exception('Invalid credentials', HttpStatus::$Unauthorized);
+        }
+        $this->userDetails = json_decode($this->c->httpRequest->cache->getCache($this->clientUserKey), true);
+        if (empty($this->userDetails['user_id']) || empty($this->userDetails['group_id'])) {
             throw new \Exception('Invalid credentials', HttpStatus::$Unauthorized);
         }
     }

@@ -38,28 +38,32 @@ class Web
         $curlConfig[CURLOPT_URL] = "{$homeURL}?r={$route}&{$queryString}";
         $curlConfig[CURLOPT_HTTPHEADER] = $header;
 
+        $payload = http_build_query([
+            "Payload" => $json
+        ]);
+
         switch ($method) {
             case 'GET':
                 break;
             case 'POST':
                 $curlConfig[CURLOPT_HTTPHEADER][] = 'Content-Type: text/plain; charset=utf-8';
                 $curlConfig[CURLOPT_POST] = true;
-                $curlConfig[CURLOPT_POSTFIELDS] = $json;
+                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
                 break;
             case 'PUT':
                 $curlConfig[CURLOPT_HTTPHEADER][] = 'Content-Type: text/plain; charset=utf-8';
                 $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PUT';
-                $curlConfig[CURLOPT_POSTFIELDS] = $json;
+                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
                 break;
             case 'PATCH':
                 $curlConfig[CURLOPT_HTTPHEADER][] = 'Content-Type: text/plain; charset=utf-8';
                 $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PATCH';
-                $curlConfig[CURLOPT_POSTFIELDS] = $json;
+                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
                 break;
             case 'DELETE':
                 $curlConfig[CURLOPT_HTTPHEADER][] = 'Content-Type: text/plain; charset=utf-8';
                 $curlConfig[CURLOPT_CUSTOMREQUEST] = 'DELETE';
-                $curlConfig[CURLOPT_POSTFIELDS] = $json;
+                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
                 break;
         }
         $curlConfig[CURLOPT_RETURNTRANSFER] = true;
@@ -93,8 +97,7 @@ class Web
 
         $assoc = (!isset($triggerConfig[0])) ? true : false;
 
-        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
-        $homeURL = $protocol . '://' . $this->c->httpRequestDetails['server']['host'] . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $homeURL = 'http://127.0.0.1:9501';
 
         $header = [];
         $header[] = 'X-API-Version: v1.0.0';
