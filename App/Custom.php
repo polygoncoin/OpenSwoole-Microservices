@@ -2,7 +2,7 @@
 namespace Microservices\App;
 
 use Microservices\App\Common;
-use Microservices\Custom\CustomInterface;
+use Microservices\Supplement\Custom\CustomInterface;
 
 /**
  * Class to initiate custom API's
@@ -55,7 +55,7 @@ class Custom
      */
     public function process()
     {
-        $class = 'Microservices\\Custom\\' . ucfirst($this->c->httpRequest->routeElements[1]);
+        $class = 'Microservices\\Supplement\\Custom\\' . ucfirst($this->c->httpRequest->routeElements[1]);
 
         $this->api = new $class($this->c);
         if ($this->api->init()) {

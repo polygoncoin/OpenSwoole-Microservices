@@ -4,7 +4,7 @@ namespace Microservices\App;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
-use Microservices\ThirdParty\ThirdPartyInterface;
+use Microservices\Supplement\ThirdParty\ThirdPartyInterface;
 
 /**
  * Class to initiate custom API's
@@ -57,7 +57,7 @@ class ThirdParty
      */
     public function process()
     {
-        $class = 'Microservices\\ThirdParty\\' . ucfirst($this->c->httpRequest->routeElements[1]);
+        $class = 'Microservices\\Supplement\\ThirdParty\\' . ucfirst($this->c->httpRequest->routeElements[1]);
 
         $this->api = new $class($this->c);
         if ($this->api->init()) {

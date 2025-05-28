@@ -7,7 +7,7 @@ return [
     'countQuery' => "SELECT count(1) as `count` FROM `address` WHERE __WHERE__",
     '__QUERY__' => "SELECT * FROM `address` WHERE __WHERE__",
     '__WHERE__' => [
-        'is_deleted' => ['custom', 'No']
+        ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No']
     ],
     '__MODE__' => 'multipleRowFormat'
 ];

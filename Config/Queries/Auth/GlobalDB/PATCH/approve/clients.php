@@ -8,15 +8,15 @@ use Microservices\App\Env;
 return [
     '__QUERY__' => "UPDATE `{$Env::$clients}` SET __SET__ WHERE __WHERE__",
     '__SET__' => [
-        'is_approved' => ['custom', 'Yes'],
-        'updated_by' => ['userDetails', 'user_id'],
-        'updated_on' => ['custom', date('Y-m-d H:i:s')]
+        ['column' => 'is_approved', 'fetchFrom' => 'custom', 'fetchFromValue' => 'Yes'],
+        ['column' => 'updated_by', 'fetchFrom' => 'userDetails', 'fetchFromValue' => 'user_id'],
+        ['column' => 'updated_on', 'fetchFrom' => 'custom', 'fetchFromValue' => date('Y-m-d H:i:s')]
     ],
     '__WHERE__' => [
-        'is_approved' => ['custom', 'No'],
-        'is_disabled' => ['custom', 'No'],
-        'is_deleted' => ['custom', 'No'],
-        'client_id' => ['payload', 'client_id', DatabaseDataTypes::$INT]
+        ['column' => 'is_approved', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+        ['column' => 'is_disabled', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+        ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+        ['column' => 'client_id', 'fetchFrom' => 'payload', 'fetchFromValue' => 'client_id', 'dataType' => DatabaseDataTypes::$INT]
     ],
     '__VALIDATE__' => [
 		[

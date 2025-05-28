@@ -9,19 +9,19 @@ return [
     'all' => [
         '__QUERY__' => "SELECT * FROM `{$Env::$groups}` WHERE __WHERE__ ORDER BY group_id ASC",
         '__WHERE__' => [
-            'is_approved' => ['custom', 'Yes'],
-            'is_disabled' => ['custom', 'No'],
-            'is_deleted' => ['custom', 'No'],
+            ['column' => 'is_approved', 'fetchFrom' => 'custom', 'fetchFromValue' => 'Yes'],
+            ['column' => 'is_disabled', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+            ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
         ],
         '__MODE__' => 'multipleRowFormat'
     ],
     'single' => [
         '__QUERY__' => "SELECT * FROM `{$Env::$groups}` WHERE __WHERE__",
         '__WHERE__' => [
-            'is_approved' => ['custom', 'Yes'],
-            'is_disabled' => ['custom', 'No'],
-            'is_deleted' => ['custom', 'No'],
-            'group_id' => ['uriParams','group_id']
+            ['column' => 'is_approved', 'fetchFrom' => 'custom', 'fetchFromValue' => 'Yes'],
+            ['column' => 'is_disabled', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+            ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+            ['column' => 'group_id', 'fetchFrom' => 'uriParams', 'fetchFromValue' => 'group_id'],
         ],
         '__MODE__' => 'singleRowFormat'
     ]

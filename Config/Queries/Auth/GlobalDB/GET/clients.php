@@ -10,19 +10,19 @@ return [
         'countQuery' => "SELECT count(1) as `count` FROM `{$Env::$clients}` WHERE __WHERE__",
         '__QUERY__' => "SELECT * FROM `{$Env::$clients}` WHERE __WHERE__ ORDER BY client_id ASC",
         '__WHERE__' => [
-            'is_approved' => ['custom', 'Yes'],
-            'is_disabled' => ['custom', 'No'],
-            'is_deleted' => ['custom', 'No']
+            ['column' => 'is_approved', 'fetchFrom' => 'custom', 'fetchFromValue' => 'Yes'],
+            ['column' => 'is_disabled', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+            ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No']
             ],
         '__MODE__' => 'multipleRowFormat'
     ],
     'single' => [
         '__QUERY__' => "SELECT * FROM `{$Env::$clients}` WHERE __WHERE__",
         '__WHERE__' => [
-            'is_approved' => ['custom', 'Yes'],
-            'is_disabled' => ['custom', 'No'],
-            'is_deleted' => ['custom', 'No'],
-            'client_id' => ['uriParams','client_id']
+            ['column' => 'is_approved', 'fetchFrom' => 'custom', 'fetchFromValue' => 'Yes'],
+            ['column' => 'is_disabled', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+            ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+            ['column' => 'client_id', 'fetchFrom' => 'uriParams', 'fetchFromValue' => 'client_id']
         ],
         '__MODE__' => 'singleRowFormat'
     ],

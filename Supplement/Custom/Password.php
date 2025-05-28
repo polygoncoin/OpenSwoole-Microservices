@@ -1,12 +1,12 @@
 <?php
-namespace Microservices\Custom;
+namespace Microservices\Supplement\Custom;
 
 use Microservices\App\Constants;
 use Microservices\App\CacheKey;
 use Microservices\App\Common;
 use Microservices\App\Env;
-use Microservices\Custom\CustomInterface;
-use Microservices\Custom\CustomTrait;
+use Microservices\Supplement\Custom\CustomInterface;
+use Microservices\Supplement\Custom\CustomTrait;
 
 /**
  * Class to initialize DB Read operation

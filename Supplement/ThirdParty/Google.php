@@ -1,12 +1,12 @@
 <?php
-namespace Microservices\ThirdParty;
+namespace Microservices\Supplement\ThirdParty;
 
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
-use Microservices\ThirdParty\ThirdPartyInterface;
-use Microservices\ThirdParty\ThirdPartyTrait;
+use Microservices\Supplement\ThirdParty\ThirdPartyInterface;
+use Microservices\Supplement\ThirdParty\ThirdPartyTrait;
 
 
 /**
@@ -43,7 +43,7 @@ class Google implements ThirdPartyInterface
     public function __construct(&$common)
     {
         $this->c = &$common;
-        $this->c->httpRequest->setConnection($fetchFrom = 'Slave');
+        $this->c->httpRequest->db = $this->c->httpRequest->setDbConnection($fetchFrom = 'Slave');
     }
 
     /**

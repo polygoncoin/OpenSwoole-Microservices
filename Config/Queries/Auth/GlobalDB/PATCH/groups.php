@@ -8,15 +8,15 @@ use Microservices\App\Env;
 return [
     '__QUERY__' => "UPDATE `{$Env::$groups}` SET __SET__ WHERE __WHERE__",
     '__SET__' => [
-        'name' => ['payload', 'name'],
-        'updated_by' => ['userDetails', 'user_id'],
-        'updated_on' => ['custom', date('Y-m-d H:i:s')]
+        ['column' => 'name', 'fetchFrom' => 'payload', 'fetchFromValue' => 'name'],
+        ['column' => 'updated_by', 'fetchFrom' => 'userDetails', 'fetchFromValue' => 'user_id'],
+        ['column' => 'updated_on', 'fetchFrom' => 'custom', 'fetchFromValue' => date('Y-m-d H:i:s')]
     ],
     '__WHERE__' => [
-        'is_approved' => ['custom', 'Yes'],
-        'is_disabled' => ['custom', 'No'],
-        'is_deleted' => ['custom', 'No'],
-        'group_id' => ['uriParams', 'group_id', DatabaseDataTypes::$INT]
+        ['column' => 'is_approved', 'fetchFrom' => 'custom', 'fetchFromValue' => 'Yes'],
+        ['column' => 'is_disabled', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+        ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+        ['column' => 'group_id', 'fetchFrom' => 'uriParams', 'fetchFromValue' => 'group_id', 'dataType' => DatabaseDataTypes::$INT]
     ],
     '__VALIDATE__' => [
 		[

@@ -6,8 +6,10 @@ use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\JsonEncode;
+use Microservices\App\Hook;
 use Microservices\App\HttpStatus;
 use Microservices\App\Validator;
+use Microservices\App\Web;
 use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
@@ -39,6 +41,20 @@ class Read
      * @var null|Common
      */
     private $c = null;
+
+    /**
+     * Trigger Web API Object
+     *
+     * @var null|Web
+     */
+    private $web = null;
+
+    /**
+     * Hook Object
+     *
+     * @var null|Hook
+     */
+    private $hook = null;
 
     /**
      * Json Encode Object
@@ -79,7 +95,7 @@ class Read
         $session = &$this->c->httpRequest->session;
 
         // Load Queries
-        $readSqlConfig = include $this->c->httpRequest->__file__;
+        $readSqlConfig = include $this->c->httpRequest->__FILE__;
 
         // Rate Limiting request if configured for Route Queries.
         $this->rateLimitRoute($readSqlConfig);
@@ -185,6 +201,15 @@ class Read
     private function readDB(&$readSqlConfig, $isFirstCall, &$configKeys, $useResultSet)
     {
         $isAssoc = $this->isAssoc($readSqlConfig);
+
+        // Execute Pre Sql Hooks
+        if (isset($readSqlConfig['__PRE-SQL-HOOKS__'])) {
+            if (is_null($this->hook)) {
+                $this->hook = new Hook($this->c);
+            }
+            $this->hook->triggerHook($readSqlConfig['__PRE-SQL-HOOKS__']);
+        }
+
         if ($isAssoc) {
             switch ($readSqlConfig['__MODE__']) {
                 // Query will return single row
@@ -215,6 +240,22 @@ class Read
                     }
                     break;
             }
+        }
+
+        // triggers
+        if (isset($readSqlConfig['__TRIGGERS__'])) {
+            if (is_null($this->web)) {
+                $this->web = new Web($this->c);
+            }
+            $this->web->triggerConfig($readSqlConfig['__TRIGGERS__']);
+        }
+
+        // Execute Post Sql Hooks
+        if (isset($readSqlConfig['__POST-SQL-HOOKS__'])) {
+            if (is_null($this->hook)) {
+                $this->hook = new Hook($this->c);
+            }
+            $this->hook->triggerHook($readSqlConfig['__POST-SQL-HOOKS__']);
         }
     }
 

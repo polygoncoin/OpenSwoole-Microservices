@@ -1,6 +1,6 @@
 # OpenSwoole based Low code API generator
 
-This is a light & easy Openswoole based low code API generator. It can be used to create APIs in a very short time once you are done with your database.
+This is a light & easy Openswoole based low code API generator using configuration arrays. It can be used to create APIs in a very short time once you are done with your database.
 
 ## Contents
 
@@ -67,7 +67,7 @@ groups='m002_master_groups'
 clients='m001_master_clients'
 ```
 
-### Default application database/server for clients
+### Default database shared by most of the clients
 ```ini
 defaultDbType='MySql'
 defaultDbHostname='127.0.0.1'
@@ -77,7 +77,12 @@ defaultDbPassword='shames11'
 defaultDbDatabase='global'
 ```
 
-### Dedicated application database/server for client 1
+### Example of seperate database for client 1 on Default database server
+```ini
+dbDatabaseClient001='client_001'
+```
+
+### Example of a dedicated database server for client 1
 ```ini
 dbHostnameClient001='127.0.0.1'
 dbUsernameClient001='root'
@@ -85,79 +90,166 @@ dbPasswordClient001='shames11'
 dbDatabaseClient001='client_001'
 ```
 
-### Additional client database details
+### Additional table details for database server
 ```ini
 clientMasterDbName='client_master'  ;contains all entities required for a new client.
 client_users='master_users'         ;Table in client database containing user details.
+```
+
+These DB/Cache configurations can be set in below columns respectively for each client.
+```SQL
+`m001_master_clients`.`master_db_server_type` varchar(255) NOT NULL,
+`m001_master_clients`.`master_db_hostname` varchar(255) NOT NULL,
+`m001_master_clients`.`master_db_port` varchar(255) NOT NULL,
+`m001_master_clients`.`master_db_username` varchar(255) NOT NULL,
+`m001_master_clients`.`master_db_password` varchar(255) NOT NULL,
+`m001_master_clients`.`master_db_database` varchar(255) NOT NULL,
+`m001_master_clients`.`slave_db_server_type` varchar(255) NOT NULL,
+`m001_master_clients`.`slave_db_hostname` varchar(255) NOT NULL,
+`m001_master_clients`.`slave_db_port` varchar(255) NOT NULL,
+`m001_master_clients`.`slave_db_username` varchar(255) NOT NULL,
+`m001_master_clients`.`slave_db_password` varchar(255) NOT NULL,
+`m001_master_clients`.`slave_db_database` varchar(255) NOT NULL,
+`m001_master_clients`.`master_cache_server_type` varchar(255) NOT NULL,
+`m001_master_clients`.`master_cache_hostname` varchar(255) NOT NULL,
+`m001_master_clients`.`master_cache_port` varchar(255) NOT NULL,
+`m001_master_clients`.`master_cache_username` varchar(255) NOT NULL,
+`m001_master_clients`.`master_cache_password` varchar(255) NOT NULL,
+`m001_master_clients`.`master_cache_database` varchar(255) NOT NULL,
+`m001_master_clients`.`slave_cache_server_type` varchar(255) NOT NULL,
+`m001_master_clients`.`slave_cache_hostname` varchar(255) NOT NULL,
+`m001_master_clients`.`slave_cache_port` varchar(255) NOT NULL,
+`m001_master_clients`.`slave_cache_username` varchar(255) NOT NULL,
+`m001_master_clients`.`slave_cache_password` varchar(255) NOT NULL,
+`m001_master_clients`.`slave_cache_database` varchar(255) NOT NULL,
+```
+
+### The Rate Limiting configurations can be set as below.
+
+#### Cache server configuration for Rate Limiting
+```ini
+; ---- Rate Limit Server Details (Redis)
+;used to save Rate Limiting related details
+RateLimiterHost='127.0.0.1'     ; Redis host dealing with Rate limit
+RateLimiterHostPort=6379        ; Redis host port
+```
+
+#### IP based Rate Limiting
+```ini
+RateLimiterIPMaxRequests=600    ; Max request allowed per IP
+RateLimiterIPSecondsWindow=300  ; Window in seconds of Max request allowed per IP
+RateLimiterIPPrefix='IPRL:'     ; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to users)
+```
+
+#### Client/Group/User based Rate Limiting
+```ini
+RateLimiterClientPrefix='CRL:'  ; Client based Rate Limitng (GRL) key prefix used in Redis
+RateLimiterGroupPrefix='GRL:'   ; Group based Rate Limitng (GRL) key prefix used in Redis
+RateLimiterUserPrefix='URL:'    ; User based Rate Limitng (URL) key prefix used in Redis
+```
+
+##### Configure these in tables below
+```SQL
+# Client level
+`m001_master_clients`.`rateLimiterMaxRequests` int DEFAULT NULL,
+`m001_master_clients`.`rateLimiterSecondsWindow` int DEFAULT NULL,
+
+# Group level
+`m002_master_groups`.`rateLimiterMaxRequests` int DEFAULT NULL,
+`m002_master_groups`.`rateLimiterSecondsWindow` int DEFAULT NULL,
+
+# User level
+`master_users`.`rateLimiterMaxRequests` int DEFAULT NULL,
+`master_users`.`rateLimiterSecondsWindow` int DEFAULT NULL,
+```
+
+#### Route based Rate Limiting
+```ini
+RateLimiterRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) key prefix used in Redis
+```
+
+##### Configure these in SQL configuration as below
+```PHP
+return [
+    [...]
+    'rateLimiterMaxRequests' => 1, // Allowed number of requests
+    'rateLimiterSecondsWindow' => 3600, // Window in Seconds for allowed number of requests
+    [...]
+];
 ```
 
 ## Folders
 
 - **App** Basic application folder
 - **Config** Basic configuration folder
-- **Crons** Contains classes for cron API's
-- **Custom** Contains classes for custom API's
 - **Dropbox** Folder for uploaded files.
-- **public\_html** Application doc root folder
-- **ThirdParty** Contains classes for third-party API's
-- **Upload** Contains classes for upload file API's
+- **Hooks** Hooks.
+- **public\_html** Applicatipn doc root folder
+- **Supplement/Crons** Contains classes for cron API's
+- **Supplement/Custom** Contains classes for custom API's
+- **Supplement/ThirdParty** Contains classes for third-party API's
+- **Supplement/Upload** Contains classes for upload file API's
 - **Validation** Contains validation classes.
 
 ## Routes Folder
 
-- **/Config/Routes/&lt;GroupName&gt;**
+- **/Config/Routes/Auth/&lt;GroupName&gt;**
+- **/Config/Routes/Open**
 
 **&lt;GroupName&gt;** is the group user belongs to for accessing the API's
 
 ### Files
 
-- **GETroutes.php** for all GET method routes configuration.
-- **POSTroutes.php** for all POST method routes configuration.
-- **PUTroutes.php** for all PUT method routes configuration.
-- **PATCHroutes.php** for all PATCH method routes configuration.
-- **DELETEroutes.php** for all DELETE method routes configuration.
+- **/GETroutes.php** for all GET method routes configuration.
+- **/POSTroutes.php** for all POST method routes configuration.
+- **/PUTroutes.php** for all PUT method routes configuration.
+- **/PATCHroutes.php** for all PATCH method routes configuration.
+- **/DELETEroutes.php** for all DELETE method routes configuration.
 
-### Example
+### Routes Configuration Rules
 
 * For configuring route **/tableName/parts** GET method
 ```PHP
 return [
     'tableName' => [
         'parts' => [
-            '__file__' => 'SQL file location'
+            '__FILE__' => 'SQL file location'
         ]
     ]
 ];
 ```
+
 * For configuring route **/tableName/{id}** where id is dynamic **integer** value to be collected.
 ```PHP
 return [
     'tableName' => [
         '{id:int}' => [
-            '__file__' => 'SQL file location'
+            '__FILE__' => 'SQL file location'
         ]
     ]
 ];
 ```
+
 * Same dynamic variable but with a different data type, for e.g. **{id}** will be treated differently for **string** and **integer** values to be collected.
 ```PHP
 return [
     'tableName' => [
         '{id:int}' => [
-            '__file__' => 'SQL file location for integer data type'
+            '__FILE__' => 'SQL file location for integer data type'
         ],
         '{id:string}' => [
-            '__file__' => 'SQL file location for string data type'
+            '__FILE__' => 'SQL file location for string data type'
         ]
     ]
 ];
 ```
+
 * To restrict dynamic values to a certain set of values. One can do the same by appending comma-separated values after OR key.
 ```PHP
 return [
     '{tableName:string|admin,group,client,routes}' => [
         '{id:int}' => [
-            '__file__' => 'SQL file location'
+            '__FILE__' => 'SQL file location'
         ]
     ]
 ];
@@ -168,25 +260,49 @@ return [
 return [
     '{tableName:string}' => [
         '{id:int|!0}' => [
-            '__file__' => 'SQL file location'
+            '__FILE__' => 'SQL file location'
         ]
     ]
 ];
 ```
+
+> Hooks
+```PHP
+return [
+    '{tableName:string}' => [
+        '__FILE__' => 'SQL file location',
+        '__PRE-ROUTE-HOOKS__' => [// These will apply recursively
+            'Hook_1',
+            '...'
+        ],
+        '__POST-ROUTE-HOOKS__' => [// These will apply recursively
+            'Hook_1',
+            '...'
+        ]
+        '{id:int|!0}' => [
+            '__FILE__' => 'SQL file location',
+            '__PRE-ROUTE-HOOKS__' => [], // For noi hooks
+            '__POST-ROUTE-HOOKS__' => [] // For noi hooks
+        ]
+    ]
+];
+```
+
 > This '{id:int|!0}' means id is integer but can't be zero.
 
 ## Queries Folder
 
-- **/Config/Queries/GlobalDB** for global database.
-- **/Config/Queries/ClientDB** for Clients (including all hosts and their databases).
+- **/Config/Queries/Auth/GlobalDB** for global database.
+- **/Config/Queries/Auth/ClientDB** for Clients (including all hosts and their databases).
+- **/Config/Queries/Open** for Open to Web API's (No Authentication).
 
 ### Files
 
-- **GET/&lt;filenames&gt;.php** GET method SQL.
-- **POST/&lt;filenames&gt;;.php** POST method SQL.
-- **PUT/&lt;filenames&gt;.php** PUT method SQL.
-- **PATCH/&lt;filenames&gt;.php** PATCH method SQL.
-- **DELETE/&lt;filenames&gt;.php** DELETE method SQL.
+- **/GET/&lt;filenames&gt;.php** GET method SQL.
+- **/POST/&lt;filenames&gt;;.php** POST method SQL.
+- **/PUT/&lt;filenames&gt;.php** PUT method SQL.
+- **/PATCH/&lt;filenames&gt;.php** PATCH method SQL.
+- **/DELETE/&lt;filenames&gt;.php** DELETE method SQL.
 
 > One can replace **&lt;filenames&gt;** tag with desired name as per functionality.
 
@@ -230,95 +346,173 @@ static public $CustomINT = [
 //return represents root for sqlResults
 return [
     // Required to implementing pagination
-    'countQuery' => "Count SQL",
+    'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE __WHERE__", // OR
+    'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE column1 = :column1 AND  id = :id",
+
     // Query to perform task
-    '__QUERY__' => "SQL",
+    '__QUERY__' => "SELECT columns FROM TableName WHERE __WHERE__", // OR
+    '__QUERY__' => "SELECT columns FROM TableName WHERE column1 = :column1 AND id = :id",
+
     // Details of data to be set by Query to perform task
     '__SET__' => [
-        'column' => [ // Fatch value from parsed route
-            'uriParams',                                // uriParams / payload
-            '<key-1>',                                  // key
-            DatabaseDataTypes::$PrimaryKey,             // key data type
-            Constants::$REQUIRED                        // Represents required field
+        [ // Fatch value from parsed route
+            'column' => 'id',
+            'fetchFrom' => 'uriParams',                     // uriParams / payload
+            'fetchFromValue' => 'id',                       // key (id)
+            'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
+            'required' => Constants::$REQUIRED              // Represents required field
         ],
-        'column' => ['payload', '<key>'],               // Fetch value from Payload
-        'column' => ['function', function($session) {   // Perform a function and use returned value
-            return 'value';
-        }],
-        'column' => ['userDetails', '<key>'],           // From user session
-        'column' => ['__INSERT-IDs__', '<key>'],        // previous Insert ids
-        'column' => ['custom', '<static-value>'],       // Static values
+        [ // Fatch value from payload
+            'column' => 'id',
+            'fetchFrom' => 'payload',                       // payload
+            'fetchFromValue' => '<key>',                    // key (<key>)
+        ],
+        [ // Fatch value from function
+            'column' => 'password',
+            'fetchFrom' => 'function',                      // function
+            'fetchFromValue' => function($session) {        // execute a function and return value
+                return 'value';
+            }
+        ],
+        [ // Fatch value from userDetails session
+            'column' => 'user_id',
+            'fetchFrom' => 'userDetails',                   // userDetails from session
+            'fetchFromValue' => 'user_id'                   // user_id Key
+        ],
+        [ // Fatch value of last insert ids
+            'column' => 'is_deleted',
+            'fetchFrom' => 'custom',                        // custom
+            'fetchFromValue' => '<static-value>'            // Static values
+        ]
     ],
+
     // Where clause of the Query to perform task
     '__WHERE__' => [
-        'column' => [ // Fatch value from parsed route
-            'uriParams',                                // uriParams / payload
-            '<key-1>',                                  // key
-            DatabaseDataTypes::$PrimaryKey,             // key data type
-            Constants::$REQUIRED                        // Represents required field
+        [ // Fatch value from parsed route
+            'column' => 'id',
+            'fetchFrom' => 'uriParams',                     // uriParams / payload
+            'fetchFromValue' => 'id',                       // key (id)
+            'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
+            'required' => Constants::$REQUIRED              // Represents required field
         ],
-        'column' => ['payload', '<key>'],               // Fetch value from Payload
-        'column' => ['function', function($session) {   // Perform a function and use returned value
-            return 'value';
-        }],
-        'column' => ['userDetails', '<key>'],           // From user session
-        'column' => ['custom', '<static-value>'],       // Static values
+        [ // Fatch value from payload
+            'column' => 'id',
+            'fetchFrom' => 'payload',                       // payload
+            'fetchFromValue' => '<key>',                    // key (<key>)
+        ],
+        [ // Fatch value from function
+            'column' => 'password',
+            'fetchFrom' => 'function',                      // function
+            'fetchFromValue' => function($session) {        // execute a function and return value
+                return 'value';
+            }
+        ],
+        [ // Fatch value from userDetails session
+            'column' => 'user_id',
+            'fetchFrom' => 'userDetails',                   // userDetails from session
+            'fetchFromValue' => 'user_id'                   // user_id Key
+        ],
+        [ // Fatch value of last insert ids
+            'column' => 'is_deleted',
+            'fetchFrom' => 'custom',                        // custom
+            'fetchFromValue' => '<static-value>'            // Static values
+        ]
     ],
+
     // Last insert id to be made available as $session['__INSERT-IDs__'][uniqueParamString];
     '__INSERT-IDs__' => '<keyName>:id',
+
     // Indicator to generate JSON in Single(Object) row / Mulple(Array) rows format.
     '__MODE__' => 'singleRowFormat/multipleRowFormat',
+
     // subQuery is a keyword to perform recursive operations
     /** Supported configuration for recursive operations are :
      * __QUERY__,
      * __SET__,
      * __WHERE__,
      * __MODE__,
+     * __SUB-QUERY__,
      * __INSERT-IDs__,
-     * __SUB-QUERY__
+     * __TRIGGERS__,
+     * __PRE-SQL-HOOKS__,
+     * __POST-SQL-HOOKS__,
+     * __VALIDATE__,
+     * __PAYLOAD-TYPE__,
+     * __MAX-PAYLOAD-OBJECTS__,
      */
+
     '__SUB-QUERY__' => [
         '<sub-key>' => [
-            ... // Recursive
-            '__SET__' => [
-                ...
-                ...
+            // Query to perform task
+            '__QUERY__' => "SQL",
+            '__SET__/__WHERE__' => [
+                [...]
                 // Database DataTypes settings required when useHierarchy is true
                 // to validate each data set before procedding forward
-                'column' => [
-                    'uriParams',
-                    '<key>',
-                    DatabaseDataTypes::$PrimaryKey,             // key data type
-                    Constants::$REQUIRED                        // Represents required field
+                [ // Fatch value of last insert ids
+                    'column' => 'user_id',
+                    'fetchFrom' => '__INSERT-IDs__',                // userDetails from session
+                    'fetchFromValue' => '<saved-id-key>'            // previous Insert ids
                 ],
-                ...
-                ...
-                'column' => ['sqlParams', '<return:keys>'], // Available for both DQL & DML operations
-                'column' => ['sqlResults', '<return:keys>'], // Available for DQL operations
-                'column' => ['sqlPayload', '<return:keys>'], // Available for both DQL & DML operations
-                'column' => ['__INSERT-IDs__', '<keyName>:id'], // SQL Insert id
-            ],
-            '__WHERE__' => [
-                ...
-                ...
-                // Database DataTypes settings required when useHierarchy is true
-                // to validate each data set before procedding forward
-                'column' => [
-                    'uriParams',
-                    '<key>',
-                    DatabaseDataTypes::$PrimaryKey,             // key data type
-                    Constants::$REQUIRED                        // Represents required field
+                [ // Fatch values of params from previous queries
+                    'column' => 'user_id',
+                    'fetchFrom' => 'sqlParams',                     // sqlParams (with useHierarchy)
+                    'fetchFromValue' => '<return:keys-seperated-by-colon>'
                 ],
-                ...
-                ...
-                'column' => ['sqlResults', '<return:keys>'], // Only for GET
+                [ // Fatch values of sql results from previous queries
+                    'column' => 'user_id',
+                    'fetchFrom' => 'sqlResults',                    // sqlResults for DQL operations (with useResultSet)
+                    'fetchFromValue' => '<return:keys-seperated-by-colon>'
+                ],
+                [ // Fatch values of sql payload for previous queries
+                    'column' => 'user_id',
+                    'fetchFrom' => 'sqlPayload',                    // sqlPayload (with useHierarchy)
+                    'fetchFromValue' => '<return:keys-seperated-by-colon>'
+                ],
             ],
+            '__TRIGGERS__' => [...],
+            '__PRE-SQL-HOOKS__' => [...],
+            '__POST-SQL-HOOKS__' => [...],
+            '__VALIDATE__' => [...],
+            '__PAYLOAD-TYPE__' => 'Object/Array',
+            '__MAX-PAYLOAD-OBJECTS__' => 'Integer',
+            '__SUB-QUERY__' => [...],
         ],
         '<sub-key>' => [
-            ...
+            [...]
         ],
-        ...
-    ]
+        [...]
+    ],
+
+    // Trigger set of routes
+    '__TRIGGERS__' => [// Array of triggers
+        [
+            '__ROUTE__' => [
+                ['fetchFrom' => 'custom', 'fetchFromValue' => 'address'],
+                ['fetchFrom' => '__INSERT-IDs__', 'fetchFromValue' => 'address:id']
+            ],
+            '__QUERY-STRING__' => [
+                ['column' => 'param-1', 'fetchFrom' => 'custom', 'fetchFromValue' => 'address'],
+                ['column' => 'param-2', 'fetchFrom' => '__INSERT-IDs__', 'fetchFromValue' => 'address:id']
+            ],
+            '__METHOD__' => 'PATCH',
+            '__PAYLOAD__' => [
+                ['column' => 'address', 'fetchFrom' => 'custom', 'fetchFromValue' => 'updated-address']
+            ]
+        ]
+        [...]
+    ],
+    
+    // Hooks
+    '__PRE-SQL-HOOKS__' => [// Array of Hooks class name in exec order
+        'Hook_Example1',
+        '...'
+    ],
+    '__POST-SQL-HOOKS__' => [// Array of Hooks class name in exec order
+        'Hook_Example2',
+        '...'
+    ],
+
     // Array of validation functions to be performed
     '__VALIDATE__' => [
         [
@@ -327,344 +521,40 @@ return [
                 'group_id' => ['payload', 'group_id']
             ],
             'errorMessage' => 'Invalid Group Id'
-        ]
+        ],
+        [...]
     ],
+
+    '__PAYLOAD-TYPE__' => 'Object', // Allow single "Object" / "Array" of Object (if not set will accept both)
+    '__MAX-PAYLOAD-OBJECTS__' => 2, // Max number of allowed Objects if __PAYLOAD-TYPE__ is 'Array'
+
+    'isTransaction' => false, // Flag to follow transaction Begin, Commit and rollback on error
+
     'useHierarchy' => true, // For DML
     'useResultSet' => true, // For DQL
+
     // Rate Limiting Route access
     'rateLimiterMaxRequests' => 1, // Allowed number of request in defined seconds window
     'rateLimiterSecondsWindow' => 3600, // Seconds Window for restricting number of request
+    
     // Control response time as per number of hits by configuring lags in seconds as below
     'responseLag' => [
         // No of Requests => Seconds Lag
         0 => 0,
         2 => 10,
     ],
+    
     // Any among below can be used for DML operations (These are Optional keys)
     // Caching
     'cacheKey' => '<unique-key-for-redis-to-cache-results>(e.g, key:1)', // Use cacheKey to cache and reuse results (Optional)
     'affectedCacheKeys' => [ // List down keys which effects configured cacheKey on DML operation
         '<unique-key-for-redis-to-drop-cached-results>(key:1)',
         '<unique-key-for-redis-to-drop-cached-results>(category etc.)',
-        ...
+        '...'
     ],
-    // Limiting payload mode
-    // Allow single "Object" / "Array" of Object
-    'payloadType' => 'Object', // Object / Array (if not set will accept both)
-    'maxPayloadObjects' => 2 // Max number of allowed Objects in Array type Payload
+    
     // Limiting duplicates
     'idempotentWindow' => 3 // Idempotent Window for DML operartion (seconds)
-];
-```
-
-#### GET method configuration without useResultSet
-
-```PHP
-return [
-    // Required to implementing pagination
-    'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE __WHERE__", // OR
-    'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE column1 = :column1 AND column2 = :column2",
-    // Query to perform task
-    '__QUERY__' => "SELECT columns FROM TableName WHERE __WHERE__", // OR
-    '__QUERY__' => "SELECT columns FROM TableName WHERE column1 = :column1 AND column2 = :column2",
-    // Where clause of the Query to perform task
-    '__WHERE__' => [
-        'column' => ['uriParams', '<key>'],             // Fatch value from parsed route
-        'column' => ['payload', '<key>'],               // Fetch value from Payload ($_GET)
-        'column' => ['function', function($session) {   // Perform a function and use returned value
-            return $session['payload']['password'];
-        }],
-        'column' => ['userDetails', '<key>'],           // From user session
-        'column' => ['custom', '<static-value>'],       // Static values
-    ],
-    // Indicator to generate JSON in Single(Object) row / Mulple(Array) rows format.
-    '__MODE__' => 'singleRowFormat / multipleRowFormat',
-    // subQuery is a keyword to perform recursive operations
-    /** Supported configuration for recursive operations are :
-     * query,
-     * __WHERE__,
-     * mode,
-     * subQuery
-     */
-    '__SUB-QUERY__' => [
-        '<sub-key>' => [// Recursive
-            ...
-        ],
-        '<sub-key>' => [
-            ...
-        ],
-        ...
-    ]
-    // Array of validation functions to be performed
-    '__VALIDATE__' => [
-        [
-            'fn' => 'validateGroupId',
-            'fnArgs' => [
-                'group_id' => ['payload', 'group_id']
-            ],
-            'errorMessage' => 'Invalid Group Id'
-        ]
-    ],
-    'cacheKey' => 'key:1',
-];
-```
-
-#### GET method configuration with useResultSet
-
-```PHP
-//return represents root for sqlResults
-return [
-    // Required to implementing pagination
-    'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE __WHERE__",
-    'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE column1 = :column1 AND column2 = :column2",
-    // Query to perform task
-    '__QUERY__' => "SELECT columns FROM TableName WHERE __WHERE__",
-    '__QUERY__' => "SELECT columns FROM TableName WHERE column1 = :column1 AND column2 = :column2",
-    // Where clause of the Query to perform task
-    '__WHERE__' => [
-        'column' => [ // Fatch value from parsed route
-            'uriParams',                                // uriParams / payload
-            '<key-1>',                                  // key
-            DatabaseDataTypes::$PrimaryKey,             // key data type
-            Constants::$REQUIRED                        // Represents required field
-        ],
-        'column' => ['payload', '<key>'],               // Fetch value from Payload ($_GET)
-        'column' => ['function', function($session) {   // Perform a function and use returned value
-            return $session['payload']['password'];
-        }],
-        'column' => ['userDetails', '<key>'],           // From user session
-        'column' => ['custom', '<static-value>'],       // Static values
-    ],
-    // Indicator to generate JSON in Single(Object) row / Mulple(Array) rows format.
-    '__MODE__' => 'singleRowFormat/multipleRowFormat',
-    // subQuery is a keyword to perform recursive operations
-    /** Supported configuration for recursive operations are :
-     * query,
-     * __WHERE__,
-     * mode,
-     * subQuery
-     */
-    '__SUB-QUERY__' => [
-        '<sub-key>' => [
-            ... // Recursive
-            '__WHERE__' => [
-                ...
-                'column' => ['sqlResults', '<return:keys>'],
-            ]
-        ],
-        '<sub-key>' => [
-            ...
-        ],
-        ...
-    ]
-    // Array of validation functions to be performed
-    '__VALIDATE__' => [
-        [
-            'fn' => 'validateGroupId',
-            'fnArgs' => [
-                'group_id' => ['payload', 'group_id']
-            ],
-            'errorMessage' => 'Invalid Group Id'
-        ]
-    ],
-    // useResultSet true represent data from higher hierarchy to be preserved
-    // to be used used in sub queries
-    'useResultSet' => true,
-    'cacheKey' => 'key:2',
-];
-```
-
-#### POST/PUT/PATCH/DELETE method configuration without useHierarchy
-
-```PHP
-return [
-    // Query to perform task
-    '__QUERY__' => "INSERT INTO `TableName` SET __SET__",
-    '__QUERY__' => "INSERT INTO `TableName` SET column1 = :column1, column2 = :column2",
-    '__QUERY__' => "UPDATE `TableName` SET __SET__ WHERE __WHERE__",
-    '__QUERY__' => "UPDATE `TableName` SET column1 = :column1, column2 = :column2 WHERE column3 = :column3 AND column4 = :column4",
-    // Details of data to be set by Query to perform task
-    '__SET__' => [
-        'column' => [ // Fatch value from parsed route
-            'uriParams',                                // uriParams / payload
-            '<key-1>',                                  // key
-            DatabaseDataTypes::$PrimaryKey,             // key data type
-            Constants::$REQUIRED                        // Represents required field
-        ],
-        'column' => ['payload', '<key>'],               // Fetch value from Payload
-        'column' => ['function', function($session) {   // Perform a function and use returned value
-            return 'value';
-        }],
-        'column' => ['userDetails', '<key>'],           // From user session
-        'column' => ['__INSERT-IDs__', '<key>'],        // previous Insert ids
-        'column' => ['custom', '<static-value>'],       // Static values
-    ],
-    // Where clause of the Query to perform task
-    '__WHERE__' => [
-        'column' => [ // Fatch value from parsed route
-            'uriParams',                                // uriParams / payload
-            '<key-1>',                                  // key
-            DatabaseDataTypes::$PrimaryKey,             // key data type
-            Constants::$REQUIRED                        // Represents required field
-        ],
-        'column' => ['payload', '<key>'],               // Fetch value from Payload
-        'column' => ['function', function($session) {   // Perform a function and use returned value
-            return password_hash($session['payload']['password'], PASSWORD_DEFAULT);
-        }],
-        'column' => ['userDetails', '<key>'],           // From user session
-        'column' => ['custom', '<static-value>'],       // Static values
-    ],
-    // To be used only for INSERT queries
-    // Last insert id to be made available as $session['__INSERT-IDs__'][uniqueParamString];
-    '__INSERT-IDs__' => '<keyName>:id',
-    // subQuery is a keyword to perform recursive operations
-    /** Supported configuration for recursive operations are :
-     * query,
-     * __SET__,
-     * __WHERE__,
-     * insertId,
-     * subQuery
-     */
-    '__SUB-QUERY__' => [
-        '<sub-key>' => [// Recursive
-            ...
-            ...
-            '__SET__' => [
-                ...
-                ...
-                'column' => ['__INSERT-IDs__', '<keyName>:id'], // previous Insert ids
-            ],
-        ],
-        '<sub-key>' => [
-            ...
-        ],
-        ...
-    ]
-    // Array of validation functions to be performed
-    '__VALIDATE__' => [
-        [
-            'fn' => 'validateGroupId',
-            'fnArgs' => [
-                'group_id' => ['payload', 'group_id']
-            ],
-            'errorMessage' => 'Invalid Group Id'
-        ]
-    ],
-    'affectedCacheKeys' => [
-        'key:1',
-        'key:2'
-    ]
-];
-```
-
-#### POST/PUT/PATCH/DELETE method configuration with useHierarchy
-
-```PHP
-//return represents root for sqlResults
-return [
-    // Query to perform task
-    '__QUERY__' => "INSERT INTO `TableName` SET __SET__",
-    '__QUERY__' => "INSERT INTO `TableName` SET column1 = :column1, column2 = :column2",
-    '__QUERY__' => "UPDATE `TableName` SET __SET__ WHERE __WHERE__",
-    '__QUERY__' => "UPDATE `TableName` SET column1 = :column1, column2 = :column2 WHERE column3 = :column3 AND column4 = :column4",
-    // Details of data to be set by Query to perform task
-    '__SET__' => [
-        'column' => [ // Fatch value from parsed route
-            'uriParams',                                // uriParams / payload
-            '<key-1>',                                  // key
-            DatabaseDataTypes::$PrimaryKey,             // key data type
-            Constants::$REQUIRED                        // Represents required field
-        ],
-        'column' => ['payload', '<key>'],               // Fetch value from Payload
-        'column' => ['function', function($session) {       // Perform a function and use returned value
-            return 'value';
-        }],
-        'column' => ['userDetails', '<key>'],           // From user session
-        'column' => ['__INSERT-IDs__', '<key>'],        // previous Insert ids
-        'column' => ['custom', '<static-value>'],       // Static values
-    ],
-    // Where clause of the Query to perform task
-    '__WHERE__' => [
-        'column' => [ // Fatch value from parsed route
-            'uriParams',                                // uriParams / payload
-            '<key-1>',                                  // key
-            DatabaseDataTypes::$PrimaryKey,             // key data type
-            Constants::$REQUIRED                        // Represents required field
-        ],
-        'column' => ['payload', '<key>'],               // Fetch value from Payload
-        'column' => ['function', function($session) {   // Perform a function and use returned value
-            return password_hash($session['payload']['password'], PASSWORD_DEFAULT);
-        }],
-        'column' => ['userDetails', '<key>'],           // From user session
-        'column' => ['custom', '<static-value>'],       // Static values
-    ],
-    // To be used only for INSERT queries
-    // Last insert id to be made available as $session['__INSERT-IDs__'][uniqueParamString];
-    '__INSERT-IDs__' => '<keyName>:id',
-    // subQuery is a keyword to perform recursive operations
-    /** Supported configuration for recursive operations are :
-     * query,
-     * __SET__,
-     * __WHERE__,
-     * insertId,
-     * subQuery
-     */
-    '__SUB-QUERY__' => [
-        '<sub-key>' => [
-            ... // Recursive
-            '__SET__' => [
-                ...
-                ...
-                // Database DataTypes settings required when useHierarchy is true
-                // to validate each data set before procedding forward
-                'column' => [
-                    'uriParams',
-                    '<key>',
-                    DatabaseDataTypes::$PrimaryKey,             // key data type
-                    Constants::$REQUIRED                        // Represents required field
-                ],
-                ...
-                ...
-                'column' => ['__INSERT-IDs__', '<keyName>:id'], // previous Insert ids
-                'column' => ['sqlResults', '<return:keys>'],
-            ],
-            '__WHERE__' => [
-                ...
-                ...
-                // Database DataTypes settings required when useHierarchy is true
-                // to validate each data set before procedding forward
-                'column' => [
-                    'uriParams',
-                    '<key>',
-                    DatabaseDataTypes::$PrimaryKey,             // key data type
-                    Constants::$REQUIRED                        // Represents required field
-                ],
-                'column' => ['sqlResults', '<return:keys>'],
-            ],
-        ],
-        '<sub-key>' => [
-            ...
-        ],
-        ...
-    ]
-    // Array of validation functions to be performed
-    '__VALIDATE__' => [
-        [
-            'fn' => 'validateGroupId',
-            'fnArgs' => [
-                'group_id' => ['payload', 'group_id']
-            ],
-            'errorMessage' => 'Invalid Group Id'
-        ]
-    ],
-    // useHierarchy true represent data is in recursive format
-    // In other words it is not presented in one simple key/value pair array
-    // Instead the data is served as per the configured hierarchy with sub arrays
-    'useHierarchy' => true,
-    'affectedCacheKeys' => [
-        'key:1',
-        'key:2'
-    ]
 ];
 ```
 
@@ -706,6 +596,7 @@ RateLimiterIPPrefix='IPRL:'     ; IP based Rate Limitng (IPRL) key prefix used i
 RateLimiterClientPrefix='CRL:'  ; Client based Rate Limitng (GRL) key prefix used in Redis
 RateLimiterGroupPrefix='GRL:'   ; Group based Rate Limitng (GRL) key prefix used in Redis
 RateLimiterUserPrefix='URL:'    ; User based Rate Limitng (URL) key prefix used in Redis
+RateLimiterRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) key prefix used in Redis
 ```
 
 #### Rate Limit at group level (global database)

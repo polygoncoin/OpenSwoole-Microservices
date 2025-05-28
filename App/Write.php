@@ -5,8 +5,10 @@ use Microservices\App\AppTrait;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\App\Hook;
 use Microservices\App\HttpStatus;
 use Microservices\App\Validator;
+use Microservices\App\Web;
 use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
@@ -40,6 +42,27 @@ class Write
     private $c = null;
 
     /**
+     * Trigger Web API Object
+     *
+     * @var null|Web
+     */
+    private $web = null;
+
+    /**
+     * Hook Object
+     *
+     * @var null|Hook
+     */
+    private $hook = null;
+
+    /**
+     * Operate DML As Transactions
+     *
+     * @var null|Web
+     */
+    private $operateAsTransaction = null;
+
+    /**
      * Constructor
      *
      * @param Common $common
@@ -70,7 +93,16 @@ class Write
         $session = &$this->c->httpRequest->session;
 
         // Load Queries
-        $writeSqlConfig = include $this->c->httpRequest->__file__;
+        $writeSqlConfig = include $this->c->httpRequest->__FILE__;
+
+        // Rate Limiting request if configured for Route Queries.
+        $this->rateLimitRoute($writeSqlConfig);
+
+        // Lag Response
+        $this->lagResponse($writeSqlConfig);
+
+        // Operate as Transaction (BEGIN COMMIT else ROLLBACK on error)
+        $this->operateAsTransaction = isset($writeSqlConfig['isTransaction']) ? $writeSqlConfig['isTransaction'] : false;
 
         // Set Server mode to execute query on - Read / Write Server
         $this->c->httpRequest->db = $this->c->httpRequest->setDbConnection('Master');
@@ -122,17 +154,17 @@ class Write
     private function processWrite(&$writeSqlConfig, $useHierarchy)
     {
         // Check for payloadType
-        if (isset($writeSqlConfig['payloadType'])) {
-            if ($this->c->httpRequest->session['payloadType'] !== $writeSqlConfig['payloadType']) {
+        if (isset($writeSqlConfig['__PAYLOAD-TYPE__'])) {
+            if ($this->c->httpRequest->session['payloadType'] !== $writeSqlConfig['__PAYLOAD-TYPE__']) {
                 throw new \Exception('Invalid paylaod type', HttpStatus::$BadRequest);
             }
             // Check for maximum number of objects supported when payloadType is Array
             if (
-                $writeSqlConfig['payloadType'] === 'Array'
-                && isset($writeSqlConfig['maxPayloadObjects'])
-                && ($this->c->httpRequest->jsonDecode->count() > $writeSqlConfig['maxPayloadObjects'])
+                $writeSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
+                && isset($writeSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
+                && ($this->c->httpRequest->jsonDecode->count() > $writeSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
             ) {
-                throw new \Exception('Maximum supported paylaod count is ' . $writeSqlConfig['maxPayloadObjects'], HttpStatus::$BadRequest);
+                throw new \Exception('Maximum supported paylaod count is ' . $writeSqlConfig['__MAX-PAYLOAD-OBJECTS__'], HttpStatus::$BadRequest);
             }
         }
 
@@ -166,19 +198,15 @@ class Write
             // Check for Idempotent Window
             list($idempotentWindow, $hashKey, $hashJson) = $this->checkIdempotent($writeSqlConfig, $_payloadIndexes);
 
-            // Rate Limiting request if configured for Route Queries.
-            $this->rateLimitRoute($writeSqlConfig);
-
-            // Lag Response
-            $this->lagResponse($writeSqlConfig);
-
             // Begin DML operation
             if (is_null($hashJson)) {
-                $this->db->begin();
+                if ($this->operateAsTransaction) {$this->db->begin();}
                 $response = [];
                 $this->writeDB($writeSqlConfig, $_payloadIndexes, $_configKeys, $useHierarchy, $response, $this->c->httpRequest->session['requiredArr']);
-                if ($this->db->beganTransaction === true) { // Success
-                    $this->db->commit();
+                if (!$this->operateAsTransaction || ($this->operateAsTransaction && $this->db->beganTransaction === true)) { // Success
+                    if ($this->operateAsTransaction) {
+                        $this->db->commit();
+                    }
                     $arr = [
                         'Status' => HttpStatus::$Created,
                         'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray(implode(':', $_payloadIndexes)),
@@ -240,7 +268,7 @@ class Write
         $counter = 0;
         for ($i=0; $i < $i_count; $i++) {
             $_payloadIndexes = $payloadIndexes;
-            if (!$this->db->beganTransaction) {
+            if ($this->operateAsTransaction && !$this->db->beganTransaction) {
                 $response['Error'] = 'Transaction rolled back';
                 return;
             }
@@ -271,6 +299,14 @@ class Write
                 continue;
             }
 
+            // Execute Pre Sql Hooks
+            if (isset($writeSqlConfig['__PRE-SQL-HOOKS__'])) {
+                if (is_null($this->hook)) {
+                    $this->hook = new Hook($this->c);
+                }
+                $this->hook->triggerHook($writeSqlConfig['__PRE-SQL-HOOKS__']);
+            }
+
             // Get Sql and Params
             list($sql, $sqlParams, $errors) = $this->getSqlAndParams($writeSqlConfig);
             if (!empty($errors)) {
@@ -281,7 +317,7 @@ class Write
 
             // Execute Query
             $this->db->execDbQuery($sql, $sqlParams);
-            if (!$this->db->beganTransaction) {
+            if ($this->operateAsTransaction && !$this->db->beganTransaction) {
                 $response['Error'] = 'Something went wrong';
                 return;
             }
@@ -305,6 +341,26 @@ class Write
                 }
             }
             $this->db->closeCursor();
+
+            // triggers
+            if (isset($writeSqlConfig['__TRIGGERS__'])) {
+                if (is_null($this->web)) {
+                    $this->web = new Web($this->c);
+                }
+                if ($isAssoc) {
+                    $response['__TRIGGERS__'] = $this->web->triggerConfig($writeSqlConfig['__TRIGGERS__']);
+                } else {
+                    $response[$counter]['__TRIGGERS__'] = $this->web->triggerConfig($writeSqlConfig['__TRIGGERS__']);
+                }
+            }
+
+            // Execute Post Sql Hooks
+            if (isset($writeSqlConfig['__POST-SQL-HOOKS__'])) {
+                if (is_null($this->hook)) {
+                    $this->hook = new Hook($this->c);
+                }
+                $this->hook->triggerHook($writeSqlConfig['__POST-SQL-HOOKS__']);
+            }
 
             // subQuery for payload
             if (isset($writeSqlConfig['__SUB-QUERY__'])) {

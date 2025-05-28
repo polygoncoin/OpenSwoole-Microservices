@@ -4,6 +4,7 @@ namespace Microservices\App;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\App\Hook;
 
 /**
  * Class to initialize api HTTP request
@@ -34,6 +35,13 @@ class Api
     private $c = null;
 
     /**
+     * Hook Object
+     *
+     * @var null|Hook
+     */
+    private $hook = null;
+
+    /**
      * Constructor
      *
      * @param Common $common
@@ -53,8 +61,8 @@ class Api
         $this->c->httpRequest->loadClientDetails();
 
         if (!$this->c->httpRequest->open) {
-            $this->c->httpRequest->loadUserDetails();
-            $this->c->httpRequest->loadGroupDetails();    
+            $this->c->httpRequest->auth->loadUserDetails();
+            $this->c->httpRequest->auth->loadGroupDetails();
         }
 
         $this->c->httpRequest->parseRoute();
@@ -70,11 +78,16 @@ class Api
      */
     public function process()
     {
-        // Check & Process Upload
-        {
-            if ($this->processBeforePayload()) {
-                return true;
+        // Execute Pre Route Hooks
+        if (isset($this->c->httpRequest->routeHook['__PRE-ROUTE-HOOKS__'])) {
+            if (is_null($this->hook)) {
+                $this->hook = new Hook($this->c);
             }
+            $this->hook->triggerHook($this->c->httpRequest->routeHook['__PRE-ROUTE-HOOKS__']);
+        }
+
+        if ($this->processBeforePayload()) {
+            return true;
         }
 
         // Load Payloads
@@ -103,8 +116,14 @@ class Api
         }
 
         // Check & Process Cron / ThirdParty calls
-        {
-            $this->processAfterPayload();
+        $this->processAfterPayload();
+
+        // Execute Post Route Hooks
+        if (isset($this->c->httpRequest->routeHook['__POST-ROUTE-HOOKS__'])) {
+            if (is_null($this->hook)) {
+                $this->hook = new Hook($this->c);
+            }
+            $this->hook->triggerHook($this->c->httpRequest->routeHook['__POST-ROUTE-HOOKS__']);
         }
 
         return true;

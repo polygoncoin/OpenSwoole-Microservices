@@ -6,22 +6,22 @@ use Microservices\App\DatabaseDataTypes;
 return [
     '__QUERY__' => "UPDATE `master_users` SET __SET__ WHERE __WHERE__",
     '__SET__' => [
-        'is_deleted' => ['custom', 'Yes']
+        ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'Yes']
     ],
     '__WHERE__' => [
-        'is_deleted' => ['custom', 'No'],
-        'user_id' => ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey]
+        ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+        ['column' => 'user_id', 'fetchFrom' => 'uriParams', 'fetchFromValue' => 'id', 'dataType' => DatabaseDataTypes::$PrimaryKey],
     ],
     '__SUB-QUERY__' => [
         'address' => [
             '__QUERY__' => "UPDATE `address` SET __SET__ WHERE __WHERE__",
             '__SET__' => [
-                'is_deleted' => ['custom', 'Yes']
+                ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'Yes']
             ],
             '__WHERE__' => [
-                'is_deleted' => ['custom', 'No'],
-                'user_id' => ['payload', 'user_id', DatabaseDataTypes::$PrimaryKey],
-                'user_id' => ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey],
+                ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+                ['column' => 'user_id', 'fetchFrom' => 'payload', 'fetchFromValue' => 'user_id', 'dataType' => DatabaseDataTypes::$PrimaryKey],
+                ['column' => 'user_id', 'fetchFrom' => 'uriParams', 'fetchFromValue' => 'id', 'dataType' => DatabaseDataTypes::$PrimaryKey],
             ],
         ]
     ],
@@ -31,7 +31,7 @@ return [
 			'fnArgs' => [
                 'table' => ['custom', 'master_users'],
                 'primary' => ['custom', 'user_id'],
-                'id' => ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey]
+                'id' => ['uriParams', 'id']
             ],
 			'errorMessage' => 'Invalid registration id'
 		],

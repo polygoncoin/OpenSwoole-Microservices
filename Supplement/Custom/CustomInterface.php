@@ -1,14 +1,14 @@
 <?php
-namespace Microservices\ThirdParty;
+namespace Microservices\Supplement\Custom;
 
 /**
- * @category   Third Party Trait
+ * @category   Custom Interface
  * @package    Microservices
  * @author     Ramesh Narayan Jangid
  * @copyright  Ramesh Narayan Jangid
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-trait ThirdPartyTrait
+interface CustomInterface
 {
 }

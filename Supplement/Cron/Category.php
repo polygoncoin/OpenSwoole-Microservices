@@ -1,12 +1,12 @@
 <?php
-namespace Microservices\Cron;
+namespace Microservices\Supplement\Cron;
 
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
-use Microservices\Cron\CronInterface;
-use Microservices\Cron\CronTrait;
+use Microservices\Supplement\Cron\CronInterface;
+use Microservices\Supplement\Cron\CronTrait;
 
 /**
  * Class for a particular cron
@@ -42,7 +42,7 @@ class Category implements CronInterface
     public function __construct(&$common)
     {
         $this->c = &$common;
-        $this->c->httpRequest->setConnection($fetchFrom = 'Slave');
+        $this->c->httpRequest->db = $this->c->httpRequest->setDbConnection($fetchFrom = 'Slave');
     }
 
     /**

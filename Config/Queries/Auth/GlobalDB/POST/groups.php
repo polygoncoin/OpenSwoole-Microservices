@@ -8,16 +8,16 @@ use Microservices\App\Env;
 return [
     '__QUERY__' => "INSERT INTO `{$Env::$groups}` SET __SET__",
     '__SET__' => [
-        'name' => ['payload', 'name'],
-        'client_id' => ['payload', 'client_id', DatabaseDataTypes::$INT],
-        'connection_id' => ['payload', 'connection_id', DatabaseDataTypes::$INT],
-        'allowed_ips' => ['payload', 'allowed_ips'],
-        'comments' => ['payload', 'comments'],
-        'created_by' => ['userDetails', 'user_id'],
-        'created_on' => ['custom', date('Y-m-d H:i:s')],
-        'is_approved' => ['custom', 'No'],
-        'is_disabled' => ['custom', 'No'],
-        'is_deleted' => ['custom', 'No']
+        ['column' => 'name', 'fetchFrom' => 'payload', 'fetchFromValue' => 'name'],
+        ['column' => 'client_id', 'fetchFrom' => 'payload', 'fetchFromValue' => 'client_id', 'dataType' => DatabaseDataTypes::$INT],
+        ['column' => 'connection_id', 'fetchFrom' => 'payload', 'fetchFromValue' => 'connection_id', 'dataType' => DatabaseDataTypes::$INT],
+        ['column' => 'allowed_ips', 'fetchFrom' => 'payload', 'fetchFromValue' => 'allowed_ips'],
+        ['column' => 'comments', 'fetchFrom' => 'payload', 'fetchFromValue' => 'comments'],
+        ['column' => 'created_by', 'fetchFrom' => 'userDetails', 'fetchFromValue' => 'user_id'],
+        ['column' => 'created_on', 'fetchFrom' => 'custom', 'fetchFromValue' => date('Y-m-d H:i:s')],
+        ['column' => 'is_approved', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+        ['column' => 'is_disabled', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+        ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No']
     ],
     '__INSERT-IDs__' => 'group_id',
 ];

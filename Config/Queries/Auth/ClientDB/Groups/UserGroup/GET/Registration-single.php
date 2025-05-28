@@ -6,8 +6,8 @@ use Microservices\App\DatabaseDataTypes;
 return [
     '__QUERY__' => "SELECT * FROM `master_users` WHERE __WHERE__",
     '__WHERE__' => [
-        'is_deleted' => ['custom', 'No'],
-        'user_id' => ['uriParams','id']
+        ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+        ['column' => 'user_id', 'fetchFrom' => 'uriParams', 'fetchFromValue' => 'id']
     ],
     '__MODE__' => 'singleRowFormat'
 ];

@@ -85,7 +85,7 @@ class Validator
                     $errors[] = 'Missing required payload: '.$column;
                     $isValidData = false;
                 }
-            }    
+            }
         }
 
         return [$isValidData, $errors];

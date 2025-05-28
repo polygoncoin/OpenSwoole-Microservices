@@ -6,8 +6,8 @@ use Microservices\App\DatabaseDataTypes;
 return [
     '__QUERY__' => "INSERT INTO `address` SET __SET__",
     '__SET__' => [
-        'user_id' => ['payload', 'user_id', DatabaseDataTypes::$INT],
-        'address' => ['payload', 'address'],
+        ['column' => 'user_id', 'fetchFrom' => 'payload', 'fetchFromValue' => 'user_id', 'dataType' => DatabaseDataTypes::$INT],
+        ['column' => 'address', 'fetchFrom' => 'payload', 'fetchFromValue' => 'address'],
     ],
     '__INSERT-IDs__' => 'address:id'
 ];

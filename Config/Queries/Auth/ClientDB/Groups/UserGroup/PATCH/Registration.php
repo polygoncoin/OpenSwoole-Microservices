@@ -8,12 +8,12 @@ return array_merge(
     include Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR . 'Queries' . DIRECTORY_SEPARATOR . 'Auth' . DIRECTORY_SEPARATOR . 'ClientDB' . DIRECTORY_SEPARATOR . 'Common' . DIRECTORY_SEPARATOR . 'Registration.php',
     [
         '__SET__' => [
-            'firstname' => ['payload', 'firstname'],
-            'lastname' => ['payload', 'lastname'],
-            'email' => ['payload', 'email'],
+            ['column' => 'firstname', 'fetchFrom' => 'payload', 'fetchFromValue' => 'firstname'],
+            ['column' => 'lastname', 'fetchFrom' => 'payload', 'fetchFromValue' => 'lastname'],
+            ['column' => 'email', 'fetchFrom' => 'payload', 'fetchFromValue' => 'email'],
         ],
         '__WHERE__' => [
-            'user_id' => ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey]
+            ['column' => 'user_id', 'fetchFrom' => 'uriParams', 'fetchFromValue' => 'id', 'dataType' => DatabaseDataTypes::$PrimaryKey]
         ],
     ]
 );

@@ -6,33 +6,33 @@ use Microservices\App\DatabaseDataTypes;
 return [
     '__QUERY__' => "INSERT INTO `master_users` SET __SET__",
     '__SET__' => [
-        'firstname' => ['payload', 'firstname'],
-        'lastname' => ['payload', 'lastname'],
-        'email' => ['payload', 'email'],
-        'username' => ['payload', 'username'],
-        'password_hash' => ['function', function($session) {
+        ['column' => 'firstname', 'fetchFrom' => 'payload', 'fetchFromValue' => 'firstname'],
+        ['column' => 'lastname', 'fetchFrom' => 'payload', 'fetchFromValue' => 'lastname'],
+        ['column' => 'email', 'fetchFrom' => 'payload', 'fetchFromValue' => 'email'],
+        ['column' => 'username', 'fetchFrom' => 'payload', 'fetchFromValue' => 'username'],
+        ['column' => 'password_hash', 'fetchFrom' => 'function', 'fetchFromValue' => function($session) {
             return password_hash($session['payload']['password'], PASSWORD_DEFAULT);
         }],
-        'ip' => ['custom', '127.0.0.1'],
-        'group_id' => ['custom', '1'],
+        ['column' => 'ip', 'fetchFrom' => 'custom', 'fetchFromValue' => '127.0.0.1'],
+        ['column' => 'group_id', 'fetchFrom' => 'custom', 'fetchFromValue' => '1'],
     ],
     '__INSERT-IDs__' => 'registration:id',
     '__SUB-QUERY__' => [
         'address' => [
             '__QUERY__' => "INSERT INTO `address` SET __SET__",
             '__SET__' => [
-                'user_id' => ['__INSERT-IDs__', 'registration:id'],
-                'address' => ['payload', 'address']
+                ['column' => 'user_id', 'fetchFrom' => '__INSERT-IDs__', 'fetchFromValue' => 'registration:id'],
+                ['column' => 'address', 'fetchFrom' => 'payload', 'fetchFromValue' => 'address'],
             ],
             '__INSERT-IDs__' => 'address:id',
-            'payloadType' => 'Array',
-            'maxPayloadObjects' => 2
+            '__PAYLOAD-TYPE__' => 'Array',
+            '__MAX-PAYLOAD-OBJECTS__' => 2
         ]
     ],
     'rateLimiterMaxRequests' => 1,
     'rateLimiterSecondsWindow' => 3600,
     'useHierarchy' => true,
-    'payloadType' => 'Object',
+    '__PAYLOAD-TYPE__' => 'Object',
     'idempotentWindow' => 10,
     'responseLag' => [
         // No of Requests => Seconds Lag

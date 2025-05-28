@@ -1,27 +1,27 @@
 <?php
-namespace Microservices\Custom;
+namespace Microservices\Supplement\Upload;
 
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
-use Microservices\Custom\CustomInterface;
-use Microservices\Custom\CustomTrait;
+use Microservices\Supplement\Upload\UploadInterface;
+use Microservices\Supplement\Upload\UploadTrait;
 
 /**
- * Class to initialize DB Read operation
+ * Class is used for file uploads
  *
- * This class process the GET api request
+ * This class supports POST & PUT HTTP request
  *
- * @category   Category
+ * @category   Upload Module 1
  * @package    Microservices
  * @author     Ramesh Narayan Jangid
  * @copyright  Ramesh Narayan Jangid
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-class Category implements CustomInterface
+class Module1 implements UploadInterface
 {
-    use CustomTrait;
+    use UploadTrait;
 
     /**
      * Microservices Collection of Common Objects
@@ -38,7 +38,7 @@ class Category implements CustomInterface
     public function __construct(&$common)
     {
         $this->c = &$common;
-        $this->c->httpRequest->setConnection($fetchFrom = 'Slave');
+        $this->c->httpRequest->db = $this->c->httpRequest->setDbConnection($fetchFrom = 'Master');
     }
 
     /**
@@ -58,15 +58,19 @@ class Category implements CustomInterface
      */
     public function process()
     {
-        $sql = 'SELECT * FROM category WHERE is_deleted = :is_deleted AND parent_id = :parent_id';
-        $sqlParams = [
-            ':is_deleted' => 'No',
-            ':parent_id' => 0,
-        ];
-        $this->c->httpRequest->db->execDbQuery($sql, $sqlParams);
-        $rows = $this->c->httpRequest->db->fetchAll();
-        $this->c->httpRequest->db->closeCursor();
-        $this->c->httpResponse->jsonEncode->addKeyValue('Results', $rows);
+        $absFilePath = $this->getLocation();
+        $this->saveFile($absFilePath);
+
         return true;
+    }
+
+    /**
+     * Function to get filename with location depending uplon $session
+     *
+     * @return string
+     */
+    private function getLocation()
+    {
+        return Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Dropbox' . DIRECTORY_SEPARATOR . 'test.png';
     }
 }

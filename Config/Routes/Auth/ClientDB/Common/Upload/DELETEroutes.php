@@ -5,7 +5,7 @@ return [
     $Env::$uploadRequestUriPrefix => [
         '{module:string}' => [
             '{id:int|!0}'  => [
-                '__file__' => false
+                '__FILE__' => false
             ]
         ]
     ]

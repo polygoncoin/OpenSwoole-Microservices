@@ -1,14 +1,14 @@
 <?php
-namespace Microservices\Cron;
+namespace Microservices\Supplement\Custom;
 
 /**
- * @category   Cron Trait
+ * @category   Custom Trait
  * @package    Microservices
  * @author     Ramesh Narayan Jangid
  * @copyright  Ramesh Narayan Jangid
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-trait CronTrait
+trait CustomTrait
 {
 }

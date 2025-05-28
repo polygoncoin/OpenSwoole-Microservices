@@ -6,27 +6,27 @@ use Microservices\App\DatabaseDataTypes;
 return [
     '__QUERY__' => "UPDATE `master_users` SET __SET__ WHERE __WHERE__",
     '__SET__' => [
-        'firstname' => ['payload', 'firstname'],
-        'lastname' => ['payload', 'lastname'],
-        'email' => ['payload', 'email'],
-        'username' => ['payload', 'username'],
-        'password_hash' => ['function', function($session) {
+        ['column' => 'firstname', 'fetchFrom' => 'payload', 'fetchFromValue' => 'firstname'],
+        ['column' => 'lastname', 'fetchFrom' => 'payload', 'fetchFromValue' => 'lastname'],
+        ['column' => 'email', 'fetchFrom' => 'payload', 'fetchFromValue' => 'email'],
+        ['column' => 'username', 'fetchFrom' => 'payload', 'fetchFromValue' => 'username'],
+        ['column' => 'password_hash', 'fetchFrom' => 'function', 'fetchFromValue' => function($session) {
             return password_hash($session['payload']['password'], PASSWORD_DEFAULT);
         }]
     ],
     '__WHERE__' => [
-        'is_deleted' => ['custom', 'No'],
-        'user_id' => ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey]
+        ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+        ['column' => 'user_id', 'fetchFrom' => 'uriParams', 'fetchFromValue' => 'id', 'dataType' => DatabaseDataTypes::$PrimaryKey]
     ],
     '__SUB-QUERY__' => [
         'address' => [
             '__QUERY__' => "UPDATE `address` SET __SET__ WHERE __WHERE__",
             '__SET__' => [
-                'address' => ['payload', 'address']
+                ['column' => 'address', 'fetchFrom' => 'payload', 'fetchFromValue' => 'address']
             ],
             '__WHERE__' => [
-                'is_deleted' => ['custom', 'No'],
-                'id' => ['payload', 'id', DatabaseDataTypes::$PrimaryKey],
+                ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+                ['column' => 'id', 'fetchFrom' => 'payload', 'fetchFromValue' => 'id', 'dataType' => DatabaseDataTypes::$PrimaryKey],
             ],
         ]
     ],
@@ -36,7 +36,7 @@ return [
 			'fnArgs' => [
                 'table' => ['custom', 'master_users'],
                 'primary' => ['custom', 'user_id'],
-                'id' => ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey]
+                'id' => ['uriParams', 'id']
             ],
 			'errorMessage' => 'Invalid registration id'
 		],

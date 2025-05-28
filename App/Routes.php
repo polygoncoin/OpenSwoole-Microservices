@@ -119,7 +119,7 @@ class Routes
             if (in_array($key, $this->reservedKeys)) {
                 continue;
             }
-            if ($key === '__file__') {
+            if ($key === '__FILE__') {
                 $httpRoutes[] = $route;
             }
             if (is_array($r)) {

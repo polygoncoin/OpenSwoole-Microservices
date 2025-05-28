@@ -11,7 +11,7 @@ return [
 			'fnArgs' => [
                 'table' => ['custom', 'address'],
                 'primary' => ['custom', 'id'],
-                'id' => ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey]
+                'id' => ['uriParams', 'id']
             ],
 			'errorMessage' => 'Invalid address id'
 		],

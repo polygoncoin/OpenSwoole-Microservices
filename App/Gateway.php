@@ -37,38 +37,10 @@ class Gateway extends RouteParser
         $this->loadClientDetails();
 
         if (!$this->open) {
-            $this->loadUserDetails();
-            $this->checkRemoteIp();
+            $this->auth->loadUserDetails();
+            $this->auth->checkRemoteIp();
         }
         $this->checkRateLimits();
-    }
-
-    /**
-     * Validate request IP
-     *
-     * @return void
-     * @throws \Exception
-     */
-    public function checkRemoteIp()
-    {
-        $groupId = $this->userDetails['group_id'];
-
-        $this->cidrKey = CacheKey::CIDR($this->userDetails['group_id']);
-        if ($this->cache->cacheExists($this->cidrKey)) {
-            $this->cidrChecked = true;
-            $cidrs = json_decode($this->cache->getCache($this->cidrKey), true);
-            $ipNumber = ip2long($this->REMOTE_ADDR);
-            $isValidIp = false;
-            foreach ($cidrs as $cidr) {
-                if ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
-                    $isValidIp = true;
-                    break;
-                }
-            }
-            if (!$isValidIp) {
-                throw new \Exception('IP not supported', HttpStatus::$BadRequest);
-            }
-        }
     }
 
     /**

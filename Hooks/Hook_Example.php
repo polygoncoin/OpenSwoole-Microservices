@@ -1,27 +1,26 @@
 <?php
-namespace Microservices\Upload;
+namespace Microservices\Hooks;
 
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
-use Microservices\Upload\UploadInterface;
-use Microservices\Upload\UploadTrait;
+use Microservices\App\HttpStatus;
+use Microservices\Hooks\HookInterface;
+use Microservices\Hooks\HookTrait;
 
 /**
- * Class is used for file uploads
+ * Hook Example class
  *
- * This class supports POST & PUT HTTP request
- *
- * @category   Upload Module 1
+ * @category   Hook Example class
  * @package    Microservices
  * @author     Ramesh Narayan Jangid
  * @copyright  Ramesh Narayan Jangid
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-class Module1 implements UploadInterface
+class Hook_Example implements HookInterface
 {
-    use UploadTrait;
+    use HookTrait;
 
     /**
      * Microservices Collection of Common Objects
@@ -38,7 +37,6 @@ class Module1 implements UploadInterface
     public function __construct(&$common)
     {
         $this->c = &$common;
-        $this->c->httpRequest->setConnection($fetchFrom = 'Master');
     }
 
     /**
@@ -58,20 +56,19 @@ class Module1 implements UploadInterface
      */
     public function process()
     {
-        $srcFilePath = $this->c->httpRequestDetails['files']['input_key']['tmp_name'];
-        $destFilePath = $this->getLocation();
-        $this->saveFile($srcFilePath, $destFilePath);
-
+        $this->execHook();
         return true;
     }
 
     /**
-     * Function to get filename with location depending uplon $session
+     * Exec Hook related code
      *
-     * @return string
+     * @return void
+     * @throws \Exception
      */
-    private function getLocation()
+    private function execHook()
     {
-        return Constants::$DOC_ROOT . '/Dropbox/' . 'test.png';
+        // Reset / empty payload.
+        $this->c->httpRequest->session['payload'] = null;
     }
 }

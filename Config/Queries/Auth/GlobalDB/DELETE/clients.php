@@ -8,13 +8,12 @@ use Microservices\App\Env;
 return [
     '__QUERY__' => "UPDATE `{$Env::$clients}` SET __SET__ WHERE __WHERE__",
     '__SET__' => [
-        'is_deleted' => ['custom', 'Yes'],
-        'updated_by' => ['userDetails', 'user_id'],
-        'updated_on' => ['custom', date('Y-m-d H:i:s')]
+        ['column' => 'updated_by', 'fetchFrom' => 'userDetails', 'fetchFromValue' => 'user_id'],
+        ['column' => 'updated_on', 'fetchFrom' => 'custom', 'fetchFromValue' => date('Y-m-d H:i:s')],
     ],
     '__WHERE__' => [
-        'is_deleted' => ['custom', 'No'],
-        'client_id' => ['uriParams', 'client_id', DatabaseDataTypes::$INT]
+        ['column' => 'is_deleted', 'fetchFrom' => 'custom', 'fetchFromValue' => 'No'],
+        ['column' => 'client_id', 'fetchFrom' => 'uriParams', 'fetchFromValue' => 'client_id', 'dataType' => DatabaseDataTypes::$INT]
     ],
     '__VALIDATE__' => [
 		[

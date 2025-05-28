@@ -1,5 +1,5 @@
 <?php
-namespace Microservices\Upload;
+namespace Microservices\Supplement\Upload;
 
 /**
  * @category   Upload Trait
@@ -14,14 +14,13 @@ trait UploadTrait
     /**
      * Saves file as stream
      *
-     * @param string $srcFilePath
-     * @param string $destFilePath
+     * @param string $absFilePath Absolute file path
      * @return boolean
      */
-    private function saveFile($srcFilePath, $destFilePath)
+    private function saveFile($absFilePath)
     {
-        $src = fopen($srcFilePath, "rb");
-        $dest = fopen($destFilePath, 'wb');
+        $src = fopen("php://input", "rb");
+        $dest = fopen($absFilePath, 'wb');
 
         stream_copy_to_stream($src, $dest);
 

@@ -54,20 +54,11 @@ trait AppTrait
         foreach (['__SET__', '__WHERE__'] as $options) {
             if (isset($sqlConfig[$options])) {
                 foreach ($sqlConfig[$options] as $config) {
-                    $require = false;
-                    $dataType = DatabaseDataTypes::$Default;
-                    $count = count($config);
-                    switch ($count) {
-                        case 4:
-                            list($dataPayloadType, $dataPayloadTypeKey, $dataType, $require) = $config;
-                            break;
-                        case 3:
-                            list($dataPayloadType, $dataPayloadTypeKey, $dataType) = $config;
-                            break;
-                        case 2:
-                            list($dataPayloadType, $dataPayloadTypeKey) = $config;
-                            break;
-                    }
+                    $dataPayloadType = $config['fetchFrom'];
+                    $dataPayloadTypeKey = $config['fetchFromValue'];
+                    $dataType = isset($config['dataType']) ? $config['dataType'] : DatabaseDataTypes::$Default;
+                    $require = isset($config['required']) ? $config['required'] : false;
+
                     if ($dataPayloadType === 'function') {
                         continue;
                     }
@@ -84,8 +75,9 @@ trait AppTrait
         $foundHierarchy = false;
         if (isset($sqlConfig['__WHERE__'])) {
             foreach ($sqlConfig['__WHERE__'] as $var => $where) {
-                $dataPayloadType = $where[0];
-                $dataPayloadTypeKey = $where[1];
+                $dataPayloadType = $where['fetchFrom'];
+                $dataPayloadTypeKey = $where['fetchFromValue'];
+
                 if ($isFirstCall && in_array($dataPayloadType, ['sqlResults', 'sqlParams', 'sqlPayload'])) {
                     throw new \Exception('Invalid config: First query can not have ' . $dataPayloadType . ' config', HttpStatus::$InternalServerError);
                 }
@@ -235,7 +227,10 @@ trait AppTrait
         $errors = [];
 
         // Collect param values as per config respectively
-        foreach ($sqlConfig as $var => [$dataPayloadType, $dataPayloadTypeKey]) {
+        foreach ($sqlConfig as $config) {
+            $var = $config['column'];
+            $dataPayloadType = $config['fetchFrom'];
+            $dataPayloadTypeKey = $config['fetchFromValue'];
             if ($dataPayloadType === 'function') {
                 $function = $dataPayloadTypeKey;
                 $value = $function($this->c->httpRequest->session);
@@ -325,24 +320,26 @@ trait AppTrait
         $result = [];
 
         if (isset($sqlConfig['countQuery'])) {
-            $sqlConfig['__CONFIG__'][] = ['payload', 'page', 'int', Constants::$REQUIRED];
-            $sqlConfig['__CONFIG__'][] = ['payload', 'perpage', 'int'];
+            $sqlConfig['__CONFIG__'][] = [
+                'column' => 'page',
+                'fetchFrom' => 'payload',
+                'fetchFromValue' => 'page',
+                'dataType' => DatabaseDataTypes::$INT,
+                'required' => Constants::$REQUIRED
+            ];
+            $sqlConfig['__CONFIG__'][] = [
+                'column' => 'perpage',
+                'fetchFrom' => 'payload',
+                'fetchFromValue' => 'perpage',
+                'dataType' => DatabaseDataTypes::$INT
+            ];
 
             foreach ($sqlConfig['__CONFIG__'] as $config) {
-                $require = false;
-                $dataType = DatabaseDataTypes::$Default;
-                $count = count($config);
-                switch ($count) {
-                    case 4:
-                        list($dataPayloadType, $dataPayloadTypeKey, $dataType, $require) = $config;
-                        break;
-                    case 3:
-                        list($dataPayloadType, $dataPayloadTypeKey, $dataType) = $config;
-                        break;
-                    case 2:
-                        list($dataPayloadType, $dataPayloadTypeKey) = $config;
-                        break;
-                }
+                $dataPayloadType = $config['fetchFrom'];
+                $dataPayloadTypeKey = $config['fetchFromValue'];
+                $dataType = isset($config['dataType']) ? $config['dataType'] : DatabaseDataTypes::$Default;
+                $require = isset($config['required']) ? $config['required'] : false;
+
                 if (!in_array($dataPayloadType, ['payload'])) continue;
                 if (isset($result[$dataPayloadTypeKey]) && $result[$dataPayloadTypeKey]['dataMode'] === 'Required') {
                     continue;
@@ -355,20 +352,11 @@ trait AppTrait
         foreach (['__SET__', '__WHERE__'] as $options) {
             if (isset($sqlConfig[$options])) {
                 foreach ($sqlConfig[$options] as $config) {
-                    $require = false;
-                    $dataType = DatabaseDataTypes::$Default;
-                    $count = count($config);
-                    switch ($count) {
-                        case 4:
-                            list($dataPayloadType, $dataPayloadTypeKey, $dataType, $require) = $config;
-                            break;
-                        case 3:
-                            list($dataPayloadType, $dataPayloadTypeKey, $dataType) = $config;
-                            break;
-                        case 2:
-                            list($dataPayloadType, $dataPayloadTypeKey) = $config;
-                            break;
-                    }
+                    $dataPayloadType = $config['fetchFrom'];
+                    $dataPayloadTypeKey = $config['fetchFromValue'];
+                    $dataType = isset($config['dataType']) ? $config['dataType'] : DatabaseDataTypes::$Default;
+                    $require = isset($config['required']) ? $config['required'] : false;
+
                     if (!in_array($dataPayloadType, ['payload'])) continue;
                     if (isset($result[$dataPayloadTypeKey]) && $result[$dataPayloadTypeKey]['dataMode'] === 'Required') {
                         continue;
@@ -452,7 +440,6 @@ trait AppTrait
      */
     private function rateLimitRoute(&$sqlConfig)
     {
-        // 
         if (
             isset($sqlConfig['rateLimiterMaxRequests'])
             && isset($sqlConfig['rateLimiterSecondsWindow'])
@@ -468,7 +455,7 @@ trait AppTrait
             // $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
             $hash = json_encode($payloadSignature);
             $hashKey = md5($hash);
-            
+
             // @throws \Exception
             $rateLimitChecked = $this->c->httpRequest->checkRateLimit(
                 $RateLimiterRoutePrefix = getenv('RateLimiterRoutePrefix'),

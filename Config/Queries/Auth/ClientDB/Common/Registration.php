@@ -11,7 +11,7 @@ return [
 			'fnArgs' => [
                 'table' => ['custom', 'master_users'],
                 'primary' => ['custom', 'user_id'],
-                'id' => ['uriParams', 'id', DatabaseDataTypes::$PrimaryKey]
+                'id' => ['uriParams', 'id']
             ],
 			'errorMessage' => 'Invalid registration id'
 		],
