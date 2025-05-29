@@ -251,6 +251,7 @@ class Login
             // We set this to have a check first if multiple request/attack occurs
             $this->c->httpRequest->cache->setCache($this->userTokenKey, json_encode($tokenDetails), Constants::$TOKEN_EXPIRY_TIME);
             $this->tokenKey = CacheKey::Token($tokenDetails['token']);
+            unset($this->userDetails['password_hash']);
             $this->c->httpRequest->cache->setCache($this->tokenKey, json_encode($this->userDetails), Constants::$TOKEN_EXPIRY_TIME);
             $this->updateDB($tokenDetails);
         }

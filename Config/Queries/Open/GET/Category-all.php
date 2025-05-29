@@ -47,6 +47,6 @@ return [
     'responseLag' => [
         // No of Requests => Seconds Lag
         0 => 0,
-        2 => 10,
+        // 2 => 10,
     ]
 ];
