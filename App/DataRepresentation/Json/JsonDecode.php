@@ -1,5 +1,5 @@
 <?php
-namespace Microservices\App;
+namespace Microservices\App\DataRepresentation\Json;
 
 use Microservices\App\HttpStatus;
 
@@ -50,7 +50,7 @@ class JsonDecode
     private $jsonDecodeEngine = null;
 
     /**
-     * JsonEncode constructor
+     * JsonDecode constructor
      *
      * @param resource $jsonFileHandle File handle
      * @return void
@@ -303,14 +303,14 @@ class JsonDecodeEngine
     private $jsonFileHandle = null;
 
     /**
-     * Array of JsonEncodeObject objects
+     * Array of JsonDecodeObject objects
      *
      * @var JsonDecodeObject[]
      */
     private $objects = [];
 
     /**
-     * Current JsonEncodeObject object
+     * Current JsonDecodeObject object
      *
      * @var JsonDecodeObject
      */
@@ -353,7 +353,7 @@ class JsonDecodeEngine
     private $charCounter = null;
 
     /**
-     * JsonEncode constructor
+     * JsonDecode constructor
      *
      * @param null|resource $jsonFileHandle
      * @return void

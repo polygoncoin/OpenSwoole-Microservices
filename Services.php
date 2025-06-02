@@ -106,7 +106,7 @@ class Services
      */
     public function startJson()
     {
-        $this->c->httpResponse->jsonEncode->startObject();
+        $this->c->httpResponse->dataEncode->startObject();
     }
 
     /**
@@ -169,7 +169,7 @@ class Services
      */
     public function endOutputJson()
     {
-        $this->c->httpResponse->jsonEncode->addKeyValue('Status', $this->c->httpResponse->httpStatus);
+        $this->c->httpResponse->dataEncode->addKeyData('Status', $this->c->httpResponse->httpStatus);
     }
 
     /**
@@ -184,13 +184,13 @@ class Services
             $time = ceil(($this->tsEnd - $this->tsStart) * 1000);
             $memory = ceil(memory_get_peak_usage() / 1000);
 
-            $this->c->httpResponse->jsonEncode->startObject('Stats');
-            $this->c->httpResponse->jsonEncode->startObject('Performance');
-            $this->c->httpResponse->jsonEncode->addKeyValue('total-time-taken', "{$time} ms");
-            $this->c->httpResponse->jsonEncode->addKeyValue('peak-memory-usage', "{$memory} KB");
-            $this->c->httpResponse->jsonEncode->endObject();
-            $this->c->httpResponse->jsonEncode->addKeyValue('getrusage', getrusage());
-            $this->c->httpResponse->jsonEncode->endObject();
+            $this->c->httpResponse->dataEncode->startObject('Stats');
+            $this->c->httpResponse->dataEncode->startObject('Performance');
+            $this->c->httpResponse->dataEncode->addKeyData('total-time-taken', "{$time} ms");
+            $this->c->httpResponse->dataEncode->addKeyData('peak-memory-usage', "{$memory} KB");
+            $this->c->httpResponse->dataEncode->endObject();
+            $this->c->httpResponse->dataEncode->addKeyData('getrusage', getrusage());
+            $this->c->httpResponse->dataEncode->endObject();
         }
     }
 
@@ -201,8 +201,8 @@ class Services
      */
     public function endJson()
     {
-        $this->c->httpResponse->jsonEncode->endObject();
-        $this->c->httpResponse->jsonEncode->end();
+        $this->c->httpResponse->dataEncode->endObject();
+        $this->c->httpResponse->dataEncode->end();
     }
 
     /**
@@ -212,7 +212,7 @@ class Services
      */
     public function outputResults()
     {
-        return $this->c->httpResponse->jsonEncode->streamJson();
+        return $this->c->httpResponse->dataEncode->streamData();
     }
 
     /**

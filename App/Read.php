@@ -4,8 +4,9 @@ namespace Microservices\App;
 use Microservices\App\AppTrait;
 use Microservices\App\Constants;
 use Microservices\App\Common;
+use Microservices\App\DataRepresentation\AbstractDataEncode;
+use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\Env;
-use Microservices\App\JsonEncode;
 use Microservices\App\Hook;
 use Microservices\App\HttpStatus;
 use Microservices\App\Validator;
@@ -59,9 +60,9 @@ class Read
     /**
      * Json Encode Object
      *
-     * @var null|JsonEncode
+     * @var null|AbstractDataEncode
      */
-    public $jsonEncode = null;
+    public $dataEncode = null;
 
     /**
      * Constructor
@@ -112,8 +113,8 @@ class Read
             $json = $this->c->httpRequest->getDqlCache($readSqlConfig['cacheKey']);
             if (!is_null($json)) {
                 $cacheHitJson = '"cacheHit": true';
-                $this->c->httpResponse->jsonEncode->appendJson($cacheHitJson);
-                $this->c->httpResponse->jsonEncode->appendJson($json);
+                $this->c->httpResponse->dataEncode->appendData($cacheHitJson);
+                $this->c->httpResponse->dataEncode->appendData($json);
                 return true;
             } else {
                 $tobeCached = true;
@@ -121,10 +122,10 @@ class Read
         }
 
         if ($tobeCached) {
-            $this->jsonEncode = new JsonEncode($this->c->httpRequestDetails);
-            $this->jsonEncode->init();
+            $this->dataEncode = new DataEncode($this->c->httpRequestDetails);
+            $this->dataEncode->init();
         } else {
-            $this->jsonEncode = &$this->c->httpResponse->jsonEncode;
+            $this->dataEncode = &$this->c->httpResponse->dataEncode;
         }
 
         // Set Server mode to execute query on - Read / Write Server
@@ -144,9 +145,9 @@ class Read
         }
 
         if ($tobeCached) {
-            $json = $this->jsonEncode->getJson();
+            $json = $this->dataEncode->getData();
             $this->c->httpRequest->setDmlCache($readSqlConfig['cacheKey'], $json);
-            $this->c->httpResponse->jsonEncode->appendJson($json);
+            $this->c->httpResponse->dataEncode->appendData($json);
         }
 
         return true;
@@ -161,10 +162,10 @@ class Read
      */
     private function processReadConfig(&$readSqlConfig, $useResultSet)
     {
-        $this->jsonEncode->startObject('Config');
-        $this->jsonEncode->addKeyValue('Route', $this->c->httpRequest->configuredUri);
-        $this->jsonEncode->addKeyValue('Payload', $this->getConfigParams($readSqlConfig, $isFirstCall = true, $useResultSet));
-        $this->jsonEncode->endObject();
+        $this->dataEncode->startObject('Config');
+        $this->dataEncode->addKeyData('Route', $this->c->httpRequest->configuredUri);
+        $this->dataEncode->addKeyData('Payload', $this->getConfigParams($readSqlConfig, $isFirstCall = true, $useResultSet));
+        $this->dataEncode->endObject();
     }
 
     /**
@@ -215,28 +216,28 @@ class Read
                 // Query will return single row
                 case 'singleRowFormat':
                     if ($isFirstCall) {
-                        $this->jsonEncode->startObject('Results');
+                        $this->dataEncode->startObject('Results');
                     } else {
-                        $this->jsonEncode->startObject();
+                        $this->dataEncode->startObject();
                     }
                     $this->fetchSingleRow($readSqlConfig, $isFirstCall, $configKeys, $useResultSet);
-                    $this->jsonEncode->endObject();
+                    $this->dataEncode->endObject();
                     break;
                 // Query will return multiple rows
                 case 'multipleRowFormat':
                     if ($isFirstCall) {
-                        $this->jsonEncode->startObject('Results');
+                        $this->dataEncode->startObject('Results');
                         if (isset($readSqlConfig['countQuery'])) {
                             $this->fetchRowsCount($readSqlConfig);
                         }
-                        $this->jsonEncode->startArray('Data');
+                        $this->dataEncode->startArray('Data');
                     } else {
-                        $this->jsonEncode->startArray($configKeys[count($configKeys)-1]);
+                        $this->dataEncode->startArray($configKeys[count($configKeys)-1]);
                     }
                     $this->fetchMultipleRows($readSqlConfig, $isFirstCall, $configKeys, $useResultSet);
-                    $this->jsonEncode->endArray();
+                    $this->dataEncode->endArray();
                     if ($isFirstCall && isset($readSqlConfig['countQuery'])) {
-                        $this->jsonEncode->endObject();
+                        $this->dataEncode->endObject();
                     }
                     break;
             }
@@ -292,7 +293,7 @@ class Read
             $row = [];
         }
         foreach($row as $key => $value) {
-            $this->jsonEncode->addKeyValue($key, $value);
+            $this->dataEncode->addKeyData($key, $value);
         }
         $this->db->closeCursor();
 
@@ -334,10 +335,10 @@ class Read
         $totalRowsCount = $row['count'];
         $totalPages = ceil($totalRowsCount/$this->c->httpRequest->session['payload']['perpage']);
 
-        $this->jsonEncode->addKeyValue('page', $this->c->httpRequest->session['payload']['page']);
-        $this->jsonEncode->addKeyValue('perpage', $this->c->httpRequest->session['payload']['perpage']);
-        $this->jsonEncode->addKeyValue('totalPages', $totalPages);
-        $this->jsonEncode->addKeyValue('totalRecords', $totalRowsCount);
+        $this->dataEncode->addKeyData('page', $this->c->httpRequest->session['payload']['page']);
+        $this->dataEncode->addKeyData('perpage', $this->c->httpRequest->session['payload']['perpage']);
+        $this->dataEncode->addKeyData('totalPages', $totalPages);
+        $this->dataEncode->addKeyData('totalRecords', $totalRowsCount);
     }
 
     /**
@@ -394,16 +395,16 @@ class Read
                 $i++;
             }
             if ($singleColumn) {
-                $this->jsonEncode->encode($row[key($row)]);
+                $this->dataEncode->encode($row[key($row)]);
             } else if (isset($readSqlConfig['__SUB-QUERY__'])) {
-                $this->jsonEncode->startObject();
+                $this->dataEncode->startObject();
                 foreach($row as $key => $value) {
-                    $this->jsonEncode->addKeyValue($key, $value);
+                    $this->dataEncode->addKeyData($key, $value);
                 }
                 $this->callReadDB($readSqlConfig, $configKeys, $row, $useResultSet);
-                $this->jsonEncode->endObject();
+                $this->dataEncode->endObject();
             } else {
-                $this->jsonEncode->encode($row);
+                $this->dataEncode->encode($row);
             }
         }
         $this->db->closeCursor($pushPop);

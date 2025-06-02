@@ -1,8 +1,9 @@
 <?php
-namespace Microservices\App;
+namespace Microservices\App\DataRepresentation\Json;
 
 use Microservices\App\Constants;
 use Microservices\App\Common;
+use Microservices\App\DataRepresentation\AbstractDataEncode;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 
@@ -22,7 +23,7 @@ use Microservices\App\HttpStatus;
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-class JsonEncode
+class JsonEncode extends AbstractDataEncode
 {
     /**
      * Temporary Stream
@@ -60,75 +61,41 @@ class JsonEncode
     private $replacements = array("\\\\", "\\\"", "\\n", "\\r", "\\t", "\\f", "\\b", ' ');
 
     /**
-     * Microservices Request Details
-     *
-     * @var null|array
-     */
-    public $httpRequestDetails = null;
-
-    /**
      * JsonEncode constructor
      *
-     * @param array $httpRequestDetails
+     * @param resource $tempStream
      */
-    public function __construct(&$httpRequestDetails)
+    public function __construct(&$tempStream)
     {
-        $this->httpRequestDetails = &$httpRequestDetails;
-    }
-
-    /**
-     * Initialize
-     *
-     * @return boolean
-     */
-    public function init()
-    {
-        if ($this->httpRequestDetails['server']['request_method'] === 'GET') {
-            $this->tempStream = fopen("php://temp", "rw+b");
-        } else {
-            $this->tempStream = fopen("php://memory", "rw+b");
-        }
+        $this->tempStream = &$tempStream;
     }
 
     /**
      * Write to temporary stream
      *
-     * @param string $str
+     * @param string $data Representation Data
      * @return void
      */
-    public function write($str)
+    private function write($data)
     {
-        fwrite($this->tempStream, $str);
-    }
-
-    /**
-     * Escape the json string key or value
-     *
-     * @param string $str json key or value string
-     * @return string
-     */
-    private function escape($str)
-    {
-        if (is_null($str)) return 'null';
-        $str = str_replace($this->escapers, $this->replacements, $str);
-        return "\"{$str}\"";
+        fwrite($this->tempStream, $data);
     }
 
     /**
      * Encodes both simple and associative array to json
      *
-     * @param $arr string value escaped and array value json_encode function is applied
+     * @param string|array $data Representation Data
      * @return void
      */
-    public function encode($arr)
+    public function encode($data)
     {
         if ($this->currentObject) {
             $this->write($this->currentObject->comma);
         }
-        if (is_array($arr)) {
-            $this->write(json_encode($arr));
+        if (is_array($data)) {
+            $this->write(json_encode($data));
         } else {
-            $this->write($this->escape($arr));
+            $this->write($this->escape($data));
         }
         if ($this->currentObject) {
             $this->currentObject->comma = ',';
@@ -136,16 +103,29 @@ class JsonEncode
     }
 
     /**
+     * Escape the json string key or value
+     *
+     * @param null|string $data Representation Data
+     * @return string
+     */
+    private function escape($data)
+    {
+        if (is_null($data)) return 'null';
+        $data = str_replace($this->escapers, $this->replacements, $data);
+        return "\"{$data}\"";
+    }
+
+    /**
      * Append raw json string
      *
-     * @param string $json JSON
+     * @param string $data Reference of Representation Data
      * @return void
      */
-    public function appendJson(&$json)
+    public function appendData(&$data)
     {
         if ($this->currentObject) {
             $this->write($this->currentObject->comma);
-            $this->write($json);
+            $this->write($data);
             $this->currentObject->comma = ',';
         }
     }
@@ -154,14 +134,14 @@ class JsonEncode
      * Append raw json string
      *
      * @param string $key  key of associative array
-     * @param string $json JSON
+     * @param string $data Reference of Representation Data
      * @return void
      */
-    public function appendKeyJson($key, &$json)
+    public function appendKeyData($key, &$data)
     {
         if ($this->currentObject && $this->currentObject->mode === 'Object') {
             $this->write($this->currentObject->comma);
-            $this->write($this->escape($key) . ':' . $json);
+            $this->write($this->escape($key) . ':' . $data);
             $this->currentObject->comma = ',';
         }
     }
@@ -169,27 +149,27 @@ class JsonEncode
     /**
      * Add simple array/value as in the json format
      *
-     * @param $value data type is string/array. This is used to add value/array in the current Array
+     * @param string|array $data Representation Data
      * @return void
      * @throws \Exception
      */
-    public function addValue($value)
+    public function addArrayData($data)
     {
         if ($this->currentObject->mode !== 'Array') {
             throw new \Exception('Mode should be Array', HttpStatus::$InternalServerError);
         }
-        $this->encode($value);
+        $this->encode($data);
     }
 
     /**
      * Add simple array/value as in the json format
      *
-     * @param string $key   key of associative array
-     * @param        $value data type is string/array. This is used to add value/array in the current Array
+     * @param string       $key  Key of associative array
+     * @param string|array $data Representation Data
      * @return void
      * @throws \Exception
      */
-    public function addKeyValue($key, $value)
+    public function addKeyData($key, $data)
     {
         if ($this->currentObject->mode !== 'Object') {
             throw new \Exception('Mode should be Object', HttpStatus::$InternalServerError);
@@ -197,13 +177,13 @@ class JsonEncode
         $this->write($this->currentObject->comma);
         $this->write($this->escape($key) . ':');
         $this->currentObject->comma = '';
-        $this->encode($value);
+        $this->encode($data);
     }
 
     /**
      * Start simple array
      *
-     * @param string $key Used while creating simple array inside an associative array and $key is the key
+     * @param null|string $key Used while creating simple array inside an associative array and $key is the key
      * @return void
      */
     public function startArray($key = null)
@@ -237,7 +217,7 @@ class JsonEncode
     /**
      * Start simple array
      *
-     * @param string $key Used while creating associative array inside an associative array and $key is the key
+     * @param null|string $key Used while creating associative array inside an associative array and $key is the key
      * @return void
      * @throws \Exception
      */
@@ -289,32 +269,6 @@ class JsonEncode
                     break;
             }
         }
-    }
-
-    /**
-     * Stream Json String
-     *
-     * @return void
-     */
-    public function streamJson()
-    {
-        return $this->getJson();
-    }
-
-    /**
-     * Return Json String
-     *
-     * @return void
-     */
-    public function getJson()
-    {
-        $this->end();
-
-        rewind($this->tempStream);
-        $json = stream_get_contents($this->tempStream);
-        fclose($this->tempStream);
-
-        return $json;
     }
 }
 

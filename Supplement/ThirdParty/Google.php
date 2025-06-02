@@ -77,7 +77,7 @@ class Google implements ThirdPartyInterface
         } else {
             $output = json_decode($output, true);
         }
-        // End the calls with json response with jsonEncode Object
+        // End the calls with json response with dataEncode Object
         $this->endProcess($output);
 
         return true;
@@ -91,6 +91,6 @@ class Google implements ThirdPartyInterface
      */
     private function endProcess($output)
     {
-        $this->c->httpResponse->jsonEncode->addKeyValue('Results', $output);
+        $this->c->httpResponse->dataEncode->addKeyData('Results', $output);
     }
 }

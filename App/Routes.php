@@ -103,7 +103,7 @@ class Routes
             $route = '';
             $this->getRoutes($routes, $route, $httpRoutes[$method]);
         }
-        $this->c->httpResponse->jsonEncode->addKeyValue('Results', $httpRoutes);
+        $this->c->httpResponse->dataEncode->addKeyData('Results', $httpRoutes);
 
         return true;
     }

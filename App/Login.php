@@ -261,7 +261,7 @@ class Login
             'Expires' => (Constants::$TOKEN_EXPIRY_TIME - ($this->timestamp - $tokenDetails['timestamp']))
         ];
 
-        $this->c->httpResponse->jsonEncode->addKeyValue('Results', $output);
+        $this->c->httpResponse->dataEncode->addKeyData('Results', $output);
     }
 
     /**

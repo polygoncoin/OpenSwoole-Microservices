@@ -94,7 +94,7 @@ class Password implements CustomInterface
                 $this->c->httpRequest->cache->deleteCache(CacheKey::Token($this->c->httpRequest->session['token']));
             }
 
-            $this->c->httpResponse->jsonEncode->addKeyValue('Results', 'Password changed successfully');
+            $this->c->httpResponse->dataEncode->addKeyData('Results', 'Password changed successfully');
         }
 
         return true;

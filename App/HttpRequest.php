@@ -3,9 +3,9 @@ namespace Microservices\App;
 
 use Microservices\App\Constants;
 use Microservices\App\CacheKey;
+use Microservices\App\DataRepresentation\Json\JsonDecode;
 use Microservices\App\Gateway;
 use Microservices\App\HttpStatus;
-use Microservices\App\JsonDecode;
 use Microservices\App\Middleware\Auth;
 use Microservices\App\Servers\Cache\AbstractCache;
 use Microservices\App\Servers\Database\AbstractDatabase;

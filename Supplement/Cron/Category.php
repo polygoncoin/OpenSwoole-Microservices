@@ -64,7 +64,7 @@ class Category implements CronInterface
     {
         // Create and call functions to manage cron functionality here
 
-        // End the calls with json response with jsonEncode Object
+        // End the calls with json response with dataEncode Object
         $this->endProcess();
         return true;
     }

@@ -137,10 +137,10 @@ class Write
      */
     private function processWriteConfig(&$writeSqlConfig, $useHierarchy)
     {
-        $this->c->httpResponse->jsonEncode->startObject('Config');
-        $this->c->httpResponse->jsonEncode->addKeyValue('Route', $this->c->httpRequest->configuredUri);
-        $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $this->getConfigParams($writeSqlConfig, $isFirstCall = true, $useHierarchy));
-        $this->c->httpResponse->jsonEncode->endObject();
+        $this->c->httpResponse->dataEncode->startObject('Config');
+        $this->c->httpResponse->dataEncode->addKeyData('Route', $this->c->httpRequest->configuredUri);
+        $this->c->httpResponse->dataEncode->addKeyData('Payload', $this->getConfigParams($writeSqlConfig, $isFirstCall = true, $useHierarchy));
+        $this->c->httpResponse->dataEncode->endObject();
     }
 
     /**
@@ -172,9 +172,9 @@ class Write
         $this->c->httpRequest->session['requiredArr'] = $this->getRequired($writeSqlConfig, $isFirstCall = true, $useHierarchy);
 
         if ($this->c->httpRequest->session['payloadType'] === 'Object') {
-            $this->c->httpResponse->jsonEncode->startObject('Results');
+            $this->c->httpResponse->dataEncode->startObject('Results');
         } else {
-            $this->c->httpResponse->jsonEncode->startArray('Results');
+            $this->c->httpResponse->dataEncode->startArray('Results');
         }
 
         // Perform action
@@ -228,17 +228,17 @@ class Write
             }
             if (isset($_payloadIndexes[$i]) && $_payloadIndexes[$i] === '') {
                 foreach ($arr as $k => $v) {
-                    $this->c->httpResponse->jsonEncode->addKeyValue($k, $v);
+                    $this->c->httpResponse->dataEncode->addKeyData($k, $v);
                 }
             } else {
-                $this->c->httpResponse->jsonEncode->encode($arr);
+                $this->c->httpResponse->dataEncode->encode($arr);
             }
         }
 
         if ($this->c->httpRequest->session['payloadType'] === 'Object') {
-            $this->c->httpResponse->jsonEncode->endObject();
+            $this->c->httpResponse->dataEncode->endObject();
         } else {
-            $this->c->httpResponse->jsonEncode->endArray();
+            $this->c->httpResponse->dataEncode->endArray();
         }
     }
 
@@ -440,10 +440,10 @@ class Write
             list($isValidData, $errors) = $this->validate($writeSqlConfig['__VALIDATE__']);
             if ($isValidData !== true) {
                 $this->c->httpResponse->httpStatus = HttpStatus::$BadRequest;
-                $this->c->httpResponse->jsonEncode->startObject();
-                $this->c->httpResponse->jsonEncode->addKeyValue('Payload', $this->c->httpRequest->session['payload']);
-                $this->c->httpResponse->jsonEncode->addKeyValue('Error', $errors);
-                $this->c->httpResponse->jsonEncode->endObject();
+                $this->c->httpResponse->dataEncode->startObject();
+                $this->c->httpResponse->dataEncode->addKeyData('Payload', $this->c->httpRequest->session['payload']);
+                $this->c->httpResponse->dataEncode->addKeyData('Error', $errors);
+                $this->c->httpResponse->dataEncode->endObject();
                 $return = false;
             }
         }

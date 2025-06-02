@@ -49,7 +49,7 @@ $server->on("start", function (Server $server) {
 
 $server->on("request", function (Request $request, Response $response) {
 
-    if (in_array($request->get['r'], ['/auth-test', '/open-test'])) {
+    if (isset($request->get['r']) && in_array($request->get['r'], ['/auth-test', '/open-test'])) {
         include __DIR__ . '/Tests.php';
         switch ($request->get['r']) {
             case '/auth-test':

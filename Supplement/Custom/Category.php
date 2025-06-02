@@ -75,7 +75,7 @@ class Category implements CustomInterface
         $this->db->execDbQuery($sql, $sqlParams);
         $rows = $this->db->fetchAll();
         $this->db->closeCursor();
-        $this->c->httpResponse->jsonEncode->addKeyValue('Results', $rows);
+        $this->c->httpResponse->dataEncode->addKeyData('Results', $rows);
         return true;
     }
 }

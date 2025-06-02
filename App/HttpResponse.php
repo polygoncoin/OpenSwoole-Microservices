@@ -3,9 +3,10 @@ namespace Microservices\App;
 
 use Microservices\App\Constants;
 use Microservices\App\Common;
+use Microservices\App\DataRepresentation\AbstractDataEncode;
+use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
-use Microservices\App\JsonEncode;
 
 /**
  * HTTP Error Response
@@ -31,9 +32,9 @@ class HttpResponse
     /**
      * Json Encode Object
      *
-     * @var null|JsonEncode
+     * @var null|AbstractDataEncode
      */
-    public $jsonEncode = null;
+    public $dataEncode = null;
 
     /**
      * Microservices Request Details
@@ -60,7 +61,7 @@ class HttpResponse
      */
     public function init()
     {
-        $this->jsonEncode = new JsonEncode($this->httpRequestDetails);
-        $this->jsonEncode->init();
+        $this->dataEncode = new DataEncode($this->httpRequestDetails);
+        $this->dataEncode->init();
     }
 }
