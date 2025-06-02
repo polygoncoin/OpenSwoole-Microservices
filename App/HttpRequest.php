@@ -3,7 +3,8 @@ namespace Microservices\App;
 
 use Microservices\App\Constants;
 use Microservices\App\CacheKey;
-use Microservices\App\DataRepresentation\Json\JsonDecode;
+use Microservices\App\DataRepresentation\AbstractDataDecode;
+use Microservices\App\DataRepresentation\DataDecode;
 use Microservices\App\Gateway;
 use Microservices\App\HttpStatus;
 use Microservices\App\Middleware\Auth;
@@ -100,9 +101,9 @@ class HttpRequest extends Gateway
     /**
      * Json Decode Object
      *
-     * @var null|JsonDecode
+     * @var null|AbstractDataDecode
      */
-    public $jsonDecode = null;
+    public $dataDecode = null;
 
     /**
      * Microservices Request Details
@@ -249,12 +250,12 @@ class HttpRequest extends Gateway
             }
             fwrite($this->payloadStream, $this->httpRequestDetails['post']['Payload']);
             
-            $this->jsonDecode = new JsonDecode($this->payloadStream);
-            $this->jsonDecode->init();
+            $this->dataDecode = new DataDecode($this->payloadStream);
+            $this->dataDecode->init();
 
             rewind($this->payloadStream);
-            $this->jsonDecode->indexJSON();
-            $this->session['payloadType'] = $this->jsonDecode->jsonType();
+            $this->dataDecode->indexData();
+            $this->session['payloadType'] = $this->dataDecode->dataType();
         }
     }
 

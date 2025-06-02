@@ -60,9 +60,9 @@ class Password implements CustomInterface
     public function process()
     {
         if ($this->c->httpRequest->session['payloadType'] === 'Object') {
-            $payload = $this->c->httpRequest->jsonDecode->get();
+            $payload = $this->c->httpRequest->dataDecode->get();
         } else {
-            $payload = $this->c->httpRequest->jsonDecode->get('0');
+            $payload = $this->c->httpRequest->dataDecode->get('0');
         }
         $this->c->httpRequest->session['payload'] = $payload;
 

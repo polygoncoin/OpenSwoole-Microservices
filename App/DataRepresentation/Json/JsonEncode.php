@@ -8,7 +8,7 @@ use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 
 /**
- * Creates JSON
+ * Generates Json
  *
  * This class is built to avoid creation of large array objects
  * (which leads to memory limit issues for larger data set)
@@ -16,7 +16,7 @@ use Microservices\App\HttpStatus;
  * create JSON in parts for what ever smallest part of data
  * we have of the large data set which are yet to be fetched
  *
- * @category   JSON Encoder
+ * @category   Json Encoder
  * @package    Microservices
  * @author     Ramesh Narayan Jangid
  * @copyright  Ramesh Narayan Jangid

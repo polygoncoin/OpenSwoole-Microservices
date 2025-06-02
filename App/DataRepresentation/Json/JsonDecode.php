@@ -1,6 +1,7 @@
 <?php
 namespace Microservices\App\DataRepresentation\Json;
 
+use Microservices\App\DataRepresentation\AbstractDataDecode;
 use Microservices\App\HttpStatus;
 
 /**
@@ -11,14 +12,14 @@ use Microservices\App\HttpStatus;
  * This class gives access to create obects from JSON string
  * in parts for what ever smallest part of data
  *
- * @category   JSON
- * @package    JSON Decoder
+ * @category   Json Decoder
+ * @package    Microservices
  * @author     Ramesh Narayan Jangid
  * @copyright  Ramesh Narayan Jangid
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-class JsonDecode
+class JsonDecode extends AbstractDataDecode
 {
     /**
      * Json File Handle
@@ -47,7 +48,7 @@ class JsonDecode
      *
      * @var null|JsonDecodeEngine
      */
-    private $jsonDecodeEngine = null;
+    private $JsonDecodeEngine = null;
 
     /**
      * JsonDecode constructor
@@ -77,8 +78,9 @@ class JsonDecode
     public function init()
     {
         // Init Json Decode Engine
-        $this->jsonDecodeEngine = new JsonDecodeEngine($this->jsonFileHandle);
+        $this->JsonDecodeEngine = new JsonDecodeEngine($this->jsonFileHandle);
     }
+
     /**
      * Validates JSON
      *
@@ -86,7 +88,7 @@ class JsonDecode
      */
     public function validate()
     {
-        foreach($this->jsonDecodeEngine->process() as $keyArr => $valueArr) {
+        foreach($this->JsonDecodeEngine->process() as $keyArr => $valueArr) {
             ;
         }
     }
@@ -96,10 +98,10 @@ class JsonDecode
      *
      * @return void
      */
-    public function indexJson()
+    public function indexData()
     {
         $this->jsonFileIndex = null;
-        foreach ($this->jsonDecodeEngine->process(true) as $keys => $val) {
+        foreach ($this->JsonDecodeEngine->process(true) as $keys => $val) {
             if (
                 isset($val['_s_']) &&
                 isset($val['_e_'])
@@ -126,7 +128,7 @@ class JsonDecode
     /**
      * Keys exist
      *
-     * @param string $keys Keys exist (values seperated by colon)
+     * @param null|string $keys Keys exist (values seperated by colon)
      * @return boolean
      */
     public function isset($keys = null)
@@ -149,13 +151,13 @@ class JsonDecode
     /**
      * Key exist
      *
-     * @param string $keys Key values seperated by colon
-     * @return string
+     * @param null|string $keys Keys exist (values seperated by colon)
+     * @return string Object/Array
      */
-    public function jsonType($keys = null)
+    public function dataType($keys = null)
     {
         $jsonFileIndex = &$this->jsonFileIndex;
-        if (!is_null($keys) && strlen($keys) !== 0) {
+        if (!empty($keys) && strlen($keys) > 0) {
             foreach (explode(':', $keys) as $key) {
                 if (isset($jsonFileIndex[$key])) {
                     $jsonFileIndex = &$jsonFileIndex[$key];
@@ -180,7 +182,7 @@ class JsonDecode
     /**
      * Count of array element
      *
-     * @param string $keys Key values seperated by colon
+     * @param null|string $keys Key values seperated by colon
      * @return integer
      */
     public function count($keys = null)
@@ -211,7 +213,7 @@ class JsonDecode
      * Pass the keys and get whole json content belonging to keys
      *
      * @param string $keys Key values seperated by colon
-     * @return array
+     * @return bool|string
      */
     public function get($keys = '')
     {
@@ -220,7 +222,7 @@ class JsonDecode
         }
         $valueArr = [];
         $this->load($keys);
-        foreach ($this->jsonDecodeEngine->process() as $keyArr => $valueArr) {
+        foreach ($this->JsonDecodeEngine->process() as $keyArr => $valueArr) {
             break;
         }
         return $valueArr;
@@ -230,7 +232,7 @@ class JsonDecode
      * Get complete JSON for Kays
      *
      * @param string $keys Key values seperated by colon
-     * @return array
+     * @return bool|array
      */
     public function getCompleteArray($keys = '')
     {
@@ -238,7 +240,7 @@ class JsonDecode
             return false;
         }
         $this->load($keys);
-        return json_decode($this->jsonDecodeEngine->getJsonString(), true);
+        return json_decode($this->JsonDecodeEngine->getJsonString(), true);
     }
 
     /**
@@ -252,8 +254,8 @@ class JsonDecode
     public function load($keys)
     {
         if (empty($keys) && $keys != 0) {
-            $this->jsonDecodeEngine->_s_ = null;
-            $this->jsonDecodeEngine->_e_ = null;
+            $this->JsonDecodeEngine->_s_ = null;
+            $this->JsonDecodeEngine->_e_ = null;
             return;
         }
         $jsonFileIndex = &$this->jsonFileIndex;
@@ -270,8 +272,8 @@ class JsonDecode
             isset($jsonFileIndex['_s_']) &&
             isset($jsonFileIndex['_e_'])
         ) {
-            $this->jsonDecodeEngine->_s_ = $jsonFileIndex['_s_'];
-            $this->jsonDecodeEngine->_e_ = $jsonFileIndex['_e_'];
+            $this->JsonDecodeEngine->_s_ = $jsonFileIndex['_s_'];
+            $this->JsonDecodeEngine->_e_ = $jsonFileIndex['_e_'];
         } else {
             throw new \Exception("Invalid keys '{$keys}'", HttpStatus::$BadRequest);
         }
@@ -518,7 +520,7 @@ class JsonDecodeEngine
         } else {
             $offset = $this->_s_ !== null ? $this->_s_ : 0;
             $length = $this->_e_ - $offset + 1;
-            return stream_get_contents($this->jsonFileHandle, $length, $offset);    
+            return stream_get_contents($this->jsonFileHandle, $length, $offset);
         }
     }
 

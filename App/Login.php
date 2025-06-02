@@ -131,7 +131,7 @@ class Login
         }
 
         $this->c->httpRequest->loadPayload();
-        $this->payload = $this->c->httpRequest->jsonDecode->get();
+        $this->payload = $this->c->httpRequest->dataDecode->get();
 
         // Check for required conditions variables
         foreach (array('username','password') as $value) {

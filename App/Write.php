@@ -162,7 +162,7 @@ class Write
             if (
                 $writeSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
                 && isset($writeSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
-                && ($this->c->httpRequest->jsonDecode->count() > $writeSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
+                && ($this->c->httpRequest->dataDecode->count() > $writeSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
             ) {
                 throw new \Exception('Maximum supported paylaod count is ' . $writeSqlConfig['__MAX-PAYLOAD-OBJECTS__'], HttpStatus::$BadRequest);
             }
@@ -178,7 +178,7 @@ class Write
         }
 
         // Perform action
-        $i_count = $this->c->httpRequest->session['payloadType'] === 'Object' ? 1 : $this->c->httpRequest->jsonDecode->count();
+        $i_count = $this->c->httpRequest->session['payloadType'] === 'Object' ? 1 : $this->c->httpRequest->dataDecode->count();
 
         $configKeys = [];
         $payloadIndexes = [];
@@ -209,7 +209,7 @@ class Write
                     }
                     $arr = [
                         'Status' => HttpStatus::$Created,
-                        'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray(implode(':', $_payloadIndexes)),
+                        'Payload' => $this->c->httpRequest->dataDecode->getCompleteArray(implode(':', $_payloadIndexes)),
                         'Response' => &$response
                     ];
                     if ($idempotentWindow) {
@@ -219,7 +219,7 @@ class Write
                     $this->c->httpResponse->httpStatus = HttpStatus::$BadRequest;
                     $arr = [
                         'Status' => HttpStatus::$BadRequest,
-                        'Payload' => $this->c->httpRequest->jsonDecode->getCompleteArray(implode(':', $_payloadIndexes)),
+                        'Payload' => $this->c->httpRequest->dataDecode->getCompleteArray(implode(':', $_payloadIndexes)),
                         'Error' => &$response
                     ];
                 }
@@ -262,8 +262,8 @@ class Write
         if (!is_array($payloadIndexes)) $payloadIndexes = [];
 
         $payloadIndex = is_array($payloadIndexes) ? implode(':', $payloadIndexes) : '';
-        $isAssoc = $this->c->httpRequest->jsonDecode->jsonType($payloadIndex) === 'Object';
-        $i_count = $isAssoc ? 1 : $this->c->httpRequest->jsonDecode->count($payloadIndex);
+        $isAssoc = $this->c->httpRequest->dataDecode->dataType($payloadIndex) === 'Object';
+        $i_count = $isAssoc ? 1 : $this->c->httpRequest->dataDecode->count($payloadIndex);
 
         $counter = 0;
         for ($i=0; $i < $i_count; $i++) {
@@ -282,11 +282,11 @@ class Write
             }
             $payloadIndex = is_array($_payloadIndexes) ? implode(':', $_payloadIndexes) : '';
 
-            if (!$this->c->httpRequest->jsonDecode->isset($payloadIndex)) {
+            if (!$this->c->httpRequest->dataDecode->isset($payloadIndex)) {
                 throw new \Exception("Paylaod key '{$payloadIndex}' not set", HttpStatus::$NotFound);
             }
 
-            $this->c->httpRequest->session['payload'] = $this->c->httpRequest->jsonDecode->get($payloadIndex);
+            $this->c->httpRequest->session['payload'] = $this->c->httpRequest->dataDecode->get($payloadIndex);
 
             if (count($required)) {
                 $this->c->httpRequest->session['required'] = $required;
@@ -405,7 +405,7 @@ class Write
                 if ($useHierarchy) { // use parent data of a payload
                     array_push($_payloadIndexes, $module);
                     array_push($_configKeys, $module);
-                    if ($this->c->httpRequest->jsonDecode->isset($modulePayloadKey)) {
+                    if ($this->c->httpRequest->dataDecode->isset($modulePayloadKey)) {
                         $_required = &$required[$module] ?? [];
                     } else {
                         throw new \Exception("Invalid payload: Module '{$module}' missing", HttpStatus::$NotFound);

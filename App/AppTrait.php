@@ -494,7 +494,7 @@ trait AppTrait
                     'userId' => (!is_null($this->c->httpRequest->userId) ? $this->c->httpRequest->userId : 0),
                     'httpMethod' => $this->c->httpRequest->REQUEST_METHOD,
                     'Route' => $this->c->httpRequest->ROUTE,
-                    'payload' => $this->c->httpRequest->jsonDecode->get(implode(':', $_payloadIndexes))
+                    'payload' => $this->c->httpRequest->dataDecode->get(implode(':', $_payloadIndexes))
                 ];
                 // $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
                 $hash = json_encode($payloadSignature);
