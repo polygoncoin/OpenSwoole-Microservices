@@ -1,5 +1,5 @@
 <?php
-namespace Microservices\Config\Queries\Auth\ClientDB\POST;
+namespace Microservices\Config\Queries\Auth\ClientDB\Groups\AdminGroup\PUT;
 
 use Microservices\App\DatabaseDataTypes;
 

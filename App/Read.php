@@ -112,8 +112,8 @@ class Read
         ) {
             $json = $this->c->httpRequest->getDqlCache($readSqlConfig['cacheKey']);
             if (!is_null($json)) {
-                $cacheHitJson = '"cacheHit": true';
-                $this->c->httpResponse->dataEncode->appendData($cacheHitJson);
+                $cacheHit = 'true';
+                $this->c->httpResponse->dataEncode->appendKeyData('cacheHit', $cacheHit);
                 $this->c->httpResponse->dataEncode->appendData($json);
                 return true;
             } else {
@@ -123,10 +123,11 @@ class Read
 
         if ($tobeCached) {
             $this->dataEncode = new DataEncode($this->c->httpRequestDetails);
-            $this->dataEncode->init();
+            $this->dataEncode->init($header = false);
         } else {
             $this->dataEncode = &$this->c->httpResponse->dataEncode;
         }
+        $this->dataEncode->XSLT = isset($readSqlConfig['XSLT']) ? $readSqlConfig['XSLT'] : null;
 
         // Set Server mode to execute query on - Read / Write Server
         $fetchFrom = (isset($readSqlConfig['fetchFrom'])) ? $readSqlConfig['fetchFrom'] : 'Slave';
@@ -248,7 +249,27 @@ class Read
             if (is_null($this->web)) {
                 $this->web = new Web($this->c);
             }
-            $this->web->triggerConfig($readSqlConfig['__TRIGGERS__']);
+            $this->dataEncode->startObject('__TRIGGERS__');
+            if ($isAssoc) {
+                $response = $this->web->triggerConfig($readSqlConfig['__TRIGGERS__']);
+                if (isset($response['body'])) {
+                    $this->dataEncode->encode($response['body']);
+                } else {
+                    for ($i = 0, $iCount = count($response); $i < $iCount; $i++) {
+                        if (isset($response[$i]['body'])) {
+                            $this->dataEncode->addKeyData($i, $response[$i]);
+                        }
+                    }
+                }
+            } else {
+                $response = $this->web->triggerConfig($readSqlConfig['__TRIGGERS__']);
+                for ($i = 0, $iCount = count($response); $i < $iCount; $i++) {
+                    if (isset($response[$i]['body'])) {
+                        $this->dataEncode->addKeyData($i, $response[$i]);
+                    }
+                }
+            }
+            $this->dataEncode->endObject();
         }
 
         // Execute Post Sql Hooks

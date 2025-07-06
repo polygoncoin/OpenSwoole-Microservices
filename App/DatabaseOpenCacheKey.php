@@ -1,6 +1,8 @@
 <?php
 namespace Microservices\App;
 
+use Microservices\App\Env;
+
 /**
  * Database Cache Key
  *
@@ -30,7 +32,7 @@ class DatabaseOpenCacheKey
      */
     static public function init($clientId)
     {
-        self::$App = 'o:app';
+        self::$App = 'o:app' . Env::$outputDataRepresentation;
         self::$Client = ":c:{$clientId}";
 
         self::$Category = self::$App . ':category';

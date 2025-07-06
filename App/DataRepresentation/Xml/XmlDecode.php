@@ -1,7 +1,7 @@
 <?php
 namespace Microservices\App\DataRepresentation\Xml;
 
-use Microservices\App\DataRepresentation\AbstractDataDecode;
+use Microservices\App\DataRepresentation\Json\JsonDecode;
 use Microservices\App\HttpStatus;
 
 /**
@@ -14,6 +14,6 @@ use Microservices\App\HttpStatus;
  * @version    Release: @1.0.0@
  * @since      Class available since Release 1.0.0
  */
-class XmlDecode extends AbstractDataDecode
+class XmlDecode extends JsonDecode
 {
 }

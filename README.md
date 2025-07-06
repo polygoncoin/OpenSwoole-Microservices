@@ -39,6 +39,11 @@ OUTPUT_PERFORMANCE_STATS=1      ;Add Performance Stats in Json output: 1 = true 
 allowConfigRequest=1            ;Allow config request (global flag): 1 = true / 0 = false
 cronRestrictedIp='127.0.0.1'    ;Crons Details
 maxPerpage=10000                ;Maximum value of perpage (records per page)
+
+;Data Representation: Json/Xml
+;To override below setting pass below params with route seperated with &
+inputDataRepresentation='Json'
+outputDataRepresentation='Json'
 ```
 
 ### Cache Server Details (Redis)
@@ -637,9 +642,9 @@ defaultPerpage=10
 maxPerpage=1000
 ```
 
-- [http://localhost/Microservices/public\_html/index.php?r=/tableName?page=1](http://localhost/Microservices/public_html/index.php?r=/tableName/1?page=1)
-- [http://localhost/Microservices/public\_html/index.php?r=/tableName?page=1&perpage=25](http://localhost/Microservices/public_html/index.php?r=/tableName/1?page=1&perpage=25)
-- [http://localhost/Microservices/public\_html/index.php?r=/tableName?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"}](http://localhost/Microservices/public_html/index.php?r=/tableName/1?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"})
+- [http://127.0.0.1:9501?r=/tableName?page=1](http://127.0.0.1:9501?r=/tableName/1?page=1)
+- [http://127.0.0.1:9501?r=/tableName?page=1&perpage=25](http://127.0.0.1:9501?r=/tableName/1?page=1&perpage=25)
+- [http://127.0.0.1:9501?r=/tableName?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"}](http://127.0.0.1:9501?r=/tableName/1?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"})
 
 >One need to urlencode orderBy value
 
@@ -941,6 +946,56 @@ var params = "Payload="+urlencodeJsonString;
 
 xmlhttp . send( params );
 ````
+
+* XML Request example
+
+```javascript
+var handlerUrl = "http://127.0.0.1:9501?r=/registration-with-address&inputDataRepresentation=Xml&outputDataRepresentation=Xml";
+
+var xmlPayload = '<?xml version="1.0" encoding="UTF-8" ?>' +
+'<Paylaod>' +
+'    <Rows>' +
+'        <Row>' +
+'            <firstname>Ramesh-1</firstname>' +
+'            <lastname>Jangid</lastname>' +
+'            <email>ramesh@test.com</email>' +
+'            <username>test</username>' +
+'            <password>shames11</password>' +
+'            <address>' +
+'                <address>A-203</address>' +
+'            </address>' +
+'        </Row>' +
+'        <Row>' +
+'            <firstname>Ramesh-2</firstname>' +
+'            <lastname>Jangid</lastname>' +
+'            <email>ramesh@test.com</email>' +
+'            <username>test</username>' +
+'            <password>shames11</password>' +
+'            <address>' +
+'                <address>A-203</address>' +
+'            </address>' +
+'        </Row>' +
+'    </Rows>' +
+'</Paylaod>';
+
+
+var xmlhttp = new XMLHttpRequest();
+
+xmlhttp . open( "POST", handlerUrl );
+xmlhttp . setRequestHeader('X-API-Version', 'v1.0.0');
+xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
+
+xmlhttp . onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        console.log(this.responseText);
+    }
+};
+
+var urlencodeJsonString = encodeURIComponent(xmlPayload);
+var payload = "Payload="+urlencodeJsonString;
+
+xmlhttp . send( payload );
+```
 
 ## License
 

@@ -57,6 +57,9 @@ class Services
     public function __construct(&$httpRequestDetails)
     {
         $this->httpRequestDetails = &$httpRequestDetails;
+
+        Constants::init();
+        Env::init($httpRequestDetails);
     }
 
     /**
@@ -66,9 +69,6 @@ class Services
      */
     public function init()
     {
-        Constants::init();
-        Env::init();
-
         $this->c = new Common($this->httpRequestDetails);
         $this->c->init();
 
@@ -239,8 +239,11 @@ class Services
             // may also be using PUT, PATCH, HEAD etc
             $headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
         } else {
-            // JSON headers
-            $headers['Content-Type'] = 'application/json; charset=utf-8';
+            if (Env::$outputDataRepresentation === 'Xml') { // XML headers
+                $headers['Content-Type'] = 'text/xml; charset=utf-8';
+            } else { // JSON headers
+                $headers['Content-Type'] = 'application/json; charset=utf-8';
+            }
             $headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0';
             $headers['Pragma'] = 'no-cache';
         }

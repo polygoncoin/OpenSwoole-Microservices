@@ -4,6 +4,8 @@ namespace Microservices\App;
 use Microservices\App\AppTrait;
 use Microservices\App\Constants;
 use Microservices\App\Common;
+use Microservices\App\DataRepresentation\AbstractDataEncode;
+use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\HttpStatus;
@@ -63,6 +65,13 @@ class Write
     private $operateAsTransaction = null;
 
     /**
+     * Json Encode Object
+     *
+     * @var null|AbstractDataEncode
+     */
+    public $dataEncode = null;
+
+    /**
      * Constructor
      *
      * @param Common $common
@@ -70,6 +79,7 @@ class Write
     public function __construct(&$common)
     {
         $this->c = &$common;
+        $this->dataEncode = &$this->c->httpResponse->dataEncode;
     }
 
     /**
@@ -97,6 +107,8 @@ class Write
 
         // Rate Limiting request if configured for Route Queries.
         $this->rateLimitRoute($writeSqlConfig);
+
+        $this->dataEncode->XSLT = isset($writeSqlConfig['XSLT']) ? $writeSqlConfig['XSLT'] : null;
 
         // Lag Response
         $this->lagResponse($writeSqlConfig);
@@ -137,10 +149,10 @@ class Write
      */
     private function processWriteConfig(&$writeSqlConfig, $useHierarchy)
     {
-        $this->c->httpResponse->dataEncode->startObject('Config');
-        $this->c->httpResponse->dataEncode->addKeyData('Route', $this->c->httpRequest->configuredUri);
-        $this->c->httpResponse->dataEncode->addKeyData('Payload', $this->getConfigParams($writeSqlConfig, $isFirstCall = true, $useHierarchy));
-        $this->c->httpResponse->dataEncode->endObject();
+        $this->dataEncode->startObject('Config');
+        $this->dataEncode->addKeyData('Route', $this->c->httpRequest->configuredUri);
+        $this->dataEncode->addKeyData('Payload', $this->getConfigParams($writeSqlConfig, $isFirstCall = true, $useHierarchy));
+        $this->dataEncode->endObject();
     }
 
     /**
@@ -172,9 +184,12 @@ class Write
         $this->c->httpRequest->session['requiredArr'] = $this->getRequired($writeSqlConfig, $isFirstCall = true, $useHierarchy);
 
         if ($this->c->httpRequest->session['payloadType'] === 'Object') {
-            $this->c->httpResponse->dataEncode->startObject('Results');
+            $this->dataEncode->startObject('Results');
         } else {
-            $this->c->httpResponse->dataEncode->startArray('Results');
+            $this->dataEncode->startObject('Results');
+            if (Env::$outputDataRepresentation === 'Xml') {
+                $this->dataEncode->startArray('Rows');
+            }
         }
 
         // Perform action
@@ -228,17 +243,27 @@ class Write
             }
             if (isset($_payloadIndexes[$i]) && $_payloadIndexes[$i] === '') {
                 foreach ($arr as $k => $v) {
-                    $this->c->httpResponse->dataEncode->addKeyData($k, $v);
+                    $this->dataEncode->addKeyData($k, $v);
                 }
             } else {
-                $this->c->httpResponse->dataEncode->encode($arr);
+                if (Env::$outputDataRepresentation === 'Xml') {
+                    $this->dataEncode->startObject('Row');
+                    $this->dataEncode->encode($arr);
+                    $this->dataEncode->endObject('Row');
+                } else {
+                    $this->dataEncode->encode($arr);
+                }
+
             }
         }
 
         if ($this->c->httpRequest->session['payloadType'] === 'Object') {
-            $this->c->httpResponse->dataEncode->endObject();
+            $this->dataEncode->endObject();
         } else {
-            $this->c->httpResponse->dataEncode->endArray();
+            if (Env::$outputDataRepresentation === 'Xml') {
+                $this->dataEncode->endArray();
+            }
+            $this->dataEncode->endObject();
         }
     }
 
@@ -440,10 +465,10 @@ class Write
             list($isValidData, $errors) = $this->validate($writeSqlConfig['__VALIDATE__']);
             if ($isValidData !== true) {
                 $this->c->httpResponse->httpStatus = HttpStatus::$BadRequest;
-                $this->c->httpResponse->dataEncode->startObject();
-                $this->c->httpResponse->dataEncode->addKeyData('Payload', $this->c->httpRequest->session['payload']);
-                $this->c->httpResponse->dataEncode->addKeyData('Error', $errors);
-                $this->c->httpResponse->dataEncode->endObject();
+                $this->dataEncode->startObject();
+                $this->dataEncode->addKeyData('Payload', $this->c->httpRequest->session['payload']);
+                $this->dataEncode->addKeyData('Error', $errors);
+                $this->dataEncode->endObject();
                 $return = false;
             }
         }

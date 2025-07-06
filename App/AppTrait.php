@@ -433,7 +433,7 @@ trait AppTrait
 
     /**
      * Rate Limiting request if configured for Route Queries
-     * 
+     *
      * @param array $sqlConfig Config from file
      * @return void
      * @throws \Exception
@@ -468,7 +468,7 @@ trait AppTrait
 
     /**
      * Check for Idempotent Window
-     * 
+     *
      * @param array $sqlConfig       Config from file
      * @param array $_payloadIndexes Payload Indexes
      * @return array

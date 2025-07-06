@@ -272,7 +272,7 @@ class Login
      */
     private function updateDB(&$tokenDetails)
     {
-        $this->c->httpRequest->setDbConnection('Master');
+        $this->c->httpRequest->db = $this->c->httpRequest->setDbConnection('Master');
         $this->db = &$this->c->httpRequest->db;
 
         $userTable = Env::$client_users;

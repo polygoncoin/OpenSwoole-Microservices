@@ -33,13 +33,14 @@ class Web
         $this->c = &$common;
     }
 
-    private function getCurlConfig($homeURL, $method, $route, $queryString, $header = [], $json = '')
+    private function getCurlConfig($homeURL, $method, $route, $queryString, $header = [], $payload = '')
     {
         $curlConfig[CURLOPT_URL] = "{$homeURL}?r={$route}&{$queryString}";
         $curlConfig[CURLOPT_HTTPHEADER] = $header;
+        $curlConfig[CURLOPT_HEADER] = 1;
 
         $payload = http_build_query([
-            "Payload" => $json
+            "Payload" => $payload
         ]);
 
         switch ($method) {
@@ -71,22 +72,35 @@ class Web
         return $curlConfig;
     }
 
-    private function trigger($homeURL, $method, $route, $queryString, $header = [], $json = '')
+    private function trigger($homeURL, $method, $route, $queryString, $header = [], $payload = '')
     {
         $curl = curl_init();
-        $curlConfig = $this->getCurlConfig($homeURL, $method, $route, $queryString, $header, $json);
+        $curlConfig = $this->getCurlConfig($homeURL, $method, $route, $queryString, $header, $payload);
         curl_setopt_array($curl, $curlConfig);
-        $responseJSON = curl_exec($curl);
-        $err = curl_error($curl);
+        $curlResponse = curl_exec($curl);
+
+        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $contentType = curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
+
+        $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        $responseHeaders = $this->http_parse_headers(substr($curlResponse, 0, $headerSize));
+        $responseBody = substr($curlResponse, $headerSize);
+
+        $error = curl_error($curl);
         curl_close($curl);
 
-        if ($err) {
-            $response = ['cURL Error #:' . $err];
+        if ($error) {
+            $response = ['cURL Error #:' . $error];
         } else {
-            $response = json_decode($responseJSON, true);
+            $response = $responseBody;
         }
 
-        return $response;
+        return [
+            'httpCode' => $httpCode,
+            'contentType' => $contentType,
+            'headers' => $responseHeaders,
+            'body' => $response
+        ];
     }
 
     public function triggerConfig($triggerConfig)
@@ -135,7 +149,7 @@ class Web
                 }
                 
                 if (empty($errors)) {
-                    $response = $this->trigger($homeURL, $method, $route, $queryString, $header, $jsonPayload = json_encode($payloadArr));
+                    $response = $this->trigger($homeURL, $method, $route, $queryString, $header, $payload = json_encode($payloadArr));
                 } else {
                     $response = $errors;
                 }
@@ -170,7 +184,7 @@ class Web
                 }
                 
                 if (empty($errors)) {
-                    $response[] = $this->trigger($homeURL, $method, $route, $queryString, $header, $jsonPayload = json_encode($payloadArr));
+                    $response[] = $this->trigger($homeURL, $method, $route, $queryString, $header, $payload = json_encode($payloadArr));
                 } else {
                     $response[] = $errors;
                 }
@@ -199,7 +213,7 @@ class Web
             } else {
                 $var = null;
             }
-            
+
             $dataPayloadType = $config['fetchFrom'];
             $dataPayloadTypeKey = $config['fetchFromValue'];
             if ($dataPayloadType === 'function') {
@@ -249,5 +263,35 @@ class Web
         }
 
         return [$sqlParams, $errors];
+    }
+
+    private function http_parse_headers($raw_headers) {
+        $headers = array();
+        $key = '';
+
+        foreach(explode("\n", $raw_headers) as $i => $h) {
+            $h = explode(':', $h, 2);
+
+            if (isset($h[1])) {
+                if (!isset($headers[$h[0]]))
+                    $headers[$h[0]] = trim($h[1]);
+                elseif (is_array($headers[$h[0]])) {
+                    $headers[$h[0]] = array_merge($headers[$h[0]], array(trim($h[1])));
+                }
+                else {
+                    $headers[$h[0]] = array_merge(array($headers[$h[0]]), array(trim($h[1])));
+                }
+
+                $key = $h[0];
+            }
+            else {
+                if (substr($h[0], 0, 1) == "\t")
+                    $headers[$key] .= "\r\n\t".trim($h[0]);
+                elseif (!$key)
+                    $headers[0] = trim($h[0]);
+            }
+        }
+
+        return $headers;
     }
 }

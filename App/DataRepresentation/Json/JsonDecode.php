@@ -488,6 +488,9 @@ class JsonDecodeEngine
 
                                 // Closing qoute of Value
                                 case $varMode === 'valueValue':
+                                    if (!isset($this->currentObject)) {
+                                        $this->startObject();
+                                    }
                                     $this->currentObject->assocValues[$keyValue] = $valueValue;
                                     $keyValue = $valueValue = '';
                                     $varMode = 'keyValue';

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:template match="/">
+    <Resultset>
+        <Results select="Resultset/Results">
+            <page><xsl:value-of select="page"/></page>
+            <perpage><xsl:value-of select="perpage"/></perpage>
+            <totalPages><xsl:value-of select="totalPages"/></totalPages>
+            <totalRecords><xsl:value-of select="totalRecords"/></totalRecords>
+        </Results>
+    </Resultset>
+</xsl:template>
+</xsl:stylesheet>

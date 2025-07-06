@@ -2,8 +2,10 @@
 namespace Microservices;
 
 use Microservices\Services;
+use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\Logs;
 
+use OpenSwoole\Coroutine;
 use OpenSwoole\Http\Server;
 use OpenSwoole\Http\Request;
 use OpenSwoole\Http\Response;
@@ -40,6 +42,12 @@ class Autoload
 
 spl_autoload_register(__NAMESPACE__ . '\Autoload::register');
 
+// Set coroutine options before you start a server...
+Coroutine::set([
+    'max_coroutine' => 100,
+    'max_concurrency' => 100,
+]);
+
 $server = new Server("127.0.0.1", 9501);
 
 $server->on("start", function (Server $server) {
@@ -47,9 +55,9 @@ $server->on("start", function (Server $server) {
     echo "OpenSwoole http server is started at http://127.0.0.1:9501\n";
 });
 
-$server->on("request", function (Request $request, Response $response) {
+$server->on("request", function (Request $request, Response $response) use ($server) {
 
-    if (isset($request->get['r']) && in_array($request->get['r'], ['/auth-test', '/open-test'])) {
+    if (isset($request->get['r']) && in_array($request->get['r'], ['/auth-test', '/open-test', '/open-test-xml'])) {
         include __DIR__ . '/Tests.php';
         switch ($request->get['r']) {
             case '/auth-test':
@@ -58,9 +66,26 @@ $server->on("request", function (Request $request, Response $response) {
             case '/open-test':
                 $response->end(processOpen());
                 break;        
+            case '/open-test-xml':
+                $response->end(processXml());
+                break;        
         }
         return;
     }
+
+    $httpRequestDetails = [];
+
+    $httpRequestDetails['server']['host'] = 'localhost';
+    // $httpRequestDetails['server']['host'] = 'public.localhost';
+    $httpRequestDetails['server']['request_method'] = $request->server['request_method'];
+    $httpRequestDetails['server']['remote_addr'] = $request->server['remote_addr'];
+    if (isset($request->header['authorization'])) {
+        $httpRequestDetails['header']['authorization'] = $request->header['authorization'];
+    }
+    $httpRequestDetails['server']['api_version'] = $request->header['x-api-version'];
+    $httpRequestDetails['get'] = &$request->get;
+    $httpRequestDetails['post'] = &$request->post;
+    $httpRequestDetails['files'] = &$request->files;
 
     // Check version
     if (!isset($request->header['x-api-version']) || $request->header['x-api-version'] !== 'v1.0.0') {
@@ -73,19 +98,11 @@ $server->on("request", function (Request $request, Response $response) {
         return;
     }
 
-    $httpRequestDetails = [];
-
-    // $httpRequestDetails['server']['host'] = 'localhost';
-    $httpRequestDetails['server']['host'] = 'public.localhost';
-    $httpRequestDetails['server']['request_method'] = $request->server['request_method'];
-    $httpRequestDetails['server']['remote_addr'] = $request->server['remote_addr'];
-    if (isset($request->header['authorization'])) {
-        $httpRequestDetails['header']['authorization'] = $request->header['authorization'];
+    // Load .env
+    $env = parse_ini_file(__DIR__ . DIRECTORY_SEPARATOR . '.env');
+    foreach ($env as $key => $value) {
+        putenv("{$key}={$value}");
     }
-    $httpRequestDetails['server']['api_version'] = $request->header['x-api-version'];
-    $httpRequestDetails['get'] = &$request->get;
-    $httpRequestDetails['post'] = &$request->post;
-    $httpRequestDetails['files'] = &$request->files;
 
     // Code to Initialize / Start the service
     try {
@@ -98,12 +115,6 @@ $server->on("request", function (Request $request, Response $response) {
         if ($httpRequestDetails['server']['request_method'] == 'OPTIONS') {
             $response->end();
             return;
-        }
-
-        // Load .env
-        $env = parse_ini_file(__DIR__ . DIRECTORY_SEPARATOR . '.env');
-        foreach ($env as $key => $value) {
-            putenv("{$key}={$value}");
         }
 
         if ($services->init()) {
@@ -145,7 +156,12 @@ $server->on("request", function (Request $request, Response $response) {
             ];
         }
 
-        $response->end(json_encode($arr));
+        $dataEncode = new DataEncode($httpRequestDetails);
+        $dataEncode->init();
+        $dataEncode->startObject();
+        $dataEncode->addKeyData('Error', $arr);
+
+        $response->end($dataEncode->streamData());
         return;
     }
 });
@@ -161,6 +177,8 @@ $server->set([
     'http_compression' => true,
     'http_compression_level' => 3, // 1 - 9
     'compression_min_length' => 20,
+    'worker_num' =>   2,
+    'max_request' =>  1000,
 ]);
 
 $server->start();

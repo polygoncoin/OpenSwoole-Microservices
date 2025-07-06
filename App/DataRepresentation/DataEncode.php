@@ -4,6 +4,7 @@ namespace Microservices\App\DataRepresentation;
 use Microservices\App\DataRepresentation\AbstractDataEncode;
 use Microservices\App\DataRepresentation\Json\JsonEncode;
 use Microservices\App\DataRepresentation\Xml\XmlEncode;
+use Microservices\App\Env;
 
 /**
  * Creates Data Representation Output
@@ -39,6 +40,13 @@ class DataEncode extends AbstractDataEncode
     private $dataEncoder = null;
 
     /**
+     * XSLT
+     *
+     * @var null|string
+     */
+    public $XSLT = null;
+
+    /**
      * DataEncode constructor
      *
      * @param array $httpRequestDetails
@@ -53,14 +61,24 @@ class DataEncode extends AbstractDataEncode
      *
      * @return boolean
      */
-    public function init()
+    public function init($header = true)
     {
         if ($this->httpRequestDetails['server']['request_method'] === 'GET') {
             $this->tempStream = fopen("php://temp", "rw+b");
         } else {
             $this->tempStream = fopen("php://memory", "rw+b");
         }
-        $this->dataEncoder = new JsonEncode($this->tempStream);
+        switch (Env::$outputDataRepresentation) {
+            case 'Xml':
+                $this->dataEncoder = new XmlEncode($this->tempStream, $header);
+                break;
+            case 'Json':
+                $this->dataEncoder = new JsonEncode($this->tempStream, $header);
+                break;
+            default:
+                $this->dataEncoder = new JsonEncode($this->tempStream, $header);
+                break;
+        }
     }
 
     /**

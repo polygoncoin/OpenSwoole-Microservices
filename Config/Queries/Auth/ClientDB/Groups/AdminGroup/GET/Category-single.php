@@ -1,5 +1,5 @@
 <?php
-namespace Microservices\Config\Queries\Auth\ClientDB\GET;
+namespace Microservices\Config\Queries\Auth\ClientDB\Groups\AdminGroup\GET;
 
 use Microservices\App\DatabaseCacheKey;
 use Microservices\App\DatabaseDataTypes;

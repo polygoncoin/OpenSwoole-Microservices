@@ -65,7 +65,7 @@ class JsonEncode extends AbstractDataEncode
      *
      * @param resource $tempStream
      */
-    public function __construct(&$tempStream)
+    public function __construct(&$tempStream, $header = true)
     {
         $this->tempStream = &$tempStream;
     }

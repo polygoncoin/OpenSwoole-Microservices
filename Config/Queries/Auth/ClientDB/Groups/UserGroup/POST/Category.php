@@ -1,5 +1,5 @@
 <?php
-namespace Microservices\Config\Queries\Auth\ClientDB\POST;
+namespace Microservices\Config\Queries\Auth\ClientDB\Groups\UserGroup\POST;
 
 use Microservices\App\DatabaseCacheKey;
 use Microservices\App\DatabaseDataTypes;
