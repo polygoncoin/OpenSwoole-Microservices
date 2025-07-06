@@ -262,7 +262,7 @@ class HttpRequest extends Gateway
 
             $this->payloadStream = fopen("php://memory", "rw+b");
             fwrite($this->payloadStream, $this->httpRequestDetails['post']['Payload']);
-            
+
             $this->dataDecode = new DataDecode($this->payloadStream);
             $this->dataDecode->init();
 

@@ -62,13 +62,13 @@ $server->on("request", function (Request $request, Response $response) use ($ser
         switch ($request->get['r']) {
             case '/auth-test':
                 $response->end(processAuth());
-                break;        
+                break;
             case '/open-test':
                 $response->end(processOpen());
-                break;        
+                break;
             case '/open-test-xml':
                 $response->end(processXml());
-                break;        
+                break;
         }
         return;
     }

@@ -231,16 +231,16 @@ if (!function_exists('processAuth')) {
                 ]
             ];
             $response[] = trigger('POST', '/registration-with-address', $header, $payload = json_encode($params));
-        
+
             $response[] = trigger('GET', '/category', $header, $payload = '');
             // $response[] = trigger('GET', '/category/search', $header, $payload = '');
             $response[] = trigger('GET', '/category/1', $header, $payload = '');
             $response[] = trigger('GET', '/category&orderBy={"id":"DESC"}', $header, $payload = '');
-        
+
             $response[] = trigger('GET', '/registration/1', $header, $payload = '');
             $response[] = trigger('GET', '/address/1', $header, $payload = '');
             $response[] = trigger('GET', '/registration-with-address/1', $header, $payload = '');
-        
+
             $params = [
                 'firstname' => 'Ramesh',
                 'lastname' => 'Jangid',
@@ -267,10 +267,10 @@ if (!function_exists('processAuth')) {
                 'address' => '203'
             ];
             $response[] = trigger('PATCH', '/address/1', $header, $payload = json_encode($params));
-        
+
             $response[] = trigger('DELETE', '/registration/1', $header, $payload = '');
             $response[] = trigger('DELETE', '/address/1', $header, $payload = '');
-        
+
             $response[] = trigger('POST', '/category/config', $header, $payload = '');
         }
 
@@ -284,7 +284,7 @@ if (!function_exists('processAuth')) {
             $response[] = trigger('GET', '/routes', $header, $payload = '');
 
             $response[] = trigger('DELETE', '/category/truncate', $header, $payload = '');
-            
+
             $params = [
                 [
                     'name' => 'ramesh0',
@@ -339,7 +339,7 @@ if (!function_exists('processAuth')) {
                 ]
             ];
             $response[] = trigger('POST', '/registration-with-address', $header, $payload = json_encode($params));
-            
+
             $response[] = trigger('GET', '/category', $header, $payload = '');
             // $response[] = trigger('GET', '/category/search', $header, $payload = '');
             $response[] = trigger('GET', '/category/1', $header, $payload = '');
@@ -531,16 +531,16 @@ if (!function_exists('processAuth')) {
                 ]
             ];
             $response[] = trigger('POST', '/registration-with-address', $header, $payload = json_encode($params));
-        
+
             $response[] = trigger('GET', '/category', $header, $payload = '');
             // $response[] = trigger('GET', '/category/search', $header, $payload = '');
             $response[] = trigger('GET', '/category/1', $header, $payload = '');
             $response[] = trigger('GET', '/category&orderBy={"id":"DESC"}', $header, $payload = '');
-        
+
             $response[] = trigger('GET', '/registration/1', $header, $payload = '');
             $response[] = trigger('GET', '/address/1', $header, $payload = '');
             $response[] = trigger('GET', '/registration-with-address/1', $header, $payload = '');
-        
+
             $params = [
                 'firstname' => 'Ramesh',
                 'lastname' => 'Jangid',
@@ -567,10 +567,10 @@ if (!function_exists('processAuth')) {
                 'address' => '203'
             ];
             $response[] = trigger('PATCH', '/address/1', $header, $payload = json_encode($params));
-        
+
             $response[] = trigger('DELETE', '/registration/1', $header, $payload = '');
             $response[] = trigger('DELETE', '/address/1', $header, $payload = '');
-        
+
             $response[] = trigger('POST', '/category/config', $header, $payload = '');
         }
 
@@ -584,7 +584,7 @@ if (!function_exists('processAuth')) {
             $response[] = trigger('GET', '/routes', $header, $payload = '');
 
             $response[] = trigger('DELETE', '/category/truncate', $header, $payload = '');
-            
+
             $params = [
                 [
                     'name' => 'ramesh0',
@@ -638,7 +638,7 @@ if (!function_exists('processAuth')) {
                 ]
             ];
             $response[] = trigger('POST', '/registration-with-address', $header, $payload = json_encode($params));
-            
+
             $response[] = trigger('GET', '/category', $header, $payload = '');
             // $response[] = trigger('GET', '/category/search', $header, $payload = '');
             $response[] = trigger('GET', '/category/1', $header, $payload = '');

@@ -507,7 +507,7 @@ return [
         ]
         [...]
     ],
-    
+
     // Hooks
     '__PRE-SQL-HOOKS__' => [// Array of Hooks class name in exec order
         'Hook_Example1',
@@ -541,14 +541,14 @@ return [
     // Rate Limiting Route access
     'rateLimiterMaxRequests' => 1, // Allowed number of request in defined seconds window
     'rateLimiterSecondsWindow' => 3600, // Seconds Window for restricting number of request
-    
+
     // Control response time as per number of hits by configuring lags in seconds as below
     'responseLag' => [
         // No of Requests => Seconds Lag
         0 => 0,
         2 => 10,
     ],
-    
+
     // Any among below can be used for DML operations (These are Optional keys)
     // Caching
     'cacheKey' => '<unique-key-for-redis-to-cache-results>(e.g, key:1)', // Use cacheKey to cache and reuse results (Optional)
@@ -557,7 +557,7 @@ return [
         '<unique-key-for-redis-to-drop-cached-results>(category etc.)',
         '...'
     ],
-    
+
     // Limiting duplicates
     'idempotentWindow' => 3 // Idempotent Window for DML operartion (seconds)
 ];

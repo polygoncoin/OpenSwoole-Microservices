@@ -124,7 +124,7 @@ class Web
         if ($assoc) {
             $method = $triggerConfig['__METHOD__'];
             list($routeElementsArr, $errors) = $this->getTriggerPayload($triggerConfig['__ROUTE__']);
-            
+
             if (empty($errors)) {
                 $route = '/' . implode('/',$routeElementsArr);
             } else {
@@ -147,7 +147,7 @@ class Web
                 } else {
                     $payloadArr = $errors = [];
                 }
-                
+
                 if (empty($errors)) {
                     $response = $this->trigger($homeURL, $method, $route, $queryString, $header, $payload = json_encode($payloadArr));
                 } else {
@@ -182,7 +182,7 @@ class Web
                 } else {
                     $payloadArr = $errors = [];
                 }
-                
+
                 if (empty($errors)) {
                     $response[] = $this->trigger($homeURL, $method, $route, $queryString, $header, $payload = json_encode($payloadArr));
                 } else {
