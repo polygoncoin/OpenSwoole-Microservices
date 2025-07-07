@@ -141,20 +141,23 @@ if (!function_exists('trigger')) {
         curl_close($curl);
 
         if ($error) {
-            $response = 'cURL Error #:' . $error;
-            echo 'Failed:'.$route . PHP_EOL;
-            echo 'O/P:' . htmlspecialchars($responseBody) . PHP_EOL . PHP_EOL;
-            die;
+            $response = ['cURL Error #:' . $error];
         } else {
-            $response = $responseBody;
+            if (strpos($contentType, 'application/json') !== false) {
+                $response = json_decode($responseBody, true);
+            } else {
+                $response = $responseBody;
+            }
         }
 
-        return [
-            'httpCode' => $httpCode,
-            'contentType' => $contentType,
-            'headers' => $responseHeaders,
-            'body' => $response
-        ];
+        // return [
+        //     'httpCode' => $httpCode,
+        //     'contentType' => $contentType,
+        //     'headers' => $responseHeaders,
+        //     'body' => $response
+        // ];
+
+        return $response;
     }
 }
 

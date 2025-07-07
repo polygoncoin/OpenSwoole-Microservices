@@ -92,15 +92,21 @@ class Web
         if ($error) {
             $response = ['cURL Error #:' . $error];
         } else {
-            $response = $responseBody;
+            if (strpos($contentType, 'application/json') !== false) {
+                $response = json_decode($responseBody, true);
+            } else {
+                $response = $responseBody;
+            }
         }
 
-        return [
-            'httpCode' => $httpCode,
-            'contentType' => $contentType,
-            'headers' => $responseHeaders,
-            'body' => $response
-        ];
+        // return [
+        //     'httpCode' => $httpCode,
+        //     'contentType' => $contentType,
+        //     'headers' => $responseHeaders,
+        //     'body' => $response
+        // ];
+
+        return $response;
     }
 
     public function triggerConfig($triggerConfig)
@@ -110,6 +116,10 @@ class Web
         }
 
         $assoc = (!isset($triggerConfig[0])) ? true : false;
+        if (!$assoc && isset($triggerConfig[0]) && count($triggerConfig) === 1) {
+            $triggerConfig = $triggerConfig[0];
+            $assoc = true;
+        }
 
         $homeURL = 'http://127.0.0.1:9501';
 
