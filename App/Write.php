@@ -439,13 +439,8 @@ class Write
                     $_required = $required;
                 }
                 $_useHierarchy = $useHierarchy ?? $this->getUseHierarchy($_writeSqlConfig, 'useHierarchy');
-                if ($isAssoc) {
-                    $response[$module] = [];
-                    $_response = &$response[$module];
-                } else {
-                    $response[$counter][$module] = [];
-                    $_response = &$response[$counter][$module];
-                }
+                $response[$module] = [];
+                $_response = &$response[$module];
                 $this->writeDB($_writeSqlConfig, $_payloadIndexes, $_configKeys, $_useHierarchy, $_response, $_required);
             }
         }
