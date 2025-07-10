@@ -189,7 +189,7 @@ class Read
      */
     private function _processReadConfig(&$rSqlConfig, $useResultSet): void
     {
-        $this->dataEncode->startObject(key: ' Config');
+        $this->dataEncode->startObject(key: 'Config');
         $this->dataEncode->addKeyData(
             key: 'Route',
             data: $this->_c->req->configuredUri
@@ -270,7 +270,7 @@ class Read
             // Query will return single row
             case 'singleRowFormat':
                 if ($isFirstCall) {
-                    $this->dataEncode->startObject(key: ' Results');
+                    $this->dataEncode->startObject(key: 'Results');
                 } else {
                     $this->dataEncode->startObject();
                 }
@@ -285,7 +285,7 @@ class Read
             // Query will return multiple rows
             case 'multipleRowFormat':
                 if ($isFirstCall) {
-                    $this->dataEncode->startObject(key: ' Results');
+                    $this->dataEncode->startObject(key: 'Results');
                     if (isset($rSqlConfig['countQuery'])) {
                         $this->_fetchRowsCount(rSqlConfig: $rSqlConfig);
                     }

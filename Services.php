@@ -212,8 +212,8 @@ class Services
             $time = ceil(num: ($this->_tsEnd - $this->_tsStart) * 1000);
             $memory = ceil(num: memory_get_peak_usage() / 1000);
 
-            $this->c->res->dataEncode->startObject(key: ' Stats');
-            $this->c->res->dataEncode->startObject(key: ' Performance');
+            $this->c->res->dataEncode->startObject(key: 'Stats');
+            $this->c->res->dataEncode->startObject(key: 'Performance');
             $this->c->res->dataEncode->addKeyData(
                 key: 'total-time-taken',
                 data: "{$time} ms"

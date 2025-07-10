@@ -240,9 +240,9 @@ class Write
         );
 
         if ($this->_sess['payloadType'] === 'Object') {
-            $this->dataEncode->startObject(key: ' Results');
+            $this->dataEncode->startObject(key: 'Results');
         } else {
-            $this->dataEncode->startObject(key: ' Results');
+            $this->dataEncode->startObject(key: 'Results');
             if (Env::$outputRepresentation === 'Xml') {
                 $this->dataEncode->startArray(key: 'Rows');
             }
