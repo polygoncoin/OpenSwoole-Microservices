@@ -1,35 +1,51 @@
 <?php
+/**
+ * Middleware
+ * php version 8.3
+ *
+ * @category  Middleware
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App\Middleware;
 
 use Microservices\App\CacheKey;
 use Microservices\App\HttpRequest;
 use Microservices\App\HttpStatus;
 
-/*
+/**
  * Class handling details for Auth middleware
+ * php version 8.3
  *
- * @category   Auth Middleware
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Auth_Middleware
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Auth
 {
     /**
+     * HTTP Request Object
+     * 
      * @var null|HttpRequest
      */
-    private $httpRequest = null;
+    private $_req = null;
 
-     /**
+    /**
      * Constructor
      *
-     * @param HttpRequest $httpRequest
+     * @param HttpRequest $req HTTP Request Object
      */
-    public function __construct(&$httpRequest)
+    public function __construct(&$req)
     {
-        $this->httpRequest = &$httpRequest;
+        $this->_req = &$req;
     }
 
     /**
@@ -38,27 +54,45 @@ class Auth
      * @return void
      * @throws \Exception
      */
-    public function loadUserDetails()
+    public function loadUserDetails(): void
     {
-        if (!is_null($this->httpRequest->userDetails)) return;
-
-        if (
-            !is_null($this->httpRequest->HTTP_AUTHORIZATION)
-            && preg_match('/Bearer\s(\S+)/', $this->httpRequest->HTTP_AUTHORIZATION, $matches)
-        ) {
-            $this->httpRequest->session['token'] = $matches[1];
-            $this->httpRequest->tokenKey = CacheKey::Token($this->httpRequest->session['token']);
-            if (!$this->httpRequest->cache->cacheExists($this->httpRequest->tokenKey)) {
-                throw new \Exception('Token expired', HttpStatus::$BadRequest);
-            }
-            $this->httpRequest->userDetails = json_decode($this->httpRequest->cache->getCache($this->httpRequest->tokenKey), true);
-            $this->httpRequest->groupId = $this->httpRequest->userDetails['group_id'];
-            $this->httpRequest->userId = $this->httpRequest->userDetails['user_id'];
-
-            $this->httpRequest->session['userDetails'] = &$this->httpRequest->userDetails;
+        if (!is_null(value: $this->_req->userDetails)) {
+             return;
         }
-        if (empty($this->httpRequest->session['token'])) {
-            throw new \Exception('Token missing', HttpStatus::$BadRequest);
+
+        if (!is_null(value: $this->_req->HTTP_AUTHORIZATION)
+            && preg_match(
+                pattern: '/Bearer\s(\S+)/',
+                subject: $this->_req->HTTP_AUTHORIZATION,
+                matches: $matches
+            )
+        ) {
+            $this->_req->sess['token'] = $matches[1];
+            $this->_req->tokenKey = CacheKey::token(
+                token: $this->_req->sess['token']
+            );
+            if (!$this->_req->cache->cacheExists(key: $this->_req->tokenKey)) {
+                throw new \Exception(
+                    message: 'Token expired',
+                    code: HttpStatus::$BadRequest
+                );
+            }
+            $this->_req->userDetails = json_decode(
+                json: $this->_req->cache->getCache(
+                    key: $this->_req->tokenKey
+                ),
+                associative: true
+            );
+            $this->_req->groupId = $this->_req->userDetails['group_id'];
+            $this->_req->userId = $this->_req->userDetails['user_id'];
+
+            $this->_req->sess['userDetails'] = &$this->_req->userDetails;
+        }
+        if (empty($this->_req->sess['token'])) {
+            throw new \Exception(
+                message: 'Token missing',
+                code: HttpStatus::$BadRequest
+            );
         }
     }
 
@@ -70,21 +104,38 @@ class Auth
      */
     public function loadGroupDetails()
     {
-        if (!is_null($this->httpRequest->groupDetails)) return;
+        if (!is_null(value: $this->_req->groupDetails)) {
+             return;
+        }
 
         // Load groupDetails
-        if (empty($this->httpRequest->userDetails['user_id']) || empty($this->httpRequest->userDetails['group_id'])) {
-            throw new \Exception('Invalid session', HttpStatus::$InternalServerError);
+        if (empty($this->_req->userDetails['user_id'])
+            || empty($this->_req->userDetails['group_id'])
+        ) {
+            throw new \Exception(
+                message: 'Invalid sess',
+                code: HttpStatus::$InternalServerError
+            );
         }
 
-        $this->httpRequest->groupKey = CacheKey::Group($this->httpRequest->userDetails['group_id']);
-        if (!$this->httpRequest->cache->cacheExists($this->httpRequest->groupKey)) {
-            throw new \Exception("Cache '{$this->httpRequest->groupKey}' missing", HttpStatus::$InternalServerError);
+        $this->_req->groupKey = CacheKey::group(
+            groupId: $this->_req->userDetails['group_id']
+        );
+        if (!$this->_req->cache->cacheExists(key: $this->_req->groupKey)) {
+            throw new \Exception(
+                message: "Cache '{$this->_req->groupKey}' missing",
+                code: HttpStatus::$InternalServerError
+            );
         }
 
-        $this->httpRequest->groupDetails = json_decode($this->httpRequest->cache->getCache($this->httpRequest->groupKey), true);
+        $this->_req->groupDetails = json_decode(
+            json: $this->_req->cache->getCache(
+                key: $this->_req->groupKey
+            ),
+            associative: true
+        );
 
-        $this->httpRequest->session['groupDetails'] = &$this->httpRequest->groupDetails;
+        $this->_req->sess['groupDetails'] = &$this->_req->groupDetails;
     }
 
     /**
@@ -95,13 +146,20 @@ class Auth
      */
     public function checkRemoteIp()
     {
-        $groupId = $this->httpRequest->userDetails['group_id'];
+        $groupId = $this->_req->userDetails['group_id'];
 
-        $this->httpRequest->cidrKey = CacheKey::CIDR($this->httpRequest->userDetails['group_id']);
-        if ($this->httpRequest->cache->cacheExists($this->httpRequest->cidrKey)) {
-            $this->httpRequest->cidrChecked = true;
-            $cidrs = json_decode($this->httpRequest->cache->getCache($this->httpRequest->cidrKey), true);
-            $ipNumber = ip2long($this->httpRequest->REMOTE_ADDR);
+        $this->_req->cidrKey = CacheKey::cidr(
+            groupId: $this->_req->userDetails['group_id']
+        );
+        if ($this->_req->cache->cacheExists(key: $this->_req->cidrKey)) {
+            $this->_req->cidrChecked = true;
+            $cidrs = json_decode(
+                json: $this->_req->cache->getCache(
+                    key: $this->_req->cidrKey
+                ),
+                associative: true
+            );
+            $ipNumber = ip2long(ip: $this->_req->REMOTE_ADDR);
             $isValidIp = false;
             foreach ($cidrs as $cidr) {
                 if ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
@@ -110,7 +168,10 @@ class Auth
                 }
             }
             if (!$isValidIp) {
-                throw new \Exception('IP not supported', HttpStatus::$BadRequest);
+                throw new \Exception(
+                    message: 'IP not supported',
+                    code: HttpStatus::$BadRequest
+                );
             }
         }
     }

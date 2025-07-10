@@ -1,57 +1,64 @@
 <?php
+/**
+ * ThirdPartyAPI
+ * php version 8.3
+ *
+ * @category  ThirdPartyAPI_Interface
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\Supplement\ThirdParty;
 
-use Microservices\App\Constants;
 use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\Supplement\ThirdParty\ThirdPartyInterface;
 use Microservices\Supplement\ThirdParty\ThirdPartyTrait;
 
-
 /**
- * Class for third party - Google
+ * ThirdPartyAPI Example
+ * php version 8.3
  *
- * This class perform third party - Google operations
- * One can initiate third party calls via access to URL
- * https://domain.tld/client/thirdParty/className?queryString
- * All HTTP methods are supported
- *
- * @category   Third party sample
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  ThirdPartyAPI_Example
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
+
 class Google implements ThirdPartyInterface
 {
     use ThirdPartyTrait;
 
     /**
-     * Microservices Collection of Common Objects
+     * Common Object
      *
      * @var null|Common
      */
-    private $c = null;
+    private $_c = null;
 
     /**
      * Constructor
      *
-     * @param Common $common
+     * @param Common $common Common object
      */
     public function __construct(&$common)
     {
-        $this->c = &$common;
-        $this->c->httpRequest->db = $this->c->httpRequest->setDbConnection($fetchFrom = 'Slave');
+        $this->_c = &$common;
+        $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: 'Slave');
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return bool
      */
-    public function init()
+    public function init(): bool
     {
         return true;
     }
@@ -59,26 +66,30 @@ class Google implements ThirdPartyInterface
     /**
      * Process
      *
-     * @return boolean
+     * @return bool
      */
-    public function process()
+    public function process(): bool
     {
         // Create and call functions to manage third party cURL calls here
 
         $curl_handle=curl_init();
-        curl_setopt($curl_handle,CURLOPT_URL,'https://api.ipify.org?format=json');
-        curl_setopt($curl_handle,CURLOPT_CONNECTTIMEOUT,2);
-        curl_setopt($curl_handle,CURLOPT_RETURNTRANSFER,1);
-        $output = curl_exec($curl_handle);
-        curl_close($curl_handle);
-        if (empty($output)){
+        curl_setopt(
+            handle: $curl_handle, 
+            option: CURLOPT_URL, 
+            value: 'https://api.ipify.org?format=json'
+        );
+        curl_setopt(handle: $curl_handle, option: CURLOPT_CONNECTTIMEOUT, value: 2);
+        curl_setopt(handle: $curl_handle, option: CURLOPT_RETURNTRANSFER, value: 1);
+        $output = curl_exec(handle: $curl_handle);
+        curl_close(handle: $curl_handle);
+        if (empty($output)) {
             $output = ['Error' => 'Nothing returned by ipify'];
-            $this->c->httpResponse->httpStatus = HttpStatus::$InternalServerError;
+            $this->_c->res->httpStatus = HttpStatus::$InternalServerError;
         } else {
-            $output = json_decode($output, true);
+            $output = json_decode(json: $output, associative: true);
         }
         // End the calls with json response with dataEncode Object
-        $this->endProcess($output);
+        $this->_endProcess(output: $output);
 
         return true;
     }
@@ -86,11 +97,12 @@ class Google implements ThirdPartyInterface
     /**
      * Function to end process which outputs the results
      *
-     * @param string $output
+     * @param string $output Output
+     *
      * @return void
      */
-    private function endProcess($output)
+    private function _endProcess($output): void
     {
-        $this->c->httpResponse->dataEncode->addKeyData('Results', $output);
+        $this->_c->res->dataEncode->addKeyData(key: 'Results', data: $output);
     }
 }

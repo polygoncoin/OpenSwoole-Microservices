@@ -1,4 +1,16 @@
 <?php
+/**
+ * HTTP Request
+ * php version 8.3
+ *
+ * @category  HTTP_Request
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 use Microservices\App\Constants;
@@ -11,17 +23,17 @@ use Microservices\App\Middleware\Auth;
 use Microservices\App\Servers\Cache\AbstractCache;
 use Microservices\App\Servers\Database\AbstractDatabase;
 
-/*
- * Class handling details of HTTP request
+/**
+ * HTTP Request
+ * php version 8.3
  *
- * This class is built to process and handle HTTP request
- *
- * @category   HTTP Request
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  HTTP_Request
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class HttpRequest extends Gateway
 {
@@ -42,16 +54,16 @@ class HttpRequest extends Gateway
     /**
      * Is a config request flag
      *
-     * @var boolean
+     * @var bool
      */
     public $isConfigRequest = false;
 
     /**
-     * Locaton of File containing code for route
+     * Location of File containing code for route
      *
      * @var string
      */
-    public $__FILE__ = null;
+    public $sqlConfigFile = null;
 
     /**
      * Pre / Post hooks defined in respective Route file
@@ -61,32 +73,50 @@ class HttpRequest extends Gateway
     public $routeHook = null;
 
     /**
-     * Session detials of a request
+     * Session details of a request
      *
      * @var null|array
      */
-    public $session = null;
+    public $sess = null;
 
-    /** @var null|integer */
+    /**
+     * Client Id
+     * 
+     * @var null|int
+     */
     public $clientId = null;
 
-    /** @var null|integer */
+    /**
+     * Group Id
+     * 
+     * @var null|int
+     */
     public $groupId = null;
 
-    /** @var null|integer */
+    /**
+     * User Id
+     * 
+     * @var null|int
+     */
     public $userId = null;
 
     /**
+     * Cache Object
+     * 
      * @var null|AbstractCache
      */
     public $cache = null;
 
     /**
+     * SQL Cache Object
+     * 
      * @var null|AbstractCache
      */
     public $sqlCache = null;
 
     /**
+     * Auth middleware Object
+     * 
      * @var null|Auth
      */
     public $auth = null;
@@ -110,17 +140,17 @@ class HttpRequest extends Gateway
      *
      * @var null|array
      */
-    public $httpRequestDetails = null;
+    public $http = null;
 
     /**
      * Open To World Request
      *
-     * @var null|boolean
+     * @var null|bool
      */
     public $open = null;
 
     /**
-     * Details var from $httpRequestDetails
+     * Details variable from $http
      */
     public $HOST = null;
     public $REQUEST_METHOD = null;
@@ -166,22 +196,24 @@ class HttpRequest extends Gateway
     /**
      * Constructor
      *
-     * @param array $httpRequestDetails
+     * @param array $http HTTP request details
      */
-    public function __construct(&$httpRequestDetails)
+    public function __construct(&$http)
     {
-        $this->httpRequestDetails = &$httpRequestDetails;
+        $this->http = &$http;
 
-        $this->HOST = $this->httpRequestDetails['server']['host'];
-        $this->REQUEST_METHOD = $this->httpRequestDetails['server']['request_method'];
-        $this->REMOTE_ADDR = $this->httpRequestDetails['server']['remote_addr'];
-        $this->ROUTE = '/' . trim($this->httpRequestDetails['get'][Constants::$ROUTE_URL_PARAM], '/');
+        $this->HOST = $this->http['server']['host'];
+        $this->REQUEST_METHOD = $this->http['server']['request_method'];
+        $this->REMOTE_ADDR = $this->http['server']['remote_addr'];
+        $this->ROUTE = '/' . trim(
+            string: $this->http['get'][Constants::$ROUTE_URL_PARAM],
+            characters: '/'
+        );
 
-        if (
-            isset($this->httpRequestDetails['header'])
-            && isset($this->httpRequestDetails['header']['authorization'])
+        if (isset($this->http['header'])
+            && isset($this->http['header']['authorization'])
         ) {
-            $this->HTTP_AUTHORIZATION = $this->httpRequestDetails['header']['authorization'];
+            $this->HTTP_AUTHORIZATION = $this->http['header']['authorization'];
             $this->open = false;
         } elseif ($this->ROUTE === '/login') {
             $this->open = false;
@@ -189,16 +221,16 @@ class HttpRequest extends Gateway
             $this->open = true;
         }
         if (!$this->open) {
-            $this->auth = new Auth($this);
+            $this->auth = new Auth(req: $this);
         }
     }
 
     /**
      * Initialize
      *
-     * @return void
+     * @return bool
      */
-    public function init()
+    public function init(): bool
     {
         return true;
     }
@@ -209,94 +241,117 @@ class HttpRequest extends Gateway
      * @return void
      * @throws \Exception
      */
-    public function loadClientDetails()
+    public function loadClientDetails(): void
     {
-        if (!is_null($this->clientDetails)) return;
+        if (!is_null(value: $this->clientDetails)) {
+            return;
+        }
 
-        $this->loadCache();
+        $this->_loadCache();
 
         if ($this->open) {
-            $this->clientKey = CacheKey::ClientOpenToWeb($this->HOST);
+            $this->clientKey = CacheKey::clientOpenToWeb(hostname: $this->HOST);
         } else {
-            $this->clientKey = CacheKey::Client($this->HOST);
+            $this->clientKey = CacheKey::client(hostname: $this->HOST);
         }
-        if (!$this->cache->cacheExists($this->clientKey)) {
-            throw new \Exception("Invalid Host '{$this->HOST}'", HttpStatus::$InternalServerError);
+        if (!$this->cache->cacheExists(key: $this->clientKey)) {
+            throw new \Exception(
+                message: "Invalid Host '{$this->HOST}'",
+                code: HttpStatus::$InternalServerError
+            );
         }
 
-        $this->clientDetails = json_decode($this->cache->getCache($this->clientKey), true);
+        $this->clientDetails = json_decode(
+            json: $this->cache->getCache(
+                key: $this->clientKey
+            ),
+            associative: true
+        );
         $this->clientId = $this->clientDetails['client_id'];
 
-        $this->session['clientDetails'] = &$this->clientDetails;
+        $this->sess['clientDetails'] = &$this->clientDetails;
     }
 
     /**
-     * Loads request payoad
+     * Loads request payload
      *
      * @return void
      */
-    public function loadPayload()
+    public function loadPayload(): void
     {
-        if (isset($this->session['payloadType'])) return;
+        if (isset($this->sess['payloadType'])) {
+            return;
+        } 
 
         if ($this->REQUEST_METHOD === Constants::$GET) {
-            $this->urlDecode($_GET);
-            $this->session['payloadType'] = 'Object';
-            $this->session['payload'] = !empty($_GET) ? $_GET : [];
+            $this->urlDecode(arr: $_GET);
+            $this->sess['payloadType'] = 'Object';
+            $this->sess['payload'] = !empty($_GET) ? $_GET : [];
         } else {
-            if (empty($this->httpRequestDetails['post']['Payload'])) {
-                $this->httpRequestDetails['post']['Payload'] = '{}';
+            if (empty($this->http['post']['Payload'])) {
+                $this->http['post']['Payload'] = '{}';
             }
 
-            if (Env::$inputDataRepresentation === 'Xml') {
-                $xml = simplexml_load_string($this->httpRequestDetails['post']['Payload']);
-                $array = json_decode(json_encode($xml), true);
+            if (Env::$inputRepresentation === 'Xml') {
+                $xml = simplexml_load_string(data: $this->http['post']['Payload']);
+                $array = json_decode(
+                    json: json_encode(value: $xml),
+                    associative: true
+                );
                 unset($xml);
 
                 $result = [];
-                $this->formatXmlArray($array, $result);
-                $this->httpRequestDetails['post']['Payload'] = json_encode($result);
+                $this->_formatXmlArray(array: $array, result: $result);
+                $this->http['post']['Payload'] = json_encode(value: $result);
                 $array = null;
                 $result = null;
             }
 
-            $this->payloadStream = fopen("php://memory", "rw+b");
-            fwrite($this->payloadStream, $this->httpRequestDetails['post']['Payload']);
+            $this->payloadStream = fopen(filename: "php://memory", mode: "rw+b");
+            fwrite(
+                stream: $this->payloadStream, 
+                data: $this->http['post']['Payload']
+            );
 
-            $this->dataDecode = new DataDecode($this->payloadStream);
+            $this->dataDecode = new DataDecode(
+                dataFileHandle: $this->payloadStream
+            );
             $this->dataDecode->init();
 
-            rewind($this->payloadStream);
+            rewind(stream: $this->payloadStream);
             $this->dataDecode->indexData();
-            $this->session['payloadType'] = $this->dataDecode->dataType();
+            $this->sess['payloadType'] = $this->dataDecode->dataType();
         }
     }
 
     /**
      * Format Array generated by Xml
      *
-     * @param array $array Array generated by Xml
+     * @param array $array  Array generated by Xml
      * @param array $result Formatted array
+     *
      * @return void
      */
-    private function formatXmlArray(&$array, &$result)
+    private function _formatXmlArray(&$array, &$result): void
     {
-        if (isset($array['Rows']) && is_array($array['Rows'])) {
+        if (isset($array['Rows']) && is_array(value: $array['Rows'])) {
             $array = &$array['Rows'];
         }
 
-        if (isset($array['Row']) && is_array($array['Row'])) {
+        if (isset($array['Row']) && is_array(value: $array['Row'])) {
             $array = &$array['Row'];
         }
 
-        if (isset($array[0]) && is_array($array[0]) && count($array) === 1) {
+        if (isset($array[0]) 
+            && is_array(value: $array[0]) && count(value: $array) === 1
+        ) {
             $array = &$array[0];
             if (empty($array)) {
                 return;
             }
         }
 
-        if (!is_array($array)) {
+        if (!is_array(value: $array)) {
             return;
         }
 
@@ -307,9 +362,9 @@ class HttpRequest extends Gateway
                 }
                 continue;
             }
-            if (is_array($value)) {
+            if (is_array(value: $value)) {
                 $result[$key] = [];
-                $this->formatXmlArray($value, $result[$key]);
+                $this->_formatXmlArray(array: $value, result: $result[$key]);
                 continue;
             }
             $result[$key] = $value;
@@ -320,48 +375,46 @@ class HttpRequest extends Gateway
      * Function to find payload is an object/array
      *
      * @param array $arr Array vales to be decoded. Basically $_GET
+     *
      * @return void
      */
-    public function urlDecode(&$arr)
+    public function urlDecode(&$arr): void
     {
-        if (is_array($arr)) {
-            foreach ($arr as $key => &$value) {
-                if (is_array($value)) {
-                    $this->urlDecode($value);
+        if (is_array(value: $arr)) {
+            foreach ($arr as &$value) {
+                if (is_array(value: $value)) {
+                    $this->urlDecode(arr: $value);
                 } else {
-                    $decodedVal = urldecode($value);
-                    $array = json_decode($decodedVal, true);
-                    if (!is_null($array)) {
-                        $value = $array;
-                    } else {
-                        $value = $decodedVal;
-                    }
+                    $decodedVal = urldecode(string: $value);
+                    $array = json_decode(json: $decodedVal, associative: true);
+                    $value = (!is_null(value: $array)) ? $array : $decodedVal;
                 }
             }
         } else {
-            $decodedVal = urldecode($arr);
-            $array = json_decode($decodedVal, true);
-            if (!is_null($array)) {
-                $arr = $array;
-            } else {
-                $arr = $decodedVal;
-            }
+            $decodedVal = urldecode(string: $arr);
+            $array = json_decode(json: $decodedVal, associative: true);
+            $arr = (!is_null(value: $array)) ? $array : $decodedVal;
         }
     }
 
-    private function loadCache()
+    /**
+     * Load cache server
+     * 
+     * @return void
+     */
+    private function _loadCache(): void
     {
-        if (!is_null($this->cache)) {
+        if (!is_null(value: $this->cache)) {
             return;
         }
 
         $this->cache = $this->connectCache(
-            getenv('cacheType'),
-            getenv('cacheHostname'),
-            getenv('cachePort'),
-            getenv('cacheUsername'),
-            getenv('cachePassword'),
-            getenv('cacheDatabase')
+            cacheType: getenv(name: 'cacheType'), 
+            cacheHostname: getenv(name: 'cacheHostname'), 
+            cachePort: getenv(name: 'cachePort'), 
+            cacheUsername: getenv(name: 'cacheUsername'), 
+            cachePassword: getenv(name: 'cachePassword'), 
+            cacheDatabase: getenv(name: 'cacheDatabase')
         );
     }
 }

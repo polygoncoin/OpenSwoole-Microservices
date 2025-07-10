@@ -1,24 +1,32 @@
 <?php
+/**
+ * Handling Cache via Memcached
+ * php version 8.3
+ *
+ * @category  Cache
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App\Servers\Cache;
 
-use Microservices\App\Constants;
-use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\Servers\Cache\AbstractCache;
 
 /**
- * Loading Redis server
+ * Caching via Memcached
+ * php version 8.3
  *
- * This class is built to handle cache operation
- *
- * @category   Cache - Memcached
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @license    http://www.php.net/license/3_01.txt  PHP License 3.01
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Cache_Memcached
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Memcached extends AbstractCache
 {
@@ -27,38 +35,32 @@ class Memcached extends AbstractCache
      *
      * @var null|string
      */
-    private $hostname = null;
+    private $_hostname = null;
 
     /**
      * Cache port
      *
-     * @var null|integer
+     * @var null|int
      */
-    private $port = null;
+    private $_port = null;
 
     /**
      * Cache connection
      *
      * @var null|\Redis
      */
-    private $cache = null;
+    private $_cache = null;
 
     /**
      * Cache connection
      *
-     * @param string $hostname  Hostname .env string
-     * @param string $port      Port .env string
-     * @param string $password  Password .env string
-     * @param string $database  Database .env string
-     * @return void
+     * @param string $hostname Hostname .env string
+     * @param string $port     Port .env string
      */
-    public function __construct(
-        $hostname,
-        $port
-    )
+    public function __construct($hostname, $port)
     {
-        $this->hostname = $hostname;
-        $this->port = $port;
+        $this->_hostname = $hostname;
+        $this->_port = $port;
     }
 
     /**
@@ -67,73 +69,87 @@ class Memcached extends AbstractCache
      * @return void
      * @throws \Exception
      */
-    public function connect()
+    public function connect(): void
     {
-        if (!is_null($this->cache)) return;
+        if (!is_null(value: $this->_cache)) {
+            return;
+        }
 
-        if (!extension_loaded('memcached')) {
-            throw new \Exception("Unable to find Memcached extension", HttpStatus::$InternalServerError);
+        if (!extension_loaded(extension: 'memcached')) {
+            throw new \Exception(
+                message: "Unable to find Memcached extension",
+                code: HttpStatus::$InternalServerError
+            );
         }
 
         try {
-            $this->cache = new \Memcached();
-            $this->cache->addServer($this->hostname, $this->port);
+            $this->_cache = new \Memcached();
+            $this->_cache->addServer($this->_hostname, $this->_port);
         } catch (\Exception $e) {
-            throw new \Exception($e->getMessage(), HttpStatus::$InternalServerError);
+            throw new \Exception(
+                message: $e->getMessage(),
+                code: HttpStatus::$InternalServerError
+            );
         }
     }
 
     /**
      * Use Database
      *
-     * @return void
+     * @return never
      * @throws \Exception
      */
-    public function useDatabase()
+    public function useDatabase(): never
     {
-        throw new \Exception('No database support', HttpStatus::$InternalServerError);
+        throw new \Exception(
+            message: 'No database support',
+            code: HttpStatus::$InternalServerError
+        );
     }
 
     /**
      * Checks if cache key exist
      *
      * @param string $key Cache key
-     * @return boolean
+     *
+     * @return mixed
      */
-    public function cacheExists($key)
+    public function cacheExists($key): mixed
     {
         $this->connect();
-        return $this->getCache($key) !== false;
+        return $this->getCache(key: $key) !== false;
     }
 
     /**
      * Get cache on basis of key
      *
      * @param string $key Cache key
-     * @return string
+     *
+     * @return mixed
      */
-    public function getCache($key)
+    public function getCache($key): mixed
     {
         $this->connect();
-        return $this->cache->get($key);
+        return $this->_cache->get($key);
     }
 
     /**
      * Set cache on basis of key
      *
-     * @param string  $key    Cache key
-     * @param string  $value  Cache value
-     * @param integer $expire Seconds to expire. Default 0 - doesnt expire
-     * @return integer
+     * @param string $key    Cache key
+     * @param string $value  Cache value
+     * @param int    $expire Seconds to expire. Default 0 - doesn't expire
+     *
+     * @return mixed
      */
-    public function setCache($key, $value, $expire = null)
+    public function setCache($key, $value, $expire = null): mixed
     {
         $this->connect();
 
-        if (is_null($expire)) {
-            return $this->cache->set($key, $value);
+        if (is_null(value: $expire)) {
+            return $this->_cache->set($key, $value);
         } else {
-            return $this->cache->set($key, $value, $expire);
+            return $this->_cache->set($key, $value, $expire);
         }
     }
 
@@ -141,11 +157,12 @@ class Memcached extends AbstractCache
      * Delete basis of key
      *
      * @param string $key Cache key
-     * @return integer
+     *
+     * @return mixed
      */
-    public function deleteCache($key)
+    public function deleteCache($key): mixed
     {
         $this->connect();
-        return $this->cache->delete($key);
+        return $this->_cache->delete($key);
     }
 }

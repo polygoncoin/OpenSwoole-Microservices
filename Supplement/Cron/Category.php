@@ -1,54 +1,61 @@
 <?php
+/**
+ * CronAPI
+ * php version 8.3
+ *
+ * @category  CronAPI_Trait
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\Supplement\Cron;
 
-use Microservices\App\Constants;
 use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\Supplement\Cron\CronInterface;
 use Microservices\Supplement\Cron\CronTrait;
 
 /**
- * Class for a particular cron
+ * CronAPI
+ * php version 8.3
  *
- * This class is meant for cron
- * One can initiate cron via access URL to this class
- * https://domain.tld/cron/className?queryString
- * All HTTP methods are supported
- *
- * @category   Crons
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  CronAPI_Example
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Category implements CronInterface
 {
     use CronTrait;
 
     /**
-     * Microservices Collection of Common Objects
+     * Common Object
      *
      * @var null|Common
      */
-    private $c = null;
+    private $_c = null;
 
     /**
      * Constructor
      *
-     * @param Common $common
+     * @param Common $common Common object
      */
     public function __construct(&$common)
     {
-        $this->c = &$common;
-        $this->c->httpRequest->db = $this->c->httpRequest->setDbConnection($fetchFrom = 'Slave');
+        $this->_c = &$common;
+        $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: $fetchFrom = 'Slave');
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return bool
      */
     public function init()
     {
@@ -58,7 +65,7 @@ class Category implements CronInterface
     /**
      * Process
      *
-     * @return boolean
+     * @return bool
      */
     public function process()
     {
@@ -77,6 +84,9 @@ class Category implements CronInterface
      */
     private function endProcess()
     {
-        throw new \Exception('message as desired', HttpStatus::$Ok);
+        throw new \Exception(
+            message: 'message as desired',
+            code: HttpStatus::$Ok
+        );
     }
 }

@@ -1,45 +1,57 @@
 <?php
+/**
+ * HTTP Status
+ * php version 8.3
+ *
+ * @category  HTTP_Status
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 /**
- * Http Status
+ * HTTP Status
+ * php version 8.3
  *
- * Contains all constants related to Microservices
- *
- * @category   Http Status
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  HTTP_Status
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class HttpStatus
 {
-    static public $Ok                   = 200;
-    static public $Created              = 201;
-    static public $NoContent            = 204;
+    public static $Ok                   = 200;
+    public static $Created              = 201;
+    public static $NoContent            = 204;
 
-    static public $MovedPermanently     = 301;
-    static public $Found                = 302;
-    static public $TemporaryRedirect    = 307;
-    static public $PermanentRedirect    = 308;
+    public static $MovedPermanently     = 301;
+    public static $Found                = 302;
+    public static $TemporaryRedirect    = 307;
+    public static $PermanentRedirect    = 308;
 
-    static public $BadRequest           = 400;
-    static public $Unauthorized         = 401;
-    static public $Forbidden            = 403;
-    static public $NotFound             = 404;
-    static public $MethodNotAllowed     = 405;
-    static public $RequestTimeout       = 408;
-    static public $Conflict             = 409;
-    static public $Gone                 = 410;
-    static public $PreconditionFailed   = 412;
-    static public $UnsupportedMediaType = 415;
-    static public $UnprocessableEntity  = 422;
-    static public $TooEarly             = 425;
-    static public $TooManyRequests      = 429;
+    public static $BadRequest           = 400;
+    public static $Unauthorized         = 401;
+    public static $Forbidden            = 403;
+    public static $NotFound             = 404;
+    public static $MethodNotAllowed     = 405;
+    public static $RequestTimeout       = 408;
+    public static $Conflict             = 409;
+    public static $Gone                 = 410;
+    public static $PreconditionFailed   = 412;
+    public static $UnsupportedMediaType = 415;
+    public static $UnprocessableEntity  = 422;
+    public static $TooEarly             = 425;
+    public static $TooManyRequests      = 429;
 
-    static public $InternalServerError  = 500;
-    static public $BadGateway           = 502;
-    static public $ServiceUnavailable   = 503;
-    static public $GatewayTimeout       = 504;
+    public static $InternalServerError  = 500;
+    public static $BadGateway           = 502;
+    public static $ServiceUnavailable   = 503;
+    public static $GatewayTimeout       = 504;
 }

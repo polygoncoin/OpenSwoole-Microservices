@@ -1,24 +1,34 @@
 <?php
+/**
+ * CustomAPI
+ * php version 8.3
+ *
+ * @category  CustomAPI
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\Supplement\Custom;
 
-use Microservices\App\Constants;
 use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\App\Servers\Database\AbstractDatabase;
 use Microservices\Supplement\Custom\CustomInterface;
 use Microservices\Supplement\Custom\CustomTrait;
 
 /**
- * Class to initialize DB Read operation
+ * CustomAPI Category
+ * php version 8.3
  *
- * This class process the GET api request
- *
- * @category   Category
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  CustomAPI_Category
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Category implements CustomInterface
 {
@@ -32,30 +42,30 @@ class Category implements CustomInterface
     public $db = null;
 
     /**
-     * Microservices Collection of Common Objects
+     * Common Object
      *
      * @var null|Common
      */
-    private $c = null;
+    private $_c = null;
 
     /**
      * Constructor
      *
-     * @param Common $common
+     * @param Common $common Common object Common object
      */
     public function __construct(&$common)
     {
-        $this->c = &$common;
-        $this->c->httpRequest->db = $this->c->httpRequest->setDbConnection($fetchFrom = 'Slave');
-        $this->db = &$this->c->httpRequest->db;
+        $this->_c = &$common;
+        $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: $fetchFrom = 'Slave');
+        $this->db = &$this->_c->req->db;
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return bool
      */
-    public function init()
+    public function init(): bool
     {
         return true;
     }
@@ -63,19 +73,23 @@ class Category implements CustomInterface
     /**
      * Process
      *
-     * @return boolean
+     * @return bool
      */
-    public function process()
+    public function process(): bool
     {
-        $sql = 'SELECT * FROM category WHERE is_deleted = :is_deleted AND parent_id = :parent_id';
+        $sql = '
+            SELECT * 
+            FROM category 
+            WHERE is_deleted = :is_deleted AND parent_id = :parent_id
+        ';
         $sqlParams = [
-            ':is_deleted' => 'No',
-            ':parent_id' => 0,
+            ':is_deleted' => 'No', 
+            ':parent_id' => 0, 
         ];
-        $this->db->execDbQuery($sql, $sqlParams);
+        $this->db->execDbQuery(sql: $sql, params: $sqlParams);
         $rows = $this->db->fetchAll();
         $this->db->closeCursor();
-        $this->c->httpResponse->dataEncode->addKeyData('Results', $rows);
+        $this->_c->res->dataEncode->addKeyData(key: 'Results', data: $rows);
         return true;
     }
 }

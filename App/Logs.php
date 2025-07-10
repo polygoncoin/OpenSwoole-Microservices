@@ -1,44 +1,60 @@
 <?php
+/**
+ * Logging
+ * php version 8.3
+ *
+ * @category  Logging
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 use Microservices\App\Constants;
-use Microservices\App\Env;
-use Microservices\App\HttpStatus;
 
 /**
- * Constants
+ * Logging
+ * php version 8.3
  *
- * Contains all constants related to Microservices
- *
- * @category   Logging
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Logging
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Logs
 {
-    private string $logsDir = DIRECTORY_SEPARATOR . 'Logs';
+    private string $_logsDir = DIRECTORY_SEPARATOR . 'Logs';
 
     /**
      * Validates password from its hash present in cache
      *
-     * @param array $logDetails
+     * @param array $logDetails Details to be logged
+     *
      * @return void
      */
-    public function log(&$logDetails)
+    public function log(&$logDetails): void
     {
-        $absLogsDir = Constants::$DOC_ROOT . $this->logsDir;
-        if (!is_dir($absLogsDir)) {
-            mkdir($absLogsDir, 0755, true);
+        $absLogsDir = Constants::$DOC_ROOT . $this->_logsDir;
+        if (!is_dir(filename: $absLogsDir)) {
+            mkdir(directory: $absLogsDir, permissions: 0755, recursive: true);
         }
 
-        $logFile = $absLogsDir . DIRECTORY_SEPARATOR . 'logs-' . date('YmdH');
-        if (!file_exists($logFile)) {
-            touch($logFile);
+        $logFile = $absLogsDir . 
+            DIRECTORY_SEPARATOR . 'logs-' . date(format: 'YmdH');
+        if (!file_exists(filename: $logFile)) {
+            touch(filename: $logFile);
         }
 
-        file_put_contents($logFile, json_encode($logDetails) . PHP_EOL, FILE_APPEND);
+        file_put_contents(
+            filename: $logFile, 
+            data: json_encode(value: $logDetails) . PHP_EOL, 
+            flags: FILE_APPEND
+        );
     }
 }

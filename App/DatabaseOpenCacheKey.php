@@ -1,38 +1,65 @@
 <?php
+/**
+ * Server side Cache keys - Open to web
+ * php version 8.3
+ *
+ * @category  CacheServerKeys
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 use Microservices\App\Env;
 
 /**
- * Database Cache Key
+ * Server side Cache keys - Open
+ * php version 8.3
  *
- * Generates Database Cache Key
- *
- * @category   Database Cache Key
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  CacheServerKeys_Open
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class DatabaseOpenCacheKey
 {
-    static public $App = null;
-    static public $Client = null;
-
-    static public $Category = null;
+    /**
+     * App key
+     *
+     * @var null|string
+     */
+    public static $App = null;
 
     /**
-     * Get Database Cache Key
+     * Client key
      *
-     * @param null|int $clientId
-     * @param null|int $groupId
-     * @param null|int $userId
-     * @return string
+     * @var null|string
      */
-    static public function init($clientId)
+    public static $Client = null;
+
+    /**
+     * Category key
+     *
+     * @var null|string
+     */
+    public static $Category = null;
+
+    /**
+     * Initialize
+     *
+     * @param null|int $clientId Client Id
+     *
+     * @return void
+     */
+    public static function init($clientId): void
     {
-        self::$App = 'o:app' . Env::$outputDataRepresentation;
+        self::$App = 'o:app' . Env::$outputRepresentation;
         self::$Client = ":c:{$clientId}";
 
         self::$Category = self::$App . ':category';

@@ -1,42 +1,59 @@
 <?php
+/**
+ * Constants
+ * php version 8.3
+ *
+ * @category  Constants
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 /**
  * Constants
+ * php version 8.3
  *
- * Contains all constants related to Microservices
- *
- * @category   Constants
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Constants
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Constants
 {
-    static public $GET       = 'GET';
-    static public $POST      = 'POST';
-    static public $PUT       = 'PUT';
-    static public $PATCH     = 'PATCH';
-    static public $DELETE    = 'DELETE';
+    public static $GET       = 'GET';
+    public static $POST      = 'POST';
+    public static $PUT       = 'PUT';
+    public static $PATCH     = 'PATCH';
+    public static $DELETE    = 'DELETE';
 
-    static public $PRODUCTION = 1;
-    static public $DEVELOPMENT = 0;
+    public static $PRODUCTION = 1;
+    public static $DEVELOPMENT = 0;
 
-    static public $TOKEN_EXPIRY_TIME = 3600;
-    static public $REQUIRED = true;
+    public static $TOKEN_EXPIRY_TIME = 3600;
+    public static $REQUIRED = true;
 
-    static public $DOC_ROOT = null;
-    static public $ROUTE_URL_PARAM = 'r';
+    public static $DOC_ROOT = null;
+    public static $ROUTE_URL_PARAM = 'r';
 
-    static private $initialized = false;
+    static private $_initialized = false;
 
-    static public function init()
+    /**
+     * Initialize
+     *
+     * @return void
+     */
+    public static function init(): void
     {
-        if (self::$initialized) return;
+        if (self::$_initialized) return;
 
-        self::$DOC_ROOT = dirname(__DIR__ . '..' . DIRECTORY_SEPARATOR);
-        self::$initialized = true;
+        self::$DOC_ROOT = dirname(path: __DIR__ . '..' . DIRECTORY_SEPARATOR);
+        self::$_initialized = true;
     }
 }

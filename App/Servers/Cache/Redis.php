@@ -1,24 +1,32 @@
 <?php
+/**
+ * Handling Cache via Redis
+ * php version 8.3
+ *
+ * @category  Cache
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App\Servers\Cache;
 
-use Microservices\App\Constants;
-use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\Servers\Cache\AbstractCache;
 
 /**
- * Loading Redis server
+ * Caching via Redis
+ * php version 8.3
  *
- * This class is built to handle cache operation
- *
- * @category   Cache - Redis
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @license    http://www.php.net/license/3_01.txt  PHP License 3.01
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Cache_Redis
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Redis extends AbstractCache
 {
@@ -27,67 +35,61 @@ class Redis extends AbstractCache
      *
      * @var null|string
      */
-    private $hostname = null;
+    private $_hostname = null;
 
     /**
      * Cache port
      *
-     * @var null|integer
+     * @var null|int
      */
-    private $port = null;
+    private $_port = null;
 
     /**
      * Cache password
      *
      * @var null|string
      */
-    private $username = null;
+    private $_username = null;
 
     /**
      * Cache password
      *
      * @var null|string
      */
-    private $password = null;
+    private $_password = null;
 
     /**
      * Cache database
      *
      * @var null|string
      */
-    private $database = null;
+    private $_database = null;
 
     /**
      * Cache connection
      *
      * @var null|\Redis
      */
-    private $cache = null;
+    private $_cache = null;
 
     /**
      * Cache connection
      *
-     * @param string $hostname  Hostname .env string
-     * @param string $port      Port .env string
-     * @param string $password  Password .env string
-     * @param string $database  Database .env string
-     * @return void
+     * @param string $hostname Hostname .env string
+     * @param string $port     Port .env string
+     * @param string $username Username .env string
+     * @param string $password Password .env string
+     * @param string $database Database .env string
      */
-    public function __construct(
-        $hostname,
-        $port,
-        $username,
-        $password,
-        $database
-    )
+    public function __construct($hostname, $port, $username, $password, $database)
     {
-        $this->hostname = $hostname;
-        $this->port = $port;
-        $this->username = $username;
-        $this->password = $password;
+        $this->_hostname = $hostname;
+        $this->_port = $port;
+        $this->_username = $username;
+        $this->_password = $password;
 
-        if (!is_null($database)) {
-            $this->database = $database;
+        if (!is_null(value: $database)) {
+            $this->_database = $database;
         }
     }
 
@@ -97,34 +99,45 @@ class Redis extends AbstractCache
      * @return void
      * @throws \Exception
      */
-    public function connect()
+    public function connect(): void
     {
-        if (!is_null($this->cache)) return;
+        if (!is_null(value: $this->_cache)) {
+             return;
+        }
 
-        if (!extension_loaded('redis')) {
-            throw new \Exception("Unable to find Redis extension", HttpStatus::$InternalServerError);
+        if (!extension_loaded(extension: 'redis')) {
+            throw new \Exception(
+                message: "Unable to find Redis extension",
+                code: HttpStatus::$InternalServerError
+            );
         }
 
         try {
             // https://github.com/phpredis/phpredis?tab=readme-ov-file#class-redis
-            $this->cache = new \Redis(
+            $this->_cache = new \Redis(
                 [
-                    'host' => $this->hostname,
-                    'port' => (int)$this->port,
-                    'connectTimeout' => 2.5,
-                    'auth' => [$this->username, $this->password],
+                    'host' => $this->_hostname, 
+                    'port' => (int)$this->_port, 
+                    'connectTimeout' => 2.5, 
+                    'auth' => [$this->_username, $this->_password], 
                 ]
             );
 
-            if (!is_null($this->database)) {
+            if (!is_null(value: $this->_database)) {
                 $this->useDatabase();
             }
 
-            if (!$this->cache->ping()) {
-                throw new \Exception($e->getMessage(), HttpStatus::$InternalServerError);
+            if (!$this->_cache->ping()) {
+                throw new \Exception(
+                    message: 'Unable to ping cache',
+                    code: HttpStatus::$InternalServerError
+                );
             }
         } catch (\Exception $e) {
-            throw new \Exception($e->getMessage(), HttpStatus::$InternalServerError);
+            throw new \Exception(
+                message: $e->getMessage(),
+                code: HttpStatus::$InternalServerError
+            );
         }
     }
 
@@ -133,11 +146,11 @@ class Redis extends AbstractCache
      *
      * @return void
      */
-    public function useDatabase()
+    public function useDatabase(): void
     {
         $this->connect();
-        if (!is_null($this->database)) {
-            $this->cache->select($this->database);
+        if (!is_null(value: $this->_database)) {
+            $this->_cache->select($this->_database);
         }
     }
 
@@ -145,42 +158,45 @@ class Redis extends AbstractCache
      * Checks if cache key exist
      *
      * @param string $key Cache key
-     * @return boolean
+     *
+     * @return mixed
      */
-    public function cacheExists($key)
+    public function cacheExists($key): mixed
     {
         $this->useDatabase();
-        return $this->cache->exists($key);
+        return $this->_cache->exists($key);
     }
 
     /**
      * Get cache on basis of key
      *
      * @param string $key Cache key
-     * @return string
+     *
+     * @return mixed
      */
-    public function getCache($key)
+    public function getCache($key): mixed
     {
         $this->useDatabase();
-        return $this->cache->get($key);
+        return $this->_cache->get($key);
     }
 
     /**
      * Set cache on basis of key
      *
-     * @param string  $key    Cache key
-     * @param string  $value  Cache value
-     * @param integer $expire Seconds to expire. Default 0 - doesnt expire
-     * @return integer
+     * @param string $key    Cache key
+     * @param string $value  Cache value
+     * @param int    $expire Seconds to expire. Default 0 - doesn't expire
+     *
+     * @return mixed
      */
-    public function setCache($key, $value, $expire = null)
+    public function setCache($key, $value, $expire = null): mixed
     {
         $this->useDatabase();
 
-        if (is_null($expire)) {
-            return $this->cache->set($key, $value);
+        if (is_null(value: $expire)) {
+            return $this->_cache->set($key, $value);
         } else {
-            return $this->cache->set($key, $value, $expire);
+            return $this->_cache->set($key, $value, $expire);
         }
     }
 
@@ -188,11 +204,12 @@ class Redis extends AbstractCache
      * Delete basis of key
      *
      * @param string $key Cache key
-     * @return integer
+     *
+     * @return mixed
      */
-    public function deleteCache($key)
+    public function deleteCache($key): mixed
     {
         $this->useDatabase();
-        return $this->cache->del($key);
+        return $this->_cache->del($key);
     }
 }

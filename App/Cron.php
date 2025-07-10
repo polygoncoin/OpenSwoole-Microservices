@@ -1,4 +1,16 @@
 <?php
+/**
+ * Initialize Cron
+ * php version 8.3
+ *
+ * @category  Cron
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 use Microservices\App\Constants;
@@ -6,50 +18,61 @@ use Microservices\App\Common;
 use Microservices\Cron\CronInterface;
 
 /**
- * Class to initiate custom API's
+ * Cron API
+ * php version 8.3
  *
- * @category   Cron API's
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  CronAPI
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Cron
 {
     /**
+     * Cron API Object
+     * 
      * @var null|CronInterface
      */
-    private $api = null;
+    private $_api = null;
 
     /**
-     * Microservices Collection of Common Objects
+     * Common Object
      *
      * @var null|Common
      */
-    private $c = null;
+    private $_c = null;
 
     /**
      * Constructor
      *
-     * @param Common $common
+     * @param Common $common Common object
      */
     public function __construct(&$common)
     {
-        $this->c = &$common;
+        $this->_c = &$common;
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return bool
      */
-    public function init()
+    public function init(): bool
     {
-        $this->c->httpRequest->init();
+        $this->_c->req->init();
 
-        $routeFileLocation = Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'Auth' . DIRECTORY_SEPARATOR . 'ClientDB' . DIRECTORY_SEPARATOR . 'Common' . DIRECTORY_SEPARATOR . 'Cron' . DIRECTORY_SEPARATOR . $this->c->httpRequest->REQUEST_METHOD . 'routes.php';
-        $this->c->httpRequest->parseRoute($routeFileLocation);
+        $routeFileLocation = Constants::$DOC_ROOT . 
+            DIRECTORY_SEPARATOR . 'Config' . 
+            DIRECTORY_SEPARATOR . 'Routes' . 
+            DIRECTORY_SEPARATOR . 'Auth' . 
+            DIRECTORY_SEPARATOR . 'ClientDB' . 
+            DIRECTORY_SEPARATOR . 'Common' . 
+            DIRECTORY_SEPARATOR . 'Cron' . 
+            DIRECTORY_SEPARATOR . $this->_c->req->REQUEST_METHOD . 'routes.php';
+        $this->_c->req->parseRoute(routeFileLocation: $routeFileLocation);
 
         return true;
     }
@@ -57,15 +80,16 @@ class Cron
     /**
      * Process
      *
-     * @return boolean
+     * @return bool
      */
-    public function process()
+    public function process(): bool
     {
-        $class = 'Microservices\\Cron\\' . ucfirst($this->c->httpRequest->routeElements[1]);
+        $class = 'Microservices\\Cron\\' . 
+            ucfirst(string: $this->_c->req->routeElements[1]);
 
-        $this->api = new $class($this->c);
-        if ($this->api->init()) {
-            $this->api->process();
+        $this->_api = new $class(common: $this->_c);
+        if ($this->_api->init()) {
+            $this->_api->process();
         }
 
         return true;

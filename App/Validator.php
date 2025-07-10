@@ -1,7 +1,18 @@
 <?php
+/**
+ * Validator
+ * php version 8.3
+ *
+ * @category  Validator
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
-use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\Validation\ClientValidator;
@@ -10,43 +21,45 @@ use Microservices\Validation\ValidatorInterface;
 
 /**
  * Validator
+ * php version 8.3
  *
- * This class is meant for validation
- *
- * @category   Validator
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Validator
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Validator
 {
     /**
+     * Validator Object
+     * 
      * @var null|ValidatorInterface
      */
-    private $v = null;
+    private $_v = null;
 
     /**
-     * Microservices Collection of Common Objects
+     * Common Object
      *
      * @var null|Common
      */
-    private $c = null;
+    private $_c = null;
 
     /**
      * Constructor
      *
-     * @param Common $common
+     * @param Common $common Common object
      */
     public function __construct(&$common)
     {
-        $this->c = &$common;
+        $this->_c = &$common;
 
-        if ($this->c->httpRequest->db->database === Env::$globalDatabase) {
-            $this->v = new GlobalValidator($this->c);
+        if ($this->_c->req->db->database === Env::$globalDatabase) {
+            $this->_v = new GlobalValidator(common: $this->_c);
         } else {
-            $this->v = new ClientValidator($this->c);
+            $this->_v = new ClientValidator(common: $this->_c);
         }
     }
 
@@ -54,35 +67,38 @@ class Validator
      * Validate payload
      *
      * @param array $validationConfig Validation configuration
+     *
      * @return array
      */
-    public function validate(&$validationConfig)
+    public function validate(&$validationConfig): array
     {
-        $session = &$this->c->httpRequest->session;
-        if (isset(($session['required'])) && count($session['required']) > 0) {
-            if ((list($isValidData, $errors) = $this->validateRequired()) && !$isValidData) {
+        $sess = &$this->_c->req->sess;
+        if (isset(($sess['necessary'])) && count(value: $sess['necessary']) > 0) {
+            if (([$isValidData, $errors] = $this->_validateRequired()) 
+                && !$isValidData
+            ) {
                 return [$isValidData, $errors];
             }
         }
 
-        return $this->v->validate($validationConfig);
+        return $this->_v->validate(validationConfig: $validationConfig);
     }
 
     /**
-     * Validate required payload
+     * Validate necessary payload
      *
      * @return array
      */
-    private function validateRequired()
+    private function _validateRequired(): array
     {
         $isValidData = true;
         $errors = [];
-        $session = &$this->c->httpRequest->session;
+        $sess = &$this->_c->req->sess;
         // Required fields payload validation
-        if (!empty($session['required']['payload'])) {
-            foreach ($session['required']['payload'] as $column => &$arr) {
-                if ($arr['require'] && !isset($session['payload'][$column])) {
-                    $errors[] = 'Missing required payload: '.$column;
+        if (!empty($sess['necessary']['payload'])) {
+            foreach ($sess['necessary']['payload'] as $column => &$arr) {
+                if ($arr['nec'] && !isset($sess['payload'][$column])) {
+                    $errors[] = 'Missing necessary payload: '.$column;
                     $isValidData = false;
                 }
             }

@@ -38,12 +38,12 @@ ENVIRONMENT=0                   ;Environment PRODUCTION = 1 / DEVELOPMENT = 0
 OUTPUT_PERFORMANCE_STATS=1      ;Add Performance Stats in Json output: 1 = true / 0 = false
 allowConfigRequest=1            ;Allow config request (global flag): 1 = true / 0 = false
 cronRestrictedIp='127.0.0.1'    ;Crons Details
-maxPerpage=10000                ;Maximum value of perpage (records per page)
+maxPerPage=10000                ;Maximum value of perPage (records per page)
 
 ;Data Representation: Json/Xml
-;To override below setting pass below params with route seperated with &
-inputDataRepresentation='Json'
-outputDataRepresentation='Json'
+;To override below setting pass below params with route separated with &
+inputRepresentation='Json'
+outputRepresentation='Json'
 ```
 
 ### Cache Server Details (Redis)
@@ -97,36 +97,36 @@ dbDatabaseClient001='client_001'
 
 ### Additional table details for database server
 ```ini
-clientMasterDbName='client_master'  ;contains all entities required for a new client.
+clientMasterDbName='client_master'  ;contains all entities necessary for a new client.
 client_users='master_users'         ;Table in client database containing user details.
 ```
 
 These DB/Cache configurations can be set in below columns respectively for each client.
 ```SQL
-`m001_master_clients`.`master_db_server_type` varchar(255) NOT NULL,
-`m001_master_clients`.`master_db_hostname` varchar(255) NOT NULL,
-`m001_master_clients`.`master_db_port` varchar(255) NOT NULL,
-`m001_master_clients`.`master_db_username` varchar(255) NOT NULL,
-`m001_master_clients`.`master_db_password` varchar(255) NOT NULL,
-`m001_master_clients`.`master_db_database` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_db_server_type` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_db_hostname` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_db_port` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_db_username` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_db_password` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_db_database` varchar(255) NOT NULL,
-`m001_master_clients`.`master_cache_server_type` varchar(255) NOT NULL,
-`m001_master_clients`.`master_cache_hostname` varchar(255) NOT NULL,
-`m001_master_clients`.`master_cache_port` varchar(255) NOT NULL,
-`m001_master_clients`.`master_cache_username` varchar(255) NOT NULL,
-`m001_master_clients`.`master_cache_password` varchar(255) NOT NULL,
-`m001_master_clients`.`master_cache_database` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_cache_server_type` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_cache_hostname` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_cache_port` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_cache_username` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_cache_password` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_cache_database` varchar(255) NOT NULL,
+`m001_master_clients`.`master_db_server_type` varchar(255) NOT NULL, 
+`m001_master_clients`.`master_db_hostname` varchar(255) NOT NULL, 
+`m001_master_clients`.`master_db_port` varchar(255) NOT NULL, 
+`m001_master_clients`.`master_db_username` varchar(255) NOT NULL, 
+`m001_master_clients`.`master_db_password` varchar(255) NOT NULL, 
+`m001_master_clients`.`master_db_database` varchar(255) NOT NULL, 
+`m001_master_clients`.`slave_db_server_type` varchar(255) NOT NULL, 
+`m001_master_clients`.`slave_db_hostname` varchar(255) NOT NULL, 
+`m001_master_clients`.`slave_db_port` varchar(255) NOT NULL, 
+`m001_master_clients`.`slave_db_username` varchar(255) NOT NULL, 
+`m001_master_clients`.`slave_db_password` varchar(255) NOT NULL, 
+`m001_master_clients`.`slave_db_database` varchar(255) NOT NULL, 
+`m001_master_clients`.`master_cache_server_type` varchar(255) NOT NULL, 
+`m001_master_clients`.`master_cache_hostname` varchar(255) NOT NULL, 
+`m001_master_clients`.`master_cache_port` varchar(255) NOT NULL, 
+`m001_master_clients`.`master_cache_username` varchar(255) NOT NULL, 
+`m001_master_clients`.`master_cache_password` varchar(255) NOT NULL, 
+`m001_master_clients`.`master_cache_database` varchar(255) NOT NULL, 
+`m001_master_clients`.`slave_cache_server_type` varchar(255) NOT NULL, 
+`m001_master_clients`.`slave_cache_hostname` varchar(255) NOT NULL, 
+`m001_master_clients`.`slave_cache_port` varchar(255) NOT NULL, 
+`m001_master_clients`.`slave_cache_username` varchar(255) NOT NULL, 
+`m001_master_clients`.`slave_cache_password` varchar(255) NOT NULL, 
+`m001_master_clients`.`slave_cache_database` varchar(255) NOT NULL, 
 ```
 
 ### The Rate Limiting configurations can be set as below.
@@ -156,16 +156,16 @@ RateLimiterUserPrefix='URL:'    ; User based Rate Limitng (URL) key prefix used 
 ##### Configure these in tables below
 ```SQL
 # Client level
-`m001_master_clients`.`rateLimiterMaxRequests` int DEFAULT NULL,
-`m001_master_clients`.`rateLimiterSecondsWindow` int DEFAULT NULL,
+`m001_master_clients`.`rateLimiterMaxRequests` int DEFAULT NULL, 
+`m001_master_clients`.`rateLimiterSecondsWindow` int DEFAULT NULL, 
 
 # Group level
-`m002_master_groups`.`rateLimiterMaxRequests` int DEFAULT NULL,
-`m002_master_groups`.`rateLimiterSecondsWindow` int DEFAULT NULL,
+`m002_master_groups`.`rateLimiterMaxRequests` int DEFAULT NULL, 
+`m002_master_groups`.`rateLimiterSecondsWindow` int DEFAULT NULL, 
 
 # User level
-`master_users`.`rateLimiterMaxRequests` int DEFAULT NULL,
-`master_users`.`rateLimiterSecondsWindow` int DEFAULT NULL,
+`master_users`.`rateLimiterMaxRequests` int DEFAULT NULL, 
+`master_users`.`rateLimiterSecondsWindow` int DEFAULT NULL, 
 ```
 
 #### Route based Rate Limiting
@@ -224,7 +224,7 @@ return [
 ];
 ```
 
-* For configuring route **/tableName/{id}** where id is dynamic **integer** value to be collected.
+* For configuring route **/tableName/{id}** where id is dynamic **int** value to be collected.
 ```PHP
 return [
     'tableName' => [
@@ -235,13 +235,13 @@ return [
 ];
 ```
 
-* Same dynamic variable but with a different data type, for e.g. **{id}** will be treated differently for **string** and **integer** values to be collected.
+* Same dynamic variable but with a different data type, for e.g. **{id}** will be treated differently for **string** and **int** values to be collected.
 ```PHP
 return [
     'tableName' => [
         '{id:int}' => [
-            '__FILE__' => 'SQL file location for integer data type'
-        ],
+            '__FILE__' => 'SQL file location for int data type'
+        ], 
         '{id:string}' => [
             '__FILE__' => 'SQL file location for string data type'
         ]
@@ -252,7 +252,7 @@ return [
 * To restrict dynamic values to a certain set of values. One can do the same by appending comma-separated values after OR key.
 ```PHP
 return [
-    '{tableName:string|admin,group,client,routes}' => [
+    '{tableName:string|admin, group, client, routes}' => [
         '{id:int}' => [
             '__FILE__' => 'SQL file location'
         ]
@@ -275,17 +275,17 @@ return [
 ```PHP
 return [
     '{tableName:string}' => [
-        '__FILE__' => 'SQL file location',
+        '__FILE__' => 'SQL file location', 
         '__PRE-ROUTE-HOOKS__' => [// These will apply recursively
-            'Hook_1',
+            'Hook_1', 
             '...'
-        ],
+        ], 
         '__POST-ROUTE-HOOKS__' => [// These will apply recursively
-            'Hook_1',
+            'Hook_1', 
             '...'
         ]
         '{id:int|!0}' => [
-            '__FILE__' => 'SQL file location',
+            '__FILE__' => 'SQL file location', 
             '__PRE-ROUTE-HOOKS__' => [], // For noi hooks
             '__POST-ROUTE-HOOKS__' => [] // For noi hooks
         ]
@@ -293,7 +293,7 @@ return [
 ];
 ```
 
-> This '{id:int|!0}' means id is integer but can't be zero.
+> This '{id:int|!0}' means id is int but can't be zero.
 
 ## Queries Folder
 
@@ -316,27 +316,27 @@ return [
 ### Database Field DataTypes Configuration in DatabaseDataTypes class
 
 ```PHP
-static public $CustomINT = [
+public static $CustomINT = [
 
     // Required param
 
     // PHP data type (bool, int, float, string)
-    'dataType' => 'int',
+    'dataType' => 'int', 
 
     // Optional params
 
     // Minimum value (int)
-    'minValue' => false,
+    'minValue' => false, 
     // Maximum value (int)
-    'maxValue' => false,
+    'maxValue' => false, 
     // Minimum length (string)
-    'minLength' => false,
+    'minLength' => false, 
     // Maximum length (string)
-    'maxLength' => false,
+    'maxLength' => false, 
     // Any one value from the Array
-    'enumValues' => false,
+    'enumValues' => false, 
     // Values belonging to this Array
-    'setValues' => false,
+    'setValues' => false, 
 
     // Values should pass this regex before use
     'regex' => false
@@ -352,183 +352,183 @@ static public $CustomINT = [
 return [
     // Required to implementing pagination
     'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE __WHERE__", // OR
-    'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE column1 = :column1 AND  id = :id",
+    'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE column1 = :column1 AND  id = :id", 
 
     // Query to perform task
     '__QUERY__' => "SELECT columns FROM TableName WHERE __WHERE__", // OR
-    '__QUERY__' => "SELECT columns FROM TableName WHERE column1 = :column1 AND id = :id",
+    '__QUERY__' => "SELECT columns FROM TableName WHERE column1 = :column1 AND id = :id", 
 
     // Details of data to be set by Query to perform task
     '__SET__' => [
         [ // Fatch value from parsed route
-            'column' => 'id',
+            'column' => 'id', 
             'fetchFrom' => 'uriParams',                     // uriParams / payload
             'fetchFromValue' => 'id',                       // key (id)
             'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
-            'required' => Constants::$REQUIRED              // Represents required field
-        ],
+            'necessary' => Constants::$REQUIRED              // Represents necessary field
+        ], 
         [ // Fatch value from payload
-            'column' => 'id',
+            'column' => 'id', 
             'fetchFrom' => 'payload',                       // payload
             'fetchFromValue' => '<key>',                    // key (<key>)
-        ],
+        ], 
         [ // Fatch value from function
-            'column' => 'password',
+            'column' => 'password', 
             'fetchFrom' => 'function',                      // function
-            'fetchFromValue' => function($session) {        // execute a function and return value
+            'fetchFromValue' => function($sess) {        // execute a function and return value
                 return 'value';
             }
-        ],
-        [ // Fatch value from userDetails session
-            'column' => 'user_id',
-            'fetchFrom' => 'userDetails',                   // userDetails from session
+        ], 
+        [ // Fatch value from userDetails sess
+            'column' => 'user_id', 
+            'fetchFrom' => 'userDetails',                   // userDetails from sess
             'fetchFromValue' => 'user_id'                   // user_id Key
-        ],
+        ], 
         [ // Fatch value of last insert ids
-            'column' => 'is_deleted',
+            'column' => 'is_deleted', 
             'fetchFrom' => 'custom',                        // custom
             'fetchFromValue' => '<static-value>'            // Static values
         ]
-    ],
+    ], 
 
     // Where clause of the Query to perform task
     '__WHERE__' => [
         [ // Fatch value from parsed route
-            'column' => 'id',
+            'column' => 'id', 
             'fetchFrom' => 'uriParams',                     // uriParams / payload
             'fetchFromValue' => 'id',                       // key (id)
             'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
-            'required' => Constants::$REQUIRED              // Represents required field
-        ],
+            'necessary' => Constants::$REQUIRED              // Represents necessary field
+        ], 
         [ // Fatch value from payload
-            'column' => 'id',
+            'column' => 'id', 
             'fetchFrom' => 'payload',                       // payload
             'fetchFromValue' => '<key>',                    // key (<key>)
-        ],
+        ], 
         [ // Fatch value from function
-            'column' => 'password',
+            'column' => 'password', 
             'fetchFrom' => 'function',                      // function
-            'fetchFromValue' => function($session) {        // execute a function and return value
+            'fetchFromValue' => function($sess) {        // execute a function and return value
                 return 'value';
             }
-        ],
-        [ // Fatch value from userDetails session
-            'column' => 'user_id',
-            'fetchFrom' => 'userDetails',                   // userDetails from session
+        ], 
+        [ // Fatch value from userDetails sess
+            'column' => 'user_id', 
+            'fetchFrom' => 'userDetails',                   // userDetails from sess
             'fetchFromValue' => 'user_id'                   // user_id Key
-        ],
+        ], 
         [ // Fatch value of last insert ids
-            'column' => 'is_deleted',
+            'column' => 'is_deleted', 
             'fetchFrom' => 'custom',                        // custom
             'fetchFromValue' => '<static-value>'            // Static values
         ]
-    ],
+    ], 
 
-    // Last insert id to be made available as $session['__INSERT-IDs__'][uniqueParamString];
-    '__INSERT-IDs__' => '<keyName>:id',
+    // Last insert id to be made available as $sess['__INSERT-IDs__'][uniqueParamString];
+    '__INSERT-IDs__' => '<keyName>:id', 
 
     // Indicator to generate JSON in Single(Object) row / Mulple(Array) rows format.
-    '__MODE__' => 'singleRowFormat/multipleRowFormat',
+    '__MODE__' => 'singleRowFormat/multipleRowFormat', 
 
     // subQuery is a keyword to perform recursive operations
     /** Supported configuration for recursive operations are :
-     * __QUERY__,
-     * __SET__,
-     * __WHERE__,
-     * __MODE__,
-     * __SUB-QUERY__,
-     * __INSERT-IDs__,
-     * __TRIGGERS__,
-     * __PRE-SQL-HOOKS__,
-     * __POST-SQL-HOOKS__,
-     * __VALIDATE__,
-     * __PAYLOAD-TYPE__,
-     * __MAX-PAYLOAD-OBJECTS__,
+     * __QUERY__, 
+     * __SET__, 
+     * __WHERE__, 
+     * __MODE__, 
+     * __SUB-QUERY__, 
+     * __INSERT-IDs__, 
+     * __TRIGGERS__, 
+     * __PRE-SQL-HOOKS__, 
+     * __POST-SQL-HOOKS__, 
+     * __VALIDATE__, 
+     * __PAYLOAD-TYPE__, 
+     * __MAX-PAYLOAD-OBJECTS__, 
      */
 
     '__SUB-QUERY__' => [
         '<sub-key>' => [
             // Query to perform task
-            '__QUERY__' => "SQL",
+            '__QUERY__' => "SQL", 
             '__SET__/__WHERE__' => [
                 [...]
-                // Database DataTypes settings required when useHierarchy is true
+                // Database DataTypes settings necessary when useHierarchy is true
                 // to validate each data set before procedding forward
                 [ // Fatch value of last insert ids
-                    'column' => 'user_id',
-                    'fetchFrom' => '__INSERT-IDs__',                // userDetails from session
+                    'column' => 'user_id', 
+                    'fetchFrom' => '__INSERT-IDs__',                // userDetails from sess
                     'fetchFromValue' => '<saved-id-key>'            // previous Insert ids
-                ],
+                ], 
                 [ // Fatch values of params from previous queries
-                    'column' => 'user_id',
+                    'column' => 'user_id', 
                     'fetchFrom' => 'sqlParams',                     // sqlParams (with useHierarchy)
-                    'fetchFromValue' => '<return:keys-seperated-by-colon>'
-                ],
+                    'fetchFromValue' => '<return:keys-separated-by-colon>'
+                ], 
                 [ // Fatch values of sql results from previous queries
-                    'column' => 'user_id',
+                    'column' => 'user_id', 
                     'fetchFrom' => 'sqlResults',                    // sqlResults for DQL operations (with useResultSet)
-                    'fetchFromValue' => '<return:keys-seperated-by-colon>'
-                ],
+                    'fetchFromValue' => '<return:keys-separated-by-colon>'
+                ], 
                 [ // Fatch values of sql payload for previous queries
-                    'column' => 'user_id',
+                    'column' => 'user_id', 
                     'fetchFrom' => 'sqlPayload',                    // sqlPayload (with useHierarchy)
-                    'fetchFromValue' => '<return:keys-seperated-by-colon>'
-                ],
-            ],
-            '__TRIGGERS__' => [...],
-            '__PRE-SQL-HOOKS__' => [...],
-            '__POST-SQL-HOOKS__' => [...],
-            '__VALIDATE__' => [...],
-            '__PAYLOAD-TYPE__' => 'Object/Array',
-            '__MAX-PAYLOAD-OBJECTS__' => 'Integer',
-            '__SUB-QUERY__' => [...],
-        ],
+                    'fetchFromValue' => '<return:keys-separated-by-colon>'
+                ], 
+            ], 
+            '__TRIGGERS__' => [...], 
+            '__PRE-SQL-HOOKS__' => [...], 
+            '__POST-SQL-HOOKS__' => [...], 
+            '__VALIDATE__' => [...], 
+            '__PAYLOAD-TYPE__' => 'Object/Array', 
+            '__MAX-PAYLOAD-OBJECTS__' => 'int', 
+            '__SUB-QUERY__' => [...], 
+        ], 
         '<sub-key>' => [
             [...]
-        ],
+        ], 
         [...]
-    ],
+    ], 
 
     // Trigger set of routes
     '__TRIGGERS__' => [// Array of triggers
         [
             '__ROUTE__' => [
-                ['fetchFrom' => 'custom', 'fetchFromValue' => 'address'],
+                ['fetchFrom' => 'custom', 'fetchFromValue' => 'address'], 
                 ['fetchFrom' => '__INSERT-IDs__', 'fetchFromValue' => 'address:id']
-            ],
+            ], 
             '__QUERY-STRING__' => [
-                ['column' => 'param-1', 'fetchFrom' => 'custom', 'fetchFromValue' => 'address'],
+                ['column' => 'param-1', 'fetchFrom' => 'custom', 'fetchFromValue' => 'address'], 
                 ['column' => 'param-2', 'fetchFrom' => '__INSERT-IDs__', 'fetchFromValue' => 'address:id']
-            ],
-            '__METHOD__' => 'PATCH',
+            ], 
+            '__METHOD__' => 'PATCH', 
             '__PAYLOAD__' => [
                 ['column' => 'address', 'fetchFrom' => 'custom', 'fetchFromValue' => 'updated-address']
             ]
         ]
         [...]
-    ],
+    ], 
 
     // Hooks
     '__PRE-SQL-HOOKS__' => [// Array of Hooks class name in exec order
-        'Hook_Example1',
+        'Hook_Example1', 
         '...'
-    ],
+    ], 
     '__POST-SQL-HOOKS__' => [// Array of Hooks class name in exec order
-        'Hook_Example2',
+        'Hook_Example2', 
         '...'
-    ],
+    ], 
 
     // Array of validation functions to be performed
     '__VALIDATE__' => [
         [
-            'fn' => 'validateGroupId',
+            'fn' => 'validateGroupId', 
             'fnArgs' => [
                 'group_id' => ['payload', 'group_id']
-            ],
+            ], 
             'errorMessage' => 'Invalid Group Id'
-        ],
+        ], 
         [...]
-    ],
+    ], 
 
     '__PAYLOAD-TYPE__' => 'Object', // Allow single "Object" / "Array" of Object (if not set will accept both)
     '__MAX-PAYLOAD-OBJECTS__' => 2, // Max number of allowed Objects if __PAYLOAD-TYPE__ is 'Array'
@@ -545,18 +545,18 @@ return [
     // Control response time as per number of hits by configuring lags in seconds as below
     'responseLag' => [
         // No of Requests => Seconds Lag
-        0 => 0,
-        2 => 10,
-    ],
+        0 => 0, 
+        2 => 10, 
+    ], 
 
     // Any among below can be used for DML operations (These are Optional keys)
     // Caching
     'cacheKey' => '<unique-key-for-redis-to-cache-results>(e.g, key:1)', // Use cacheKey to cache and reuse results (Optional)
     'affectedCacheKeys' => [ // List down keys which effects configured cacheKey on DML operation
-        '<unique-key-for-redis-to-drop-cached-results>(key:1)',
-        '<unique-key-for-redis-to-drop-cached-results>(category etc.)',
+        '<unique-key-for-redis-to-drop-cached-results>(key:1)', 
+        '<unique-key-for-redis-to-drop-cached-results>(category etc.)', 
         '...'
-    ],
+    ], 
 
     // Limiting duplicates
     'idempotentWindow' => 3 // Idempotent Window for DML operartion (seconds)
@@ -570,17 +570,17 @@ return [
 ```PHP
 '__SUB-QUERY__' => [
     //Here the module1 properties are reused for write operation.
-    'module1' => include $Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config/Queries/ClientDB/Common/reusefilename.php',
+    'module1' => include $Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config/Queries/ClientDB/Common/reusefilename.php', 
 ]
 ```
 
-> For POST, PUT, PATCH, and DELETE methods one can configure both INSERT as well as UPDATE queries if required for sub modules.
+> For POST, PUT, PATCH, and DELETE methods one can configure both INSERT as well as UPDATE queries if necessary for sub modules.
 
 ## Security
 
 ### Allowed IPs
 
-Classless Inter-Domain Routing (CIDR) is a method for assigning IP addresses to devices on the internet. Multiple CIDR seperated by comma can be set in (groups table) in **global** database.
+Classless Inter-Domain Routing (CIDR) is a method for assigning IP addresses to devices on the internet. Multiple CIDR separated by comma can be set in (groups table) in **global** database.
 
 ```SQL
 `m002_master_groups`.`allowed_ips` text
@@ -632,19 +632,19 @@ One can set these details for respective user in master_users table of respectiv
 
 - [http://127.0.0.1:9501?r=/tableName/1](http://127.0.0.1:9501?r=/tableName/1)
 
-> One can clean the URL by making the required changes in the web server .conf file.
+> One can clean the URL by making the necessary changes in the web server .conf file.
 
 ### Pagination in GET Request
 
 Requires **countQuery** SQL in the configuration for GET request
 ```ini
-defaultPerpage=10
-maxPerpage=1000
+defaultPerPage=10
+maxPerPage=1000
 ```
 
 - [http://127.0.0.1:9501?r=/tableName?page=1](http://127.0.0.1:9501?r=/tableName/1?page=1)
-- [http://127.0.0.1:9501?r=/tableName?page=1&perpage=25](http://127.0.0.1:9501?r=/tableName/1?page=1&perpage=25)
-- [http://127.0.0.1:9501?r=/tableName?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"}](http://127.0.0.1:9501?r=/tableName/1?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"})
+- [http://127.0.0.1:9501?r=/tableName?page=1&perPage=25](http://127.0.0.1:9501?r=/tableName/1?page=1&perPage=25)
+- [http://127.0.0.1:9501?r=/tableName?page=1&perPage=25&orderBy={"field1":"ASC", "field2":"DESC"}](http://127.0.0.1:9501?r=/tableName/1?page=1&perPage=25&orderBy={"field1":"ASC", "field2":"DESC"})
 
 >One need to urlencode orderBy value
 
@@ -654,8 +654,8 @@ maxPerpage=1000
 
 ```javascript
 var payload = {
-    "key1": "value1",
-    "key2": "value2",
+    "key1": "value1", 
+    "key2": "value2", 
     ...
 };
 ```
@@ -665,34 +665,34 @@ var payload = {
 ```javascript
 var payload = [
     {
-        "key1": "value1",
-        "key2": "value2",
+        "key1": "value1", 
+        "key2": "value2", 
         ...
-    },
+    }, 
     {
-        "key1": "value1",
-        "key2": "value2",
+        "key1": "value1", 
+        "key2": "value2", 
         ...
-    },
+    }, 
     ...
 ];
 ```
 
 ### HttpRequest Variables
 
-- **$session\['userDetails'\]** Session Data.
+- **$sess\['userDetails'\]** Session Data.
 > This remains same for every request and contains keys like id, group\_id, client\_id
 
-- **$session\['uriParams'\]** Data passed in URI.
-> Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $session\['uriParams'\] will hold these dynamic values as below.
+- **$sess\['uriParams'\]** Data passed in URI.
+> Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $sess\['uriParams'\] will hold these dynamic values as below.
 
-- **$session\['payload'\]** Request data.
+- **$sess\['payload'\]** Request data.
 > For **GET** method, the **$\_GET** is the payload.
 
-* **$session\['__INSERT-IDs__'\]** Insert ids Data as per configuration.
+* **$sess\['__INSERT-IDs__'\]** Insert ids Data as per configuration.
 >For **POST/PUT/PATCH/DELETE** we perform both INSERT as well as UPDATE operation. The insertId contains the insert ids of the executed INSERT queries.
 
-* **$session\['sqlResults'\]** Hierarchy data.
+* **$sess\['sqlResults'\]** Hierarchy data.
 >For **GET** method, one can use previous query results if configured to use hierarchy.
 
 ## Hierarchy Data
@@ -701,29 +701,29 @@ var payload = [
 >In this file one can confirm how previous select data is used recursively in subQuery select as indicated by useHierarchy flag.
 
 ```PHP
-'parent_id' => ['sqlResults', 'return:id'],
+'parent_id' => ['sqlResults', 'return:id'], 
 ```
 
 - Config/Queries/ClientDB/POST/Category.php .Here a request can handle the hierarchy for write operations.
 
 ```PHP
 return [
-    '__QUERY__' => "INSERT INTO `category` SET __SET__",
+    '__QUERY__' => "INSERT INTO `category` SET __SET__", 
     '__SET__' => [
-        'name' => ['payload', 'name'],
-        'parent_id' => ['custom', 0],
-    ],
-    '__INSERT-IDs__' => 'category:id',
+        'name' => ['payload', 'name'], 
+        'parent_id' => ['custom', 0], 
+    ], 
+    '__INSERT-IDs__' => 'category:id', 
     '__SUB-QUERY__' => [
         'module1' => [
-            '__QUERY__' => "INSERT INTO `category` SET __SET__",
+            '__QUERY__' => "INSERT INTO `category` SET __SET__", 
             '__SET__' => [
-                'name' => ['payload', 'subname'],
-                'parent_id' => ['__INSERT-IDs__', 'category:id'],
-            ],
-            '__INSERT-IDs__' => 'sub:id',
+                'name' => ['payload', 'subname'], 
+                'parent_id' => ['__INSERT-IDs__', 'category:id'], 
+            ], 
+            '__INSERT-IDs__' => 'sub:id', 
         ]
-    ],
+    ], 
     'useHierarchy' => true
 ];
 ```
@@ -734,9 +734,9 @@ return [
 
 ```javascript
 var payload = {
-    "name":"name",
+    "name":"name", 
     "module1": {
-        "subname":"subname",
+        "subname":"subname", 
     }
 }
 ```
@@ -745,15 +745,15 @@ var payload = {
 
 ```javascript
 var payload = {
-    "name":"name",
+    "name":"name", 
     "module1":
     [
         {
-            "subname":"subname1",
-        },
+            "subname":"subname1", 
+        }, 
         {
-            "subname":"subname2",
-        },
+            "subname":"subname2", 
+        }, 
         ...
     ]
 }
@@ -764,38 +764,38 @@ var payload = {
 ```javascript
 var payload = [
     {
-        "name":"name1",
+        "name":"name1", 
         "module1":
         [
             {
-                "subname":"subname1",
-            },
+                "subname":"subname1", 
+            }, 
             {
-                "subname":"subname2",
-            },
+                "subname":"subname2", 
+            }, 
             ...
         ]
-    },
+    }, 
     {
-        "name":"name2",
+        "name":"name2", 
         "module1":
         [
             {
-                "subname":"subname21",
-            },
+                "subname":"subname21", 
+            }, 
             {
-                "subname":"subname22",
-            },
+                "subname":"subname22", 
+            }, 
             ...
         ]
-    },
+    }, 
     ...
 ]
 ```
 
 ## Configuration Route
 
-* Appending route with **/config** returns the payload information that should be supplied; both required and optional with desired format.
+* Appending route with **/config** returns the payload information that should be supplied; both necessary and optional with desired format.
 
 Examples:
 
@@ -832,7 +832,7 @@ This lists down all allowed routes for HTTP methods respectively.
 var handlerUrl = "http://127.0.0.1:9501?r=/login";
 var xmlhttp = new XMLHttpRequest();
 
-xmlhttp . open( "POST", handlerUrl );
+xmlhttp . open( "POST", handlerUrl);
 xmlhttp . setRequestHeader('X-API-Version', 'v1.0.0');
 xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
 
@@ -848,7 +848,7 @@ xmlhttp . onreadystatechange = function() {
 
 // Payload data which is to be made available on the server for the "/ajax-handler".
 var payload = {
-    "username":"client_1_user_1",
+    "username":"client_1_user_1", 
     "password":"shames11"
 };
 
@@ -856,7 +856,7 @@ var jsonString = JSON.stringify(payload);
 var urlencodeJsonString = encodeURIComponent(jsonString);
 var params = "Payload="+urlencodeJsonString;
 
-xmlhttp . send( params );
+xmlhttp . send( params);
 ````
 
 ### For other API's
@@ -867,7 +867,7 @@ xmlhttp . send( params );
 var handlerUrl = "http://127.0.0.1:9501?r=/routes";
 var xmlhttp = new XMLHttpRequest();
 
-xmlhttp . open( "GET", handlerUrl );
+xmlhttp . open( "GET", handlerUrl);
 xmlhttp . setRequestHeader('X-API-Version', 'v1.0.0');
 xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 xmlhttp . setRequestHeader('Authorization', 'Bearer <Token-from-login-api>');
@@ -889,7 +889,7 @@ xmlhttp . send();
 var handlerUrl = "http://127.0.0.1:9501?r=/ajax-handler-route";
 var xmlhttp = new XMLHttpRequest();
 
-xmlhttp . open( "POST", handlerUrl );
+xmlhttp . open( "POST", handlerUrl);
 xmlhttp . setRequestHeader('X-API-Version', 'v1.0.0');
 xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
 xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
@@ -904,15 +904,15 @@ xmlhttp . onreadystatechange = function() {
 
 // Payload data which is to be made available on the server for the "/ajax-handler".
 var payload = {
-    "key1": "value1",
-    "key2": "value2",
+    "key1": "value1", 
+    "key2": "value2", 
 };
 
 var jsonString = JSON.stringify(payload);
 var urlencodeJsonString = encodeURIComponent(jsonString);
 var params = "Payload="+urlencodeJsonString;
 
-xmlhttp . send( params );
+xmlhttp . send( params);
 ````
 
 * PUT Request
@@ -921,7 +921,7 @@ xmlhttp . send( params );
 var handlerUrl = "http://127.0.0.1:9501?r=/custom/password";
 var xmlhttp = new XMLHttpRequest();
 
-xmlhttp . open( "PUT", handlerUrl );
+xmlhttp . open( "PUT", handlerUrl);
 xmlhttp . setRequestHeader('X-API-Version', 'v1.0.0');
 xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
 xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
@@ -936,24 +936,24 @@ xmlhttp . onreadystatechange = function() {
 
 // Payload data which is to be made available on the server for the "/ajax-handler".
 var payload = {
-    "old_password": "shames11",
-    "new_password": "ramesh",
+    "old_password": "shames11", 
+    "new_password": "ramesh", 
 };
 
 var jsonString = JSON.stringify(payload);
 var urlencodeJsonString = encodeURIComponent(jsonString);
 var params = "Payload="+urlencodeJsonString;
 
-xmlhttp . send( params );
+xmlhttp . send( params);
 ````
 
 * XML Request example
 
 ```javascript
-var handlerUrl = "http://127.0.0.1:9501?r=/registration-with-address&inputDataRepresentation=Xml&outputDataRepresentation=Xml";
+var handlerUrl = "http://127.0.0.1:9501?r=/registration-with-address&inputRepresentation=Xml&outputRepresentation=Xml";
 
 var xmlPayload = '<?xml version="1.0" encoding="UTF-8" ?>' +
-'<Paylaod>' +
+'<Payload>' +
 '    <Rows>' +
 '        <Row>' +
 '            <firstname>Ramesh-1</firstname>' +
@@ -976,12 +976,12 @@ var xmlPayload = '<?xml version="1.0" encoding="UTF-8" ?>' +
 '            </address>' +
 '        </Row>' +
 '    </Rows>' +
-'</Paylaod>';
+'</Payload>';
 
 
 var xmlhttp = new XMLHttpRequest();
 
-xmlhttp . open( "POST", handlerUrl );
+xmlhttp . open( "POST", handlerUrl);
 xmlhttp . setRequestHeader('X-API-Version', 'v1.0.0');
 xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 
@@ -994,7 +994,7 @@ xmlhttp . onreadystatechange = function() {
 var urlencodeJsonString = encodeURIComponent(xmlPayload);
 var payload = "Payload="+urlencodeJsonString;
 
-xmlhttp . send( payload );
+xmlhttp . send( payload);
 ```
 
 ## License

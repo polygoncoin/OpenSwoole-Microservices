@@ -1,4 +1,16 @@
 <?php
+/**
+ * Login
+ * php version 8.3
+ *
+ * @category  Login
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 use Microservices\App\Constants;
@@ -10,15 +22,15 @@ use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
  * Login
+ * php version 8.3
  *
- * This class is used for login and generates token for user
- *
- * @category   Login
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Login
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Login
 {
@@ -34,69 +46,69 @@ class Login
      *
      * @var null|string
      */
-    private $username = null;
+    public $username = null;
 
     /**
      * Password for login
      *
      * @var null|string
      */
-    private $password = null;
+    public $password = null;
 
     /**
      * Details pertaining to user
      *
      * @var array
      */
-    private $userDetails;
+    private $_userDetails;
 
     /**
      * Current timestamp
      *
-     * @var integer
+     * @var int
      */
-    private $timestamp;
+    private $_timestamp;
 
     /**
      * Payload
      *
      * @var array
      */
-    private $payload = [];
+    private $_payload = [];
 
     /**
-     * Microservices Collection of Common Objects
+     * Common Object
      *
      * @var null|Common
      */
-    private $c = null;
+    private $_c = null;
 
     /**
      * Cache Keys
      */
-    private $clientUserKey = null;
-    private $tokenKey = null;
-    private $userTokenKey = null;
-    private $cidrKey = null;
+    private $_clientUserKey = null;
+    private $_tokenKey = null;
+    private $_userTokenKey = null;
+    private $_cidrKey = null;
 
     /**
      * Constructor
      *
-     * @param Common $common
+     * @param Common $common Common object
      */
     public function __construct(&$common)
     {
-        $this->c = &$common;
+        $this->_c = &$common;
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return bool
      */
-    public function init()
+    public function init(): bool
     {
-        $this->c->httpRequest->loadClientDetails();
+        $this->_c->req->loadClientDetails();
 
         return true;
     }
@@ -104,15 +116,15 @@ class Login
     /**
      * Process
      *
-     * @return boolean
+     * @return bool
      */
-    public function process()
+    public function process(): bool
     {
-        $this->loadPayload();
-        $this->loadUserDetails();
-        $this->validateRequestIp();
-        $this->validatePassword();
-        $this->outputTokenDetails();
+        $this->_loadPayload();
+        $this->_loadUserDetails();
+        $this->_validateRequestIp();
+        $this->_validatePassword();
+        $this->_outputTokenDetails();
 
         return true;
     }
@@ -123,22 +135,28 @@ class Login
      * @return void
      * @throws \Exception
      */
-    private function loadPayload()
+    private function _loadPayload(): void
     {
         // Check request method is POST
-        if ($this->c->httpRequest->REQUEST_METHOD !== Constants::$POST) {
-            throw new \Exception('Invalid request method', HttpStatus::$NotFound);
+        if ($this->_c->req->REQUEST_METHOD !== Constants::$POST) {
+            throw new \Exception(
+                message: 'Invalid request method',
+                code: HttpStatus::$NotFound
+            );
         }
 
-        $this->c->httpRequest->loadPayload();
-        $this->payload = $this->c->httpRequest->dataDecode->get();
+        $this->_c->req->loadPayload();
+        $this->_payload = $this->_c->req->dataDecode->get();
 
-        // Check for required conditions variables
-        foreach (array('username','password') as $value) {
-            if (!isset($this->payload[$value]) || empty($this->payload[$value])) {
-                throw new \Exception('Missing required parameters', HttpStatus::$NotFound);
+        // Check for necessary conditions variables
+        foreach (array('username', 'password') as $value) {
+            if (!isset($this->_payload[$value]) || empty($this->_payload[$value])) {
+                throw new \Exception(
+                    message: 'Missing necessary parameters',
+                    code: HttpStatus::$NotFound
+                );
             } else {
-                $this->$value = $this->payload[$value];
+                $this->$value = $this->_payload[$value];
             }
         }
     }
@@ -149,17 +167,33 @@ class Login
      * @return void
      * @throws \Exception
      */
-    private function loadUserDetails()
+    private function _loadUserDetails(): void
     {
-        $clientId = $this->c->httpRequest->session['clientDetails']['client_id'];
-        $this->clientUserKey = CacheKey::ClientUser($clientId, $this->payload['username']);
+        $clientId = $this->_c->req->sess['clientDetails']['client_id'];
+        $this->_clientUserKey = CacheKey::clientUser(
+            clientId: $clientId,
+            username: $this->_payload['username']
+        );
         // Redis - one can find the userID from client username
-        if (!$this->c->httpRequest->cache->cacheExists($this->clientUserKey)) {
-            throw new \Exception('Invalid credentials', HttpStatus::$Unauthorized);
+        if (!$this->_c->req->cache->cacheExists(key: $this->_clientUserKey)) {
+            throw new \Exception(
+                message: 'Invalid credentials',
+                code: HttpStatus::$Unauthorized
+            );
         }
-        $this->userDetails = json_decode($this->c->httpRequest->cache->getCache($this->clientUserKey), true);
-        if (empty($this->userDetails['user_id']) || empty($this->userDetails['group_id'])) {
-            throw new \Exception('Invalid credentials', HttpStatus::$Unauthorized);
+        $this->_userDetails = json_decode(
+            json: $this->_c->req->cache->getCache(
+                key: $this->_clientUserKey
+            ), 
+            associative: true
+        );
+        if (empty($this->_userDetails['user_id'])
+            || empty($this->_userDetails['group_id'])
+        ) {
+            throw new \Exception(
+                message: 'Invalid credentials',
+                code: HttpStatus::$Unauthorized
+            );
         }
     }
 
@@ -169,13 +203,18 @@ class Login
      * @return void
      * @throws \Exception
      */
-    private function validateRequestIp()
+    private function _validateRequestIp(): void
     {
         // Redis - one can find the userID from username
-        $this->cidrKey = CacheKey::CIDR($this->userDetails['group_id']);
-        if ($this->c->httpRequest->cache->cacheExists($this->cidrKey)) {
-            $cidrs = json_decode($this->c->httpRequest->cache->getCache($this->cidrKey), true);
-            $ipNumber = ip2long($this->c->httpRequest->REMOTE_ADDR);
+        $this->_cidrKey = CacheKey::cidr(groupId: $this->_userDetails['group_id']);
+        if ($this->_c->req->cache->cacheExists(key: $this->_cidrKey)) {
+            $cidrs = json_decode(
+                json: $this->_c->req->cache->getCache(
+                    key: $this->_cidrKey
+                ),
+                associative: true
+            );
+            $ipNumber = ip2long(ip: $this->_c->req->REMOTE_ADDR);
             $isValidIp = false;
             foreach ($cidrs as $cidr) {
                 if ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
@@ -184,7 +223,10 @@ class Login
                 }
             }
             if (!$isValidIp) {
-                throw new \Exception('IP not supported', HttpStatus::$Unauthorized);
+                throw new \Exception(
+                    message: 'IP not supported',
+                    code: HttpStatus::$Unauthorized
+                );
             }
         }
     }
@@ -195,11 +237,18 @@ class Login
      * @return void
      * @throws \Exception
      */
-    private function validatePassword()
+    private function _validatePassword(): void
     {
         // get hash from cache and compares with password
-        if (!password_verify($this->password, $this->userDetails['password_hash'])) {
-            throw new \Exception('Invalid credentials', HttpStatus::$Unauthorized);
+        if (!password_verify(
+            password: $this->password,
+            hash: $this->_userDetails['password_hash']
+        )
+        ) {
+            throw new \Exception(
+                message: 'Invalid credentials',
+                code: HttpStatus::$Unauthorized
+            );
         }
     }
 
@@ -208,15 +257,22 @@ class Login
      *
      * @return array
      */
-    private function generateToken()
+    private function _generateToken(): array
     {
         //generates a crypto-secure 64 characters long
         while (true) {
-            $token = bin2hex(random_bytes(32));
-            $this->tokenKey = CacheKey::Token($token);
-            if (!$this->c->httpRequest->cache->cacheExists($this->tokenKey)) {
-                $this->c->httpRequest->cache->setCache($this->tokenKey, '{}', Constants::$TOKEN_EXPIRY_TIME);
-                $tokenDetails = ['token' => $token, 'timestamp' => $this->timestamp];
+            $token = bin2hex(string: random_bytes(length: 32));
+            $this->_tokenKey = CacheKey::token(token: $token);
+            if (!$this->_c->req->cache->cacheExists(key: $this->_tokenKey)) {
+                $this->_c->req->cache->setCache(
+                    key: $this->_tokenKey, 
+                    value: '{}', 
+                    expire: Constants::$TOKEN_EXPIRY_TIME
+                );
+                $tokenDetails = [
+                    'token' => $token, 
+                    'timestamp' => $this->_timestamp
+                ];
                 break;
             }
         }
@@ -228,66 +284,90 @@ class Login
      *
      * @return void
      */
-    private function outputTokenDetails()
+    private function _outputTokenDetails(): void
     {
-        $this->timestamp = time();
+        $this->_timestamp = time();
         $tokenFound = false;
 
-        $this->userTokenKey = CacheKey::UserToken($this->userDetails['user_id']);
-        if ($this->c->httpRequest->cache->cacheExists($this->userTokenKey)) {
-            $tokenDetails = json_decode($this->c->httpRequest->cache->getCache($this->userTokenKey), true);
-            $this->tokenKey = CacheKey::Token($tokenDetails['token']);
-            if ($this->c->httpRequest->cache->cacheExists($this->tokenKey)) {
-                if ((Constants::$TOKEN_EXPIRY_TIME - ($this->timestamp - $tokenDetails['timestamp'])) > 0) {
+        $this->_userTokenKey = CacheKey::userToken(
+            userId: $this->_userDetails['user_id']
+        );
+        if ($this->_c->req->cache->cacheExists(key: $this->_userTokenKey)) {
+            $tokenDetails = json_decode(
+                json: $this->_c->req->cache->getCache(
+                    key: $this->_userTokenKey
+                ),
+                associative: true
+            );
+            $this->_tokenKey = CacheKey::token(token: $tokenDetails['token']);
+            if ($this->_c->req->cache->cacheExists(key: $this->_tokenKey)) {
+                $time = $this->_timestamp - $tokenDetails['timestamp'];
+                if ((Constants::$TOKEN_EXPIRY_TIME - $time) > 0) {
                     $tokenFound = true;
                 } else {
-                    $this->c->httpRequest->cache->deleteCache($this->tokenKey);
+                    $this->_c->req->cache->deleteCache(key: $this->_tokenKey);
                 }
             }
         }
 
         if (!$tokenFound) {
-            $tokenDetails = $this->generateToken();
+            $tokenDetails = $this->_generateToken();
             // We set this to have a check first if multiple request/attack occurs
-            $this->c->httpRequest->cache->setCache($this->userTokenKey, json_encode($tokenDetails), Constants::$TOKEN_EXPIRY_TIME);
-            $this->tokenKey = CacheKey::Token($tokenDetails['token']);
-            unset($this->userDetails['password_hash']);
-            $this->c->httpRequest->cache->setCache($this->tokenKey, json_encode($this->userDetails), Constants::$TOKEN_EXPIRY_TIME);
-            $this->updateDB($tokenDetails);
+            $this->_c->req->cache->setCache(
+                key: $this->_userTokenKey, 
+                value: json_encode(
+                    value: $tokenDetails
+                ), 
+                expire: Constants::$TOKEN_EXPIRY_TIME
+            );
+            $this->_tokenKey = CacheKey::token(token: $tokenDetails['token']);
+            unset($this->_userDetails['password_hash']);
+            $this->_c->req->cache->setCache(
+                key: $this->_tokenKey, 
+                value: json_encode(
+                    value: $this->_userDetails
+                ), 
+                expire: Constants::$TOKEN_EXPIRY_TIME
+            );
+            $this->_updateDB(tokenDetails: $tokenDetails);
         }
 
+        $time = $this->_timestamp - $tokenDetails['timestamp'];
         $output = [
-            'Token' => $tokenDetails['token'],
-            'Expires' => (Constants::$TOKEN_EXPIRY_TIME - ($this->timestamp - $tokenDetails['timestamp']))
+            'Token' => $tokenDetails['token'], 
+            'Expires' => (Constants::$TOKEN_EXPIRY_TIME - $time)
         ];
 
-        $this->c->httpResponse->dataEncode->addKeyData('Results', $output);
+        $this->_c->res->dataEncode->addKeyData(key: 'Results', data: $output);
     }
 
     /**
      * Update token details in DB for respective account
      *
-     * @param array $tokenDetails
+     * @param array $tokenDetails Token Details
+     *
      * @return void
      */
-    private function updateDB(&$tokenDetails)
+    private function _updateDB(&$tokenDetails): void
     {
-        $this->c->httpRequest->db = $this->c->httpRequest->setDbConnection('Master');
-        $this->db = &$this->c->httpRequest->db;
+        $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: 'Master');
+        $this->db = &$this->_c->req->db;
 
         $userTable = Env::$client_users;
-        $this->db->execDbQuery("
-        UPDATE
-            `{$userTable}`
-        SET
-            `token` = :token,
-            `token_ts` = :token_ts
-        WHERE
-            user_id = :user_id",
-        [
-            ':token' => $tokenDetails['token'],
-            ':token_ts' => $tokenDetails['timestamp'],
-            ':user_id' => $this->userDetails['user_id']
-        ]);
+        $this->db->execDbQuery(
+            sql: "
+                UPDATE
+                    `{$userTable}`
+                SET
+                    `token` = :token, 
+                    `token_ts` = :token_ts
+                WHERE
+                    user_id = :user_id", 
+            params: [
+                ':token' => $tokenDetails['token'], 
+                ':token_ts' => $tokenDetails['timestamp'], 
+                ':user_id' => $this->_userDetails['user_id']
+            ]
+        );
     }
 }

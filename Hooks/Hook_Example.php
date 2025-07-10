@@ -1,50 +1,61 @@
 <?php
+/**
+ * Hook
+ * php version 8.3
+ *
+ * @category  Hook
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\Hooks;
 
-use Microservices\App\Constants;
 use Microservices\App\Common;
-use Microservices\App\Env;
-use Microservices\App\HttpStatus;
 use Microservices\Hooks\HookInterface;
 use Microservices\Hooks\HookTrait;
 
 /**
  * Hook Example class
+ * php version 8.3
  *
- * @category   Hook Example class
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Hook_Example
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Hook_Example implements HookInterface
 {
     use HookTrait;
 
     /**
-     * Microservices Collection of Common Objects
+     * Common Object
      *
      * @var null|Common
      */
-    private $c = null;
+    private $_c = null;
 
     /**
      * Constructor
      *
-     * @param Common $common
+     * @param Common $common Common object
      */
     public function __construct(&$common)
     {
-        $this->c = &$common;
+        $this->_c = &$common;
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return bool
      */
-    public function init()
+    public function init(): bool
     {
         return true;
     }
@@ -52,11 +63,11 @@ class Hook_Example implements HookInterface
     /**
      * Process
      *
-     * @return boolean
+     * @return bool
      */
-    public function process()
+    public function process(): bool
     {
-        $this->execHook();
+        $this->_execHook();
         return true;
     }
 
@@ -66,9 +77,9 @@ class Hook_Example implements HookInterface
      * @return void
      * @throws \Exception
      */
-    private function execHook()
+    private function _execHook(): void
     {
         // Reset / empty payload.
-        $this->c->httpRequest->session['payload'] = null;
+        $this->_c->req->sess['payload'] = null;
     }
 }

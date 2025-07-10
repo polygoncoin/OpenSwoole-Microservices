@@ -1,31 +1,40 @@
 <?php
+/**
+ * HTTP Response
+ * php version 8.3
+ *
+ * @category  HTTP_Response
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
-use Microservices\App\Constants;
-use Microservices\App\Common;
 use Microservices\App\DataRepresentation\AbstractDataEncode;
 use Microservices\App\DataRepresentation\DataEncode;
-use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 
 /**
- * HTTP Error Response
+ * HTTP Response
+ * php version 8.3
  *
- * This class is built to handle HTTP error response
- *
- * @category   HttpError
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  HTTP_Response
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class HttpResponse
 {
     /**
      * HTTP Status
      *
-     * @var integer
+     * @var int
      */
     public $httpStatus;
 
@@ -41,27 +50,27 @@ class HttpResponse
      *
      * @var array
      */
-    public $httpRequestDetails = null;
+    public $http = null;
 
     /**
      * Constructor
      *
-     * @param array $httpRequestDetails
+     * @param array $http HTTP request details
      */
-    public function __construct(&$httpRequestDetails)
+    public function __construct(&$http)
     {
         $this->httpStatus = HttpStatus::$Ok;
-        $this->httpRequestDetails = &$httpRequestDetails;
+        $this->http = &$http;
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return void
      */
-    public function init()
+    public function init(): void
     {
-        $this->dataEncode = new DataEncode($this->httpRequestDetails);
+        $this->dataEncode = new DataEncode(http: $this->http);
         $this->dataEncode->init();
     }
 }

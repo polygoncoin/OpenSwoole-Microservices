@@ -1,25 +1,34 @@
 <?php
+/**
+ * Read / Write Trait
+ * php version 8.3
+ *
+ * @category  API
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 use Microservices\App\Constants;
-use Microservices\App\Common;
 use Microservices\App\DatabaseDataTypes;
-use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\Validator;
 
 /**
- * Trait for PHP functions
+ * Trait for API
+ * php version 8.3
  *
- * This trait constains only one function so that one can execute inbuilt PHP
- * functions in strings enclosed with double quotes
- *
- * @category   PHP Trait
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  API_Trait
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 trait AppTrait
 {
@@ -34,38 +43,45 @@ trait AppTrait
      * Function to help execute PHP functions enclosed with double quotes
      *
      * @param mixed $param Returned values by PHP inbuilt functions
+     *
      * @return mixed
      */
-    function execPhpFunc($param) { return $param;}
+    public function execPhpFunc($param): mixed
+    {
+         return $param;
+    }
 
     /**
-     * Sets required payload
+     * Sets necessary payload
      *
-     * @param array   $sqlConfig   Config from file
-     * @param boolean $isFirstCall true to represent the first call in recursion
-     * @param boolean $flag        useHierarchy / useResultSet flag
-     * @return void
+     * @param array $sqlConfig   Config from file
+     * @param bool  $isFirstCall true to represent the first call in recursion
+     * @param bool  $flag        useHierarchy / useResultSet flag
+     *
+     * @return array
      * @throws \Exception
      */
-    private function getRequired(&$sqlConfig, $isFirstCall, $flag)
+    private function _getRequired(&$sqlConfig, $isFirstCall, $flag): array
     {
-        $requiredFields = [];
+        $necessaryFields = [];
 
         foreach (['__SET__', '__WHERE__'] as $options) {
             if (isset($sqlConfig[$options])) {
                 foreach ($sqlConfig[$options] as $config) {
-                    $dataPayloadType = $config['fetchFrom'];
-                    $dataPayloadTypeKey = $config['fetchFromValue'];
-                    $dataType = isset($config['dataType']) ? $config['dataType'] : DatabaseDataTypes::$Default;
-                    $require = isset($config['required']) ? $config['required'] : false;
+                    $fetchFrom = $config['fetchFrom'];
+                    $fKey = $config['fetchFromValue'];
+                    $dataType = isset($config['dataType']) ? 
+                        $config['dataType'] : DatabaseDataTypes::$Default;
+                    $require = isset($config['necessary']) ? 
+                        $config['necessary'] : false;
 
-                    if ($dataPayloadType === 'function') {
+                    if ($fetchFrom === 'function') {
                         continue;
                     }
-                    if (!isset($requiredFields[$dataPayloadType][$dataPayloadTypeKey])) {
-                        $dataType['dataKey'] = $dataPayloadTypeKey;
-                        $dataType['require'] = $require;
-                        $requiredFields[$dataPayloadType][$dataPayloadTypeKey] = $dataType;
+                    if (!isset($necessaryFields[$fetchFrom][$fKey])) {
+                        $dataType['dataKey'] = $fKey;
+                        $dataType['nec'] = $require;
+                        $necessaryFields[$fetchFrom][$fKey] = $dataType;
                     }
                 }
             }
@@ -75,41 +91,60 @@ trait AppTrait
         $foundHierarchy = false;
         if (isset($sqlConfig['__WHERE__'])) {
             foreach ($sqlConfig['__WHERE__'] as $var => $where) {
-                $dataPayloadType = $where['fetchFrom'];
-                $dataPayloadTypeKey = $where['fetchFromValue'];
+                $fetchFrom = $where['fetchFrom'];
+                $fKey = $where['fetchFromValue'];
 
-                if ($isFirstCall && in_array($dataPayloadType, ['sqlResults', 'sqlParams', 'sqlPayload'])) {
-                    throw new \Exception('Invalid config: First query can not have ' . $dataPayloadType . ' config', HttpStatus::$InternalServerError);
+                if ($isFirstCall
+                    && in_array(
+                        needle: $fetchFrom,
+                        haystack: ['sqlResults', 'sqlParams', 'sqlPayload']
+                    )
+                ) {
+                    throw new \Exception(
+                        message: "First query can not have {$fetchFrom} config",
+                        code: HttpStatus::$InternalServerError
+                    );
                 }
-                if (in_array($dataPayloadType, ['sqlResults', 'sqlParams', 'sqlPayload'])) {
+                if (in_array(
+                    needle: $fetchFrom,
+                    haystack: ['sqlResults', 'sqlParams', 'sqlPayload']
+                )
+                ) {
                     $foundHierarchy = true;
                     break;
                 }
             }
             // if (!$isFirstCall && $flag && !$foundHierarchy) {
-            //     throw new \Exception('Invalid config: missing ' . $dataPayloadType, HttpStatus::$InternalServerError);
+            //     throw new \Exception(
+            //          message: 'Invalid config: missing ' . $fetchFrom,
+            //          code: HttpStatus::$InternalServerError
+            //      );
             // }
         }
 
         // Check in subQuery
         if (isset($sqlConfig['__SUB-QUERY__'])) {
-            if (!$this->isAssoc($sqlConfig['__SUB-QUERY__'])) {
-                throw new \Exception('Invalid Configuration: subQuery should be an associative array', HttpStatus::$InternalServerError);
-                return;
+            if (!$this->_isAssoc($sqlConfig['__SUB-QUERY__'])) {
+                throw new \Exception(
+                    message: 'Sub-Query should be an associative array',
+                    code: HttpStatus::$InternalServerError
+                );
             }
             foreach ($sqlConfig['__SUB-QUERY__'] as $module => &$sqlDetails) {
-                $_flag = ($flag) ?? $this->getUseHierarchy($sqlDetails);
-                $sub_requiredFields = $this->getRequired($sqlDetails, $isGetRequiredFirstCall = false, $_flag);
+                $_flag = ($flag) ?? $this->_getUseHierarchy($sqlDetails);
+                $sub_necessaryFields = $this->_getRequired(
+                    $sqlDetails, false, $_flag
+                );
                 if ($_flag) {
-                    $requiredFields[$module] = $sub_requiredFields;
+                    $necessaryFields[$module] = $sub_necessaryFields;
                 } else {
-                    foreach ($sub_requiredFields as $dataPayloadType => &$fields) {
-                        if (!isset($requiredFields[$dataPayloadType])) {
-                            $requiredFields[$dataPayloadType] = [];
+                    foreach ($sub_necessaryFields as $fetchFrom => &$fields) {
+                        if (!isset($necessaryFields[$fetchFrom])) {
+                            $necessaryFields[$fetchFrom] = [];
                         }
-                        foreach ($fields as $dataPayloadTypeKey => $field) {
-                            if (!isset($requiredFields[$dataPayloadType][$dataPayloadTypeKey])) {
-                                $requiredFields[$dataPayloadType][$dataPayloadTypeKey] = $field;
+                        foreach ($fields as $fKey => $field) {
+                            if (!isset($necessaryFields[$fetchFrom][$fKey])) {
+                                $necessaryFields[$fetchFrom][$fKey] = $field;
                             }
                         }
                     }
@@ -117,35 +152,41 @@ trait AppTrait
             }
         }
 
-        return $requiredFields;
+        return $necessaryFields;
     }
 
     /**
      * Validate payload
      *
      * @param array $validationConfig Validation config from Config file
+     *
      * @return array
      */
-    private function validate(&$validationConfig)
+    public function validate(&$validationConfig): array
     {
-        if (is_null($this->validator)) {
-            $this->validator = new Validator($this->c);
+        if (is_null(value: $this->validator)) {
+            $this->validator = new Validator(common: $this->_c);
         }
 
-        return $this->validator->validate($validationConfig);
+        return $this->validator->validate(validationConfig: $validationConfig);
     }
 
     /**
      * Returns Query and Params for execution
      *
-     * @param array        $sqlDetails  Config from file
-     * @param boolean|null $isFirstCall true to represent the first call in recursion
-     * @param array|null   $configKeys  Config Keys
-     * @param boolean|null $flag        useHierarchy / useResultSet flag
+     * @param array      $sqlDetails  Config from file
+     * @param bool|null  $isFirstCall true to represent the first call in recursion
+     * @param array|null $configKeys  Config Keys
+     * @param bool|null  $flag        useHierarchy / useResultSet flag
+     *
      * @return array
      */
-    private function getSqlAndParams(&$sqlDetails, $isFirstCall = null, $configKeys = null, $flag = null)
-    {
+    private function _getSqlAndParams(
+        &$sqlDetails,
+        $isFirstCall = null,
+        $configKeys = null,
+        $flag = null
+    ): array {
         $sql = $sqlDetails['__QUERY__'];
         $sqlParams = [];
         $paramKeys = [];
@@ -153,15 +194,21 @@ trait AppTrait
         $row = [];
 
         // Check __SET__
-        if (isset($sqlDetails['__SET__']) && count($sqlDetails['__SET__']) !== 0) {
-            list($params, $errors) = $this->getSqlParams($sqlDetails['__SET__']);
+        if (isset($sqlDetails['__SET__'])
+            && count(value: $sqlDetails['__SET__']) !== 0
+        ) {
+            [$params, $errors] = $this->_getSqlParams($sqlDetails['__SET__']);
             if (empty($errors)) {
                 if (!empty($params)) {
-                    // __SET__ not compulsary in query
-                    $found = strpos($sql, '__SET__') !== false;
+                    // __SET__ not compulsory in query
+                    $found = strpos(haystack: $sql, needle: '__SET__') !== false;
                     $__SET__ = [];
                     foreach ($params as $param => &$v) {
-                        $param = str_replace(['`', ' '], '', $param);
+                        $param = str_replace(
+                            search: ['`', ' '],
+                            replace: '',
+                            subject: $param
+                        );
                         $paramKeys[] = $param;
                         if ($found) {
                             $__SET__[] = "`{$param}` = :{$param}";
@@ -170,24 +217,38 @@ trait AppTrait
                         $row[$param] = $v;
                     }
                     if ($found) {
-                        $sql = str_replace('__SET__', implode(', ', $__SET__), $sql);
+                        $sql = str_replace(
+                            search: '__SET__',
+                            replace: implode(separator: ', ', array: $__SET__),
+                            subject: $sql
+                        );
                     }
                 }
             }
         }
 
         // Check __WHERE__
-        if (empty($errors) && isset($sqlDetails['__WHERE__']) && count($sqlDetails['__WHERE__']) !== 0) {
-            list($sqlWhereParams, $werrors) = $this->getSqlParams($sqlDetails['__WHERE__']);
-            if (empty($werrors)) {
-                if(!empty($sqlWhereParams)) {
-                    // __WHERE__ not compulsary in query
-                    $wfound = strpos($sql, '__WHERE__') !== false;
+        if (empty($errors)
+            && isset($sqlDetails['__WHERE__'])
+            && count(value: $sqlDetails['__WHERE__']) !== 0
+        ) {
+            $wErrors = [];
+            [$sqlWhereParams, $wErrors] = $this->_getSqlParams(
+                $sqlDetails['__WHERE__']
+            );
+            if (empty($wErrors)) {
+                if (!empty($sqlWhereParams)) {
+                    // __WHERE__ not compulsory in query
+                    $wfound = strpos(haystack: $sql, needle: '__WHERE__') !== false;
                     $__WHERE__ = [];
                     foreach ($sqlWhereParams as $param => &$v) {
-                        $wparam = $param = str_replace(['`', ' '], '', $param);
+                        $wparam = $param = str_replace(
+                            search: ['`', ' '],
+                            replace: '',
+                            subject: $param
+                        );
                         $i = 0;
-                        while (in_array($wparam, $paramKeys)) {
+                        while (in_array(needle: $wparam, haystack: $paramKeys)) {
                             $i++;
                             $wparam = "{$param}{$i}";
                         }
@@ -199,16 +260,20 @@ trait AppTrait
                         $row[$wparam] = $v;
                     }
                     if ($wfound) {
-                        $sql = str_replace('__WHERE__', implode(' AND ', $__WHERE__), $sql);
+                        $sql = str_replace(
+                            search: '__WHERE__',
+                            replace: implode(separator: ' AND ', array: $__WHERE__),
+                            subject: $sql
+                        );
                     }
                 }
             } else {
-                $errors = array_merge($errors, $werrors);
+                $errors = array_merge($errors, $wErrors);
             }
         }
 
         if (!empty($row)) {
-            $this->resetFetchData($dataPayloadType = 'sqlParams', $configKeys, $row);
+            $this->_resetFetchData('sqlParams', $configKeys, $row);
         }
 
         return [$sql, $sqlParams, $errors];
@@ -218,10 +283,11 @@ trait AppTrait
      * Generates Params for statement to execute
      *
      * @param array $sqlConfig Config from file
+     *
      * @return array
      * @throws \Exception
      */
-    private function getSqlParams(&$sqlConfig)
+    private function _getSqlParams(&$sqlConfig): array
     {
         $sqlParams = [];
         $errors = [];
@@ -229,39 +295,46 @@ trait AppTrait
         // Collect param values as per config respectively
         foreach ($sqlConfig as $config) {
             $var = $config['column'];
-            $dataPayloadType = $config['fetchFrom'];
-            $dataPayloadTypeKey = $config['fetchFromValue'];
-            if ($dataPayloadType === 'function') {
-                $function = $dataPayloadTypeKey;
-                $value = $function($this->c->httpRequest->session);
+            $fetchFrom = $config['fetchFrom'];
+            $fKey = $config['fetchFromValue'];
+            if ($fetchFrom === 'function') {
+                $function = $fKey;
+                $value = $function($this->_c->req->sess);
                 $sqlParams[$var] = $value;
                 continue;
-            } else if (in_array($dataPayloadType, ['sqlResults', 'sqlParams', 'sqlPayload'])) {
-                $dataPayloadTypeKeys = explode(':',$dataPayloadTypeKey);
-                $value = $this->c->httpRequest->session[$dataPayloadType];
-                foreach($dataPayloadTypeKeys as $key) {
+            } elseif (in_array(
+                needle: $fetchFrom,
+                haystack: ['sqlResults', 'sqlParams', 'sqlPayload']
+            )
+            ) {
+                $fetchFromKeys = explode(separator: ':', string: $fKey);
+                $value = $this->_c->req->sess[$fetchFrom];
+                foreach ($fetchFromKeys as $key) {
                     if (!isset($value[$key])) {
-                        throw new \Exception('Invalid hierarchy:  Missing hierarchy data', HttpStatus::$InternalServerError);
+                        throw new \Exception(
+                            message: 'Invalid hierarchy:  Missing hierarchy data',
+                            code: HttpStatus::$InternalServerError
+                        );
                     }
                     $value = $value[$key];
                 }
                 $sqlParams[$var] = $value;
                 continue;
-            } else if ($dataPayloadType === 'custom') {
-                $value = $dataPayloadTypeKey;
+            } elseif ($fetchFrom === 'custom') {
+                $value = $fKey;
                 $sqlParams[$var] = $value;
                 continue;
-            } else if (isset($this->c->httpRequest->session[$dataPayloadType][$dataPayloadTypeKey])) {
+            } elseif (isset($this->_c->req->sess[$fetchFrom][$fKey])) {
                 $sqlParams[$var] = DatabaseDataTypes::validateDataType(
-                    $this->c->httpRequest->session[$dataPayloadType][$dataPayloadTypeKey],
-                    $this->c->httpRequest->session['required'][$dataPayloadType][$dataPayloadTypeKey]
+                    data: $this->_c->req->sess[$fetchFrom][$fKey], 
+                    dataType: $this->_c->req->sess['necessary'][$fetchFrom][$fKey]
                 );
                 continue;
-            } else if ($this->c->httpRequest->session['required'][$dataPayloadType][$dataPayloadTypeKey]['require']) {
-                $errors[] = "Missing required field of '{$dataPayloadType}' for '{$dataPayloadTypeKey}'";
+            } elseif ($this->_c->req->sess['necessary'][$fetchFrom][$fKey]['nec']) {
+                $errors[] = "Missing necessary field '{$fetchFrom}' for '{$fKey}'";
                 continue;
             } else {
-                $errors[] = "Invalid configuration of '{$dataPayloadType}' for '{$dataPayloadTypeKey}'";
+                $errors[] = "Invalid configuration of '{$fetchFrom}' for '{$fKey}'";
                 continue;
             }
         }
@@ -270,12 +343,13 @@ trait AppTrait
     }
 
     /**
-     * Function to find wether privider array is associative/simple array
+     * Function to find wether provided array is associative/simple array
      *
      * @param array $arr Array to search for associative/simple array
-     * @return boolean
+     *
+     * @return bool
      */
-    private function isAssoc($arr)
+    private function _isAssoc($arr): bool
     {
         $assoc = false;
 
@@ -295,74 +369,97 @@ trait AppTrait
      *
      * @param array  $sqlConfig Config from file
      * @param string $keyword   useHierarchy/useResultSet
-     * @return boolean
+     *
+     * @return bool
      */
-    private function getUseHierarchy(&$sqlConfig, $keyword)
+    private function _getUseHierarchy(&$sqlConfig, $keyword = ''): bool
     {
-        $flag = false;
         if (isset($sqlConfig[$keyword]) && $sqlConfig[$keyword] === true) {
-            $flag = true;
+            return true;
         }
-        return $flag;
+        if (isset($sqlConfig['useHierarchy']) 
+            && $sqlConfig['useHierarchy'] === true
+        ) {
+            return true;
+        }
+        if (isset($sqlConfig['useResultSet']) 
+            && $sqlConfig['useResultSet'] === true
+        ) {
+            return true;
+        }
+        return false;
     }
 
     /**
      * Return config par recursively
      *
-     * @param array   $sqlConfig   Config from file
-     * @param array   $isFirstCall Flag to check if this is first request in a recursive call
-     * @param boolean $flag        useHierarchy/useResultSet flag
+     * @param array $sqlConfig   Config from file
+     * @param bool  $isFirstCall Flag to check if this is first request
+     * @param bool  $flag        useHierarchy/useResultSet flag
+     *
      * @return array
      * @throws \Exception
      */
-    private function getConfigParams(&$sqlConfig, $isFirstCall, $flag)
+    private function _getConfigParams(&$sqlConfig, $isFirstCall, $flag): array
     {
         $result = [];
 
         if (isset($sqlConfig['countQuery'])) {
             $sqlConfig['__CONFIG__'][] = [
-                'column' => 'page',
-                'fetchFrom' => 'payload',
-                'fetchFromValue' => 'page',
-                'dataType' => DatabaseDataTypes::$INT,
-                'required' => Constants::$REQUIRED
+                'column' => 'page', 
+                'fetchFrom' => 'payload', 
+                'fetchFromValue' => 'page', 
+                'dataType' => DatabaseDataTypes::$INT, 
+                'necessary' => Constants::$REQUIRED
             ];
             $sqlConfig['__CONFIG__'][] = [
-                'column' => 'perpage',
-                'fetchFrom' => 'payload',
-                'fetchFromValue' => 'perpage',
+                'column' => 'perPage', 
+                'fetchFrom' => 'payload', 
+                'fetchFromValue' => 'perPage', 
                 'dataType' => DatabaseDataTypes::$INT
             ];
 
             foreach ($sqlConfig['__CONFIG__'] as $config) {
-                $dataPayloadType = $config['fetchFrom'];
-                $dataPayloadTypeKey = $config['fetchFromValue'];
-                $dataType = isset($config['dataType']) ? $config['dataType'] : DatabaseDataTypes::$Default;
-                $require = isset($config['required']) ? $config['required'] : false;
+                $fetchFrom = $config['fetchFrom'];
+                $fKey = $config['fetchFromValue'];
+                $dataType = isset($config['dataType'])
+                    ? $config['dataType'] : DatabaseDataTypes::$Default;
+                $require = isset($config['necessary'])
+                    ? $config['necessary'] : false;
 
-                if (!in_array($dataPayloadType, ['payload'])) continue;
-                if (isset($result[$dataPayloadTypeKey]) && $result[$dataPayloadTypeKey]['dataMode'] === 'Required') {
+                if ($fetchFrom !== 'payload') {
+                    continue;
+                }
+                if (isset($result[$fKey])
+                    && $result[$fKey]['dataMode'] === 'Required'
+                ) {
                     continue;
                 }
                 $dataType['dataMode'] = $require ? 'Required' : 'Optional';
-                $result[$dataPayloadTypeKey] = $dataType;
+                $result[$fKey] = $dataType;
             }
         }
 
         foreach (['__SET__', '__WHERE__'] as $options) {
             if (isset($sqlConfig[$options])) {
                 foreach ($sqlConfig[$options] as $config) {
-                    $dataPayloadType = $config['fetchFrom'];
-                    $dataPayloadTypeKey = $config['fetchFromValue'];
-                    $dataType = isset($config['dataType']) ? $config['dataType'] : DatabaseDataTypes::$Default;
-                    $require = isset($config['required']) ? $config['required'] : false;
+                    $fetchFrom = $config['fetchFrom'];
+                    $fKey = $config['fetchFromValue'];
+                    $dataType = isset($config['dataType']) ?
+                        $config['dataType'] : DatabaseDataTypes::$Default;
+                    $require = isset($config['necessary']) ?
+                        $config['necessary'] : false;
 
-                    if (!in_array($dataPayloadType, ['payload'])) continue;
-                    if (isset($result[$dataPayloadTypeKey]) && $result[$dataPayloadTypeKey]['dataMode'] === 'Required') {
+                    if ($fetchFrom !== 'payload') {
+                        continue;
+                    }
+                    if (isset($result[$fKey])
+                        && $result[$fKey]['dataMode'] === 'Required'
+                    ) {
                         continue;
                     }
                     $dataType['dataMode'] = $require ? 'Required' : 'Optional';
-                    $result[$dataPayloadTypeKey] = $dataType;
+                    $result[$fKey] = $dataType;
                 }
             }
         }
@@ -371,31 +468,42 @@ trait AppTrait
         $foundHierarchy = false;
         if (isset($sqlConfig['__WHERE__'])) {
             foreach ($sqlConfig['__WHERE__'] as $var => $payload) {
-                $dataPayloadType = $payload[0];
-                $dataPayloadTypeKey = $payload[1];
-                if (in_array($dataPayloadType, ['sqlResults', 'sqlParams', 'sqlPayload'])) {
+                $fetchFrom = $payload[0];
+                $fKey = $payload[1];
+                if (in_array(
+                    needle: $fetchFrom,
+                    haystack: ['sqlResults', 'sqlParams', 'sqlPayload']
+                )
+                ) {
                     $foundHierarchy = true;
                     break;
                 }
             }
             if (!$isFirstCall && $flag && !$foundHierarchy) {
-                throw new \Exception('Invalid config: missing ' . $dataPayloadType, HttpStatus::$InternalServerError);
+                throw new \Exception(
+                    message: 'Invalid config: missing ' . $fetchFrom,
+                    code: HttpStatus::$InternalServerError
+                );
             }
         }
 
         // Check in subQuery
         if (isset($sqlConfig['__SUB-QUERY__'])) {
             foreach ($sqlConfig['__SUB-QUERY__'] as $module => &$_sqlConfig) {
-                $_flag = ($flag) ?? $this->getUseHierarchy($_sqlConfig);
-                $sub_requiredFields = $this->getConfigParams($_sqlConfig, $isGetConfigParamsFirstCall = false, $_flag);
+                $_flag = ($flag) ?? $this->_getUseHierarchy($_sqlConfig);
+                $sub_necessaryFields = $this->_getConfigParams(
+                    $_sqlConfig,
+                    false,
+                    $_flag
+                );
                 if ($flag) {
-                    if (!empty($sub_requiredFields)) {
-                        $result[$module] = $sub_requiredFields;
+                    if (!empty($sub_necessaryFields)) {
+                        $result[$module] = $sub_necessaryFields;
                     }
                 } else {
-                    foreach ($sub_requiredFields as $dataPayloadTypeKey => $field) {
-                        if (!isset($result[$dataPayloadTypeKey])) {
-                            $result[$dataPayloadTypeKey] = $field;
+                    foreach ($sub_necessaryFields as $fKey => $field) {
+                        if (!isset($result[$fKey])) {
+                            $result[$fKey] = $field;
                         }
                     }
                 }
@@ -408,18 +516,19 @@ trait AppTrait
     /**
      * Function to reset data for module key wise
      *
-     * @param string  $dataPayloadType sqlResults / sqlParams / sqlPayload
-     * @param array   $keys            Module Keys in recursion
-     * @param array   $row             Row data fetched from DB
+     * @param string $fetchFrom sqlResults / sqlParams / sqlPayload
+     * @param array  $keys      Module Keys in recursion
+     * @param array  $row       Row data fetched from DB
+     *
      * @return void
      */
-    private function resetFetchData($dataPayloadType, $keys, $row)
+    private function _resetFetchData($fetchFrom, $keys, $row): void
     {
-        if (empty($keys) || count($keys) === 0) {
-            $this->c->httpRequest->session[$dataPayloadType] = [];
-            $this->c->httpRequest->session[$dataPayloadType]['return'] = [];
+        if (empty($keys) || count(value: $keys) === 0) {
+            $this->_c->req->sess[$fetchFrom] = [];
+            $this->_c->req->sess[$fetchFrom]['return'] = [];
         }
-        $httpReq = &$this->c->httpRequest->session[$dataPayloadType]['return'];
+        $httpReq = &$this->_c->req->sess[$fetchFrom]['return'];
         if (!empty($keys)) {
             foreach ($keys as $k) {
                 if (!isset($httpReq[$k])) {
@@ -435,33 +544,39 @@ trait AppTrait
      * Rate Limiting request if configured for Route Queries
      *
      * @param array $sqlConfig Config from file
+     *
      * @return void
      * @throws \Exception
      */
-    private function rateLimitRoute(&$sqlConfig)
+    private function _rateLimitRoute(&$sqlConfig): void
     {
-        if (
-            isset($sqlConfig['rateLimiterMaxRequests'])
+        if (isset($sqlConfig['rateLimiterMaxRequests'])
             && isset($sqlConfig['rateLimiterSecondsWindow'])
         ) {
             $payloadSignature = [
-                'IP' => $this->c->httpRequest->REMOTE_ADDR,
-                'clientId' => $this->c->httpRequest->clientId,
-                'groupId' => (!is_null($this->c->httpRequest->groupId) ? $this->c->httpRequest->groupId : 0),
-                'userId' => (!is_null($this->c->httpRequest->userId) ? $this->c->httpRequest->userId : 0),
-                'httpMethod' => $this->c->httpRequest->REQUEST_METHOD,
-                'Route' => $this->c->httpRequest->ROUTE,
+                'IP' => $this->_c->req->REMOTE_ADDR, 
+                'clientId' => $this->_c->req->clientId, 
+                'groupId' => (!is_null(value: $this->_c->req->groupId) ?
+                    $this->_c->req->groupId : 0), 
+                'userId' => (!is_null(value: $this->_c->req->userId) ?
+                    $this->_c->req->userId : 0), 
+                'httpMethod' => $this->_c->req->REQUEST_METHOD, 
+                'Route' => $this->_c->req->ROUTE, 
             ];
-            // $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
-            $hash = json_encode($payloadSignature);
-            $hashKey = md5($hash);
+            // $hash = hash_hmac(
+            // 'sha256', 
+            // json_encode($payloadSignature), 
+            // getenv(name: 'IdempotentSecret')
+            // );
+            $hash = json_encode(value: $payloadSignature);
+            $hashKey = md5(string: $hash);
 
             // @throws \Exception
-            $rateLimitChecked = $this->c->httpRequest->checkRateLimit(
-                $RateLimiterRoutePrefix = getenv('RateLimiterRoutePrefix'),
-                $RateLimiterMaxRequests = $sqlConfig['rateLimiterMaxRequests'],
-                $RateLimiterSecondsWindow = $sqlConfig['rateLimiterSecondsWindow'],
-                $key = $hashKey
+            $rateLimitChecked = $this->_c->req->checkRateLimit(
+                getenv(name: 'RateLimiterRoutePrefix'), 
+                $sqlConfig['rateLimiterMaxRequests'], 
+                $sqlConfig['rateLimiterSecondsWindow'], 
+                $hashKey
             );
         }
     }
@@ -471,36 +586,44 @@ trait AppTrait
      *
      * @param array $sqlConfig       Config from file
      * @param array $_payloadIndexes Payload Indexes
+     *
      * @return array
      */
-    private function checkIdempotent(&$sqlConfig, $_payloadIndexes)
+    private function _checkIdempotent(&$sqlConfig, $_payloadIndexes): array
     {
         $idempotentWindow = 0;
         $hashKey = null;
         $hashJson = null;
-        if (
-            isset($sqlConfig['idempotentWindow'])
-            && is_numeric($sqlConfig['idempotentWindow'])
+        if (isset($sqlConfig['idempotentWindow'])
+            && is_numeric(value: $sqlConfig['idempotentWindow'])
             && $sqlConfig['idempotentWindow'] > 0
         ) {
             $idempotentWindow = (int)$sqlConfig['idempotentWindow'];
             if ($idempotentWindow) {
                 $payloadSignature = [
-                    'IdempotentSecret' => getenv('IdempotentSecret'),
-                    'idempotentWindow' => $idempotentWindow,
-                    'IP' => $this->c->httpRequest->REMOTE_ADDR,
-                    'clientId' => $this->c->httpRequest->clientId,
-                    'groupId' => (!is_null($this->c->httpRequest->groupId) ? $this->c->httpRequest->groupId : 0),
-                    'userId' => (!is_null($this->c->httpRequest->userId) ? $this->c->httpRequest->userId : 0),
-                    'httpMethod' => $this->c->httpRequest->REQUEST_METHOD,
-                    'Route' => $this->c->httpRequest->ROUTE,
-                    'payload' => $this->c->httpRequest->dataDecode->get(implode(':', $_payloadIndexes))
+                    'IdempotentSecret' => getenv(name: 'IdempotentSecret'), 
+                    'idempotentWindow' => $idempotentWindow, 
+                    'IP' => $this->_c->req->REMOTE_ADDR, 
+                    'clientId' => $this->_c->req->clientId, 
+                    'groupId' => (!is_null(value: $this->_c->req->groupId) ?
+                        $this->_c->req->groupId : 0), 
+                    'userId' => (!is_null(value: $this->_c->req->userId) ?
+                        $this->_c->req->userId : 0), 
+                    'httpMethod' => $this->_c->req->REQUEST_METHOD, 
+                    'Route' => $this->_c->req->ROUTE, 
+                    'payload' => $this->_c->req->dataDecode->get(
+                        implode(separator: ':', array: $_payloadIndexes)
+                    )
                 ];
-                // $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
-                $hash = json_encode($payloadSignature);
-                $hashKey = md5($hash);
-                if ($this->c->httpRequest->cache->cacheExists($hashKey)) {
-                    $hashJson = str_replace('JSON', $this->c->httpRequest->cache->getCache($hashKey), '{"Idempotent": JSON, "Status": 200}');
+
+                $hash = json_encode(value: $payloadSignature);
+                $hashKey = md5(string: $hash);
+                if ($this->_c->req->cache->cacheExists(key: $hashKey)) {
+                    $hashJson = str_replace(
+                        search: 'JSON', 
+                        replace: $this->_c->req->cache->getCache(key: $hashKey), 
+                        subject: '{"Idempotent": JSON, "Status": 200}'
+                    );
                 }
             }
         }
@@ -511,40 +634,44 @@ trait AppTrait
     /**
      * Lag Response
      *
-     * @param array $sqlConfig    Config from file
+     * @param array $sqlConfig Config from file
+     *
      * @return void
      */
-    private function lagResponse($sqlConfig)
+    private function _lagResponse($sqlConfig): void
     {
-        if (
-            isset($sqlConfig['responseLag'])
+        if (isset($sqlConfig['responseLag'])
             && isset($sqlConfig['responseLag'])
         ) {
             $payloadSignature = [
-                'IP' => $this->c->httpRequest->REMOTE_ADDR,
-                'clientId' => $this->c->httpRequest->clientId,
-                'groupId' => (!is_null($this->c->httpRequest->groupId) ? $this->c->httpRequest->groupId : 0),
-                'userId' => (!is_null($this->c->httpRequest->userId) ? $this->c->httpRequest->userId : 0),
-                'httpMethod' => $this->c->httpRequest->REQUEST_METHOD,
-                'Route' => $this->c->httpRequest->ROUTE,
+                'IP' => $this->_c->req->REMOTE_ADDR, 
+                'clientId' => $this->_c->req->clientId, 
+                'groupId' => (!is_null(value: $this->_c->req->groupId) ?
+                    $this->_c->req->groupId : 0), 
+                'userId' => (!is_null(value: $this->_c->req->userId) ?
+                    $this->_c->req->userId : 0), 
+                'httpMethod' => $this->_c->req->REQUEST_METHOD, 
+                'Route' => $this->_c->req->ROUTE, 
             ];
 
-            // $hash = hash_hmac('sha256', json_encode($payloadSignature), getenv('IdempotentSecret'));
-            $hash = json_encode($payloadSignature);
-            $hashKey = 'LAG:' . md5($hash);
+            $hash = json_encode(value: $payloadSignature);
+            $hashKey = 'LAG:' . md5(string: $hash);
 
-            // @throws \Exception
-            if ($this->c->httpRequest->cache->cacheExists($hashKey)) {
-                $noOfRequests = $this->c->httpRequest->cache->getCache($hashKey);
+            if ($this->_c->req->cache->cacheExists(key: $hashKey)) {
+                $noOfRequests = $this->_c->req->cache->getCache(key: $hashKey);
             } else {
                 $noOfRequests = 0;
             }
 
-            $this->c->httpRequest->cache->setCache($hashKey, ++$noOfRequests, $expire = 3600);
+            $this->_c->req->cache->setCache(
+                key: $hashKey,
+                value: ++$noOfRequests,
+                expire: 3600
+            );
 
             $lag = 0;
             $responseLag = &$sqlConfig['responseLag'];
-            if (is_array($responseLag)) {
+            if (is_array(value: $responseLag)) {
                 foreach ($responseLag as $start => $newLag) {
                     if ($noOfRequests > $start) {
                         $lag = $newLag;
@@ -553,7 +680,7 @@ trait AppTrait
             }
 
             if ($lag > 0) {
-                sleep($lag);
+                sleep(seconds: $lag);
             }
         }
     }

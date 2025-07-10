@@ -1,20 +1,32 @@
 <?php
+/**
+ * Handling Database via pgsql
+ * php version 8.3
+ *
+ * @category  Database
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App\Servers\Database;
 
 use Microservices\App\HttpStatus;
 use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
- * Loading database server
+ * PgSQL Database
+ * php version 8.3
  *
- * This class is built to handle MySql database operation
- *
- * @category   Database - PgSql
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Database_PgSQL
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class PgSql extends AbstractDatabase
 {
@@ -23,28 +35,28 @@ class PgSql extends AbstractDatabase
      *
      * @var null|string
      */
-    private $hostname = null;
+    private $_hostname = null;
 
     /**
      * Database port
      *
      * @var null|string
      */
-    private $port = null;
+    private $_port = null;
 
     /**
      * Database username
      *
      * @var null|string
      */
-    private $username = null;
+    private $_username = null;
 
     /**
      * Database password
      *
      * @var null|string
      */
-    private $password = null;
+    private $_password = null;
 
     /**
      * Database database
@@ -58,30 +70,30 @@ class PgSql extends AbstractDatabase
      *
      * @var null|\PgSql\Connection
      */
-    private $db = null;
+    private $_db = null;
 
     /**
      * Executed query statement
      *
      * @var null|\PgSql\Result
      */
-    private $stmt = null;
+    private $_stmt = null;
 
     /**
      * Transaction started flag
      *
-     * @var boolean
+     * @var bool
      */
     public $beganTransaction = false;
 
     /**
      * Database constructor
      *
-     * @param string $hostname  Hostname .env string
-     * @param string $username  Username .env string
-     * @param string $password  Password .env string
-     * @param string $database  Database .env string
-     * @return void
+     * @param string      $hostname Hostname .env string
+     * @param string      $port     Port .env string
+     * @param string      $username Username .env string
+     * @param string      $password Password .env string
+     * @param null|string $database Database .env string
      */
     public function __construct(
         $hostname,
@@ -89,14 +101,13 @@ class PgSql extends AbstractDatabase
         $username,
         $password,
         $database = null
-    )
-    {
-        $this->hostname = $hostname;
-        $this->port = $port;
-        $this->username = $username;
-        $this->password = $password;
+    ) {
+        $this->_hostname = $hostname;
+        $this->_port = $port;
+        $this->_username = $username;
+        $this->_password = $password;
 
-        if (!is_null($database)) {
+        if (!is_null(value: $database)) {
             $this->database = $database;
         }
     }
@@ -106,18 +117,25 @@ class PgSql extends AbstractDatabase
      *
      * @return void
      */
-    public function connect()
+    public function connect(): void
     {
-        if (!is_null($this->db)) return;
+        if (!is_null(value: $this->_db)) {
+            return;
+        }
 
         try {
-            $this->db = pg_connect("host={$this->hostname} port={$this->port} user={$this->username} password={$this->password}");
+            $this->_db = pg_connect(
+                "host={$this->_hostname} \
+                port={$this->_port} \
+                user={$this->_username} \
+                password={$this->_password}"
+            );
 
-            if (!is_null($this->database)) {
+            if (!is_null(value: $this->database)) {
                 $this->useDatabase();
             }
         } catch (\Exception $e) {
-            $this->log($e);
+            $this->_log(e: $e);
         }
     }
 
@@ -126,17 +144,17 @@ class PgSql extends AbstractDatabase
      *
      * @return void
      */
-    public function useDatabase()
+    public function useDatabase(): void
     {
         $this->connect();
 
         try {
-            if (!is_null($this->database)) {
-                pg_query($this->db, "set schema '{$this->database}';");
+            if (!is_null(value: $this->database)) {
+                pg_query($this->_db, "set schema '{$this->database}';");
             }
         } catch (\Exception $e) {
             $this->rollback();
-            $this->log($e);
+            $this->_log(e: $e);
         }
     }
 
@@ -145,15 +163,15 @@ class PgSql extends AbstractDatabase
      *
      * @return void
      */
-    public function begin()
+    public function begin(): void
     {
         $this->useDatabase();
 
         $this->beganTransaction = true;
         try {
-            pg_query($this->db, 'BEGIN');
+            pg_query($this->_db, 'BEGIN');
         } catch (\Exception $e) {
-            $this->log($e);
+            $this->_log(e: $e);
         }
     }
 
@@ -162,15 +180,15 @@ class PgSql extends AbstractDatabase
      *
      * @return void
      */
-    public function commit()
+    public function commit(): void
     {
         try {
             if ($this->beganTransaction) {
                 $this->beganTransaction = false;
-                pg_query($this->db, 'COMMIT');
+                pg_query($this->_db, 'COMMIT');
             }
         } catch (\Exception $e) {
-            $this->log($e);
+            $this->_log(e: $e);
         }
     }
 
@@ -179,147 +197,152 @@ class PgSql extends AbstractDatabase
      *
      * @return void
      */
-    public function rollback()
+    public function rollback(): void
     {
         try {
             if ($this->beganTransaction) {
                 $this->beganTransaction = false;
-                pg_query($this->db, 'ROLLBACK');
+                pg_query($this->_db, 'ROLLBACK');
             }
         } catch (\Exception $e) {
-            $this->log($e);
+            $this->_log(e: $e);
         }
     }
 
     /**
      * Affected Rows by PDO
      *
-     * @return integer
+     * @return bool|int
      */
-    public function affectedRows()
+    public function affectedRows(): bool|int
     {
         try {
-            if ($this->stmt) {
-                return pg_affected_rows($this->stmt);
-            } else {
-                return false;
+            if ($this->_stmt) {
+                return (int)pg_affected_rows($this->_stmt);
             }
         } catch (\Exception $e) {
             if ($this->beganTransaction) {
                 $this->rollback();
             }
-            $this->log($e);
+            $this->_log(e: $e);
         }
+        return false;
     }
 
     /**
      * Last Insert Id by PDO
      *
-     * @return integer
+     * @return bool|int
      */
-    public function lastInsertId()
+    public function lastInsertId(): bool|int
     {
         try {
-            $stmt = $this->execDbQuery('SELECT lastval()');
-            if ($stmt) {
-                $row = pg_fetch_row($stmt);
+            $this->execDbQuery(sql: 'SELECT lastval()');
+            $row = pg_fetch_row();
+            if ($row[0]) {
                 return $row[0];
             }
-            return false;
         } catch (\Exception $e) {
             if ($this->beganTransaction) {
                 $this->rollback();
             }
-            $this->log($e);
+            $this->_log(e: $e);
         }
+        return false;
     }
 
     /**
-     * Execute parameterised query
+     * Execute Parameterized query
      *
-     * @param string $sql  Parameterised query
-     * @param array  $params Parameterised query params
+     * @param string $sql     Parameterized query
+     * @param array  $params  Parameterized query params
+     * @param bool   $pushPop Push Pop result set stmt
+     *
      * @return void
      */
-    public function execDbQuery($sql, $params = [])
+    public function execDbQuery($sql, $params = [], $pushPop = false): void
     {
         $this->useDatabase();
 
         try {
-            pg_prepare($this->db, 'pg_query', $sql);
-            pg_execute($this->db, 'pg_query', $params);
+            pg_prepare($this->_db, 'pg_query', $sql);
+            pg_execute($this->_db, 'pg_query', $params);
         } catch (\Exception $e) {
             if ($this->beganTransaction) {
                 $this->rollback();
             }
-            $this->log($e);
+            $this->_log(e: $e);
         }
     }
 
     /**
      * Fetch row from statement
      *
-     * @return array
+     * @return mixed
      */
-    public function fetch()
+    public function fetch(): mixed
     {
         try {
-            if ($this->stmt) {
-                return pg_fetch_assoc($this->stmt);
-            } else {
-                return false;
+            if ($this->_stmt) {
+                return pg_fetch_assoc($this->_stmt);
             }
         } catch (\Exception $e) {
-            $this->log($e);
+            $this->_log(e: $e);
         }
+        return false;
     }
 
     /**
      * Fetch all rows from statement
      *
-     * @return array
+     * @return array|bool
      */
-    public function fetchAll()
+    public function fetchAll(): array|bool
     {
         try {
-            if ($this->stmt) {
-                return pg_fetch_all($this->stmt);
-            } else {
-                return false;
+            if ($this->_stmt) {
+                return pg_fetch_all($this->_stmt);
             }
         } catch (\Exception $e) {
-            $this->log($e);
+            $this->_log(e: $e);
         }
+        return false;
     }
 
     /**
      * Close statement cursor
      *
+     * @param bool $pushPop Push Pop result set stmt
+     * 
      * @return void
      */
-    public function closeCursor()
+    public function closeCursor($pushPop = false): void
     {
         try {
-            if ($this->stmt) {
-                pg_free_result($this->stmt);
+            if ($this->_stmt) {
+                pg_free_result($this->_stmt);
             }
-            if ($this->db) {
-                pg_flush($this->db);
+            if ($this->_db) {
+                pg_flush($this->_db);
             }
         } catch (\Exception $e) {
-            $this->log($e);
+            $this->_log(e: $e);
         }
     }
 
     /**
      * Log error
      *
-     * @param \Exception $e
-     * @return void
+     * @param \Exception $e Exception object
+     *
+     * @return never
      * @throws \Exception
      */
-    private function log($e)
+    private function _log($e): never
     {
-        throw new \Exception(pg_last_error($this->db), HttpStatus::$InternalServerError);
+        throw new \Exception(
+            message: pg_last_error($this->_db),
+            code: HttpStatus::$InternalServerError
+        );
     }
 }

@@ -1,25 +1,33 @@
 <?php
+/**
+ * Handling Cache via pgsql
+ * php version 8.3
+ *
+ * @category  Cache
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App\Servers\Cache;
 
-use Microservices\App\Constants;
-use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\Servers\Cache\AbstractCache;
 use Microservices\App\Servers\Database\PgSql as DB_PgSQL;
 
 /**
- * Loading MySql server
+ * Caching via pgsql
+ * php version 8.3
  *
- * This class is built to handle cache operation
- *
- * @category   Cache - PgSql
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @license    http://www.php.net/license/3_01.txt  PHP License 3.01
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Cache_PgSQL
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class PgSql extends AbstractCache
 {
@@ -28,75 +36,69 @@ class PgSql extends AbstractCache
      *
      * @var null|string
      */
-    private $hostname = null;
+    private $_hostname = null;
 
     /**
      * Cache port
      *
-     * @var null|integer
+     * @var null|int
      */
-    private $port = null;
+    private $_port = null;
 
     /**
      * Cache password
      *
      * @var null|string
      */
-    private $username = null;
+    private $_username = null;
 
     /**
      * Cache password
      *
      * @var null|string
      */
-    private $password = null;
+    private $_password = null;
 
     /**
      * Cache database
      *
      * @var null|string
      */
-    private $database = null;
+    private $_database = null;
 
     /**
      * Cache connection
      *
      * @var null|Pg_MySql
      */
-    private $cache = null;
+    private $_cache = null;
 
     /**
      * Current timestamp
      *
-     * @var null|integer
+     * @var null|int
      */
-    private $ts = null;
+    private $_ts = null;
 
     /**
      * Cache connection
      *
-     * @param string $hostname  Hostname .env string
-     * @param string $port      Port .env string
-     * @param string $password  Password .env string
-     * @param string $database  Database .env string
-     * @return void
+     * @param string $hostname Hostname .env string
+     * @param string $port     Port .env string
+     * @param string $username Username .env string
+     * @param string $password Password .env string
+     * @param string $database Database .env string
      */
-    public function __construct(
-        $hostname,
-        $port,
-        $username,
-        $password,
-        $database
-    )
+    public function __construct($hostname, $port, $username, $password, $database)
     {
-        $this->ts = time();
-        $this->hostname = $hostname;
-        $this->port = $port;
-        $this->username = $username;
-        $this->password = $password;
+        $this->_ts = time();
+        $this->_hostname = $hostname;
+        $this->_port = $port;
+        $this->_username = $username;
+        $this->_password = $password;
 
-        if (!is_null($database)) {
-            $this->database = $database;
+        if (!is_null(value: $database)) {
+            $this->_database = $database;
         }
     }
 
@@ -106,19 +108,25 @@ class PgSql extends AbstractCache
      * @return void
      * @throws \Exception
      */
-    public function connect()
+    public function connect(): void
     {
-        if (!is_null($this->cache)) return;
+        if (!is_null(value: $this->_cache)) {
+            return;
+        }
+
         try {
-            $this->cache = new DB_PgSql(
-                $this->hostname,
-                $this->port,
-                $this->username,
-                $this->password,
-                $this->database
+            $this->_cache = new DB_PgSql(
+                hostname: $this->_hostname, 
+                port: $this->_port, 
+                username: $this->_username, 
+                password: $this->_password, 
+                database: $this->_database
             );
         } catch (\Exception $e) {
-            throw new \Exception($e->getMessage(), HttpStatus::$InternalServerError);
+            throw new \Exception(
+                message: $e->getMessage(),
+                code: HttpStatus::$InternalServerError
+            );
         }
     }
 
@@ -127,11 +135,11 @@ class PgSql extends AbstractCache
      *
      * @return void
      */
-    public function useDatabase()
+    public function useDatabase(): void
     {
         $this->connect();
-        if (!is_null($this->database)) {
-            $this->cache->useDatabase();
+        if (!is_null(value: $this->_database)) {
+            $this->_cache->useDatabase();
         }
     }
 
@@ -139,12 +147,13 @@ class PgSql extends AbstractCache
      * Checks if cache key exist
      *
      * @param string $key Cache key
-     * @return boolean
+     *
+     * @return bool
      */
-    public function cacheExists($key)
+    public function cacheExists($key): bool
     {
         $this->useDatabase();
-        $keyDetails = $this->getKeyDetails($key);
+        $keyDetails = $this->getKeyDetails(key: $key);
         return $keyDetails['count'] === 1;
     }
 
@@ -152,20 +161,25 @@ class PgSql extends AbstractCache
      * Get cache on basis of key
      *
      * @param string $key Cache key
-     * @return string
+     *
+     * @return mixed
      */
-    public function getCache($key)
+    public function getCache($key): mixed
     {
         $this->useDatabase();
 
-        $keyDetails = $this->getKeyDetails($key);
+        $keyDetails = $this->getKeyDetails(key: $key);
 
         if (isset($keyDetails['count']) && $keyDetails['count'] === 1) {
-            $sql = "SELECT `value` FROM `{$keyDetails['table']}` WHERE `key` = ? AND (`ts` = 0 OR `ts` > ?)";
-            $params = [$keyDetails['key'], $this->ts];
-            $this->cache->execDbQuery($sql, $params);
-            $row = $this->cache->fetch();
-            $this->cache->closeCursor();
+            $sql = "
+                SELECT `value` 
+                FROM `{$keyDetails['table']}` 
+                WHERE `key` = ? AND (`ts` = 0 OR `ts` > ?)
+            ";
+            $params = [$keyDetails['key'], $this->_ts];
+            $this->_cache->execDbQuery(sql: $sql, $params);
+            $row = $this->_cache->fetch();
+            $this->_cache->closeCursor();
             return $row['value'];
         } else {
             return false;
@@ -175,92 +189,108 @@ class PgSql extends AbstractCache
     /**
      * Set cache on basis of key
      *
-     * @param string  $key    Cache key
-     * @param string  $value  Cache value
-     * @param null|integer $expire Seconds to expire. Default 0 - doesnt expire
-     * @return integer
+     * @param string   $key    Cache key
+     * @param string   $value  Cache value
+     * @param null|int $expire Seconds to expire. Default 0 - doesn't expire
+     *
+     * @return void
      */
-    public function setCache($key, $value, $expire = null)
+    public function setCache($key, $value, $expire = null): void
     {
         $this->useDatabase();
 
-        $keyDetails = $this->getKeyDetails($key);
+        $keyDetails = $this->getKeyDetails(key: $key);
 
         if (isset($keyDetails['count']) && $keyDetails['count'] > 0) {
             $sql = "DELETE FROM `{$keyDetails['table']}` WHERE `key` = ?";
             $params = [$keyDetails['key']];
-            $this->cache->execDbQuery($sql, $params);
-            $this->cache->closeCursor();
+            $this->_cache->execDbQuery(sql: $sql, $params);
+            $this->_cache->closeCursor();
         }
 
-        $sql = "INSERT INTO `{$keyDetails['table']}` SET `value` = ?, `ts` = ?, `key` = ?";
-        if (is_null($expire)) {
+        $sql = "
+            INSERT INTO `{$keyDetails['table']}` 
+            SET `value` = ?, `ts` = ?, `key` = ?
+        ";
+        if (is_null(value: $expire)) {
             $params = [$value, 0, $keyDetails['key']];
         } else {
-            $params = [$value, $this->ts + $expire, $keyDetails['key']];
+            $params = [$value, $this->_ts + $expire, $keyDetails['key']];
         }
 
-        $this->cache->execDbQuery($sql, $params);
-        $this->cache->closeCursor();
+        $this->_cache->execDbQuery(sql: $sql, $params);
+        $this->_cache->closeCursor();
     }
 
     /**
      * Delete basis of key
      *
      * @param string $key Cache key
-     * @return integer
+     *
+     * @return void
      */
-    public function deleteCache($key)
+    public function deleteCache($key): void
     {
         $this->useDatabase();
 
-        $keyDetails = $this->getKeyDetails($key);
+        $keyDetails = $this->getKeyDetails(key: $key);
 
         if (isset($keyDetails['count']) && $keyDetails['count'] > 0) {
             $sql = "DELETE FROM `{$keyDetails['table']}` WHERE `key` = ?";
             $params = [$keyDetails['key']];
-            $this->cache->execDbQuery($sql, $params);
-            $this->cache->closeCursor();
+            $this->_cache->execDbQuery(sql: $sql, $params);
+            $this->_cache->closeCursor();
         }
     }
 
-    public function getKeyDetails($key)
+    /**
+     * Get Key Details
+     *
+     * @param string $key Cache key
+     *
+     * @return array
+     */
+    public function getKeyDetails($key): array
     {
-        $pos = strpos($key, ':');
-        $tableKey = substr($key, 0, $pos);
+        $pos = strpos(haystack: $key, needle: ':');
+        $tableKey = substr(string: $key, offset: 0, length: $pos);
 
         switch ($tableKey) {
-            case 'c':
-                $table = 'client';
-                break;
-            case 'cu':
-                $table = 'user';
-                break;
-            case 'g':
-                $table = 'group';
-                break;
-            case 'cidr':
-                $table = 'cidr';
-                break;
-            case 'ut':
-                $table = 'usertoken';
-                break;
-            case 't':
-                $table = 'token';
-                break;
+        case 'c':
+            $table = 'client';
+            break;
+        case 'cu':
+            $table = 'user';
+            break;
+        case 'g':
+            $table = 'group';
+            break;
+        case 'cidr':
+            $table = 'cidr';
+            break;
+        case 'ut':
+            $table = 'usertoken';
+            break;
+        case 't':
+            $table = 'token';
+            break;
         }
 
         $keyDetails = [
-            'table' => $table,
+            'table' => $table, 
             'key' => $key
         ];
 
-        $sql = "SELECT count(1) as `count` FROM `{$keyDetails['table']}` WHERE `key` = ? AND (`ts` = 0 OR `ts` > ?)";
-        $params = [$keyDetails['key'], $this->ts];
+        $sql = "
+            SELECT count(1) as `count` 
+            FROM `{$keyDetails['table']}` 
+            WHERE `key` = ? AND (`ts` = 0 OR `ts` > ?)
+        ";
+        $params = [$keyDetails['key'], $this->_ts];
 
-        $this->cache->execDbQuery($sql, $params);
-        $row = $this->cache->fetch();
-        $this->cache->closeCursor();
+        $this->_cache->execDbQuery(sql: $sql, $params);
+        $row = $this->_cache->fetch();
+        $this->_cache->closeCursor();
 
         $keyDetails['count'] = $row['count'];
 

@@ -1,108 +1,133 @@
 <?php
+/**
+ * Environment
+ * php version 8.3
+ *
+ * @category  Environment
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 /**
- * Constants
+ * Environment
+ * php version 8.3
  *
- * Contains all constants related to Microservices
- *
- * @category   Constants
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Environment
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Env
 {
-    static public $globalDatabase = null;
-    static public $cacheDatabase = null;
+    public static $globalDatabase = null;
+    public static $cacheDatabase = null;
 
-    static public $ENVIRONMENT = null;
-    static public $OUTPUT_PERFORMANCE_STATS = null;
+    public static $ENVIRONMENT = null;
+    public static $OUTPUT_PERFORMANCE_STATS = null;
 
-    static public $allowConfigRequest = null;
-    static public $configRequestUriKeyword = null;
+    public static $allowConfigRequest = null;
+    public static $configRequestUriKeyword = null;
 
-    static public $groups = null;
-    static public $client_users = null;
-    static public $clients = null;
+    public static $groups = null;
+    public static $client_users = null;
+    public static $clients = null;
 
-    static public $maxPerpage = null;
-    static public $defaultPerpage = null;
+    public static $maxPerPage = null;
+    public static $defaultPerPage = null;
 
-    static public $allowCronRequest = null;
-    static public $cronRequestUriPrefix = null;
-    static public $cronRestrictedIp = null;
+    public static $allowCronRequest = null;
+    public static $cronRequestUriPrefix = null;
+    public static $cronRestrictedIp = null;
 
-    static public $allowRoutesRequest = null;
-    static public $routesRequestUri = null;
+    public static $allowRoutesRequest = null;
+    public static $routesRequestUri = null;
 
-    static public $allowCustomRequest = null;
-    static public $customRequestUriPrefix = null;
+    public static $allowCustomRequest = null;
+    public static $customRequestUriPrefix = null;
 
-    static public $allowUploadRequest = null;
-    static public $uploadRequestUriPrefix = null;
+    public static $allowUploadRequest = null;
+    public static $uploadRequestUriPrefix = null;
 
-    static public $allowThirdPartyRequest = null;
-    static public $thirdPartyRequestUriPrefix = null;
+    public static $allowThirdPartyRequest = null;
+    public static $thirdPartyRequestUriPrefix = null;
 
-    static public $allowCacheRequest = null;
-    static public $cacheRequestUriPrefix = null;
+    public static $allowCacheRequest = null;
+    public static $cacheRequestUriPrefix = null;
 
-    static public $inputDataRepresentation = null;
-    static public $outputDataRepresentation = null;
+    public static $inputRepresentation = null;
+    public static $outputRepresentation = null;
 
-    static public function init(&$httpRequestDetails)
+    /**
+     * Initialize
+     *
+     * @param array $http HTTP request details
+     *
+     * @return void
+     */
+    public static function init(&$http): void
     {
-        self::$globalDatabase = getenv('globalDatabase');
-        self::$cacheDatabase = getenv('cacheDatabase');
+        self::$globalDatabase = getenv(name: 'globalDatabase');
+        self::$cacheDatabase = getenv(name: 'cacheDatabase');
 
-        self::$ENVIRONMENT = getenv('ENVIRONMENT');
-        self::$OUTPUT_PERFORMANCE_STATS = getenv('OUTPUT_PERFORMANCE_STATS');
+        self::$ENVIRONMENT = getenv(name: 'ENVIRONMENT');
+        self::$OUTPUT_PERFORMANCE_STATS = getenv(name: 'OUTPUT_PERFORMANCE_STATS');
 
-        self::$allowConfigRequest = getenv('allowConfigRequest');
-        self::$configRequestUriKeyword = getenv('configRequestUriKeyword');
+        self::$allowConfigRequest = getenv(name: 'allowConfigRequest');
+        self::$configRequestUriKeyword = getenv(name: 'configRequestUriKeyword');
 
-        self::$groups = getenv('groups');
-        self::$client_users = getenv('client_users');
-        self::$clients = getenv('clients');
+        self::$groups = getenv(name: 'groups');
+        self::$client_users = getenv(name: 'client_users');
+        self::$clients = getenv(name: 'clients');
 
-        self::$maxPerpage = getenv('maxPerpage');
-        self::$defaultPerpage = getenv('defaultPerpage');
+        self::$maxPerPage = getenv(name: 'maxPerPage');
+        self::$defaultPerPage = getenv(name: 'defaultPerPage');
 
-        self::$allowCronRequest = getenv('allowCronRequest');
-        self::$cronRequestUriPrefix = getenv('cronRequestUriPrefix');
-        self::$cronRestrictedIp = getenv('cronRestrictedIp');
+        self::$allowCronRequest = getenv(name: 'allowCronRequest');
+        self::$cronRequestUriPrefix = getenv(name: 'cronRequestUriPrefix');
+        self::$cronRestrictedIp = getenv(name: 'cronRestrictedIp');
 
-        self::$allowRoutesRequest = getenv('allowRoutesRequest');
-        self::$routesRequestUri = getenv('routesRequestUri');
+        self::$allowRoutesRequest = getenv(name: 'allowRoutesRequest');
+        self::$routesRequestUri = getenv(name: 'routesRequestUri');
 
-        self::$allowCustomRequest = getenv('allowCustomRequest');
-        self::$customRequestUriPrefix = getenv('customRequestUriPrefix');
+        self::$allowCustomRequest = getenv(name: 'allowCustomRequest');
+        self::$customRequestUriPrefix = getenv(name: 'customRequestUriPrefix');
 
-        self::$allowUploadRequest = getenv('allowUploadRequest');
-        self::$uploadRequestUriPrefix = getenv('uploadRequestUriPrefix');
+        self::$allowUploadRequest = getenv(name: 'allowUploadRequest');
+        self::$uploadRequestUriPrefix = getenv(name: 'uploadRequestUriPrefix');
 
-        self::$allowThirdPartyRequest = getenv('allowThirdPartyRequest');
-        self::$thirdPartyRequestUriPrefix = getenv('thirdPartyRequestUriPrefix');
+        self::$allowThirdPartyRequest = getenv(name: 'allowThirdPartyRequest');
+        self::$thirdPartyRequestUriPrefix = getenv(
+            name: 'thirdPartyRequestUriPrefix'
+        );
 
-        self::$allowCacheRequest = getenv('allowCacheRequest');
-        self::$cacheRequestUriPrefix = getenv('cacheRequestUriPrefix');
+        self::$allowCacheRequest = getenv(name: 'allowCacheRequest');
+        self::$cacheRequestUriPrefix = getenv(name: 'cacheRequestUriPrefix');
 
-        $inputDataRepresentation = isset($httpRequestDetails['get']['inputDataRepresentation']) ? $httpRequestDetails['get']['inputDataRepresentation'] : null;
-        $outputDataRepresentation = isset($httpRequestDetails['get']['outputDataRepresentation']) ? $httpRequestDetails['get']['outputDataRepresentation'] : null;
+        $inputRepresentation = isset($http['get']['inputRepresentation']) ?
+            $http['get']['inputRepresentation'] : null;
+        $outputRepresentation = isset($http['get']['outputRepresentation']) ?
+            $http['get']['outputRepresentation'] : null;
 
-        if (in_array($inputDataRepresentation, ['Json', 'Xml'])) {
-            self::$inputDataRepresentation = $inputDataRepresentation;
+        if (in_array(needle: $inputRepresentation, haystack: ['Json', 'Xml'])) {
+            self::$inputRepresentation = $inputRepresentation;
         } else {
-            self::$inputDataRepresentation = getenv('inputDataRepresentation');
+            self::$inputRepresentation = getenv(name: 'inputRepresentation');
         }
 
-        if (in_array($outputDataRepresentation, ['Json', 'Xml'])) {
-            self::$outputDataRepresentation = $outputDataRepresentation;
+        if (in_array(needle: $outputRepresentation, haystack: ['Json', 'Xml'])) {
+            self::$outputRepresentation = $outputRepresentation;
         } else {
-            self::$outputDataRepresentation = getenv('outputDataRepresentation');
+            self::$outputRepresentation = getenv(
+                name: 'outputRepresentation'
+            );
         }
     }
 }

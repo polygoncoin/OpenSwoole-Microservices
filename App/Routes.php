@@ -1,4 +1,16 @@
 <?php
+/**
+ * Routes - Available routes
+ * php version 8.3
+ *
+ * @category  Routes
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 use Microservices\App\Constants;
@@ -6,16 +18,16 @@ use Microservices\App\Common;
 use Microservices\App\Env;
 
 /**
- * Class to initialize api HTTP request
+ * Routes - Available routes
+ * php version 8.3
  *
- * This class process the api request
- *
- * @category   Routes
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Routes
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Routes
 {
@@ -24,11 +36,11 @@ class Routes
      *
      * @var array
      */
-    private $httpMethods = [
-        'GET',
-        'POST',
-        'PUT',
-        'PATCH',
+    private $_httpMethods = [
+        'GET', 
+        'POST', 
+        'PUT', 
+        'PATCH', 
         'DELETE'
     ];
 
@@ -37,38 +49,39 @@ class Routes
      *
      * @var string
      */
-    private $routesFolder = DIRECTORY_SEPARATOR . 'Config' . DIRECTORY_SEPARATOR . 'Routes';
+    private $_routesFolder = DIRECTORY_SEPARATOR . 'Config' . 
+        DIRECTORY_SEPARATOR . 'Routes';
 
     /**
      * Route config ignore keys
      *
      * @var array
      */
-    private $reservedKeys = [];
+    private $_reservedKeys = [];
 
     /**
-     * Microservices Collection of Common Objects
+     * Collection of Common Objects
      *
      * @var null|Common
      */
-    private $c = null;
+    private $_c = null;
 
     /**
      * Constructor
      *
-     * @param Common $common
+     * @param Common $common Common object
      */
     public function __construct(&$common)
     {
-        $this->c = &$common;
+        $this->_c = &$common;
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return bool
      */
-    public function init()
+    public function init(): bool
     {
         if (Env::$allowRoutesRequest) {
             return true;
@@ -79,31 +92,43 @@ class Routes
     /**
      * Make allowed routes list of a logged-in user
      *
-     * @return boolean
+     * @return bool
      */
-    public function process()
+    public function process(): bool
     {
         $Constants = __NAMESPACE__ . '\Constants';
         $Env = __NAMESPACE__ . '\Env';
 
         $httpRoutes = [];
-        if ($this->c->httpRequest->open) {
-            $userRoutesFolder = Constants::$DOC_ROOT . $this->routesFolder . DIRECTORY_SEPARATOR . 'Open';
+        if ($this->_c->req->open) {
+            $userRoutesFolder = Constants::$DOC_ROOT . $this->_routesFolder . 
+                DIRECTORY_SEPARATOR . 'Open';
         } else {
-            $userRoutesFolder = Constants::$DOC_ROOT . $this->routesFolder . DIRECTORY_SEPARATOR . 'Auth' . DIRECTORY_SEPARATOR . 'GroupRoutes' .  DIRECTORY_SEPARATOR . $this->c->httpRequest->session['groupDetails']['name'];
+            $userRoutesFolder = Constants::$DOC_ROOT . $this->_routesFolder . 
+                DIRECTORY_SEPARATOR . 'Auth' . 
+                DIRECTORY_SEPARATOR . 'GroupRoutes' .  
+                DIRECTORY_SEPARATOR . $this->_c->req->sess['groupDetails']['name'];
         }
 
-        foreach ($this->httpMethods as $method) {
+        foreach ($this->_httpMethods as $method) {
             $httpRoutes[$method] = [];
-            $routeFileLocation =  $userRoutesFolder . DIRECTORY_SEPARATOR . $method . 'routes.php';
-            if (!file_exists($routeFileLocation)) {
+            $routeFileLocation =  $userRoutesFolder . 
+                DIRECTORY_SEPARATOR . $method . 'routes.php';
+            if (!file_exists(filename: $routeFileLocation)) {
                 continue;
             }
             $routes = include $routeFileLocation;
             $route = '';
-            $this->getRoutes($routes, $route, $httpRoutes[$method]);
+            $this->_getRoutes(
+                routes: $routes, 
+                route: $route, 
+                httpRoutes: $httpRoutes[$method]
+            );
         }
-        $this->c->httpResponse->dataEncode->addKeyData('Results', $httpRoutes);
+        $this->_c->res->dataEncode->addKeyData(
+            key: 'Results', 
+            data: $httpRoutes
+        );
 
         return true;
     }
@@ -111,20 +136,28 @@ class Routes
     /**
      * Create Routes list
      *
+     * @param array  $routes     Routes
+     * @param string $route      Current Route
+     * @param array  $httpRoutes All HTTP Routes
+     *
      * @return void
      */
-    private function getRoutes(&$routes, $route, &$httpRoutes)
+    private function _getRoutes(&$routes, $route, &$httpRoutes): void
     {
         foreach ($routes as $key => &$r) {
-            if (in_array($key, $this->reservedKeys)) {
+            if (in_array(needle: $key, haystack: $this->_reservedKeys)) {
                 continue;
             }
             if ($key === '__FILE__') {
                 $httpRoutes[] = $route;
             }
-            if (is_array($r)) {
+            if (is_array(value: $r)) {
                 $_route = $route . '/' . $key;
-                $this->getRoutes($r, $_route, $httpRoutes);
+                $this->_getRoutes(
+                    routes: $r, 
+                    route: $_route, 
+                    httpRoutes: $httpRoutes
+                );
             }
         }
     }

@@ -1,4 +1,16 @@
 <?php
+/**
+ * Start
+ * php version 8.3
+ *
+ * @category  Start
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices;
 
 use Microservices\Services;
@@ -11,87 +23,105 @@ use OpenSwoole\Http\Request;
 use OpenSwoole\Http\Response;
 
 /**
- * Class to autoload class files
+ * Autoload
+ * php version 8.3
  *
- * @category   Autoload
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Autoload
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Autoload
 {
     /**
      * Autoload Register function
      *
-     * @param string $className
+     * @param string $className Class name
+     *
      * @return void
      */
-    static public function register($className)
+    public static function register($className): void
     {
-        $className = substr($className, strlen(__NAMESPACE__));
-        $className = str_replace("\\", DIRECTORY_SEPARATOR, $className);
+        $className = substr(
+            string: $className, 
+            offset: strlen(string: __NAMESPACE__)
+        );
+        $className = str_replace(
+            search: "\\", 
+            replace: DIRECTORY_SEPARATOR, 
+            subject: $className
+        );
         $file = __DIR__ . $className . '.php';
-        if (!file_exists($file)) {
+        if (!file_exists(filename: $file)) {
             echo PHP_EOL . "File '{$file}' missing" . PHP_EOL;
         }
-        require $file;
+        include_once $file;
     }
 }
 
-spl_autoload_register(__NAMESPACE__ . '\Autoload::register');
+spl_autoload_register(callback: __NAMESPACE__ . '\Autoload::register');
 
 // Set coroutine options before you start a server...
 Coroutine::set([
-    'max_coroutine' => 100,
-    'max_concurrency' => 100,
+    'max_coroutine' => 100, 
+    'max_concurrency' => 100, 
 ]);
 
 $server = new Server("127.0.0.1", 9501);
 
-$server->on("start", function (Server $server) {
+$server->on("start", function (Server $server): void {
     //$server->reload(false);
     echo "OpenSwoole http server is started at http://127.0.0.1:9501\n";
 });
 
-$server->on("request", function (Request $request, Response $response) use ($server) {
+$server->on("request", function (Request $request, Response $response) use ($server): void {
 
-    if (isset($request->get['r']) && in_array($request->get['r'], ['/auth-test', '/open-test', '/open-test-xml'])) {
+    if (isset($request->get['r']) 
+        && in_array(
+            needle: $request->get['r'], 
+            haystack: ['/auth-test', '/open-test', '/open-test-xml']
+        )
+    ) {
         include __DIR__ . '/Tests.php';
         switch ($request->get['r']) {
-            case '/auth-test':
-                $response->end(processAuth());
-                break;
-            case '/open-test':
-                $response->end(processOpen());
-                break;
-            case '/open-test-xml':
-                $response->end(processXml());
-                break;
+        case '/auth-test':
+            $response->end(processAuth());
+            break;
+        case '/open-test':
+            $response->end(processOpen());
+            break;
+        case '/open-test-xml':
+            $response->end(processXml());
+            break;
         }
         return;
     }
 
-    $httpRequestDetails = [];
+    $http = [];
 
-    $httpRequestDetails['server']['host'] = 'localhost';
-    // $httpRequestDetails['server']['host'] = 'public.localhost';
-    $httpRequestDetails['server']['request_method'] = $request->server['request_method'];
-    $httpRequestDetails['server']['remote_addr'] = $request->server['remote_addr'];
+    $http['server']['host'] = 'localhost';
+    // $http['server']['host'] = 'public.localhost';
+    $http['server']['request_method'] = $request->server['request_method'];
+    $http['server']['remote_addr'] = $request->server['remote_addr'];
     if (isset($request->header['authorization'])) {
-        $httpRequestDetails['header']['authorization'] = $request->header['authorization'];
+        $http['header']['authorization'] = $request->header['authorization'];
     }
-    $httpRequestDetails['server']['api_version'] = $request->header['x-api-version'];
-    $httpRequestDetails['get'] = &$request->get;
-    $httpRequestDetails['post'] = &$request->post;
-    $httpRequestDetails['files'] = &$request->files;
+    $http['server']['api_version'] = $request->header['x-api-version'];
+    $http['get'] = &$request->get;
+    $http['post'] = &$request->post;
+    $http['files'] = &$request->files;
 
     // Check version
-    if (!isset($request->header['x-api-version']) || $request->header['x-api-version'] !== 'v1.0.0') {
+    if (!isset($request->header['x-api-version']) 
+        || $request->header['x-api-version'] !== 'v1.0.0'
+    ) {
         // Set response headers
         $response->header('Content-Type', 'application/json; charset=utf-8');
-        $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $cacheControl = 'no-store, no-cache, must-revalidate, max-age=0';
+        $response->header('Cache-Control', $cacheControl);
         $response->header('Pragma', 'no-cache');
 
         $response->end('{"Status": 400, "Message": "Bad Request"}');
@@ -99,45 +129,45 @@ $server->on("request", function (Request $request, Response $response) use ($ser
     }
 
     // Load .env
-    $env = parse_ini_file(__DIR__ . DIRECTORY_SEPARATOR . '.env');
+    $env = parse_ini_file(filename: __DIR__ . DIRECTORY_SEPARATOR . '.env');
     foreach ($env as $key => $value) {
-        putenv("{$key}={$value}");
+        putenv(assignment: "{$key}={$value}");
     }
 
     // Code to Initialize / Start the service
     try {
-        $services = new Services($httpRequestDetails);
+        $services = new Services(http: $http);
 
         // Setting CORS
         foreach ($services->getHeaders() as $k => $v) {
             $response->header($k, $v);
         }
-        if ($httpRequestDetails['server']['request_method'] == 'OPTIONS') {
+        if ($http['server']['request_method'] == 'OPTIONS') {
             $response->end();
             return;
         }
 
         if ($services->init()) {
             $services->process();
-            $response->status($services->c->httpResponse->httpStatus);
+            $response->status($services->c->res->httpStatus);
             $response->end($services->outputResults());
         }
     } catch (\Exception $e) {
         if ($e->getCode() !== 400) {
             // Log request details
             $logDetails = [
-                'LogType' => 'ERROR',
-                'DateTime' => date('Y-m-d H:i:s'),
+                'LogType' => 'ERROR', 
+                'DateTime' => date('Y-m-d H:i:s'), 
                 'HttpDetails' => [
-                    "HttpCode" => $e->getCode(),
+                    "HttpCode" => $e->getCode(), 
                     "HttpMessage" => $e->getMessage()
-                ],
+                ], 
                 'Details' => [
-                    'httpRequestDetails' => $httpRequestDetails,
-                    'session' => $services->c->httpRequest->session
+                    'http' => $http, 
+                    'sess' => $services->c->req->sess
                 ]
             ];
-            (new Logs)->log($logDetails);
+            (new Logs)->log(logDetails: $logDetails);
         }
 
         $response->status($e->getCode());
@@ -145,21 +175,21 @@ $server->on("request", function (Request $request, Response $response) use ($ser
         if ($e->getCode() == 429) {
             $response->header('Retry-After:', $e->getMessage());
             $arr = [
-                'Status' => $e->getCode(),
-                'Message' => 'Too Many Requests',
+                'Status' => $e->getCode(), 
+                'Message' => 'Too Many Requests', 
                 'RetryAfter' => $e->getMessage()
             ];
         } else {
             $arr = [
-                'Status' => $e->getCode(),
+                'Status' => $e->getCode(), 
                 'Message' => $e->getMessage()
             ];
         }
 
-        $dataEncode = new DataEncode($httpRequestDetails);
+        $dataEncode = new DataEncode(http: $http);
         $dataEncode->init();
         $dataEncode->startObject();
-        $dataEncode->addKeyData('Error', $arr);
+        $dataEncode->addKeyData(key: 'Error', data: $arr);
 
         $response->end($dataEncode->streamData());
         return;
@@ -174,11 +204,11 @@ $server->set([
     // 'max_request_execution_time' => 10, // 10s
 
     // Compression
-    'http_compression' => true,
+    'http_compression' => true, 
     'http_compression_level' => 3, // 1 - 9
-    'compression_min_length' => 20,
-    'worker_num' =>   2,
-    'max_request' =>  1000,
+    'compression_min_length' => 20, 
+    'worker_num' =>   2, 
+    'max_request' =>  1000, 
 ]);
 
 $server->start();

@@ -1,17 +1,29 @@
 <?php
+/**
+ * Cache
+ * php version 8.3
+ *
+ * @category  Cache
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App\Servers\Cache;
 
 /**
- * Loading database server
+ * Cache Abstract class
+ * php version 8.3
  *
- * This abstract class is built to handle the database server
- *
- * @category   Abstract Cache Class
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Cache_Abstract_Class
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 abstract class AbstractCache
 {
@@ -20,46 +32,50 @@ abstract class AbstractCache
      *
      * @return void
      */
-    abstract public function connect();
+    abstract public function connect(): void;
 
     /**
      * Use Cache Database
      *
      * @return void
      */
-    abstract public function useDatabase();
+    abstract public function useDatabase(): void;
 
     /**
      * Checks if cache key exist
      *
      * @param string $key Cache key
-     * @return boolean
+     *
+     * @return mixed
      */
-    abstract public function cacheExists($key);
+    abstract public function cacheExists($key): mixed;
 
     /**
      * Get cache on basis of key
      *
      * @param string $key Cache key
-     * @return string
+     *
+     * @return mixed
      */
-    abstract public function getCache($key);
+    abstract public function getCache($key): mixed;
 
     /**
      * Set cache on basis of key
      *
-     * @param string  $key    Cache key
-     * @param string  $value  Cache value
-     * @param integer $expire Seconds to expire. Default 0 - doesnt expire
-     * @return integer
+     * @param string $key    Cache key
+     * @param string $value  Cache value
+     * @param int    $expire Seconds to expire. Default 0 - doesn't expire
+     *
+     * @return mixed
      */
-    abstract public function setCache($key, $value, $expire = null);
+    abstract public function setCache($key, $value, $expire = null): mixed;
 
     /**
      * Delete cache on basis of key
      *
      * @param string $key Cache key
-     * @return integer
+     *
+     * @return mixed
      */
-    abstract public function deleteCache($key);
+    abstract public function deleteCache($key): mixed;
 }

@@ -1,18 +1,29 @@
 <?php
+/**
+ * Rate Limiter
+ * php version 8.3
+ *
+ * @category  RateLimiter
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 /**
  * Rate Limiter
+ * php version 8.3
  *
- * This class is built to handle Limit Rate of requests
- *
- * @category   Rate Limiter
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @license    http://www.php.net/license/3_01.txt  PHP License 3.01
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  RateLimiter
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class RateLimiter
 {
@@ -21,76 +32,80 @@ class RateLimiter
      *
      * @var null|\Redis
      */
-    private $redis = null;
+    private $_redis = null;
 
     /**
      * Current timestamp
      *
-     * @var null|integer
-    */
-    private $currentTimestamp = null;
+     * @var null|int
+     */
+    private $_currentTimestamp = null;
 
     /**
      * Constructor
-     *
-     * @param Redis  $redis
-     * @param string $prefix
-     * @param int    $maxRequests
-     * @param int    $secondsWindow
-     * @return void
      */
     public function __construct()
     {
-        if (!extension_loaded('redis')) {
-            throw new \Exception("Unable to find Redis extension", HttpStatus::$InternalServerError);
+        if (!extension_loaded(extension: 'redis')) {
+            throw new \Exception(
+                message: "Unable to find Redis extension",
+                code: HttpStatus::$InternalServerError
+            );
         }
 
-        $this->redis = new \Redis();
-        $this->redis->connect(getenv('RateLimiterHost'), (int)getenv('RateLimiterHostPort'));
+        $this->_redis = new \Redis();
+        $this->_redis->connect(
+            getenv(name: 'RateLimiterHost'), 
+            (int)getenv(name: 'RateLimiterHostPort')
+        );
 
-        $this->currentTimestamp = time();
+        $this->_currentTimestamp = time();
     }
 
     /**
      * Check the request is valid
      *
-     * @param string $key
+     * @param string $prefix        Prefix
+     * @param int    $maxRequests   Max request
+     * @param int    $secondsWindow Window in seconds
+     * @param string $key           Key
+     *
      * @return array
      * @throws \Exception
      */
     public function check(
-        $prefix,
-        $maxRequests,
-        $secondsWindow,
+        $prefix, 
+        $maxRequests, 
+        $secondsWindow, 
         $key
-    ) {
+    ): array {
         $maxRequests = (int)$maxRequests;
         $secondsWindow = (int)$secondsWindow;
 
-        $remainder = $this->currentTimestamp % $secondsWindow;
+        $remainder = $this->_currentTimestamp % $secondsWindow;
         $remainder = $remainder !== 0 ? $remainder : $secondsWindow;
 
         $key = $prefix . $key;
 
-        if ($this->redis->exists($key)) {
-            $requestCount = (int)$this->redis->get($key);
+        if ($this->_redis->exists($key)) {
+            $requestCount = (int)$this->_redis->get($key);
         } else {
             $requestCount = 0;
-            $this->redis->set($key, $requestCount, $remainder);
+            $this->_redis->set($key, $requestCount, $remainder);
         }
         $requestCount++;
 
         $allowed = $requestCount <= $maxRequests;
         $remaining = max(0, $maxRequests - $requestCount);
-        $resetAt = $this->currentTimestamp + $remainder;
+        $resetAt = $this->_currentTimestamp + $remainder;
 
         if ($allowed) {
-            $this->redis->incr($key);
+            $this->_redis->incr($key);
         }
 
         return [
-            'allowed' => $allowed,
-            'remaining' => $remaining,
+            'allowed' => $allowed, 
+            'remaining' => $remaining, 
             'resetAt' => $resetAt
         ];
     }

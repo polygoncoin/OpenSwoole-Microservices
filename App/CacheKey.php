@@ -1,27 +1,40 @@
 <?php
+/**
+ * Server side Cache keys
+ * php version 8.3
+ *
+ * @category  CacheServerKeys
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 /**
- * Cache Key
+ * Server side Cache keys - Required
+ * php version 8.3
  *
- * Generates Cache Key
- *
- * @category   Cache Key
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  CacheServerKeys_Required
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class CacheKey
 {
     /**
      * Get Client Key
      *
-     * @param string $hostname
+     * @param string $hostname Hostname
+     *
      * @return string
      */
-    static public function ClientOpenToWeb(&$hostname)
+    public static function clientOpenToWeb(&$hostname): string
     {
         return "c:otw:{$hostname}";
     }
@@ -29,10 +42,11 @@ class CacheKey
     /**
      * Get Client Key
      *
-     * @param string $hostname
+     * @param string $hostname Hostname
+     *
      * @return string
      */
-    static public function Client(&$hostname)
+    public static function client(&$hostname): string
     {
         return "c:{$hostname}";
     }
@@ -40,11 +54,12 @@ class CacheKey
     /**
      * Get Client User Key
      *
-     * @param integer $clientId
-     * @param string  $username
+     * @param int    $clientId Client Id
+     * @param string $username Hostname
+     *
      * @return string
      */
-    static public function ClientUser(&$clientId, &$username)
+    public static function clientUser(&$clientId, &$username): string
     {
         return "cu:{$clientId}:u:{$username}";
     }
@@ -52,10 +67,11 @@ class CacheKey
     /**
      * Get Group Key
      *
-     * @param integer $clientId
+     * @param int $groupId Group Id
+     *
      * @return string
      */
-    static public function Group(&$groupId)
+    public static function group(&$groupId): string
     {
         return "g:{$groupId}";
     }
@@ -63,10 +79,11 @@ class CacheKey
     /**
      * Get Group CIDR Key
      *
-     * @param integer $groupId
+     * @param int $groupId Group Id
+     *
      * @return string
      */
-    static public function CIDR(&$groupId)
+    public static function cidr(&$groupId): string
     {
         return "cidr:{$groupId}";
     }
@@ -74,10 +91,11 @@ class CacheKey
     /**
      * Get Token Key
      *
-     * @param string $token
+     * @param string $token Token
+     *
      * @return string
      */
-    static public function Token(&$token)
+    public static function token(&$token): string
     {
         return "t:{$token}";
     }
@@ -85,10 +103,11 @@ class CacheKey
     /**
      * Get User Token Key
      *
-     * @param integer $userId
+     * @param int $userId User Id
+     *
      * @return string
      */
-    static public function UserToken(&$userId)
+    public static function userToken(&$userId): string
     {
         return "ut:{$userId}";
     }

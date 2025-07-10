@@ -1,47 +1,70 @@
 <?php
+/**
+ * Hook
+ * php version 8.3
+ *
+ * @category  Hook
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 use Microservices\App\Common;
 use Microservices\App\Constants;
 
 /**
- * Hook executor class
+ * Executes configured hooks
+ * php version 8.3
  *
- * @category   Hook class
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Hook
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Hook
 {
     /**
-     * Microservices Collection of Common Objects
+     * Common Object
      *
      * @var null|Common
      */
-    private $c = null;
+    private $_c = null;
 
     /**
      * Constructor
      *
-     * @param Common $common
+     * @param Common $common Common object
      */
     public function __construct(&$common)
     {
-        $this->c = &$common;
+        $this->_c = &$common;
     }
 
-    public function triggerHook($hookConfig)
+    /**
+     * Triggers Hook
+     *
+     * @param array $hookConfig Hook configuration
+     * 
+     * @return bool
+     */
+    public function triggerHook($hookConfig): bool
     {
-        if (is_array($HookConfig)) {
-            for ($i = 0, $iCount = count($hookConfig); $i < $iCount; $i++) {
+        if (is_array(value: $hookConfig)) {
+            for ($i = 0, $iCount = count(value: $hookConfig); $i < $iCount; $i++) {
                 $hook = $hookConfig[$i];
-                $hookFile = Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Hooks' . DIRECTORY_SEPARATOR . $hook . '.php';
-                if (file_exists($hookFile)) {
+                $hookFile = Constants::$DOC_ROOT . 
+                    DIRECTORY_SEPARATOR . 'Hooks' . 
+                    DIRECTORY_SEPARATOR . $hook . '.php';
+                if (file_exists(filename: $hookFile)) {
                     $hookClass = 'Microservices\\Hooks\\'.$hook;
-                    $hookObj = new $hookClass($this->c);
+                    $hookObj = new $hookClass(common: $this->_c);
                     if ($hookObj->init()) {
                         $hookObj->process();
                     }

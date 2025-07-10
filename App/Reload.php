@@ -1,25 +1,35 @@
 <?php
+/**
+ * Load CacheServerKeys_Required
+ * php version 8.3
+ *
+ * @category  Reload
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 use Microservices\App\AppTrait;
-use Microservices\App\Constants;
 use Microservices\App\CacheKey;
 use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\App\Servers\Cache\AbstractCache;
 use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
- * Updates cache
+ * Load CacheServerKeys_Required
+ * php version 8.3
  *
- * This class is Reloads the Cache values of respective keys
- *
- * @category   Reload
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Reload
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Reload
 {
@@ -40,28 +50,28 @@ class Reload
     public $cache = null;
 
     /**
-     * Microservices Collection of Common Objects
+     * Common Object
      *
      * @var null|Common
      */
-    private $c = null;
+    private $_c = null;
 
     /**
      * Constructor
      *
-     * @param Common $common
+     * @param Common $common Common object
      */
     public function __construct(&$common)
     {
-        $this->c = &$common;
+        $this->_c = &$common;
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return bool
      */
-    public function init()
+    public function init(): bool
     {
         return true;
     }
@@ -69,21 +79,21 @@ class Reload
     /**
      * Process
      *
-     * @return boolean
+     * @return bool
      */
-    public function process()
+    public function process(): bool
     {
-        $this->cache = $this->c->httpRequest->connectCache(
-            getenv('cacheType'),
-            getenv('cacheHostname'),
-            getenv('cachePort'),
-            getenv('cacheUsername'),
-            getenv('cachePassword'),
-            getenv('cacheDatabase')
+        $this->cache = $this->_c->req->connectCache(
+            cacheType: getenv(name: 'cacheType'), 
+            cacheHostname: getenv(name: 'cacheHostname'), 
+            cachePort: getenv(name: 'cachePort'), 
+            cacheUsername: getenv(name: 'cacheUsername'), 
+            cachePassword: getenv(name: 'cachePassword'), 
+            cacheDatabase: getenv(name: 'cacheDatabase')
         );
 
-        $this->processDomainAndUser();
-        $this->processGroup();
+        $this->_processDomainAndUser();
+        $this->_processGroup();
 
         return true;
     }
@@ -93,53 +103,73 @@ class Reload
      *
      * @return void
      */
-    private function processDomainAndUser()
+    private function _processDomainAndUser(): void
     {
-        $this->c->httpRequest->db = $this->c->httpRequest->connectDb(
-            getenv('globalType'),
-            getenv('globalHostname'),
-            getenv('globalPort'),
-            getenv('globalUsername'),
-            getenv('globalPassword'),
-            getenv('globalDatabase')
+        $this->_c->req->db = $this->_c->req->connectDb(
+            dbType: getenv(name: 'globalType'), 
+            dbHostname: getenv(name: 'globalHostname'), 
+            dbPort: getenv(name: 'globalPort'), 
+            dbUsername: getenv(name: 'globalUsername'), 
+            dbPassword: getenv(name: 'globalPassword'), 
+            dbDatabase: getenv(name: 'globalDatabase')
         );
-        $this->db = &$this->c->httpRequest->db;
+        $this->db = &$this->_c->req->db;
 
-        $this->db->execDbQuery("
-            SELECT
-                *
-            FROM
-                `{$this->execPhpFunc(getenv('clients'))}` C
-            ", []);
-        $crows = $this->db->fetchAll();
-        $this->db->closeCursor();
-        for ($ci = 0, $ci_count = count($crows); $ci < $ci_count; $ci++) {
-            if (!empty($crows[$ci]['open_api_domain'])) {
-                $c_key = CacheKey::ClientOpenToWeb($crows[$ci]['open_api_domain']);
-                $this->cache->setCache($c_key, json_encode($crows[$ci]));
-            }
-            $c_key = CacheKey::Client($crows[$ci]['api_domain']);
-            $this->cache->setCache($c_key, json_encode($crows[$ci]));
-            $this->c->httpRequest->db = $this->c->httpRequest->connectDb(
-                getenv($crows[$ci]['master_db_server_type']),
-                getenv($crows[$ci]['master_db_hostname']),
-                getenv($crows[$ci]['master_db_port']),
-                getenv($crows[$ci]['master_db_username']),
-                getenv($crows[$ci]['master_db_password']),
-                getenv($crows[$ci]['master_db_database'])
-            );
-
-            $this->db->execDbQuery("
+        $this->db->execDbQuery(
+            sql: "
                 SELECT
                     *
                 FROM
-                    `{$this->execPhpFunc(getenv('client_users'))}` U
-                ", []);
+                    `{$this->execPhpFunc(param: getenv(name: 'clients'))}` C
+                ", 
+            params: []
+        );
+        $crows = $this->db->fetchAll();
+        $this->db->closeCursor();
+        for ($ci = 0, $ci_count = count(value: $crows); $ci < $ci_count; $ci++) {
+            if (!empty($crows[$ci]['open_api_domain'])) {
+                $c_key = CacheKey::clientOpenToWeb(
+                    hostname: $crows[$ci]['open_api_domain']
+                );
+                $this->cache->setCache(
+                    key: $c_key, 
+                    value: json_encode(value: $crows[$ci])
+                );
+            }
+            $c_key = CacheKey::client(hostname: $crows[$ci]['api_domain']);
+            $this->cache->setCache(
+                key: $c_key, 
+                value: json_encode(value: $crows[$ci])
+            );
+            $this->_c->req->db = $this->_c->req->connectDb(
+                dbType: getenv(name: $crows[$ci]['master_db_server_type']), 
+                dbHostname: getenv(name: $crows[$ci]['master_db_hostname']), 
+                dbPort: getenv(name: $crows[$ci]['master_db_port']), 
+                dbUsername: getenv(name: $crows[$ci]['master_db_username']), 
+                dbPassword: getenv(name: $crows[$ci]['master_db_password']), 
+                dbDatabase: getenv(name: $crows[$ci]['master_db_database'])
+            );
+
+            $this->db->execDbQuery(
+                sql: "
+                    SELECT
+                        *
+                    FROM
+                        `{$this->execPhpFunc(param: getenv(name: 'client_users'))}` U
+                    ", 
+                params: []
+            );
             $urows = $this->db->fetchAll();
             $this->db->closeCursor();
-            for ($ui = 0, $ui_count = count($urows); $ui < $ui_count; $ui++) {
-                $cu_key = CacheKey::ClientUser($crows[$ci]['client_id'], $urows[$ui]['username']);
-                $this->cache->setCache($cu_key, json_encode($urows[$ui]));
+            for ($ui = 0, $ui_count = count(value: $urows); $ui < $ui_count; $ui++) {
+                $cu_key = CacheKey::clientUser(
+                    clientId: $crows[$ci]['client_id'], 
+                    username: $urows[$ui]['username']
+                );
+                $this->cache->setCache(
+                    key: $cu_key, 
+                    value: json_encode(value: $urows[$ui])
+                );
             }
         }
     }
@@ -149,32 +179,38 @@ class Reload
      *
      * @return void
      */
-    private function processGroup()
+    private function _processGroup(): void
     {
-        $this->c->httpRequest->db = $this->c->httpRequest->connectDb(
-            getenv('globalType'),
-            getenv('globalHostname'),
-            getenv('globalPort'),
-            getenv('globalUsername'),
-            getenv('globalPassword'),
-            getenv('globalDatabase')
+        $this->_c->req->db = $this->_c->req->connectDb(
+            dbType: getenv(name: 'globalType'), 
+            dbHostname: getenv(name: 'globalHostname'), 
+            dbPort: getenv(name: 'globalPort'), 
+            dbUsername: getenv(name: 'globalUsername'), 
+            dbPassword: getenv(name: 'globalPassword'), 
+            dbDatabase: getenv(name: 'globalDatabase')
         );
 
-        $this->db->execDbQuery("
-            SELECT
-                *
-            FROM
-                `{$this->execPhpFunc(getenv('groups'))}` G
-            ", []);
+        $this->db->execDbQuery(
+            sql: "
+                SELECT
+                    *
+                FROM
+                    `{$this->execPhpFunc(param: getenv(name: 'groups'))}` G
+                ", 
+            params: []
+        );
 
-        while($row = $this->db->fetch(\PDO::FETCH_ASSOC)) {
-            $g_key = CacheKey::Group($row['group_id']);
-            $this->cache->setCache($g_key, json_encode($row));
+        while ($row = $this->db->fetch(\PDO::FETCH_ASSOC)) {
+            $g_key = CacheKey::group(groupId: $row['group_id']);
+            $this->cache->setCache(key: $g_key, value: json_encode(value: $row));
             if (!empty($row['allowed_ips'])) {
-                $cidrs = $this->cidrsIpNumber($row['allowed_ips']);
-                if (count($cidrs)>0) {
-                    $cidrKey = CacheKey::CIDR($row['group_id']);
-                    $this->cache->setCache($cidrKey, json_encode($cidrs));
+                $cidrs = $this->_cidrsIpNumber(cidrs: $row['allowed_ips']);
+                if (count(value: $cidrs)>0) {
+                    $cidrKey = CacheKey::cidr(groupId: $row['group_id']);
+                    $this->cache->setCache(
+                        key: $cidrKey, 
+                        value: json_encode(value: $cidrs)
+                    );
                 }
             }
         }
@@ -185,38 +221,66 @@ class Reload
      * Remove token from cache
      *
      * @param string $token Token to be delete from cache
+     *
      * @return void
      */
-    private function processToken($token)
+    private function _processToken($token): void
     {
-        $this->cache->deleteCache("t:$token");
+        $this->cache->deleteCache(key: "t:$token");
     }
 
 
     /**
      * Returns Start IP and End IP for a given CIDR
      *
-     * @param  string $cidrs IP address range in CIDR notation for check
+     * @param string $cidrs IP address range in CIDR notation for check
+     *
      * @return array
      */
-    private function cidrsIpNumber($cidrs)
+    private function _cidrsIpNumber($cidrs): array
     {
         $response = [];
 
-        foreach (explode(',', str_replace(' ', '', $cidrs)) as $cidr) {
-            if (strpos($cidr, '/')) {
-                list($cidrIp, $bits) = explode('/', str_replace(' ', '', $cidr));
-                $binCidrIpStr = str_pad(decbin(ip2long($cidrIp)), 32, 0, STR_PAD_LEFT);
-                $startIpNumber = bindec(str_pad(substr($binCidrIpStr, 0, $bits), 32, 0, STR_PAD_RIGHT));
-                $endIpNumber = $startIpNumber + pow(2, $bits) - 1;
+        foreach (explode(
+            separator: ', ', 
+            string: str_replace(
+                search: ' ', 
+                replace: '', 
+                subject: $cidrs
+            )
+        ) as $cidr) {
+            if (strpos(haystack: $cidr, needle: '/')) {
+                [$cidrIp, $bits] = explode(
+                    separator: '/', 
+                    string: str_replace(search: ' ', replace: '', subject: $cidr)
+                );
+                $binCidrIpStr = str_pad(
+                    string: decbin(num: ip2long(ip: $cidrIp)), 
+                    length: 32, 
+                    pad_string: 0, 
+                    pad_type: STR_PAD_LEFT
+                );
+                $startIpNumber = bindec(
+                    binary_string: str_pad(
+                        string: substr(
+                            string: $binCidrIpStr, 
+                            offset: 0, 
+                            length: $bits
+                        ), 
+                        length: 32, 
+                        pad_string: 0, 
+                        pad_type: STR_PAD_RIGHT
+                    )
+                );
+                $endIpNumber = $startIpNumber + pow(num: 2, exponent: $bits) - 1;
                 $response[] = [
-                    'start' => $startIpNumber,
+                    'start' => $startIpNumber, 
                     'end' => $endIpNumber
                 ];
             } else {
-                if ($ipNumber = ip2long($cidr)) {
+                if ($ipNumber = ip2long(ip: $cidr)) {
                     $response[] = [
-                        'start' => $ipNumber,
+                        'start' => $ipNumber, 
                         'end' => $ipNumber
                     ];
                 }

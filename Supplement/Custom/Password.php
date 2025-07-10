@@ -1,100 +1,133 @@
 <?php
+/**
+ * CustomAPI
+ * php version 8.3
+ *
+ * @category  CustomAPI_Interface
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\Supplement\Custom;
 
-use Microservices\App\Constants;
 use Microservices\App\CacheKey;
 use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\Supplement\Custom\CustomInterface;
 use Microservices\Supplement\Custom\CustomTrait;
 
 /**
- * Class to initialize DB Read operation
+ * CustomAPI Password
+ * php version 8.3
  *
- * This class process the GET api request
- *
- * @category   Category
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  CustomAPI_Password
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Password implements CustomInterface
 {
     use CustomTrait;
 
     /**
-     * Microservices Collection of Common Objects
+     * Common Object
      *
      * @var null|Common
      */
-    private $c = null;
+    private $_c = null;
 
     /**
      * Constructor
      *
-     * @param Common $common
+     * @param Common $common Common object
      */
     public function __construct(&$common)
     {
-        $this->c = &$common;
+        $this->_c = &$common;
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return bool
      */
-    public function init()
+    public function init(): bool
     {
-        $this->c->httpRequest->loadPayload();
+        $this->_c->req->loadPayload();
         return true;
     }
 
     /**
      * Process
      *
-     * @return boolean
+     * @return bool
      */
-    public function process()
+    public function process(): bool
     {
-        if ($this->c->httpRequest->session['payloadType'] === 'Object') {
-            $payload = $this->c->httpRequest->dataDecode->get();
+        if ($this->_c->req->sess['payloadType'] === 'Object') {
+            $payload = $this->_c->req->dataDecode->get();
         } else {
-            $payload = $this->c->httpRequest->dataDecode->get('0');
+            $payload = $this->_c->req->dataDecode->get('0');
         }
-        $this->c->httpRequest->session['payload'] = $payload;
+        $this->_c->req->sess['payload'] = $payload;
 
-        $oldPassword = $this->c->httpRequest->session['payload']['old_password'];
-        $oldPasswordHash = $this->c->httpRequest->session['userDetails']['password_hash'];
+        $oldPassword = $this->_c->req->sess['payload']['old_password'];
+        $oldPasswordHash = $this->_c->req->sess['userDetails']['password_hash'];
 
-        if (password_verify($oldPassword, $oldPasswordHash)) {
-            $userName = $this->c->httpRequest->session['userDetails']['username'];
-            $newPassword = $this->c->httpRequest->session['payload']['new_password'];
-            $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+        if (password_verify(password: $oldPassword, hash: $oldPasswordHash)) {
+            $userName = $this->_c->req->sess['userDetails']['username'];
+            $newPassword = $this->_c->req->sess['payload']['new_password'];
+            $newPasswordHash = password_hash(
+                password: $newPassword, 
+                algo: PASSWORD_DEFAULT
+            );
 
-            $table = getenv('client_users');
-            $sql = "Update `{$table}` SET password_hash = :password_hash WHERE username = :username AND is_deleted = :is_deleted";
+            $table = getenv(name: 'client_users');
+            $sql = "
+                UPDATE `{$table}` 
+                SET password_hash = :password_hash 
+                WHERE username = :username AND is_deleted = :is_deleted
+            ";
             $sqlParams = [
-                ':password_hash' => $newPasswordHash,
-                ':username' => $userName,
-                ':is_deleted' => 'No',
+                ':password_hash' => $newPasswordHash, 
+                ':username' => $userName, 
+                ':is_deleted' => 'No', 
             ];
 
-            $this->c->httpRequest->db->execDbQuery($sql, $sqlParams);
-            $this->c->httpRequest->db->closeCursor();
+            $this->_c->req->db->execDbQuery(sql: $sql, params: $sqlParams);
+            $this->_c->req->db->closeCursor();
 
-            $clientId = $this->c->httpRequest->session['clientDetails']['client_id'];
-            $cu_key = CacheKey::ClientUser($clientId,$userName);
-            if ($this->c->httpRequest->cache->cacheExists($cu_key)) {
-                $userDetails = json_decode($this->c->httpRequest->cache->getCache($cu_key), true);
+            $clientId = $this->_c->req->sess['clientDetails']['client_id'];
+            $cu_key = CacheKey::clientUser(
+                clientId: $clientId, 
+                username: $userName
+            );
+            if ($this->_c->req->cache->cacheExists(key: $cu_key)) {
+                $userDetails = json_decode(
+                    json: $this->_c->req->cache->getCache(
+                        key: $cu_key
+                    ), 
+                    associative: true
+                );
                 $userDetails['password_hash'] = $newPasswordHash;
-                $this->c->httpRequest->cache->setCache($cu_key, json_encode($userDetails));
-                $this->c->httpRequest->cache->deleteCache(CacheKey::Token($this->c->httpRequest->session['token']));
+                $this->_c->req->cache->setCache(
+                    key: $cu_key, 
+                    value: json_encode(value: $userDetails)
+                );
+                $this->_c->req->cache->deleteCache(
+                    key: CacheKey::token(token: $this->_c->req->sess['token'])
+                );
             }
 
-            $this->c->httpResponse->dataEncode->addKeyData('Results', 'Password changed successfully');
+            $this->_c->res->dataEncode->addKeyData(
+                key: 'Results', 
+                data: 'Password changed successfully'
+            );
         }
 
         return true;

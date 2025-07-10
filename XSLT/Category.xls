@@ -4,7 +4,7 @@
     <Resultset>
         <Results select="Resultset/Results">
             <page><xsl:value-of select="page"/></page>
-            <perpage><xsl:value-of select="perpage"/></perpage>
+            <perPage><xsl:value-of select="perPage"/></perPage>
             <totalPages><xsl:value-of select="totalPages"/></totalPages>
             <totalRecords><xsl:value-of select="totalRecords"/></totalRecords>
         </Results>

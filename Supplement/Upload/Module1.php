@@ -1,52 +1,63 @@
 <?php
+/**
+ * UploadAPI
+ * php version 8.3
+ *
+ * @category  UploadAPI
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\Supplement\Upload;
 
 use Microservices\App\Constants;
 use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\Supplement\Upload\UploadInterface;
 use Microservices\Supplement\Upload\UploadTrait;
 
 /**
- * Class is used for file uploads
+ * UploadAPI Example
+ * php version 8.3
  *
- * This class supports POST & PUT HTTP request
- *
- * @category   Upload Module 1
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  UploadAPI_Example
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Module1 implements UploadInterface
 {
     use UploadTrait;
 
     /**
-     * Microservices Collection of Common Objects
+     * Common Object
      *
      * @var null|Common
      */
-    private $c = null;
+    private $_c = null;
 
     /**
      * Constructor
      *
-     * @param Common $common
+     * @param Common $common Common object
      */
     public function __construct(&$common)
     {
-        $this->c = &$common;
-        $this->c->httpRequest->db = $this->c->httpRequest->setDbConnection($fetchFrom = 'Master');
+        $this->_c = &$common;
+        $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: 'Master');
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return bool
      */
-    public function init()
+    public function init(): bool
     {
         return true;
     }
@@ -54,23 +65,25 @@ class Module1 implements UploadInterface
     /**
      * Process
      *
-     * @return boolean
+     * @return bool
      */
-    public function process()
+    public function process(): bool
     {
-        $absFilePath = $this->getLocation();
-        $this->saveFile($absFilePath);
+        $absFilePath = $this->_getLocation();
+        $this->_saveFile(absFilePath: $absFilePath);
 
         return true;
     }
 
     /**
-     * Function to get filename with location depending uplon $session
+     * Function to get filename with location depending upon $sess
      *
      * @return string
      */
-    private function getLocation()
+    private function _getLocation(): string
     {
-        return Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Dropbox' . DIRECTORY_SEPARATOR . 'test.png';
+        return Constants::$DOC_ROOT . 
+            DIRECTORY_SEPARATOR . 'Dropbox' . 
+            DIRECTORY_SEPARATOR . 'test.png';
     }
 }

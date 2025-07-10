@@ -1,53 +1,65 @@
 <?php
+/**
+ * Initialize Upload
+ * php version 8.3
+ *
+ * @category  Upload
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
-use Microservices\App\Constants;
 use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\Supplement\Upload\UploadInterface;
 
 /**
- * Class is used for file uploads
+ * Cron API
+ * php version 8.3
  *
- * This class supports POST & PUT HTTP request
- *
- * @category   Upload
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  UploadAPI
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Upload
 {
     /**
+     * Upload API Object
+     * 
      * @var null|UploadInterface
      */
-    private $api = null;
+    private $_api = null;
 
     /**
-     * Microservices Collection of Common Objects
+     * Common Object
      *
      * @var null|Common
      */
-    private $c = null;
+    private $_c = null;
 
     /**
      * Constructor
      *
-     * @param Common $common
+     * @param Common $common Common object
      */
     public function __construct(&$common)
     {
-        $this->c = &$common;
+        $this->_c = &$common;
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return bool
      */
-    public function init()
+    public function init(): bool
     {
         return true;
     }
@@ -55,15 +67,16 @@ class Upload
     /**
      * Process
      *
-     * @return boolean
+     * @return bool
      */
-    public function process()
+    public function process(): bool
     {
-        $class = 'Microservices\\Supplement\\Upload\\' . ucfirst($this->c->httpRequest->routeElements[1]);
+        $class = 'Microservices\\Supplement\\Upload\\' .
+            ucfirst(string: $this->_c->req->routeElements[1]);
 
-        $this->api = new $class($this->c);
-        if ($this->api->init()) {
-            $this->api->process();
+        $this->_api = new $class(common: $this->_c);
+        if ($this->_api->init()) {
+            $this->_api->process();
         }
 
         return true;

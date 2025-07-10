@@ -1,4 +1,16 @@
 <?php
+/**
+ * Creates Data Representation Input
+ * php version 8.3
+ *
+ * @category  DataDecode
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App\DataRepresentation;
 
 use Microservices\App\DataRepresentation\AbstractDataDecode;
@@ -8,13 +20,15 @@ use Microservices\App\Env;
 
 /**
  * Creates Data Representation Output
+ * php version 8.3
  *
- * @category   Data Decoder
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  DataDecoder
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class DataDecode extends AbstractDataDecode
 {
@@ -23,29 +37,32 @@ class DataDecode extends AbstractDataDecode
      *
      * @var null|resource
      */
-    private $dataFileHandle = null;
+    private $_dataFileHandle = null;
 
     /**
      * Temporary Stream
      *
      * @var null|AbstractDataDecode
      */
-    private $dataDecoder = null;
+    private $_dataDecoder = null;
 
     /**
      * JsonDecode constructor
      *
      * @param resource $dataFileHandle File handle
-     * @return void
      */
     public function __construct(&$dataFileHandle)
     {
-        $this->dataFileHandle = &$dataFileHandle;
+        $this->_dataFileHandle = &$dataFileHandle;
 
-        if (Env::$inputDataRepresentation === 'Json') {
-            $this->dataDecoder = new JsonDecode($this->dataFileHandle);
+        if (Env::$inputRepresentation === 'Json') {
+            $this->_dataDecoder = new JsonDecode(
+                jsonFileHandle: $this->_dataFileHandle
+            );
         } else {
-            $this->dataDecoder = new XmlDecode($this->dataFileHandle);
+            $this->_dataDecoder = new XmlDecode(
+                jsonFileHandle: $this->_dataFileHandle
+            );
         }
     }
 
@@ -54,9 +71,9 @@ class DataDecode extends AbstractDataDecode
      *
      * @return void
      */
-    public function init()
+    public function init(): void
     {
-        $this->dataDecoder->init();
+        $this->_dataDecoder->init();
     }
 
     /**
@@ -64,9 +81,9 @@ class DataDecode extends AbstractDataDecode
      *
      * @return void
      */
-    public function validate()
+    public function validate(): void
     {
-        $this->dataDecoder->validate();
+        $this->_dataDecoder->validate();
     }
 
     /**
@@ -74,76 +91,82 @@ class DataDecode extends AbstractDataDecode
      *
      * @return void
      */
-    public function indexData()
+    public function indexData(): void
     {
-        $this->dataDecoder->indexData();
+        $this->_dataDecoder->indexData();
     }
 
     /**
      * Keys exist
      *
-     * @param null|string $keys Keys exist (values seperated by colon)
-     * @return boolean
+     * @param null|string $keys Keys exist (values separated by colon)
+     *
+     * @return bool
      */
-    public function isset($keys = null)
+    public function isset($keys = null): bool
     {
-        return $this->dataDecoder->isset($keys);
+        return $this->_dataDecoder->isset(keys: $keys);
     }
 
     /**
      * Key exist
      *
-     * @param null|string $keys Keys exist (values seperated by colon)
+     * @param null|string $keys Keys exist (values separated by colon)
+     *
      * @return string Object/Array
      */
-    public function dataType($keys = null)
+    public function dataType($keys = null): string
     {
-        return $this->dataDecoder->dataType($keys);
+        return $this->_dataDecoder->dataType(keys: $keys);
     }
 
     /**
      * Count of array element
      *
-     * @param null|string $keys Key values seperated by colon
-     * @return integer
+     * @param null|string $keys Key values separated by colon
+     *
+     * @return int
      */
-    public function count($keys = null)
+    public function count($keys = null): int
     {
-        return $this->dataDecoder->count($keys);
+        return $this->_dataDecoder->count(keys: $keys);
     }
 
     /**
      * Pass the keys and get whole raw data content belonging to keys
      *
-     * @param string $keys Key values seperated by colon
-     * @return bool|string
+     * @param string $keys Key values separated by colon
+     *
+     * @return mixed
      */
-    public function get($keys = '')
+    public function get($keys = ''): mixed
     {
-        return $this->dataDecoder->get($keys);
+        return $this->_dataDecoder->get(keys: $keys);
     }
 
     /**
      * Get complete array for keys
      *
-     * @param string $keys Key values seperated by colon
-     * @return bool|array
+     * @param string $keys Key values separated by colon
+     *
+     * @return mixed
      */
-    public function getCompleteArray($keys = '')
+    public function getCompleteArray($keys = ''): mixed
     {
-        return $this->dataDecoder->getCompleteArray($keys);
+        return $this->_dataDecoder->getCompleteArray(keys: $keys);
     }
 
     /**
      * Start processing the JSON string for a keys
      * Perform search inside keys of JSON like $json['data'][0]['data1']
      *
-     * @param string $keys Key values seperated by colon
+     * @param string $keys Key values separated by colon
+     *
      * @return void
      * @throws \Exception
      */
-    public function load($keys)
+    public function load($keys): void
     {
-        $this->dataDecoder->load($keys);
+        $this->_dataDecoder->load(keys: $keys);
     }
 }

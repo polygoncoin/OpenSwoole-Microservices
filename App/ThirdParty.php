@@ -1,51 +1,65 @@
 <?php
+/**
+ * Initialize ThirdParty
+ * php version 8.3
+ *
+ * @category  ThirdParty
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
-use Microservices\App\Constants;
 use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\Supplement\ThirdParty\ThirdPartyInterface;
 
 /**
- * Class to initiate custom API's
+ * ThirdParty API
+ * php version 8.3
  *
- * @category   Third party API's
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  ThirdPartyAPI
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class ThirdParty
 {
     /**
+     * ThirdParty API Object
+     *
      * @var null|ThirdPartyInterface
      */
-    private $api = null;
+    private $_api = null;
 
     /**
-     * Microservices Collection of Common Objects
+     * Common Object
      *
      * @var null|Common
      */
-    private $c = null;
+    private $_c = null;
 
     /**
      * Constructor
      *
-     * @param Common $common
+     * @param Common $common Common object
      */
     public function __construct(&$common)
     {
-        $this->c = &$common;
+        $this->_c = &$common;
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return bool
      */
-    public function init()
+    public function init(): bool
     {
         return true;
     }
@@ -53,15 +67,16 @@ class ThirdParty
     /**
      * Process
      *
-     * @return boolean
+     * @return bool
      */
-    public function process()
+    public function process(): bool
     {
-        $class = 'Microservices\\Supplement\\ThirdParty\\' . ucfirst($this->c->httpRequest->routeElements[1]);
+        $class = 'Microservices\\Supplement\\ThirdParty\\' .
+            ucfirst(string: $this->_c->req->routeElements[1]);
 
-        $this->api = new $class($this->c);
-        if ($this->api->init()) {
-            $this->api->process();
+        $this->_api = new $class(common: $this->_c);
+        if ($this->_api->init()) {
+            $this->_api->process();
         }
 
         return true;

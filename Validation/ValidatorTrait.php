@@ -1,35 +1,53 @@
 <?php
+/**
+ * Validator
+ * php version 8.3
+ *
+ * @category  Validator
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\Validation;
 
 /**
- * @category   Validator Trait
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * Validator Trait
+ * php version 8.3
+ *
+ * @category  Validator_Trait
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 trait ValidatorTrait
 {
     /**
      * Validate string is alphanumeric
      *
-     * @param string $v
-     * @return boolean
+     * @param string $v String
+     *
+     * @return bool|int
      */
-    private function isAlphanumeric(&$v)
+    private function _isAlphanumeric(&$v): bool|int
     {
-        return preg_match('/^[a-z0-9 .\-]+$/i', $v);
+        return preg_match(pattern: '/^[a-z0-9 .\-]+$/i', subject: $v);
     }
 
     /**
      * Validate string is an email
      *
      * @param string $v email address
-     * @return boolean
+     *
+     * @return mixed
      */
-    private function isEmail(&$v)
+    private function _isEmail(&$v): mixed
     {
-        return filter_var($v, FILTER_VALIDATE_EMAIL);
+        return filter_var(value: $v, filter: FILTER_VALIDATE_EMAIL);
     }
 }

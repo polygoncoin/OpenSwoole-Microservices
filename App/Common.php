@@ -1,4 +1,16 @@
 <?php
+/**
+ * Common
+ * php version 8.3
+ *
+ * @category  Common
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 namespace Microservices\App;
 
 use Microservices\App\HttpRequest;
@@ -6,15 +18,15 @@ use Microservices\App\HttpResponse;
 
 /**
  * Common Class
+ * php version 8.3
  *
- * Common objects class
- *
- * @category   Common
- * @package    Microservices
- * @author     Ramesh Narayan Jangid
- * @copyright  Ramesh Narayan Jangid
- * @version    Release: @1.0.0@
- * @since      Class available since Release 1.0.0
+ * @category  Common
+ * @package   OpenSwoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @since     Class available since Release 1.0.0
  */
 class Common
 {
@@ -23,43 +35,43 @@ class Common
      *
      * @var null|HttpRequest
      */
-    public $httpRequest = null;
+    public $req = null;
 
     /**
      * Microservices HTTP Response
      *
      * @var null|HttpResponse
      */
-    public $httpResponse = null;
+    public $res = null;
 
     /**
      * Microservices Request Details
      *
      * @var null|array
      */
-    public $httpRequestDetails = null;
+    public $http = null;
 
     /**
      * Constructor
      *
-     * @param array $httpRequestDetails
+     * @param array $http HTTP request details
      */
-    public function __construct(&$httpRequestDetails)
+    public function __construct(&$http)
     {
-        $this->httpRequestDetails = &$httpRequestDetails;
+        $this->http = &$http;
     }
 
     /**
      * Initialize
      *
-     * @return boolean
+     * @return bool
      */
-    public function init()
+    public function init(): void
     {
-        $this->httpRequest = new HttpRequest($this->httpRequestDetails);
-        $this->httpRequest->init();
+        $this->req = new HttpRequest(http: $this->http);
+        $this->req->init();
 
-        $this->httpResponse = new HttpResponse($this->httpRequestDetails);
-        $this->httpResponse->init();
+        $this->res = new HttpResponse(http: $this->http);
+        $this->res->init();
     }
 }
