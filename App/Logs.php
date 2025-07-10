@@ -45,15 +45,15 @@ class Logs
             mkdir(directory: $absLogsDir, permissions: 0755, recursive: true);
         }
 
-        $logFile = $absLogsDir . 
+        $logFile = $absLogsDir .
             DIRECTORY_SEPARATOR . 'logs-' . date(format: 'YmdH');
         if (!file_exists(filename: $logFile)) {
             touch(filename: $logFile);
         }
 
         file_put_contents(
-            filename: $logFile, 
-            data: json_encode(value: $logDetails) . PHP_EOL, 
+            filename: $logFile,
+            data: json_encode(value: $logDetails) . PHP_EOL,
             flags: FILE_APPEND
         );
     }

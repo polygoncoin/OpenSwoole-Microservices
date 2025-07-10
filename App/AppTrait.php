@@ -70,9 +70,9 @@ trait AppTrait
                 foreach ($sqlConfig[$options] as $config) {
                     $fetchFrom = $config['fetchFrom'];
                     $fKey = $config['fetchFromValue'];
-                    $dataType = isset($config['dataType']) ? 
+                    $dataType = isset($config['dataType']) ?
                         $config['dataType'] : DatabaseDataTypes::$Default;
-                    $require = isset($config['necessary']) ? 
+                    $require = isset($config['necessary']) ?
                         $config['necessary'] : false;
 
                     if ($fetchFrom === 'function') {
@@ -326,7 +326,7 @@ trait AppTrait
                 continue;
             } elseif (isset($this->_c->req->sess[$fetchFrom][$fKey])) {
                 $sqlParams[$var] = DatabaseDataTypes::validateDataType(
-                    data: $this->_c->req->sess[$fetchFrom][$fKey], 
+                    data: $this->_c->req->sess[$fetchFrom][$fKey],
                     dataType: $this->_c->req->sess['necessary'][$fetchFrom][$fKey]
                 );
                 continue;
@@ -377,12 +377,12 @@ trait AppTrait
         if (isset($sqlConfig[$keyword]) && $sqlConfig[$keyword] === true) {
             return true;
         }
-        if (isset($sqlConfig['useHierarchy']) 
+        if (isset($sqlConfig['useHierarchy'])
             && $sqlConfig['useHierarchy'] === true
         ) {
             return true;
         }
-        if (isset($sqlConfig['useResultSet']) 
+        if (isset($sqlConfig['useResultSet'])
             && $sqlConfig['useResultSet'] === true
         ) {
             return true;
@@ -406,16 +406,16 @@ trait AppTrait
 
         if (isset($sqlConfig['countQuery'])) {
             $sqlConfig['__CONFIG__'][] = [
-                'column' => 'page', 
-                'fetchFrom' => 'payload', 
-                'fetchFromValue' => 'page', 
-                'dataType' => DatabaseDataTypes::$INT, 
+                'column' => 'page',
+                'fetchFrom' => 'payload',
+                'fetchFromValue' => 'page',
+                'dataType' => DatabaseDataTypes::$INT,
                 'necessary' => Constants::$REQUIRED
             ];
             $sqlConfig['__CONFIG__'][] = [
-                'column' => 'perPage', 
-                'fetchFrom' => 'payload', 
-                'fetchFromValue' => 'perPage', 
+                'column' => 'perPage',
+                'fetchFrom' => 'payload',
+                'fetchFromValue' => 'perPage',
                 'dataType' => DatabaseDataTypes::$INT
             ];
 
@@ -554,18 +554,18 @@ trait AppTrait
             && isset($sqlConfig['rateLimiterSecondsWindow'])
         ) {
             $payloadSignature = [
-                'IP' => $this->_c->req->REMOTE_ADDR, 
-                'clientId' => $this->_c->req->clientId, 
+                'IP' => $this->_c->req->REMOTE_ADDR,
+                'clientId' => $this->_c->req->clientId,
                 'groupId' => (!is_null(value: $this->_c->req->groupId) ?
-                    $this->_c->req->groupId : 0), 
+                    $this->_c->req->groupId : 0),
                 'userId' => (!is_null(value: $this->_c->req->userId) ?
-                    $this->_c->req->userId : 0), 
-                'httpMethod' => $this->_c->req->REQUEST_METHOD, 
-                'Route' => $this->_c->req->ROUTE, 
+                    $this->_c->req->userId : 0),
+                'httpMethod' => $this->_c->req->REQUEST_METHOD,
+                'Route' => $this->_c->req->ROUTE,
             ];
             // $hash = hash_hmac(
-            // 'sha256', 
-            // json_encode($payloadSignature), 
+            // 'sha256',
+            // json_encode($payloadSignature),
             // getenv(name: 'IdempotentSecret')
             // );
             $hash = json_encode(value: $payloadSignature);
@@ -573,9 +573,9 @@ trait AppTrait
 
             // @throws \Exception
             $rateLimitChecked = $this->_c->req->checkRateLimit(
-                getenv(name: 'RateLimiterRoutePrefix'), 
-                $sqlConfig['rateLimiterMaxRequests'], 
-                $sqlConfig['rateLimiterSecondsWindow'], 
+                getenv(name: 'RateLimiterRoutePrefix'),
+                $sqlConfig['rateLimiterMaxRequests'],
+                $sqlConfig['rateLimiterSecondsWindow'],
                 $hashKey
             );
         }
@@ -601,16 +601,16 @@ trait AppTrait
             $idempotentWindow = (int)$sqlConfig['idempotentWindow'];
             if ($idempotentWindow) {
                 $payloadSignature = [
-                    'IdempotentSecret' => getenv(name: 'IdempotentSecret'), 
-                    'idempotentWindow' => $idempotentWindow, 
-                    'IP' => $this->_c->req->REMOTE_ADDR, 
-                    'clientId' => $this->_c->req->clientId, 
+                    'IdempotentSecret' => getenv(name: 'IdempotentSecret'),
+                    'idempotentWindow' => $idempotentWindow,
+                    'IP' => $this->_c->req->REMOTE_ADDR,
+                    'clientId' => $this->_c->req->clientId,
                     'groupId' => (!is_null(value: $this->_c->req->groupId) ?
-                        $this->_c->req->groupId : 0), 
+                        $this->_c->req->groupId : 0),
                     'userId' => (!is_null(value: $this->_c->req->userId) ?
-                        $this->_c->req->userId : 0), 
-                    'httpMethod' => $this->_c->req->REQUEST_METHOD, 
-                    'Route' => $this->_c->req->ROUTE, 
+                        $this->_c->req->userId : 0),
+                    'httpMethod' => $this->_c->req->REQUEST_METHOD,
+                    'Route' => $this->_c->req->ROUTE,
                     'payload' => $this->_c->req->dataDecode->get(
                         implode(separator: ':', array: $_payloadIndexes)
                     )
@@ -620,8 +620,8 @@ trait AppTrait
                 $hashKey = md5(string: $hash);
                 if ($this->_c->req->cache->cacheExists(key: $hashKey)) {
                     $hashJson = str_replace(
-                        search: 'JSON', 
-                        replace: $this->_c->req->cache->getCache(key: $hashKey), 
+                        search: 'JSON',
+                        replace: $this->_c->req->cache->getCache(key: $hashKey),
                         subject: '{"Idempotent": JSON, "Status": 200}'
                     );
                 }
@@ -644,14 +644,14 @@ trait AppTrait
             && isset($sqlConfig['responseLag'])
         ) {
             $payloadSignature = [
-                'IP' => $this->_c->req->REMOTE_ADDR, 
-                'clientId' => $this->_c->req->clientId, 
+                'IP' => $this->_c->req->REMOTE_ADDR,
+                'clientId' => $this->_c->req->clientId,
                 'groupId' => (!is_null(value: $this->_c->req->groupId) ?
-                    $this->_c->req->groupId : 0), 
+                    $this->_c->req->groupId : 0),
                 'userId' => (!is_null(value: $this->_c->req->userId) ?
-                    $this->_c->req->userId : 0), 
-                'httpMethod' => $this->_c->req->REQUEST_METHOD, 
-                'Route' => $this->_c->req->ROUTE, 
+                    $this->_c->req->userId : 0),
+                'httpMethod' => $this->_c->req->REQUEST_METHOD,
+                'Route' => $this->_c->req->ROUTE,
             ];
 
             $hash = json_encode(value: $payloadSignature);

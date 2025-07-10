@@ -116,10 +116,10 @@ class Redis extends AbstractCache
             // https://github.com/phpredis/phpredis?tab=readme-ov-file#class-redis
             $this->_cache = new \Redis(
                 [
-                    'host' => $this->_hostname, 
-                    'port' => (int)$this->_port, 
-                    'connectTimeout' => 2.5, 
-                    'auth' => [$this->_username, $this->_password], 
+                    'host' => $this->_hostname,
+                    'port' => (int)$this->_port,
+                    'connectTimeout' => 2.5,
+                    'auth' => [$this->_username, $this->_password],
                 ]
             );
 

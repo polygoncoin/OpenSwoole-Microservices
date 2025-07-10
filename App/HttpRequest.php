@@ -81,42 +81,42 @@ class HttpRequest extends Gateway
 
     /**
      * Client Id
-     * 
+     *
      * @var null|int
      */
     public $clientId = null;
 
     /**
      * Group Id
-     * 
+     *
      * @var null|int
      */
     public $groupId = null;
 
     /**
      * User Id
-     * 
+     *
      * @var null|int
      */
     public $userId = null;
 
     /**
      * Cache Object
-     * 
+     *
      * @var null|AbstractCache
      */
     public $cache = null;
 
     /**
      * SQL Cache Object
-     * 
+     *
      * @var null|AbstractCache
      */
     public $sqlCache = null;
 
     /**
      * Auth middleware Object
-     * 
+     *
      * @var null|Auth
      */
     public $auth = null;
@@ -281,7 +281,7 @@ class HttpRequest extends Gateway
     {
         if (isset($this->sess['payloadType'])) {
             return;
-        } 
+        }
 
         if ($this->REQUEST_METHOD === Constants::$GET) {
             $this->urlDecode(arr: $_GET);
@@ -309,7 +309,7 @@ class HttpRequest extends Gateway
 
             $this->payloadStream = fopen(filename: "php://memory", mode: "rw+b");
             fwrite(
-                stream: $this->payloadStream, 
+                stream: $this->payloadStream,
                 data: $this->http['post']['Payload']
             );
 
@@ -342,7 +342,7 @@ class HttpRequest extends Gateway
             $array = &$array['Row'];
         }
 
-        if (isset($array[0]) 
+        if (isset($array[0])
             && is_array(value: $array[0]) && count(value: $array) === 1
         ) {
             $array = &$array[0];
@@ -399,7 +399,7 @@ class HttpRequest extends Gateway
 
     /**
      * Load cache server
-     * 
+     *
      * @return void
      */
     private function _loadCache(): void
@@ -409,11 +409,11 @@ class HttpRequest extends Gateway
         }
 
         $this->cache = $this->connectCache(
-            cacheType: getenv(name: 'cacheType'), 
-            cacheHostname: getenv(name: 'cacheHostname'), 
-            cachePort: getenv(name: 'cachePort'), 
-            cacheUsername: getenv(name: 'cacheUsername'), 
-            cachePassword: getenv(name: 'cachePassword'), 
+            cacheType: getenv(name: 'cacheType'),
+            cacheHostname: getenv(name: 'cacheHostname'),
+            cachePort: getenv(name: 'cachePort'),
+            cacheUsername: getenv(name: 'cacheUsername'),
+            cachePassword: getenv(name: 'cachePassword'),
             cacheDatabase: getenv(name: 'cacheDatabase')
         );
     }

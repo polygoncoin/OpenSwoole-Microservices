@@ -116,10 +116,10 @@ class MySql extends AbstractCache
 
         try {
             $this->_cache = new DB_MySql(
-                hostname: $this->_hostname, 
-                port: $this->_port, 
-                username: $this->_username, 
-                password: $this->_password, 
+                hostname: $this->_hostname,
+                port: $this->_port,
+                username: $this->_username,
+                password: $this->_password,
                 database: $this->_database
             );
         } catch (\Exception $e) {
@@ -172,8 +172,8 @@ class MySql extends AbstractCache
 
         if (isset($keyDetails['count']) && $keyDetails['count'] === 1) {
             $sql = "
-                SELECT `value` 
-                FROM `{$keyDetails['table']}` 
+                SELECT `value`
+                FROM `{$keyDetails['table']}`
                 WHERE `key` = ? AND (`ts` = 0 OR `ts` > ?)
             ";
             $params = [$keyDetails['key'], $this->_ts];
@@ -209,7 +209,7 @@ class MySql extends AbstractCache
         }
 
         $sql = "
-            INSERT INTO `{$keyDetails['table']}` 
+            INSERT INTO `{$keyDetails['table']}`
             SET `value` = ?, `ts` = ?, `key` = ?
         ";
         if (is_null(value: $expire)) {
@@ -279,13 +279,13 @@ class MySql extends AbstractCache
         }
 
         $keyDetails = [
-            'table' => $table, 
+            'table' => $table,
             'key' => $key
         ];
 
         $sql = "
-            SELECT count(1) as `count` 
-            FROM `{$keyDetails['table']}` 
+            SELECT count(1) as `count`
+            FROM `{$keyDetails['table']}`
             WHERE `key` = ? AND (`ts` = 0 OR `ts` > ?)
         ";
         $params = [$keyDetails['key'], $this->_ts];

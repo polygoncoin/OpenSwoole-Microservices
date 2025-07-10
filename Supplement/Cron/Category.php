@@ -46,7 +46,7 @@ class Category implements CronInterface
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
         $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: $fetchFrom = 'Slave');

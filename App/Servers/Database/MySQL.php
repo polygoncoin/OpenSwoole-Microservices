@@ -132,11 +132,11 @@ class MySql extends AbstractDatabase
 
         try {
             $this->_pdo = new \PDO(
-                dsn: "mysql:host={$this->_hostname};port={$this->_port}", 
-                username: $this->_username, 
-                password: $this->_password, 
+                dsn: "mysql:host={$this->_hostname};port={$this->_port}",
+                username: $this->_username,
+                password: $this->_password,
                 options: [
-                    \PDO::ATTR_EMULATE_PREPARES => false, 
+                    \PDO::ATTR_EMULATE_PREPARES => false,
                     // \PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false
                 ]
             );

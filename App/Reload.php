@@ -61,7 +61,7 @@ class Reload
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
     }
@@ -84,11 +84,11 @@ class Reload
     public function process(): bool
     {
         $this->cache = $this->_c->req->connectCache(
-            cacheType: getenv(name: 'cacheType'), 
-            cacheHostname: getenv(name: 'cacheHostname'), 
-            cachePort: getenv(name: 'cachePort'), 
-            cacheUsername: getenv(name: 'cacheUsername'), 
-            cachePassword: getenv(name: 'cachePassword'), 
+            cacheType: getenv(name: 'cacheType'),
+            cacheHostname: getenv(name: 'cacheHostname'),
+            cachePort: getenv(name: 'cachePort'),
+            cacheUsername: getenv(name: 'cacheUsername'),
+            cachePassword: getenv(name: 'cachePassword'),
             cacheDatabase: getenv(name: 'cacheDatabase')
         );
 
@@ -106,11 +106,11 @@ class Reload
     private function _processDomainAndUser(): void
     {
         $this->_c->req->db = $this->_c->req->connectDb(
-            dbType: getenv(name: 'globalType'), 
-            dbHostname: getenv(name: 'globalHostname'), 
-            dbPort: getenv(name: 'globalPort'), 
-            dbUsername: getenv(name: 'globalUsername'), 
-            dbPassword: getenv(name: 'globalPassword'), 
+            dbType: getenv(name: 'globalType'),
+            dbHostname: getenv(name: 'globalHostname'),
+            dbPort: getenv(name: 'globalPort'),
+            dbUsername: getenv(name: 'globalUsername'),
+            dbPassword: getenv(name: 'globalPassword'),
             dbDatabase: getenv(name: 'globalDatabase')
         );
         $this->db = &$this->_c->req->db;
@@ -121,7 +121,7 @@ class Reload
                     *
                 FROM
                     `{$this->execPhpFunc(param: getenv(name: 'clients'))}` C
-                ", 
+                ",
             params: []
         );
         $crows = $this->db->fetchAll();
@@ -132,21 +132,21 @@ class Reload
                     hostname: $crows[$ci]['open_api_domain']
                 );
                 $this->cache->setCache(
-                    key: $c_key, 
+                    key: $c_key,
                     value: json_encode(value: $crows[$ci])
                 );
             }
             $c_key = CacheKey::client(hostname: $crows[$ci]['api_domain']);
             $this->cache->setCache(
-                key: $c_key, 
+                key: $c_key,
                 value: json_encode(value: $crows[$ci])
             );
             $this->_c->req->db = $this->_c->req->connectDb(
-                dbType: getenv(name: $crows[$ci]['master_db_server_type']), 
-                dbHostname: getenv(name: $crows[$ci]['master_db_hostname']), 
-                dbPort: getenv(name: $crows[$ci]['master_db_port']), 
-                dbUsername: getenv(name: $crows[$ci]['master_db_username']), 
-                dbPassword: getenv(name: $crows[$ci]['master_db_password']), 
+                dbType: getenv(name: $crows[$ci]['master_db_server_type']),
+                dbHostname: getenv(name: $crows[$ci]['master_db_hostname']),
+                dbPort: getenv(name: $crows[$ci]['master_db_port']),
+                dbUsername: getenv(name: $crows[$ci]['master_db_username']),
+                dbPassword: getenv(name: $crows[$ci]['master_db_password']),
                 dbDatabase: getenv(name: $crows[$ci]['master_db_database'])
             );
 
@@ -156,18 +156,18 @@ class Reload
                         *
                     FROM
                         `{$this->execPhpFunc(param: getenv(name: 'client_users'))}` U
-                    ", 
+                    ",
                 params: []
             );
             $urows = $this->db->fetchAll();
             $this->db->closeCursor();
             for ($ui = 0, $ui_count = count(value: $urows); $ui < $ui_count; $ui++) {
                 $cu_key = CacheKey::clientUser(
-                    clientId: $crows[$ci]['client_id'], 
+                    clientId: $crows[$ci]['client_id'],
                     username: $urows[$ui]['username']
                 );
                 $this->cache->setCache(
-                    key: $cu_key, 
+                    key: $cu_key,
                     value: json_encode(value: $urows[$ui])
                 );
             }
@@ -182,11 +182,11 @@ class Reload
     private function _processGroup(): void
     {
         $this->_c->req->db = $this->_c->req->connectDb(
-            dbType: getenv(name: 'globalType'), 
-            dbHostname: getenv(name: 'globalHostname'), 
-            dbPort: getenv(name: 'globalPort'), 
-            dbUsername: getenv(name: 'globalUsername'), 
-            dbPassword: getenv(name: 'globalPassword'), 
+            dbType: getenv(name: 'globalType'),
+            dbHostname: getenv(name: 'globalHostname'),
+            dbPort: getenv(name: 'globalPort'),
+            dbUsername: getenv(name: 'globalUsername'),
+            dbPassword: getenv(name: 'globalPassword'),
             dbDatabase: getenv(name: 'globalDatabase')
         );
 
@@ -196,7 +196,7 @@ class Reload
                     *
                 FROM
                     `{$this->execPhpFunc(param: getenv(name: 'groups'))}` G
-                ", 
+                ",
             params: []
         );
 
@@ -208,7 +208,7 @@ class Reload
                 if (count(value: $cidrs)>0) {
                     $cidrKey = CacheKey::cidr(groupId: $row['group_id']);
                     $this->cache->setCache(
-                        key: $cidrKey, 
+                        key: $cidrKey,
                         value: json_encode(value: $cidrs)
                     );
                 }
@@ -226,7 +226,7 @@ class Reload
      */
     private function _processToken($token): void
     {
-        $this->cache->deleteCache(key: "t:$token");
+        $this->cache->deleteCache(key: CacheKey::token(token: $token));
     }
 
 
@@ -242,45 +242,45 @@ class Reload
         $response = [];
 
         foreach (explode(
-            separator: ', ', 
+            separator: ', ',
             string: str_replace(
-                search: ' ', 
-                replace: '', 
+                search: ' ',
+                replace: '',
                 subject: $cidrs
             )
         ) as $cidr) {
             if (strpos(haystack: $cidr, needle: '/')) {
                 [$cidrIp, $bits] = explode(
-                    separator: '/', 
+                    separator: '/',
                     string: str_replace(search: ' ', replace: '', subject: $cidr)
                 );
                 $binCidrIpStr = str_pad(
-                    string: decbin(num: ip2long(ip: $cidrIp)), 
-                    length: 32, 
-                    pad_string: 0, 
+                    string: decbin(num: ip2long(ip: $cidrIp)),
+                    length: 32,
+                    pad_string: 0,
                     pad_type: STR_PAD_LEFT
                 );
                 $startIpNumber = bindec(
                     binary_string: str_pad(
                         string: substr(
-                            string: $binCidrIpStr, 
-                            offset: 0, 
+                            string: $binCidrIpStr,
+                            offset: 0,
                             length: $bits
-                        ), 
-                        length: 32, 
-                        pad_string: 0, 
+                        ),
+                        length: 32,
+                        pad_string: 0,
                         pad_type: STR_PAD_RIGHT
                     )
                 );
                 $endIpNumber = $startIpNumber + pow(num: 2, exponent: $bits) - 1;
                 $response[] = [
-                    'start' => $startIpNumber, 
+                    'start' => $startIpNumber,
                     'end' => $endIpNumber
                 ];
             } else {
                 if ($ipNumber = ip2long(ip: $cidr)) {
                     $response[] = [
-                        'start' => $ipNumber, 
+                        'start' => $ipNumber,
                         'end' => $ipNumber
                     ];
                 }

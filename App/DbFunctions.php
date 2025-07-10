@@ -40,23 +40,23 @@ class DbFunctions
      * @param string $cacheUsername Username
      * @param string $cachePassword Password
      * @param string $cacheDatabase Database
-     * 
+     *
      * @return object
      */
     public function connectCache(
-        $cacheType, 
-        $cacheHostname, 
-        $cachePort, 
-        $cacheUsername, 
-        $cachePassword, 
+        $cacheType,
+        $cacheHostname,
+        $cachePort,
+        $cacheUsername,
+        $cachePassword,
         $cacheDatabase
     ): object {
         $cacheNS = 'Microservices\\App\\Servers\\Cache\\'.$cacheType;
         return new $cacheNS(
-            $cacheHostname, 
-            $cachePort, 
-            $cacheUsername, 
-            $cachePassword, 
+            $cacheHostname,
+            $cachePort,
+            $cacheUsername,
+            $cachePassword,
             $cacheDatabase
         );
     }
@@ -84,19 +84,19 @@ class DbFunctions
             return $this->connectCache(
                 cacheType: getenv(
                     name: $this->sess['clientDetails']['master_cache_server_type']
-                ), 
+                ),
                 cacheHostname: getenv(
                     name: $this->sess['clientDetails']['master_cache_hostname']
-                ), 
+                ),
                 cachePort: getenv(
                     name: $this->sess['clientDetails']['master_cache_port']
-                ), 
+                ),
                 cacheUsername: getenv(
                     name: $this->sess['clientDetails']['master_cache_username']
-                ), 
+                ),
                 cachePassword: getenv(
                     name: $this->sess['clientDetails']['master_cache_password']
-                ), 
+                ),
                 cacheDatabase: getenv(
                     name: $this->sess['clientDetails']['master_cache_database']
                 )
@@ -105,19 +105,19 @@ class DbFunctions
             return $this->connectCache(
                 cacheType: getenv(
                     name: $this->sess['clientDetails']['slave_cache_server_type']
-                ), 
+                ),
                 cacheHostname: getenv(
                     name: $this->sess['clientDetails']['slave_cache_hostname']
-                ), 
+                ),
                 cachePort: getenv(
                     name: $this->sess['clientDetails']['slave_cache_port']
-                ), 
+                ),
                 cacheUsername: getenv(
                     name: $this->sess['clientDetails']['slave_cache_username']
-                ), 
+                ),
                 cachePassword: getenv(
                     name: $this->sess['clientDetails']['slave_cache_password']
-                ), 
+                ),
                 cacheDatabase: getenv(
                     name: $this->sess['clientDetails']['slave_cache_database']
                 )
@@ -143,19 +143,19 @@ class DbFunctions
      * @return object
      */
     public function connectDb(
-        $dbType, 
-        $dbHostname, 
-        $dbPort, 
-        $dbUsername, 
-        $dbPassword, 
+        $dbType,
+        $dbHostname,
+        $dbPort,
+        $dbUsername,
+        $dbPassword,
         $dbDatabase
     ): object {
         $dbNS = 'Microservices\\App\\Servers\\Database\\'.$dbType;
         return new $dbNS(
-            $dbHostname, 
-            $dbPort, 
-            $dbUsername, 
-            $dbPassword, 
+            $dbHostname,
+            $dbPort,
+            $dbUsername,
+            $dbPassword,
             $dbDatabase
         );
     }
@@ -183,19 +183,19 @@ class DbFunctions
             return $this->connectDb(
                 dbType: getenv(
                     name: $this->sess['clientDetails']['master_db_server_type']
-                ), 
+                ),
                 dbHostname: getenv(
                     name: $this->sess['clientDetails']['master_db_hostname']
-                ), 
+                ),
                 dbPort: getenv(
                     name: $this->sess['clientDetails']['master_db_port']
-                ), 
+                ),
                 dbUsername: getenv(
                     name: $this->sess['clientDetails']['master_db_username']
-                ), 
+                ),
                 dbPassword: getenv(
                     name: $this->sess['clientDetails']['master_db_password']
-                ), 
+                ),
                 dbDatabase: getenv(
                     name: $this->sess['clientDetails']['master_db_database']
                 )
@@ -204,19 +204,19 @@ class DbFunctions
             return $this->connectDb(
                 dbType: getenv(
                     name: $this->sess['clientDetails']['slave_db_server_type']
-                ), 
+                ),
                 dbHostname: getenv(
                     name: $this->sess['clientDetails']['slave_db_hostname']
-                ), 
+                ),
                 dbPort: getenv(
                     name: $this->sess['clientDetails']['slave_db_port']
-                ), 
+                ),
                 dbUsername: getenv(
                     name: $this->sess['clientDetails']['slave_db_username']
-                ), 
+                ),
                 dbPassword: getenv(
                     name: $this->sess['clientDetails']['slave_db_password']
-                ), 
+                ),
                 dbDatabase: getenv(
                     name: $this->sess['clientDetails']['slave_db_database']
                 )

@@ -35,7 +35,7 @@ class Validator
 {
     /**
      * Validator Object
-     * 
+     *
      * @var null|ValidatorInterface
      */
     private $_v = null;
@@ -52,7 +52,7 @@ class Validator
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
 
@@ -74,7 +74,7 @@ class Validator
     {
         $sess = &$this->_c->req->sess;
         if (isset(($sess['necessary'])) && count(value: $sess['necessary']) > 0) {
-            if (([$isValidData, $errors] = $this->_validateRequired()) 
+            if (([$isValidData, $errors] = $this->_validateRequired())
                 && !$isValidData
             ) {
                 return [$isValidData, $errors];

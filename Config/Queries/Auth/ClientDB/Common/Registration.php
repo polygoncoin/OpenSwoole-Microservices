@@ -4,16 +4,16 @@ namespace Microservices\Config\Queries\Auth\ClientDB\Common;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    '__QUERY__' => "UPDATE `master_users` SET __SET__ WHERE __WHERE__", 
+    '__QUERY__' => "UPDATE `master_users` SET __SET__ WHERE __WHERE__",
     '__VALIDATE__' => [
     [
-      'fn' => '_primaryKeyExist', 
+      'fn' => '_primaryKeyExist',
       'fnArgs' => [
-                'table' => ['custom', 'master_users'], 
-                'primary' => ['custom', 'user_id'], 
+                'table' => ['custom', 'master_users'],
+                'primary' => ['custom', 'user_id'],
                 'id' => ['uriParams', 'id']
-            ], 
+            ],
       'errorMessage' => 'Invalid registration id'
-    ], 
+    ],
   ]
 ];

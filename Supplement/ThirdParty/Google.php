@@ -47,7 +47,7 @@ class Google implements ThirdPartyInterface
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
         $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: 'Slave');
@@ -74,8 +74,8 @@ class Google implements ThirdPartyInterface
 
         $curl_handle=curl_init();
         curl_setopt(
-            handle: $curl_handle, 
-            option: CURLOPT_URL, 
+            handle: $curl_handle,
+            option: CURLOPT_URL,
             value: 'https://api.ipify.org?format=json'
         );
         curl_setopt(handle: $curl_handle, option: CURLOPT_CONNECTTIMEOUT, value: 2);

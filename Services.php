@@ -137,7 +137,7 @@ class Services
         switch (true) {
 
         case Env::$allowCronRequest && strpos(
-            haystack: $this->c->req->ROUTE, 
+            haystack: $this->c->req->ROUTE,
             needle: '/' . Env::$cronRequestUriPrefix
         ) === 0:
             if ($this->c->req->REMOTE_ADDR !== Env::$cronRestrictedIp) {
@@ -195,7 +195,7 @@ class Services
     public function endOutputJson(): void
     {
         $this->c->res->dataEncode->addKeyData(
-            key: 'Status', 
+            key: 'Status',
             data: $this->c->res->httpStatus
         );
     }
@@ -215,16 +215,16 @@ class Services
             $this->c->res->dataEncode->startObject(key: ' Stats');
             $this->c->res->dataEncode->startObject(key: ' Performance');
             $this->c->res->dataEncode->addKeyData(
-                key: 'total-time-taken', 
+                key: 'total-time-taken',
                 data: "{$time} ms"
             );
             $this->c->res->dataEncode->addKeyData(
-                key: 'peak-memory-usage', 
+                key: 'peak-memory-usage',
                 data: "{$memory} KB"
             );
             $this->c->res->dataEncode->endObject();
             $this->c->res->dataEncode->addKeyData(
-                key: 'getrusage', 
+                key: 'getrusage',
                 data: getrusage()
             );
             $this->c->res->dataEncode->endObject();

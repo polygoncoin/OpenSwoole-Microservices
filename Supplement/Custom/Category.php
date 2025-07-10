@@ -53,7 +53,7 @@ class Category implements CustomInterface
      *
      * @param Common $common Common object Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
         $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: $fetchFrom = 'Slave');
@@ -78,13 +78,13 @@ class Category implements CustomInterface
     public function process(): bool
     {
         $sql = '
-            SELECT * 
-            FROM category 
+            SELECT *
+            FROM category
             WHERE is_deleted = :is_deleted AND parent_id = :parent_id
         ';
         $sqlParams = [
-            ':is_deleted' => 'No', 
-            ':parent_id' => 0, 
+            ':is_deleted' => 'No',
+            ':parent_id' => 0,
         ];
         $this->db->execDbQuery(sql: $sql, params: $sqlParams);
         $rows = $this->db->fetchAll();

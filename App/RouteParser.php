@@ -47,19 +47,19 @@ class RouteParser extends DbFunctions
 
         if (is_null(value: $routeFileLocation)) {
             if ($this->open) {
-                $routeFileLocation = Constants::$DOC_ROOT . 
-                    DIRECTORY_SEPARATOR . 'Config' . 
-                    DIRECTORY_SEPARATOR . 'Routes' . 
-                    DIRECTORY_SEPARATOR . 'Open' . 
+                $routeFileLocation = Constants::$DOC_ROOT .
+                    DIRECTORY_SEPARATOR . 'Config' .
+                    DIRECTORY_SEPARATOR . 'Routes' .
+                    DIRECTORY_SEPARATOR . 'Open' .
                     DIRECTORY_SEPARATOR . $this->REQUEST_METHOD . 'routes.php';
             } else {
-                $routeFileLocation = Constants::$DOC_ROOT . 
-                    DIRECTORY_SEPARATOR . 'Config' . 
-                    DIRECTORY_SEPARATOR . 'Routes' . 
-                    DIRECTORY_SEPARATOR . 'Auth' . 
-                    DIRECTORY_SEPARATOR . 'ClientDB' . 
-                    DIRECTORY_SEPARATOR . 'Groups' . 
-                    DIRECTORY_SEPARATOR . $this->sess['groupDetails']['name'] . 
+                $routeFileLocation = Constants::$DOC_ROOT .
+                    DIRECTORY_SEPARATOR . 'Config' .
+                    DIRECTORY_SEPARATOR . 'Routes' .
+                    DIRECTORY_SEPARATOR . 'Auth' .
+                    DIRECTORY_SEPARATOR . 'ClientDB' .
+                    DIRECTORY_SEPARATOR . 'Groups' .
+                    DIRECTORY_SEPARATOR . $this->sess['groupDetails']['name'] .
                     DIRECTORY_SEPARATOR . $this->REQUEST_METHOD . 'routes.php';
             }
         }
@@ -68,13 +68,13 @@ class RouteParser extends DbFunctions
             $routes = include $routeFileLocation;
         } else {
             throw new \Exception(
-                message: 'Route file missing: ' . $this->REQUEST_METHOD . ' method', 
+                message: 'Route file missing: ' . $this->REQUEST_METHOD . ' method',
                 code: HttpStatus::$InternalServerError
             );
         }
 
         $this->routeElements = explode(
-            separator: '/', 
+            separator: '/',
             string: trim(string: $this->ROUTE, characters: '/')
         );
         $routeLastElementPos = count(value: $this->routeElements) - 1;
@@ -82,7 +82,7 @@ class RouteParser extends DbFunctions
 
         foreach ($this->routeElements as $key => $element) {
             if (in_array(
-                needle: $key, 
+                needle: $key,
                 haystack: ['__PRE-ROUTE-HOOKS__', '__POST-ROUTE-HOOKS__']
             )
             ) {
@@ -95,8 +95,8 @@ class RouteParser extends DbFunctions
                 $routes = &$routes[$element];
                 if (strpos(haystack: $element, needle: '{') === 0) {
                     $param = substr(
-                        string: $element, 
-                        offset: 1, 
+                        string: $element,
+                        offset: 1,
                         length: strpos(haystack: $element, needle: ':') - 1
                     );
                     $this->sess['uriParams'][$param] = $element;
@@ -114,11 +114,11 @@ class RouteParser extends DbFunctions
                         if (strpos(haystack: $routeElement, needle: '{') === 0) {
                             // Is a dynamic URI element
                             $this->_processRouteElement(
-                                routeElement: $routeElement, 
-                                element: $element, 
-                                foundIntRoute: $foundIntRoute, 
-                                foundIntParamName: $foundIntParamName, 
-                                foundStringRoute: $foundStringRoute, 
+                                routeElement: $routeElement,
+                                element: $element,
+                                foundIntRoute: $foundIntRoute,
+                                foundIntParamName: $foundIntParamName,
+                                foundStringRoute: $foundStringRoute,
                                 foundStringParamName: $foundStringParamName
                             );
                         }
@@ -173,11 +173,11 @@ class RouteParser extends DbFunctions
      * @throws \Exception
      */
     private function _processRouteElement(
-        $routeElement, 
-        &$element, 
-        &$foundIntRoute, 
-        &$foundIntParamName, 
-        &$foundStringRoute, 
+        $routeElement,
+        &$element,
+        &$foundIntRoute,
+        &$foundIntParamName,
+        &$foundStringRoute,
         &$foundStringParamName
     ): bool {
         // Is a dynamic URI element
@@ -191,13 +191,13 @@ class RouteParser extends DbFunctions
         $preferredValues = [];
         if (strpos(haystack: $routeElement, needle: '|') !== false) {
             [$dynamicRoute, $preferredValuesString] = explode(
-                separator: '|', 
+                separator: '|',
                 string: $dynamicRoute
             );
             if (strpos(haystack: $preferredValuesString, needle: '!') === 0) {
                 $mode = 'exclude';
                 $preferredValuesString = substr(
-                    string: $preferredValuesString, 
+                    string: $preferredValuesString,
                     offset: 1
                 );
             }
@@ -206,7 +206,7 @@ class RouteParser extends DbFunctions
         }
 
         [$paramName, $paramDataType] = explode(
-            separator: ':', 
+            separator: ':',
             string: $dynamicRoute
         );
         if (!in_array(needle: $paramDataType, haystack: ['int', 'string'])) {
@@ -260,7 +260,7 @@ class RouteParser extends DbFunctions
     private function _validateConfigFile(&$routes): void
     {
         // Set route code file
-        if (!(isset($routes['__FILE__']) && ($routes['__FILE__'] === false 
+        if (!(isset($routes['__FILE__']) && ($routes['__FILE__'] === false
             || file_exists(filename: $routes['__FILE__'])))
         ) {
             throw new \Exception(

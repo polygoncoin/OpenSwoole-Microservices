@@ -37,10 +37,10 @@ class Routes
      * @var array
      */
     private $_httpMethods = [
-        'GET', 
-        'POST', 
-        'PUT', 
-        'PATCH', 
+        'GET',
+        'POST',
+        'PUT',
+        'PATCH',
         'DELETE'
     ];
 
@@ -49,7 +49,7 @@ class Routes
      *
      * @var string
      */
-    private $_routesFolder = DIRECTORY_SEPARATOR . 'Config' . 
+    private $_routesFolder = DIRECTORY_SEPARATOR . 'Config' .
         DIRECTORY_SEPARATOR . 'Routes';
 
     /**
@@ -71,7 +71,7 @@ class Routes
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
     }
@@ -101,18 +101,18 @@ class Routes
 
         $httpRoutes = [];
         if ($this->_c->req->open) {
-            $userRoutesFolder = Constants::$DOC_ROOT . $this->_routesFolder . 
+            $userRoutesFolder = Constants::$DOC_ROOT . $this->_routesFolder .
                 DIRECTORY_SEPARATOR . 'Open';
         } else {
-            $userRoutesFolder = Constants::$DOC_ROOT . $this->_routesFolder . 
-                DIRECTORY_SEPARATOR . 'Auth' . 
-                DIRECTORY_SEPARATOR . 'GroupRoutes' .  
+            $userRoutesFolder = Constants::$DOC_ROOT . $this->_routesFolder .
+                DIRECTORY_SEPARATOR . 'Auth' .
+                DIRECTORY_SEPARATOR . 'GroupRoutes' .
                 DIRECTORY_SEPARATOR . $this->_c->req->sess['groupDetails']['name'];
         }
 
         foreach ($this->_httpMethods as $method) {
             $httpRoutes[$method] = [];
-            $routeFileLocation =  $userRoutesFolder . 
+            $routeFileLocation =  $userRoutesFolder .
                 DIRECTORY_SEPARATOR . $method . 'routes.php';
             if (!file_exists(filename: $routeFileLocation)) {
                 continue;
@@ -120,13 +120,13 @@ class Routes
             $routes = include $routeFileLocation;
             $route = '';
             $this->_getRoutes(
-                routes: $routes, 
-                route: $route, 
+                routes: $routes,
+                route: $route,
                 httpRoutes: $httpRoutes[$method]
             );
         }
         $this->_c->res->dataEncode->addKeyData(
-            key: 'Results', 
+            key: 'Results',
             data: $httpRoutes
         );
 
@@ -154,8 +154,8 @@ class Routes
             if (is_array(value: $r)) {
                 $_route = $route . '/' . $key;
                 $this->_getRoutes(
-                    routes: $r, 
-                    route: $_route, 
+                    routes: $r,
+                    route: $_route,
                     httpRoutes: $httpRoutes
                 );
             }

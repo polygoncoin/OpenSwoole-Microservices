@@ -313,7 +313,7 @@ class PgSql extends AbstractDatabase
      * Close statement cursor
      *
      * @param bool $pushPop Push Pop result set stmt
-     * 
+     *
      * @return void
      */
     public function closeCursor($pushPop = false): void

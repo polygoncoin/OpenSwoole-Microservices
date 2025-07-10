@@ -92,7 +92,7 @@ class Write
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
         $this->_sess = &$this->_c->req->sess;
@@ -125,7 +125,7 @@ class Write
         // Rate Limiting request if configured for Route Queries.
         $this->_rateLimitRoute(sqlConfig: $wSqlConfig);
 
-        $this->dataEncode->XSLT = isset($wSqlConfig['XSLT']) ? 
+        $this->dataEncode->XSLT = isset($wSqlConfig['XSLT']) ?
             $wSqlConfig['XSLT'] : null;
 
         // Lag Response
@@ -141,18 +141,18 @@ class Write
 
         // Use results in where clause of sub queries recursively
         $useHierarchy = $this->_getUseHierarchy(
-            sqlConfig: $wSqlConfig, 
+            sqlConfig: $wSqlConfig,
             keyword: 'useHierarchy'
         );
 
         if (Env::$allowConfigRequest && $this->_c->req->isConfigRequest) {
             $this->_processWriteConfig(
-                wSqlConfig: $wSqlConfig, 
+                wSqlConfig: $wSqlConfig,
                 useHierarchy: $useHierarchy
             );
         } else {
             $this->_processWrite(
-                wSqlConfig: $wSqlConfig, 
+                wSqlConfig: $wSqlConfig,
                 useHierarchy: $useHierarchy
             );
         }
@@ -184,13 +184,13 @@ class Write
     {
         $this->dataEncode->startObject(key: 'Config');
         $this->dataEncode->addKeyData(
-            key: 'Route', 
+            key: 'Route',
             data: $this->_c->req->configuredUri
         );
         $this->dataEncode->addKeyData(
-            key: 'Payload', 
+            key: 'Payload',
             data: $this->_getConfigParams(
-                sqlConfig: $wSqlConfig, 
+                sqlConfig: $wSqlConfig,
                 isFirstCall: true,
                 flag: $useHierarchy
             )
@@ -225,7 +225,7 @@ class Write
                 && ($objCount > $wSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
             ) {
                 throw new \Exception(
-                    message: 'Maximum supported payload count is ' . 
+                    message: 'Maximum supported payload count is ' .
                         $wSqlConfig['__MAX-PAYLOAD-OBJECTS__'],
                     code: HttpStatus::$BadRequest
                 );
@@ -269,7 +269,7 @@ class Write
 
             // Check for Idempotent Window
             [$idempotentWindow, $hashKey, $hashJson] = $this->_checkIdempotent(
-                sqlConfig: $wSqlConfig, 
+                sqlConfig: $wSqlConfig,
                 _payloadIndexes: $_payloadIndexes
             );
 
@@ -280,46 +280,46 @@ class Write
                 }
                 $response = [];
                 $this->_writeDB(
-                    wSqlConfig: $wSqlConfig, 
-                    payloadIndexes: $_payloadIndexes, 
-                    configKeys: $_configKeys, 
-                    useHierarchy: $useHierarchy, 
-                    response: $response, 
+                    wSqlConfig: $wSqlConfig,
+                    payloadIndexes: $_payloadIndexes,
+                    configKeys: $_configKeys,
+                    useHierarchy: $useHierarchy,
+                    response: $response,
                     necessary: $this->_sess['necessaryArr']
                 );
-                $bool = $this->_operateAsTransaction 
+                $bool = $this->_operateAsTransaction
                     && ($this->db->beganTransaction === true);
                 if (!$this->_operateAsTransaction || $bool) {
                     if ($this->_operateAsTransaction) {
                         $this->db->commit();
                     }
                     $arr = [
-                        'Status' => HttpStatus::$Created, 
+                        'Status' => HttpStatus::$Created,
                         'Payload' => $this->_c->req->dataDecode->getCompleteArray(
                             keys: implode(
-                                separator: ':', 
+                                separator: ':',
                                 array: $_payloadIndexes
                             )
-                        ), 
+                        ),
                         'Response' => &$response
                     ];
                     if ($idempotentWindow) {
                         $this->_c->req->cache->setCache(
-                            key: $hashKey, 
-                            value: json_encode(value: $arr), 
+                            key: $hashKey,
+                            value: json_encode(value: $arr),
                             expire: $idempotentWindow
                         );
                     }
                 } else { // Failure
                     $this->_c->res->httpStatus = HttpStatus::$BadRequest;
                     $arr = [
-                        'Status' => HttpStatus::$BadRequest, 
+                        'Status' => HttpStatus::$BadRequest,
                         'Payload' => $this->_c->req->dataDecode->getCompleteArray(
                             keys: implode(
-                                separator: ':', 
+                                separator: ':',
                                 array: $_payloadIndexes
                             )
-                        ), 
+                        ),
                         'Error' => &$response
                     ];
                 }
@@ -366,11 +366,11 @@ class Write
      * @throws \Exception
      */
     private function _writeDB(
-        &$wSqlConfig, 
-        $payloadIndexes, 
-        $configKeys, 
-        $useHierarchy, 
-        &$response, 
+        &$wSqlConfig,
+        $payloadIndexes,
+        $configKeys,
+        $useHierarchy,
+        &$response,
         &$necessary
     ): void {
         if (isset($payloadIndexes[0]) && $payloadIndexes[0] === '') {
@@ -502,12 +502,12 @@ class Write
             // subQuery for payload
             if (isset($wSqlConfig['__SUB-QUERY__'])) {
                 $this->_callWriteDB(
-                    isAssoc: $isAssoc, 
-                    wSqlConfig: $wSqlConfig, 
-                    payloadIndexes: $_payloadIndexes, 
-                    configKeys: $configKeys, 
-                    useHierarchy: $useHierarchy, 
-                    response: $response, 
+                    isAssoc: $isAssoc,
+                    wSqlConfig: $wSqlConfig,
+                    payloadIndexes: $_payloadIndexes,
+                    configKeys: $configKeys,
+                    useHierarchy: $useHierarchy,
+                    response: $response,
                     necessary: $necessary
                 );
             }
@@ -532,19 +532,19 @@ class Write
      * @return void
      */
     private function _callWriteDB(
-        $isAssoc, 
-        &$wSqlConfig, 
-        $payloadIndexes, 
-        $configKeys, 
-        $useHierarchy, 
-        &$response, 
+        $isAssoc,
+        &$wSqlConfig,
+        $payloadIndexes,
+        $configKeys,
+        $useHierarchy,
+        &$response,
         &$necessary
     ): void {
         if ($useHierarchy) {
             $row = $this->_sess['payload'];
             $this->_resetFetchData(
-                fetchFrom: 'sqlPayload', 
-                keys: $configKeys, 
+                fetchFrom: 'sqlPayload',
+                keys: $configKeys,
                 row: $row
             );
         }
@@ -554,13 +554,13 @@ class Write
         }
         if (!is_array(value: $payloadIndexes)) $payloadIndexes = [];
 
-        if (isset($wSqlConfig['__SUB-QUERY__']) 
+        if (isset($wSqlConfig['__SUB-QUERY__'])
             && $this->_isAssoc(arr: $wSqlConfig['__SUB-QUERY__'])
         ) {
             foreach ($wSqlConfig['__SUB-QUERY__'] as $module => &$_wSqlConfig) {
                 $_payloadIndexes = $payloadIndexes;
                 $_configKeys = $configKeys;
-                $modulePayloadKey = is_array(value: $_payloadIndexes) ? 
+                $modulePayloadKey = is_array(value: $_payloadIndexes) ?
                     implode(separator: ':', array: $_payloadIndexes) : '';
                 if ($useHierarchy) { // use parent data of a payload
                     array_push($_payloadIndexes, $module);
@@ -577,17 +577,17 @@ class Write
                     $_necessary = $necessary;
                 }
                 $_useHierarchy = $useHierarchy ?? $this->_getUseHierarchy(
-                    sqlConfig: $_wSqlConfig, 
+                    sqlConfig: $_wSqlConfig,
                     keyword: 'useHierarchy'
                 );
                 $response[$module] = [];
                 $_response = &$response[$module];
                 $this->_writeDB(
-                    wSqlConfig: $_wSqlConfig, 
-                    payloadIndexes: $_payloadIndexes, 
-                    configKeys: $_configKeys, 
-                    useHierarchy: $_useHierarchy, 
-                    response: $_response, 
+                    wSqlConfig: $_wSqlConfig,
+                    payloadIndexes: $_payloadIndexes,
+                    configKeys: $_configKeys,
+                    useHierarchy: $_useHierarchy,
+                    response: $_response,
                     necessary: $_necessary
                 );
             }
@@ -613,7 +613,7 @@ class Write
                 $this->_c->res->httpStatus = HttpStatus::$BadRequest;
                 $this->dataEncode->startObject();
                 $this->dataEncode->addKeyData(
-                    key: 'Payload', 
+                    key: 'Payload',
                     data: $this->_sess['payload']
                 );
                 $this->dataEncode->addKeyData(key: 'Error', data: $errors);

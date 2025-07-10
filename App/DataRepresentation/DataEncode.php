@@ -74,7 +74,7 @@ class DataEncode extends AbstractDataEncode
      * Initialize
      *
      * @param bool $header Append XML header flag
-     * 
+     *
      * @return void
      */
     public function init($header = true): void

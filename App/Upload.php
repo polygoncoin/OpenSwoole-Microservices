@@ -32,7 +32,7 @@ class Upload
 {
     /**
      * Upload API Object
-     * 
+     *
      * @var null|UploadInterface
      */
     private $_api = null;
@@ -49,7 +49,7 @@ class Upload
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
     }

@@ -47,7 +47,7 @@ class Memcached extends AbstractCache
     /**
      * Cache connection
      *
-     * @var null|\Redis
+     * @var null|\Memcached
      */
     private $_cache = null;
 
@@ -96,10 +96,10 @@ class Memcached extends AbstractCache
     /**
      * Use Database
      *
-     * @return never
+     * @return void
      * @throws \Exception
      */
-    public function useDatabase(): never
+    public function useDatabase(): void
     {
         throw new \Exception(
             message: 'No database support',

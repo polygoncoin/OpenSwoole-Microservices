@@ -46,7 +46,7 @@ class Module1 implements UploadInterface
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
         $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: 'Master');
@@ -82,8 +82,8 @@ class Module1 implements UploadInterface
      */
     private function _getLocation(): string
     {
-        return Constants::$DOC_ROOT . 
-            DIRECTORY_SEPARATOR . 'Dropbox' . 
+        return Constants::$DOC_ROOT .
+            DIRECTORY_SEPARATOR . 'Dropbox' .
             DIRECTORY_SEPARATOR . 'test.png';
     }
 }

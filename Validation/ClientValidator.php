@@ -54,7 +54,7 @@ class ClientValidator implements ValidatorInterface
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
         $this->db = &$this->_c->req->db;
@@ -101,8 +101,8 @@ class ClientValidator implements ValidatorInterface
     {
         extract(array: $args);
         return $this->_getPrimaryCount(
-            table: Env::$clients, 
-            primary: 'client_id', 
+            table: Env::$clients,
+            primary: 'client_id',
             id: $client_id
         );
     }
@@ -120,8 +120,8 @@ class ClientValidator implements ValidatorInterface
     {
         $db = $this->db->database;
         $sql = "
-            SELECT count(1) as `count` 
-            FROM `{$db}`.`{$table}` 
+            SELECT count(1) as `count`
+            FROM `{$db}`.`{$table}`
             WHERE `{$primary}` = ?
         ";
         $params = [$id];

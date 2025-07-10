@@ -15,7 +15,7 @@ namespace Microservices\App;
 
 use Microservices\App\Constants;
 use Microservices\App\Common;
-use Microservices\Cron\CronInterface;
+use Microservices\Supplement\Cron\CronInterface;
 
 /**
  * Cron API
@@ -33,7 +33,7 @@ class Cron
 {
     /**
      * Cron API Object
-     * 
+     *
      * @var null|CronInterface
      */
     private $_api = null;
@@ -50,7 +50,7 @@ class Cron
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
     }
@@ -64,13 +64,13 @@ class Cron
     {
         $this->_c->req->init();
 
-        $routeFileLocation = Constants::$DOC_ROOT . 
-            DIRECTORY_SEPARATOR . 'Config' . 
-            DIRECTORY_SEPARATOR . 'Routes' . 
-            DIRECTORY_SEPARATOR . 'Auth' . 
-            DIRECTORY_SEPARATOR . 'ClientDB' . 
-            DIRECTORY_SEPARATOR . 'Common' . 
-            DIRECTORY_SEPARATOR . 'Cron' . 
+        $routeFileLocation = Constants::$DOC_ROOT .
+            DIRECTORY_SEPARATOR . 'Config' .
+            DIRECTORY_SEPARATOR . 'Routes' .
+            DIRECTORY_SEPARATOR . 'Auth' .
+            DIRECTORY_SEPARATOR . 'ClientDB' .
+            DIRECTORY_SEPARATOR . 'Common' .
+            DIRECTORY_SEPARATOR . 'Cron' .
             DIRECTORY_SEPARATOR . $this->_c->req->REQUEST_METHOD . 'routes.php';
         $this->_c->req->parseRoute(routeFileLocation: $routeFileLocation);
 
@@ -84,7 +84,7 @@ class Cron
      */
     public function process(): bool
     {
-        $class = 'Microservices\\Cron\\' . 
+        $class = 'Microservices\\Supplement\\Cron\\' .
             ucfirst(string: $this->_c->req->routeElements[1]);
 
         $this->_api = new $class(common: $this->_c);

@@ -32,7 +32,7 @@ class Custom
 {
     /**
      * Custom API Object
-     * 
+     *
      * @var null|CustomInterface
      */
     private $_api = null;
@@ -49,7 +49,7 @@ class Custom
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
     }
@@ -71,7 +71,7 @@ class Custom
      */
     public function process(): bool
     {
-        $class = 'Microservices\\Supplement\\Custom\\' . 
+        $class = 'Microservices\\Supplement\\Custom\\' .
             ucfirst(string: $this->_c->req->routeElements[1]);
 
         $this->_api = new $class(common: $this->_c);

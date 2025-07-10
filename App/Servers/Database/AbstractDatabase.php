@@ -40,7 +40,7 @@ abstract class AbstractDatabase
      * @var bool
      */
     public $beganTransaction = false;
-    
+
     /**
      * Database connection
      *

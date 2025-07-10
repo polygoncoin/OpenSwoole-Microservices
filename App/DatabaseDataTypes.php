@@ -20,8 +20,8 @@ namespace Microservices\App;
     255. Default is 1
     CHAR(size)
     public static $CHAR = [
-        'dataType' => 'string', 
-        'minLength' => (size-x), 
+        'dataType' => 'string',
+        'minLength' => (size-x),
         'maxLength' => (size-x)
     ];
 
@@ -30,8 +30,8 @@ namespace Microservices\App;
     from 0 to 65535
     VARCHAR(size)
     public static $VARCHAR = [
-        'dataType' => 'string', 
-        'minLength' => 0, 
+        'dataType' => 'string',
+        'minLength' => 0,
         'maxLength' => 65535
     ];
 
@@ -39,8 +39,8 @@ namespace Microservices\App;
     the column length in bytes. Default is 1
     BINARY(size)
     public static $BINARY = [
-        'dataType' => 'string', 
-        'minLength' => 0, 
+        'dataType' => 'string',
+        'minLength' => 0,
         'maxLength' => 8
     ];
 
@@ -48,56 +48,56 @@ namespace Microservices\App;
     the maximum column length in bytes
     VARBINARY(size)
     public static $VARBINARY = [
-        'dataType' => 'string', 
-        'minLength' => 0, 
+        'dataType' => 'string',
+        'minLength' => 0,
         'maxLength' => 65535
     ];
 
     For BLOBs (Binary Large OBjects). Max length: 255 bytes
     TINYBLOB
     public static $TINYBLOB = [
-        'dataType' => 'string', 
-        'minLength' => 0, 
+        'dataType' => 'string',
+        'minLength' => 0,
         'maxLength' => 255
     ];
 
     Holds a string with a maximum length of 255 characters
     TINYTEXT
     public static $TINYTEXT = [
-        'dataType' => 'string', 
-        'minLength' => 0, 
+        'dataType' => 'string',
+        'minLength' => 0,
         'maxLength' => 255
     ];
 
     Holds a string with a maximum length of 65, 535 bytes
     TEXT(size)
     public static $TEXT = [
-        'dataType' => 'string', 
-        'minLength' => 0, 
+        'dataType' => 'string',
+        'minLength' => 0,
         'maxLength' => 65535
     ];
 
     For BLOBs (Binary Large OBjects). Holds up to 65, 535 bytes of data
     BLOB(size)
     public static $BLOB = [
-        'dataType' => 'string', 
-        'minLength' => 0, 
+        'dataType' => 'string',
+        'minLength' => 0,
         'maxLength' => 65535
     ];
 
     Holds a string with a maximum length of 16, 777, 215 characters
     MEDIUMTEXT
     public static $MEDIUMTEXT = [
-        'dataType' => 'string', 
-        'minLength' => 0, 
+        'dataType' => 'string',
+        'minLength' => 0,
         'maxLength' => 16777215
     ];
 
     For BLOBs (Binary Large OBjects). Holds up to 16, 777, 215 bytes of data
     MEDIUMBLOB
     public static $MEDIUMBLOB = [
-        'dataType' => 'string', 
-        'minLength' => 0, 
+        'dataType' => 'string',
+        'minLength' => 0,
         'maxLength' => 16777215
     ];
 
@@ -119,11 +119,11 @@ namespace Microservices\App;
     values are sorted in the order you enter them
     ENUM(val1, val2, val3, ...)
     public static $ENUM = [
-        'dataType' => 'string', 
+        'dataType' => 'string',
         'enumValues' => [val1, val2, val3, ...]
     ];
 
-    A string object that can have 0 or more values, chosen from a list of 
+    A string object that can have 0 or more values, chosen from a list of
     possible values. You can list up to 64 values in a SET list
     SET(val1, val2, val3, ...)
     public static $SET = [
@@ -138,22 +138,22 @@ namespace Microservices\App;
     parameter can hold a value from 1 to 64. The default value for size is 1
     BIT(size)
     public static $BIT = [
-        'dataType' => 'string', 
-        'minLength' => 1, 
+        'dataType' => 'string',
+        'minLength' => 1,
         'maxLength' => 64
     ];
 
-    A very small int. Signed range is from -128 to 127. Unsigned range is from 0 to 
+    A very small int. Signed range is from -128 to 127. Unsigned range is from 0 to
     255. The size parameter specifies the maximum display width (which is 255)
     TINYINT(size)
     public static $TINYINT = [
-        'dataType' => 'int', 
-        'minValue' => -128, 
+        'dataType' => 'int',
+        'minValue' => -128,
         'maxValue' => 127
     ];
     public static $U_TINYINT = [
-        'dataType' => 'int', 
-        'minValue' => 0, 
+        'dataType' => 'int',
+        'minValue' => 0,
         'maxValue' => 255
     ];
 
@@ -161,53 +161,53 @@ namespace Microservices\App;
     BOOL
     bool
     public static $BOOL = [
-        'dataType' => 'int', 
-        'minValue' => 0, 
+        'dataType' => 'int',
+        'minValue' => 0,
         'maxValue' => 1
     ];
 
-    A small int. Signed range is from -32768 to 32767. Unsigned range is from 0 to 
+    A small int. Signed range is from -32768 to 32767. Unsigned range is from 0 to
     65535. The size parameter specifies the maximum display width (which is 255)
     SMALLINT(size)
     public static $SMALLINT = [
-        'dataType' => 'int', 
-        'minValue' => -32768, 
+        'dataType' => 'int',
+        'minValue' => -32768,
         'maxValue' => 32767
     ];
     public static $U_SMALLINT = [
-        'dataType' => 'int', 
-        'minValue' => 0, 
+        'dataType' => 'int',
+        'minValue' => 0,
         'maxValue' => 65535
     ];
 
-    A medium int. Signed range is from -8388608 to 8388607. Unsigned range is from 
-    0 to 16777215. The size parameter specifies the maximum display width (which 
+    A medium int. Signed range is from -8388608 to 8388607. Unsigned range is from
+    0 to 16777215. The size parameter specifies the maximum display width (which
     is 255)
     MEDIUMINT(size)
     public static $MEDIUMINT = [
-        'dataType' => 'int', 
-        'minValue' => -8388608, 
+        'dataType' => 'int',
+        'minValue' => -8388608,
         'maxValue' => 655838860735
     ];
     public static $U_MEDIUMINT = [
-        'dataType' => 'int', 
-        'minValue' => 0, 
+        'dataType' => 'int',
+        'minValue' => 0,
         'maxValue' => 16777215
     ];
 
-    A medium int. Signed range is from -2147483648 to 2147483647. Unsigned range 
-    is from 0 to 4294967295. The size parameter specifies the maximum display width 
+    A medium int. Signed range is from -2147483648 to 2147483647. Unsigned range
+    is from 0 to 4294967295. The size parameter specifies the maximum display width
     (which is 255)
     INT(size)
     int(size)
     public static $INT = [
-        'dataType' => 'int', 
-        'minValue' => -2147483648, 
+        'dataType' => 'int',
+        'minValue' => -2147483648,
         'maxValue' => 2147483647
     ];
     public static $U_INT = [
-        'dataType' => 'int', 
-        'minValue' => 0, 
+        'dataType' => 'int',
+        'minValue' => 0,
         'maxValue' => 4294967295
     ];
 
@@ -219,35 +219,35 @@ namespace Microservices\App;
         'dataType' => 'string'
     ];
 
-    A floating point number. The total number of digits is specified in size. The 
-    number of digits after the decimal point is specified in the d parameter. 
-    This syntax is deprecated in MySQL 8.0.17, and it will be removed in future 
+    A floating point number. The total number of digits is specified in size. The
+    number of digits after the decimal point is specified in the d parameter.
+    This syntax is deprecated in MySQL 8.0.17, and it will be removed in future
     MySQL versions
     FLOAT(size, d)
     public static $FLOAT = [
         'dataType' => 'string'
     ];
 
-    A floating point number. MySQL uses the p value to determine whether to use 
-    FLOAT or DOUBLE for the resulting data type. If p is from 0 to 24, the data 
+    A floating point number. MySQL uses the p value to determine whether to use
+    FLOAT or DOUBLE for the resulting data type. If p is from 0 to 24, the data
     type becomes FLOAT(). If p is from 25 to 53, the data type becomes DOUBLE()
     FLOAT(p)
     public static $FLOAT_P = [
         'dataType' => 'string'
     ];
 
-    A normal-size floating point number. The total number of digits is specified in 
-    size. The number of digits after the decimal point is specified in the d 
+    A normal-size floating point number. The total number of digits is specified in
+    size. The number of digits after the decimal point is specified in the d
     parameter
     DOUBLE(size, d)
-    DOUBLE PRECISION(size, d)  
+    DOUBLE PRECISION(size, d)
     public static $DOUBLE = [
         'dataType' => 'string'
     ];
 
-    An exact fixed-point number. The total number of digits is specified in size. 
-    The number of digits after the decimal point is specified in the d parameter. 
-    The maximum number for size is 65. The maximum number for d is 30. The default 
+    An exact fixed-point number. The total number of digits is specified in size.
+    The number of digits after the decimal point is specified in the d parameter.
+    The maximum number for size is 65. The maximum number for d is 30. The default
     value for size is 10. The default value for d is 0
     DECIMAL(size, d)
     DEC(size, d)
@@ -268,24 +268,24 @@ namespace Microservices\App;
 
     DATE
     public static $DATE = [
-        'dataType' => 'string', 
+        'dataType' => 'string',
         'regex' => '/\d{4}-\d{2}-\d{2}/'
     ];
 
     A date and time combination. Format: YYYY-MM-DD hh:mm:ss. The supported range is
-    from '1000-01-01 00:00:00' to '9999-12-31 23:59:59'. Adding DEFAULT and ON 
-    UPDATE in the column definition to get automatic initialization and updating to 
+    from '1000-01-01 00:00:00' to '9999-12-31 23:59:59'. Adding DEFAULT and ON
+    UPDATE in the column definition to get automatic initialization and updating to
     the current date and time
     DATETIME(fsp)
     public static $DATETIME = [
-        'dataType' => 'string', 
+        'dataType' => 'string',
         'regex' => '/\d{4}-\d{2}-\d{2}\s{1}\d{2}:\d{2}:\d{2}/'
     ];
 
-    A timestamp. TIMESTAMP values are stored as the number of seconds since the 
-    Unix epoch ('1970-01-01 00:00:00' UTC). Format: YYYY-MM-DD hh:mm:ss. 
-    The supported range is from '1970-01-01 00:00:01' UTC to '2038-01-09 03:14:07' 
-    UTC. Automatic initialization and updating to the current date and time can be 
+    A timestamp. TIMESTAMP values are stored as the number of seconds since the
+    Unix epoch ('1970-01-01 00:00:00' UTC). Format: YYYY-MM-DD hh:mm:ss.
+    The supported range is from '1970-01-01 00:00:01' UTC to '2038-01-09 03:14:07'
+    UTC. Automatic initialization and updating to the current date and time can be
     specified using DEFAULT CURRENT_TIMESTAMP and ON UPDATE CURRENT_TIMESTAMP in the
     column definition
     TIMESTAMP(fsp)
@@ -296,7 +296,7 @@ namespace Microservices\App;
     A time. Format: hh:mm:ss. The supported range is from '-838:59:59' - '838:59:59'
     TIME(fsp)
     public static $TIME = [
-        'dataType' => 'string', 
+        'dataType' => 'string',
         'regex' => '/\d{2}:\d{2}:\d{2}/'
     ];
 
@@ -304,8 +304,8 @@ namespace Microservices\App;
     and 0000
     YEAR
     public static $YEAR = [
-        'dataType' => 'int', 
-        'minValue' => 1901, 
+        'dataType' => 'int',
+        'minValue' => 1901,
         'maxValue' => 2155
     ];
 
@@ -331,19 +331,19 @@ class DatabaseDataTypes
      * You can configure them in /Config/Queries folder as a data type
      * This will validate the received payload/uriParam/etc data where this is
      * configured
-     * 
+     *
      * DatabaseDataTypes::$CustomINT
      *
      * public static $CustomINT = [
      *      // PHP data type (null, bool, int, float, string)
-     *      'dataType' => 'int', 
+     *      'dataType' => 'int',
      *      // if needed append necessary options from below with values
-     *      'minValue' => false, 
-     *      'maxValue' => false, 
-     *      'minLength' => false, 
-     *      'maxLength' => false, 
-     *      'enumValues' => false, 
-     *      'setValues' => false, 
+     *      'minValue' => false,
+     *      'maxValue' => false,
+     *      'minLength' => false,
+     *      'maxLength' => false,
+     *      'enumValues' => false,
+     *      'setValues' => false,
      *      'regex' => false
      *  ];
      */
@@ -460,7 +460,7 @@ class DatabaseDataTypes
 
         if (!$returnFlag) {
             throw new \Exception(
-                message: 'Invalid data based on Data-type details', 
+                message: 'Invalid data based on Data-type details',
                 code: HttpStatus::$BadRequest
             );
         }

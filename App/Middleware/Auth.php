@@ -33,7 +33,7 @@ class Auth
 {
     /**
      * HTTP Request Object
-     * 
+     *
      * @var null|HttpRequest
      */
     private $_req = null;

@@ -70,15 +70,15 @@ class Gateway extends RouteParser
             && !empty($this->clientDetails['rateLimiterSecondsWindow'])
         ) {
             $RateLimiterGroupPrefix = getenv(name: 'RateLimiterClientPrefix');
-            $RateLimiterMaxRequests = $this->clientDetails['rateLimiterMaxRequests']; 
-            $RateLimiterSecondsWindow = 
+            $RateLimiterMaxRequests = $this->clientDetails['rateLimiterMaxRequests'];
+            $RateLimiterSecondsWindow =
                 $this->clientDetails['rateLimiterSecondsWindow'];
             $key = $this->clientDetails['client_id'];
-            
+
             $rateLimitChecked = $this->checkRateLimit(
-                RateLimiterPrefix: $RateLimiterGroupPrefix, 
-                RateLimiterMaxRequests: $RateLimiterMaxRequests, 
-                RateLimiterSecondsWindow: $RateLimiterSecondsWindow, 
+                RateLimiterPrefix: $RateLimiterGroupPrefix,
+                RateLimiterMaxRequests: $RateLimiterMaxRequests,
+                RateLimiterSecondsWindow: $RateLimiterSecondsWindow,
                 key: $key
             );
         }
@@ -88,19 +88,19 @@ class Gateway extends RouteParser
             if (!empty($this->groupDetails['rateLimiterMaxRequests'])
                 && !empty($this->groupDetails['rateLimiterSecondsWindow'])
             ) {
-                $RateLimiterGroupPrefix = 
-                    getenv(name: 'RateLimiterGroupPrefix'); 
-                $RateLimiterMaxRequests = 
+                $RateLimiterGroupPrefix =
+                    getenv(name: 'RateLimiterGroupPrefix');
+                $RateLimiterMaxRequests =
                     $this->groupDetails['rateLimiterMaxRequests'];
-                $RateLimiterSecondsWindow = 
-                    $this->groupDetails['rateLimiterSecondsWindow']; 
-                $key = $this->clientDetails['client_id'] . ':' . 
+                $RateLimiterSecondsWindow =
+                    $this->groupDetails['rateLimiterSecondsWindow'];
+                $key = $this->clientDetails['client_id'] . ':' .
                     $this->userDetails['group_id'];
 
                 $rateLimitChecked = $this->checkRateLimit(
-                    RateLimiterPrefix: $RateLimiterGroupPrefix, 
-                    RateLimiterMaxRequests: $RateLimiterMaxRequests, 
-                    RateLimiterSecondsWindow: $RateLimiterSecondsWindow, 
+                    RateLimiterPrefix: $RateLimiterGroupPrefix,
+                    RateLimiterMaxRequests: $RateLimiterMaxRequests,
+                    RateLimiterSecondsWindow: $RateLimiterSecondsWindow,
                     key: $key
                 );
             }
@@ -109,36 +109,36 @@ class Gateway extends RouteParser
             if (!empty($this->userDetails['rateLimiterMaxRequests'])
                 && !empty($this->userDetails['rateLimiterSecondsWindow'])
             ) {
-                $RateLimiterUserPrefix = getenv(name: 'RateLimiterUserPrefix'); 
-                $RateLimiterMaxRequests = 
-                    $this->groupDetails['rateLimiterMaxRequests']; 
-                $RateLimiterSecondsWindow = 
-                    $this->groupDetails['rateLimiterSecondsWindow']; 
-                $key = $this->clientDetails['client_id'] . ':' . 
-                    $this->userDetails['group_id'] . ':' . 
+                $RateLimiterUserPrefix = getenv(name: 'RateLimiterUserPrefix');
+                $RateLimiterMaxRequests =
+                    $this->groupDetails['rateLimiterMaxRequests'];
+                $RateLimiterSecondsWindow =
+                    $this->groupDetails['rateLimiterSecondsWindow'];
+                $key = $this->clientDetails['client_id'] . ':' .
+                    $this->userDetails['group_id'] . ':' .
                     $this->userDetails['user_id'];
 
                 $rateLimitChecked = $this->checkRateLimit(
-                    RateLimiterPrefix: $RateLimiterUserPrefix, 
-                    RateLimiterMaxRequests: $RateLimiterMaxRequests, 
-                    RateLimiterSecondsWindow: $RateLimiterSecondsWindow, 
+                    RateLimiterPrefix: $RateLimiterUserPrefix,
+                    RateLimiterMaxRequests: $RateLimiterMaxRequests,
+                    RateLimiterSecondsWindow: $RateLimiterSecondsWindow,
                     key: $key
                 );
             }
         }
 
-        // Rate limit open traffic (not limited by allowed IPs/CIDR and allowed 
+        // Rate limit open traffic (not limited by allowed IPs/CIDR and allowed
         // Rate Limits to users)
         if ($this->cidrChecked === false && $rateLimitChecked === false) {
             $RateLimiterIPPrefix = getenv(name: 'RateLimiterIPPrefix');
-            $RateLimiterIPMaxRequests = getenv(name: 'RateLimiterIPMaxRequests'); 
-            $RateLimiterIPSecondsWindow = getenv(name: 'RateLimiterIPSecondsWindow'); 
+            $RateLimiterIPMaxRequests = getenv(name: 'RateLimiterIPMaxRequests');
+            $RateLimiterIPSecondsWindow = getenv(name: 'RateLimiterIPSecondsWindow');
             $key = $this->REMOTE_ADDR;
 
             $this->checkRateLimit(
-                RateLimiterPrefix: $RateLimiterIPPrefix, 
-                RateLimiterMaxRequests: $RateLimiterIPMaxRequests, 
-                RateLimiterSecondsWindow: $RateLimiterIPSecondsWindow, 
+                RateLimiterPrefix: $RateLimiterIPPrefix,
+                RateLimiterMaxRequests: $RateLimiterIPMaxRequests,
+                RateLimiterSecondsWindow: $RateLimiterIPSecondsWindow,
                 key: $key
             );
         }
@@ -156,16 +156,16 @@ class Gateway extends RouteParser
      * @throws \Exception
      */
     public function checkRateLimit(
-        $RateLimiterPrefix, 
-        $RateLimiterMaxRequests, 
-        $RateLimiterSecondsWindow, 
+        $RateLimiterPrefix,
+        $RateLimiterMaxRequests,
+        $RateLimiterSecondsWindow,
         $key
     ): bool {
         try {
             $result = $this->_rateLimiter->check(
-                prefix: $RateLimiterPrefix, 
-                maxRequests: $RateLimiterMaxRequests, 
-                secondsWindow: $RateLimiterSecondsWindow, 
+                prefix: $RateLimiterPrefix,
+                maxRequests: $RateLimiterMaxRequests,
+                secondsWindow: $RateLimiterSecondsWindow,
                 key: $key
             );
 

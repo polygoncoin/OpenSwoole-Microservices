@@ -42,7 +42,7 @@ class Web
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
     }
@@ -56,15 +56,15 @@ class Web
      * @param string $queryString Query String
      * @param array  $header      Header
      * @param string $payload     Payload
-     * 
+     *
      * @return array
      */
     private function _getCurlConfig(
-        $homeURL, 
-        $method, 
-        $route, 
-        $queryString, 
-        $header = [], 
+        $homeURL,
+        $method,
+        $route,
+        $queryString,
+        $header = [],
         $payload = ''
     ): array {
         $curlConfig[CURLOPT_URL] = "{$homeURL}?r={$route}&{$queryString}";
@@ -117,7 +117,7 @@ class Web
      * @param string $queryString Query String
      * @param array  $header      Header
      * @param string $payload     Payload
-     * 
+     *
      * @return mixed
      */
     private function _trigger(
@@ -131,29 +131,29 @@ class Web
         $curl = curl_init();
         $curlConfig = $this->_getCurlConfig(
             homeURL: $homeURL,
-            method: $method, 
-            route: $route, 
-            queryString: $queryString, 
-            header: $header, 
+            method: $method,
+            route: $route,
+            queryString: $queryString,
+            header: $header,
             payload: $payload
         );
         curl_setopt_array(handle: $curl, options: $curlConfig);
         $curlResponse = curl_exec(handle: $curl);
 
         $responseHttpCode = curl_getinfo(
-            handle: $curl, 
+            handle: $curl,
             option: CURLINFO_HTTP_CODE
         );
         $responseContentType = curl_getinfo(
-            handle: $curl, 
+            handle: $curl,
             option: CURLINFO_CONTENT_TYPE
         );
 
         $headerSize = curl_getinfo(handle: $curl, option: CURLINFO_HEADER_SIZE);
         $responseHeaders = $this->_httpParseHeaders(
             rawHeaders: substr(
-                string: $curlResponse, 
-                offset: 0, 
+                string: $curlResponse,
+                offset: 0,
                 length: $headerSize
             )
         );
@@ -177,8 +177,8 @@ class Web
         //     'requestHeaders' => $curlConfig[CURLOPT_HTTPHEADER],
         //     'requestPayload' => $payload,
         //     'responseHttpCode' => $responseHttpCode,
-        //     'responseHeaders' => $responseHeaders, 
-        //     'responseContentType' => $responseContentType, 
+        //     'responseHeaders' => $responseHeaders,
+        //     'responseContentType' => $responseContentType,
         //     'responseBody' => $response
         // ];
 
@@ -189,7 +189,7 @@ class Web
      * Trigger Config
      *
      * @param array $triggerConfig Config
-     * 
+     *
      * @return mixed
      */
     public function triggerConfig($triggerConfig): mixed
@@ -202,7 +202,7 @@ class Web
         }
 
         $assoc = (!isset($triggerConfig[0])) ? true : false;
-        if (!$assoc && isset($triggerConfig[0]) 
+        if (!$assoc && isset($triggerConfig[0])
             && count(value: $triggerConfig) === 1
         ) {
             $triggerConfig = $triggerConfig[0];
@@ -256,11 +256,11 @@ class Web
 
                 $response = (empty($errors)) ?
                     $response = $this->_trigger(
-                        homeURL: $homeURL, 
-                        method: $method, 
-                        route: $route, 
-                        queryString: $queryString, 
-                        header: $header, 
+                        homeURL: $homeURL,
+                        method: $method,
+                        route: $route,
+                        queryString: $queryString,
+                        header: $header,
                         payload: json_encode(value: $payloadArr)
                     ) : $errors;
             }
@@ -301,11 +301,11 @@ class Web
 
                 $response[] = (empty($errors)) ?
                     $this->_trigger(
-                        homeURL: $homeURL, 
-                        method: $method, 
-                        route: $route, 
-                        queryString: $queryString, 
-                        header: $header, 
+                        homeURL: $homeURL,
+                        method: $method,
+                        route: $route,
+                        queryString: $queryString,
+                        header: $header,
                         payload: json_encode(value: $payloadArr)
                     ) : $errors;
             }
@@ -343,7 +343,7 @@ class Web
                 }
                 continue;
             } elseif (in_array(
-                needle: $fetchFrom, 
+                needle: $fetchFrom,
                 haystack: ['sqlResults', 'sqlParams', 'sqlPayload']
             )
             ) {
@@ -410,12 +410,12 @@ class Web
                     $headers[$h[0]] = trim(string: $h[1]);
                 } elseif (is_array(value: $headers[$h[0]])) {
                     $headers[$h[0]] = array_merge(
-                        $headers[$h[0]], 
+                        $headers[$h[0]],
                         array(trim(string: $h[1]))
                     );
                 } else {
                     $headers[$h[0]] = array_merge(
-                        array($headers[$h[0]]), 
+                        array($headers[$h[0]]),
                         array(trim(string: $h[1]))
                     );
                 }

@@ -79,7 +79,7 @@ class Read
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
     }
@@ -151,7 +151,7 @@ class Read
 
         // Use result set recursively flag
         $useResultSet = $this->_getUseHierarchy(
-            sqlConfig: $rSqlConfig, 
+            sqlConfig: $rSqlConfig,
             keyword: 'useResultSet'
         );
 
@@ -162,7 +162,7 @@ class Read
             );
         } else {
             $this->_processRead(
-                rSqlConfig: $rSqlConfig, 
+                rSqlConfig: $rSqlConfig,
                 useResultSet: $useResultSet
             );
         }
@@ -170,7 +170,7 @@ class Read
         if ($toBeCached) {
             $json = $this->dataEncode->getData();
             $this->_c->req->setDmlCache(
-                cacheKey: $rSqlConfig['cacheKey'], 
+                cacheKey: $rSqlConfig['cacheKey'],
                 json: $json
             );
             $this->_c->res->dataEncode->appendData(data: $json);
@@ -182,8 +182,8 @@ class Read
     /**
      * Process read function for configuration
      *
-     * @param array $rSqlConfig Config from file
-     * @param bool  $useResultSet  Use result set recursively flag
+     * @param array $rSqlConfig   Config from file
+     * @param bool  $useResultSet Use result set recursively flag
      *
      * @return void
      */
@@ -191,7 +191,7 @@ class Read
     {
         $this->dataEncode->startObject(key: ' Config');
         $this->dataEncode->addKeyData(
-            key: 'Route', 
+            key: 'Route',
             data: $this->_c->req->configuredUri
         );
         $this->dataEncode->addKeyData(
@@ -208,8 +208,8 @@ class Read
     /**
      * Process Function for read operation
      *
-     * @param array $rSqlConfig Config from file
-     * @param bool  $useResultSet  Use result set recursively flag
+     * @param array $rSqlConfig   Config from file
+     * @param bool  $useResultSet Use result set recursively flag
      *
      * @return void
      */
@@ -240,10 +240,10 @@ class Read
     /**
      * Function to select sub queries recursively
      *
-     * @param array $rSqlConfig Config from file
-     * @param bool  $isFirstCall   true to represent the first call in recursion
-     * @param array $configKeys    Keys in recursion
-     * @param bool  $useResultSet  Use result set recursively flag
+     * @param array $rSqlConfig   Config from file
+     * @param bool  $isFirstCall  true to represent the first call in recursion
+     * @param array $configKeys   Keys in recursion
+     * @param bool  $useResultSet Use result set recursively flag
      *
      * @return void
      */
@@ -277,7 +277,7 @@ class Read
                 $this->_fetchSingleRow(
                     rSqlConfig: $rSqlConfig,
                     isFirstCall: $isFirstCall,
-                    configKeys: $configKeys, 
+                    configKeys: $configKeys,
                     useResultSet: $useResultSet
                 );
                 $this->dataEncode->endObject();
@@ -296,9 +296,9 @@ class Read
                     );
                 }
                 $this->_fetchMultipleRows(
-                    rSqlConfig: $rSqlConfig, 
-                    isFirstCall: $isFirstCall, 
-                    configKeys: $configKeys, 
+                    rSqlConfig: $rSqlConfig,
+                    isFirstCall: $isFirstCall,
+                    configKeys: $configKeys,
                     useResultSet: $useResultSet
                 );
                 $this->dataEncode->endArray();
@@ -315,7 +315,7 @@ class Read
                 $this->_web = new Web(common: $this->_c);
             }
             $this->dataEncode->addKeyData(
-                key: '__TRIGGERS__', 
+                key: '__TRIGGERS__',
                 data: $this->_web->triggerConfig(
                     triggerConfig: $rSqlConfig['__TRIGGERS__']
                 )
@@ -336,10 +336,10 @@ class Read
     /**
      * Function to fetch single record
      *
-     * @param array $rSqlConfig Read SQL configuration
-     * @param bool  $isFirstCall   true to represent the first call in recursion
-     * @param array $configKeys    Config Keys
-     * @param bool  $useResultSet  Use result set recursively flag
+     * @param array $rSqlConfig   Read SQL configuration
+     * @param bool  $isFirstCall  true to represent the first call in recursion
+     * @param array $configKeys   Config Keys
+     * @param bool  $useResultSet Use result set recursively flag
      *
      * @return void
      * @throws \Exception
@@ -365,7 +365,7 @@ class Read
 
         $this->db->execDbQuery(sql: $sql, params: $sqlParams);
         if ($row =  $this->db->fetch()) {
-            // check if selected column-name mismatches or conflicts with 
+            // check if selected column-name mismatches or conflicts with
             // configured module/submodule names
             if (isset($rSqlConfig['__SUB-QUERY__'])) {
                 $subQueryKeys = array_keys(array: $rSqlConfig['__SUB-QUERY__']);
@@ -421,7 +421,7 @@ class Read
         }
 
         $this->_c->req->sess['payload']['start'] = (
-            ($this->_c->req->sess['payload']['page'] - 1) * 
+            ($this->_c->req->sess['payload']['page'] - 1) *
             $this->_c->req->sess['payload']['perPage']
         );
         [$sql, $sqlParams, $errors] = $this->_getSqlAndParams(
@@ -449,15 +449,15 @@ class Read
             data: $this->_c->req->sess['payload']['page']
         );
         $this->dataEncode->addKeyData(
-            key: 'perPage', 
+            key: 'perPage',
             data: $this->_c->req->sess['payload']['perPage']
         );
         $this->dataEncode->addKeyData(
-            key: 'totalPages', 
+            key: 'totalPages',
             data: $totalPages
         );
         $this->dataEncode->addKeyData(
-            key: 'totalRecords', 
+            key: 'totalRecords',
             data: $totalRowsCount
         );
     }
@@ -465,10 +465,10 @@ class Read
     /**
      * Function to fetch multiple record
      *
-     * @param array $rSqlConfig Read SQL configuration
-     * @param bool  $isFirstCall   true to represent the first call in recursion
-     * @param array $configKeys    Config Keys
-     * @param bool  $useResultSet  Use result set recursively flag
+     * @param array $rSqlConfig   Read SQL configuration
+     * @param bool  $isFirstCall  true to represent the first call in recursion
+     * @param array $configKeys   Config Keys
+     * @param bool  $useResultSet Use result set recursively flag
      *
      * @return void
      * @throws \Exception
@@ -480,9 +480,9 @@ class Read
         $useResultSet
     ): void {
         [$sql, $sqlParams, $errors] = $this->_getSqlAndParams(
-            sqlDetails: $rSqlConfig, 
-            isFirstCall: $isFirstCall, 
-            configKeys: $configKeys, 
+            sqlDetails: $rSqlConfig,
+            isFirstCall: $isFirstCall,
+            configKeys: $configKeys,
             flag: $useResultSet
         );
         if (!empty($errors)) {
@@ -505,7 +505,7 @@ class Read
                 }
                 if (count(value: $orderByStrArr) > 0) {
                     $sql .= ' ORDER BY '.implode(
-                        separator: ', ', 
+                        separator: ', ',
                         array: $orderByStrArr
                     );
                 }
@@ -526,7 +526,7 @@ class Read
                 if (count(value: $row) === 1) {
                     $singleColumn = true;
                 }
-                $singleColumn = $singleColumn 
+                $singleColumn = $singleColumn
                     && !isset($rSqlConfig['__SUB-QUERY__']);
                 $i++;
             }
@@ -538,9 +538,9 @@ class Read
                     $this->dataEncode->addKeyData(key: $key, data: $value);
                 }
                 $this->_callReadDB(
-                    rSqlConfig: $rSqlConfig, 
-                    configKeys: $configKeys, 
-                    row: $row, 
+                    rSqlConfig: $rSqlConfig,
+                    configKeys: $configKeys,
+                    row: $row,
                     useResultSet: $useResultSet
                 );
                 $this->dataEncode->endObject();
@@ -554,10 +554,10 @@ class Read
     /**
      * Validate and call readDB
      *
-     * @param array $rSqlConfig Read SQL configuration
-     * @param array $configKeys    Config Keys
-     * @param array $row           Row data fetched from DB
-     * @param bool  $useResultSet  Use result set recursively flag
+     * @param array $rSqlConfig   Read SQL configuration
+     * @param array $configKeys   Config Keys
+     * @param array $row          Row data fetched from DB
+     * @param bool  $useResultSet Use result set recursively flag
      *
      * @return void
      */
@@ -575,7 +575,7 @@ class Read
             );
         }
 
-        if (isset($rSqlConfig['__SUB-QUERY__']) 
+        if (isset($rSqlConfig['__SUB-QUERY__'])
             && $this->_isAssoc(arr: $rSqlConfig['__SUB-QUERY__'])
         ) {
             foreach ($rSqlConfig['__SUB-QUERY__'] as $key => &$_rSqlConfig) {
@@ -583,13 +583,13 @@ class Read
                 $_configKeys[] = $key;
                 $_useResultSet = $useResultSet ??
                     $this->_getUseHierarchy(
-                        sqlConfig: $_rSqlConfig, 
+                        sqlConfig: $_rSqlConfig,
                         keyword: 'useResultSet'
                     );
                 $this->_readDB(
-                    rSqlConfig: $_rSqlConfig, 
-                    isFirstCall: false, 
-                    configKeys: $_configKeys, 
+                    rSqlConfig: $_rSqlConfig,
+                    isFirstCall: false,
+                    configKeys: $_configKeys,
                     useResultSet: $_useResultSet
                 );
             }

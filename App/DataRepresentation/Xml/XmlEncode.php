@@ -326,6 +326,6 @@ class XmlEncoderObject
         } else {
             $this->tag = $tag;
         }
-        
+
     }
 }

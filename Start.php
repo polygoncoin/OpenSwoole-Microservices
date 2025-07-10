@@ -46,12 +46,12 @@ class Autoload
     public static function register($className): void
     {
         $className = substr(
-            string: $className, 
+            string: $className,
             offset: strlen(string: __NAMESPACE__)
         );
         $className = str_replace(
-            search: "\\", 
-            replace: DIRECTORY_SEPARATOR, 
+            search: "\\",
+            replace: DIRECTORY_SEPARATOR,
             subject: $className
         );
         $file = __DIR__ . $className . '.php';
@@ -66,8 +66,8 @@ spl_autoload_register(callback: __NAMESPACE__ . '\Autoload::register');
 
 // Set coroutine options before you start a server...
 Coroutine::set([
-    'max_coroutine' => 100, 
-    'max_concurrency' => 100, 
+    'max_coroutine' => 100,
+    'max_concurrency' => 100,
 ]);
 
 $server = new Server("127.0.0.1", 9501);
@@ -79,9 +79,9 @@ $server->on("start", function (Server $server): void {
 
 $server->on("request", function (Request $request, Response $response) use ($server): void {
 
-    if (isset($request->get['r']) 
+    if (isset($request->get['r'])
         && in_array(
-            needle: $request->get['r'], 
+            needle: $request->get['r'],
             haystack: ['/auth-test', '/open-test', '/open-test-xml']
         )
     ) {
@@ -115,7 +115,7 @@ $server->on("request", function (Request $request, Response $response) use ($ser
     $http['files'] = &$request->files;
 
     // Check version
-    if (!isset($request->header['x-api-version']) 
+    if (!isset($request->header['x-api-version'])
         || $request->header['x-api-version'] !== 'v1.0.0'
     ) {
         // Set response headers
@@ -156,14 +156,14 @@ $server->on("request", function (Request $request, Response $response) use ($ser
         if ($e->getCode() !== 400) {
             // Log request details
             $logDetails = [
-                'LogType' => 'ERROR', 
-                'DateTime' => date('Y-m-d H:i:s'), 
+                'LogType' => 'ERROR',
+                'DateTime' => date('Y-m-d H:i:s'),
                 'HttpDetails' => [
-                    "HttpCode" => $e->getCode(), 
+                    "HttpCode" => $e->getCode(),
                     "HttpMessage" => $e->getMessage()
-                ], 
+                ],
                 'Details' => [
-                    'http' => $http, 
+                    'http' => $http,
                     'sess' => $services->c->req->sess
                 ]
             ];
@@ -175,13 +175,13 @@ $server->on("request", function (Request $request, Response $response) use ($ser
         if ($e->getCode() == 429) {
             $response->header('Retry-After:', $e->getMessage());
             $arr = [
-                'Status' => $e->getCode(), 
-                'Message' => 'Too Many Requests', 
+                'Status' => $e->getCode(),
+                'Message' => 'Too Many Requests',
                 'RetryAfter' => $e->getMessage()
             ];
         } else {
             $arr = [
-                'Status' => $e->getCode(), 
+                'Status' => $e->getCode(),
                 'Message' => $e->getMessage()
             ];
         }
@@ -204,11 +204,11 @@ $server->set([
     // 'max_request_execution_time' => 10, // 10s
 
     // Compression
-    'http_compression' => true, 
+    'http_compression' => true,
     'http_compression_level' => 3, // 1 - 9
-    'compression_min_length' => 20, 
-    'worker_num' =>   2, 
-    'max_request' =>  1000, 
+    'compression_min_length' => 20,
+    'worker_num' =>   2,
+    'max_request' =>  1000,
 ]);
 
 $server->start();

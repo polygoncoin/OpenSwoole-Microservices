@@ -53,7 +53,7 @@ class GlobalValidator implements ValidatorInterface
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
         $this->db = &$this->_c->req->db;
@@ -118,8 +118,8 @@ class GlobalValidator implements ValidatorInterface
     {
         extract(array: $args);
         $sql = "
-            SELECT count(1) as `count` 
-            FROM `{$table}` 
+            SELECT count(1) as `count`
+            FROM `{$table}`
             WHERE `{$column}` = ? AND`{$primary}` = ?
         ";
         $params = [$columnValue, $id];

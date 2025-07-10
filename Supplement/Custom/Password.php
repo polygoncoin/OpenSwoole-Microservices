@@ -46,7 +46,7 @@ class Password implements CustomInterface
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
     }
@@ -83,20 +83,20 @@ class Password implements CustomInterface
             $userName = $this->_c->req->sess['userDetails']['username'];
             $newPassword = $this->_c->req->sess['payload']['new_password'];
             $newPasswordHash = password_hash(
-                password: $newPassword, 
+                password: $newPassword,
                 algo: PASSWORD_DEFAULT
             );
 
             $table = getenv(name: 'client_users');
             $sql = "
-                UPDATE `{$table}` 
-                SET password_hash = :password_hash 
+                UPDATE `{$table}`
+                SET password_hash = :password_hash
                 WHERE username = :username AND is_deleted = :is_deleted
             ";
             $sqlParams = [
-                ':password_hash' => $newPasswordHash, 
-                ':username' => $userName, 
-                ':is_deleted' => 'No', 
+                ':password_hash' => $newPasswordHash,
+                ':username' => $userName,
+                ':is_deleted' => 'No',
             ];
 
             $this->_c->req->db->execDbQuery(sql: $sql, params: $sqlParams);
@@ -104,19 +104,19 @@ class Password implements CustomInterface
 
             $clientId = $this->_c->req->sess['clientDetails']['client_id'];
             $cu_key = CacheKey::clientUser(
-                clientId: $clientId, 
+                clientId: $clientId,
                 username: $userName
             );
             if ($this->_c->req->cache->cacheExists(key: $cu_key)) {
                 $userDetails = json_decode(
                     json: $this->_c->req->cache->getCache(
                         key: $cu_key
-                    ), 
+                    ),
                     associative: true
                 );
                 $userDetails['password_hash'] = $newPasswordHash;
                 $this->_c->req->cache->setCache(
-                    key: $cu_key, 
+                    key: $cu_key,
                     value: json_encode(value: $userDetails)
                 );
                 $this->_c->req->cache->deleteCache(
@@ -125,7 +125,7 @@ class Password implements CustomInterface
             }
 
             $this->_c->res->dataEncode->addKeyData(
-                key: 'Results', 
+                key: 'Results',
                 data: 'Password changed successfully'
             );
         }

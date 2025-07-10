@@ -43,6 +43,8 @@ class RateLimiter
 
     /**
      * Constructor
+     *
+     * @throws \Exception
      */
     public function __construct()
     {
@@ -55,7 +57,7 @@ class RateLimiter
 
         $this->_redis = new \Redis();
         $this->_redis->connect(
-            getenv(name: 'RateLimiterHost'), 
+            getenv(name: 'RateLimiterHost'),
             (int)getenv(name: 'RateLimiterHostPort')
         );
 
@@ -71,12 +73,11 @@ class RateLimiter
      * @param string $key           Key
      *
      * @return array
-     * @throws \Exception
      */
     public function check(
-        $prefix, 
-        $maxRequests, 
-        $secondsWindow, 
+        $prefix,
+        $maxRequests,
+        $secondsWindow,
         $key
     ): array {
         $maxRequests = (int)$maxRequests;
@@ -104,8 +105,8 @@ class RateLimiter
         }
 
         return [
-            'allowed' => $allowed, 
-            'remaining' => $remaining, 
+            'allowed' => $allowed,
+            'remaining' => $remaining,
             'resetAt' => $resetAt
         ];
     }

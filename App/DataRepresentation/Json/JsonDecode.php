@@ -605,7 +605,7 @@ class JsonDecodeEngine
         case '[':
             if (!$index) {
                 $arr = [
-                    'key' => $this->_getKeys(), 
+                    'key' => $this->_getKeys(),
                     'value' => $this->_getObjectValues()
                 ];
             }
@@ -615,7 +615,7 @@ class JsonDecodeEngine
         case '{':
             if (!$index) {
                 $arr = [
-                    'key' => $this->_getKeys(), 
+                    'key' => $this->_getKeys(),
                     'value' => $this->_getObjectValues()
                 ];
             }
@@ -633,16 +633,16 @@ class JsonDecodeEngine
             }
             if ($index) {
                 $arr = [
-                    'key' => $this->_getKeys(), 
+                    'key' => $this->_getKeys(),
                     'value' => [
-                        'sIndex' => $this->_currentObject->sIndex, 
+                        'sIndex' => $this->_currentObject->sIndex,
                         'eIndex' => $this->_charCounter
                     ]
                 ];
             } else {
                 if (!empty($this->_currentObject->arrayValues)) {
                     $arr = [
-                        'key' => $this->_getKeys(), 
+                        'key' => $this->_getKeys(),
                         'value' => $this->_currentObject->arrayValues
                     ];
                 }
@@ -657,16 +657,16 @@ class JsonDecodeEngine
             }
             if ($index) {
                 $arr = [
-                    'key' => $this->_getKeys(), 
+                    'key' => $this->_getKeys(),
                     'value' => [
-                        'sIndex' => $this->_currentObject->sIndex, 
+                        'sIndex' => $this->_currentObject->sIndex,
                         'eIndex' => $this->_charCounter
                     ]
                 ];
             } else {
                 if (!empty($this->_currentObject->assocValues)) {
                     $arr = [
-                        'key' => $this->_getKeys(), 
+                        'key' => $this->_getKeys(),
                         'value' => $this->_currentObject->assocValues
                     ];
                 }

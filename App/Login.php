@@ -96,7 +96,7 @@ class Login
      *
      * @param Common $common Common object
      */
-    public function __construct(&$common)
+    public function __construct(Common &$common)
     {
         $this->_c = &$common;
     }
@@ -184,7 +184,7 @@ class Login
         $this->_userDetails = json_decode(
             json: $this->_c->req->cache->getCache(
                 key: $this->_clientUserKey
-            ), 
+            ),
             associative: true
         );
         if (empty($this->_userDetails['user_id'])
@@ -265,12 +265,12 @@ class Login
             $this->_tokenKey = CacheKey::token(token: $token);
             if (!$this->_c->req->cache->cacheExists(key: $this->_tokenKey)) {
                 $this->_c->req->cache->setCache(
-                    key: $this->_tokenKey, 
-                    value: '{}', 
+                    key: $this->_tokenKey,
+                    value: '{}',
                     expire: Constants::$TOKEN_EXPIRY_TIME
                 );
                 $tokenDetails = [
-                    'token' => $token, 
+                    'token' => $token,
                     'timestamp' => $this->_timestamp
                 ];
                 break;
@@ -314,19 +314,19 @@ class Login
             $tokenDetails = $this->_generateToken();
             // We set this to have a check first if multiple request/attack occurs
             $this->_c->req->cache->setCache(
-                key: $this->_userTokenKey, 
+                key: $this->_userTokenKey,
                 value: json_encode(
                     value: $tokenDetails
-                ), 
+                ),
                 expire: Constants::$TOKEN_EXPIRY_TIME
             );
             $this->_tokenKey = CacheKey::token(token: $tokenDetails['token']);
             unset($this->_userDetails['password_hash']);
             $this->_c->req->cache->setCache(
-                key: $this->_tokenKey, 
+                key: $this->_tokenKey,
                 value: json_encode(
                     value: $this->_userDetails
-                ), 
+                ),
                 expire: Constants::$TOKEN_EXPIRY_TIME
             );
             $this->_updateDB(tokenDetails: $tokenDetails);
@@ -334,7 +334,7 @@ class Login
 
         $time = $this->_timestamp - $tokenDetails['timestamp'];
         $output = [
-            'Token' => $tokenDetails['token'], 
+            'Token' => $tokenDetails['token'],
             'Expires' => (Constants::$TOKEN_EXPIRY_TIME - $time)
         ];
 
@@ -359,13 +359,13 @@ class Login
                 UPDATE
                     `{$userTable}`
                 SET
-                    `token` = :token, 
+                    `token` = :token,
                     `token_ts` = :token_ts
                 WHERE
-                    user_id = :user_id", 
+                    user_id = :user_id",
             params: [
-                ':token' => $tokenDetails['token'], 
-                ':token_ts' => $tokenDetails['timestamp'], 
+                ':token' => $tokenDetails['token'],
+                ':token_ts' => $tokenDetails['timestamp'],
                 ':user_id' => $this->_userDetails['user_id']
             ]
         );
