@@ -4,11 +4,11 @@
  * php version 8.3
  *
  * @category  DataDecode
- * @package   OpenSwoole_Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 namespace Microservices\App\DataRepresentation\Json;
@@ -22,11 +22,11 @@ use Microservices\App\HttpStatus;
  * php version 8.3
  *
  * @category  DataDecode_JSON
- * @package   OpenSwoole_Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 class JsonDecode extends AbstractDataDecode
@@ -318,11 +318,11 @@ class JsonDecode extends AbstractDataDecode
  * php version 8.3
  *
  * @category  JSON_Decode_Engine
- * @package   OpenSwoole_Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 class JsonDecodeEngine
@@ -876,11 +876,11 @@ class JsonDecodeEngine
  * php version 8.3
  *
  * @category  JSON_Decode_Object
- * @package   OpenSwoole_Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 class JsonDecodeObject

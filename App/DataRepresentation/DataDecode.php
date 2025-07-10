@@ -4,11 +4,11 @@
  * php version 8.3
  *
  * @category  DataDecode
- * @package   OpenSwoole_Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 namespace Microservices\App\DataRepresentation;
@@ -23,11 +23,11 @@ use Microservices\App\Env;
  * php version 8.3
  *
  * @category  DataDecoder
- * @package   OpenSwoole_Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/OpenSwoole-Microservices
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 class DataDecode extends AbstractDataDecode
