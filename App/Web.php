@@ -140,8 +140,14 @@ class Web
         curl_setopt_array(handle: $curl, options: $curlConfig);
         $curlResponse = curl_exec(handle: $curl);
 
-        $httpCode = curl_getinfo(handle: $curl, option: CURLINFO_HTTP_CODE);
-        $contentType = curl_getinfo(handle: $curl, option: CURLINFO_CONTENT_TYPE);
+        $responseHttpCode = curl_getinfo(
+            handle: $curl, 
+            option: CURLINFO_HTTP_CODE
+        );
+        $responseContentType = curl_getinfo(
+            handle: $curl, 
+            option: CURLINFO_CONTENT_TYPE
+        );
 
         $headerSize = curl_getinfo(handle: $curl, option: CURLINFO_HEADER_SIZE);
         $responseHeaders = $this->_httpParseHeaders(
@@ -156,25 +162,24 @@ class Web
         $error = curl_error(handle: $curl);
         curl_close(handle: $curl);
 
+        $error = curl_error(handle: $curl);
+        curl_close(handle: $curl);
+
         if ($error) {
-            $response = ['cURL Error #:' . $error];
+            $response = 'cURL Error #:' . $error;
         } else {
-            if (strpos(
-                haystack: $contentType, 
-                needle: 'application/json'
-            ) !== false
-            ) {
-                $response = json_decode(json: $responseBody, associative: true);
-            } else {
-                $response = $responseBody;
-            }
+            $response = $responseBody;
         }
 
         // return [
-        //     'httpCode' => $httpCode, 
-        //     'contentType' => $contentType, 
-        //     'headers' => $responseHeaders, 
-        //     'body' => $response
+        //     'route' => "{$homeURL}?r={$route}&{$queryString}",
+        //     'httpMethod' => $method,
+        //     'requestHeaders' => $curlConfig[CURLOPT_HTTPHEADER],
+        //     'requestPayload' => $payload,
+        //     'responseHttpCode' => $responseHttpCode,
+        //     'responseHeaders' => $responseHeaders, 
+        //     'responseContentType' => $responseContentType, 
+        //     'responseBody' => $response
         // ];
 
         return $response;
@@ -207,7 +212,7 @@ class Web
         $homeURL = 'http://127.0.0.1:9501';
 
         $header = [];
-        $header[] = 'X-API-Version: v1.0.0';
+        $header[] = 'x-api-version: v1.0.0';
         $header[] = 'Cache-Control: no-cache';
         $header[] = 'Authorization: Bearer ' . $this->_c->req->sess['token'];
 
