@@ -130,27 +130,32 @@ if (!function_exists(function: 'getCurlConfig')) {
             ]
         );
 
+        $contentType = [
+            'Content-Type: text/plain; charset=utf-8',
+            'Content-Type: application/x-www-form-urlencoded; charset=utf-8',
+        ];
+
         switch ($method) {
         case 'GET':
-            $curlConfig[CURLOPT_HTTPHEADER][] = 'Content-Type: text/plain; charset=utf-8';
+            $curlConfig[CURLOPT_HTTPHEADER][] = $contentType[0];
             break;
         case 'POST':
-            $curlConfig[CURLOPT_HTTPHEADER][] = 'Content-Type: application/x-www-form-urlencoded; charset=utf-8';
+            $curlConfig[CURLOPT_HTTPHEADER][] = $contentType[1];
             $curlConfig[CURLOPT_POST] = true;
             $curlConfig[CURLOPT_POSTFIELDS] = $payload;
             break;
         case 'PUT':
-            $curlConfig[CURLOPT_HTTPHEADER][] = 'Content-Type: application/x-www-form-urlencoded; charset=utf-8';
+            $curlConfig[CURLOPT_HTTPHEADER][] = $contentType[1];
             $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PUT';
             $curlConfig[CURLOPT_POSTFIELDS] = $payload;
             break;
         case 'PATCH':
-            $curlConfig[CURLOPT_HTTPHEADER][] = 'Content-Type: application/x-www-form-urlencoded; charset=utf-8';
+            $curlConfig[CURLOPT_HTTPHEADER][] = $contentType[1];
             $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PATCH';
             $curlConfig[CURLOPT_POSTFIELDS] = $payload;
             break;
         case 'DELETE':
-            $curlConfig[CURLOPT_HTTPHEADER][] = 'Content-Type: application/x-www-form-urlencoded; charset=utf-8';
+            $curlConfig[CURLOPT_HTTPHEADER][] = $contentType[1];
             $curlConfig[CURLOPT_CUSTOMREQUEST] = 'DELETE';
             $curlConfig[CURLOPT_POSTFIELDS] = $payload;
             break;
