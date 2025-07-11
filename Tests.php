@@ -86,9 +86,15 @@ if (!function_exists(function: '_httpParseHeaders')) {
                 if (!isset($headers[$h[0]])) {
                     $headers[$h[0]] = trim(string: $h[1]);
                 } elseif (is_array(value: $headers[$h[0]])) {
-                    $headers[$h[0]] = array_merge($headers[$h[0]], array(trim(string: $h[1])));
+                    $headers[$h[0]] = array_merge(
+                        $headers[$h[0]], 
+                        array(trim(string: $h[1]))
+                    );
                 } else {
-                    $headers[$h[0]] = array_merge(array($headers[$h[0]]), array(trim(string: $h[1])));
+                    $headers[$h[0]] = array_merge(
+                        array($headers[$h[0]]), 
+                        array(trim(string: $h[1]))
+                    );
                 }
 
                 $key = $h[0];
@@ -358,7 +364,8 @@ if (!function_exists(function: 'processAuth')) {
                 payload: ''
             );
 
-            // $response[] = trigger(method: 'GET', route: '/category/search', header: $header, payload: '');
+            // $response[] = trigger(method: 'GET', route: '/category/search', 
+            // header: $header, payload: '');
 
             $response[] = trigger(
                 method: 'GET',
@@ -576,7 +583,8 @@ if (!function_exists(function: 'processAuth')) {
                 payload: ''
             );
 
-            // $response[] = trigger(method: 'GET', route: '/category/search', header: $header, payload: '');
+            // $response[] = trigger(method: 'GET', route: '/category/search', 
+            // header: $header, payload: '');
 
             $response[] = trigger(
                 method: 'GET',
@@ -802,7 +810,8 @@ if (!function_exists(function: 'processOpen')) {
             payload: ''
         );
 
-        // $response[] = trigger(method: 'GET', route: '/category/search', header: $header, payload: '');
+        // $response[] = trigger(method: 'GET', route: '/category/search', 
+        // header: $header, payload: '');
 
         $response[] = trigger(
             method: 'GET',
@@ -851,7 +860,8 @@ if (!function_exists(function: 'processXml')) {
 
         $response[] = trigger(
             method: 'POST',
-            route: '/registration-with-address&inputRepresentation=Xml&outputRepresentation=Xml',
+            route: '/registration-with-address' . 
+                '&inputRepresentation=Xml&outputRepresentation=Xml',
             header: $header,
             payload: $payload
         );
