@@ -258,10 +258,11 @@ if (!function_exists(function: 'processAuth')) {
         );
         if ($res) {
             $response[] = $res;
-            $token = json_decode(
+            $arr = json_decode(
                 json: $res['responseBody'],
                 associative: true
-            )['Results']['Token'];
+            );
+            $token = $arr['Results']['Token'];
             $header = ["Authorization: Bearer {$token}"];
 
             $response[] = trigger(
@@ -467,10 +468,11 @@ if (!function_exists(function: 'processAuth')) {
         );
         if ($res) {
             $response[] = $res;
-            $token = json_decode(
+            $arr = json_decode(
                 json: $res['responseBody'],
                 associative: true
-            )['Results']['Token'];
+            );
+            $token = $arr['Results']['Token'];
             $header = ["Authorization: Bearer {$token}"];
 
             $response[] = trigger(
