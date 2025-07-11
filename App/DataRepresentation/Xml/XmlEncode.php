@@ -90,20 +90,20 @@ class XmlEncode extends AbstractDataEncode
         if (is_array(value: $data)) {
             $isAssoc = (isset($data[0])) ? false : true;
             if (!$isAssoc) {
-                $this->_write(data: "<{$this->_currentObject->tag}>");
+                $this->_write(data: "<{$this->_currentObject->key}>");
             }
-            foreach ($data as $tag => $value) {
+            foreach ($data as $key => $value) {
                 if (!is_array(value: $value)) {
-                    $tag = $this->_escapeTag(tag: $tag);
+                    $key = $this->_escapeTag(key: $key);
                     $this->_write(
-                        data: "<{$tag}>{$this->_escape(data: $value)}</{$tag}>"
+                        data: "<{$key}>{$this->_escape(data: $value)}</{$key}>"
                     );
                 } else {
-                    $this->addKeyData(tag: $tag, data: $value);
+                    $this->addKeyData(key: $key, data: $value);
                 }
             }
             if (!$isAssoc) {
-                $this->_write(data: "</{$this->_currentObject->tag}>");
+                $this->_write(data: "</{$this->_currentObject->key}>");
             }
         } else {
             $this->_write(data: $this->_escape(data: $data));
@@ -140,16 +140,16 @@ class XmlEncode extends AbstractDataEncode
     /**
      * Append raw Xml string
      *
-     * @param string $tag  Tag of associative array
+     * @param string $key  Tag of associative array
      * @param string $data Reference of Representation Data
      *
      * @return void
      */
-    public function appendKeyData($tag, &$data): void
+    public function appendKeyData($key, &$data): void
     {
         if ($this->_currentObject && $this->_currentObject->mode === 'Object') {
-            $tag = $this->_escapeTag(tag: $tag);
-            $this->_write(data: "<{$tag}>{$this->_escape(data: $data)}</{$tag}>");
+            $key = $this->_escapeTag(key: $key);
+            $this->_write(data: "<{$key}>{$this->_escape(data: $data)}</{$key}>");
         }
     }
 
@@ -175,15 +175,15 @@ class XmlEncode extends AbstractDataEncode
     /**
      * Add simple array/value as in the Xml format
      *
-     * @param string       $tag  Tag of associative array
+     * @param string       $key  Tag of associative array
      * @param string|array $data Representation Data
      *
      * @return void
      * @throws \Exception
      */
-    public function addKeyData($tag, $data): void
+    public function addKeyData($key, $data): void
     {
-        $this->startObject(tag: $tag);
+        $this->startObject(key: $key);
         $this->encode(data: $data);
         $this->endObject();
     }
@@ -191,20 +191,20 @@ class XmlEncode extends AbstractDataEncode
     /**
      * Start simple array
      *
-     * @param null|string $tag Used while creating simple array inside an object
+     * @param null|string $key Used while creating simple array inside an object
      *
      * @return void
      */
-    public function startArray($tag = null): void
+    public function startArray($key = null): void
     {
-        if (is_null(value: $tag)) {
-            $tag = 'Rows';
+        if (is_null(value: $key)) {
+            $key = 'Rows';
         }
         if ($this->_currentObject) {
             array_push($this->_objects, $this->_currentObject);
         }
-        $this->_currentObject = new XmlEncoderObject(mode: 'Array', tag: $tag);
-        $this->_write(data: "<{$this->_currentObject->tag}>");
+        $this->_currentObject = new XmlEncoderObject(mode: 'Array', key: $key);
+        $this->_write(data: "<{$this->_currentObject->key}>");
     }
 
     /**
@@ -214,7 +214,7 @@ class XmlEncode extends AbstractDataEncode
      */
     public function endArray(): void
     {
-        $this->_write(data: "</{$this->_currentObject->tag}>");
+        $this->_write(data: "</{$this->_currentObject->key}>");
         $this->_currentObject = null;
         if (count(value: $this->_objects)>0) {
             $this->_currentObject = array_pop($this->_objects);
@@ -224,18 +224,18 @@ class XmlEncode extends AbstractDataEncode
     /**
      * Start simple array
      *
-     * @param null|string $tag Used while creating associative array inside an object
+     * @param null|string $key Used while creating associative array inside an object
      *
      * @return void
      * @throws \Exception
      */
-    public function startObject($tag = null): void
+    public function startObject($key = null): void
     {
-        if (is_null(value: $tag)) {
-            $tag = (is_null(value: $this->_currentObject)) ? 'Resultset' : 'Row';
+        if (is_null(value: $key)) {
+            $key = (is_null(value: $this->_currentObject)) ? 'Resultset' : 'Row';
         }
         if ($this->_currentObject) {
-            if ($this->_currentObject->mode === 'Object' && is_null(value: $tag)) {
+            if ($this->_currentObject->mode === 'Object' && is_null(value: $key)) {
                 throw new \Exception(
                     message: 'Object inside an Object should be supported with Key',
                     code: HttpStatus::$InternalServerError
@@ -243,8 +243,8 @@ class XmlEncode extends AbstractDataEncode
             }
             array_push($this->_objects, $this->_currentObject);
         }
-        $this->_currentObject = new XmlEncoderObject(mode: 'Object', tag: $tag);
-        $this->_write(data: "<{$this->_currentObject->tag}>");
+        $this->_currentObject = new XmlEncoderObject(mode: 'Object', key: $key);
+        $this->_write(data: "<{$this->_currentObject->key}>");
     }
 
     /**
@@ -254,7 +254,7 @@ class XmlEncode extends AbstractDataEncode
      */
     public function endObject(): void
     {
-        $this->_write(data: "</{$this->_currentObject->tag}>");
+        $this->_write(data: "</{$this->_currentObject->key}>");
         $this->_currentObject = null;
         if (count(value: $this->_objects)>0) {
             $this->_currentObject = array_pop($this->_objects);
@@ -283,13 +283,13 @@ class XmlEncode extends AbstractDataEncode
     /**
      * Checks Xml was properly closed
      *
-     * @param null|string $tag Used while creating associative array inside an object
+     * @param null|string $key Used while creating associative array inside an object
      *
      * @return array|string
      */
-    private function _escapeTag($tag): array|string
+    private function _escapeTag($key): array|string
     {
-        return str_replace(search: ':', replace: '-', subject: $tag);
+        return str_replace(search: ':', replace: '-', subject: $key);
     }
 }
 
@@ -310,21 +310,21 @@ class XmlEncode extends AbstractDataEncode
 class XmlEncoderObject
 {
     public $mode = '';
-    public $tag = '';
+    public $key = '';
 
     /**
      * Constructor
      *
      * @param string      $mode Values can be one among Array/Object
-     * @param null|string $tag  Tag
+     * @param null|string $key  Tag
      */
-    public function __construct($mode, $tag)
+    public function __construct($mode, $key)
     {
         $this->mode = $mode;
-        if (!is_null(value: $tag)) {
-            $this->tag = str_replace(search: ':', replace: '-', subject: $tag);
+        if (!is_null(value: $key)) {
+            $this->key = str_replace(search: ':', replace: '-', subject: $key);
         } else {
-            $this->tag = $tag;
+            $this->key = $key;
         }
 
     }

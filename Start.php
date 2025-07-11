@@ -108,8 +108,8 @@ $server->on(
 
         $http = [];
 
-        $http['server']['host'] = 'localhost';
-        // $http['server']['host'] = 'public.localhost';
+        // $http['server']['host'] = 'localhost';
+        $http['server']['host'] = 'public.localhost';
         $http['server']['request_method'] = $request->server['request_method'];
         $http['server']['remote_addr'] = $request->server['remote_addr'];
         if (isset($request->header['authorization'])) {
@@ -203,8 +203,8 @@ $server->on(
     }
 );
 
-/**
- *  https://openswoole.com/docs/modules/swoole-server/configuration
+/*
+ * https://openswoole.com/docs/modules/swoole-server/configuration
  */
 $server->set(
     [

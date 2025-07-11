@@ -746,7 +746,7 @@ if (!function_exists(function: 'processAuth')) {
     }
 }
 
-if (!function_exists('processOpen')) {
+if (!function_exists(function: 'processOpen')) {
     /**
      * Process Open to web api requests
      *
