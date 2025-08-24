@@ -85,13 +85,13 @@ class DataEncode extends AbstractDataEncode
             $this->_tempStream = fopen(filename: "php://memory", mode: "rw+b");
         }
         switch (Env::$outputRepresentation) {
-        case 'Xml':
+        case 'XML':
             $this->_dataEncoder = new XmlEncode(
                 tempStream: $this->_tempStream,
                 header: $header
             );
             break;
-        case 'Json':
+        case 'JSON':
             $this->_dataEncoder = new JsonEncode(
                 tempStream: $this->_tempStream,
                 header: $header

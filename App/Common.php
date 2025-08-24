@@ -4,11 +4,11 @@
  * php version 8.3
  *
  * @category  Common
- * @package   Openswoole_Microservices
+ * @package   Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Microservices
  * @since     Class available since Release 1.0.0
  */
 namespace Microservices\App;
@@ -21,11 +21,11 @@ use Microservices\App\HttpResponse;
  * php version 8.3
  *
  * @category  Common
- * @package   Openswoole_Microservices
+ * @package   Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Microservices
  * @since     Class available since Release 1.0.0
  */
 class Common
@@ -59,19 +59,27 @@ class Common
     public function __construct(&$http)
     {
         $this->http = &$http;
+        $this->req = new HttpRequest(http: $this->http);
+        $this->res = new HttpResponse(http: $this->http);
     }
 
     /**
-     * Initialize
+     * Initialize Request
      *
      * @return bool
      */
-    public function init(): void
+    public function initRequest(): void
     {
-        $this->req = new HttpRequest(http: $this->http);
         $this->req->init();
+    }
 
-        $this->res = new HttpResponse(http: $this->http);
+    /**
+     * Initialize Response
+     *
+     * @return bool
+     */
+    public function initResponse(): void
+    {
         $this->res->init();
     }
 }

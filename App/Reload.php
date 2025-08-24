@@ -126,7 +126,7 @@ class Reload
         );
         $crows = $this->db->fetchAll();
         $this->db->closeCursor();
-        for ($ci = 0, $ci_count = count(value: $crows); $ci < $ci_count; $ci++) {
+        for ($ci = 0, $ciCount = count(value: $crows); $ci < $ciCount; $ci++) {
             if (!empty($crows[$ci]['open_api_domain'])) {
                 $c_key = CacheKey::clientOpenToWeb(
                     hostname: $crows[$ci]['open_api_domain']
@@ -161,7 +161,7 @@ class Reload
             );
             $urows = $this->db->fetchAll();
             $this->db->closeCursor();
-            for ($ui = 0, $ui_count = count(value: $urows); $ui < $ui_count; $ui++) {
+            for ($ui = 0, $uiCount = count(value: $urows); $ui < $uiCount; $ui++) {
                 $cu_key = CacheKey::clientUser(
                     clientId: $crows[$ci]['client_id'],
                     username: $urows[$ui]['username']

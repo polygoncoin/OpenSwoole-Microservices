@@ -92,7 +92,7 @@ class Api
     {
         // Execute Pre Route Hooks
         if (isset($this->_c->req->routeHook['__PRE-ROUTE-HOOKS__'])) {
-            if (is_null(value: $this->_hook)) {
+            if ($this->_hook === null) {
                 $this->_hook = new Hook(common: $this->_c);
             }
             $this->_hook->triggerHook(
@@ -122,7 +122,7 @@ class Api
             break;
         }
 
-        if (!is_null(value: $class)) {
+        if ($class !== null) {
             $api = new $class(common: $this->_c);
             if ($api->init()) {
                 $api->process();
@@ -134,7 +134,7 @@ class Api
 
         // Execute Post Route Hooks
         if (isset($this->_c->req->routeHook['__POST-ROUTE-HOOKS__'])) {
-            if (is_null(value: $this->_hook)) {
+            if ($this->_hook === null) {
                 $this->_hook = new Hook(common: $this->_c);
             }
             $this->_hook->triggerHook(

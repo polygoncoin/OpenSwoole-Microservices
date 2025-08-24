@@ -71,7 +71,7 @@ class Memcached extends AbstractCache
      */
     public function connect(): void
     {
-        if (!is_null(value: $this->_cache)) {
+        if ($this->_cache !== null) {
             return;
         }
 
@@ -146,7 +146,7 @@ class Memcached extends AbstractCache
     {
         $this->connect();
 
-        if (is_null(value: $expire)) {
+        if ($expire === null) {
             return $this->_cache->set($key, $value);
         } else {
             return $this->_cache->set($key, $value, $expire);

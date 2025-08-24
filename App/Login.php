@@ -169,7 +169,7 @@ class Login
      */
     private function _loadUserDetails(): void
     {
-        $clientId = $this->_c->req->sess['clientDetails']['client_id'];
+        $clientId = $this->_c->req->session['clientDetails']['client_id'];
         $this->_clientUserKey = CacheKey::clientUser(
             clientId: $clientId,
             username: $this->_payload['username']
@@ -338,6 +338,8 @@ class Login
             'Expires' => (Constants::$TOKEN_EXPIRY_TIME - $time)
         ];
 
+        $this->_c->initResponse();
+        $this->_c->res->dataEncode->startObject();
         $this->_c->res->dataEncode->addKeyData(key: 'Results', data: $output);
     }
 

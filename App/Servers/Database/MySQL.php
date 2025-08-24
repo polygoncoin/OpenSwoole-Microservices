@@ -114,7 +114,7 @@ class MySql extends AbstractDatabase
         $this->_username = $username;
         $this->_password = $password;
 
-        if (!is_null(value: $database)) {
+        if ($database !== null) {
             $this->database = $database;
         }
     }
@@ -126,7 +126,7 @@ class MySql extends AbstractDatabase
      */
     public function connect(): void
     {
-        if (!is_null(value: $this->_pdo)) {
+        if ($this->_pdo !== null) {
             return;
         }
 
@@ -141,7 +141,7 @@ class MySql extends AbstractDatabase
                 ]
             );
 
-            if (!is_null(value: $this->database)) {
+            if ($this->database !== null) {
                 $this->useDatabase();
             }
         } catch (\PDOException $e) {
@@ -161,7 +161,7 @@ class MySql extends AbstractDatabase
         $this->connect();
 
         try {
-            if (!is_null(value: $this->database)) {
+            if ($this->database !== null) {
                 $this->_pdo->exec(statement: "USE `{$this->database}`");
             }
         } catch (\PDOException $e) {

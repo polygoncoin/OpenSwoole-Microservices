@@ -67,6 +67,18 @@ class XmlEncode extends AbstractDataEncode
     }
 
     /**
+     * Initialize
+     *
+     * @param bool $header Append XML header flag
+     *
+     * @return void
+     */
+    public function init($header = true): void
+    {
+
+    }
+
+    /**
      * Write to temporary stream
      *
      * @param string $data Representation Data
@@ -88,8 +100,8 @@ class XmlEncode extends AbstractDataEncode
     public function encode($data): void
     {
         if (is_array(value: $data)) {
-            $isAssoc = (isset($data[0])) ? false : true;
-            if (!$isAssoc) {
+            $isObject = (isset($data[0])) ? false : true;
+            if (!$isObject) {
                 $this->_write(data: "<{$this->_currentObject->key}>");
             }
             foreach ($data as $key => $value) {
@@ -102,7 +114,7 @@ class XmlEncode extends AbstractDataEncode
                     $this->addKeyData(key: $key, data: $value);
                 }
             }
-            if (!$isAssoc) {
+            if (!$isObject) {
                 $this->_write(data: "</{$this->_currentObject->key}>");
             }
         } else {
@@ -119,7 +131,9 @@ class XmlEncode extends AbstractDataEncode
      */
     private function _escape($data): string
     {
-        if (is_null(value: $data)) return 'null';
+        if ($data === null) {
+             return 'null';
+        }
         return htmlspecialchars(string: $data);
     }
 
@@ -197,7 +211,7 @@ class XmlEncode extends AbstractDataEncode
      */
     public function startArray($key = null): void
     {
-        if (is_null(value: $key)) {
+        if ($key === null) {
             $key = 'Rows';
         }
         if ($this->_currentObject) {
@@ -231,11 +245,11 @@ class XmlEncode extends AbstractDataEncode
      */
     public function startObject($key = null): void
     {
-        if (is_null(value: $key)) {
-            $key = (is_null(value: $this->_currentObject)) ? 'Resultset' : 'Row';
+        if ($key === null) {
+            $key = ($this->_currentObject === null) ? 'Resultset' : 'Row';
         }
         if ($this->_currentObject) {
-            if ($this->_currentObject->mode === 'Object' && is_null(value: $key)) {
+            if ($this->_currentObject->mode === 'Object' && ($key === null)) {
                 throw new \Exception(
                     message: 'Object inside an Object should be supported with Key',
                     code: HttpStatus::$InternalServerError
@@ -321,7 +335,7 @@ class XmlEncoderObject
     public function __construct($mode, $key)
     {
         $this->mode = $mode;
-        if (!is_null(value: $key)) {
+        if ($key !== null) {
             $this->key = str_replace(search: ':', replace: '-', subject: $key);
         } else {
             $this->key = $key;

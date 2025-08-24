@@ -102,7 +102,7 @@ class Read
     public function process(): bool
     {
         $Env = __NAMESPACE__ . '\Env';
-        $sess = &$this->_c->req->sess;
+        $sess = &$this->_c->req->session;
 
         // Load Queries
         $rSqlConfig = include $this->_c->req->sqlConfigFile;
@@ -116,12 +116,12 @@ class Read
         // Check for cache
         $toBeCached = false;
         if (isset($rSqlConfig['cacheKey'])
-            && !isset($this->_c->req->sess['payload']['orderBy'])
+            && !isset($this->_c->req->session['payload']['orderBy'])
         ) {
             $json = $this->_c->req->getDqlCache(
                 cacheKey: $rSqlConfig['cacheKey']
             );
-            if (!is_null(value: $json)) {
+            if ($json !== null) {
                 $cacheHit = 'true';
                 $this->_c->res->dataEncode->appendKeyData(
                     key: 'cacheHit',
@@ -215,16 +215,16 @@ class Read
      */
     private function _processRead(&$rSqlConfig, $useResultSet): void
     {
-        $this->_c->req->sess['necessaryArr'] = $this->_getRequired(
+        $this->_c->req->session['necessaryArr'] = $this->_getRequired(
             sqlConfig: $rSqlConfig,
             isFirstCall: true,
             flag: $useResultSet
         );
 
-        if (isset($this->_c->req->sess['necessaryArr'])) {
-            $this->_c->req->sess['necessary'] = $this->_c->req->sess['necessaryArr'];
+        if (isset($this->_c->req->session['necessaryArr'])) {
+            $this->_c->req->session['necessary'] = $this->_c->req->session['necessaryArr'];
         } else {
-            $this->_c->req->sess['necessary'] = [];
+            $this->_c->req->session['necessary'] = [];
         }
 
         // Start Read operation
@@ -253,11 +253,11 @@ class Read
         &$configKeys,
         $useResultSet
     ): void {
-        $isAssoc = $this->_isAssoc(arr: $rSqlConfig);
+        $isObject = $this->_isObject(arr: $rSqlConfig);
 
         // Execute Pre Sql Hooks
         if (isset($rSqlConfig['__PRE-SQL-HOOKS__'])) {
-            if (is_null(value: $this->_hook)) {
+            if ($this->_hook === null) {
                 $this->_hook = new Hook(common: $this->_c);
             }
             $this->_hook->triggerHook(
@@ -265,7 +265,7 @@ class Read
             );
         }
 
-        if ($isAssoc) {
+        if ($isObject) {
             switch ($rSqlConfig['__MODE__']) {
             // Query will return single row
             case 'singleRowFormat':
@@ -311,7 +311,7 @@ class Read
 
         // triggers
         if (isset($rSqlConfig['__TRIGGERS__'])) {
-            if (is_null(value: $this->_web)) {
+            if ($this->_web === null) {
                 $this->_web = new Web(common: $this->_c);
             }
             $this->dataEncode->addKeyData(
@@ -324,7 +324,7 @@ class Read
 
         // Execute Post Sql Hooks
         if (isset($rSqlConfig['__POST-SQL-HOOKS__'])) {
-            if (is_null(value: $this->_hook)) {
+            if ($this->_hook === null) {
                 $this->_hook = new Hook(common: $this->_c);
             }
             $this->_hook->triggerHook(
@@ -409,20 +409,20 @@ class Read
         $rSqlConfig['__QUERY__'] = $rSqlConfig['countQuery'];
         unset($rSqlConfig['countQuery']);
 
-        $this->_c->req->sess['payload']['page']  = $_GET['page'] ?? 1;
-        $this->_c->req->sess['payload']['perPage']  = $_GET['perPage'] ??
+        $this->_c->req->session['payload']['page']  = $_GET['page'] ?? 1;
+        $this->_c->req->session['payload']['perPage']  = $_GET['perPage'] ??
             Env::$defaultPerPage;
 
-        if ($this->_c->req->sess['payload']['perPage'] > Env::$maxPerPage) {
+        if ($this->_c->req->session['payload']['perPage'] > Env::$maxPerPage) {
             throw new \Exception(
                 message: 'perPage exceeds max perPage value of ' . Env::$maxPerPage,
                 code: HttpStatus::$Forbidden
             );
         }
 
-        $this->_c->req->sess['payload']['start'] = (
-            ($this->_c->req->sess['payload']['page'] - 1) *
-            $this->_c->req->sess['payload']['perPage']
+        $this->_c->req->session['payload']['start'] = (
+            ($this->_c->req->session['payload']['page'] - 1) *
+            $this->_c->req->session['payload']['perPage']
         );
         [$sql, $sqlParams, $errors] = $this->_getSqlAndParams(
             sqlDetails: $rSqlConfig
@@ -441,16 +441,16 @@ class Read
 
         $totalRowsCount = $row['count'];
         $totalPages = ceil(
-            num: $totalRowsCount / $this->_c->req->sess['payload']['perPage']
+            num: $totalRowsCount / $this->_c->req->session['payload']['perPage']
         );
 
         $this->dataEncode->addKeyData(
             key: 'page',
-            data: $this->_c->req->sess['payload']['page']
+            data: $this->_c->req->session['payload']['page']
         );
         $this->dataEncode->addKeyData(
             key: 'perPage',
-            data: $this->_c->req->sess['payload']['perPage']
+            data: $this->_c->req->session['payload']['perPage']
         );
         $this->dataEncode->addKeyData(
             key: 'totalPages',
@@ -493,9 +493,9 @@ class Read
         }
 
         if ($isFirstCall) {
-            if (isset($this->_c->req->sess['payload']['orderBy'])) {
+            if (isset($this->_c->req->session['payload']['orderBy'])) {
                 $orderByStrArr = [];
-                $orderByArr = $this->_c->req->sess['payload']['orderBy'];
+                $orderByArr = $this->_c->req->session['payload']['orderBy'];
                 foreach ($orderByArr as $k => $v) {
                     $k = str_replace(search: ['`', ' '], replace: '', subject: $k);
                     $v = strtoupper(string: $v);
@@ -513,8 +513,8 @@ class Read
         }
 
         if (isset($rSqlConfig['countQuery'])) {
-            $start = $this->_c->req->sess['payload']['start'];
-            $offset = $this->_c->req->sess['payload']['perPage'];
+            $start = $this->_c->req->session['payload']['start'];
+            $offset = $this->_c->req->session['payload']['perPage'];
             $sql .= " LIMIT {$start}, {$offset}";
         }
 
@@ -522,7 +522,7 @@ class Read
         $pushPop = true;
         $this->db->execDbQuery(sql: $sql, params: $sqlParams, pushPop: $pushPop);
         for ($i = 0; $row = $this->db->fetch(\PDO::FETCH_ASSOC);) {
-            if ($i===0) {
+            if ($i === 0) {
                 if (count(value: $row) === 1) {
                     $singleColumn = true;
                 }
@@ -576,7 +576,7 @@ class Read
         }
 
         if (isset($rSqlConfig['__SUB-QUERY__'])
-            && $this->_isAssoc(arr: $rSqlConfig['__SUB-QUERY__'])
+            && $this->_isObject(arr: $rSqlConfig['__SUB-QUERY__'])
         ) {
             foreach ($rSqlConfig['__SUB-QUERY__'] as $key => &$_rSqlConfig) {
                 $_configKeys = $configKeys;

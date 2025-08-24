@@ -65,6 +65,10 @@ class Env
     public static $inputRepresentation = null;
     public static $outputRepresentation = null;
 
+    public static $allowGetRepresentation = null;
+
+    private static $_allowedRepresentation = ['JSON', 'XML'];
+
     /**
      * Initialize
      *
@@ -111,22 +115,43 @@ class Env
         self::$allowCacheRequest = getenv(name: 'allowCacheRequest');
         self::$cacheRequestUriPrefix = getenv(name: 'cacheRequestUriPrefix');
 
-        $inputRepresentation = isset($http['get']['inputRepresentation']) ?
-            $http['get']['inputRepresentation'] : null;
-        $outputRepresentation = isset($http['get']['outputRepresentation']) ?
-            $http['get']['outputRepresentation'] : null;
-
-        if (in_array(needle: $inputRepresentation, haystack: ['Json', 'Xml'])) {
-            self::$inputRepresentation = $inputRepresentation;
-        } else {
+        $inputRepresentation = getenv(name: 'inputRepresentation');
+        if ($inputRepresentation !== false
+            && self::isValidDataRep(dataRepresentation: $inputRepresentation)
+        ) {
             self::$inputRepresentation = getenv(name: 'inputRepresentation');
         }
 
-        if (in_array(needle: $outputRepresentation, haystack: ['Json', 'Xml'])) {
-            self::$outputRepresentation = $outputRepresentation;
+        $outputRepresentation = getenv(name: 'outputRepresentation');
+        if ($outputRepresentation !== false
+            && self::isValidDataRep(dataRepresentation: $outputRepresentation)
+        ) {
+            self::$outputRepresentation = getenv(name: 'outputRepresentation');
+        }
+
+        self::$allowGetRepresentation = getenv(name: 'allowGetRepresentation');
+    }
+
+    /**
+     * Validate Data Representation
+     *
+     * @param string $dataRepresentation Data Representation
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public static function isValidDataRep($dataRepresentation): bool
+    {
+        if (in_array(
+            needle: $dataRepresentation,
+            haystack: self::$_allowedRepresentation
+        )
+        ) {
+            return true;
         } else {
-            self::$outputRepresentation = getenv(
-                name: 'outputRepresentation'
+            throw new \Exception(
+                message: "Invalid Data Representation '{$dataRepresentation}'",
+                code: HttpStatus::$InternalServerError
             );
         }
     }

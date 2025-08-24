@@ -107,7 +107,7 @@ class PgSql extends AbstractDatabase
         $this->_username = $username;
         $this->_password = $password;
 
-        if (!is_null(value: $database)) {
+        if ($database !== null) {
             $this->database = $database;
         }
     }
@@ -119,7 +119,7 @@ class PgSql extends AbstractDatabase
      */
     public function connect(): void
     {
-        if (!is_null(value: $this->_db)) {
+        if ($this->_db !== null) {
             return;
         }
 
@@ -131,7 +131,7 @@ class PgSql extends AbstractDatabase
                 password={$this->_password}"
             );
 
-            if (!is_null(value: $this->database)) {
+            if ($this->database !== null) {
                 $this->useDatabase();
             }
         } catch (\Exception $e) {
@@ -149,7 +149,7 @@ class PgSql extends AbstractDatabase
         $this->connect();
 
         try {
-            if (!is_null(value: $this->database)) {
+            if ($this->database !== null) {
                 pg_query($this->_db, "set schema '{$this->database}';");
             }
         } catch (\Exception $e) {

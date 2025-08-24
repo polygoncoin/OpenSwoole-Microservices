@@ -14,7 +14,7 @@
 if (!function_exists(function: 'genXmlPayload')) {
     /**
      * Defining function genXmlPayload
-     * to generate Xml for use as payload
+     * to generate XML for use as payload
      *
      * @param mixed  $params   Payload whose XML format is requested
      * @param string $payload  Reference to which generated XML is appended
@@ -29,15 +29,15 @@ if (!function_exists(function: 'genXmlPayload')) {
         }
 
         $rows = false;
-        $isAssoc = (isset($params[0])) ? false : true;
-        if (!$isAssoc && count(value: $params) === 1) {
+        $isObject = (isset($params[0])) ? false : true;
+        if (!$isObject && count(value: $params) === 1) {
             $params = $params[0];
             if (empty($params)) {
                 return;
             }
-            $isAssoc = true;
+            $isObject = true;
         }
-        if (!$isAssoc) {
+        if (!$isObject) {
             $payload .= "<Rows>";
             $rows = true;
         }
@@ -45,7 +45,7 @@ if (!function_exists(function: 'genXmlPayload')) {
             $payload .= "<Row>";
         }
         foreach ($params as $key => &$value) {
-            if ($isAssoc) {
+            if ($isObject) {
                 $payload .= "<{$key}>";
             }
             if (is_array(value: $value)) {
@@ -53,14 +53,14 @@ if (!function_exists(function: 'genXmlPayload')) {
             } else {
                 $payload .= htmlspecialchars(string: $value);
             }
-            if ($isAssoc) {
+            if ($isObject) {
                 $payload .= "</{$key}>";
             }
         }
         if ($rowsFlag) {
             $payload .= "</Row>";
         }
-        if (!$isAssoc) {
+        if (!$isObject) {
             $payload .= "</Rows>";
         }
     }
@@ -223,7 +223,7 @@ if (!function_exists(function: 'trigger')) {
         if ($error) {
             $response = 'cURL Error #:' . $error;
         } else {
-            $response = $responseBody;
+            $response = json_decode(json: $responseBody, associative: true);
         }
 
         return [
@@ -269,10 +269,7 @@ if (!function_exists(function: 'processAuth')) {
         );
         if ($res) {
             $response[] = $res;
-            $arr = json_decode(
-                json: $res['responseBody'],
-                associative: true
-            );
+            $arr = $res['responseBody'];
             $token = $arr['Results']['Token'];
             $header = ["Authorization: Bearer {$token}"];
 
@@ -480,10 +477,7 @@ if (!function_exists(function: 'processAuth')) {
         );
         if ($res) {
             $response[] = $res;
-            $arr = json_decode(
-                json: $res['responseBody'],
-                associative: true
-            );
+            $arr = $res['responseBody'];
             $token = $arr['Results']['Token'];
             $header = ["Authorization: Bearer {$token}"];
 
@@ -861,7 +855,7 @@ if (!function_exists(function: 'processXml')) {
         $response[] = trigger(
             method: 'POST',
             route: '/registration-with-address' .
-                '&inputRepresentation=Xml&outputRepresentation=Xml',
+                '&inputRepresentation=XML&outputRepresentation=XML',
             header: $header,
             payload: $payload
         );

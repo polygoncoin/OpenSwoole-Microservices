@@ -107,7 +107,7 @@ class Routes
             $userRoutesFolder = Constants::$DOC_ROOT . $this->_routesFolder .
                 DIRECTORY_SEPARATOR . 'Auth' .
                 DIRECTORY_SEPARATOR . 'GroupRoutes' .
-                DIRECTORY_SEPARATOR . $this->_c->req->sess['groupDetails']['name'];
+                DIRECTORY_SEPARATOR . $this->_c->req->session['groupDetails']['name'];
         }
 
         foreach ($this->_httpMethods as $method) {

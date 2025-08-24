@@ -84,9 +84,9 @@ class DatabaseCacheKey
         $userId = null
     ): void {
         self::$App = 'app';
-        self::$Client = !is_null(value: $clientId) ? ":c:{$clientId}" : '';
-        self::$Group = !is_null(value: $groupId) ? ":g:{$groupId}" : '';
-        self::$User = !is_null(value: $userId) ? ":u:{$userId}" : '';
+        self::$Client = $clientId !== null ? ":c:{$clientId}" : '';
+        self::$Group = $groupId !== null ? ":g:{$groupId}" : '';
+        self::$User = $userId !== null ? ":u:{$userId}" : '';
 
         self::$Category = self::$App . self::$Client . self::$Group . ':category';
         self::$Category1 = self::$App . self::$Client . self::$Group . ':category:1';

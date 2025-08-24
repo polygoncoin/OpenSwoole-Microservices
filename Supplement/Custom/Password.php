@@ -69,19 +69,19 @@ class Password implements CustomInterface
      */
     public function process(): bool
     {
-        if ($this->_c->req->sess['payloadType'] === 'Object') {
+        if ($this->_c->req->session['payloadType'] === 'Object') {
             $payload = $this->_c->req->dataDecode->get();
         } else {
             $payload = $this->_c->req->dataDecode->get('0');
         }
-        $this->_c->req->sess['payload'] = $payload;
+        $this->_c->req->session['payload'] = $payload;
 
-        $oldPassword = $this->_c->req->sess['payload']['old_password'];
-        $oldPasswordHash = $this->_c->req->sess['userDetails']['password_hash'];
+        $oldPassword = $this->_c->req->session['payload']['old_password'];
+        $oldPasswordHash = $this->_c->req->session['userDetails']['password_hash'];
 
         if (password_verify(password: $oldPassword, hash: $oldPasswordHash)) {
-            $userName = $this->_c->req->sess['userDetails']['username'];
-            $newPassword = $this->_c->req->sess['payload']['new_password'];
+            $userName = $this->_c->req->session['userDetails']['username'];
+            $newPassword = $this->_c->req->session['payload']['new_password'];
             $newPasswordHash = password_hash(
                 password: $newPassword,
                 algo: PASSWORD_DEFAULT
@@ -102,7 +102,7 @@ class Password implements CustomInterface
             $this->_c->req->db->execDbQuery(sql: $sql, params: $sqlParams);
             $this->_c->req->db->closeCursor();
 
-            $clientId = $this->_c->req->sess['clientDetails']['client_id'];
+            $clientId = $this->_c->req->session['clientDetails']['client_id'];
             $cu_key = CacheKey::clientUser(
                 clientId: $clientId,
                 username: $userName
@@ -120,7 +120,7 @@ class Password implements CustomInterface
                     value: json_encode(value: $userDetails)
                 );
                 $this->_c->req->cache->deleteCache(
-                    key: CacheKey::token(token: $this->_c->req->sess['token'])
+                    key: CacheKey::token(token: $this->_c->req->session['token'])
                 );
             }
 

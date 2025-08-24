@@ -56,20 +56,20 @@ class Auth
      */
     public function loadUserDetails(): void
     {
-        if (!is_null(value: $this->_req->userDetails)) {
+        if ($this->_req->userDetails !== null) {
              return;
         }
 
-        if (!is_null(value: $this->_req->HTTP_AUTHORIZATION)
+        if (($this->_req->HTTP_AUTHORIZATION !== null)
             && preg_match(
                 pattern: '/Bearer\s(\S+)/',
                 subject: $this->_req->HTTP_AUTHORIZATION,
                 matches: $matches
             )
         ) {
-            $this->_req->sess['token'] = $matches[1];
+            $this->_req->session['token'] = $matches[1];
             $this->_req->tokenKey = CacheKey::token(
-                token: $this->_req->sess['token']
+                token: $this->_req->session['token']
             );
             if (!$this->_req->cache->cacheExists(key: $this->_req->tokenKey)) {
                 throw new \Exception(
@@ -86,9 +86,9 @@ class Auth
             $this->_req->groupId = $this->_req->userDetails['group_id'];
             $this->_req->userId = $this->_req->userDetails['user_id'];
 
-            $this->_req->sess['userDetails'] = &$this->_req->userDetails;
+            $this->_req->session['userDetails'] = &$this->_req->userDetails;
         }
-        if (empty($this->_req->sess['token'])) {
+        if (empty($this->_req->session['token'])) {
             throw new \Exception(
                 message: 'Token missing',
                 code: HttpStatus::$BadRequest
@@ -104,7 +104,7 @@ class Auth
      */
     public function loadGroupDetails()
     {
-        if (!is_null(value: $this->_req->groupDetails)) {
+        if ($this->_req->groupDetails !== null) {
              return;
         }
 
@@ -135,7 +135,7 @@ class Auth
             associative: true
         );
 
-        $this->_req->sess['groupDetails'] = &$this->_req->groupDetails;
+        $this->_req->session['groupDetails'] = &$this->_req->groupDetails;
     }
 
     /**

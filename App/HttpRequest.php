@@ -77,7 +77,7 @@ class HttpRequest extends Gateway
      *
      * @var null|array
      */
-    public $sess = null;
+    public $session = null;
 
     /**
      * Client Id
@@ -243,7 +243,7 @@ class HttpRequest extends Gateway
      */
     public function loadClientDetails(): void
     {
-        if (!is_null(value: $this->clientDetails)) {
+        if ($this->clientDetails !== null) {
             return;
         }
 
@@ -269,7 +269,7 @@ class HttpRequest extends Gateway
         );
         $this->clientId = $this->clientDetails['client_id'];
 
-        $this->sess['clientDetails'] = &$this->clientDetails;
+        $this->session['clientDetails'] = &$this->clientDetails;
     }
 
     /**
@@ -279,20 +279,20 @@ class HttpRequest extends Gateway
      */
     public function loadPayload(): void
     {
-        if (isset($this->sess['payloadType'])) {
+        if (isset($this->session['payloadType'])) {
             return;
         }
 
         if ($this->REQUEST_METHOD === Constants::$GET) {
             $this->urlDecode(arr: $_GET);
-            $this->sess['payloadType'] = 'Object';
-            $this->sess['payload'] = !empty($_GET) ? $_GET : [];
+            $this->session['payloadType'] = 'Object';
+            $this->session['payload'] = !empty($_GET) ? $_GET : [];
         } else {
             if (empty($this->http['post']['Payload'])) {
                 $this->http['post']['Payload'] = '{}';
             }
 
-            if (Env::$inputRepresentation === 'Xml') {
+            if (Env::$inputRepresentation === 'XML') {
                 $xml = simplexml_load_string(data: $this->http['post']['Payload']);
                 $array = json_decode(
                     json: json_encode(value: $xml),
@@ -301,10 +301,12 @@ class HttpRequest extends Gateway
                 unset($xml);
 
                 $result = [];
+
                 $this->_formatXmlArray(array: $array, result: $result);
                 $this->http['post']['Payload'] = json_encode(value: $result);
-                $array = null;
-                $result = null;
+
+                unset($array);
+                unset($result);
             }
 
             $this->payloadStream = fopen(filename: "php://memory", mode: "rw+b");
@@ -320,7 +322,7 @@ class HttpRequest extends Gateway
 
             rewind(stream: $this->payloadStream);
             $this->dataDecode->indexData();
-            $this->sess['payloadType'] = $this->dataDecode->dataType();
+            $this->session['payloadType'] = $this->dataDecode->dataType();
         }
     }
 
@@ -387,13 +389,13 @@ class HttpRequest extends Gateway
                 } else {
                     $decodedVal = urldecode(string: $value);
                     $array = json_decode(json: $decodedVal, associative: true);
-                    $value = (!is_null(value: $array)) ? $array : $decodedVal;
+                    $value = ($array !== null) ? $array : $decodedVal;
                 }
             }
         } else {
             $decodedVal = urldecode(string: $arr);
             $array = json_decode(json: $decodedVal, associative: true);
-            $arr = (!is_null(value: $array)) ? $array : $decodedVal;
+            $arr = ($array !== null) ? $array : $decodedVal;
         }
     }
 
@@ -404,7 +406,7 @@ class HttpRequest extends Gateway
      */
     private function _loadCache(): void
     {
-        if (!is_null(value: $this->cache)) {
+        if ($this->cache !== null) {
             return;
         }
 

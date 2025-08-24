@@ -97,7 +97,7 @@ class PgSql extends AbstractCache
         $this->_username = $username;
         $this->_password = $password;
 
-        if (!is_null(value: $database)) {
+        if ($database !== null) {
             $this->_database = $database;
         }
     }
@@ -110,7 +110,7 @@ class PgSql extends AbstractCache
      */
     public function connect(): void
     {
-        if (!is_null(value: $this->_cache)) {
+        if ($this->_cache !== null) {
             return;
         }
 
@@ -138,7 +138,7 @@ class PgSql extends AbstractCache
     public function useDatabase(): void
     {
         $this->connect();
-        if (!is_null(value: $this->_database)) {
+        if ($this->_database !== null) {
             $this->_cache->useDatabase();
         }
     }
@@ -212,7 +212,7 @@ class PgSql extends AbstractCache
             INSERT INTO `{$keyDetails['table']}`
             SET `value` = ?, `ts` = ?, `key` = ?
         ";
-        if (is_null(value: $expire)) {
+        if ($expire === null) {
             $params = [$value, 0, $keyDetails['key']];
         } else {
             $params = [$value, $this->_ts + $expire, $keyDetails['key']];

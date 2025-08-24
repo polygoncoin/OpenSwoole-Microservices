@@ -88,7 +88,7 @@ class Redis extends AbstractCache
         $this->_username = $username;
         $this->_password = $password;
 
-        if (!is_null(value: $database)) {
+        if ($database !== null) {
             $this->_database = $database;
         }
     }
@@ -101,7 +101,7 @@ class Redis extends AbstractCache
      */
     public function connect(): void
     {
-        if (!is_null(value: $this->_cache)) {
+        if ($this->_cache !== null) {
              return;
         }
 
@@ -123,7 +123,7 @@ class Redis extends AbstractCache
                 ]
             );
 
-            if (!is_null(value: $this->_database)) {
+            if ($this->_database !== null) {
                 $this->useDatabase();
             }
 
@@ -149,7 +149,7 @@ class Redis extends AbstractCache
     public function useDatabase(): void
     {
         $this->connect();
-        if (!is_null(value: $this->_database)) {
+        if ($this->_database !== null) {
             $this->_cache->select($this->_database);
         }
     }
@@ -193,7 +193,7 @@ class Redis extends AbstractCache
     {
         $this->useDatabase();
 
-        if (is_null(value: $expire)) {
+        if ($expire === null) {
             return $this->_cache->set($key, $value);
         } else {
             return $this->_cache->set($key, $value, $expire);

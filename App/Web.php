@@ -194,7 +194,7 @@ class Web
      */
     public function triggerConfig($triggerConfig): mixed
     {
-        if (!isset($this->_c->req->sess['token'])) {
+        if (!isset($this->_c->req->session['token'])) {
             throw new \Exception(
                 message: 'Missing token',
                 code: HttpStatus::$InternalServerError
@@ -214,12 +214,12 @@ class Web
         $header = [];
         $header[] = 'x-api-version: v1.0.0';
         $header[] = 'Cache-Control: no-cache';
-        $header[] = 'Authorization: Bearer ' . $this->_c->req->sess['token'];
+        $header[] = 'Authorization: Bearer ' . $this->_c->req->session['token'];
 
         $response = [];
 
         // For use in function configuration
-        $sess = &$this->_c->req->sess;
+        $sess = &$this->_c->req->session;
 
         if ($assoc) {
             $method = $triggerConfig['__METHOD__'];
@@ -335,8 +335,8 @@ class Web
             $fKey = $config['fetchFromValue'];
             if ($fetchFrom === 'function') {
                 $function = $fKey;
-                $value = $function($this->_c->req->sess);
-                if (is_null(value: $var)) {
+                $value = $function($this->_c->req->session);
+                if ($var ===  null) {
                     $sqlParams[] = $value;
                 } else {
                     $sqlParams[$var] = $value;
@@ -348,7 +348,7 @@ class Web
             )
             ) {
                 $fetchFromKeys = explode(separator: ':', string: $fKey);
-                $value = $this->_c->req->sess[$fetchFrom];
+                $value = $this->_c->req->session[$fetchFrom];
                 foreach ($fetchFromKeys as $key) {
                     if (!isset($value[$key])) {
                         throw new \Exception(
@@ -358,7 +358,7 @@ class Web
                     }
                     $value = $value[$key];
                 }
-                if (is_null(value: $var)) {
+                if ($var ===  null) {
                     $sqlParams[] = $value;
                 } else {
                     $sqlParams[$var] = $value;
@@ -366,15 +366,15 @@ class Web
                 continue;
             } elseif ($fetchFrom === 'custom') {
                 $value = $fKey;
-                if (is_null(value: $var)) {
+                if ($var ===  null) {
                     $sqlParams[] = $value;
                 } else {
                     $sqlParams[$var] = $value;
                 }
                 continue;
-            } elseif (isset($this->_c->req->sess[$fetchFrom][$fKey])) {
-                $value = $this->_c->req->sess[$fetchFrom][$fKey];
-                if (is_null(value: $var)) {
+            } elseif (isset($this->_c->req->session[$fetchFrom][$fKey])) {
+                $value = $this->_c->req->session[$fetchFrom][$fKey];
+                if ($var ===  null) {
                     $sqlParams[] = $value;
                 } else {
                     $sqlParams[$var] = $value;

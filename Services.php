@@ -79,11 +79,12 @@ class Services
      * Initialize
      *
      * @return bool
+     * @throws \Exception
      */
     public function init(): bool
     {
         $this->c = new Common(http: $this->http);
-        $this->c->init();
+        $this->c->initRequest();
 
         if (!isset($this->http['get'][Constants::$ROUTE_URL_PARAM])) {
             throw new \Exception(
@@ -106,11 +107,7 @@ class Services
      */
     public function process(): bool
     {
-        $this->startJson();
         $this->processApi();
-        $this->endOutputJson();
-        $this->addPerformance();
-        $this->endJson();
 
         return true;
     }
@@ -120,7 +117,7 @@ class Services
      *
      * @return void
      */
-    public function startJson(): void
+    public function startData(): void
     {
         $this->c->res->dataEncode->startObject();
     }
@@ -129,6 +126,7 @@ class Services
      * Process API request
      *
      * @return bool
+     * @throws \Exception
      */
     public function processApi(): bool
     {
@@ -174,14 +172,19 @@ class Services
 
         // Class found
         try {
-            if (!is_null(value: $class)) {
+            if ($class !== null) {
                 $api = new $class($this->c);
                 if ($api->init()) {
+                    $this->c->initResponse();
+                    $this->startData();
                     $api->process();
+                    $this->addStatus();
+                    $this->addPerformance();
+                    $this->endData();
                 }
             }
         } catch (\Exception $e) {
-            $this->_log($e);
+            $this->_log(e: $e);
         }
 
         return true;
@@ -192,7 +195,7 @@ class Services
      *
      * @return void
      */
-    public function endOutputJson(): void
+    public function addStatus(): void
     {
         $this->c->res->dataEncode->addKeyData(
             key: 'Status',
@@ -236,7 +239,7 @@ class Services
      *
      * @return void
      */
-    public function endJson(): void
+    public function endData(): void
     {
         $this->c->res->dataEncode->endObject();
         $this->c->res->dataEncode->end();
@@ -277,7 +280,7 @@ class Services
             $methods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
             $headers['Access-Control-Allow-Methods'] = $methods;
         } else {
-            if (Env::$outputRepresentation === 'Xml') { // XML headers
+            if (Env::$outputRepresentation === 'XML') { // XML headers
                 $headers['Content-Type'] = 'text/xml; charset=utf-8';
             } else { // JSON headers
                 $headers['Content-Type'] = 'application/json; charset=utf-8';
@@ -295,7 +298,8 @@ class Services
      *
      * @param \Exception $e Exception
      *
-     * @return void
+     * @return never
+     * @throws \Exception
      */
     private function _log($e): never
     {

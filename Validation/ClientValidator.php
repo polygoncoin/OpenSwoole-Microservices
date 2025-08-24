@@ -69,7 +69,7 @@ class ClientValidator implements ValidatorInterface
      */
     public function validate(&$validationConfig): array
     {
-        $sess = &$this->_c->req->sess;
+        $sess = &$this->_c->req->session;
         $isValidData = true;
         $errors = [];
         foreach ($validationConfig as &$v) {

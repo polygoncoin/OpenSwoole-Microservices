@@ -154,7 +154,7 @@ class JsonDecode extends AbstractDataDecode
     {
         $return = true;
         $jsonFileIndex = &$this->jsonFileIndex;
-        if (!is_null(value: $keys) && strlen(string: $keys) !== 0) {
+        if (!in_array(needle: $keys, haystack: [null, ''])) {
             foreach (explode(separator: ':', string: $keys) as $key) {
                 if (isset($jsonFileIndex[$key])) {
                     $jsonFileIndex = &$jsonFileIndex[$key];
@@ -177,7 +177,7 @@ class JsonDecode extends AbstractDataDecode
     public function dataType($keys = null): string
     {
         $jsonFileIndex = &$this->jsonFileIndex;
-        if (!empty($keys) && strlen(string: $keys) > 0) {
+        if (($keys !== null) && strlen(string: $keys) > 0) {
             foreach (explode(separator: ':', string: $keys) as $key) {
                 if (isset($jsonFileIndex[$key])) {
                     $jsonFileIndex = &$jsonFileIndex[$key];
@@ -208,7 +208,7 @@ class JsonDecode extends AbstractDataDecode
     public function count($keys = null): int
     {
         $jsonFileIndex = &$this->jsonFileIndex;
-        if (!is_null(value: $keys) && strlen(string: $keys) !== 0) {
+        if (!in_array(needle: $keys, haystack: [null, ''])) {
             foreach (explode(separator: ':', string: $keys) as $key) {
                 if (isset($jsonFileIndex[$key])) {
                     $jsonFileIndex = &$jsonFileIndex[$key];
@@ -220,12 +220,15 @@ class JsonDecode extends AbstractDataDecode
                 }
             }
         }
-        if (!(isset($jsonFileIndex['sIndex']) && isset($jsonFileIndex['eIndex'])
-            && isset($jsonFileIndex['_c_']))
-        ) {
-            return 0;
+
+        $count = 0;
+        if (isset($jsonFileIndex['sIndex']) && isset($jsonFileIndex['eIndex'])) {
+            $count = 1;
         }
-        return (int)$jsonFileIndex['_c_'];
+        if (isset($jsonFileIndex['_c_'])) {
+            $count = (int)$jsonFileIndex['_c_'];
+        }
+        return $count;
     }
 
     /**
@@ -278,13 +281,13 @@ class JsonDecode extends AbstractDataDecode
      */
     public function load($keys): void
     {
-        if (empty($keys) && $keys != 0) {
+        if (in_array(needle: $keys, haystack: [null, ''])) {
             $this->_jsonDecodeEngine->sIndex = null;
             $this->_jsonDecodeEngine->eIndex = null;
             return;
         }
         $jsonFileIndex = &$this->jsonFileIndex;
-        if (!is_null(value: $keys) && strlen(string: $keys) !== 0) {
+        if (!in_array(needle: $keys, haystack: [null, ''])) {
             foreach (explode(separator: ':', string: $keys) as $key) {
                 if (isset($jsonFileIndex[$key])) {
                     $jsonFileIndex = &$jsonFileIndex[$key];
@@ -467,13 +470,13 @@ class JsonDecodeEngine
                     break;
 
                 // Check for null values
-                case $char === ', ' && !is_null(value: $nullStr):
+                case $char === ',' && $nullStr !== null:
                     $nullStr = $this->_checkNullStr(nullStr: $nullStr);
                     switch ($this->_currentObject->mode) {
                     case 'Array':
                         $this->_currentObject->arrayValues[] = $nullStr;
                         break;
-                    case 'Assoc':
+                    case 'Object':
                         if (!empty($keyValue)) {
                             $this->_currentObject->assocValues[$keyValue] = $nullStr;
                         }
@@ -518,7 +521,11 @@ class JsonDecodeEngine
                         needle: $strToEscape . $char,
                         haystack: $this->_replacements
                     ):
-                    $$varMode .= str_replace(search: $this->_replacements, replace: $this->_escapers, subject: $strToEscape . $char);
+                    $$varMode .= str_replace(
+                        search: $this->_replacements,
+                        replace: $this->_escapers,
+                        subject: $strToEscape . $char
+                    );
                     $strToEscape = '';
                     $prevIsEscape = false;
                     break;
@@ -530,7 +537,11 @@ class JsonDecodeEngine
                         needle: $strToEscape,
                         haystack: $this->_replacements
                     ):
-                    $$varMode .= str_replace(search: $this->_replacements, replace: $this->_escapers, subject: $strToEscape) . $char;
+                    $$varMode .= str_replace(
+                        search: $this->_replacements,
+                        replace: $this->_escapers,
+                        subject: $strToEscape
+                    ) . $char;
                     $strToEscape = '';
                     $prevIsEscape = false;
                     break;
@@ -574,7 +585,7 @@ class JsonDecodeEngine
      */
     public function getJsonString(): bool|string
     {
-        if (is_null(value: $this->sIndex) && is_null(value: $this->eIndex)) {
+        if (($this->sIndex === null) && ($this->eIndex === null)) {
             rewind(stream: $this->_jsonFileHandle);
             return stream_get_contents(stream: $this->_jsonFileHandle);
         } else {
@@ -625,7 +636,7 @@ class JsonDecodeEngine
         case ']':
             if (!empty($keyValue)) {
                 $this->_currentObject->arrayValues[] = $keyValue;
-                if (is_null(value: $this->_currentObject->arrayKey)) {
+                if ($this->_currentObject->arrayKey === null) {
                     $this->_currentObject->arrayKey = 0;
                 } else {
                     $this->_currentObject->arrayKey++;
@@ -728,7 +739,7 @@ class JsonDecodeEngine
     private function _startObject($key = null): void
     {
         $this->_pushCurrentObject(key: $key);
-        $this->_currentObject = new JsonDecodeObject(mode: 'Assoc', assocKey: $key);
+        $this->_currentObject = new JsonDecodeObject(mode: 'Object', assocKey: $key);
         $this->_currentObject->sIndex = $this->_charCounter;
     }
 
@@ -742,13 +753,13 @@ class JsonDecodeEngine
     private function _pushCurrentObject($key): void
     {
         if ($this->_currentObject) {
-            if ($this->_currentObject->mode === 'Assoc'
-                && (is_null(value: $key) || empty(trim(string: $key)))
+            if ($this->_currentObject->mode === 'Object'
+                && (($key === null) || empty(trim(string: $key)))
             ) {
                 $this->_isBadJson(str: $key);
             }
             if ($this->_currentObject->mode === 'Array'
-                && (is_null(value: $key) || empty(trim(string: $key)))
+                && (($key === null) || empty(trim(string: $key)))
             ) {
                 $this->_isBadJson(str: $key);
             }
@@ -777,10 +788,10 @@ class JsonDecodeEngine
      */
     private function _increment(): void
     {
-        if (!is_null(value: $this->_currentObject)
+        if ($this->_currentObject !== null
             && $this->_currentObject->mode === 'Array'
         ) {
-            if (is_null(value: $this->_currentObject->arrayKey)) {
+            if ($this->_currentObject->arrayKey === null) {
                 $this->_currentObject->arrayKey = 0;
             } else {
                 $this->_currentObject->arrayKey++;
@@ -796,8 +807,8 @@ class JsonDecodeEngine
     private function _getObjectValues(): array|bool
     {
         $arr = false;
-        if (!is_null(value: $this->_currentObject)
-            && $this->_currentObject->mode === 'Assoc'
+        if ($this->_currentObject !== null
+            && $this->_currentObject->mode === 'Object'
             && count(value: $this->_currentObject->assocValues) > 0
         ) {
             $arr = $this->_currentObject->assocValues;
@@ -815,7 +826,7 @@ class JsonDecodeEngine
      */
     private function _isBadJson($str): void
     {
-        $str =  !is_null(value: $str) ? trim(string: $str) : $str;
+        $str =  $str !== null ? trim(string: $str) : $str;
         if (!empty($str)) {
             throw new \Exception(
                 message: "Invalid JSON: {$str}",
@@ -837,16 +848,16 @@ class JsonDecodeEngine
         if ($objCount > 0) {
             for ($i=0; $i<$objCount; $i++) {
                 switch ($this->_objects[$i]->mode) {
-                case 'Assoc':
-                    if (!is_null(value: $this->_objects[$i]->assocKey)) {
+                case 'Object':
+                    if ($this->_objects[$i]->assocKey !== null) {
                         $keys[] = $this->_objects[$i]->assocKey;
                     }
                     break;
                 case 'Array':
-                    if (!is_null(value: $this->_objects[$i]->assocKey)) {
+                    if ($this->_objects[$i]->assocKey !== null) {
                         $keys[] = $this->_objects[$i]->assocKey;
                     }
-                    if (!is_null(value: $this->_objects[$i]->arrayKey)) {
+                    if ($this->_objects[$i]->arrayKey !== null) {
                         $keys[] = $this->_objects[$i]->arrayKey;
                     }
                     break;
@@ -855,13 +866,13 @@ class JsonDecodeEngine
         }
         if ($this->_currentObject) {
             switch ($this->_currentObject->mode) {
-            case 'Assoc':
-                if (!is_null(value: $this->_currentObject->assocKey)) {
+            case 'Object':
+                if ($this->_currentObject->assocKey !== null) {
                     $keys[] = $this->_currentObject->assocKey;
                 }
                 break;
             case 'Array':
-                if (!is_null(value: $this->_currentObject->assocKey)) {
+                if ($this->_currentObject->assocKey !== null) {
                     $keys[] = $this->_currentObject->assocKey;
                 }
                 break;
@@ -944,7 +955,7 @@ class JsonDecodeObject
     {
         $this->mode = $mode;
 
-        $assocKey = !is_null(value: $assocKey) ? trim(string: $assocKey) : $assocKey;
+        $assocKey = $assocKey !== null ? trim(string: $assocKey) : $assocKey;
         $this->assocKey = !empty($assocKey) ? $assocKey : null;
     }
 }

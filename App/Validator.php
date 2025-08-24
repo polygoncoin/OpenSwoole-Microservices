@@ -72,7 +72,7 @@ class Validator
      */
     public function validate(&$validationConfig): array
     {
-        $sess = &$this->_c->req->sess;
+        $sess = &$this->_c->req->session;
         if (isset(($sess['necessary'])) && count(value: $sess['necessary']) > 0) {
             if (([$isValidData, $errors] = $this->_validateRequired())
                 && !$isValidData
@@ -93,7 +93,7 @@ class Validator
     {
         $isValidData = true;
         $errors = [];
-        $sess = &$this->_c->req->sess;
+        $sess = &$this->_c->req->session;
         // Required fields payload validation
         if (!empty($sess['necessary']['payload'])) {
             foreach ($sess['necessary']['payload'] as $column => &$arr) {

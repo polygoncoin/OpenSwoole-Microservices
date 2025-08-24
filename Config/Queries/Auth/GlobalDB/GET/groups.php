@@ -61,4 +61,4 @@ return [
         ],
         '__MODE__' => 'singleRowFormat'
     ]
-][isset($this->_c->req->sess['uriParams']['group_id'])?'single':'all'];
+][isset($this->_c->req->session['uriParams']['group_id'])?'single':'all'];

@@ -55,7 +55,7 @@ class DataDecode extends AbstractDataDecode
     {
         $this->_dataFileHandle = &$dataFileHandle;
 
-        if (Env::$inputRepresentation === 'Json') {
+        if (Env::$inputRepresentation === 'JSON') {
             $this->_dataDecoder = new JsonDecode(
                 jsonFileHandle: $this->_dataFileHandle
             );

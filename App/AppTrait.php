@@ -124,7 +124,7 @@ trait AppTrait
 
         // Check in subQuery
         if (isset($sqlConfig['__SUB-QUERY__'])) {
-            if (!$this->_isAssoc($sqlConfig['__SUB-QUERY__'])) {
+            if (!$this->_isObject($sqlConfig['__SUB-QUERY__'])) {
                 throw new \Exception(
                     message: 'Sub-Query should be an associative array',
                     code: HttpStatus::$InternalServerError
@@ -164,7 +164,7 @@ trait AppTrait
      */
     public function validate(&$validationConfig): array
     {
-        if (is_null(value: $this->validator)) {
+        if ($this->validator === null) {
             $this->validator = new Validator(common: $this->_c);
         }
 
@@ -299,7 +299,7 @@ trait AppTrait
             $fKey = $config['fetchFromValue'];
             if ($fetchFrom === 'function') {
                 $function = $fKey;
-                $value = $function($this->_c->req->sess);
+                $value = $function($this->_c->req->session);
                 $sqlParams[$var] = $value;
                 continue;
             } elseif (in_array(
@@ -308,7 +308,7 @@ trait AppTrait
             )
             ) {
                 $fetchFromKeys = explode(separator: ':', string: $fKey);
-                $value = $this->_c->req->sess[$fetchFrom];
+                $value = $this->_c->req->session[$fetchFrom];
                 foreach ($fetchFromKeys as $key) {
                     if (!isset($value[$key])) {
                         throw new \Exception(
@@ -324,13 +324,13 @@ trait AppTrait
                 $value = $fKey;
                 $sqlParams[$var] = $value;
                 continue;
-            } elseif (isset($this->_c->req->sess[$fetchFrom][$fKey])) {
+            } elseif (isset($this->_c->req->session[$fetchFrom][$fKey])) {
                 $sqlParams[$var] = DatabaseDataTypes::validateDataType(
-                    data: $this->_c->req->sess[$fetchFrom][$fKey],
-                    dataType: $this->_c->req->sess['necessary'][$fetchFrom][$fKey]
+                    data: $this->_c->req->session[$fetchFrom][$fKey],
+                    dataType: $this->_c->req->session['necessary'][$fetchFrom][$fKey]
                 );
                 continue;
-            } elseif ($this->_c->req->sess['necessary'][$fetchFrom][$fKey]['nec']) {
+            } elseif ($this->_c->req->session['necessary'][$fetchFrom][$fKey]['nec']) {
                 $errors[] = "Missing necessary field '{$fetchFrom}' for '{$fKey}'";
                 continue;
             } else {
@@ -349,7 +349,7 @@ trait AppTrait
      *
      * @return bool
      */
-    private function _isAssoc($arr): bool
+    private function _isObject($arr): bool
     {
         $assoc = false;
 
@@ -525,10 +525,10 @@ trait AppTrait
     private function _resetFetchData($fetchFrom, $keys, $row): void
     {
         if (empty($keys) || count(value: $keys) === 0) {
-            $this->_c->req->sess[$fetchFrom] = [];
-            $this->_c->req->sess[$fetchFrom]['return'] = [];
+            $this->_c->req->session[$fetchFrom] = [];
+            $this->_c->req->session[$fetchFrom]['return'] = [];
         }
-        $httpReq = &$this->_c->req->sess[$fetchFrom]['return'];
+        $httpReq = &$this->_c->req->session[$fetchFrom]['return'];
         if (!empty($keys)) {
             foreach ($keys as $k) {
                 if (!isset($httpReq[$k])) {
@@ -556,9 +556,9 @@ trait AppTrait
             $payloadSignature = [
                 'IP' => $this->_c->req->REMOTE_ADDR,
                 'clientId' => $this->_c->req->clientId,
-                'groupId' => (!is_null(value: $this->_c->req->groupId) ?
+                'groupId' => ($this->_c->req->groupId !== null ?
                     $this->_c->req->groupId : 0),
-                'userId' => (!is_null(value: $this->_c->req->userId) ?
+                'userId' => ($this->_c->req->userId !== null ?
                     $this->_c->req->userId : 0),
                 'httpMethod' => $this->_c->req->REQUEST_METHOD,
                 'Route' => $this->_c->req->ROUTE,
@@ -605,14 +605,14 @@ trait AppTrait
                     'idempotentWindow' => $idempotentWindow,
                     'IP' => $this->_c->req->REMOTE_ADDR,
                     'clientId' => $this->_c->req->clientId,
-                    'groupId' => (!is_null(value: $this->_c->req->groupId) ?
+                    'groupId' => ($this->_c->req->groupId !== null ?
                         $this->_c->req->groupId : 0),
-                    'userId' => (!is_null(value: $this->_c->req->userId) ?
+                    'userId' => ($this->_c->req->userId !== null ?
                         $this->_c->req->userId : 0),
                     'httpMethod' => $this->_c->req->REQUEST_METHOD,
                     'Route' => $this->_c->req->ROUTE,
                     'payload' => $this->_c->req->dataDecode->get(
-                        implode(separator: ':', array: $_payloadIndexes)
+                        keys: implode(separator: ':', array: $_payloadIndexes)
                     )
                 ];
 
@@ -646,9 +646,9 @@ trait AppTrait
             $payloadSignature = [
                 'IP' => $this->_c->req->REMOTE_ADDR,
                 'clientId' => $this->_c->req->clientId,
-                'groupId' => (!is_null(value: $this->_c->req->groupId) ?
+                'groupId' => ($this->_c->req->groupId !== null ?
                     $this->_c->req->groupId : 0),
-                'userId' => (!is_null(value: $this->_c->req->userId) ?
+                'userId' => ($this->_c->req->userId !== null ?
                     $this->_c->req->userId : 0),
                 'httpMethod' => $this->_c->req->REQUEST_METHOD,
                 'Route' => $this->_c->req->ROUTE,
