@@ -4,11 +4,11 @@
  * php version 8.3
  *
  * @category  DataTypes
- * @package   Openswoole_Microservices
+ * @package   Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Microservices
  * @since     Class available since Release 1.0.0
  */
 namespace Microservices\App;
@@ -317,11 +317,11 @@ namespace Microservices\App;
  * php version 8.3
  *
  * @category  DataTypes
- * @package   Openswoole_Microservices
+ * @package   Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Microservices
  * @since     Class available since Release 1.0.0
  */
 class DatabaseDataTypes
@@ -381,7 +381,7 @@ class DatabaseDataTypes
      * @param bool|float|int|string|null $data     Data
      * @param array                      $dataType Custom data type
      *
-     * @return bool
+     * @return bool|float|int|string|null
      * @throws \Exception
      */
     public static function validateDataType(

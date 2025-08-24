@@ -4,11 +4,11 @@
  * php version 8.3
  *
  * @category  API
- * @package   Openswoole_Microservices
+ * @package   Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Microservices
  * @since     Class available since Release 1.0.0
  */
 namespace Microservices\App;
@@ -23,11 +23,11 @@ use Microservices\App\Validator;
  * php version 8.3
  *
  * @category  API_Trait
- * @package   Openswoole_Microservices
+ * @package   Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Microservices
  * @since     Class available since Release 1.0.0
  */
 trait AppTrait
@@ -325,10 +325,13 @@ trait AppTrait
                 $sqlParams[$var] = $value;
                 continue;
             } elseif (isset($this->_c->req->session[$fetchFrom][$fKey])) {
-                $sqlParams[$var] = DatabaseDataTypes::validateDataType(
+                if (DatabaseDataTypes::validateDataType(
                     data: $this->_c->req->session[$fetchFrom][$fKey],
                     dataType: $this->_c->req->session['necessary'][$fetchFrom][$fKey]
-                );
+                )
+                ) {
+                    $sqlParams[$var] = $this->_c->req->session[$fetchFrom][$fKey];
+                }
                 continue;
             } elseif ($this->_c->req->session['necessary'][$fetchFrom][$fKey]['nec']) {
                 $errors[] = "Missing necessary field '{$fetchFrom}' for '{$fKey}'";
@@ -612,7 +615,7 @@ trait AppTrait
                     'httpMethod' => $this->_c->req->REQUEST_METHOD,
                     'Route' => $this->_c->req->ROUTE,
                     'payload' => $this->_c->req->dataDecode->get(
-                        keys: implode(separator: ':', array: $_payloadIndexes)
+                        implode(separator: ':', array: $_payloadIndexes)
                     )
                 ];
 

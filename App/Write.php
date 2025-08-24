@@ -441,7 +441,7 @@ class Write
             [$sql, $sqlParams, $errors] = $this->_getSqlAndParams(
                 sqlDetails: $wSqlConfig
             );
-
+            
             if (!empty($errors)) {
                 $response['Error'] = $errors;
                 $this->db->rollback();
