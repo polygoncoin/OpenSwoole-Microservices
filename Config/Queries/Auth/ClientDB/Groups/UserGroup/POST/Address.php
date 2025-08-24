@@ -31,39 +31,39 @@ return [
         ],
     ],
     '__INSERT-IDs__' => 'address:id',
-    '__TRIGGERS__' => [
-        [
-            '__ROUTE__' => [
-                [
-                    'fetchFrom' => 'custom',
-                    'fetchFromValue' => 'address'
-                ],
-                [
-                    'fetchFrom' => '__INSERT-IDs__',
-                    'fetchFromValue' => 'address:id'
-                ]
-            ],
-            '__QUERY-STRING__' => [
-                [
-                    'column' => 'param-1',
-                    'fetchFrom' => 'custom',
-                    'fetchFromValue' => 'address'
-                ],
-                [
-                    'column' => 'param-2',
-                    'fetchFrom' => '__INSERT-IDs__',
-                    'fetchFromValue' => 'address:id'
-                ]
-            ],
-            '__METHOD__' => 'PATCH',
-            '__PAYLOAD__' => [
-                [
-                    'column' => 'address',
-                    'fetchFrom' => 'custom',
-                    'fetchFromValue' => 'updated-address'
-                ]
-            ]
-        ]
-    ],
+    // '__TRIGGERS__' => [
+    //     [
+    //         '__ROUTE__' => [
+    //             [
+    //                 'fetchFrom' => 'custom',
+    //                 'fetchFromValue' => 'address'
+    //             ],
+    //             [
+    //                 'fetchFrom' => '__INSERT-IDs__',
+    //                 'fetchFromValue' => 'address:id'
+    //             ]
+    //         ],
+    //         '__QUERY-STRING__' => [
+    //             [
+    //                 'column' => 'param-1',
+    //                 'fetchFrom' => 'custom',
+    //                 'fetchFromValue' => 'address'
+    //             ],
+    //             [
+    //                 'column' => 'param-2',
+    //                 'fetchFrom' => '__INSERT-IDs__',
+    //                 'fetchFromValue' => 'address:id'
+    //             ]
+    //         ],
+    //         '__METHOD__' => 'PATCH',
+    //         '__PAYLOAD__' => [
+    //             [
+    //                 'column' => 'address',
+    //                 'fetchFrom' => 'custom',
+    //                 'fetchFromValue' => 'updated-address'
+    //             ]
+    //         ]
+    //     ]
+    // ],
     'isTransaction' => false
 ];

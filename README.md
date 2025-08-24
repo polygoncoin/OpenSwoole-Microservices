@@ -23,9 +23,9 @@ This is a light & easy Openswoole based low code API generator using configurati
 ## Important Files
 
 - **.env.example** Create a copy of this file as **.env**
-- **global.sql** Import this SQL file on your **MySql global** instance
-- **client\_master.sql** Import this SQL file on your **MySql client** instance
-- **cache.sql** Import this SQL file for cache in **MySql cache** instance if Redis is not the choice (To be configured in .env)
+- **Sql/global.sql** Import this SQL file on your **MySql global** instance
+- **Sql/client\_master.sql** Import this SQL file on your **MySql client** instance
+- **Sql/cache.sql** Import this SQL file for cache in **MySql cache** instance if Redis is not the choice (To be configured in .env)
 
 > **Note**: One can import all three sql's in a single database to start with. Just configure the same details in the .env file.
 
@@ -651,7 +651,7 @@ maxPerPage=1000
 
 - [http://127.0.0.1:9501?r=/tableName?page=1](http://127.0.0.1:9501?r=/tableName/1?page=1)
 - [http://127.0.0.1:9501?r=/tableName?page=1&perPage=25](http://127.0.0.1:9501?r=/tableName/1?page=1&perPage=25)
-- [http://127.0.0.1:9501?r=/tableName?page=1&perPage=25&orderBy={"field1":"ASC", "field2":"DESC"}](http://127.0.0.1:9501?r=/tableName/1?page=1&perPage=25&orderBy={"field1":"ASC", "field2":"DESC"})
+- [http://127.0.0.1:9501?r=/tableName?page=1&perPage=25&orderBy={"field1":"ASC","field2":"DESC"}](http://127.0.0.1:9501?r=/tableName/1?page=1&perPage=25&orderBy={"field1":"ASC","field2":"DESC"})
 
 >One need to urlencode orderBy value
 
