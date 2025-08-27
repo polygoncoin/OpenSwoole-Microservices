@@ -57,8 +57,8 @@ class RateLimiter
 
         $this->_redis = new \Redis();
         $this->_redis->connect(
-            getenv(name: 'RateLimiterHost'),
-            (int)getenv(name: 'RateLimiterHostPort')
+            getenv(name: 'rateLimiterHost'),
+            (int)getenv(name: 'rateLimiterHostPort')
         );
 
         $this->_currentTimestamp = time();

@@ -136,15 +136,15 @@ These DB/Cache configurations can be set in below columns respectively for each 
 ```ini
 ; ---- Rate Limit Server Details (Redis)
 ;used to save Rate Limiting related details
-RateLimiterHost='127.0.0.1'     ; Redis host dealing with Rate limit
-RateLimiterHostPort=6379        ; Redis host port
+rateLimiterHost='127.0.0.1'     ; Redis host dealing with Rate limit
+rateLimiterHostPort=6379        ; Redis host port
 ```
 
 #### IP based Rate Limiting
 ```ini
-RateLimiterIPMaxRequests=600    ; Max request allowed per IP
-RateLimiterIPSecondsWindow=300  ; Window in seconds of Max request allowed per IP
-RateLimiterIPPrefix='IPRL:'     ; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to users)
+rateLimiterIPMaxRequests=600    ; Max request allowed per IP
+rateLimiterIPSecondsWindow=300  ; Window in seconds of Max request allowed per IP
+rateLimiterIPPrefix='IPRL:'     ; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to users)
 ```
 
 #### Client/Group/User based Rate Limiting
@@ -171,7 +171,7 @@ rateLimiterUserPrefix='URL:'    ; User based Rate Limitng (URL) key prefix used 
 
 #### Route based Rate Limiting
 ```ini
-RateLimiterRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) key prefix used in Redis
+rateLimiterRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) key prefix used in Redis
 ```
 
 ##### Configure these in SQL configuration as below
@@ -600,15 +600,15 @@ One can configure Rate Limiting server details in **.env** file.
 #### Rate Limit Server(Redis) Configuration in .env
 
 ```ini
-RateLimiterHost='127.0.0.1'     ; Redis host dealing with Rate limit
-RateLimiterHostPort=6379        ; Redis host port
-RateLimiterIPMaxRequests=600    ; Max request allowed per IP
-RateLimiterIPSecondsWindow=300  ; Window in seconds of Max request allowed per IP
-RateLimiterIPPrefix='IPRL:'     ; IP based Rate Limitng (IPRL) key prefix used in Redis
+rateLimiterHost='127.0.0.1'     ; Redis host dealing with Rate limit
+rateLimiterHostPort=6379        ; Redis host port
+rateLimiterIPMaxRequests=600    ; Max request allowed per IP
+rateLimiterIPSecondsWindow=300  ; Window in seconds of Max request allowed per IP
+rateLimiterIPPrefix='IPRL:'     ; IP based Rate Limitng (IPRL) key prefix used in Redis
 rateLimiterClientPrefix='CRL:'  ; Client based Rate Limitng (GRL) key prefix used in Redis
 rateLimiterGroupPrefix='GRL:'   ; Group based Rate Limitng (GRL) key prefix used in Redis
 rateLimiterUserPrefix='URL:'    ; User based Rate Limitng (URL) key prefix used in Redis
-RateLimiterRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) key prefix used in Redis
+rateLimiterRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) key prefix used in Redis
 ```
 
 #### Rate Limit at group level (global database)

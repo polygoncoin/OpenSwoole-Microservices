@@ -130,15 +130,15 @@ class Gateway extends RouteParser
         // Rate limit open traffic (not limited by allowed IPs/CIDR and allowed
         // Rate Limits to users)
         if ($this->cidrChecked === false && $rateLimitChecked === false) {
-            $RateLimiterIPPrefix = getenv(name: 'RateLimiterIPPrefix');
-            $RateLimiterIPMaxRequests = getenv(name: 'RateLimiterIPMaxRequests');
-            $RateLimiterIPSecondsWindow = getenv(name: 'RateLimiterIPSecondsWindow');
+            $rateLimiterIPPrefix = getenv(name: 'rateLimiterIPPrefix');
+            $rateLimiterIPMaxRequests = getenv(name: 'rateLimiterIPMaxRequests');
+            $rateLimiterIPSecondsWindow = getenv(name: 'rateLimiterIPSecondsWindow');
             $key = $this->REMOTE_ADDR;
 
             $this->checkRateLimit(
-                rateLimiterPrefix: $RateLimiterIPPrefix,
-                rateLimiterMaxRequests: $RateLimiterIPMaxRequests,
-                rateLimiterSecondsWindow: $RateLimiterIPSecondsWindow,
+                rateLimiterPrefix: $rateLimiterIPPrefix,
+                rateLimiterMaxRequests: $rateLimiterIPMaxRequests,
+                rateLimiterSecondsWindow: $rateLimiterIPSecondsWindow,
                 key: $key
             );
         }

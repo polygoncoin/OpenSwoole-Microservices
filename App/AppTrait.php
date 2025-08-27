@@ -576,7 +576,7 @@ trait AppTrait
 
             // @throws \Exception
             $rateLimitChecked = $this->_c->req->checkRateLimit(
-                rateLimiterPrefix: getenv(name: 'RateLimiterRoutePrefix'),
+                rateLimiterPrefix: getenv(name: 'rateLimiterRoutePrefix'),
                 rateLimiterMaxRequests: $sqlConfig['rateLimiterMaxRequests'],
                 rateLimiterSecondsWindow: $sqlConfig['rateLimiterSecondsWindow'],
                 key: $hashKey
