@@ -374,12 +374,12 @@ class Write
         $payloadIndex = is_array(value: $payloadIndexes) ?
             trim(
                 string: implode(
-                    separator: ':', 
+                    separator: ':',
                     array: $payloadIndexes
-                ), 
+                ),
                 characters: ':'
             ) : '';
-        
+
         $isObject = $this->_c->req->dataDecode->dataType(
             keys: $payloadIndex
         ) === 'Object';
@@ -441,7 +441,7 @@ class Write
             [$sql, $sqlParams, $errors] = $this->_getSqlAndParams(
                 sqlDetails: $wSqlConfig
             );
-            
+
             if (!empty($errors)) {
                 $response['Error'] = $errors;
                 $this->db->rollback();
