@@ -4,7 +4,7 @@
  * php version 8.3
  *
  * @category  ReadAPI
- * @package   Openswoole_Microservices
+ * @package   Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
@@ -28,7 +28,7 @@ use Microservices\App\Servers\Database\AbstractDatabase;
  * php version 8.3
  *
  * @category  ReadAPIs
- * @package   Openswoole_Microservices
+ * @package   Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
@@ -68,7 +68,7 @@ class Read
     private $_hook = null;
 
     /**
-     * Json Encode Object
+     * JSON Encode Object
      *
      * @var null|AbstractDataEncode
      */
@@ -102,7 +102,6 @@ class Read
     public function process(): bool
     {
         $Env = __NAMESPACE__ . '\Env';
-        $sess = &$this->_c->req->session;
 
         // Load Queries
         $rSqlConfig = include $this->_c->req->sqlConfigFile;
@@ -356,6 +355,7 @@ class Read
             configKeys: $configKeys,
             flag: $useResultSet
         );
+
         if (!empty($errors)) {
             throw new \Exception(
                 message: $errors,
@@ -365,6 +365,9 @@ class Read
 
         $this->db->execDbQuery(sql: $sql, params: $sqlParams);
         if ($row =  $this->db->fetch()) {
+            foreach ($row as $key => $value) {
+                $this->dataEncode->addKeyData(key: $key, data: $value);
+            }
             // check if selected column-name mismatches or conflicts with
             // configured module/submodule names
             if (isset($rSqlConfig['__SUB-QUERY__'])) {
@@ -378,11 +381,6 @@ class Read
                     }
                 }
             }
-        } else {
-            $row = [];
-        }
-        foreach ($row as $key => $value) {
-            $this->dataEncode->addKeyData(key: $key, data: $value);
         }
         $this->db->closeCursor();
 
