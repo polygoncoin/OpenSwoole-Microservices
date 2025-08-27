@@ -103,8 +103,8 @@ if (!function_exists(function: 'getCurlConfig')) {
         $queryString = empty($queryString) ? '' : '&' . $queryString;
         $curlConfig[CURLOPT_URL] = "{$homeURL}?r={$route}{$queryString}";
         $curlConfig[CURLOPT_HTTPHEADER] = $header;
-        $curlConfig[CURLOPT_HTTPHEADER][] = "x-api-version: v1.0.0";
-        $curlConfig[CURLOPT_HTTPHEADER][] = "Cache-Control: no-cache";
+        $curlConfig[CURLOPT_HTTPHEADER][] = 'x-api-version: v1.0.0';
+        $curlConfig[CURLOPT_HTTPHEADER][] = 'Cache-Control: no-cache';
         $curlConfig[CURLOPT_HEADER] = 1;
 
         $payload = http_build_query(
@@ -266,12 +266,12 @@ if (!function_exists(function: 'genXmlPayload')) {
         }
 
         if (!$isObject) {
-            $payload .= "<Rows>";
+            $payload .= '<Rows>';
             $rows = true;
         }
 
         if ($rowsFlag) {
-            $payload .= "<Row>";
+            $payload .= '<Row>';
         }
         foreach ($params as $key => &$value) {
             if ($isObject) {
@@ -287,10 +287,10 @@ if (!function_exists(function: 'genXmlPayload')) {
             }
         }
         if ($rowsFlag) {
-            $payload .= "</Row>";
+            $payload .= '</Row>';
         }
         if (!$isObject) {
-            $payload .= "</Rows>";
+            $payload .= '</Rows>';
         }
     }
 }

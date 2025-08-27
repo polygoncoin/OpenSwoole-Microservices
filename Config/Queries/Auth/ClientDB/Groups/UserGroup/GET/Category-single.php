@@ -14,7 +14,7 @@
 namespace Microservices\Config\Queries\Auth\ClientDB\Groups\UserGroup\GET;
 
 return [
-    '__QUERY__' => "SELECT * FROM `category` WHERE __WHERE__",
+    '__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
     '__WHERE__' => [
         [
             'column' => 'is_deleted',
@@ -35,7 +35,7 @@ return [
     '__MODE__' => 'multipleRowFormat',
     '__SUB-QUERY__' => [
         'sub' => [
-            '__QUERY__' => "SELECT * FROM `category` WHERE __WHERE__",
+            '__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
             '__WHERE__' => [
                 [
                     'column' => 'is_deleted',
@@ -51,7 +51,7 @@ return [
             '__MODE__' => 'multipleRowFormat',
             '__SUB-QUERY__' => [
                 'subsub' => [
-                    '__QUERY__' => "SELECT * FROM `category` WHERE __WHERE__",
+                    '__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
                     '__WHERE__' => [
                         [
                             'column' => 'is_deleted',
@@ -67,7 +67,7 @@ return [
                     '__MODE__' => 'multipleRowFormat',
                     '__SUB-QUERY__' => [
                         'subsubsub' => [
-                            '__QUERY__' => "SELECT * FROM `category` WHERE __WHERE__",
+                            '__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
                             '__WHERE__' => [
                                 [
                                     'column' => 'is_deleted',

@@ -15,8 +15,8 @@ namespace Microservices\Config\Queries\Auth\GlobalDB\GET;
 
 return [
     'all' => [
-        'countQuery' => "SELECT count(1) as `count` FROM `{$Env::$clients}` WHERE __WHERE__",
-        '__QUERY__' => "SELECT * FROM `{$Env::$clients}` WHERE __WHERE__ ORDER BY client_id ASC",
+        'countQuery' => 'SELECT count(1) as `count` FROM `{$Env::$clients}` WHERE __WHERE__',
+        '__QUERY__' => 'SELECT * FROM `{$Env::$clients}` WHERE __WHERE__ ORDER BY client_id ASC',
         '__WHERE__' => [
             [
                 'column' => 'is_approved',
@@ -37,7 +37,7 @@ return [
         '__MODE__' => 'multipleRowFormat'
     ],
     'single' => [
-        '__QUERY__' => "SELECT * FROM `{$Env::$clients}` WHERE __WHERE__",
+        '__QUERY__' => 'SELECT * FROM `{$Env::$clients}` WHERE __WHERE__',
         '__WHERE__' => [
             [
                 'column' => 'is_approved',

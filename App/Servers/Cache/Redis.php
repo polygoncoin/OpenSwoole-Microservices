@@ -107,7 +107,7 @@ class Redis extends AbstractCache
 
         if (!extension_loaded(extension: 'redis')) {
             throw new \Exception(
-                message: "Unable to find Redis extension",
+                message: 'Unable to find Redis extension',
                 code: HttpStatus::$InternalServerError
             );
         }

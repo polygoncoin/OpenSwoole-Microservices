@@ -14,7 +14,7 @@
 namespace Microservices\Config\Queries\Auth\ClientDB\Common;
 
 return [
-  '__QUERY__' => "UPDATE `master_users` SET __SET__ WHERE __WHERE__",
+  '__QUERY__' => 'UPDATE `master_users` SET __SET__ WHERE __WHERE__',
   '__VALIDATE__' => [
     [
       'fn' => '_primaryKeyExist',

@@ -77,7 +77,7 @@ class Memcached extends AbstractCache
 
         if (!extension_loaded(extension: 'memcached')) {
             throw new \Exception(
-                message: "Unable to find Memcached extension",
+                message: 'Unable to find Memcached extension',
                 code: HttpStatus::$InternalServerError
             );
         }

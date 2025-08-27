@@ -14,7 +14,7 @@
 namespace Microservices\Config\Queries\Auth\ClientDB\Groups\UserGroup\POST;
 
 return [
-    '__QUERY__' => "INSERT INTO `master_users` SET __SET__",
+    '__QUERY__' => 'INSERT INTO `master_users` SET __SET__',
     '__SET__' => [
         [
             'column' => 'firstname',
@@ -60,7 +60,7 @@ return [
     '__INSERT-IDs__' => 'registration:id',
     '__SUB-QUERY__' => [
         'address' => [
-            '__QUERY__' => "INSERT INTO `address` SET __SET__",
+            '__QUERY__' => 'INSERT INTO `address` SET __SET__',
             '__SET__' => [
                 [
                     'column' => 'user_id',

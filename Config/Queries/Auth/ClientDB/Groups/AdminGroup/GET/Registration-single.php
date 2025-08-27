@@ -14,7 +14,7 @@
 namespace Microservices\Config\Queries\Auth\ClientDB\Groups\AdminGroup\GET;
 
 return [
-    '__QUERY__' => "SELECT * FROM `master_users` WHERE __WHERE__",
+    '__QUERY__' => 'SELECT * FROM `master_users` WHERE __WHERE__',
     '__WHERE__' => [
         [
             'column' => 'is_deleted',

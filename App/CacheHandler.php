@@ -132,15 +132,15 @@ class CacheHandler
 
         // send the headers
         //header("Content-Disposition: attachment;filename='$fileName';");
-        header('Cache-Control: max-age=0, must-revalidate');
-        header("Last-Modified: ".gmdate(
-            format: "D, d M Y H:i:s",
-            timestamp: $modifiedTime)." GMT"
+        header(header: 'Cache-Control: max-age=0, must-revalidate');
+        header(header: 'Last-Modified: ' . gmdate(
+            format: 'D, d M Y H:i:s',
+            timestamp: $modifiedTime) . ' GMT'
         );
-        header("Etag:\"{$eTag}\"");
-        header('Expires: -1');
-        header("Content-Type: $mime");
-        header('Content-Length: ' . filesize(filename: $fileLocation));
+        header(header: "Etag:\"{$eTag}\"");
+        header(header: 'Expires: -1');
+        header(header: "Content-Type: {$mime}");
+        header(header: 'Content-Length: ' . filesize(filename: $fileLocation));
 
         // Send file content as stream
         $fp = fopen(filename: $fileLocation, mode: 'rb');

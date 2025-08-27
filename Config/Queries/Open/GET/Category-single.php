@@ -14,7 +14,7 @@
 namespace Microservices\Config\Queries\Open\GET;
 
 return [
-    '__QUERY__' => "SELECT * FROM `category` WHERE __WHERE__",
+    '__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
     '__WHERE__' => [
         [
             'column' => 'is_deleted',

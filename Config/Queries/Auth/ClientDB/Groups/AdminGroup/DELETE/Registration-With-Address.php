@@ -16,7 +16,7 @@ namespace Microservices\Config\Queries\Auth\ClientDB\Groups\AdminGroup\DELETE;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    '__QUERY__' => "UPDATE `master_users` SET __SET__ WHERE __WHERE__",
+    '__QUERY__' => 'UPDATE `master_users` SET __SET__ WHERE __WHERE__',
     '__SET__' => [
         [
             'column' => 'is_deleted',
@@ -39,7 +39,7 @@ return [
     ],
     '__SUB-QUERY__' => [
         'address' => [
-            '__QUERY__' => "UPDATE `address` SET __SET__ WHERE __WHERE__",
+            '__QUERY__' => 'UPDATE `address` SET __SET__ WHERE __WHERE__',
             '__SET__' => [
                 [
                     'column' => 'is_deleted',

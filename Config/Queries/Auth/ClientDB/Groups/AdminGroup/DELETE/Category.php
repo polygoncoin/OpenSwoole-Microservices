@@ -14,5 +14,5 @@
 namespace Microservices\Config\Queries\Auth\ClientDB\Groups\AdminGroup\DELETE;
 
 return [
-    '__QUERY__' => "TRUNCATE TABLE `category`;",
+    '__QUERY__' => 'TRUNCATE TABLE `category`;',
 ];

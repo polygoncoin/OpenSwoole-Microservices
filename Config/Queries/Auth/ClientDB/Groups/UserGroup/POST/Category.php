@@ -16,7 +16,7 @@ namespace Microservices\Config\Queries\Auth\ClientDB\Groups\UserGroup\POST;
 use Microservices\App\DatabaseCacheKey;
 
 return [
-    '__QUERY__' => "INSERT INTO `category` SET __SET__",
+    '__QUERY__' => 'INSERT INTO `category` SET __SET__',
     '__SET__' => [
         [
             'column' => 'name',
@@ -32,7 +32,7 @@ return [
     '__INSERT-IDs__' => 'category:id',
     '__SUB-QUERY__' => [
         'sub' => [
-            '__QUERY__' => "INSERT INTO `category` SET __SET__",
+            '__QUERY__' => 'INSERT INTO `category` SET __SET__',
             '__SET__' => [
                 [
                     'column' => 'name',
@@ -48,7 +48,7 @@ return [
             '__INSERT-IDs__' => 'sub:id',
             '__SUB-QUERY__' => [
                 'subsub' => [
-                    '__QUERY__' => "INSERT INTO `category` SET __SET__",
+                    '__QUERY__' => 'INSERT INTO `category` SET __SET__',
                     '__SET__' => [
                         [
                             'column' => 'name',

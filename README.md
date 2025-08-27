@@ -359,8 +359,8 @@ return [
     'countQuery' => "SELECT count(1) as `count` FROM TableName WHERE column1 = :column1 AND  id = :id",
 
     // Query to perform task
-    '__QUERY__' => "SELECT columns FROM TableName WHERE __WHERE__", // OR
-    '__QUERY__' => "SELECT columns FROM TableName WHERE column1 = :column1 AND id = :id",
+    '__QUERY__' => 'SELECT columns FROM TableName WHERE __WHERE__", // OR
+    '__QUERY__' => 'SELECT columns FROM TableName WHERE column1 = :column1 AND id = :id",
 
     // Details of data to be set by Query to perform task
     '__SET__' => [
@@ -453,7 +453,7 @@ return [
     '__SUB-QUERY__' => [
         '<sub-key>' => [
             // Query to perform task
-            '__QUERY__' => "SQL",
+            '__QUERY__' => 'SQL",
             '__SET__/__WHERE__' => [
                 [...]
                 // Database DataTypes settings necessary when useHierarchy is true
@@ -715,7 +715,7 @@ var payload = [
 
 ```PHP
 return [
-    '__QUERY__' => "INSERT INTO `category` SET __SET__",
+    '__QUERY__' => 'INSERT INTO `category` SET __SET__",
     '__SET__' => [
         'name' => ['payload', 'name'],
         'parent_id' => ['custom', 0],
@@ -723,7 +723,7 @@ return [
     '__INSERT-IDs__' => 'category:id',
     '__SUB-QUERY__' => [
         'module1' => [
-            '__QUERY__' => "INSERT INTO `category` SET __SET__",
+            '__QUERY__' => 'INSERT INTO `category` SET __SET__",
             '__SET__' => [
                 'name' => ['payload', 'subname'],
                 'parent_id' => ['__INSERT-IDs__', 'category:id'],

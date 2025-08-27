@@ -15,7 +15,7 @@ namespace Microservices\Config\Queries\Auth\GlobalDB\GET;
 
 return [
     'all' => [
-        '__QUERY__' => "SELECT * FROM `{$Env::$groups}` WHERE __WHERE__ ORDER BY group_id ASC",
+        '__QUERY__' => 'SELECT * FROM `{$Env::$groups}` WHERE __WHERE__ ORDER BY group_id ASC',
         '__WHERE__' => [
             [
                 'column' => 'is_approved',
@@ -36,7 +36,7 @@ return [
         '__MODE__' => 'multipleRowFormat'
     ],
     'single' => [
-        '__QUERY__' => "SELECT * FROM `{$Env::$groups}` WHERE __WHERE__",
+        '__QUERY__' => 'SELECT * FROM `{$Env::$groups}` WHERE __WHERE__',
         '__WHERE__' => [
             [
                 'column' => 'is_approved',

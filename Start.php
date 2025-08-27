@@ -32,17 +32,17 @@ Coroutine::set(
     ]
 );
 
-$server = new Server("127.0.0.1", 9501);
+$server = new Server('127.0.0.1', 9501);
 
 $server->on(
-    "start",
+    'start',
     function (Server $server): void {
-        echo "Openswoole http server is started at http://127.0.0.1:9501\n";
+        echo 'Openswoole http server is started at http://127.0.0.1:9501' . "\n";
     }
 );
 
 $server->on(
-    "request",
+    'request',
     function (Request $request, Response $response): void {
 
         if (isset($request->get['r'])
@@ -125,12 +125,12 @@ $server->on(
                     'LogType' => 'ERROR',
                     'DateTime' => date(format: 'Y-m-d H:i:s'),
                     'HttpDetails' => [
-                        "HttpCode" => $e->getCode(),
-                        "HttpMessage" => $e->getMessage()
+                        'HttpCode' => $e->getCode(),
+                        'HttpMessage' => $e->getMessage()
                     ],
                     'Details' => [
                         'http' => $http,
-                        'sess' => $services->c->req->session
+                        'session' => $services->c->req->session
                     ]
                 ];
                 (new Logs)->log(logDetails: $logDetails);

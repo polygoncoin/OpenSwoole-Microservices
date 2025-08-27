@@ -13,7 +13,7 @@
  */
 namespace Microservices\TestCases;
 
-require_once __DIR__ . '/TestFunctions.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'TestFunctions.php';
 
 $header = [];
 $response = [];

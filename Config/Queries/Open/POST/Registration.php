@@ -16,7 +16,7 @@ namespace Microservices\Config\Queries\Open\POST;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    '__QUERY__' => "INSERT INTO `master_users` SET __SET__",
+    '__QUERY__' => 'INSERT INTO `master_users` SET __SET__',
     '__SET__' => [
         [
             'column' => 'firstname',

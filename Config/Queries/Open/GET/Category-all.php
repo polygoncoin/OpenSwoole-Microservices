@@ -17,8 +17,8 @@ use Microservices\App\Constants;
 use Microservices\App\DatabaseOpenCacheKey;
 
 return [
-    'countQuery' => "SELECT count(1) as `count` FROM `category` WHERE __WHERE__",
-    '__QUERY__' => "SELECT * FROM `category` WHERE __WHERE__",
+    'countQuery' => 'SELECT count(1) as `count` FROM `category` WHERE __WHERE__',
+    '__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
     '__WHERE__' => [
         [
             'column' => 'is_deleted',
@@ -34,7 +34,7 @@ return [
     '__MODE__' => 'multipleRowFormat',
     '__SUB-QUERY__' => [
         'sub' => [
-            '__QUERY__' => "SELECT * FROM `category` WHERE __WHERE__",
+            '__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
             '__WHERE__' => [
                 [
                     'column' => 'is_deleted',
@@ -50,7 +50,7 @@ return [
             '__MODE__' => 'multipleRowFormat',
             '__SUB-QUERY__' => [
                 'subsub' => [
-                    '__QUERY__' => "SELECT * FROM `category` WHERE __WHERE__",
+                    '__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
                     '__WHERE__' => [
                         [
                             'column' => 'is_deleted',
@@ -66,7 +66,7 @@ return [
                     '__MODE__' => 'multipleRowFormat',
                     '__SUB-QUERY__' => [
                         'subsubsub' => [
-                            '__QUERY__' => "SELECT * FROM `category` WHERE __WHERE__",
+                            '__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
                             '__WHERE__' => [
                                 [
                                     'column' => 'is_deleted',

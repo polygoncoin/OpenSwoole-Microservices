@@ -16,7 +16,7 @@ namespace Microservices\Config\Queries\Auth\GlobalDB\POST;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    '__QUERY__' => "INSERT INTO `{$Env::$groups}` SET __SET__",
+    '__QUERY__' => 'INSERT INTO `{$Env::$groups}` SET __SET__',
     '__SET__' => [
         [
             'column' => 'name',

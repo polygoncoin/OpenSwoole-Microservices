@@ -16,7 +16,7 @@ namespace Microservices\Config\Queries\Auth\ClientDB\Groups\UserGroup\POST;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    '__QUERY__' => "INSERT INTO `address` SET __SET__",
+    '__QUERY__' => 'INSERT INTO `address` SET __SET__',
     '__SET__' => [
         [
             'column' => 'user_id',
