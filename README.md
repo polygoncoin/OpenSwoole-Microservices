@@ -149,9 +149,9 @@ RateLimiterIPPrefix='IPRL:'     ; Rate limit open traffic (not limited by allowe
 
 #### Client/Group/User based Rate Limiting
 ```ini
-RateLimiterClientPrefix='CRL:'  ; Client based Rate Limitng (GRL) key prefix used in Redis
-RateLimiterGroupPrefix='GRL:'   ; Group based Rate Limitng (GRL) key prefix used in Redis
-RateLimiterUserPrefix='URL:'    ; User based Rate Limitng (URL) key prefix used in Redis
+rateLimiterClientPrefix='CRL:'  ; Client based Rate Limitng (GRL) key prefix used in Redis
+rateLimiterGroupPrefix='GRL:'   ; Group based Rate Limitng (GRL) key prefix used in Redis
+rateLimiterUserPrefix='URL:'    ; User based Rate Limitng (URL) key prefix used in Redis
 ```
 
 ##### Configure these in tables below
@@ -605,9 +605,9 @@ RateLimiterHostPort=6379        ; Redis host port
 RateLimiterIPMaxRequests=600    ; Max request allowed per IP
 RateLimiterIPSecondsWindow=300  ; Window in seconds of Max request allowed per IP
 RateLimiterIPPrefix='IPRL:'     ; IP based Rate Limitng (IPRL) key prefix used in Redis
-RateLimiterClientPrefix='CRL:'  ; Client based Rate Limitng (GRL) key prefix used in Redis
-RateLimiterGroupPrefix='GRL:'   ; Group based Rate Limitng (GRL) key prefix used in Redis
-RateLimiterUserPrefix='URL:'    ; User based Rate Limitng (URL) key prefix used in Redis
+rateLimiterClientPrefix='CRL:'  ; Client based Rate Limitng (GRL) key prefix used in Redis
+rateLimiterGroupPrefix='GRL:'   ; Group based Rate Limitng (GRL) key prefix used in Redis
+rateLimiterUserPrefix='URL:'    ; User based Rate Limitng (URL) key prefix used in Redis
 RateLimiterRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) key prefix used in Redis
 ```
 
