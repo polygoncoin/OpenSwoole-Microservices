@@ -41,9 +41,9 @@ return [
         [
             'column' => 'password_hash',
             'fetchFrom' => 'function',
-            'fetchFromValue' => function($sess): string {
+            'fetchFromValue' => function ($session): string {
                 return password_hash(
-                    password: $sess['payload']['password'],
+                    password: $session['payload']['password'],
                     algo: PASSWORD_DEFAULT
                 );
             }
@@ -56,7 +56,7 @@ return [
             'fetchFromValue' => 'No'
         ],
         [
-            'column' => 'user_id',
+            'column' => 'id',
             'fetchFrom' => 'uriParams',
             'fetchFromValue' => 'id',
             'dataType' => DatabaseDataTypes::$PrimaryKey
@@ -92,7 +92,7 @@ return [
             'fn' => '_primaryKeyExist',
             'fnArgs' => [
                 'table' => ['custom', 'master_users'],
-                'primary' => ['custom', 'user_id'],
+                'primary' => ['custom', 'id'],
                 'id' => ['uriParams', 'id']
             ],
             'errorMessage' => 'Invalid registration id'

@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS `m001_master_clients`;
 
 CREATE TABLE `m001_master_clients` (
-  `client_id` int NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `api_domain` varchar(255) DEFAULT NULL,
   `open_api_domain` varchar(255) DEFAULT NULL,
@@ -41,13 +41,13 @@ CREATE TABLE `m001_master_clients` (
   `is_approved` enum('Yes', 'No') NOT NULL DEFAULT 'No',
   `is_disabled` enum('Yes', 'No') NOT NULL DEFAULT 'No',
   `is_deleted` enum('Yes', 'No') NOT NULL DEFAULT 'No',
-  PRIMARY KEY (`client_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `m002_master_groups`;
 
 CREATE TABLE `m002_master_groups` (
-  `group_id` int NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `client_id` int DEFAULT NULL,
   `allowed_ips` text,
@@ -63,7 +63,7 @@ CREATE TABLE `m002_master_groups` (
   `is_approved` enum('Yes', 'No') NOT NULL DEFAULT 'No',
   `is_disabled` enum('Yes', 'No') NOT NULL DEFAULT 'No',
   `is_deleted` enum('Yes', 'No') NOT NULL DEFAULT 'No',
-  PRIMARY KEY (`group_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 LOCK TABLES `m001_master_clients` WRITE;

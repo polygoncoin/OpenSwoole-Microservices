@@ -72,21 +72,21 @@ class DatabaseCacheKey
     /**
      * Initialize
      *
-     * @param null|int $clientId Client Id
-     * @param null|int $groupId  Group Id
-     * @param null|int $userId   User Id
+     * @param null|int $cID Client Id
+     * @param null|int $gID  Group Id
+     * @param null|int $uID   User Id
      *
      * @return void
      */
     public static function init(
-        $clientId = null,
-        $groupId = null,
-        $userId = null
+        $cID = null,
+        $gID = null,
+        $uID = null
     ): void {
         self::$App = 'app';
-        self::$Client = $clientId !== null ? ":c:{$clientId}" : '';
-        self::$Group = $groupId !== null ? ":g:{$groupId}" : '';
-        self::$User = $userId !== null ? ":u:{$userId}" : '';
+        self::$Client = $cID !== null ? ":c:{$cID}" : '';
+        self::$Group = $gID !== null ? ":g:{$gID}" : '';
+        self::$User = $uID !== null ? ":u:{$uID}" : '';
 
         self::$Category = self::$App . self::$Client . self::$Group . ':category';
         self::$Category1 = self::$App . self::$Client . self::$Group . ':category:1';

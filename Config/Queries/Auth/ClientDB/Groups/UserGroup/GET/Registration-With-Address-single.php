@@ -22,7 +22,7 @@ return [
             'fetchFromValue' => 'No'
         ],
         [
-            'column' => 'user_id',
+            'column' => 'id',
             'fetchFrom' => 'uriParams',
             'fetchFromValue' => 'id'
         ]
@@ -40,7 +40,7 @@ return [
                 [
                     'column' => 'user_id',
                     'fetchFrom' => 'sqlResults',
-                    'fetchFromValue' => 'return:user_id'
+                    'fetchFromValue' => 'return:id'
                 ],
             ],
             '__MODE__' => 'multipleRowFormat',

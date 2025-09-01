@@ -62,8 +62,8 @@ class Env
     public static $allowCacheRequest = null;
     public static $cacheRequestUriPrefix = null;
 
-    public static $inputRepresentation = null;
-    public static $outputRepresentation = null;
+    public static $iRepresentation = null;
+    public static $oRepresentation = null;
 
     public static $allowGetRepresentation = null;
 
@@ -115,18 +115,18 @@ class Env
         self::$allowCacheRequest = getenv(name: 'allowCacheRequest');
         self::$cacheRequestUriPrefix = getenv(name: 'cacheRequestUriPrefix');
 
-        $inputRepresentation = getenv(name: 'inputRepresentation');
-        if ($inputRepresentation !== false
-            && self::isValidDataRep(dataRepresentation: $inputRepresentation)
+        $iRepresentation = getenv(name: 'iRepresentation');
+        if ($iRepresentation !== false
+            && self::isValidDataRep(dataRepresentation: $iRepresentation)
         ) {
-            self::$inputRepresentation = getenv(name: 'inputRepresentation');
+            self::$iRepresentation = getenv(name: 'iRepresentation');
         }
 
-        $outputRepresentation = getenv(name: 'outputRepresentation');
-        if ($outputRepresentation !== false
-            && self::isValidDataRep(dataRepresentation: $outputRepresentation)
+        $oRepresentation = getenv(name: 'oRepresentation');
+        if ($oRepresentation !== false
+            && self::isValidDataRep(dataRepresentation: $oRepresentation)
         ) {
-            self::$outputRepresentation = getenv(name: 'outputRepresentation');
+            self::$oRepresentation = getenv(name: 'oRepresentation');
         }
 
         self::$allowGetRepresentation = getenv(name: 'allowGetRepresentation');

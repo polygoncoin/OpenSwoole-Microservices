@@ -39,9 +39,9 @@ return [
         [
             'column' => 'password_hash',
             'fetchFrom' => 'function',
-            'fetchFromValue' => function($sess): string {
+            'fetchFromValue' => function ($session): string {
                 return password_hash(
-                    password: $sess['payload']['password'],
+                    password: $session['payload']['password'],
                     algo: PASSWORD_DEFAULT
                 );
             }
@@ -78,8 +78,8 @@ return [
             '__MAX-PAYLOAD-OBJECTS__' => 2
         ]
     ],
-    'rateLimiterMaxRequests' => 1,
-    'rateLimiterSecondsWindow' => 3600,
+    'rateLimitMaxRequests' => 100,
+    'rateLimitSecondsWindow' => 3600,
     'useHierarchy' => true,
     '__PAYLOAD-TYPE__' => 'Object',
     'idempotentWindow' => 10,

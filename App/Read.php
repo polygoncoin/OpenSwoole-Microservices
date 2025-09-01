@@ -4,7 +4,7 @@
  * php version 8.3
  *
  * @category  ReadAPI
- * @package   Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
@@ -28,7 +28,7 @@ use Microservices\App\Servers\Database\AbstractDatabase;
  * php version 8.3
  *
  * @category  ReadAPIs
- * @package   Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
@@ -104,7 +104,7 @@ class Read
         $Env = __NAMESPACE__ . '\Env';
 
         // Load Queries
-        $rSqlConfig = include $this->_c->req->sqlConfigFile;
+        $rSqlConfig = include $this->_c->req->rParser->sqlConfigFile;
 
         // Rate Limiting request if configured for Route Queries.
         $this->_rateLimitRoute(sqlConfig: $rSqlConfig);
@@ -115,7 +115,7 @@ class Read
         // Check for cache
         $toBeCached = false;
         if (isset($rSqlConfig['cacheKey'])
-            && !isset($this->_c->req->session['payload']['orderBy'])
+            && !isset($this->_c->req->s['payload']['orderBy'])
         ) {
             $json = $this->_c->req->getDqlCache(
                 cacheKey: $rSqlConfig['cacheKey']
@@ -154,7 +154,7 @@ class Read
             keyword: 'useResultSet'
         );
 
-        if (Env::$allowConfigRequest && $this->_c->req->isConfigRequest) {
+        if (Env::$allowConfigRequest && $this->_c->req->rParser->isConfigRequest) {
             $this->_processReadConfig(
                 rSqlConfig: $rSqlConfig,
                 useResultSet: $useResultSet
@@ -191,7 +191,7 @@ class Read
         $this->dataEncode->startObject(key: 'Config');
         $this->dataEncode->addKeyData(
             key: 'Route',
-            data: $this->_c->req->configuredUri
+            data: $this->_c->req->rParser->configuredUri
         );
         $this->dataEncode->addKeyData(
             key: 'Payload',
@@ -214,16 +214,16 @@ class Read
      */
     private function _processRead(&$rSqlConfig, $useResultSet): void
     {
-        $this->_c->req->session['necessaryArr'] = $this->_getRequired(
+        $this->_c->req->s['necessaryArr'] = $this->_getRequired(
             sqlConfig: $rSqlConfig,
             isFirstCall: true,
             flag: $useResultSet
         );
 
-        if (isset($this->_c->req->session['necessaryArr'])) {
-            $this->_c->req->session['necessary'] = $this->_c->req->session['necessaryArr'];
+        if (isset($this->_c->req->s['necessaryArr'])) {
+            $this->_c->req->s['necessary'] = $this->_c->req->s['necessaryArr'];
         } else {
-            $this->_c->req->session['necessary'] = [];
+            $this->_c->req->s['necessary'] = [];
         }
 
         // Start Read operation
@@ -407,20 +407,20 @@ class Read
         $rSqlConfig['__QUERY__'] = $rSqlConfig['countQuery'];
         unset($rSqlConfig['countQuery']);
 
-        $this->_c->req->session['payload']['page']  = $_GET['page'] ?? 1;
-        $this->_c->req->session['payload']['perPage']  = $_GET['perPage'] ??
+        $this->_c->req->s['payload']['page']  = $_GET['page'] ?? 1;
+        $this->_c->req->s['payload']['perPage']  = $_GET['perPage'] ??
             Env::$defaultPerPage;
 
-        if ($this->_c->req->session['payload']['perPage'] > Env::$maxPerPage) {
+        if ($this->_c->req->s['payload']['perPage'] > Env::$maxPerPage) {
             throw new \Exception(
                 message: 'perPage exceeds max perPage value of ' . Env::$maxPerPage,
                 code: HttpStatus::$Forbidden
             );
         }
 
-        $this->_c->req->session['payload']['start'] = (
-            ($this->_c->req->session['payload']['page'] - 1) *
-            $this->_c->req->session['payload']['perPage']
+        $this->_c->req->s['payload']['start'] = (
+            ($this->_c->req->s['payload']['page'] - 1) *
+            $this->_c->req->s['payload']['perPage']
         );
         [$sql, $sqlParams, $errors] = $this->_getSqlAndParams(
             sqlDetails: $rSqlConfig
@@ -439,16 +439,16 @@ class Read
 
         $totalRowsCount = $row['count'];
         $totalPages = ceil(
-            num: $totalRowsCount / $this->_c->req->session['payload']['perPage']
+            num: $totalRowsCount / $this->_c->req->s['payload']['perPage']
         );
 
         $this->dataEncode->addKeyData(
             key: 'page',
-            data: $this->_c->req->session['payload']['page']
+            data: $this->_c->req->s['payload']['page']
         );
         $this->dataEncode->addKeyData(
             key: 'perPage',
-            data: $this->_c->req->session['payload']['perPage']
+            data: $this->_c->req->s['payload']['perPage']
         );
         $this->dataEncode->addKeyData(
             key: 'totalPages',
@@ -491,9 +491,9 @@ class Read
         }
 
         if ($isFirstCall) {
-            if (isset($this->_c->req->session['payload']['orderBy'])) {
+            if (isset($this->_c->req->s['payload']['orderBy'])) {
                 $orderByStrArr = [];
-                $orderByArr = $this->_c->req->session['payload']['orderBy'];
+                $orderByArr = $this->_c->req->s['payload']['orderBy'];
                 foreach ($orderByArr as $k => $v) {
                     $k = str_replace(search: ['`', ' '], replace: '', subject: $k);
                     $v = strtoupper(string: $v);
@@ -511,8 +511,8 @@ class Read
         }
 
         if (isset($rSqlConfig['countQuery'])) {
-            $start = $this->_c->req->session['payload']['start'];
-            $offset = $this->_c->req->session['payload']['perPage'];
+            $start = $this->_c->req->s['payload']['start'];
+            $offset = $this->_c->req->s['payload']['perPage'];
             $sql .= " LIMIT {$start}, {$offset}";
         }
 

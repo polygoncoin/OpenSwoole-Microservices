@@ -21,8 +21,8 @@ return [
     '__SET__' => [
         [
             'column' => 'updated_by',
-            'fetchFrom' => 'userDetails',
-            'fetchFromValue' => 'user_id'
+            'fetchFrom' => 'uDetails',
+            'fetchFromValue' => 'id'
         ],
         [
             'column' => 'updated_on',
@@ -37,9 +37,9 @@ return [
             'fetchFromValue' => 'No'
         ],
         [
-            'column' => 'client_id',
+            'column' => 'id',
             'fetchFrom' => 'uriParams',
-            'fetchFromValue' => 'client_id',
+            'fetchFromValue' => 'id',
             'dataType' => DatabaseDataTypes::$INT
         ]
     ],
@@ -48,8 +48,8 @@ return [
             'fn' => '_primaryKeyExist',
             'fnArgs' => [
                 'table' => ['custom', Env::$clients],
-                'primary' => ['custom', 'client_id'],
-                'id' => ['payload', 'client_id', DatabaseDataTypes::$INT]
+                'primary' => ['custom', 'id'],
+                'id' => ['payload', 'id', DatabaseDataTypes::$INT]
             ],
             'errorMessage' => 'Invalid Client Id'
         ],
@@ -59,8 +59,8 @@ return [
                 'table' => ['custom', Env::$clients],
                 'column' => ['custom', 'is_deleted'],
                 'columnValue' => ['custom', 'No'],
-                'primary' => ['custom', 'client_id'],
-                'id' => ['payload', 'client_id', DatabaseDataTypes::$INT],
+                'primary' => ['custom', 'id'],
+                'id' => ['payload', 'id', DatabaseDataTypes::$INT],
             ],
             'errorMessage' => 'Record is already deleted'
         ]

@@ -56,6 +56,27 @@ abstract class AbstractDatabase
     abstract public function useDatabase(): void;
 
     /**
+     * Begin transaction
+     *
+     * @return void
+     */
+    abstract public function begin(): void;
+
+    /**
+     * Commit transaction
+     *
+     * @return void
+     */
+    abstract public function commit(): void;
+
+    /**
+     * Rollback transaction
+     *
+     * @return void
+     */
+    abstract public function rollback(): void;
+
+    /**
      * Affected Rows by PDO
      *
      * @return bool|int

@@ -77,7 +77,7 @@ class Api
             $this->_c->req->auth->loadGroupDetails();
         }
 
-        $this->_c->req->parseRoute();
+        $this->_c->req->rParser->parseRoute();
         $this->_c->req->setDatabaseCacheKey();
 
         return true;
@@ -91,12 +91,12 @@ class Api
     public function process(): bool
     {
         // Execute Pre Route Hooks
-        if (isset($this->_c->req->routeHook['__PRE-ROUTE-HOOKS__'])) {
+        if (isset($this->_c->req->rParser->routeHook['__PRE-ROUTE-HOOKS__'])) {
             if ($this->_hook === null) {
                 $this->_hook = new Hook(common: $this->_c);
             }
             $this->_hook->triggerHook(
-                hookConfig: $this->_c->req->routeHook['__PRE-ROUTE-HOOKS__']
+                hookConfig: $this->_c->req->rParser->routeHook['__PRE-ROUTE-HOOKS__']
             );
         }
 
@@ -105,12 +105,12 @@ class Api
         }
 
         // Load Payloads
-        if (!$this->_c->req->isConfigRequest) {
+        if (!$this->_c->req->rParser->isConfigRequest) {
             $this->_c->req->loadPayload();
         }
 
         $class = null;
-        switch ($this->_c->req->REQUEST_METHOD) {
+        switch ($this->_c->req->METHOD) {
         case Constants::$GET:
             $class = __NAMESPACE__ . '\\Read';
             break;
@@ -133,12 +133,12 @@ class Api
         $this->_processAfterPayload();
 
         // Execute Post Route Hooks
-        if (isset($this->_c->req->routeHook['__POST-ROUTE-HOOKS__'])) {
+        if (isset($this->_c->req->rParser->routeHook['__POST-ROUTE-HOOKS__'])) {
             if ($this->_hook === null) {
                 $this->_hook = new Hook(common: $this->_c);
             }
             $this->_hook->triggerHook(
-                hookConfig: $this->_c->req->routeHook['__POST-ROUTE-HOOKS__']
+                hookConfig: $this->_c->req->rParser->routeHook['__POST-ROUTE-HOOKS__']
             );
         }
 
@@ -154,25 +154,25 @@ class Api
     {
         $class = null;
 
-        switch ($this->_c->req->routeElements[0]) {
+        switch ($this->_c->req->rParser->routeElements[0]) {
         case Env::$allowRoutesRequest
-            && Env::$routesRequestUri === $this->_c->req->routeElements[0]:
+            && Env::$routesRequestUri === $this->_c->req->rParser->routeElements[0]:
             $class = __NAMESPACE__ . '\\Routes';
             break;
         case Env::$allowCustomRequest
-            && Env::$customRequestUriPrefix === $this->_c->req->routeElements[0]:
+            && Env::$customRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
             $class = __NAMESPACE__ . '\\Custom';
             break;
         case Env::$allowUploadRequest
-            && Env::$uploadRequestUriPrefix === $this->_c->req->routeElements[0]:
+            && Env::$uploadRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
             $class = __NAMESPACE__ . '\\Upload';
             break;
         case Env::$allowThirdPartyRequest
-            && Env::$thirdPartyRequestUriPrefix === $this->_c->req->routeElements[0]:
+            && Env::$thirdPartyRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
             $class = __NAMESPACE__ . '\\ThirdParty';
             break;
         case Env::$allowCacheRequest
-            && Env::$cacheRequestUriPrefix === $this->_c->req->routeElements[0]:
+            && Env::$cacheRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
             $class = __NAMESPACE__ . '\\CacheHandler';
             break;
         }

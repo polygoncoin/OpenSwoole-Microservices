@@ -49,9 +49,9 @@ return array_merge(
             [
                 'column' => 'password_hash',
                 'fetchFrom' => 'function',
-                'fetchFromValue' => function($sess): string {
+                'fetchFromValue' => function ($session): string {
                     return password_hash(
-                        password: $sess['payload']['password'],
+                        password: $session['payload']['password'],
                         algo: PASSWORD_DEFAULT
                     );
                 }
@@ -64,7 +64,7 @@ return array_merge(
                 'fetchFromValue' => 'No'
             ],
             [
-                'column' => 'user_id',
+                'column' => 'id',
                 'fetchFrom' => 'uriParams',
                 'fetchFromValue' => 'id',
                 'dataType' => DatabaseDataTypes::$PrimaryKey

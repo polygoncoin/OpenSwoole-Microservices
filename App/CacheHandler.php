@@ -45,7 +45,8 @@ class CacheHandler
      *
      * @var string
      */
-    private $_cacheLocation = DIRECTORY_SEPARATOR . 'Dropbox';
+    private $_cacheLocation = DIRECTORY_SEPARATOR . 'Files' .
+        DIRECTORY_SEPARATOR . 'Dropbox';
 
     /**
      * Common Object
@@ -93,7 +94,7 @@ class CacheHandler
      */
     public function validateFileRequest(): void
     {
-        // check logic for user is allowed to access the file as per $this->_c->req->session
+        // check logic for user is allowed to access the file as per $this->_c->req->s
         // $this->filePath;
     }
 
@@ -109,7 +110,7 @@ class CacheHandler
 
         // Get the $fileLocation file mime
         $fileInfo = finfo_open(flags: FILEINFO_MIME_TYPE);
-        $mime = finfo_file(finfo: $fileInfo, filename: $fileLocation);
+        $mime = finfo_file(finfo: $fileInfo, filename: $this->_fileLocation);
         finfo_close(finfo: $fileInfo);
 
         // Let Etag be last modified timestamp of file
@@ -126,24 +127,26 @@ class CacheHandler
                 datetime: $_SERVER['HTTP_IF_MODIFIED_SINCE']
             ) == $modifiedTime)
         ) {
-            header('HTTP/1.1 304 Not Modified');
+            header(header: 'HTTP/1.1 304 Not Modified');
             return true;
         }
 
         // send the headers
         //header("Content-Disposition: attachment;filename='$fileName';");
         header(header: 'Cache-Control: max-age=0, must-revalidate');
-        header(header: 'Last-Modified: ' . gmdate(
-            format: 'D, d M Y H:i:s',
-            timestamp: $modifiedTime) . ' GMT'
+        header(
+            header: 'Last-Modified: ' . gmdate(
+                format: 'D, d M Y H:i:s',
+                timestamp: $modifiedTime
+            ) . ' GMT'
         );
         header(header: "Etag:\"{$eTag}\"");
         header(header: 'Expires: -1');
         header(header: "Content-Type: {$mime}");
-        header(header: 'Content-Length: ' . filesize(filename: $fileLocation));
+        header(header: 'Content-Length: ' . filesize(filename: $this->_fileLocation));
 
         // Send file content as stream
-        $fp = fopen(filename: $fileLocation, mode: 'rb');
+        $fp = fopen(filename: $this->_fileLocation, mode: 'rb');
         fpassthru(stream: $fp);
 
         return true;

@@ -68,7 +68,7 @@ class GlobalValidator implements ValidatorInterface
      */
     public function validate(&$validationConfig): array
     {
-        $sess = &$this->_c->req->session;
+        $session = &$this->_c->req->s;
         $isValidData = true;
         $errors = [];
         foreach ($validationConfig as &$v) {
@@ -77,7 +77,7 @@ class GlobalValidator implements ValidatorInterface
                 if ($mode === 'custom') {
                     $args[$attr] = $key;
                 } else {
-                    $args[$attr] = $sess[$mode][$key];
+                    $args[$attr] = $session[$mode][$key];
                 }
             }
             $fn = $v['fn'];

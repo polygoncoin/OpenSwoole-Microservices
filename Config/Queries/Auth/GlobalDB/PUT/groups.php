@@ -48,8 +48,8 @@ return [
         ],
         [
             'column' => 'updated_by',
-            'fetchFrom' => 'userDetails',
-            'fetchFromValue' => 'user_id'
+            'fetchFrom' => 'uDetails',
+            'fetchFromValue' => 'id'
         ],
         [
             'column' => 'updated_on',
@@ -74,9 +74,9 @@ return [
             'fetchFromValue' => 'No'
         ],
         [
-            'column' => 'group_id',
+            'column' => 'id',
             'fetchFrom' => 'uriParams',
-            'fetchFromValue' => 'group_id',
+            'fetchFromValue' => 'id',
             'dataType' => DatabaseDataTypes::$INT
         ]
     ],
@@ -85,8 +85,8 @@ return [
             'fn' => '_primaryKeyExist',
             'fnArgs' => [
                 'table' => ['custom', Env::$groups],
-                'primary' => ['custom', 'group_id'],
-                'id' => ['payload', 'group_id', DatabaseDataTypes::$INT]
+                'primary' => ['custom', 'id'],
+                'id' => ['payload', 'id', DatabaseDataTypes::$INT]
             ],
             'errorMessage' => 'Invalid Group Id'
         ],

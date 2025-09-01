@@ -69,19 +69,19 @@ class Password implements CustomInterface
      */
     public function process(): bool
     {
-        if ($this->_c->req->session['payloadType'] === 'Object') {
+        if ($this->_c->req->s['payloadType'] === 'Object') {
             $payload = $this->_c->req->dataDecode->get();
         } else {
             $payload = $this->_c->req->dataDecode->get('0');
         }
-        $this->_c->req->session['payload'] = $payload;
+        $this->_c->req->s['payload'] = $payload;
 
-        $oldPassword = $this->_c->req->session['payload']['old_password'];
-        $oldPasswordHash = $this->_c->req->session['userDetails']['password_hash'];
+        $oldPassword = $this->_c->req->s['payload']['old_password'];
+        $oldPasswordHash = $this->_c->req->s['uDetails']['password_hash'];
 
         if (password_verify(password: $oldPassword, hash: $oldPasswordHash)) {
-            $userName = $this->_c->req->session['userDetails']['username'];
-            $newPassword = $this->_c->req->session['payload']['new_password'];
+            $userName = $this->_c->req->s['uDetails']['username'];
+            $newPassword = $this->_c->req->s['payload']['new_password'];
             $newPasswordHash = password_hash(
                 password: $newPassword,
                 algo: PASSWORD_DEFAULT
@@ -102,25 +102,25 @@ class Password implements CustomInterface
             $this->_c->req->db->execDbQuery(sql: $sql, params: $sqlParams);
             $this->_c->req->db->closeCursor();
 
-            $clientId = $this->_c->req->session['clientDetails']['client_id'];
+            $cID = $this->_c->req->s['cDetails']['id'];
             $cu_key = CacheKey::clientUser(
-                clientId: $clientId,
+                cID: $cID,
                 username: $userName
             );
             if ($this->_c->req->cache->cacheExists(key: $cu_key)) {
-                $userDetails = json_decode(
+                $uDetails = json_decode(
                     json: $this->_c->req->cache->getCache(
                         key: $cu_key
                     ),
                     associative: true
                 );
-                $userDetails['password_hash'] = $newPasswordHash;
+                $uDetails['password_hash'] = $newPasswordHash;
                 $this->_c->req->cache->setCache(
                     key: $cu_key,
-                    value: json_encode(value: $userDetails)
+                    value: json_encode(value: $uDetails)
                 );
                 $this->_c->req->cache->deleteCache(
-                    key: CacheKey::token(token: $this->_c->req->session['token'])
+                    key: CacheKey::token(token: $this->_c->req->s['token'])
                 );
             }
 

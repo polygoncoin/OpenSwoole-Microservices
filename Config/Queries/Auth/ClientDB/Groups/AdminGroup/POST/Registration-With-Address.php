@@ -39,8 +39,11 @@ return [
         [
             'column' => 'password_hash',
             'fetchFrom' => 'function',
-            'fetchFromValue' => function($sess): string {
-                return password_hash(password: $sess['payload']['password'], algo: PASSWORD_DEFAULT);
+            'fetchFromValue' => function ($session): string {
+                return password_hash(
+                    password: $session['payload']['password'],
+                    algo: PASSWORD_DEFAULT
+                );
             }
         ],
         [

@@ -4,7 +4,7 @@
  * php version 8.3
  *
  * @category  WriteAPI
- * @package   Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
@@ -27,7 +27,7 @@ use Microservices\App\Servers\Database\AbstractDatabase;
  * php version 8.3
  *
  * @category  WriteAPIs
- * @package   Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
@@ -95,7 +95,7 @@ class Write
     public function __construct(Common &$common)
     {
         $this->_c = &$common;
-        $this->_s = &$this->_c->req->session;
+        $this->_s = &$this->_c->req->s;
         $this->dataEncode = &$this->_c->res->dataEncode;
     }
 
@@ -119,7 +119,7 @@ class Write
         $Env = __NAMESPACE__ . '\Env';
 
         // Load Queries
-        $wSqlConfig = include $this->_c->req->sqlConfigFile;
+        $wSqlConfig = include $this->_c->req->rParser->sqlConfigFile;
 
         // Rate Limiting request if configured for Route Queries.
         $this->_rateLimitRoute(sqlConfig: $wSqlConfig);
@@ -143,7 +143,7 @@ class Write
             keyword: 'useHierarchy'
         );
 
-        if (Env::$allowConfigRequest && $this->_c->req->isConfigRequest) {
+        if (Env::$allowConfigRequest && $this->_c->req->rParser->isConfigRequest) {
             $this->_processWriteConfig(
                 wSqlConfig: $wSqlConfig,
                 useHierarchy: $useHierarchy
@@ -183,7 +183,7 @@ class Write
         $this->dataEncode->startObject(key: 'Config');
         $this->dataEncode->addKeyData(
             key: 'Route',
-            data: $this->_c->req->configuredUri
+            data: $this->_c->req->rParser->configuredUri
         );
         $this->dataEncode->addKeyData(
             key: 'Payload',
@@ -241,7 +241,7 @@ class Write
             $this->dataEncode->startObject(key: 'Results');
         } else {
             $this->dataEncode->startObject(key: 'Results');
-            if (Env::$outputRepresentation === 'XML') {
+            if (Env::$oRepresentation === 'XML') {
                 $this->dataEncode->startArray(key: 'Rows');
             }
         }
@@ -328,7 +328,7 @@ class Write
                     $this->dataEncode->addKeyData(key: $k, data: $v);
                 }
             } else {
-                if (Env::$outputRepresentation === 'XML') {
+                if (Env::$oRepresentation === 'XML') {
                     $this->dataEncode->startObject(key: 'Row');
                     foreach ($arr as $k => $v) {
                         $this->dataEncode->addKeyData(key: $k, data: $v);
@@ -343,7 +343,7 @@ class Write
         if ($this->_s['payloadType'] === 'Object') {
             $this->dataEncode->endObject();
         } else {
-            if (Env::$outputRepresentation === 'XML') {
+            if (Env::$oRepresentation === 'XML') {
                 $this->dataEncode->endArray();
             }
             $this->dataEncode->endObject();

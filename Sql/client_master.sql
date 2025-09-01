@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS `master_users`;
 
 CREATE TABLE `master_users` (
-  `user_id` int NOT NULL AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `firstname` varchar(255) NOT NULL,
   `lastname` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE `master_users` (
   `is_approved` enum('Yes', 'No') NOT NULL DEFAULT 'No',
   `is_disabled` enum('Yes', 'No') NOT NULL DEFAULT 'No',
   `is_deleted` enum('Yes', 'No') NOT NULL DEFAULT 'No',
-  PRIMARY KEY (`user_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `address`;

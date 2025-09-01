@@ -71,8 +71,8 @@ class ThirdParty
      */
     public function process(): bool
     {
-        $class = 'Microservices\\Supplement\\ThirdParty\\' .
-            ucfirst(string: $this->_c->req->routeElements[1]);
+        $class = 'Microservices\\\Supplement\\ThirdParty\\' .
+            ucfirst(string: $this->_c->req->rParser->routeElements[1]);
 
         $this->_api = new $class(common: $this->_c);
         if ($this->_api->init()) {

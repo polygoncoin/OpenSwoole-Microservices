@@ -39,7 +39,7 @@ return array_merge(
                 'fetchFromValue' => 'No'
             ],
             [
-                'column' => 'user_id',
+                'column' => 'id',
                 'fetchFrom' => 'uriParams',
                 'fetchFromValue' => 'id',
                 'dataType' => DatabaseDataTypes::$PrimaryKey

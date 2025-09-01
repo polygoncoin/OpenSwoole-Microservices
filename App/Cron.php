@@ -64,14 +64,14 @@ class Cron
     {
         $this->_c->initRequest();
 
-        $routeFileLocation = Constants::$DOC_ROOT .
+        $routeFileLocation = Constants::$PUBLIC_HTML .
             DIRECTORY_SEPARATOR . 'Config' .
             DIRECTORY_SEPARATOR . 'Routes' .
             DIRECTORY_SEPARATOR . 'Auth' .
             DIRECTORY_SEPARATOR . 'ClientDB' .
             DIRECTORY_SEPARATOR . 'Common' .
             DIRECTORY_SEPARATOR . 'Cron' .
-            DIRECTORY_SEPARATOR . $this->_c->req->REQUEST_METHOD . 'routes.php';
+            DIRECTORY_SEPARATOR . $this->_c->req->METHOD . 'routes.php';
         $this->_c->req->parseRoute(routeFileLocation: $routeFileLocation);
 
         return true;
@@ -85,7 +85,7 @@ class Cron
     public function process(): bool
     {
         $class = 'Microservices\\Supplement\\Cron\\' .
-            ucfirst(string: $this->_c->req->routeElements[1]);
+            ucfirst(string: $this->_c->req->rParser->routeElements[1]);
 
         $this->_api = new $class(common: $this->_c);
         if ($this->_api->init()) {

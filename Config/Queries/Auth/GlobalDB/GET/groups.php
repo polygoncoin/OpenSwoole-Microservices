@@ -15,7 +15,7 @@ namespace Microservices\Config\Queries\Auth\GlobalDB\GET;
 
 return [
     'all' => [
-        '__QUERY__' => 'SELECT * FROM `{$Env::$groups}` WHERE __WHERE__ ORDER BY group_id ASC',
+        '__QUERY__' => 'SELECT * FROM `{$Env::$groups}` WHERE __WHERE__ ORDER BY id ASC',
         '__WHERE__' => [
             [
                 'column' => 'is_approved',
@@ -54,11 +54,11 @@ return [
                 'fetchFromValue' => 'No'
             ],
             [
-                'column' => 'group_id',
+                'column' => 'id',
                 'fetchFrom' => 'uriParams',
-                'fetchFromValue' => 'group_id'
+                'fetchFromValue' => 'id'
             ],
         ],
         '__MODE__' => 'singleRowFormat'
     ]
-][isset($this->_c->req->session['uriParams']['group_id'])?'single':'all'];
+][isset($this->_c->req->s['uriParams']['id'])?'single':'all'];

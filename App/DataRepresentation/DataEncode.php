@@ -79,12 +79,12 @@ class DataEncode extends AbstractDataEncode
      */
     public function init($header = true): void
     {
-        if ($this->http['server']['request_method'] === 'GET') {
+        if ($this->http['server']['method'] === 'GET') {
             $this->_tempStream = fopen(filename: "php://temp", mode: "rw+b");
         } else {
             $this->_tempStream = fopen(filename: "php://memory", mode: "rw+b");
         }
-        switch (Env::$outputRepresentation) {
+        switch (Env::$oRepresentation) {
         case 'XML':
             $this->_dataEncoder = new XmlEncode(
                 tempStream: $this->_tempStream,

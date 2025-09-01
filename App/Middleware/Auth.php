@@ -56,7 +56,7 @@ class Auth
      */
     public function loadUserDetails(): void
     {
-        if ($this->_req->userDetails !== null) {
+        if (isset($this->_req->s['uDetails'])) {
              return;
         }
 
@@ -67,28 +67,27 @@ class Auth
                 matches: $matches
             )
         ) {
-            $this->_req->session['token'] = $matches[1];
-            $this->_req->tokenKey = CacheKey::token(
-                token: $this->_req->session['token']
+            $this->_req->s['token'] = $matches[1];
+            $tokenKey = CacheKey::token(
+                token: $this->_req->s['token']
             );
-            if (!$this->_req->cache->cacheExists(key: $this->_req->tokenKey)) {
+            if (!$this->_req->cache->cacheExists(
+                key: $tokenKey
+            )
+            ) {
                 throw new \Exception(
                     message: 'Token expired',
                     code: HttpStatus::$BadRequest
                 );
             }
-            $this->_req->userDetails = json_decode(
+            $this->_req->s['uDetails'] = json_decode(
                 json: $this->_req->cache->getCache(
-                    key: $this->_req->tokenKey
+                    key: $tokenKey
                 ),
                 associative: true
             );
-            $this->_req->groupId = $this->_req->userDetails['group_id'];
-            $this->_req->userId = $this->_req->userDetails['user_id'];
-
-            $this->_req->session['userDetails'] = &$this->_req->userDetails;
         }
-        if (empty($this->_req->session['token'])) {
+        if (empty($this->_req->s['token'])) {
             throw new \Exception(
                 message: 'Token missing',
                 code: HttpStatus::$BadRequest
@@ -102,77 +101,37 @@ class Auth
      * @return void
      * @throws \Exception
      */
-    public function loadGroupDetails()
+    public function loadGroupDetails(): void
     {
-        if ($this->_req->groupDetails !== null) {
+        if (isset($this->_req->s['gDetails'])) {
              return;
         }
 
-        // Load groupDetails
-        if (empty($this->_req->userDetails['user_id'])
-            || empty($this->_req->userDetails['group_id'])
+        // Load gDetails
+        if (empty($this->_req->s['uDetails']['id'])
+            || empty($this->_req->s['uDetails']['id'])
         ) {
             throw new \Exception(
-                message: 'Invalid sess',
+                message: 'Invalid session',
                 code: HttpStatus::$InternalServerError
             );
         }
 
-        $this->_req->groupKey = CacheKey::group(
-            groupId: $this->_req->userDetails['group_id']
+        $gKey = CacheKey::group(
+            gID: $this->_req->s['uDetails']['group_id']
         );
-        if (!$this->_req->cache->cacheExists(key: $this->_req->groupKey)) {
+        if (!$this->_req->cache->cacheExists(key: $gKey)) {
             throw new \Exception(
-                message: "Cache '{$this->_req->groupKey}' missing",
+                message: "Cache '{$gKey}' missing",
                 code: HttpStatus::$InternalServerError
             );
         }
 
-        $this->_req->groupDetails = json_decode(
+        $this->_req->s['gDetails'] = json_decode(
             json: $this->_req->cache->getCache(
-                key: $this->_req->groupKey
+                key: $gKey
             ),
             associative: true
         );
-
-        $this->_req->session['groupDetails'] = &$this->_req->groupDetails;
-    }
-
-    /**
-     * Validate request IP
-     *
-     * @return void
-     * @throws \Exception
-     */
-    public function checkRemoteIp()
-    {
-        $groupId = $this->_req->userDetails['group_id'];
-
-        $this->_req->cidrKey = CacheKey::cidr(
-            groupId: $this->_req->userDetails['group_id']
-        );
-        if ($this->_req->cache->cacheExists(key: $this->_req->cidrKey)) {
-            $this->_req->cidrChecked = true;
-            $cidrs = json_decode(
-                json: $this->_req->cache->getCache(
-                    key: $this->_req->cidrKey
-                ),
-                associative: true
-            );
-            $ipNumber = ip2long(ip: $this->_req->REMOTE_ADDR);
-            $isValidIp = false;
-            foreach ($cidrs as $cidr) {
-                if ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
-                    $isValidIp = true;
-                    break;
-                }
-            }
-            if (!$isValidIp) {
-                throw new \Exception(
-                    message: 'IP not supported',
-                    code: HttpStatus::$BadRequest
-                );
-            }
-        }
     }
 }

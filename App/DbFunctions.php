@@ -15,7 +15,9 @@ namespace Microservices\App;
 
 use Microservices\App\DatabaseCacheKey;
 use Microservices\App\DatabaseOpenCacheKey;
+use Microservices\App\HttpRequest;
 use Microservices\App\HttpStatus;
+use Microservices\App\Servers\Cache\AbstractCache;
 
 /**
  * DB Functions
@@ -31,6 +33,23 @@ use Microservices\App\HttpStatus;
  */
 class DbFunctions
 {
+    /**
+     * Rate Limiter
+     *
+     * @var null|HttpRequest
+     */
+    private $_req = null;
+
+    /**
+     * Constructor
+     *
+     * @param HttpRequest $req HTTP Request Object
+     */
+    public function __construct(&$req)
+    {
+        $this->_req = &$req;
+    }
+
     /**
      * Set Cache
      *
@@ -71,7 +90,7 @@ class DbFunctions
      */
     public function setCacheConnection($fetchFrom): object
     {
-        if ($this->session['clientDetails'] === null) {
+        if ($this->_req->s['cDetails'] === null) {
             throw new \Exception(
                 message: 'Yet to set connection params',
                 code: HttpStatus::$InternalServerError
@@ -83,43 +102,43 @@ class DbFunctions
         case 'Master':
             return $this->connectCache(
                 cacheType: getenv(
-                    name: $this->session['clientDetails']['master_cache_server_type']
+                    name: $this->_req->s['cDetails']['master_cache_server_type']
                 ),
                 cacheHostname: getenv(
-                    name: $this->session['clientDetails']['master_cache_hostname']
+                    name: $this->_req->s['cDetails']['master_cache_hostname']
                 ),
                 cachePort: getenv(
-                    name: $this->session['clientDetails']['master_cache_port']
+                    name: $this->_req->s['cDetails']['master_cache_port']
                 ),
                 cacheUsername: getenv(
-                    name: $this->session['clientDetails']['master_cache_username']
+                    name: $this->_req->s['cDetails']['master_cache_username']
                 ),
                 cachePassword: getenv(
-                    name: $this->session['clientDetails']['master_cache_password']
+                    name: $this->_req->s['cDetails']['master_cache_password']
                 ),
                 cacheDatabase: getenv(
-                    name: $this->session['clientDetails']['master_cache_database']
+                    name: $this->_req->s['cDetails']['master_cache_database']
                 )
             );
         case 'Slave':
             return $this->connectCache(
                 cacheType: getenv(
-                    name: $this->session['clientDetails']['slave_cache_server_type']
+                    name: $this->_req->s['cDetails']['slave_cache_server_type']
                 ),
                 cacheHostname: getenv(
-                    name: $this->session['clientDetails']['slave_cache_hostname']
+                    name: $this->_req->s['cDetails']['slave_cache_hostname']
                 ),
                 cachePort: getenv(
-                    name: $this->session['clientDetails']['slave_cache_port']
+                    name: $this->_req->s['cDetails']['slave_cache_port']
                 ),
                 cacheUsername: getenv(
-                    name: $this->session['clientDetails']['slave_cache_username']
+                    name: $this->_req->s['cDetails']['slave_cache_username']
                 ),
                 cachePassword: getenv(
-                    name: $this->session['clientDetails']['slave_cache_password']
+                    name: $this->_req->s['cDetails']['slave_cache_password']
                 ),
                 cacheDatabase: getenv(
-                    name: $this->session['clientDetails']['slave_cache_database']
+                    name: $this->_req->s['cDetails']['slave_cache_database']
                 )
             );
         default:
@@ -170,7 +189,7 @@ class DbFunctions
      */
     public function setDbConnection($fetchFrom): object
     {
-        if ($this->session['clientDetails'] === null) {
+        if ($this->_req->s['cDetails'] === null) {
             throw new \Exception(
                 message: 'Yet to set connection params',
                 code: HttpStatus::$InternalServerError
@@ -182,43 +201,43 @@ class DbFunctions
         case 'Master':
             return $this->connectDb(
                 dbType: getenv(
-                    name: $this->session['clientDetails']['master_db_server_type']
+                    name: $this->_req->s['cDetails']['master_db_server_type']
                 ),
                 dbHostname: getenv(
-                    name: $this->session['clientDetails']['master_db_hostname']
+                    name: $this->_req->s['cDetails']['master_db_hostname']
                 ),
                 dbPort: getenv(
-                    name: $this->session['clientDetails']['master_db_port']
+                    name: $this->_req->s['cDetails']['master_db_port']
                 ),
                 dbUsername: getenv(
-                    name: $this->session['clientDetails']['master_db_username']
+                    name: $this->_req->s['cDetails']['master_db_username']
                 ),
                 dbPassword: getenv(
-                    name: $this->session['clientDetails']['master_db_password']
+                    name: $this->_req->s['cDetails']['master_db_password']
                 ),
                 dbDatabase: getenv(
-                    name: $this->session['clientDetails']['master_db_database']
+                    name: $this->_req->s['cDetails']['master_db_database']
                 )
             );
         case 'Slave':
             return $this->connectDb(
                 dbType: getenv(
-                    name: $this->session['clientDetails']['slave_db_server_type']
+                    name: $this->_req->s['cDetails']['slave_db_server_type']
                 ),
                 dbHostname: getenv(
-                    name: $this->session['clientDetails']['slave_db_hostname']
+                    name: $this->_req->s['cDetails']['slave_db_hostname']
                 ),
                 dbPort: getenv(
-                    name: $this->session['clientDetails']['slave_db_port']
+                    name: $this->_req->s['cDetails']['slave_db_port']
                 ),
                 dbUsername: getenv(
-                    name: $this->session['clientDetails']['slave_db_username']
+                    name: $this->_req->s['cDetails']['slave_db_username']
                 ),
                 dbPassword: getenv(
-                    name: $this->session['clientDetails']['slave_db_password']
+                    name: $this->_req->s['cDetails']['slave_db_password']
                 ),
                 dbDatabase: getenv(
-                    name: $this->session['clientDetails']['slave_db_database']
+                    name: $this->_req->s['cDetails']['slave_db_database']
                 )
             );
         default:
@@ -236,13 +255,13 @@ class DbFunctions
      */
     public function setDatabaseCacheKey(): void
     {
-        if ($this->open) {
-            DatabaseOpenCacheKey::init(clientId: $this->clientId);
+        if ($this->_req->open) {
+            DatabaseOpenCacheKey::init(cID: $this->_req->s['cDetails']['id']);
         } else {
             DatabaseCacheKey::init(
-                clientId: $this->clientId,
-                groupId: $this->groupId,
-                userId: $this->userId
+                cID: $this->_req->s['cDetails']['id'],
+                gID: $this->_req->s['gDetails']['id'],
+                uID: $this->_req->s['uDetails']['id']
             );
         }
     }
@@ -256,12 +275,12 @@ class DbFunctions
      */
     public function getDqlCache($cacheKey): mixed
     {
-        if ($this->sqlCache === null) {
-            $this->sqlCache = $this->setCacheConnection(fetchFrom: 'Slave');
+        if ($this->_req->sqlCache === null) {
+            $this->_req->sqlCache = $this->setCacheConnection(fetchFrom: 'Slave');
         }
 
-        if ($this->sqlCache->cacheExists(key: $cacheKey)) {
-            return $json = $this->sqlCache->getCache(key: $cacheKey);
+        if ($this->_req->sqlCache->cacheExists(key: $cacheKey)) {
+            return $json = $this->_req->sqlCache->getCache(key: $cacheKey);
         } else {
             return $json = null;
         }
@@ -277,11 +296,11 @@ class DbFunctions
      */
     public function setDmlCache($cacheKey, &$json): void
     {
-        if ($this->sqlCache === null) {
-            $this->sqlCache = $this->setCacheConnection(fetchFrom: 'Master');
+        if ($this->_req->sqlCache === null) {
+            $this->_req->sqlCache = $this->setCacheConnection(fetchFrom: 'Master');
         }
 
-        $this->sqlCache->setCache(key: $cacheKey, value: $json);
+        $this->_req->sqlCache->setCache(key: $cacheKey, value: $json);
     }
 
     /**
@@ -293,10 +312,10 @@ class DbFunctions
      */
     public function delDmlCache($cacheKey): void
     {
-        if ($this->sqlCache === null) {
-            $this->sqlCache = $this->setCacheConnection(fetchFrom: 'Master');
+        if ($this->_req->sqlCache === null) {
+            $this->_req->sqlCache = $this->setCacheConnection(fetchFrom: 'Master');
         }
 
-        $this->sqlCache->deleteCache(key: $cacheKey);
+        $this->_req->sqlCache->deleteCache(key: $cacheKey);
     }
 }

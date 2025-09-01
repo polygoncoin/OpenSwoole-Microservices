@@ -13,7 +13,6 @@
  */
 namespace Microservices\App;
 
-use Microservices\App\DataRepresentation\AbstractDataEncode;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\HttpStatus;
 
@@ -39,9 +38,9 @@ class HttpResponse
     public $httpStatus;
 
     /**
-     * Json Encode Object
+     * JSON Encode Object
      *
-     * @var null|AbstractDataEncode
+     * @var null|DataEncode
      */
     public $dataEncode = null;
 

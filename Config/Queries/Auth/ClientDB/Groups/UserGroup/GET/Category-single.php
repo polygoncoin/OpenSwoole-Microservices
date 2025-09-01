@@ -27,12 +27,12 @@ return [
             'fetchFromValue' => 0
         ],
         [
-            'column' => 'is_deleted',
+            'column' => 'id',
             'fetchFrom' => 'uriParams',
             'fetchFromValue' => 'id'
         ]
     ],
-    '__MODE__' => 'multipleRowFormat',
+    '__MODE__' => 'singleRowFormat',
     '__SUB-QUERY__' => [
         'sub' => [
             '__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',

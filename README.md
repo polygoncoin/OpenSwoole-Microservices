@@ -42,8 +42,8 @@ maxPerPage=10000                ;Maximum value of perPage (records per page)
 
 ;Data Representation: JSON/XML
 ;To override below setting pass below params with route separated with &
-inputRepresentation='JSON'
-outputRepresentation='JSON'
+iRepresentation='JSON'
+oRepresentation='JSON'
 allowGetRepresentation=1
 ```
 
@@ -292,7 +292,7 @@ return [
         ],
 
         // Input Data Representation
-        'inputRepresentation' => 'XML' // JSON/XML - Defaults to JSON
+        'iRepresentation' => 'XML' // JSON/XML - Defaults to JSON
     ]
 ];
 ```
@@ -563,7 +563,7 @@ return [
     ],
 
     // Data Representation
-    'outputRepresentation' => 'XML', // JSON/XML - Defaults to JSON
+    'oRepresentation' => 'XML', // JSON/XML - Defaults to JSON
 
     // Limiting duplicates
     'idempotentWindow' => 3 // Idempotent Window for DML operartion (seconds)
@@ -957,7 +957,7 @@ xmlhttp . send( params);
 * XML Request example
 
 ```javascript
-var handlerUrl = "http://127.0.0.1:9501?r=/registration-with-address&inputRepresentation=XML&outputRepresentation=XML";
+var handlerUrl = "http://127.0.0.1:9501?r=/registration-with-address&iRepresentation=XML&oRepresentation=XML";
 
 var xmlPayload = '<?xml version="1.0" encoding="UTF-8" ?>' +
 '<Payload>' +

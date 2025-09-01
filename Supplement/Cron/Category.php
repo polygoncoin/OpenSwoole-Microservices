@@ -49,7 +49,7 @@ class Category implements CronInterface
     public function __construct(Common &$common)
     {
         $this->_c = &$common;
-        $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: $fetchFrom = 'Slave');
+        $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: 'Slave');
     }
 
     /**
@@ -57,7 +57,7 @@ class Category implements CronInterface
      *
      * @return bool
      */
-    public function init()
+    public function init(): bool
     {
         return true;
     }
@@ -67,22 +67,22 @@ class Category implements CronInterface
      *
      * @return bool
      */
-    public function process()
+    public function process(): bool
     {
         // Create and call functions to manage cron functionality here
 
         // End the calls with json response with dataEncode Object
-        $this->endProcess();
+        $this->_endProcess();
         return true;
     }
 
     /**
      * Function to end process which outputs the results
      *
-     * @return void
+     * @return never
      * @throws \Exception
      */
-    private function endProcess()
+    private function _endProcess(): never
     {
         throw new \Exception(
             message: 'message as desired',

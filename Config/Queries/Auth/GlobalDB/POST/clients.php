@@ -28,8 +28,8 @@ return [
         ],
         [
             'column' => 'created_by',
-            'fetchFrom' => 'userDetails',
-            'fetchFromValue' => 'user_id'
+            'fetchFrom' => 'uDetails',
+            'fetchFromValue' => 'id'
         ],
         [
             'column' => 'created_on',
@@ -52,5 +52,5 @@ return [
             'fetchFromValue' => 'No'
         ]
     ],
-    '__INSERT-IDs__' => 'client_id',
+    '__INSERT-IDs__' => 'client:id',
 ];

@@ -53,14 +53,14 @@ class DatabaseOpenCacheKey
     /**
      * Initialize
      *
-     * @param null|int $clientId Client Id
+     * @param null|int $cID Client Id
      *
      * @return void
      */
-    public static function init($clientId): void
+    public static function init($cID): void
     {
-        self::$App = 'o:app' . Env::$outputRepresentation;
-        self::$Client = ":c:{$clientId}";
+        self::$App = 'o:app' . Env::$oRepresentation;
+        self::$Client = ":c:{$cID}";
 
         self::$Category = self::$App . ':category';
     }

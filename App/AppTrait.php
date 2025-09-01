@@ -4,7 +4,7 @@
  * php version 8.3
  *
  * @category  API
- * @package   Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
@@ -23,7 +23,7 @@ use Microservices\App\Validator;
  * php version 8.3
  *
  * @category  API_Trait
- * @package   Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
@@ -299,7 +299,7 @@ trait AppTrait
             $fKey = $config['fetchFromValue'];
             if ($fetchFrom === 'function') {
                 $function = $fKey;
-                $value = $function($this->_c->req->session);
+                $value = $function ($this->_c->req->s);
                 $sqlParams[$var] = $value;
                 continue;
             } elseif (in_array(
@@ -308,7 +308,7 @@ trait AppTrait
             )
             ) {
                 $fetchFromKeys = explode(separator: ':', string: $fKey);
-                $value = $this->_c->req->session[$fetchFrom];
+                $value = $this->_c->req->s[$fetchFrom];
                 foreach ($fetchFromKeys as $key) {
                     if (!isset($value[$key])) {
                         throw new \Exception(
@@ -324,16 +324,16 @@ trait AppTrait
                 $value = $fKey;
                 $sqlParams[$var] = $value;
                 continue;
-            } elseif (isset($this->_c->req->session[$fetchFrom][$fKey])) {
+            } elseif (isset($this->_c->req->s[$fetchFrom][$fKey])) {
                 if (DatabaseDataTypes::validateDataType(
-                    data: $this->_c->req->session[$fetchFrom][$fKey],
-                    dataType: $this->_c->req->session['necessary'][$fetchFrom][$fKey]
+                    data: $this->_c->req->s[$fetchFrom][$fKey],
+                    dataType: $this->_c->req->s['necessary'][$fetchFrom][$fKey]
                 )
                 ) {
-                    $sqlParams[$var] = $this->_c->req->session[$fetchFrom][$fKey];
+                    $sqlParams[$var] = $this->_c->req->s[$fetchFrom][$fKey];
                 }
                 continue;
-            } elseif ($this->_c->req->session['necessary'][$fetchFrom][$fKey]['nec']) {
+            } elseif ($this->_c->req->s['necessary'][$fetchFrom][$fKey]['nec']) {
                 $errors[] = "Missing necessary field '{$fetchFrom}' for '{$fKey}'";
                 continue;
             } else {
@@ -528,10 +528,10 @@ trait AppTrait
     private function _resetFetchData($fetchFrom, $keys, $row): void
     {
         if (empty($keys) || count(value: $keys) === 0) {
-            $this->_c->req->session[$fetchFrom] = [];
-            $this->_c->req->session[$fetchFrom]['return'] = [];
+            $this->_c->req->s[$fetchFrom] = [];
+            $this->_c->req->s[$fetchFrom]['return'] = [];
         }
-        $httpReq = &$this->_c->req->session[$fetchFrom]['return'];
+        $httpReq = &$this->_c->req->s[$fetchFrom]['return'];
         if (!empty($keys)) {
             foreach ($keys as $k) {
                 if (!isset($httpReq[$k])) {
@@ -553,17 +553,17 @@ trait AppTrait
      */
     private function _rateLimitRoute(&$sqlConfig): void
     {
-        if (isset($sqlConfig['rateLimiterMaxRequests'])
-            && isset($sqlConfig['rateLimiterSecondsWindow'])
+        if (isset($sqlConfig['rateLimitMaxRequests'])
+            && isset($sqlConfig['rateLimitSecondsWindow'])
         ) {
             $payloadSignature = [
-                'IP' => $this->_c->req->REMOTE_ADDR,
-                'clientId' => $this->_c->req->clientId,
-                'groupId' => ($this->_c->req->groupId !== null ?
-                    $this->_c->req->groupId : 0),
-                'userId' => ($this->_c->req->userId !== null ?
-                    $this->_c->req->userId : 0),
-                'httpMethod' => $this->_c->req->REQUEST_METHOD,
+                'IP' => $this->_c->req->IP,
+                'cID' => $this->_c->req->s['cDetails']['id'],
+                'gID' => ($this->_c->req->s['gDetails']['id'] !== null ?
+                    $this->_c->req->s['gDetails']['id'] : 0),
+                'uID' => ($this->_c->req->s['uDetails']['id'] !== null ?
+                    $this->_c->req->s['uDetails']['id'] : 0),
+                'httpMethod' => $this->_c->req->METHOD,
                 'Route' => $this->_c->req->ROUTE,
             ];
             // $hash = hash_hmac(
@@ -576,9 +576,9 @@ trait AppTrait
 
             // @throws \Exception
             $rateLimitChecked = $this->_c->req->checkRateLimit(
-                rateLimiterPrefix: getenv(name: 'rateLimiterRoutePrefix'),
-                rateLimiterMaxRequests: $sqlConfig['rateLimiterMaxRequests'],
-                rateLimiterSecondsWindow: $sqlConfig['rateLimiterSecondsWindow'],
+                rateLimitPrefix: getenv(name: 'rateLimitRoutePrefix'),
+                rateLimitMaxRequests: $sqlConfig['rateLimitMaxRequests'],
+                rateLimitSecondsWindow: $sqlConfig['rateLimitSecondsWindow'],
                 key: $hashKey
             );
         }
@@ -606,13 +606,13 @@ trait AppTrait
                 $payloadSignature = [
                     'IdempotentSecret' => getenv(name: 'IdempotentSecret'),
                     'idempotentWindow' => $idempotentWindow,
-                    'IP' => $this->_c->req->REMOTE_ADDR,
-                    'clientId' => $this->_c->req->clientId,
-                    'groupId' => ($this->_c->req->groupId !== null ?
-                        $this->_c->req->groupId : 0),
-                    'userId' => ($this->_c->req->userId !== null ?
-                        $this->_c->req->userId : 0),
-                    'httpMethod' => $this->_c->req->REQUEST_METHOD,
+                    'IP' => $this->_c->req->IP,
+                    'cID' => $this->_c->req->s['cDetails']['id'],
+                    'gID' => ($this->_c->req->s['gDetails']['id'] !== null ?
+                        $this->_c->req->s['gDetails']['id'] : 0),
+                    'uID' => ($this->_c->req->s['uDetails']['id'] !== null ?
+                        $this->_c->req->s['uDetails']['id'] : 0),
+                    'httpMethod' => $this->_c->req->METHOD,
                     'Route' => $this->_c->req->ROUTE,
                     'payload' => $this->_c->req->dataDecode->get(
                         implode(separator: ':', array: $_payloadIndexes)
@@ -647,13 +647,13 @@ trait AppTrait
             && isset($sqlConfig['responseLag'])
         ) {
             $payloadSignature = [
-                'IP' => $this->_c->req->REMOTE_ADDR,
-                'clientId' => $this->_c->req->clientId,
-                'groupId' => ($this->_c->req->groupId !== null ?
-                    $this->_c->req->groupId : 0),
-                'userId' => ($this->_c->req->userId !== null ?
-                    $this->_c->req->userId : 0),
-                'httpMethod' => $this->_c->req->REQUEST_METHOD,
+                'IP' => $this->_c->req->IP,
+                'cID' => $this->_c->req->s['cDetails']['id'],
+                'gID' => ($this->_c->req->s['gDetails']['id'] !== null ?
+                    $this->_c->req->s['gDetails']['id'] : 0),
+                'uID' => ($this->_c->req->s['uDetails']['id'] !== null ?
+                    $this->_c->req->s['uDetails']['id'] : 0),
+                'httpMethod' => $this->_c->req->METHOD,
                 'Route' => $this->_c->req->ROUTE,
             ];
 

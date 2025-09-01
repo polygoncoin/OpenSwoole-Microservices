@@ -4,7 +4,7 @@
  * php version 8.3
  *
  * @category  Common
- * @package   Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
@@ -21,7 +21,7 @@ use Microservices\App\HttpResponse;
  * php version 8.3
  *
  * @category  Common
- * @package   Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit

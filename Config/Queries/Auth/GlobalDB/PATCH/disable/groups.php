@@ -26,8 +26,8 @@ return [
         ],
         [
             'column' => 'updated_by',
-            'fetchFrom' => 'userDetails',
-            'fetchFromValue' => 'user_id'
+            'fetchFrom' => 'uDetails',
+            'fetchFromValue' => 'id'
         ],
         [
             'column' => 'updated_on',
@@ -47,9 +47,9 @@ return [
             'fetchFromValue' => 'No'
         ],
         [
-            'column' => 'group_id',
+            'column' => 'id',
             'fetchFrom' => 'payload',
-            'fetchFromValue' => 'group_id',
+            'fetchFromValue' => 'id',
             'dataType' => DatabaseDataTypes::$INT
         ]
     ],
@@ -58,8 +58,8 @@ return [
             'fn' => '_primaryKeyExist',
             'fnArgs' => [
                 'table' => ['custom', Env::$groups],
-                'primary' => ['custom', 'group_id'],
-                'id' => ['payload', 'group_id', DatabaseDataTypes::$INT]
+                'primary' => ['custom', 'id'],
+                'id' => ['payload', 'id', DatabaseDataTypes::$INT]
             ],
             'errorMessage' => 'Invalid Group Id'
         ],
@@ -69,8 +69,8 @@ return [
                 'table' => ['custom', Env::$groups],
                 'column' => ['custom', 'is_deleted'],
                 'columnValue' => ['custom', 'No'],
-                'primary' => ['custom', 'group_id'],
-                'id' => ['payload', 'group_id', DatabaseDataTypes::$INT],
+                'primary' => ['custom', 'id'],
+                'id' => ['payload', 'id', DatabaseDataTypes::$INT],
             ],
             'errorMessage' => 'Record is deleted'
         ],
@@ -80,8 +80,8 @@ return [
                 'table' => ['custom', Env::$groups],
                 'column' => ['custom', 'is_disabled'],
                 'columnValue' => ['custom', 'No'],
-                'primary' => ['custom', 'group_id'],
-                'id' => ['payload', 'group_id', DatabaseDataTypes::$INT],
+                'primary' => ['custom', 'id'],
+                'id' => ['payload', 'id', DatabaseDataTypes::$INT],
             ],
             'errorMessage' => 'Record is already disabled'
         ]

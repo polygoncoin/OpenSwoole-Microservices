@@ -20,7 +20,7 @@ return [
       'fn' => '_primaryKeyExist',
       'fnArgs' => [
                 'table' => ['custom', 'master_users'],
-                'primary' => ['custom', 'user_id'],
+                'primary' => ['custom', 'id'],
                 'id' => ['uriParams', 'id']
             ],
           'errorMessage' => 'Invalid registration id'

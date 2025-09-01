@@ -27,9 +27,9 @@ return array_merge(
     [
         '__SET__' => [
             [
-            'column' => 'address',
-            'fetchFrom' => 'payload',
-            'fetchFromValue' => 'address'
+                'column' => 'address',
+                'fetchFrom' => 'payload',
+                'fetchFromValue' => 'address'
             ]
         ],
         '__WHERE__' => [

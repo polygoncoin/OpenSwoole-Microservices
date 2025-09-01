@@ -36,7 +36,7 @@ return [
                 [
                     'column' => 'user_id',
                     'fetchFrom' => 'sqlResults',
-                    'fetchFromValue' => 'return:user_id'
+                    'fetchFromValue' => 'return:id'
                 ],
             ],
             '__MODE__' => 'multipleRowFormat',

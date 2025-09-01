@@ -27,4 +27,17 @@ namespace Microservices\Supplement\Cron;
  */
 interface CronInterface
 {
+    /**
+     * Initialize
+     *
+     * @return bool
+     */
+    public function init();
+
+    /**
+     * Process
+     *
+     * @return bool
+     */
+    public function process(): bool;
 }

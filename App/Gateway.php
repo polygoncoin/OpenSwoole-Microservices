@@ -13,9 +13,9 @@
  */
 namespace Microservices\App;
 
+use Microservices\App\HttpRequest;
 use Microservices\App\HttpStatus;
 use Microservices\App\RateLimiter;
-use Microservices\App\RouteParser;
 
 /**
  * Gateway - contains checks like IP and Rate Limiting functions
@@ -29,8 +29,15 @@ use Microservices\App\RouteParser;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class Gateway extends RouteParser
+class Gateway
 {
+    /**
+     * CIDR checked boolean flag
+     *
+     * @var bool
+     */
+    public $cidrChecked = false;
+
     /**
      * Rate Limiter
      *
@@ -39,17 +46,34 @@ class Gateway extends RouteParser
     private $_rateLimiter = null;
 
     /**
+     * Rate Limiter
+     *
+     * @var null|HttpRequest
+     */
+    private $_req = null;
+
+    /**
+     * Constructor
+     *
+     * @param HttpRequest $req HTTP Request Object
+     */
+    public function __construct(&$req)
+    {
+        $this->_req = &$req;
+    }
+
+    /**
      * Initialize Gateway
      *
      * @return void
      */
     public function initGateway(): void
     {
-        $this->loadClientDetails();
+        $this->_req->loadClientDetails();
 
-        if (!$this->open) {
-            $this->auth->loadUserDetails();
-            $this->auth->checkRemoteIp();
+        if (!$this->_req->open) {
+            $this->_req->auth->loadUserDetails();
+            $this->checkRemoteIp();
         }
         $this->_checkRateLimits();
     }
@@ -66,62 +90,62 @@ class Gateway extends RouteParser
         $rateLimitChecked = false;
 
         // Client Rate Limiting
-        if (!empty($this->clientDetails['rateLimiterMaxRequests'])
-            && !empty($this->clientDetails['rateLimiterSecondsWindow'])
+        if (!empty($this->_req->s['cDetails']['rateLimitMaxRequests'])
+            && !empty($this->_req->s['cDetails']['rateLimitSecondsWindow'])
         ) {
-            $rateLimiterClientPrefix = getenv(name: 'rateLimiterClientPrefix');
-            $rateLimiterMaxRequests = $this->clientDetails['rateLimiterMaxRequests'];
-            $rateLimiterSecondsWindow =
-                $this->clientDetails['rateLimiterSecondsWindow'];
-            $key = $this->clientDetails['client_id'];
+            $rateLimitClientPrefix = getenv(name: 'rateLimitClientPrefix');
+            $rateLimitMaxRequests = $this->_req->s['cDetails']['rateLimitMaxRequests'];
+            $rateLimitSecondsWindow
+                = $this->_req->s['cDetails']['rateLimitSecondsWindow'];
+            $key = $this->_req->s['cDetails']['id'];
 
             $rateLimitChecked = $this->checkRateLimit(
-                rateLimiterPrefix: $rateLimiterClientPrefix,
-                rateLimiterMaxRequests: $rateLimiterMaxRequests,
-                rateLimiterSecondsWindow: $rateLimiterSecondsWindow,
+                rateLimitPrefix: $rateLimitClientPrefix,
+                rateLimitMaxRequests: $rateLimitMaxRequests,
+                rateLimitSecondsWindow: $rateLimitSecondsWindow,
                 key: $key
             );
         }
 
-        if (!$this->open) {
+        if (!$this->_req->open) {
             // Group Rate Limiting
-            if (!empty($this->groupDetails['rateLimiterMaxRequests'])
-                && !empty($this->groupDetails['rateLimiterSecondsWindow'])
+            if (!empty($this->_req->s['gDetails']['rateLimitMaxRequests'])
+                && !empty($this->_req->s['gDetails']['rateLimitSecondsWindow'])
             ) {
-                $rateLimiterGroupPrefix =
-                    getenv(name: 'rateLimiterGroupPrefix');
-                $rateLimiterMaxRequests =
-                    $this->groupDetails['rateLimiterMaxRequests'];
-                $rateLimiterSecondsWindow =
-                    $this->groupDetails['rateLimiterSecondsWindow'];
-                $key = $this->clientDetails['client_id'] . ':' .
-                    $this->userDetails['group_id'];
+                $rateLimitGroupPrefix
+                    = getenv(name: 'rateLimitGroupPrefix');
+                $rateLimitMaxRequests
+                    = $this->_req->s['gDetails']['rateLimitMaxRequests'];
+                $rateLimitSecondsWindow
+                    = $this->_req->s['gDetails']['rateLimitSecondsWindow'];
+                $key = $this->_req->s['cDetails']['id'] . ':' .
+                    $this->_req->s['uDetails']['id'];
 
                 $rateLimitChecked = $this->checkRateLimit(
-                    rateLimiterPrefix: $rateLimiterGroupPrefix,
-                    rateLimiterMaxRequests: $rateLimiterMaxRequests,
-                    rateLimiterSecondsWindow: $rateLimiterSecondsWindow,
+                    rateLimitPrefix: $rateLimitGroupPrefix,
+                    rateLimitMaxRequests: $rateLimitMaxRequests,
+                    rateLimitSecondsWindow: $rateLimitSecondsWindow,
                     key: $key
                 );
             }
 
             // User Rate Limiting
-            if (!empty($this->userDetails['rateLimiterMaxRequests'])
-                && !empty($this->userDetails['rateLimiterSecondsWindow'])
+            if (!empty($this->_req->s['uDetails']['rateLimitMaxRequests'])
+                && !empty($this->_req->s['uDetails']['rateLimitSecondsWindow'])
             ) {
-                $rateLimiterUserPrefix = getenv(name: 'rateLimiterUserPrefix');
-                $rateLimiterMaxRequests =
-                    $this->groupDetails['rateLimiterMaxRequests'];
-                $rateLimiterSecondsWindow =
-                    $this->groupDetails['rateLimiterSecondsWindow'];
-                $key = $this->clientDetails['client_id'] . ':' .
-                    $this->userDetails['group_id'] . ':' .
-                    $this->userDetails['user_id'];
+                $rateLimitUserPrefix = getenv(name: 'rateLimitUserPrefix');
+                $rateLimitMaxRequests
+                    = $this->_req->s['gDetails']['rateLimitMaxRequests'];
+                $rateLimitSecondsWindow
+                    = $this->_req->s['gDetails']['rateLimitSecondsWindow'];
+                $key = $this->_req->s['cDetails']['id'] . ':' .
+                    $this->_req->s['uDetails']['id'] . ':' .
+                    $this->_req->s['uDetails']['user_id'];
 
                 $rateLimitChecked = $this->checkRateLimit(
-                    rateLimiterPrefix: $rateLimiterUserPrefix,
-                    rateLimiterMaxRequests: $rateLimiterMaxRequests,
-                    rateLimiterSecondsWindow: $rateLimiterSecondsWindow,
+                    rateLimitPrefix: $rateLimitUserPrefix,
+                    rateLimitMaxRequests: $rateLimitMaxRequests,
+                    rateLimitSecondsWindow: $rateLimitSecondsWindow,
                     key: $key
                 );
             }
@@ -130,15 +154,15 @@ class Gateway extends RouteParser
         // Rate limit open traffic (not limited by allowed IPs/CIDR and allowed
         // Rate Limits to users)
         if ($this->cidrChecked === false && $rateLimitChecked === false) {
-            $rateLimiterIPPrefix = getenv(name: 'rateLimiterIPPrefix');
-            $rateLimiterIPMaxRequests = getenv(name: 'rateLimiterIPMaxRequests');
-            $rateLimiterIPSecondsWindow = getenv(name: 'rateLimiterIPSecondsWindow');
-            $key = $this->REMOTE_ADDR;
+            $rateLimitIPPrefix = getenv(name: 'rateLimitIPPrefix');
+            $rateLimitIPMaxRequests = getenv(name: 'rateLimitIPMaxRequests');
+            $rateLimitIPSecondsWindow = getenv(name: 'rateLimitIPSecondsWindow');
+            $key = $this->_req->IP;
 
             $this->checkRateLimit(
-                rateLimiterPrefix: $rateLimiterIPPrefix,
-                rateLimiterMaxRequests: $rateLimiterIPMaxRequests,
-                rateLimiterSecondsWindow: $rateLimiterIPSecondsWindow,
+                rateLimitPrefix: $rateLimitIPPrefix,
+                rateLimitMaxRequests: $rateLimitIPMaxRequests,
+                rateLimitSecondsWindow: $rateLimitIPSecondsWindow,
                 key: $key
             );
         }
@@ -147,25 +171,25 @@ class Gateway extends RouteParser
     /**
      * Check Rate Limit
      *
-     * @param string $rateLimiterPrefix        Prefix
-     * @param int    $rateLimiterMaxRequests   Max request
-     * @param int    $rateLimiterSecondsWindow Window in seconds
-     * @param string $key                      Key
+     * @param string $rateLimitPrefix        Prefix
+     * @param int    $rateLimitMaxRequests   Max request
+     * @param int    $rateLimitSecondsWindow Window in seconds
+     * @param string $key                    Key
      *
      * @return void
      * @throws \Exception
      */
     public function checkRateLimit(
-        $rateLimiterPrefix,
-        $rateLimiterMaxRequests,
-        $rateLimiterSecondsWindow,
+        $rateLimitPrefix,
+        $rateLimitMaxRequests,
+        $rateLimitSecondsWindow,
         $key
     ): bool {
         try {
             $result = $this->_rateLimiter->check(
-                prefix: $rateLimiterPrefix,
-                maxRequests: $rateLimiterMaxRequests,
-                secondsWindow: $rateLimiterSecondsWindow,
+                prefix: $rateLimitPrefix,
+                maxRequests: $rateLimitMaxRequests,
+                secondsWindow: $rateLimitSecondsWindow,
                 key: $key
             );
 
@@ -186,6 +210,42 @@ class Gateway extends RouteParser
                 message: $e->getMessage(),
                 code: $e->getCode()
             );
+        }
+    }
+
+    /**
+     * Validate request IP
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function checkRemoteIp(): void
+    {
+        $cidrKey = CacheKey::cidr(
+            gID: $this->_req->s['uDetails']['group_id']
+        );
+        if ($this->_req->cache->cacheExists(key: $cidrKey)) {
+            $this->cidrChecked = true;
+            $cidrs = json_decode(
+                json: $this->_req->cache->getCache(
+                    key: $cidrKey
+                ),
+                associative: true
+            );
+            $ipNumber = ip2long(ip: $this->_req->IP);
+            $isValidIp = false;
+            foreach ($cidrs as $cidr) {
+                if ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
+                    $isValidIp = true;
+                    break;
+                }
+            }
+            if (!$isValidIp) {
+                throw new \Exception(
+                    message: 'IP not supported',
+                    code: HttpStatus::$BadRequest
+                );
+            }
         }
     }
 }

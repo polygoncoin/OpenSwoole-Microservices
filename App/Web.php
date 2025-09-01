@@ -67,7 +67,7 @@ class Web
         $header = [],
         $payload = ''
     ): array {
-        $curlConfig[CURLOPT_URL] = "{$homeURL}?r={$route}&{$queryString}";
+        $curlConfig[CURLOPT_URL] = "{$homeURL}?r={$route}{$queryString}";
         $curlConfig[CURLOPT_HTTPHEADER] = $header;
         $curlConfig[CURLOPT_HEADER] = 1;
 
@@ -128,6 +128,8 @@ class Web
         $header = [],
         $payload = ''
     ): mixed {
+        $queryString = empty($queryString) ? '' : '&' . $queryString;
+
         $curl = curl_init();
         $curlConfig = $this->_getCurlConfig(
             homeURL: $homeURL,
@@ -172,7 +174,7 @@ class Web
         }
 
         // return [
-        //     'route' => "{$homeURL}?r={$route}&{$queryString}",
+        //     'route' => "{$homeURL}?r={$route}{$queryString}",
         //     'httpMethod' => $method,
         //     'requestHeaders' => $curlConfig[CURLOPT_HTTPHEADER],
         //     'requestPayload' => $payload,

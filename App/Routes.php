@@ -101,13 +101,13 @@ class Routes
 
         $httpRoutes = [];
         if ($this->_c->req->open) {
-            $userRoutesFolder = Constants::$DOC_ROOT . $this->_routesFolder .
+            $userRoutesFolder = Constants::$PUBLIC_HTML . $this->_routesFolder .
                 DIRECTORY_SEPARATOR . 'Open';
         } else {
-            $userRoutesFolder = Constants::$DOC_ROOT . $this->_routesFolder .
+            $userRoutesFolder = Constants::$PUBLIC_HTML . $this->_routesFolder .
                 DIRECTORY_SEPARATOR . 'Auth' .
                 DIRECTORY_SEPARATOR . 'GroupRoutes' .
-                DIRECTORY_SEPARATOR . $this->_c->req->session['groupDetails']['name'];
+                DIRECTORY_SEPARATOR . $this->_c->req->s['gDetails']['name'];
         }
 
         foreach ($this->_httpMethods as $method) {

@@ -27,4 +27,17 @@ namespace Microservices\Supplement\ThirdParty;
  */
 interface ThirdPartyInterface
 {
+    /**
+     * Initialize
+     *
+     * @return bool
+     */
+    public function init(): bool;
+
+    /**
+     * Process
+     *
+     * @return bool
+     */
+    public function process(): bool;
 }

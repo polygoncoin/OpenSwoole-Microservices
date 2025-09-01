@@ -14,8 +14,8 @@
 namespace Microservices\App;
 
 use Microservices\App\Constants;
-use Microservices\App\DbFunctions;
 use Microservices\App\Env;
+use Microservices\App\HttpRequest;
 use Microservices\App\HttpStatus;
 
 /**
@@ -30,8 +30,68 @@ use Microservices\App\HttpStatus;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class RouteParser extends DbFunctions
+class RouteParser
 {
+    /**
+     * Array containing details of received route elements
+     *
+     * @var string[]
+     */
+    public $routeElements = [];
+
+    /**
+     * Pre / Post hooks defined in respective Route file
+     *
+     * @var string
+     */
+    public $routeHook = null;
+
+    /**
+     * Is a config request flag
+     *
+     * @var bool
+     */
+    public $isConfigRequest = false;
+
+    /**
+     * Raw route / Configured Uri
+     *
+     * @var string
+     */
+    public $configuredUri = '';
+
+    /**
+     * Location of File containing code for route
+     *
+     * @var string
+     */
+    public $sqlConfigFile = null;
+
+    /**
+     * Rate Limiter
+     *
+     * @var null|HttpRequest
+     */
+    private $_req = null;
+
+    /**
+     * Session reference variable
+     *
+     * @var null|array
+     */
+    private $_s = null;
+
+    /**
+     * Constructor
+     *
+     * @param HttpRequest $req HTTP Request Object
+     */
+    public function __construct(&$req)
+    {
+        $this->_req = &$req;
+        $this->_s = &$this->_req->s;
+    }
+
     /**
      * Parse route as per method
      *
@@ -46,21 +106,21 @@ class RouteParser extends DbFunctions
         $Env = __NAMESPACE__ . '\Env';
 
         if ($routeFileLocation === null) {
-            if ($this->open) {
-                $routeFileLocation = Constants::$DOC_ROOT .
+            if ($this->_req->open) {
+                $routeFileLocation = Constants::$PUBLIC_HTML .
                     DIRECTORY_SEPARATOR . 'Config' .
                     DIRECTORY_SEPARATOR . 'Routes' .
                     DIRECTORY_SEPARATOR . 'Open' .
-                    DIRECTORY_SEPARATOR . $this->REQUEST_METHOD . 'routes.php';
+                    DIRECTORY_SEPARATOR . $this->_req->METHOD . 'routes.php';
             } else {
-                $routeFileLocation = Constants::$DOC_ROOT .
+                $routeFileLocation = Constants::$PUBLIC_HTML .
                     DIRECTORY_SEPARATOR . 'Config' .
                     DIRECTORY_SEPARATOR . 'Routes' .
                     DIRECTORY_SEPARATOR . 'Auth' .
                     DIRECTORY_SEPARATOR . 'ClientDB' .
                     DIRECTORY_SEPARATOR . 'Groups' .
-                    DIRECTORY_SEPARATOR . $this->session['groupDetails']['name'] .
-                    DIRECTORY_SEPARATOR . $this->REQUEST_METHOD . 'routes.php';
+                    DIRECTORY_SEPARATOR . $this->_s['gDetails']['name'] .
+                    DIRECTORY_SEPARATOR . $this->_req->METHOD . 'routes.php';
             }
         }
 
@@ -68,14 +128,14 @@ class RouteParser extends DbFunctions
             $routes = include $routeFileLocation;
         } else {
             throw new \Exception(
-                message: 'Route file missing: ' . $this->REQUEST_METHOD . ' method',
+                message: 'Route file missing: ' . $this->_req->METHOD . ' method',
                 code: HttpStatus::$InternalServerError
             );
         }
 
         $this->routeElements = explode(
             separator: '/',
-            string: trim(string: $this->ROUTE, characters: '/')
+            string: trim(string: $this->_req->ROUTE, characters: '/')
         );
         $routeLastElementPos = count(value: $this->routeElements) - 1;
         $configuredUri = [];
@@ -99,7 +159,7 @@ class RouteParser extends DbFunctions
                         offset: 1,
                         length: strpos(haystack: $element, needle: ':') - 1
                     );
-                    $this->session['uriParams'][$param] = $element;
+                    $this->_s['uriParams'][$param] = $element;
                 }
                 continue;
             } else {
@@ -110,7 +170,7 @@ class RouteParser extends DbFunctions
                     $foundIntParamName = false;
                     $foundStringRoute = false;
                     $foundStringParamName = false;
-                    foreach (array_keys($routes) as $routeElement) {
+                    foreach (array_keys(array: $routes) as $routeElement) {
                         if (strpos(haystack: $routeElement, needle: '{') === 0) {
                             // Is a dynamic URI element
                             $this->_processRouteElement(
@@ -125,12 +185,12 @@ class RouteParser extends DbFunctions
                     }
                     if ($foundIntRoute) {
                         $configuredUri[] = $foundIntRoute;
-                        $this->session['uriParams'][$foundIntParamName] = (int)$element;
+                        $this->_s['uriParams'][$foundIntParamName]
+                            = (int)$element;
                     } elseif ($foundStringRoute) {
                         $configuredUri[] = $foundStringRoute;
-                        $this->session['uriParams'][$foundStringParamName] = urldecode(
-                            string: $element
-                        );
+                        $this->_s['uriParams'][$foundStringParamName]
+                            = urldecode(string: $element);
                     } else {
                         throw new \Exception(
                             message: 'Route not supported',
@@ -138,7 +198,7 @@ class RouteParser extends DbFunctions
                         );
                     }
                     $routes = &$routes[
-                        ($foundIntRoute ? $foundIntRoute : $foundStringRoute)
+                        ($foundIntRoute ?? $foundStringRoute)
                     ];
                 } elseif ($key === $routeLastElementPos
                     && Env::$allowConfigRequest == 1
@@ -152,12 +212,12 @@ class RouteParser extends DbFunctions
                         code: HttpStatus::$BadRequest
                     );
                 }
-                if (isset($routes['inputRepresentation'])
+                if (isset($routes['iRepresentation'])
                     && Env::isValidDataRep(
-                        dataRepresentation: $routes['inputRepresentation']
+                        dataRepresentation: $routes['iRepresentation']
                     )
                 ) {
-                    Env::$inputRepresentation = $routes['inputRepresentation'];
+                    Env::$iRepresentation = $routes['iRepresentation'];
                 }
             }
         }
@@ -165,12 +225,12 @@ class RouteParser extends DbFunctions
         // Input data representation over rides global and routes settings
         // Switch Input data representation if set in URL param
         if (Env::$allowGetRepresentation == 1
-            && isset($this->http['get']['inputRepresentation'])
+            && isset($this->_req->http['get']['iRepresentation'])
             && Env::isValidDataRep(
-                dataRepresentation: $this->http['get']['inputRepresentation']
+                dataRepresentation: $this->_req->http['get']['iRepresentation']
             )
         ) {
-            Env::$inputRepresentation = $this->http['get']['inputRepresentation'];
+            Env::$iRepresentation = $this->_req->http['get']['iRepresentation'];
         }
 
         $this->configuredUri = '/' . implode(separator: '/', array: $configuredUri);
@@ -282,7 +342,7 @@ class RouteParser extends DbFunctions
             || file_exists(filename: $routes['__FILE__'])))
         ) {
             throw new \Exception(
-                message: 'Missing config for ' . $this->REQUEST_METHOD . ' method',
+                message: 'Missing config for ' . $this->_req->METHOD . ' method',
                 code: HttpStatus::$InternalServerError
             );
         }
@@ -295,23 +355,23 @@ class RouteParser extends DbFunctions
             // Output data representation over rides global
             // Output data representation set in Query config file
             $sqlConfig = include $this->sqlConfigFile;
-            if (isset($sqlConfig['outputRepresentation'])
+            if (isset($sqlConfig['oRepresentation'])
                 && Env::isValidDataRep(
-                    dataRepresentation: $sqlConfig['outputRepresentation']
+                    dataRepresentation: $sqlConfig['oRepresentation']
                 )
             ) {
-                Env::$outputRepresentation = $sqlConfig['outputRepresentation'];
+                Env::$oRepresentation = $sqlConfig['oRepresentation'];
             }
         }
 
         // Switch Output data representation if set in URL param
         if (Env::$allowGetRepresentation == 1
-            && isset($this->http['get']['outputRepresentation'])
+            && isset($this->_req->http['get']['oRepresentation'])
             && Env::isValidDataRep(
-                dataRepresentation: $this->http['get']['outputRepresentation']
+                dataRepresentation: $this->_req->http['get']['oRepresentation']
             )
         ) {
-            Env::$outputRepresentation = $this->http['get']['outputRepresentation'];
+            Env::$oRepresentation = $this->_req->http['get']['oRepresentation'];
         }
     }
 }

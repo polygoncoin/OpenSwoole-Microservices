@@ -70,8 +70,8 @@ $server->on(
         $http['server']['host'] = 'localhost';
         // $http['server']['host'] = 'public.localhost';
         // $http['server']['host'] = OpenSwoole\Core\Psr\Uri->getHost();
-        $http['server']['request_method'] = $request->server['request_method'];
-        $http['server']['remote_addr'] = $request->server['remote_addr'];
+        $http['server']['method'] = $request->server['request_method'];
+        $http['server']['ip'] = $request->server['remote_addr'];
         if (isset($request->header['authorization'])) {
             $http['header']['authorization'] = $request->header['authorization'];
         }
@@ -108,7 +108,7 @@ $server->on(
             foreach ($services->getHeaders() as $k => $v) {
                 $response->header($k, $v);
             }
-            if ($http['server']['request_method'] == 'OPTIONS') {
+            if ($http['server']['method'] == 'OPTIONS') {
                 $response->end();
                 return;
             }
@@ -130,7 +130,7 @@ $server->on(
                     ],
                     'Details' => [
                         'http' => $http,
-                        'session' => $services->c->req->session
+                        'session' => $services->c->req->s
                     ]
                 ];
                 (new Logs)->log(logDetails: $logDetails);

@@ -54,38 +54,38 @@ class CacheKey
     /**
      * Get Client User Key
      *
-     * @param int    $clientId Client Id
+     * @param int    $cID Client Id
      * @param string $username Hostname
      *
      * @return string
      */
-    public static function clientUser(&$clientId, &$username): string
+    public static function clientUser(&$cID, &$username): string
     {
-        return "cu:{$clientId}:u:{$username}";
+        return "cu:{$cID}:u:{$username}";
     }
 
     /**
      * Get Group Key
      *
-     * @param int $groupId Group Id
+     * @param int $gID Group Id
      *
      * @return string
      */
-    public static function group(&$groupId): string
+    public static function group(&$gID): string
     {
-        return "g:{$groupId}";
+        return "g:{$gID}";
     }
 
     /**
      * Get Group CIDR Key
      *
-     * @param int $groupId Group Id
+     * @param int $gID Group Id
      *
      * @return string
      */
-    public static function cidr(&$groupId): string
+    public static function cidr(&$gID): string
     {
-        return "cidr:{$groupId}";
+        return "cidr:{$gID}";
     }
 
     /**
@@ -103,12 +103,12 @@ class CacheKey
     /**
      * Get User Token Key
      *
-     * @param int $userId User Id
+     * @param int $uID User Id
      *
      * @return string
      */
-    public static function userToken(&$userId): string
+    public static function userToken(&$uID): string
     {
-        return "ut:{$userId}";
+        return "ut:{$uID}";
     }
 }

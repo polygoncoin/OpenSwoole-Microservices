@@ -16,7 +16,7 @@ namespace Microservices\Config\Queries\Auth\GlobalDB\GET;
 return [
     'all' => [
         'countQuery' => 'SELECT count(1) as `count` FROM `{$Env::$clients}` WHERE __WHERE__',
-        '__QUERY__' => 'SELECT * FROM `{$Env::$clients}` WHERE __WHERE__ ORDER BY client_id ASC',
+        '__QUERY__' => 'SELECT * FROM `{$Env::$clients}` WHERE __WHERE__ ORDER BY id ASC',
         '__WHERE__' => [
             [
                 'column' => 'is_approved',
@@ -55,11 +55,11 @@ return [
                 'fetchFromValue' => 'No'
             ],
             [
-                'column' => 'client_id',
+                'column' => 'id',
                 'fetchFrom' => 'uriParams',
-                'fetchFromValue' => 'client_id'
+                'fetchFromValue' => 'id'
             ]
         ],
         '__MODE__' => 'singleRowFormat'
     ],
-][isset($this->_c->req->session['uriParams']['client_id'])?'single':'all'];
+][isset($this->_c->req->s['uriParams']['id'])?'single':'all'];
