@@ -27,7 +27,7 @@ return [
             'fetchFromValue' => 0
         ],
         [
-            'column' => 'is_deleted',
+            'column' => 'id',
             'fetchFrom' => 'uriParams',
             'fetchFromValue' => 'id'
         ]

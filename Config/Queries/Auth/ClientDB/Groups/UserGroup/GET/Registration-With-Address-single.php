@@ -27,7 +27,7 @@ return [
             'fetchFromValue' => 'id'
         ]
     ],
-    '__MODE__' => 'multipleRowFormat',
+    '__MODE__' => 'singleRowFormat',
     '__SUB-QUERY__' => [
         'address' => [
             '__QUERY__' => 'SELECT * FROM `address` WHERE __WHERE__',
