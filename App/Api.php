@@ -40,14 +40,14 @@ class Api
     private $_beforePayload = null;
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */
     private $_c = null;
 
     /**
-     * Hook Object
+     * Hook object
      *
      * @var null|Hook
      */

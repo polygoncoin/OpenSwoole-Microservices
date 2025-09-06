@@ -31,7 +31,7 @@ use Microservices\App\Constants;
 class Hook
 {
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */

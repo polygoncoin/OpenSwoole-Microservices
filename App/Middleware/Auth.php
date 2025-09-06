@@ -32,7 +32,7 @@ use Microservices\App\HttpStatus;
 class Auth
 {
     /**
-     * HTTP Request Object
+     * HTTP Request object
      *
      * @var null|HttpRequest
      */
@@ -41,7 +41,7 @@ class Auth
     /**
      * Constructor
      *
-     * @param HttpRequest $req HTTP Request Object
+     * @param HttpRequest $req HTTP Request object
      */
     public function __construct(&$req)
     {

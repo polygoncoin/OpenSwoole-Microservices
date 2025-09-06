@@ -31,7 +31,7 @@ use Microservices\App\HttpStatus;
 class Web
 {
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */

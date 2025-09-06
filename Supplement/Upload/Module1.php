@@ -35,7 +35,7 @@ class Module1 implements UploadInterface
     use UploadTrait;
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */

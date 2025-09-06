@@ -36,21 +36,21 @@ class Reload
     use AppTrait;
 
     /**
-     * Database Object
+     * Database object
      *
      * @var null|AbstractDatabase
      */
     public $db = null;
 
     /**
-     * Caching Object
+     * Caching object
      *
      * @var null|AbstractCache
      */
     public $cache = null;
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */

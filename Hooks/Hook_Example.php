@@ -34,7 +34,7 @@ class Hook_Example implements HookInterface
     use HookTrait;
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */

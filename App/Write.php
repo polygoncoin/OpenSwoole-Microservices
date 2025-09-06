@@ -39,14 +39,14 @@ class Write
     use AppTrait;
 
     /**
-     * Database Object
+     * Database object
      *
      * @var null|AbstractDatabase
      */
     public $db = null;
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */
@@ -60,14 +60,14 @@ class Write
     private $_s = null;
 
     /**
-     * Trigger Web API Object
+     * Trigger Web API object
      *
      * @var null|Web
      */
     private $_web = null;
 
     /**
-     * Hook Object
+     * Hook object
      *
      * @var null|Hook
      */
@@ -81,7 +81,7 @@ class Write
     private $_operateAsTransaction = null;
 
     /**
-     * JSON Encode Object
+     * JSON Encode object
      *
      * @var null|AbstractDataEncode
      */

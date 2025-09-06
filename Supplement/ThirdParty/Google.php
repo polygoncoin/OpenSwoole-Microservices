@@ -36,7 +36,7 @@ class Google implements ThirdPartyInterface
     use ThirdPartyTrait;
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */
@@ -88,7 +88,7 @@ class Google implements ThirdPartyInterface
         } else {
             $output = json_decode(json: $output, associative: true);
         }
-        // End the calls with json response with dataEncode Object
+        // End the calls with json response with dataEncode object
         $this->_endProcess(output: $output);
 
         return true;

@@ -35,7 +35,7 @@ class Password implements CustomInterface
     use CustomTrait;
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */

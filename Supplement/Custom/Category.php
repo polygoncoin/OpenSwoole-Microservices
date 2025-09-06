@@ -35,14 +35,14 @@ class Category implements CustomInterface
     use CustomTrait;
 
     /**
-     * Database Object
+     * Database object
      *
      * @var null|AbstractDatabase
      */
     public $db = null;
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */

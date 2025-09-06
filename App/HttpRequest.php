@@ -45,35 +45,35 @@ class HttpRequest extends DbFunctions
     public $s = null;
 
     /**
-     * Cache Object
+     * Cache object
      *
      * @var null|AbstractCache
      */
     public $cache = null;
 
     /**
-     * SQL Cache Object
+     * SQL Cache object
      *
      * @var null|AbstractCache
      */
     public $sqlCache = null;
 
     /**
-     * Auth middleware Object
+     * Auth middleware object
      *
      * @var null|Auth
      */
     public $auth = null;
 
     /**
-     * Database Object
+     * Database object
      *
      * @var null|AbstractDatabase
      */
     public $db = null;
 
     /**
-     * JSON Decode Object
+     * JSON Decode object
      *
      * @var null|DataDecode
      */
@@ -108,7 +108,7 @@ class HttpRequest extends DbFunctions
     public $payloadStream = null;
 
     /**
-     * Route Parser Object
+     * Route Parser object
      *
      * @var null|RouteParser
      */

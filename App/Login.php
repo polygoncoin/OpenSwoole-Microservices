@@ -35,7 +35,7 @@ use Microservices\App\Servers\Database\AbstractDatabase;
 class Login
 {
     /**
-     * Database Object
+     * Database object
      *
      * @var null|AbstractDatabase
      */
@@ -77,7 +77,7 @@ class Login
     private $_payload = [];
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */

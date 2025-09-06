@@ -40,35 +40,35 @@ class Read
     use AppTrait;
 
     /**
-     * Database Object
+     * Database object
      *
      * @var null|AbstractDatabase
      */
     public $db = null;
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */
     private $_c = null;
 
     /**
-     * Trigger Web API Object
+     * Trigger Web API object
      *
      * @var null|Web
      */
     private $_web = null;
 
     /**
-     * Hook Object
+     * Hook object
      *
      * @var null|Hook
      */
     private $_hook = null;
 
     /**
-     * JSON Encode Object
+     * JSON Encode object
      *
      * @var null|AbstractDataEncode
      */

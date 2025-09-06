@@ -36,14 +36,14 @@ class ClientValidator implements ValidatorInterface
     use ValidatorTrait;
 
     /**
-     * Database Object
+     * Database object
      *
      * @var null|AbstractDatabase
      */
     public $db = null;
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */

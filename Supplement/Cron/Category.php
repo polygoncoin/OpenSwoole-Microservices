@@ -35,7 +35,7 @@ class Category implements CronInterface
     use CronTrait;
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */
@@ -71,7 +71,7 @@ class Category implements CronInterface
     {
         // Create and call functions to manage cron functionality here
 
-        // End the calls with json response with dataEncode Object
+        // End the calls with json response with dataEncode object
         $this->_endProcess();
         return true;
     }

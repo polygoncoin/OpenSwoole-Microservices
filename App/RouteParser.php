@@ -84,7 +84,7 @@ class RouteParser
     /**
      * Constructor
      *
-     * @param HttpRequest $req HTTP Request Object
+     * @param HttpRequest $req HTTP Request object
      */
     public function __construct(&$req)
     {

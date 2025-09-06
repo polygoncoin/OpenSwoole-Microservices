@@ -308,7 +308,7 @@ class XmlEncode extends AbstractDataEncode
 }
 
 /**
- * Xml Object
+ * Xml object
  *
  * This class is built to help maintain state of simple/associative array
  * php version 8.3
@@ -329,7 +329,7 @@ class XmlEncoderObject
     /**
      * Constructor
      *
-     * @param string      $mode Values can be one among Array/Object
+     * @param string      $mode Values can be one among Array/object
      * @param null|string $key  Tag
      */
     public function __construct($mode, $key)

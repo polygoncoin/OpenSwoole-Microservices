@@ -49,7 +49,7 @@ class CacheHandler
         DIRECTORY_SEPARATOR . 'Dropbox';
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */

@@ -55,7 +55,7 @@ class Services
     public $http = null;
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */

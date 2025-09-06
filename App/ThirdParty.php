@@ -31,14 +31,14 @@ use Microservices\Supplement\ThirdParty\ThirdPartyInterface;
 class ThirdParty
 {
     /**
-     * ThirdParty API Object
+     * ThirdParty API object
      *
      * @var null|ThirdPartyInterface
      */
     private $_api = null;
 
     /**
-     * Common Object
+     * Common object
      *
      * @var null|Common
      */

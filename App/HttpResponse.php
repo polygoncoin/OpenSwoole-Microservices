@@ -38,7 +38,7 @@ class HttpResponse
     public $httpStatus;
 
     /**
-     * JSON Encode Object
+     * JSON Encode object
      *
      * @var null|DataEncode
      */

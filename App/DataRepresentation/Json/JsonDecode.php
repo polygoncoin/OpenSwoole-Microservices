@@ -54,7 +54,7 @@ class JsonDecode extends AbstractDataDecode
     private $_allowedPayloadLength = 100 * 1024 * 1024; // 100 MB
 
     /**
-     * Json Decode Engine Object
+     * Json Decode Engine object
      *
      * @var null|JsonDecodeEngine
      */
@@ -883,7 +883,7 @@ class JsonDecodeEngine
 }
 
 /**
- * JSON Object
+ * JSON object
  * php version 8.3
  *
  * @category  JSON_Decode_Object
@@ -949,7 +949,7 @@ class JsonDecodeObject
      * Constructor
      *
      * @param string $mode     Values can be one among Array
-     * @param string $assocKey Key for Object
+     * @param string $assocKey Key for object
      */
     public function __construct($mode, $assocKey = null)
     {
