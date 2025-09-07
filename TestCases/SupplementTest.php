@@ -31,5 +31,4 @@ $response[] = include POST . DIRECTORY_SEPARATOR . 'Login.php';
 
 $response[] = include POST . DIRECTORY_SEPARATOR . 'SupplementTest.php';
 
-echo '<pre>';
-print_r(value: $response);
+return '<pre>'.print_r(value: $response, return: true);
