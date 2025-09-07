@@ -459,23 +459,16 @@ class Write
                 $counter = 0;
             } else {
                 $response[++$counter] = [];
+                $response = &$response[$counter];
             }
 
             if (isset($wSqlConfig['__INSERT-IDs__'])) {
                 $id = $this->db->lastInsertId();
-                if ($isObject) {
-                    $response[$wSqlConfig['__INSERT-IDs__']] = $id;
-                } else {
-                    $response[$counter][$wSqlConfig['__INSERT-IDs__']] = $id;
-                }
+                $response[$wSqlConfig['__INSERT-IDs__']] = $id;
                 $this->_s['__INSERT-IDs__'][$wSqlConfig['__INSERT-IDs__']] = $id;
             } else {
                 $affectedRows = $this->db->affectedRows();
-                if ($isObject) {
-                    $response['affectedRows'] = $affectedRows;
-                } else {
-                    $response[$counter]['affectedRows'] = $affectedRows;
-                }
+                $response['affectedRows'] = $affectedRows;
             }
             $this->db->closeCursor();
 
@@ -484,15 +477,9 @@ class Write
                 if ($this->_web === null) {
                     $this->_web = new Web(common: $this->_c);
                 }
-                if ($isObject) {
-                    $response['__TRIGGERS__'] = $this->_web->triggerConfig(
-                        triggerConfig: $wSqlConfig['__TRIGGERS__']
-                    );
-                } else {
-                    $response[$counter]['__TRIGGERS__'] = $this->_web->triggerConfig(
-                        triggerConfig: $wSqlConfig['__TRIGGERS__']
-                    );
-                }
+                $response['__TRIGGERS__'] = $this->_web->triggerConfig(
+                    triggerConfig: $wSqlConfig['__TRIGGERS__']
+                );
             }
 
             // Execute Post Sql Hooks
@@ -551,44 +538,47 @@ class Write
         if (isset($payloadIndexes[0]) && $payloadIndexes[0] === '') {
             $payloadIndexes = array_shift($payloadIndexes);
         }
-        if (!is_array(value: $payloadIndexes)) $payloadIndexes = [];
+        if (!is_array(value: $payloadIndexes)) {
+            $payloadIndexes = [];
+        }
 
         if (isset($wSqlConfig['__SUB-QUERY__'])
             && $this->_isObject(arr: $wSqlConfig['__SUB-QUERY__'])
         ) {
             foreach ($wSqlConfig['__SUB-QUERY__'] as $module => &$_wSqlConfig) {
+                $dataExists = false;
                 $_payloadIndexes = $payloadIndexes;
                 $_configKeys = $configKeys;
+                array_push($_payloadIndexes, $module);
+                array_push($_configKeys, $module);
                 $modulePayloadKey = is_array(value: $_payloadIndexes) ?
                     implode(separator: ':', array: $_payloadIndexes) : '';
-                if ($useHierarchy) { // use parent data of a payload
-                    array_push($_payloadIndexes, $module);
-                    array_push($_configKeys, $module);
-                    if ($this->_c->req->dataDecode->isset(keys: $modulePayloadKey)) {
-                        $_necessary = &$necessary[$module] ?? [];
-                    } else {
-                        throw new \Exception(
-                            message: "Invalid payload: Module '{$module}' missing",
-                            code: HttpStatus::$NotFound
-                        );
-                    }
-                } else {
-                    $_necessary = $necessary;
+                $dataExists = $this->_c->req->dataDecode->isset(
+                    keys: $modulePayloadKey
+                );
+                if ($useHierarchy && !$dataExists) { // use parent data of a payload
+                    throw new \Exception(
+                        message: "Invalid payload: Module '{$module}' missing",
+                        code: HttpStatus::$NotFound
+                    );
                 }
-                $_useHierarchy = $useHierarchy ?? $this->_getUseHierarchy(
-                    sqlConfig: $_wSqlConfig,
-                    keyword: 'useHierarchy'
-                );
-                $response[$module] = [];
-                $_response = &$response[$module];
-                $this->_writeDB(
-                    wSqlConfig: $_wSqlConfig,
-                    payloadIndexes: $_payloadIndexes,
-                    configKeys: $_configKeys,
-                    useHierarchy: $_useHierarchy,
-                    response: $_response,
-                    necessary: $_necessary
-                );
+                if ($dataExists) {
+                    $_necessary = $necessary[$module] ?? $necessary;
+                    $_useHierarchy = $useHierarchy ?? $this->_getUseHierarchy(
+                        sqlConfig: $_wSqlConfig,
+                        keyword: 'useHierarchy'
+                    );
+                    $response[$module] = [];
+                    $_response = &$response[$module];
+                    $this->_writeDB(
+                        wSqlConfig: $_wSqlConfig,
+                        payloadIndexes: $_payloadIndexes,
+                        configKeys: $_configKeys,
+                        useHierarchy: $_useHierarchy,
+                        response: $_response,
+                        necessary: $_necessary
+                    );
+                }
             }
         }
     }

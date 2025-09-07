@@ -149,7 +149,7 @@ class Login
         $this->_payload = $this->_c->req->dataDecode->get();
 
         // Check for necessary conditions variables
-        foreach (array('username', 'password') as $value) {
+        foreach (['username', 'password'] as $value) {
             if (!isset($this->_payload[$value]) || empty($this->_payload[$value])) {
                 throw new \Exception(
                     message: 'Missing necessary parameters',

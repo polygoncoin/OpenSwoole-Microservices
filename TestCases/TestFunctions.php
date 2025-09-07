@@ -44,7 +44,7 @@ if (!function_exists(function: 'httpParseHeaders')) {
      */
     function httpParseHeaders($rawHeaders): array
     {
-        $headers = array();
+        $headers = [];
         $key = '';
 
         foreach (explode(separator: "\n", string: $rawHeaders) as $i => $h) {
@@ -56,12 +56,12 @@ if (!function_exists(function: 'httpParseHeaders')) {
                 } elseif (is_array(value: $headers[$h[0]])) {
                     $headers[$h[0]] = array_merge(
                         $headers[$h[0]],
-                        array(trim(string: $h[1]))
+                        [trim(string: $h[1])]
                     );
                 } else {
                     $headers[$h[0]] = array_merge(
-                        array($headers[$h[0]]),
-                        array(trim(string: $h[1]))
+                        [$headers[$h[0]]],
+                        [trim(string: $h[1])]
                     );
                 }
 

@@ -56,18 +56,18 @@ class JsonEncode extends AbstractDataEncode
      *
      * @var string[]
      */
-    private $_escapers = array(
+    private $_escapers = [
         "\\", "\"", "\n", "\r", "\t", "\x08", "\x0c", ' '
-    );
+    ];
 
     /**
      * Characters that are escaped with for $escapers while creating JSON
      *
      * @var string[]
      */
-    private $_replacements = array(
+    private $_replacements = [
         "\\\\", "\\\"", "\\n", "\\r", "\\t", "\\f", "\\b", ' '
-    );
+    ];
 
     /**
      * JsonEncode constructor
