@@ -92,9 +92,11 @@ class Routes
     /**
      * Make allowed routes list of a logged-in user
      *
-     * @return bool
+     * @param array $payload Payload
+     *
+     * @return array
      */
-    public function process(): bool
+    public function process(array $payload = []): array
     {
         $Constants = __NAMESPACE__ . '\Constants';
         $Env = __NAMESPACE__ . '\Env';
@@ -130,7 +132,7 @@ class Routes
             data: $httpRoutes
         );
 
-        return true;
+        return $httpRoutes;
     }
 
     /**

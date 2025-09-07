@@ -159,10 +159,10 @@ class Api
         $supplementApiClass = null;
 
         switch ($this->_c->req->rParser->routeElements[0]) {
-        case Env::$allowRoutesRequest
-            && Env::$routesRequestUri === $this->_c->req->rParser->routeElements[0]:
-            $supplementApiClass = __NAMESPACE__ . '\\Routes';
-            break;
+        // case Env::$allowRoutesRequest
+        //     && Env::$routesRequestUri === $this->_c->req->rParser->routeElements[0]:
+        //     $supplementApiClass = __NAMESPACE__ . '\\Routes';
+        //     break;
         case Env::$allowCustomRequest
             && Env::$customRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
             $supplementApiClass = __NAMESPACE__ . '\\Custom';
