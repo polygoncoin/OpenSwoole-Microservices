@@ -79,7 +79,7 @@ class Hook_Example implements HookInterface
      */
     private function _execHook(): void
     {
-        // Reset / empty payload.
-        $this->_c->req->s['payload'] = null;
+        // Change payload.
+        $this->_c->req->s['payload']['hook'] = 'Yes';
     }
 }

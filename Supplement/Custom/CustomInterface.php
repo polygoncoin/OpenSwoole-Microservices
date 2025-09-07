@@ -37,7 +37,9 @@ interface CustomInterface
     /**
      * Process
      *
-     * @return bool
+     * @param array $payload Payload
+     *
+     * @return array
      */
-    public function process(): bool;
+    public function process(array $payload = []): array;
 }

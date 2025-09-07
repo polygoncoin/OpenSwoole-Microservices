@@ -1,9 +1,9 @@
 <?php
 /**
- * CronAPI
+ * CustomAPI
  * php version 8.3
  *
- * @category  CronAPI_Trait
+ * @category  CustomAPI
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -11,18 +11,18 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-namespace Microservices\Supplement\Cron;
+namespace Microservices\Supplement\Custom;
 
 use Microservices\App\Common;
-use Microservices\App\HttpStatus;
-use Microservices\Supplement\Cron\CronInterface;
-use Microservices\Supplement\Cron\CronTrait;
+use Microservices\App\Servers\Database\AbstractDatabase;
+use Microservices\Supplement\Custom\CustomInterface;
+use Microservices\Supplement\Custom\CustomTrait;
 
 /**
- * CronAPI
+ * CustomAPI Supplement Test
  * php version 8.3
  *
- * @category  CronAPI_Example
+ * @category  CustomAPI_SupplementTest
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -30,9 +30,16 @@ use Microservices\Supplement\Cron\CronTrait;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class Category implements CronInterface
+class SupplementTest implements CustomInterface
 {
-    use CronTrait;
+    use CustomTrait;
+
+    /**
+     * Database object
+     *
+     * @var null|AbstractDatabase
+     */
+    public $db = null;
 
     /**
      * Common object
@@ -44,12 +51,13 @@ class Category implements CronInterface
     /**
      * Constructor
      *
-     * @param Common $common Common object
+     * @param Common $common Common object Common object
      */
     public function __construct(Common &$common)
     {
         $this->_c = &$common;
-        $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: 'Slave');
+        $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: $fetchFrom = 'Slave');
+        $this->db = &$this->_c->req->db;
     }
 
     /**
@@ -71,24 +79,18 @@ class Category implements CronInterface
      */
     public function process(array $payload = []): array
     {
-        // Create and call functions to manage cron functionality here
-
-        // End the calls with json response with dataEncode object
-        $this->_endProcess();
-        return [true];
+        return $payload;
     }
 
     /**
-     * Function to end process which outputs the results
+     * Process Sub
      *
-     * @return never
-     * @throws \Exception
+     * @param array $payload Payload
+     *
+     * @return array
      */
-    private function _endProcess(): never
+    public function processSub(array $payload = []): array
     {
-        throw new \Exception(
-            message: 'message as desired',
-            code: HttpStatus::$Ok
-        );
+        return $payload;
     }
 }

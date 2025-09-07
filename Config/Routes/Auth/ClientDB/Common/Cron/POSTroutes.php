@@ -14,5 +14,9 @@
 namespace Microservices\Config\Routes\Auth\ClientDB\Common\Cron;
 
 return [
-    $Env::$cronRequestUriPrefix => false
+    $Env::$cronRequestUriPrefix => [
+        '{cron:string}' => [
+            '__FILE__' => false
+        ]
+    ]
 ];

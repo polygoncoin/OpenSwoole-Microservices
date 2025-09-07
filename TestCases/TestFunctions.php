@@ -109,12 +109,12 @@ if (!function_exists(function: 'getCurlConfig')) {
 
         $payload = http_build_query(
             data: [
-            "Payload" => $payload
+                "Payload" => $payload
             ]
         );
 
         $contentType = [
-            'Content-Type: text/plain; charset=utf-8',
+            // 'Content-Type: text/plain; charset=utf-8',
             'Content-Type: application/x-www-form-urlencoded; charset=utf-8',
         ];
 

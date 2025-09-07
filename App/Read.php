@@ -15,7 +15,6 @@ namespace Microservices\App;
 
 use Microservices\App\AppTrait;
 use Microservices\App\Common;
-use Microservices\App\DataRepresentation\AbstractDataEncode;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\Env;
 use Microservices\App\Hook;
@@ -70,7 +69,7 @@ class Read
     /**
      * JSON Encode object
      *
-     * @var null|AbstractDataEncode
+     * @var null|DataEncode
      */
     public $dataEncode = null;
 
@@ -519,7 +518,7 @@ class Read
         $singleColumn = false;
         $pushPop = true;
         $this->db->execDbQuery(sql: $sql, params: $sqlParams, pushPop: $pushPop);
-        for ($i = 0; $row = $this->db->fetch(\PDO::FETCH_ASSOC);) {
+        for ($i = 0; $row = $this->db->fetch();) {
             if ($i === 0) {
                 if (count(value: $row) === 1) {
                     $singleColumn = true;

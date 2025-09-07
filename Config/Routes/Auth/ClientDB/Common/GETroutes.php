@@ -15,7 +15,7 @@ namespace Microservices\Config\Routes\Auth\CommonRoutes\Client;
 
 return [
     'category' => [
-        '__FILE__' => $Constants::$DOC_ROOT .
+        '__FILE__' => $Constants::$PUBLIC_HTML .
             DIRECTORY_SEPARATOR . 'Config' .
             DIRECTORY_SEPARATOR . 'Queries' .
             DIRECTORY_SEPARATOR . 'Auth' .
@@ -25,7 +25,7 @@ return [
             DIRECTORY_SEPARATOR . 'GET' .
             DIRECTORY_SEPARATOR . 'Category-all.php',
         'search' => [
-            '__FILE__' => $Constants::$DOC_ROOT .
+            '__FILE__' => $Constants::$PUBLIC_HTML .
                 DIRECTORY_SEPARATOR . 'Config' .
                 DIRECTORY_SEPARATOR . 'Queries' .
                 DIRECTORY_SEPARATOR . 'Auth' .
@@ -36,7 +36,7 @@ return [
                 DIRECTORY_SEPARATOR . 'SearchCategory.php',
         ],
         '{id:int|!0}' => [
-            '__FILE__' => $Constants::$DOC_ROOT .
+            '__FILE__' => $Constants::$PUBLIC_HTML .
                 DIRECTORY_SEPARATOR . 'Config' .
                 DIRECTORY_SEPARATOR . 'Queries' .
                 DIRECTORY_SEPARATOR . 'Auth' .
@@ -49,7 +49,7 @@ return [
     ],
     'registration' => [
         '{id:int|!0}'  => [
-            '__FILE__' => $Constants::$DOC_ROOT .
+            '__FILE__' => $Constants::$PUBLIC_HTML .
                 DIRECTORY_SEPARATOR . 'Config' .
                 DIRECTORY_SEPARATOR . 'Queries' .
                 DIRECTORY_SEPARATOR . 'Auth' .
@@ -62,7 +62,7 @@ return [
     ],
     'address' => [
         '{id:int|!0}'  => [
-            '__FILE__' => $Constants::$DOC_ROOT .
+            '__FILE__' => $Constants::$PUBLIC_HTML .
                 DIRECTORY_SEPARATOR . 'Config' .
                 DIRECTORY_SEPARATOR . 'Queries' .
                 DIRECTORY_SEPARATOR . 'Auth' .
@@ -75,7 +75,7 @@ return [
     ],
     'registration-with-address' => [
         '{id:int|!0}'  => [
-            '__FILE__' => $Constants::$DOC_ROOT .
+            '__FILE__' => $Constants::$PUBLIC_HTML .
                 DIRECTORY_SEPARATOR . 'Config' .
                 DIRECTORY_SEPARATOR . 'Queries' .
                 DIRECTORY_SEPARATOR . 'Auth' .

@@ -65,14 +65,16 @@ class Module1 implements UploadInterface
     /**
      * Process
      *
-     * @return bool
+     * @param array $payload Payload
+     *
+     * @return array
      */
-    public function process(): bool
+    public function process(array $payload = []): array
     {
         $absFilePath = $this->_getLocation();
         $this->_saveFile(absFilePath: $absFilePath);
 
-        return true;
+        return [true];
     }
 
     /**

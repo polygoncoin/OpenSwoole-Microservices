@@ -198,7 +198,7 @@ class RouteParser
                         );
                     }
                     $routes = &$routes[
-                        ($foundIntRoute ?? $foundStringRoute)
+                        ($foundIntRoute ? $foundIntRoute : $foundStringRoute)
                     ];
                 } elseif ($key === $routeLastElementPos
                     && Env::$allowConfigRequest == 1

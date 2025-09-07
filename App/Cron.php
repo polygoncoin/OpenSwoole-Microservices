@@ -72,26 +72,26 @@ class Cron
             DIRECTORY_SEPARATOR . 'Common' .
             DIRECTORY_SEPARATOR . 'Cron' .
             DIRECTORY_SEPARATOR . $this->_c->req->METHOD . 'routes.php';
-        $this->_c->req->parseRoute(routeFileLocation: $routeFileLocation);
+        $this->_c->req->rParser->parseRoute(routeFileLocation: $routeFileLocation);
 
-        return true;
+        $class = 'Microservices\\Supplement\\Cron\\' .
+            ucfirst(string: $this->_c->req->rParser->routeElements[1]);
+
+        $this->_api = new $class(common: $this->_c);
+
+        return $this->_api->init();
     }
 
     /**
      * Process
      *
-     * @return bool
+     * @param string $function Function
+     * @param array  $payload  Payload
+     *
+     * @return array
      */
-    public function process(): bool
+    public function process($function, $payload): array
     {
-        $class = 'Microservices\\Supplement\\Cron\\' .
-            ucfirst(string: $this->_c->req->rParser->routeElements[1]);
-
-        $this->_api = new $class(common: $this->_c);
-        if ($this->_api->init()) {
-            $this->_api->process();
-        }
-
-        return true;
+        return $this->_api->$function($payload);
     }
 }

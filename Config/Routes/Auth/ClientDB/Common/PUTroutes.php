@@ -16,7 +16,7 @@ namespace Microservices\Config\Routes\Auth\CommonRoutes\Client;
 return [
     'registration' => [
         '{id:int|!0}'  => [
-            '__FILE__' => $Constants::$DOC_ROOT .
+            '__FILE__' => $Constants::$PUBLIC_HTML .
                 DIRECTORY_SEPARATOR . 'Config' .
                 DIRECTORY_SEPARATOR . 'Queries' .
                 DIRECTORY_SEPARATOR . 'Auth' .
@@ -29,7 +29,7 @@ return [
     ],
     'address' => [
         '{id:int|!0}'  => [
-            '__FILE__' => $Constants::$DOC_ROOT .
+            '__FILE__' => $Constants::$PUBLIC_HTML .
                 DIRECTORY_SEPARATOR . 'Config' .
                 DIRECTORY_SEPARATOR . 'Queries' .
                 DIRECTORY_SEPARATOR . 'Auth' .

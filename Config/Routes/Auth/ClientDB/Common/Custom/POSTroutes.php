@@ -14,5 +14,17 @@
 namespace Microservices\Config\Routes\Auth\ClientDB\Common\Custom;
 
 return [
-    $Env::$customRequestUriPrefix => false
+    $Env::$customRequestUriPrefix => [
+        '{custom:string}' => [
+            '__FILE__' => $Constants::$PUBLIC_HTML .
+                DIRECTORY_SEPARATOR . 'Config' .
+                DIRECTORY_SEPARATOR . 'Queries' .
+                DIRECTORY_SEPARATOR . 'Auth' .
+                DIRECTORY_SEPARATOR . 'ClientDB' .
+                DIRECTORY_SEPARATOR . 'Groups' .
+                DIRECTORY_SEPARATOR . 'UserGroup' .
+                DIRECTORY_SEPARATOR . 'POST' .
+                DIRECTORY_SEPARATOR . 'SupplementTest.php'
+        ]
+    ]
 ];

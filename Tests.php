@@ -51,3 +51,17 @@ if (!function_exists(function: 'processXml')) {
             DIRECTORY_SEPARATOR . 'OpenTestsXml.php';
     }
 }
+
+if (!function_exists(function: 'processSupplement')) {
+    /**
+     * Process Auth based requests
+     *
+     * @return string
+     */
+    function processSupplement(): string
+    {
+        return include __DIR__ . DIRECTORY_SEPARATOR . 'TestCases' .
+            DIRECTORY_SEPARATOR . 'SupplementTest.php';
+    }
+}
+

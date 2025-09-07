@@ -17,6 +17,11 @@ return [
     $Env::$customRequestUriPrefix => [
         'password' => [
             '__FILE__' => false
+        ],
+        '{custom:string}' => [
+            '{id:int|!0}'  => [
+                '__FILE__' => false
+            ]
         ]
     ]
 ];

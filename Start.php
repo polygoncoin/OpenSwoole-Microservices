@@ -48,7 +48,12 @@ $server->on(
         if (isset($request->get['r'])
             && in_array(
                 needle: $request->get['r'],
-                haystack: ['/auth-test', '/open-test', '/open-test-xml']
+                haystack: [
+                    '/auth-test',
+                    '/open-test',
+                    '/open-test-xml',
+                    '/supp-test'
+                ]
             )
         ) {
             include __DIR__ . '/Tests.php';
@@ -61,6 +66,9 @@ $server->on(
                 break;
             case '/open-test-xml':
                 $response->end(processXml());
+                break;
+            case '/supp-test':
+                $response->end(processSupplement());
                 break;
             }
             return;

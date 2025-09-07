@@ -14,14 +14,22 @@
 namespace Microservices\Config\Routes\Auth\ClientDB\Groups\Client001UserGroup1;
 
 return array_merge(
-    require $Constants::$DOC_ROOT .
+    require $Constants::$PUBLIC_HTML .
         DIRECTORY_SEPARATOR . 'Config' .
         DIRECTORY_SEPARATOR . 'Routes' .
         DIRECTORY_SEPARATOR . 'Auth' .
         DIRECTORY_SEPARATOR . 'ClientDB' .
         DIRECTORY_SEPARATOR . 'Common' .
         DIRECTORY_SEPARATOR . 'POSTroutes.php',
-    require $Constants::$DOC_ROOT .
+    require $Constants::$PUBLIC_HTML .
+        DIRECTORY_SEPARATOR . 'Config' .
+        DIRECTORY_SEPARATOR . 'Routes' .
+        DIRECTORY_SEPARATOR . 'Auth' .
+        DIRECTORY_SEPARATOR . 'ClientDB' .
+        DIRECTORY_SEPARATOR . 'Common' .
+        DIRECTORY_SEPARATOR . 'Custom' .
+        DIRECTORY_SEPARATOR . 'POSTroutes.php',
+    require $Constants::$PUBLIC_HTML .
         DIRECTORY_SEPARATOR . 'Config' .
         DIRECTORY_SEPARATOR . 'Routes' .
         DIRECTORY_SEPARATOR . 'Auth' .
@@ -29,7 +37,7 @@ return array_merge(
         DIRECTORY_SEPARATOR . 'Common' .
         DIRECTORY_SEPARATOR . 'ThirdParty' .
         DIRECTORY_SEPARATOR . 'POSTroutes.php',
-    require $Constants::$DOC_ROOT .
+    require $Constants::$PUBLIC_HTML .
         DIRECTORY_SEPARATOR . 'Config' .
         DIRECTORY_SEPARATOR . 'Routes' .
         DIRECTORY_SEPARATOR . 'Auth' .
