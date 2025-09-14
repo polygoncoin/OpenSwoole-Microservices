@@ -156,41 +156,49 @@ class Api
      */
     private function _processBeforePayload(): bool
     {
-        $supplementApiClass = null;
-
-        switch ($this->_c->req->rParser->routeElements[0]) {
-        // case Env::$allowRoutesRequest
-        //     && Env::$routesRequestUri === $this->_c->req->rParser->routeElements[0]:
-        //     $supplementApiClass = __NAMESPACE__ . '\\Routes';
-        //     break;
-        case Env::$allowCustomRequest
-            && Env::$customRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
-            $supplementApiClass = __NAMESPACE__ . '\\Custom';
-            break;
-        case Env::$allowUploadRequest
-            && Env::$uploadRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
-            $supplementApiClass = __NAMESPACE__ . '\\Upload';
-            break;
-        case Env::$allowThirdPartyRequest
-            && Env::$thirdPartyRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
-            $supplementApiClass = __NAMESPACE__ . '\\ThirdParty';
-            break;
-        case Env::$allowCacheRequest
-            && Env::$cacheRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
-            $supplementApiClass = __NAMESPACE__ . '\\CacheHandler';
-            break;
-        }
-
         $foundClass = false;
-        if (!empty($supplementApiClass)) {
+
+        if (Env::$allowRoutesRequest
+            && Env::$routesRequestUri === $this->_c->req->rParser->routeElements[0]
+        ) {
             $this->_beforePayload = true;
+            $supplementApiClass = __NAMESPACE__ . '\\Routes';
             $supplementObj = new $supplementApiClass(common: $this->_c);
-            $supplementObj->init();
-            $supplement = new Supplement(common: $this->_c);
-            if ($supplement->init(supplementObj: $supplementObj)) {
-                $supplement->process();
+            if ($supplementObj->init()) {
+                $supplementObj->process();
             }
             $foundClass = true;
+        } else {
+            $supplementApiClass = null;
+            switch ($this->_c->req->rParser->routeElements[0]) {
+            case Env::$allowCustomRequest
+                && Env::$customRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
+                $supplementApiClass = __NAMESPACE__ . '\\Custom';
+                break;
+            case Env::$allowUploadRequest
+                && Env::$uploadRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
+                $supplementApiClass = __NAMESPACE__ . '\\Upload';
+                break;
+            case Env::$allowThirdPartyRequest
+                && Env::$thirdPartyRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
+                $supplementApiClass = __NAMESPACE__ . '\\ThirdParty';
+                break;
+            case Env::$allowCacheRequest
+                && Env::$cacheRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
+                $supplementApiClass = __NAMESPACE__ . '\\CacheHandler';
+                break;
+            }
+
+            if (!empty($supplementApiClass)) {
+                $this->_beforePayload = true;
+                $supplementObj = new $supplementApiClass(common: $this->_c);
+                $supplementObj->init();
+                $supplement = new Supplement(common: $this->_c);
+                if ($supplement->init(supplementObj: $supplementObj)) {
+                    $supplement->process();
+                }
+                $foundClass = true;
+            }
         }
 
         return $foundClass;

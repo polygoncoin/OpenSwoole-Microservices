@@ -94,9 +94,9 @@ class Routes
      *
      * @param array $payload Payload
      *
-     * @return array
+     * @return bool
      */
-    public function process(array $payload = []): array
+    public function process(array $payload = []): bool
     {
         $Constants = __NAMESPACE__ . '\Constants';
         $Env = __NAMESPACE__ . '\Env';
@@ -108,7 +108,8 @@ class Routes
         } else {
             $userRoutesFolder = Constants::$PUBLIC_HTML . $this->_routesFolder .
                 DIRECTORY_SEPARATOR . 'Auth' .
-                DIRECTORY_SEPARATOR . 'GroupRoutes' .
+                DIRECTORY_SEPARATOR . 'ClientDB' .
+                DIRECTORY_SEPARATOR . 'Groups' .
                 DIRECTORY_SEPARATOR . $this->_c->req->s['gDetails']['name'];
         }
 
@@ -132,7 +133,7 @@ class Routes
             data: $httpRoutes
         );
 
-        return $httpRoutes;
+        return true;
     }
 
     /**
