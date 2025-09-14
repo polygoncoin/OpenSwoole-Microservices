@@ -172,19 +172,23 @@ class Api
             $supplementApiClass = null;
             switch ($this->_c->req->rParser->routeElements[0]) {
             case Env::$allowCustomRequest
-                && Env::$customRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
+                && (Env::$customRequestUriPrefix 
+                    === $this->_c->req->rParser->routeElements[0]):
                 $supplementApiClass = __NAMESPACE__ . '\\Custom';
                 break;
             case Env::$allowUploadRequest
-                && Env::$uploadRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
+                && (Env::$uploadRequestUriPrefix 
+                    === $this->_c->req->rParser->routeElements[0]):
                 $supplementApiClass = __NAMESPACE__ . '\\Upload';
                 break;
             case Env::$allowThirdPartyRequest
-                && Env::$thirdPartyRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
+                && (Env::$thirdPartyRequestUriPrefix 
+                    === $this->_c->req->rParser->routeElements[0]):
                 $supplementApiClass = __NAMESPACE__ . '\\ThirdParty';
                 break;
             case Env::$allowCacheRequest
-                && Env::$cacheRequestUriPrefix === $this->_c->req->rParser->routeElements[0]:
+                && (Env::$cacheRequestUriPrefix 
+                    === $this->_c->req->rParser->routeElements[0]):
                 $supplementApiClass = __NAMESPACE__ . '\\CacheHandler';
                 break;
             }

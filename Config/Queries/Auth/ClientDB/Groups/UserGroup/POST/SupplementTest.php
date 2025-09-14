@@ -56,5 +56,5 @@ return [
         'Hook_Example',
     ],
 
-    // 'useHierarchy' => true
+    'useHierarchy' => true
 ];

@@ -163,17 +163,16 @@ class Supplement
                 sSqlConfig: $sSqlConfig,
                 useHierarchy: $useHierarchy
             );
-        }
-
-        if (isset($sSqlConfig['affectedCacheKeys'])) {
-            for (
-                $i = 0, $iCount = count(value: $sSqlConfig['affectedCacheKeys']);
-                $i < $iCount;
-                $i++
-            ) {
-                $this->_c->req->delDmlCache(
-                    cacheKey: $sSqlConfig['affectedCacheKeys'][$i]
-                );
+            if (isset($sSqlConfig['affectedCacheKeys'])) {
+                for (
+                    $i = 0, $iCount = count(value: $sSqlConfig['affectedCacheKeys']);
+                    $i < $iCount;
+                    $i++
+                ) {
+                    $this->_c->req->delDmlCache(
+                        cacheKey: $sSqlConfig['affectedCacheKeys'][$i]
+                    );
+                }
             }
         }
 

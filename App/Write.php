@@ -153,17 +153,16 @@ class Write
                 wSqlConfig: $wSqlConfig,
                 useHierarchy: $useHierarchy
             );
-        }
-
-        if (isset($wSqlConfig['affectedCacheKeys'])) {
-            for (
-                $i = 0, $iCount = count(value: $wSqlConfig['affectedCacheKeys']);
-                $i < $iCount;
-                $i++
-            ) {
-                $this->_c->req->delDmlCache(
-                    cacheKey: $wSqlConfig['affectedCacheKeys'][$i]
-                );
+            if (isset($wSqlConfig['affectedCacheKeys'])) {
+                for (
+                    $i = 0, $iCount = count(value: $wSqlConfig['affectedCacheKeys']);
+                    $i < $iCount;
+                    $i++
+                ) {
+                    $this->_c->req->delDmlCache(
+                        cacheKey: $wSqlConfig['affectedCacheKeys'][$i]
+                    );
+                }
             }
         }
 

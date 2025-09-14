@@ -162,6 +162,12 @@ class RouteParser
                     $this->_s['uriParams'][$param] = $element;
                 }
                 continue;
+            } elseif ($key === $routeLastElementPos
+                && Env::$allowConfigRequest == 1
+                && Env::$configRequestUriKeyword === $element
+            ) {
+                $this->isConfigRequest = true;
+                break;
             } else {
                 if ((isset($routes['__FILE__']) && count(value: $routes) > 1)
                     || (!isset($routes['__FILE__']) && count(value: $routes) > 0)
@@ -200,12 +206,6 @@ class RouteParser
                     $routes = &$routes[
                         ($foundIntRoute ? $foundIntRoute : $foundStringRoute)
                     ];
-                } elseif ($key === $routeLastElementPos
-                    && Env::$allowConfigRequest == 1
-                    && Env::$configRequestUriKeyword === $element
-                ) {
-                    $this->isConfigRequest = true;
-                    break;
                 } else {
                     throw new \Exception(
                         message: 'Route not supported',

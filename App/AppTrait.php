@@ -476,7 +476,7 @@ trait AppTrait
             }
         }
 
-        foreach (['__SET__', '__WHERE__'] as $options) {
+        foreach (['__PAYLOAD__', '__SET__', '__WHERE__'] as $options) {
             if (isset($sqlConfig[$options])) {
                 foreach ($sqlConfig[$options] as $config) {
                     $fetchFrom = $config['fetchFrom'];
@@ -523,23 +523,25 @@ trait AppTrait
             }
         }
 
-        // Check in subQuery
-        if (isset($sqlConfig['__SUB-QUERY__'])) {
-            foreach ($sqlConfig['__SUB-QUERY__'] as $module => &$_sqlConfig) {
-                $_flag = ($flag) ?? $this->_getUseHierarchy($_sqlConfig);
-                $sub_necessaryFields = $this->_getConfigParams(
-                    $_sqlConfig,
-                    false,
-                    $_flag
-                );
-                if ($flag) {
-                    if (!empty($sub_necessaryFields)) {
-                        $result[$module] = $sub_necessaryFields;
-                    }
-                } else {
-                    foreach ($sub_necessaryFields as $fKey => $field) {
-                        if (!isset($result[$fKey])) {
-                            $result[$fKey] = $field;
+        // Check in subQuery//'__SUB-PAYLOAD__'
+        foreach (['__SUB-PAYLOAD__', '__SUB-QUERY__'] as $options) {
+            if (isset($sqlConfig[$options])) {
+                foreach ($sqlConfig[$options] as $module => &$_sqlConfig) {
+                    $_flag = ($flag) ?? $this->_getUseHierarchy($_sqlConfig);
+                    $sub_necessaryFields = $this->_getConfigParams(
+                        $_sqlConfig,
+                        false,
+                        $_flag
+                    );
+                    if ($flag) {
+                        if (!empty($sub_necessaryFields)) {
+                            $result[$module] = $sub_necessaryFields;
+                        }
+                    } else {
+                        foreach ($sub_necessaryFields as $fKey => $field) {
+                            if (!isset($result[$fKey])) {
+                                $result[$fKey] = $field;
+                            }
                         }
                     }
                 }
