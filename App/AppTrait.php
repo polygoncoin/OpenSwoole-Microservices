@@ -213,7 +213,14 @@ trait AppTrait
         $configKeys = null,
         $flag = null
     ): array {
-        $sql = $sqlDetails['__QUERY__'];
+        $sql = '';
+        /*!999999 comment goes here */
+        if (isset($sqlDetails['__SQL-COMMENT__'])) {
+            $sql .= '/' . '*!999999 ';
+            $sql .= $sqlDetails['__SQL-COMMENT__'];
+            $sql .= ' */';
+        }
+        $sql .= $sqlDetails['__QUERY__'];
         $sqlParams = [];
         $paramKeys = [];
         $errors = [];

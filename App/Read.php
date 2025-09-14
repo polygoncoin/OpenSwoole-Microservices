@@ -403,7 +403,9 @@ class Read
      */
     private function _fetchRowsCount($rSqlConfig): void
     {
+        $rSqlConfig['__SQL-COMMENT__'] = $rSqlConfig['__COUNT-SQL-COMMENT__'];
         $rSqlConfig['__QUERY__'] = $rSqlConfig['countQuery'];
+        unset($rSqlConfig['__COUNT-SQL-COMMENT__']);
         unset($rSqlConfig['countQuery']);
 
         $this->_c->req->s['payload']['page']  = $_GET['page'] ?? 1;
