@@ -46,6 +46,13 @@ class Gateway
     private $_rateLimiter = null;
 
     /**
+     * Rate Limit check flag
+     *
+     * @var bool
+     */
+    private $_rateLimitChecked = false;
+
+    /**
      * Rate Limiter
      *
      * @var null|HttpRequest
@@ -87,84 +94,22 @@ class Gateway
     {
         $this->_rateLimiter = new RateLimiter();
 
-        $rateLimitChecked = false;
-
         // Client Rate Limiting
-        if (!empty($this->_req->s['cDetails']['rateLimitMaxRequests'])
-            && !empty($this->_req->s['cDetails']['rateLimitSecondsWindow'])
-        ) {
-            $rateLimitClientPrefix = getenv(name: 'rateLimitClientPrefix');
-            $rateLimitMaxRequests = $this->_req->s['cDetails']['rateLimitMaxRequests'];
-            $rateLimitSecondsWindow
-                = $this->_req->s['cDetails']['rateLimitSecondsWindow'];
-            $key = $this->_req->s['cDetails']['id'];
-
-            $rateLimitChecked = $this->checkRateLimit(
-                rateLimitPrefix: $rateLimitClientPrefix,
-                rateLimitMaxRequests: $rateLimitMaxRequests,
-                rateLimitSecondsWindow: $rateLimitSecondsWindow,
-                key: $key
-            );
-        }
+        $this->_rateLimitClient();
 
         if (!$this->_req->open) {
             // Group Rate Limiting
-            if (!empty($this->_req->s['gDetails']['rateLimitMaxRequests'])
-                && !empty($this->_req->s['gDetails']['rateLimitSecondsWindow'])
-            ) {
-                $rateLimitGroupPrefix
-                    = getenv(name: 'rateLimitGroupPrefix');
-                $rateLimitMaxRequests
-                    = $this->_req->s['gDetails']['rateLimitMaxRequests'];
-                $rateLimitSecondsWindow
-                    = $this->_req->s['gDetails']['rateLimitSecondsWindow'];
-                $key = $this->_req->s['cDetails']['id'] . ':' .
-                    $this->_req->s['uDetails']['id'];
-
-                $rateLimitChecked = $this->checkRateLimit(
-                    rateLimitPrefix: $rateLimitGroupPrefix,
-                    rateLimitMaxRequests: $rateLimitMaxRequests,
-                    rateLimitSecondsWindow: $rateLimitSecondsWindow,
-                    key: $key
-                );
-            }
+            $this->_rateLimitGroup();
 
             // User Rate Limiting
-            if (!empty($this->_req->s['uDetails']['rateLimitMaxRequests'])
-                && !empty($this->_req->s['uDetails']['rateLimitSecondsWindow'])
-            ) {
-                $rateLimitUserPrefix = getenv(name: 'rateLimitUserPrefix');
-                $rateLimitMaxRequests
-                    = $this->_req->s['gDetails']['rateLimitMaxRequests'];
-                $rateLimitSecondsWindow
-                    = $this->_req->s['gDetails']['rateLimitSecondsWindow'];
-                $key = $this->_req->s['cDetails']['id'] . ':' .
-                    $this->_req->s['uDetails']['id'] . ':' .
-                    $this->_req->s['uDetails']['user_id'];
-
-                $rateLimitChecked = $this->checkRateLimit(
-                    rateLimitPrefix: $rateLimitUserPrefix,
-                    rateLimitMaxRequests: $rateLimitMaxRequests,
-                    rateLimitSecondsWindow: $rateLimitSecondsWindow,
-                    key: $key
-                );
-            }
+            $this->_rateLimitUser();
         }
 
         // Rate limit open traffic (not limited by allowed IPs/CIDR and allowed
         // Rate Limits to users)
-        if ($this->cidrChecked === false && $rateLimitChecked === false) {
-            $rateLimitIPPrefix = getenv(name: 'rateLimitIPPrefix');
-            $rateLimitIPMaxRequests = getenv(name: 'rateLimitIPMaxRequests');
-            $rateLimitIPSecondsWindow = getenv(name: 'rateLimitIPSecondsWindow');
-            $key = $this->_req->IP;
-
-            $this->checkRateLimit(
-                rateLimitPrefix: $rateLimitIPPrefix,
-                rateLimitMaxRequests: $rateLimitIPMaxRequests,
-                rateLimitSecondsWindow: $rateLimitIPSecondsWindow,
-                key: $key
-            );
+        if ($this->cidrChecked === false && $this->_rateLimitChecked === false) {
+            // IP Rate Limiting
+            $this->_rateLimitIp();
         }
     }
 
@@ -247,5 +192,107 @@ class Gateway
                 );
             }
         }
+    }
+
+    /**
+     * Rate Limit Client Request
+     *
+     * @return void
+     */
+    private function _rateLimitClient(): void
+    {
+        if (!empty($this->_req->s['cDetails']['rateLimitMaxRequests'])
+            && !empty($this->_req->s['cDetails']['rateLimitSecondsWindow'])
+        ) {
+            $rateLimitClientPrefix = getenv(name: 'rateLimitClientPrefix');
+            $rateLimitMaxRequests
+                = $this->_req->s['cDetails']['rateLimitMaxRequests'];
+            $rateLimitSecondsWindow
+                = $this->_req->s['cDetails']['rateLimitSecondsWindow'];
+            $key = $this->_req->s['cDetails']['id'];
+
+            $this->_rateLimitChecked = $this->checkRateLimit(
+                rateLimitPrefix: $rateLimitClientPrefix,
+                rateLimitMaxRequests: $rateLimitMaxRequests,
+                rateLimitSecondsWindow: $rateLimitSecondsWindow,
+                key: $key
+            );
+        }
+    }
+
+    /**
+     * Rate Limit Client Group Request
+     *
+     * @return void
+     */
+    private function _rateLimitGroup(): void
+    {
+        if (!empty($this->_req->s['gDetails']['rateLimitMaxRequests'])
+            && !empty($this->_req->s['gDetails']['rateLimitSecondsWindow'])
+        ) {
+            $rateLimitGroupPrefix
+                = getenv(name: 'rateLimitGroupPrefix');
+            $rateLimitMaxRequests
+                = $this->_req->s['gDetails']['rateLimitMaxRequests'];
+            $rateLimitSecondsWindow
+                = $this->_req->s['gDetails']['rateLimitSecondsWindow'];
+            $key = $this->_req->s['cDetails']['id'] . ':' .
+                $this->_req->s['uDetails']['id'];
+
+            $this->_rateLimitChecked = $this->checkRateLimit(
+                rateLimitPrefix: $rateLimitGroupPrefix,
+                rateLimitMaxRequests: $rateLimitMaxRequests,
+                rateLimitSecondsWindow: $rateLimitSecondsWindow,
+                key: $key
+            );
+        }
+    }
+
+    /**
+     * Rate Limit Client Group User Request
+     *
+     * @return void
+     */
+    private function _rateLimitUser(): void
+    {
+        if (!empty($this->_req->s['uDetails']['rateLimitMaxRequests'])
+            && !empty($this->_req->s['uDetails']['rateLimitSecondsWindow'])
+        ) {
+            $rateLimitUserPrefix = getenv(name: 'rateLimitUserPrefix');
+            $rateLimitMaxRequests
+                = $this->_req->s['gDetails']['rateLimitMaxRequests'];
+            $rateLimitSecondsWindow
+                = $this->_req->s['gDetails']['rateLimitSecondsWindow'];
+            $key = $this->_req->s['cDetails']['id'] . ':' .
+                $this->_req->s['uDetails']['id'] . ':' .
+                $this->_req->s['uDetails']['user_id'];
+
+            $this->_rateLimitChecked = $this->checkRateLimit(
+                rateLimitPrefix: $rateLimitUserPrefix,
+                rateLimitMaxRequests: $rateLimitMaxRequests,
+                rateLimitSecondsWindow: $rateLimitSecondsWindow,
+                key: $key
+            );
+        }
+    }
+
+    /**
+     * Rate Limit Request from source IP
+     *
+     * @return void
+     */
+    private function _rateLimitIp(): void
+    {
+        $rateLimitIPPrefix = getenv(name: 'rateLimitIPPrefix');
+        $rateLimitIPMaxRequests = getenv(name: 'rateLimitIPMaxRequests');
+        $rateLimitIPSecondsWindow = getenv(name: 'rateLimitIPSecondsWindow');
+        $key = $this->_req->IP;
+
+        $this->checkRateLimit(
+            rateLimitPrefix: $rateLimitIPPrefix,
+            rateLimitMaxRequests: $rateLimitIPMaxRequests,
+            rateLimitSecondsWindow: $rateLimitIPSecondsWindow,
+            key: $key
+        );
     }
 }

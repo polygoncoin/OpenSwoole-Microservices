@@ -153,14 +153,7 @@ class RouteParser
             if (isset($routes[$element])) {
                 $configuredUri[] = $element;
                 $routes = &$routes[$element];
-                if (strpos(haystack: $element, needle: '{') === 0) {
-                    $param = substr(
-                        string: $element,
-                        offset: 1,
-                        length: strpos(haystack: $element, needle: ':') - 1
-                    );
-                    $this->_s['uriParams'][$param] = $element;
-                }
+                $this->_checkPresenceOfDynamicString(element: $element);
                 continue;
             } elseif ($key === $routeLastElementPos
                 && Env::$allowConfigRequest == 1
@@ -172,23 +165,15 @@ class RouteParser
                 if ((isset($routes['__FILE__']) && count(value: $routes) > 1)
                     || (!isset($routes['__FILE__']) && count(value: $routes) > 0)
                 ) {
-                    $foundIntRoute = false;
-                    $foundIntParamName = false;
-                    $foundStringRoute = false;
-                    $foundStringParamName = false;
-                    foreach (array_keys(array: $routes) as $routeElement) {
-                        if (strpos(haystack: $routeElement, needle: '{') === 0) {
-                            // Is a dynamic URI element
-                            $this->_processRouteElement(
-                                routeElement: $routeElement,
-                                element: $element,
-                                foundIntRoute: $foundIntRoute,
-                                foundIntParamName: $foundIntParamName,
-                                foundStringRoute: $foundStringRoute,
-                                foundStringParamName: $foundStringParamName
-                            );
-                        }
-                    }
+                    [
+                        $foundIntRoute,
+                        $foundIntParamName,
+                        $foundStringRoute,
+                        $foundStringParamName
+                    ] = $this->_findRouteAndParamName(
+                        routes: $routes,
+                        element: $element
+                    );
                     if ($foundIntRoute) {
                         $configuredUri[] = $foundIntRoute;
                         $this->_s['uriParams'][$foundIntParamName]
@@ -374,4 +359,60 @@ class RouteParser
             Env::$oRepresentation = $this->_req->http['get']['oRepresentation'];
         }
     }
+
+    /**
+     * Check presence of Dynamic String in URL same as configured in Route file.
+     *
+     * @param string $element Routes element
+     *
+     * @return void
+     */
+    private function _checkPresenceOfDynamicString($element): void
+    {
+        if (strpos(haystack: $element, needle: '{') === 0) {
+            $param = substr(
+                string: $element,
+                offset: 1,
+                length: strpos(haystack: $element, needle: ':') - 1
+            );
+            $this->_s['uriParams'][$param] = $element;
+        }
+    }
+
+    /**
+     * Find ROute and Param Name from Dynamic String configured in Route file.
+     *
+     * @param array  $routes  Routes config
+     * @param string $element Routes element
+     *
+     * @return array
+     */
+    private function _findRouteAndParamName(&$routes, &$element): array
+    {
+        $foundIntRoute = false;
+        $foundIntParamName = false;
+        $foundStringRoute = false;
+        $foundStringParamName = false;
+        foreach (array_keys(array: $routes) as $routeElement) {
+            if (strpos(haystack: $routeElement, needle: '{') === 0) {
+                // Is a dynamic URI element
+                $this->_processRouteElement(
+                    routeElement: $routeElement,
+                    element: $element,
+                    foundIntRoute: $foundIntRoute,
+                    foundIntParamName: $foundIntParamName,
+                    foundStringRoute: $foundStringRoute,
+                    foundStringParamName: $foundStringParamName
+                );
+            }
+        }
+
+        return [
+            $foundIntRoute,
+            $foundIntParamName,
+            $foundStringRoute,
+            $foundStringParamName
+        ];
+    }
+
 }

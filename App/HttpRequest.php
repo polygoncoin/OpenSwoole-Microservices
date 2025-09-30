@@ -209,42 +209,52 @@ class HttpRequest extends DbFunctions
             $this->s['payloadType'] = 'Object';
             $this->s['payload'] = !empty($_GET) ? $_GET : [];
         } else {
-            if (empty($this->http['post']['Payload'])) {
-                $this->http['post']['Payload'] = '{}';
-            }
-
-            if (Env::$iRepresentation === 'XML') {
-                $xml = simplexml_load_string(data: $this->http['post']['Payload']);
-                $array = json_decode(
-                    json: json_encode(value: $xml),
-                    associative: true
-                );
-                unset($xml);
-
-                $result = [];
-
-                $this->_formatXmlArray(array: $array, result: $result);
-                $this->http['post']['Payload'] = json_encode(value: $result);
-
-                unset($array);
-                unset($result);
-            }
-
-            $this->payloadStream = fopen(filename: "php://memory", mode: "rw+b");
-            fwrite(
-                stream: $this->payloadStream,
-                data: $this->http['post']['Payload']
-            );
+            $this->_setPayloadStream();
 
             $this->dataDecode = new DataDecode(
                 dataFileHandle: $this->payloadStream
             );
             $this->dataDecode->init();
 
-            rewind(stream: $this->payloadStream);
             $this->dataDecode->indexData();
             $this->s['payloadType'] = $this->dataDecode->dataType();
         }
+    }
+
+    /**
+     * Set payload stream
+     *
+     * @return void
+     */
+    private function _setPayloadStream(): void
+    {
+        if (empty($this->http['post']['Payload'])) {
+            $this->http['post']['Payload'] = '{}';
+        }
+
+        if (Env::$iRepresentation === 'XML') {
+            $xml = simplexml_load_string(data: $this->http['post']['Payload']);
+            $array = json_decode(
+                json: json_encode(value: $xml),
+                associative: true
+            );
+            unset($xml);
+
+            $result = [];
+
+            $this->_formatXmlArray(array: $array, result: $result);
+            $this->http['post']['Payload'] = json_encode(value: $result);
+
+            unset($array);
+            unset($result);
+        }
+
+        $this->payloadStream = fopen(filename: "php://memory", mode: "rw+b");
+        fwrite(
+            stream: $this->payloadStream,
+            data: $this->http['post']['Payload']
+        );
+        rewind(stream: $this->payloadStream);
     }
 
     /**
