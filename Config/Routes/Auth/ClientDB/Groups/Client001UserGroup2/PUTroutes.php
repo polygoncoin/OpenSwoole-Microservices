@@ -1,4 +1,5 @@
 <?php
+
 /**
  * API Route config
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\Config\Routes\Auth\ClientDB\Groups\Client001UserGroup1;
 
 return array_merge (

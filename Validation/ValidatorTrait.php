@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Validator
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\Validation;
 
 /**
@@ -34,7 +36,7 @@ trait ValidatorTrait
      *
      * @return bool|int
      */
-    private function _isAlphanumeric(&$v): bool|int
+    private function isAlphanumeric(&$v): bool|int
     {
         return preg_match(pattern: '/^[a-z0-9 .\-]+$/i', subject: $v);
     }
@@ -46,7 +48,7 @@ trait ValidatorTrait
      *
      * @return mixed
      */
-    private function _isEmail(&$v): mixed
+    private function isEmail(&$v): mixed
     {
         return filter_var(value: $v, filter: FILTER_VALIDATE_EMAIL);
     }

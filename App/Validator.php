@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Validator
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 use Microservices\App\Common;
@@ -38,14 +40,14 @@ class Validator
      *
      * @var null|ValidatorInterface
      */
-    private $_v = null;
+    private $v = null;
 
     /**
      * Common object
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Constructor
@@ -54,12 +56,12 @@ class Validator
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
+        $this->c = &$common;
 
-        if ($this->_c->req->db->database === Env::$globalDatabase) {
-            $this->_v = new GlobalValidator(common: $this->_c);
+        if ($this->c->req->db->database === Env::$globalDatabase) {
+            $this->v = new GlobalValidator(common: $this->c);
         } else {
-            $this->_v = new ClientValidator(common: $this->_c);
+            $this->v = new ClientValidator(common: $this->c);
         }
     }
 
@@ -72,17 +74,19 @@ class Validator
      */
     public function validate(&$validationConfig): array
     {
-        if (isset(($this->_c->req->s['necessary']))
-            && count(value: $this->_c->req->s['necessary']) > 0
+        if (
+            isset(($this->c->req->s['necessary']))
+            && count(value: $this->c->req->s['necessary']) > 0
         ) {
-            if (([$isValidData, $errors] = $this->_validateRequired())
+            if (
+                ([$isValidData, $errors] = $this->validateRequired())
                 && !$isValidData
             ) {
                 return [$isValidData, $errors];
             }
         }
 
-        return $this->_v->validate(validationConfig: $validationConfig);
+        return $this->v->validate(validationConfig: $validationConfig);
     }
 
     /**
@@ -90,15 +94,15 @@ class Validator
      *
      * @return array
      */
-    private function _validateRequired(): array
+    private function validateRequired(): array
     {
         $isValidData = true;
         $errors = [];
         // Required fields payload validation
-        if (!empty($this->_c->req->s['necessary']['payload'])) {
-            foreach ($this->_c->req->s['necessary']['payload'] as $column => &$arr) {
-                if ($arr['nec'] && !isset($this->_c->req->s['payload'][$column])) {
-                    $errors[] = 'Missing necessary payload: '.$column;
+        if (!empty($this->c->req->s['necessary']['payload'])) {
+            foreach ($this->c->req->s['necessary']['payload'] as $column => &$arr) {
+                if ($arr['nec'] && !isset($this->c->req->s['payload'][$column])) {
+                    $errors[] = 'Missing necessary payload: ' . $column;
                     $isValidData = false;
                 }
             }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hook
  * php version 8.3
@@ -11,10 +12,12 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 use Microservices\App\Common;
 use Microservices\App\Constants;
+use Microservices\App\HttpStatus;
 
 /**
  * Executes configured hooks
@@ -35,7 +38,7 @@ class Hook
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Constructor
@@ -44,7 +47,7 @@ class Hook
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
+        $this->c = &$common;
     }
 
     /**
@@ -63,11 +66,16 @@ class Hook
                     DIRECTORY_SEPARATOR . 'Hooks' .
                     DIRECTORY_SEPARATOR . $hook . '.php';
                 if (file_exists(filename: $hookFile)) {
-                    $hookClass = 'Microservices\\\Hooks\\'.$hook;
-                    $hookObj = new $hookClass(common: $this->_c);
+                    $hookClass = 'Microservices\\Hooks\\' . $hook;
+                    $hookObj = new $hookClass(common: $this->c);
                     if ($hookObj->init()) {
                         $hookObj->process();
                     }
+                } else {
+                    throw new \Exception(
+                        message: "Hook '{$hook}' missing",
+                        code: HttpStatus::$InternalServerError
+                    );
                 }
             }
         }

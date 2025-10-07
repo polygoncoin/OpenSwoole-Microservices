@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Creates Data Representation Output
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App\DataRepresentation;
 
 use Microservices\App\DataRepresentation\AbstractDataEncode;
@@ -37,7 +39,7 @@ class DataEncode extends AbstractDataEncode
      *
      * @var null|resource
      */
-    private $_tempStream = null;
+    private $tempStream = null;
 
     /**
      * Microservices Request Details
@@ -51,7 +53,7 @@ class DataEncode extends AbstractDataEncode
      *
      * @var null|AbstractDataEncode
      */
-    private $_dataEncoder = null;
+    private $dataEncoder = null;
 
     /**
      * XSLT
@@ -80,23 +82,23 @@ class DataEncode extends AbstractDataEncode
     public function init($header = true): void
     {
         if ($this->http['server']['method'] === 'GET') {
-            $this->_tempStream = fopen(filename: "php://temp", mode: "rw+b");
+            $this->tempStream = fopen(filename: "php://temp", mode: "rw+b");
         } else {
-            $this->_tempStream = fopen(filename: "php://memory", mode: "rw+b");
+            $this->tempStream = fopen(filename: "php://memory", mode: "rw+b");
         }
         switch (Env::$oRepresentation) {
-        case 'XML':
-            $this->_dataEncoder = new XmlEncode(
-                tempStream: $this->_tempStream,
-                header: $header
-            );
-            break;
-        case 'JSON':
-            $this->_dataEncoder = new JsonEncode(
-                tempStream: $this->_tempStream,
-                header: $header
-            );
-            break;
+            case 'XML':
+                $this->dataEncoder = new XmlEncode(
+                    tempStream: $this->tempStream,
+                    header: $header
+                );
+                break;
+            case 'JSON':
+                $this->dataEncoder = new JsonEncode(
+                    tempStream: $this->tempStream,
+                    header: $header
+                );
+                break;
         }
     }
 
@@ -109,7 +111,7 @@ class DataEncode extends AbstractDataEncode
      */
     public function startArray($key = null): void
     {
-        $this->_dataEncoder->startArray(key: $key);
+        $this->dataEncoder->startArray(key: $key);
     }
 
     /**
@@ -122,7 +124,7 @@ class DataEncode extends AbstractDataEncode
      */
     public function addArrayData($data): void
     {
-        $this->_dataEncoder->addArrayData(data: $data);
+        $this->dataEncoder->addArrayData(data: $data);
     }
 
     /**
@@ -132,7 +134,7 @@ class DataEncode extends AbstractDataEncode
      */
     public function endArray(): void
     {
-        $this->_dataEncoder->endArray();
+        $this->dataEncoder->endArray();
     }
 
     /**
@@ -145,7 +147,7 @@ class DataEncode extends AbstractDataEncode
      */
     public function startObject($key = null): void
     {
-        $this->_dataEncoder->startObject(key: $key);
+        $this->dataEncoder->startObject(key: $key);
     }
 
     /**
@@ -159,7 +161,7 @@ class DataEncode extends AbstractDataEncode
      */
     public function addKeyData($key, $data): void
     {
-        $this->_dataEncoder->addKeyData(key: $key, data: $data);
+        $this->dataEncoder->addKeyData(key: $key, data: $data);
     }
 
     /**
@@ -169,7 +171,7 @@ class DataEncode extends AbstractDataEncode
      */
     public function endObject(): void
     {
-        $this->_dataEncoder->endObject();
+        $this->dataEncoder->endObject();
     }
 
     /**
@@ -181,7 +183,7 @@ class DataEncode extends AbstractDataEncode
      */
     public function encode($data): void
     {
-        $this->_dataEncoder->encode(data: $data);
+        $this->dataEncoder->encode(data: $data);
     }
 
     /**
@@ -193,7 +195,7 @@ class DataEncode extends AbstractDataEncode
      */
     public function appendData(&$data): void
     {
-        $this->_dataEncoder->appendData(data: $data);
+        $this->dataEncoder->appendData(data: $data);
     }
 
     /**
@@ -206,7 +208,7 @@ class DataEncode extends AbstractDataEncode
      */
     public function appendKeyData($key, &$data): void
     {
-        $this->_dataEncoder->appendKeyData(key: $key, data: $data);
+        $this->dataEncoder->appendKeyData(key: $key, data: $data);
     }
 
     /**
@@ -216,7 +218,7 @@ class DataEncode extends AbstractDataEncode
      */
     public function end(): void
     {
-        $this->_dataEncoder->end();
+        $this->dataEncoder->end();
     }
 
     /**
@@ -230,7 +232,7 @@ class DataEncode extends AbstractDataEncode
     }
 
     /**
-     * Return Json String
+     * Return JSON String
      *
      * @return bool|string
      */
@@ -238,10 +240,10 @@ class DataEncode extends AbstractDataEncode
     {
         $this->end();
 
-        rewind(stream: $this->_tempStream);
-        $json = stream_get_contents(stream: $this->_tempStream);
-        fclose(stream: $this->_tempStream);
+        rewind(stream: $this->tempStream);
+        $streamContent = stream_get_contents(stream: $this->tempStream);
+        fclose(stream: $this->tempStream);
 
-        return $json;
+        return $streamContent;
     }
 }

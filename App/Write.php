@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Write APIs
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 use Microservices\App\AppTrait;
@@ -50,35 +52,35 @@ class Write
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Session variable
      *
      * @var null|array
      */
-    private $_s = null;
+    private $s = null;
 
     /**
      * Trigger Web API object
      *
      * @var null|Web
      */
-    private $_web = null;
+    private $web = null;
 
     /**
      * Hook object
      *
      * @var null|Hook
      */
-    private $_hook = null;
+    private $hook = null;
 
     /**
      * Operate DML As Transactions
      *
      * @var null|Web
      */
-    private $_operateAsTransaction = null;
+    private $operateAsTransaction = null;
 
     /**
      * JSON Encode object
@@ -94,9 +96,9 @@ class Write
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
-        $this->_s = &$this->_c->req->s;
-        $this->dataEncode = &$this->_c->res->dataEncode;
+        $this->c = &$common;
+        $this->s = &$this->c->req->s;
+        $this->dataEncode = &$this->c->res->dataEncode;
     }
 
     /**
@@ -119,37 +121,37 @@ class Write
         $Env = __NAMESPACE__ . '\Env';
 
         // Load Queries
-        $wSqlConfig = include $this->_c->req->rParser->sqlConfigFile;
+        $wSqlConfig = include $this->c->req->rParser->sqlConfigFile;
 
         // Rate Limiting request if configured for Route Queries.
-        $this->_rateLimitRoute(sqlConfig: $wSqlConfig);
+        $this->rateLimitRoute(sqlConfig: $wSqlConfig);
 
         $this->dataEncode->XSLT = $wSqlConfig['XSLT'] ?? null;
 
         // Lag Response
-        $this->_lagResponse(sqlConfig: $wSqlConfig);
+        $this->lagResponse(sqlConfig: $wSqlConfig);
 
         // Operate as Transaction (BEGIN COMMIT else ROLLBACK on error)
-        $this->_operateAsTransaction = isset($wSqlConfig['isTransaction']) ?
+        $this->operateAsTransaction = isset($wSqlConfig['isTransaction']) ?
             $wSqlConfig['isTransaction'] : false;
 
         // Set Server mode to execute query on - Read / Write Server
-        $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: 'Master');
-        $this->db = &$this->_c->req->db;
+        $this->c->req->db = $this->c->req->setDbConnection(fetchFrom: 'Master');
+        $this->db = &$this->c->req->db;
 
         // Use results in where clause of sub queries recursively
-        $useHierarchy = $this->_getUseHierarchy(
+        $useHierarchy = $this->getUseHierarchy(
             sqlConfig: $wSqlConfig,
             keyword: 'useHierarchy'
         );
 
-        if (Env::$allowConfigRequest && $this->_c->req->rParser->isConfigRequest) {
-            $this->_processWriteConfig(
+        if (Env::$allowConfigRequest && $this->c->req->rParser->isConfigRequest) {
+            $this->processWriteConfig(
                 wSqlConfig: $wSqlConfig,
                 useHierarchy: $useHierarchy
             );
         } else {
-            $this->_processWrite(
+            $this->processWrite(
                 wSqlConfig: $wSqlConfig,
                 useHierarchy: $useHierarchy
             );
@@ -159,7 +161,7 @@ class Write
                     $i < $iCount;
                     $i++
                 ) {
-                    $this->_c->req->delDmlCache(
+                    $this->c->req->delDmlCache(
                         cacheKey: $wSqlConfig['affectedCacheKeys'][$i]
                     );
                 }
@@ -177,16 +179,16 @@ class Write
      *
      * @return void
      */
-    private function _processWriteConfig(&$wSqlConfig, $useHierarchy): void
+    private function processWriteConfig(&$wSqlConfig, $useHierarchy): void
     {
         $this->dataEncode->startObject(key: 'Config');
         $this->dataEncode->addKeyData(
             key: 'Route',
-            data: $this->_c->req->rParser->configuredUri
+            data: $this->c->req->rParser->configuredUri
         );
         $this->dataEncode->addKeyData(
             key: 'Payload',
-            data: $this->_getConfigParams(
+            data: $this->getConfigParams(
                 sqlConfig: $wSqlConfig,
                 isFirstCall: true,
                 flag: $useHierarchy
@@ -204,11 +206,11 @@ class Write
      * @return void
      * @throws \Exception
      */
-    private function _processWrite(&$wSqlConfig, $useHierarchy): void
+    private function processWrite(&$wSqlConfig, $useHierarchy): void
     {
         // Check for payloadType
         if (isset($wSqlConfig['__PAYLOAD-TYPE__'])) {
-            $payloadType = $this->_s['payloadType'];
+            $payloadType = $this->s['payloadType'];
             if ($payloadType !== $wSqlConfig['__PAYLOAD-TYPE__']) {
                 throw new \Exception(
                     message: 'Invalid payload type',
@@ -216,9 +218,10 @@ class Write
                 );
             }
             // Check for maximum objects supported when payloadType is Array
-            if ($wSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
+            if (
+                $wSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
                 && isset($wSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
-                && ($objCount = $this->_c->req->dataDecode->count())
+                && ($objCount = $this->c->req->dataDecode->count())
                 && ($objCount > $wSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
             ) {
                 throw new \Exception(
@@ -230,13 +233,13 @@ class Write
         }
 
         // Set necessary fields
-        $this->_s['necessaryArr'] = $this->_getRequired(
+        $this->s['necessaryArr'] = $this->getRequired(
             sqlConfig: $wSqlConfig,
             isFirstCall: true,
             flag: $useHierarchy
         );
 
-        if ($this->_s['payloadType'] === 'Object') {
+        if ($this->s['payloadType'] === 'Object') {
             $this->dataEncode->startObject(key: 'Results');
         } else {
             $this->dataEncode->startObject(key: 'Results');
@@ -246,73 +249,73 @@ class Write
         }
 
         // Perform action
-        $iCount = $this->_s['payloadType'] === 'Object' ?
-            1 : $this->_c->req->dataDecode->count();
+        $iCount = $this->s['payloadType'] === 'Object' ?
+            1 : $this->c->req->dataDecode->count();
 
-        for ($i=0; $i < $iCount; $i++) {
-            $_configKeys = [];
-            $_payloadIndexes = [];
+        for ($i = 0; $i < $iCount; $i++) {
+            $configKeys = [];
+            $payloadIndexes = [];
             if ($i === 0) {
-                if ($this->_s['payloadType'] === 'Object') {
-                    $_payloadIndexes[] = '';
+                if ($this->s['payloadType'] === 'Object') {
+                    $payloadIndexes[] = '';
                 } else {
-                    $_payloadIndexes[] = "{$i}";
+                    $payloadIndexes[] = "{$i}";
                 }
             } else {
-                $_payloadIndexes[] = "{$i}";
+                $payloadIndexes[] = "{$i}";
             }
 
             // Check for Idempotent Window
-            [$idempotentWindow, $hashKey, $hashJson] = $this->_checkIdempotent(
+            [$idempotentWindow, $hashKey, $hashJson] = $this->checkIdempotent(
                 sqlConfig: $wSqlConfig,
-                _payloadIndexes: $_payloadIndexes
+                payloadIndexes: $payloadIndexes
             );
 
             // Begin DML operation
             if ($hashJson === null) {
-                if ($this->_operateAsTransaction) {
+                if ($this->operateAsTransaction) {
                     $this->db->begin();
                 }
                 $response = [];
-                $this->_writeDB(
+                $this->writeDB(
                     wSqlConfig: $wSqlConfig,
-                    payloadIndexes: $_payloadIndexes,
-                    configKeys: $_configKeys,
+                    payloadIndexes: $payloadIndexes,
+                    configKeys: $configKeys,
                     useHierarchy: $useHierarchy,
                     response: $response,
-                    necessary: $this->_s['necessaryArr']
+                    necessary: $this->s['necessaryArr']
                 );
-                $bool = $this->_operateAsTransaction
+                $bool = $this->operateAsTransaction
                     && ($this->db->beganTransaction === true);
-                if (!$this->_operateAsTransaction || $bool) {
-                    if ($this->_operateAsTransaction) {
+                if (!$this->operateAsTransaction || $bool) {
+                    if ($this->operateAsTransaction) {
                         $this->db->commit();
                     }
                     $arr = [
                         'Status' => HttpStatus::$Created,
-                        'Payload' => $this->_c->req->dataDecode->getCompleteArray(
+                        'Payload' => $this->c->req->dataDecode->getCompleteArray(
                             keys: implode(
                                 separator: ':',
-                                array: $_payloadIndexes
+                                array: $payloadIndexes
                             )
                         ),
                         'Response' => $response
                     ];
                     if ($idempotentWindow) {
-                        $this->_c->req->cache->setCache(
+                        $this->c->req->cache->setCache(
                             key: $hashKey,
                             value: json_encode(value: $arr),
                             expire: $idempotentWindow
                         );
                     }
                 } else { // Failure
-                    $this->_c->res->httpStatus = HttpStatus::$BadRequest;
+                    $this->c->res->httpStatus = HttpStatus::$BadRequest;
                     $arr = [
                         'Status' => HttpStatus::$BadRequest,
-                        'Payload' => $this->_c->req->dataDecode->getCompleteArray(
+                        'Payload' => $this->c->req->dataDecode->getCompleteArray(
                             keys: implode(
                                 separator: ':',
-                                array: $_payloadIndexes
+                                array: $payloadIndexes
                             )
                         ),
                         'Error' => $response
@@ -322,7 +325,7 @@ class Write
                 $arr = json_decode(json: $hashJson, associative: true);
             }
 
-            if ($_payloadIndexes[0] === '') {
+            if ($payloadIndexes[0] === '') {
                 foreach ($arr as $k => $v) {
                     $this->dataEncode->addKeyData(key: $k, data: $v);
                 }
@@ -339,7 +342,7 @@ class Write
             }
         }
 
-        if ($this->_s['payloadType'] === 'Object') {
+        if ($this->s['payloadType'] === 'Object') {
             $this->dataEncode->endObject();
         } else {
             if (Env::$oRepresentation === 'XML') {
@@ -362,7 +365,7 @@ class Write
      * @return void
      * @throws \Exception
      */
-    private function _writeDB(
+    private function writeDB(
         &$wSqlConfig,
         $payloadIndexes,
         $configKeys,
@@ -379,17 +382,17 @@ class Write
                 characters: ':'
             ) : '';
 
-        $isObject = $this->_c->req->dataDecode->dataType(
+        $isObject = $this->c->req->dataDecode->dataType(
             keys: $payloadIndex
         ) === 'Object';
 
         $iCount = $isObject ?
-            1 : $this->_c->req->dataDecode->count(keys: $payloadIndex);
+            1 : $this->c->req->dataDecode->count(keys: $payloadIndex);
 
         $counter = -1;
-        for ($i=0; $i < $iCount; $i++) {
-            $_payloadIndexes = $payloadIndexes;
-            if ($this->_operateAsTransaction && !$this->db->beganTransaction) {
+        for ($i = 0; $i < $iCount; $i++, $counter++) {
+            $payloadIndexes = $payloadIndexes;
+            if ($this->operateAsTransaction && !$this->db->beganTransaction) {
                 $response['Error'] = 'Transaction rolled back';
                 return;
             }
@@ -399,45 +402,45 @@ class Write
             }
 
             if (!$isObject && !$useHierarchy) {
-                array_push($_payloadIndexes, $i);
+                array_push($payloadIndexes, $i);
             }
-            $payloadIndex = is_array(value: $_payloadIndexes) ?
-                implode(separator: ':', array: $_payloadIndexes) : '';
+            $payloadIndex = is_array(value: $payloadIndexes) ?
+                implode(separator: ':', array: $payloadIndexes) : '';
 
-            if (!$this->_c->req->dataDecode->isset(keys: $payloadIndex)) {
+            if (!$this->c->req->dataDecode->isset(keys: $payloadIndex)) {
                 throw new \Exception(
                     message: "Payload key '{$payloadIndex}' not set",
                     code: HttpStatus::$NotFound
                 );
             }
 
-            $this->_s['payload'] = $this->_c->req->dataDecode->get(
+            $this->s['payload'] = $this->c->req->dataDecode->get(
                 keys: $payloadIndex
             );
 
             if (count(value: $necessary)) {
-                $this->_s['necessary'] = $necessary;
+                $this->s['necessary'] = $necessary;
             } else {
-                $this->_s['necessary'] = [];
+                $this->s['necessary'] = [];
             }
 
             // Validation
-            if (!$this->_isValidPayload(wSqlConfig: $wSqlConfig)) {
+            if (!$this->isValidPayload(wSqlConfig: $wSqlConfig)) {
                 continue;
             }
 
             // Execute Pre Sql Hooks
             if (isset($wSqlConfig['__PRE-SQL-HOOKS__'])) {
-                if ($this->_hook === null) {
-                    $this->_hook = new Hook(common: $this->_c);
+                if ($this->hook === null) {
+                    $this->hook = new Hook(common: $this->c);
                 }
-                $this->_hook->triggerHook(
+                $this->hook->triggerHook(
                     hookConfig: $wSqlConfig['__PRE-SQL-HOOKS__']
                 );
             }
 
             // Get Sql and Params
-            [$sql, $sqlParams, $errors] = $this->_getSqlAndParams(
+            [$sql, $sqlParams, $errors] = $this->getSqlAndParams(
                 sqlDetails: $wSqlConfig
             );
 
@@ -449,56 +452,56 @@ class Write
 
             // Execute Query
             $this->db->execDbQuery(sql: $sql, params: $sqlParams);
-            if ($this->_operateAsTransaction && !$this->db->beganTransaction) {
+            if ($this->operateAsTransaction && !$this->db->beganTransaction) {
                 $response['Error'] = 'Something went wrong';
                 return;
             }
 
             if ($isObject) {
-                $counter = 0;
+                $_response = &$response;
             } else {
-                $response[++$counter] = [];
-                $response = &$response[$counter];
+                $response[$counter] = [];
+                $_response = &$response[$counter];
             }
 
             if (isset($wSqlConfig['__INSERT-IDs__'])) {
                 $id = $this->db->lastInsertId();
-                $response[$wSqlConfig['__INSERT-IDs__']] = $id;
-                $this->_s['__INSERT-IDs__'][$wSqlConfig['__INSERT-IDs__']] = $id;
+                $_response[$wSqlConfig['__INSERT-IDs__']] = $id;
+                $this->s['__INSERT-IDs__'][$wSqlConfig['__INSERT-IDs__']] = $id;
             } else {
                 $affectedRows = $this->db->affectedRows();
-                $response['affectedRows'] = $affectedRows;
+                $_response['affectedRows'] = $affectedRows;
             }
             $this->db->closeCursor();
 
             // triggers
             if (isset($wSqlConfig['__TRIGGERS__'])) {
-                if ($this->_web === null) {
-                    $this->_web = new Web(common: $this->_c);
+                if ($this->web === null) {
+                    $this->web = new Web(common: $this->c);
                 }
-                $response['__TRIGGERS__'] = $this->_web->triggerConfig(
+                $_response['__TRIGGERS__'] = $this->web->triggerConfig(
                     triggerConfig: $wSqlConfig['__TRIGGERS__']
                 );
             }
 
             // Execute Post Sql Hooks
             if (isset($wSqlConfig['__POST-SQL-HOOKS__'])) {
-                if ($this->_hook === null) {
-                    $this->_hook = new Hook(common: $this->_c);
+                if ($this->hook === null) {
+                    $this->hook = new Hook(common: $this->c);
                 }
-                $this->_hook->triggerHook(
+                $this->hook->triggerHook(
                     hookConfig: $wSqlConfig['__POST-SQL-HOOKS__']
                 );
             }
 
             // subQuery for payload
             if (isset($wSqlConfig['__SUB-QUERY__'])) {
-                $this->_callWriteDB(
+                $this->callWriteDB(
                     wSqlConfig: $wSqlConfig,
-                    payloadIndexes: $_payloadIndexes,
+                    payloadIndexes: $payloadIndexes,
                     configKeys: $configKeys,
                     useHierarchy: $useHierarchy,
-                    response: $response,
+                    response: $_response,
                     necessary: $necessary
                 );
             }
@@ -517,7 +520,7 @@ class Write
      *
      * @return void
      */
-    private function _callWriteDB(
+    private function callWriteDB(
         &$wSqlConfig,
         $payloadIndexes,
         $configKeys,
@@ -526,8 +529,8 @@ class Write
         &$necessary
     ): void {
         if ($useHierarchy) {
-            $row = $this->_s['payload'];
-            $this->_resetFetchData(
+            $row = $this->s['payload'];
+            $this->resetFetchData(
                 fetchFrom: 'sqlPayload',
                 keys: $configKeys,
                 row: $row
@@ -541,18 +544,19 @@ class Write
             $payloadIndexes = [];
         }
 
-        if (isset($wSqlConfig['__SUB-QUERY__'])
-            && $this->_isObject(arr: $wSqlConfig['__SUB-QUERY__'])
+        if (
+            isset($wSqlConfig['__SUB-QUERY__'])
+            && $this->isObject(arr: $wSqlConfig['__SUB-QUERY__'])
         ) {
-            foreach ($wSqlConfig['__SUB-QUERY__'] as $module => &$_wSqlConfig) {
+            foreach ($wSqlConfig['__SUB-QUERY__'] as $module => &$wSqlConfig) {
                 $dataExists = false;
-                $_payloadIndexes = $payloadIndexes;
-                $_configKeys = $configKeys;
-                array_push($_payloadIndexes, $module);
-                array_push($_configKeys, $module);
-                $modulePayloadKey = is_array(value: $_payloadIndexes) ?
-                    implode(separator: ':', array: $_payloadIndexes) : '';
-                $dataExists = $this->_c->req->dataDecode->isset(
+                $payloadIndexes = $payloadIndexes;
+                $configKeys = $configKeys;
+                array_push($payloadIndexes, $module);
+                array_push($configKeys, $module);
+                $modulePayloadKey = is_array(value: $payloadIndexes) ?
+                    implode(separator: ':', array: $payloadIndexes) : '';
+                $dataExists = $this->c->req->dataDecode->isset(
                     keys: $modulePayloadKey
                 );
                 if ($useHierarchy && !$dataExists) { // use parent data of a payload
@@ -562,20 +566,20 @@ class Write
                     );
                 }
                 if ($dataExists) {
-                    $_necessary = $necessary[$module] ?? $necessary;
-                    $_useHierarchy = $useHierarchy ?? $this->_getUseHierarchy(
-                        sqlConfig: $_wSqlConfig,
+                    $necessary = $necessary[$module] ?? $necessary;
+                    $useHierarchy = $useHierarchy ?? $this->getUseHierarchy(
+                        sqlConfig: $wSqlConfig,
                         keyword: 'useHierarchy'
                     );
                     $response[$module] = [];
-                    $_response = &$response[$module];
-                    $this->_writeDB(
-                        wSqlConfig: $_wSqlConfig,
-                        payloadIndexes: $_payloadIndexes,
-                        configKeys: $_configKeys,
-                        useHierarchy: $_useHierarchy,
-                        response: $_response,
-                        necessary: $_necessary
+                    $response = &$response[$module];
+                    $this->writeDB(
+                        wSqlConfig: $wSqlConfig,
+                        payloadIndexes: $payloadIndexes,
+                        configKeys: $configKeys,
+                        useHierarchy: $useHierarchy,
+                        response: $response,
+                        necessary: $necessary
                     );
                 }
             }
@@ -589,7 +593,7 @@ class Write
      *
      * @return bool
      */
-    private function _isValidPayload($wSqlConfig): bool
+    private function isValidPayload($wSqlConfig): bool
     {
         $return = true;
         $isValidData = true;
@@ -598,11 +602,11 @@ class Write
                 validationConfig: $wSqlConfig['__VALIDATE__']
             );
             if ($isValidData !== true) {
-                $this->_c->res->httpStatus = HttpStatus::$BadRequest;
+                $this->c->res->httpStatus = HttpStatus::$BadRequest;
                 $this->dataEncode->startObject();
                 $this->dataEncode->addKeyData(
                     key: 'Payload',
-                    data: $this->_s['payload']
+                    data: $this->s['payload']
                 );
                 $this->dataEncode->addKeyData(key: 'Error', data: $errors);
                 $this->dataEncode->endObject();

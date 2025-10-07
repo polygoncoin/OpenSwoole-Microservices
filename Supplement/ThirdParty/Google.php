@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ThirdPartyAPI
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\Supplement\ThirdParty;
 
 use Microservices\App\Common;
@@ -40,7 +42,7 @@ class Google implements ThirdPartyInterface
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Constructor
@@ -49,8 +51,8 @@ class Google implements ThirdPartyInterface
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
-        $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: 'Slave');
+        $this->c = &$common;
+        $this->c->req->db = $this->c->req->setDbConnection(fetchFrom: 'Slave');
     }
 
     /**
@@ -74,7 +76,7 @@ class Google implements ThirdPartyInterface
     {
         // Create and call functions to manage third party cURL calls here
 
-        $curl_handle=curl_init();
+        $curl_handle = curl_init();
         curl_setopt(
             handle: $curl_handle,
             option: CURLOPT_URL,
@@ -86,12 +88,12 @@ class Google implements ThirdPartyInterface
         curl_close(handle: $curl_handle);
         if (empty($output)) {
             $output = ['Error' => 'Nothing returned by ipify'];
-            $this->_c->res->httpStatus = HttpStatus::$InternalServerError;
+            $this->c->res->httpStatus = HttpStatus::$InternalServerError;
         } else {
             $output = json_decode(json: $output, associative: true);
         }
         // End the calls with json response with dataEncode object
-        $this->_endProcess(output: $output);
+        $this->endProcess(output: $output);
 
         return [true];
     }
@@ -103,8 +105,8 @@ class Google implements ThirdPartyInterface
      *
      * @return void
      */
-    private function _endProcess($output): void
+    private function endProcess($output): void
     {
-        $this->_c->res->dataEncode->addKeyData(key: 'Results', data: $output);
+        $this->c->res->dataEncode->addKeyData(key: 'Results', data: $output);
     }
 }

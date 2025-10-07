@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CronAPI
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\Supplement\Cron;
 
 use Microservices\App\Common;
@@ -39,7 +41,7 @@ class Category implements CronInterface
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Constructor
@@ -48,8 +50,8 @@ class Category implements CronInterface
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
-        $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: 'Slave');
+        $this->c = &$common;
+        $this->c->req->db = $this->c->req->setDbConnection(fetchFrom: 'Slave');
     }
 
     /**
@@ -74,7 +76,7 @@ class Category implements CronInterface
         // Create and call functions to manage cron functionality here
 
         // End the calls with json response with dataEncode object
-        $this->_endProcess();
+        $this->endProcess();
         return [true];
     }
 
@@ -84,7 +86,7 @@ class Category implements CronInterface
      * @return never
      * @throws \Exception
      */
-    private function _endProcess(): never
+    private function endProcess(): never
     {
         throw new \Exception(
             message: 'message as desired',

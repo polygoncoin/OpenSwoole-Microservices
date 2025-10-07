@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Decodes Xml
+ * Decodes XML
  * php version 8.3
  *
  * @category  DataDecode
@@ -11,12 +12,13 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App\DataRepresentation\Xml;
 
 use Microservices\App\DataRepresentation\Json\JsonDecode;
 
 /**
- * Decodes Xml
+ * Decodes XML
  * php version 8.3
  *
  * @category  DataDecode_XML

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Web via cURL
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 use Microservices\App\Common;
@@ -35,7 +37,7 @@ class Web
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Constructor
@@ -44,7 +46,7 @@ class Web
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
+        $this->c = &$common;
     }
 
     /**
@@ -59,7 +61,7 @@ class Web
      *
      * @return array
      */
-    private function _getCurlConfig(
+    private function getCurlConfig(
         $homeURL,
         $method,
         $route,
@@ -80,28 +82,28 @@ class Web
         $contentType = 'Content-Type: text/plain; charset=utf-8';
 
         switch ($method) {
-        case 'GET':
-            break;
-        case 'POST':
-            $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
-            $curlConfig[CURLOPT_POST] = true;
-            $curlConfig[CURLOPT_POSTFIELDS] = $payload;
-            break;
-        case 'PUT':
-            $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
-            $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PUT';
-            $curlConfig[CURLOPT_POSTFIELDS] = $payload;
-            break;
-        case 'PATCH':
-            $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
-            $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PATCH';
-            $curlConfig[CURLOPT_POSTFIELDS] = $payload;
-            break;
-        case 'DELETE':
-            $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
-            $curlConfig[CURLOPT_CUSTOMREQUEST] = 'DELETE';
-            $curlConfig[CURLOPT_POSTFIELDS] = $payload;
-            break;
+            case 'GET':
+                break;
+            case 'POST':
+                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
+                $curlConfig[CURLOPT_POST] = true;
+                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
+                break;
+            case 'PUT':
+                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
+                $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PUT';
+                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
+                break;
+            case 'PATCH':
+                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
+                $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PATCH';
+                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
+                break;
+            case 'DELETE':
+                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
+                $curlConfig[CURLOPT_CUSTOMREQUEST] = 'DELETE';
+                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
+                break;
         }
         $curlConfig[CURLOPT_RETURNTRANSFER] = true;
 
@@ -120,7 +122,7 @@ class Web
      *
      * @return mixed
      */
-    private function _trigger(
+    private function trigger(
         $homeURL,
         $method,
         $route,
@@ -131,7 +133,7 @@ class Web
         $queryString = empty($queryString) ? '' : '&' . $queryString;
 
         $curl = curl_init();
-        $curlConfig = $this->_getCurlConfig(
+        $curlConfig = $this->getCurlConfig(
             homeURL: $homeURL,
             method: $method,
             route: $route,
@@ -152,7 +154,7 @@ class Web
         );
 
         $headerSize = curl_getinfo(handle: $curl, option: CURLINFO_HEADER_SIZE);
-        $responseHeaders = $this->_httpParseHeaders(
+        $responseHeaders = $this->httpParseHeaders(
             rawHeaders: substr(
                 string: $curlResponse,
                 offset: 0,
@@ -196,7 +198,7 @@ class Web
      */
     public function triggerConfig($triggerConfig): mixed
     {
-        if (!isset($this->_c->req->s['token'])) {
+        if (!isset($this->c->req->s['token'])) {
             throw new \Exception(
                 message: 'Missing token',
                 code: HttpStatus::$InternalServerError
@@ -204,7 +206,9 @@ class Web
         }
 
         $assoc = (!isset($triggerConfig[0])) ? true : false;
-        if (!$assoc && isset($triggerConfig[0])
+        if (
+            !$assoc
+            && isset($triggerConfig[0])
             && count(value: $triggerConfig) === 1
         ) {
             $triggerConfig = $triggerConfig[0];
@@ -216,13 +220,13 @@ class Web
         $header = [];
         $header[] = 'x-api-version: v1.0.0';
         $header[] = 'Cache-Control: no-cache';
-        $header[] = 'Authorization: Bearer ' . $this->_c->req->s['token'];
+        $header[] = 'Authorization: Bearer ' . $this->c->req->s['token'];
 
         $response = [];
 
         if ($assoc) {
             $method = $triggerConfig['__METHOD__'];
-            [$routeElementsArr, $errors] = $this->_getTriggerPayload(
+            [$routeElementsArr, $errors] = $this->getTriggerPayload(
                 payloadConfig: $triggerConfig['__ROUTE__']
             );
 
@@ -233,7 +237,7 @@ class Web
             }
 
             if (empty($response) && isset($triggerConfig['__QUERY-STRING__'])) {
-                [$queryStringArr, $errors] = $this->_getTriggerPayload(
+                [$queryStringArr, $errors] = $this->getTriggerPayload(
                     payloadConfig: $triggerConfig['__QUERY-STRING__']
                 );
 
@@ -246,7 +250,7 @@ class Web
 
             if (empty($response)) {
                 if (isset($triggerConfig['__PAYLOAD__'])) {
-                    [$payloadArr, $errors] = $this->_getTriggerPayload(
+                    [$payloadArr, $errors] = $this->getTriggerPayload(
                         payloadConfig: $triggerConfig['__PAYLOAD__']
                     );
                 } else {
@@ -254,7 +258,7 @@ class Web
                 }
 
                 $response = (empty($errors)) ?
-                    $response = $this->_trigger(
+                    $response = $this->trigger(
                         homeURL: $homeURL,
                         method: $method,
                         route: $route,
@@ -266,7 +270,7 @@ class Web
         } else {
             foreach ($triggerConfig as &$config) {
                 $method = $config['__METHOD__'];
-                [$routeElementsArr, $errors] = $this->_getTriggerPayload(
+                [$routeElementsArr, $errors] = $this->getTriggerPayload(
                     payloadConfig: $config['__ROUTE__']
                 );
 
@@ -278,7 +282,7 @@ class Web
                 }
 
                 if (isset($config['__QUERY-STRING__'])) {
-                    [$queryStringArr, $errors] = $this->_getTriggerPayload(
+                    [$queryStringArr, $errors] = $this->getTriggerPayload(
                         payloadConfig: $config['__QUERY-STRING__']
                     );
 
@@ -291,7 +295,7 @@ class Web
                 }
 
                 if (isset($config['__PAYLOAD__'])) {
-                    [$payloadArr, $errors] = $this->_getTriggerPayload(
+                    [$payloadArr, $errors] = $this->getTriggerPayload(
                         payloadConfig: $config['__PAYLOAD__']
                     );
                 } else {
@@ -299,7 +303,7 @@ class Web
                 }
 
                 $response[] = (empty($errors)) ?
-                    $this->_trigger(
+                    $this->trigger(
                         homeURL: $homeURL,
                         method: $method,
                         route: $route,
@@ -321,7 +325,7 @@ class Web
      * @return array
      * @throws \Exception
      */
-    private function _getTriggerPayload(&$payloadConfig): array
+    private function getTriggerPayload(&$payloadConfig): array
     {
         $sqlParams = [];
         $errors = [];
@@ -334,20 +338,21 @@ class Web
             $fKey = $config['fetchFromValue'];
             if ($fetchFrom === 'function') {
                 $function = $fKey;
-                $value = $function($this->_c->req->s);
+                $value = $function($this->c->req->s);
                 if ($var ===  null) {
                     $sqlParams[] = $value;
                 } else {
                     $sqlParams[$var] = $value;
                 }
                 continue;
-            } elseif (in_array(
-                needle: $fetchFrom,
-                haystack: ['sqlResults', 'sqlParams', 'sqlPayload']
-            )
+            } elseif (
+                in_array(
+                    needle: $fetchFrom,
+                    haystack: ['sqlResults', 'sqlParams', 'sqlPayload']
+                )
             ) {
                 $fetchFromKeys = explode(separator: ':', string: $fKey);
-                $value = $this->_c->req->s[$fetchFrom];
+                $value = $this->c->req->s[$fetchFrom];
                 foreach ($fetchFromKeys as $key) {
                     if (!isset($value[$key])) {
                         throw new \Exception(
@@ -371,8 +376,8 @@ class Web
                     $sqlParams[$var] = $value;
                 }
                 continue;
-            } elseif (isset($this->_c->req->s[$fetchFrom][$fKey])) {
-                $value = $this->_c->req->s[$fetchFrom][$fKey];
+            } elseif (isset($this->c->req->s[$fetchFrom][$fKey])) {
+                $value = $this->c->req->s[$fetchFrom][$fKey];
                 if ($var ===  null) {
                     $sqlParams[] = $value;
                 } else {
@@ -396,7 +401,7 @@ class Web
      * @return array
      * @throws \Exception
      */
-    private function _httpParseHeaders($rawHeaders): array
+    private function httpParseHeaders($rawHeaders): array
     {
         $headers = [];
         $key = '';
@@ -422,7 +427,7 @@ class Web
                 $key = $h[0];
             } else {
                 if (substr(string: $h[0], offset: 0, length: 1) == "\t") {
-                    $headers[$key] .= "\r\n\t".trim(string: $h[0]);
+                    $headers[$key] .= "\r\n\t" . trim(string: $h[0]);
                 } elseif (!$key) {
                     $headers[0] = trim(string: $h[0]);
                 }

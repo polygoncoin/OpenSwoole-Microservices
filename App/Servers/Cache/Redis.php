@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Handling Cache via Redis
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App\Servers\Cache;
 
 use Microservices\App\HttpStatus;
@@ -35,42 +37,42 @@ class Redis extends AbstractCache
      *
      * @var null|string
      */
-    private $_hostname = null;
+    private $hostname = null;
 
     /**
      * Cache port
      *
      * @var null|int
      */
-    private $_port = null;
+    private $port = null;
 
     /**
      * Cache password
      *
      * @var null|string
      */
-    private $_username = null;
+    private $username = null;
 
     /**
      * Cache password
      *
      * @var null|string
      */
-    private $_password = null;
+    private $password = null;
 
     /**
      * Cache database
      *
      * @var null|string
      */
-    private $_database = null;
+    private $database = null;
 
     /**
      * Cache connection
      *
      * @var null|\Redis
      */
-    private $_cache = null;
+    private $cache = null;
 
     /**
      * Cache connection
@@ -83,13 +85,13 @@ class Redis extends AbstractCache
      */
     public function __construct($hostname, $port, $username, $password, $database)
     {
-        $this->_hostname = $hostname;
-        $this->_port = $port;
-        $this->_username = $username;
-        $this->_password = $password;
+        $this->hostname = $hostname;
+        $this->port = $port;
+        $this->username = $username;
+        $this->password = $password;
 
         if ($database !== null) {
-            $this->_database = $database;
+            $this->database = $database;
         }
     }
 
@@ -101,7 +103,7 @@ class Redis extends AbstractCache
      */
     public function connect(): void
     {
-        if ($this->_cache !== null) {
+        if ($this->cache !== null) {
              return;
         }
 
@@ -114,20 +116,20 @@ class Redis extends AbstractCache
 
         try {
             // https://github.com/phpredis/phpredis?tab=readme-ov-file#class-redis
-            $this->_cache = new \Redis(
+            $this->cache = new \Redis(
                 [
-                    'host' => $this->_hostname,
-                    'port' => (int)$this->_port,
+                    'host' => $this->hostname,
+                    'port' => (int)$this->port,
                     'connectTimeout' => 2.5,
-                    'auth' => [$this->_username, $this->_password],
+                    'auth' => [$this->username, $this->password],
                 ]
             );
 
-            if ($this->_database !== null) {
+            if ($this->database !== null) {
                 $this->useDatabase();
             }
 
-            if (!$this->_cache->ping()) {
+            if (!$this->cache->ping()) {
                 throw new \Exception(
                     message: 'Unable to ping cache',
                     code: HttpStatus::$InternalServerError
@@ -149,8 +151,8 @@ class Redis extends AbstractCache
     public function useDatabase(): void
     {
         $this->connect();
-        if ($this->_database !== null) {
-            $this->_cache->select($this->_database);
+        if ($this->database !== null) {
+            $this->cache->select($this->database);
         }
     }
 
@@ -164,7 +166,7 @@ class Redis extends AbstractCache
     public function cacheExists($key): mixed
     {
         $this->useDatabase();
-        return $this->_cache->exists($key);
+        return $this->cache->exists($key);
     }
 
     /**
@@ -177,7 +179,7 @@ class Redis extends AbstractCache
     public function getCache($key): mixed
     {
         $this->useDatabase();
-        return $this->_cache->get($key);
+        return $this->cache->get($key);
     }
 
     /**
@@ -194,9 +196,9 @@ class Redis extends AbstractCache
         $this->useDatabase();
 
         if ($expire === null) {
-            return $this->_cache->set($key, $value);
+            return $this->cache->set($key, $value);
         } else {
-            return $this->_cache->set($key, $value, $expire);
+            return $this->cache->set($key, $value, $expire);
         }
     }
 
@@ -210,6 +212,6 @@ class Redis extends AbstractCache
     public function deleteCache($key): mixed
     {
         $this->useDatabase();
-        return $this->_cache->del($key);
+        return $this->cache->del($key);
     }
 }

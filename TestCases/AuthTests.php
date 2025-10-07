@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TestCases
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\TestCases;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'TestFunctions.php';
@@ -97,4 +99,4 @@ $response[] = include DELETE . DIRECTORY_SEPARATOR . 'RegistrationWithAddress.ph
 
 $response[] = include POST . DIRECTORY_SEPARATOR . 'CategoryConfig.php';
 
-return '<pre>'.print_r(value: $response, return: true);
+return '<pre>' . print_r(value: $response, return: true);

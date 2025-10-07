@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Read APIs
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 use Microservices\App\AppTrait;
@@ -50,21 +52,21 @@ class Read
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Trigger Web API object
      *
      * @var null|Web
      */
-    private $_web = null;
+    private $web = null;
 
     /**
      * Hook object
      *
      * @var null|Hook
      */
-    private $_hook = null;
+    private $hook = null;
 
     /**
      * JSON Encode object
@@ -80,7 +82,7 @@ class Read
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
+        $this->c = &$common;
     }
 
     /**
@@ -103,29 +105,30 @@ class Read
         $Env = __NAMESPACE__ . '\Env';
 
         // Load Queries
-        $rSqlConfig = include $this->_c->req->rParser->sqlConfigFile;
+        $rSqlConfig = include $this->c->req->rParser->sqlConfigFile;
 
         // Rate Limiting request if configured for Route Queries.
-        $this->_rateLimitRoute(sqlConfig: $rSqlConfig);
+        $this->rateLimitRoute(sqlConfig: $rSqlConfig);
 
         // Lag Response
-        $this->_lagResponse(sqlConfig: $rSqlConfig);
+        $this->lagResponse(sqlConfig: $rSqlConfig);
 
         // Check for cache
         $toBeCached = false;
-        if (isset($rSqlConfig['cacheKey'])
-            && !isset($this->_c->req->s['payload']['orderBy'])
+        if (
+            isset($rSqlConfig['cacheKey'])
+            && !isset($this->c->req->s['payload']['orderBy'])
         ) {
-            $json = $this->_c->req->getDqlCache(
+            $json = $this->c->req->getDqlCache(
                 cacheKey: $rSqlConfig['cacheKey']
             );
             if ($json !== null) {
                 $cacheHit = 'true';
-                $this->_c->res->dataEncode->appendKeyData(
+                $this->c->res->dataEncode->appendKeyData(
                     key: 'cacheHit',
                     data: $cacheHit
                 );
-                $this->_c->res->dataEncode->appendData(data: $json);
+                $this->c->res->dataEncode->appendData(data: $json);
                 return true;
             } else {
                 $toBeCached = true;
@@ -133,33 +136,32 @@ class Read
         }
 
         if ($toBeCached) {
-            $this->dataEncode = new DataEncode(http: $this->_c->http);
+            $this->dataEncode = new DataEncode(http: $this->c->http);
             $this->dataEncode->init(header: false);
         } else {
-            $this->dataEncode = &$this->_c->res->dataEncode;
+            $this->dataEncode = &$this->c->res->dataEncode;
         }
         $this->dataEncode->XSLT = isset($rSqlConfig['XSLT']) ?
             $rSqlConfig['XSLT'] : null;
 
         // Set Server mode to execute query on - Read / Write Server
-        $fetchFrom = (isset($rSqlConfig['fetchFrom'])) ?
-            $rSqlConfig['fetchFrom'] : 'Slave';
-        $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: $fetchFrom);
-        $this->db = &$this->_c->req->db;
+        $fetchFrom = $rSqlConfig['fetchFrom'] ?? 'Slave';
+        $this->c->req->db = $this->c->req->setDbConnection(fetchFrom: $fetchFrom);
+        $this->db = &$this->c->req->db;
 
         // Use result set recursively flag
-        $useResultSet = $this->_getUseHierarchy(
+        $useResultSet = $this->getUseHierarchy(
             sqlConfig: $rSqlConfig,
             keyword: 'useResultSet'
         );
 
-        if (Env::$allowConfigRequest && $this->_c->req->rParser->isConfigRequest) {
-            $this->_processReadConfig(
+        if (Env::$allowConfigRequest && $this->c->req->rParser->isConfigRequest) {
+            $this->processReadConfig(
                 rSqlConfig: $rSqlConfig,
                 useResultSet: $useResultSet
             );
         } else {
-            $this->_processRead(
+            $this->processRead(
                 rSqlConfig: $rSqlConfig,
                 useResultSet: $useResultSet
             );
@@ -167,11 +169,11 @@ class Read
 
         if ($toBeCached) {
             $json = $this->dataEncode->getData();
-            $this->_c->req->setDmlCache(
+            $this->c->req->setDmlCache(
                 cacheKey: $rSqlConfig['cacheKey'],
                 json: $json
             );
-            $this->_c->res->dataEncode->appendData(data: $json);
+            $this->c->res->dataEncode->appendData(data: $json);
         }
 
         return true;
@@ -185,16 +187,16 @@ class Read
      *
      * @return void
      */
-    private function _processReadConfig(&$rSqlConfig, $useResultSet): void
+    private function processReadConfig(&$rSqlConfig, $useResultSet): void
     {
         $this->dataEncode->startObject(key: 'Config');
         $this->dataEncode->addKeyData(
             key: 'Route',
-            data: $this->_c->req->rParser->configuredUri
+            data: $this->c->req->rParser->configuredUri
         );
         $this->dataEncode->addKeyData(
             key: 'Payload',
-            data: $this->_getConfigParams(
+            data: $this->getConfigParams(
                 sqlConfig: $rSqlConfig,
                 isFirstCall: true,
                 flag: $useResultSet
@@ -211,23 +213,23 @@ class Read
      *
      * @return void
      */
-    private function _processRead(&$rSqlConfig, $useResultSet): void
+    private function processRead(&$rSqlConfig, $useResultSet): void
     {
-        $this->_c->req->s['necessaryArr'] = $this->_getRequired(
+        $this->c->req->s['necessaryArr'] = $this->getRequired(
             sqlConfig: $rSqlConfig,
             isFirstCall: true,
             flag: $useResultSet
         );
 
-        if (isset($this->_c->req->s['necessaryArr'])) {
-            $this->_c->req->s['necessary'] = $this->_c->req->s['necessaryArr'];
+        if (isset($this->c->req->s['necessaryArr'])) {
+            $this->c->req->s['necessary'] = $this->c->req->s['necessaryArr'];
         } else {
-            $this->_c->req->s['necessary'] = [];
+            $this->c->req->s['necessary'] = [];
         }
 
         // Start Read operation
         $configKeys = [];
-        $this->_readDB(
+        $this->readDB(
             rSqlConfig: $rSqlConfig,
             isFirstCall: true,
             configKeys: $configKeys,
@@ -245,76 +247,76 @@ class Read
      *
      * @return void
      */
-    private function _readDB(
+    private function readDB(
         &$rSqlConfig,
         $isFirstCall,
         &$configKeys,
         $useResultSet
     ): void {
-        $isObject = $this->_isObject(arr: $rSqlConfig);
+        $isObject = $this->isObject(arr: $rSqlConfig);
 
         // Execute Pre Sql Hooks
         if (isset($rSqlConfig['__PRE-SQL-HOOKS__'])) {
-            if ($this->_hook === null) {
-                $this->_hook = new Hook(common: $this->_c);
+            if ($this->hook === null) {
+                $this->hook = new Hook(common: $this->c);
             }
-            $this->_hook->triggerHook(
+            $this->hook->triggerHook(
                 hookConfig: $rSqlConfig['__PRE-SQL-HOOKS__']
             );
         }
 
         if ($isObject) {
             switch ($rSqlConfig['__MODE__']) {
-            // Query will return single row
-            case 'singleRowFormat':
-                if ($isFirstCall) {
-                    $this->dataEncode->startObject(key: 'Results');
-                } else {
-                    $this->dataEncode->startObject();
-                }
-                $this->_fetchSingleRow(
-                    rSqlConfig: $rSqlConfig,
-                    isFirstCall: $isFirstCall,
-                    configKeys: $configKeys,
-                    useResultSet: $useResultSet
-                );
-                $this->dataEncode->endObject();
-                break;
-            // Query will return multiple rows
-            case 'multipleRowFormat':
-                if ($isFirstCall) {
-                    $this->dataEncode->startObject(key: 'Results');
-                    if (isset($rSqlConfig['countQuery'])) {
-                        $this->_fetchRowsCount(rSqlConfig: $rSqlConfig);
+                // Query will return single row
+                case 'singleRowFormat':
+                    if ($isFirstCall) {
+                        $this->dataEncode->startObject(key: 'Results');
+                    } else {
+                        $this->dataEncode->startObject();
                     }
-                    $this->dataEncode->startArray(key: 'Data');
-                } else {
-                    $this->dataEncode->startArray(
-                        key: $configKeys[count(value: $configKeys)-1]
+                    $this->fetchSingleRow(
+                        rSqlConfig: $rSqlConfig,
+                        isFirstCall: $isFirstCall,
+                        configKeys: $configKeys,
+                        useResultSet: $useResultSet
                     );
-                }
-                $this->_fetchMultipleRows(
-                    rSqlConfig: $rSqlConfig,
-                    isFirstCall: $isFirstCall,
-                    configKeys: $configKeys,
-                    useResultSet: $useResultSet
-                );
-                $this->dataEncode->endArray();
-                if ($isFirstCall && isset($rSqlConfig['countQuery'])) {
                     $this->dataEncode->endObject();
-                }
-                break;
+                    break;
+                // Query will return multiple rows
+                case 'multipleRowFormat':
+                    if ($isFirstCall) {
+                        $this->dataEncode->startObject(key: 'Results');
+                        if (isset($rSqlConfig['countQuery'])) {
+                            $this->fetchRowsCount(rSqlConfig: $rSqlConfig);
+                        }
+                        $this->dataEncode->startArray(key: 'Data');
+                    } else {
+                        $this->dataEncode->startArray(
+                            key: $configKeys[count(value: $configKeys) - 1]
+                        );
+                    }
+                    $this->fetchMultipleRows(
+                        rSqlConfig: $rSqlConfig,
+                        isFirstCall: $isFirstCall,
+                        configKeys: $configKeys,
+                        useResultSet: $useResultSet
+                    );
+                    $this->dataEncode->endArray();
+                    if ($isFirstCall && isset($rSqlConfig['countQuery'])) {
+                        $this->dataEncode->endObject();
+                    }
+                    break;
             }
         }
 
         // triggers
         if (isset($rSqlConfig['__TRIGGERS__'])) {
-            if ($this->_web === null) {
-                $this->_web = new Web(common: $this->_c);
+            if ($this->web === null) {
+                $this->web = new Web(common: $this->c);
             }
             $this->dataEncode->addKeyData(
                 key: '__TRIGGERS__',
-                data: $this->_web->triggerConfig(
+                data: $this->web->triggerConfig(
                     triggerConfig: $rSqlConfig['__TRIGGERS__']
                 )
             );
@@ -322,10 +324,10 @@ class Read
 
         // Execute Post Sql Hooks
         if (isset($rSqlConfig['__POST-SQL-HOOKS__'])) {
-            if ($this->_hook === null) {
-                $this->_hook = new Hook(common: $this->_c);
+            if ($this->hook === null) {
+                $this->hook = new Hook(common: $this->c);
             }
-            $this->_hook->triggerHook(
+            $this->hook->triggerHook(
                 hookConfig: $rSqlConfig['__POST-SQL-HOOKS__']
             );
         }
@@ -342,13 +344,13 @@ class Read
      * @return void
      * @throws \Exception
      */
-    private function _fetchSingleRow(
+    private function fetchSingleRow(
         &$rSqlConfig,
         $isFirstCall,
         &$configKeys,
         $useResultSet
     ): void {
-        [$sql, $sqlParams, $errors] = $this->_getSqlAndParams(
+        [$sql, $sqlParams, $errors] = $this->getSqlAndParams(
             sqlDetails: $rSqlConfig,
             isFirstCall: $isFirstCall,
             configKeys: $configKeys,
@@ -384,7 +386,7 @@ class Read
         $this->db->closeCursor();
 
         if (isset($rSqlConfig['__SUB-QUERY__'])) {
-            $this->_callReadDB(
+            $this->callReadDB(
                 rSqlConfig: $rSqlConfig,
                 configKeys: $configKeys,
                 row: $row,
@@ -401,29 +403,29 @@ class Read
      * @return void
      * @throws \Exception
      */
-    private function _fetchRowsCount($rSqlConfig): void
+    private function fetchRowsCount($rSqlConfig): void
     {
         $rSqlConfig['__SQL-COMMENT__'] = $rSqlConfig['__COUNT-SQL-COMMENT__'];
         $rSqlConfig['__QUERY__'] = $rSqlConfig['countQuery'];
         unset($rSqlConfig['__COUNT-SQL-COMMENT__']);
         unset($rSqlConfig['countQuery']);
 
-        $this->_c->req->s['payload']['page']  = $_GET['page'] ?? 1;
-        $this->_c->req->s['payload']['perPage']  = $_GET['perPage'] ??
+        $this->c->req->s['payload']['page']  = $_GET['page'] ?? 1;
+        $this->c->req->s['payload']['perPage']  = $_GET['perPage'] ??
             Env::$defaultPerPage;
 
-        if ($this->_c->req->s['payload']['perPage'] > Env::$maxPerPage) {
+        if ($this->c->req->s['payload']['perPage'] > Env::$maxPerPage) {
             throw new \Exception(
                 message: 'perPage exceeds max perPage value of ' . Env::$maxPerPage,
                 code: HttpStatus::$Forbidden
             );
         }
 
-        $this->_c->req->s['payload']['start'] = (
-            ($this->_c->req->s['payload']['page'] - 1) *
-            $this->_c->req->s['payload']['perPage']
+        $this->c->req->s['payload']['start'] = (
+            ($this->c->req->s['payload']['page'] - 1) *
+            $this->c->req->s['payload']['perPage']
         );
-        [$sql, $sqlParams, $errors] = $this->_getSqlAndParams(
+        [$sql, $sqlParams, $errors] = $this->getSqlAndParams(
             sqlDetails: $rSqlConfig
         );
 
@@ -440,16 +442,16 @@ class Read
 
         $totalRowsCount = $row['count'];
         $totalPages = ceil(
-            num: $totalRowsCount / $this->_c->req->s['payload']['perPage']
+            num: $totalRowsCount / $this->c->req->s['payload']['perPage']
         );
 
         $this->dataEncode->addKeyData(
             key: 'page',
-            data: $this->_c->req->s['payload']['page']
+            data: $this->c->req->s['payload']['page']
         );
         $this->dataEncode->addKeyData(
             key: 'perPage',
-            data: $this->_c->req->s['payload']['perPage']
+            data: $this->c->req->s['payload']['perPage']
         );
         $this->dataEncode->addKeyData(
             key: 'totalPages',
@@ -472,13 +474,13 @@ class Read
      * @return void
      * @throws \Exception
      */
-    private function _fetchMultipleRows(
+    private function fetchMultipleRows(
         &$rSqlConfig,
         $isFirstCall,
         &$configKeys,
         $useResultSet
     ): void {
-        [$sql, $sqlParams, $errors] = $this->_getSqlAndParams(
+        [$sql, $sqlParams, $errors] = $this->getSqlAndParams(
             sqlDetails: $rSqlConfig,
             isFirstCall: $isFirstCall,
             configKeys: $configKeys,
@@ -492,9 +494,9 @@ class Read
         }
 
         if ($isFirstCall) {
-            if (isset($this->_c->req->s['payload']['orderBy'])) {
+            if (isset($this->c->req->s['payload']['orderBy'])) {
                 $orderByStrArr = [];
-                $orderByArr = $this->_c->req->s['payload']['orderBy'];
+                $orderByArr = $this->c->req->s['payload']['orderBy'];
                 foreach ($orderByArr as $k => $v) {
                     $k = str_replace(search: ['`', ' '], replace: '', subject: $k);
                     $v = strtoupper(string: $v);
@@ -503,7 +505,7 @@ class Read
                     }
                 }
                 if (count(value: $orderByStrArr) > 0) {
-                    $sql .= ' ORDER BY '.implode(
+                    $sql .= ' ORDER BY ' . implode(
                         separator: ', ',
                         array: $orderByStrArr
                     );
@@ -512,8 +514,8 @@ class Read
         }
 
         if (isset($rSqlConfig['countQuery'])) {
-            $start = $this->_c->req->s['payload']['start'];
-            $offset = $this->_c->req->s['payload']['perPage'];
+            $start = $this->c->req->s['payload']['start'];
+            $offset = $this->c->req->s['payload']['perPage'];
             $sql .= " LIMIT {$start}, {$offset}";
         }
 
@@ -536,7 +538,7 @@ class Read
                 foreach ($row as $key => $value) {
                     $this->dataEncode->addKeyData(key: $key, data: $value);
                 }
-                $this->_callReadDB(
+                $this->callReadDB(
                     rSqlConfig: $rSqlConfig,
                     configKeys: $configKeys,
                     row: $row,
@@ -560,36 +562,37 @@ class Read
      *
      * @return void
      */
-    private function _callReadDB(
+    private function callReadDB(
         &$rSqlConfig,
         &$configKeys,
         $row,
         $useResultSet
     ): void {
         if ($useResultSet && !empty($row)) {
-            $this->_resetFetchData(
+            $this->resetFetchData(
                 fetchFrom: 'sqlResults',
                 keys: $configKeys,
                 row: $row
             );
         }
 
-        if (isset($rSqlConfig['__SUB-QUERY__'])
-            && $this->_isObject(arr: $rSqlConfig['__SUB-QUERY__'])
+        if (
+            isset($rSqlConfig['__SUB-QUERY__'])
+            && $this->isObject(arr: $rSqlConfig['__SUB-QUERY__'])
         ) {
-            foreach ($rSqlConfig['__SUB-QUERY__'] as $key => &$_rSqlConfig) {
-                $_configKeys = $configKeys;
-                $_configKeys[] = $key;
-                $_useResultSet = $useResultSet ??
-                    $this->_getUseHierarchy(
-                        sqlConfig: $_rSqlConfig,
+            foreach ($rSqlConfig['__SUB-QUERY__'] as $key => &$rSqlConfig) {
+                $configKeys = $configKeys;
+                $configKeys[] = $key;
+                $useResultSet = $useResultSet ??
+                    $this->getUseHierarchy(
+                        sqlConfig: $rSqlConfig,
                         keyword: 'useResultSet'
                     );
-                $this->_readDB(
-                    rSqlConfig: $_rSqlConfig,
+                $this->readDB(
+                    rSqlConfig: $rSqlConfig,
                     isFirstCall: false,
-                    configKeys: $_configKeys,
-                    useResultSet: $_useResultSet
+                    configKeys: $configKeys,
+                    useResultSet: $useResultSet
                 );
             }
         }

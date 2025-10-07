@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Client side Cache
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 use Microservices\App\Constants;
@@ -35,7 +37,7 @@ class CacheHandler
      *
      * @var string
      */
-    private $_fileLocation;
+    private $fileLocation;
 
     /**
      * Cache Folder
@@ -45,7 +47,7 @@ class CacheHandler
      *
      * @var string
      */
-    private $_cacheLocation = DIRECTORY_SEPARATOR . 'Files' .
+    private $cacheLocation = DIRECTORY_SEPARATOR . 'Files' .
         DIRECTORY_SEPARATOR . 'Dropbox';
 
     /**
@@ -53,7 +55,7 @@ class CacheHandler
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Constructor
@@ -62,7 +64,7 @@ class CacheHandler
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
+        $this->c = &$common;
     }
 
     /**
@@ -72,17 +74,17 @@ class CacheHandler
      */
     public function init(): bool
     {
-        $this->_cacheLocation = Constants::$DOC_ROOT . $this->_cacheLocation;
+        $this->cacheLocation = Constants::$DOC_ROOT . $this->cacheLocation;
         $this->filePath = DIRECTORY_SEPARATOR . trim(
             string: str_replace(
                 search: ['../', '..\\', '/', '\\'],
                 replace: ['', '', DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR],
-                subject: urldecode(string: $this->_c->req->ROUTE)
+                subject: urldecode(string: $this->c->req->ROUTE)
             ),
             characters: './\\'
         );
         $this->validateFileRequest();
-        $this->_fileLocation = $this->_cacheLocation . $this->filePath;
+        $this->fileLocation = $this->cacheLocation . $this->filePath;
 
         return true;
     }
@@ -94,7 +96,7 @@ class CacheHandler
      */
     public function validateFileRequest(): void
     {
-        // check logic for user is allowed to access the file as per $this->_c->req->s
+        // check logic for user is allowed to access the file as per $this->c->req->s
         // $this->filePath;
     }
 
@@ -106,22 +108,24 @@ class CacheHandler
     public function process(): bool
     {
         // File name requested for download
-        $fileName = basename(path: $this->_fileLocation);
+        $fileName = basename(path: $this->fileLocation);
 
         // Get the $fileLocation file mime
         $fileInfo = finfo_open(flags: FILEINFO_MIME_TYPE);
-        $mime = finfo_file(finfo: $fileInfo, filename: $this->_fileLocation);
+        $mime = finfo_file(finfo: $fileInfo, filename: $this->fileLocation);
         finfo_close(finfo: $fileInfo);
 
         // Let Etag be last modified timestamp of file
-        $modifiedTime = filemtime(filename: $this->_fileLocation);
+        $modifiedTime = filemtime(filename: $this->fileLocation);
         $eTag = "{$modifiedTime}";
 
-        if ((isset($_SERVER['HTTP_IF_NONE_MATCH'])
-            && strpos(
-                haystack: $_SERVER['HTTP_IF_NONE_MATCH'],
-                needle: $eTag
-            ) !== false)
+        if (
+            (isset($_SERVER['HTTP_IF_NONE_MATCH'])
+                && strpos(
+                    haystack: $_SERVER['HTTP_IF_NONE_MATCH'],
+                    needle: $eTag
+                ) !== false
+            )
             || (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
             && @strtotime(
                 datetime: $_SERVER['HTTP_IF_MODIFIED_SINCE']
@@ -143,10 +147,10 @@ class CacheHandler
         header(header: "Etag:\"{$eTag}\"");
         header(header: 'Expires: -1');
         header(header: "Content-Type: {$mime}");
-        header(header: 'Content-Length: ' . filesize(filename: $this->_fileLocation));
+        header(header: 'Content-Length: ' . filesize(filename: $this->fileLocation));
 
         // Send file content as stream
-        $fp = fopen(filename: $this->_fileLocation, mode: 'rb');
+        $fp = fopen(filename: $this->fileLocation, mode: 'rb');
         fpassthru(stream: $fp);
 
         return true;

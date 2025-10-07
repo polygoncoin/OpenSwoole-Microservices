@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Creates Data Representation Input
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App\DataRepresentation;
 
 use Microservices\App\DataRepresentation\AbstractDataDecode;
@@ -33,18 +35,18 @@ use Microservices\App\Env;
 class DataDecode extends AbstractDataDecode
 {
     /**
-     * Json File Handle
+     * JSON File Handle
      *
      * @var null|resource
      */
-    private $_dataFileHandle = null;
+    private $dataFileHandle = null;
 
     /**
      * Temporary Stream
      *
      * @var null|AbstractDataDecode
      */
-    private $_dataDecoder = null;
+    private $dataDecoder = null;
 
     /**
      * JsonDecode constructor
@@ -53,15 +55,15 @@ class DataDecode extends AbstractDataDecode
      */
     public function __construct(&$dataFileHandle)
     {
-        $this->_dataFileHandle = &$dataFileHandle;
+        $this->dataFileHandle = &$dataFileHandle;
 
         if (Env::$iRepresentation === 'JSON') {
-            $this->_dataDecoder = new JsonDecode(
-                jsonFileHandle: $this->_dataFileHandle
+            $this->dataDecoder = new JsonDecode(
+                jsonFileHandle: $this->dataFileHandle
             );
         } else {
-            $this->_dataDecoder = new XmlDecode(
-                jsonFileHandle: $this->_dataFileHandle
+            $this->dataDecoder = new XmlDecode(
+                jsonFileHandle: $this->dataFileHandle
             );
         }
     }
@@ -73,7 +75,7 @@ class DataDecode extends AbstractDataDecode
      */
     public function init(): void
     {
-        $this->_dataDecoder->init();
+        $this->dataDecoder->init();
     }
 
     /**
@@ -83,7 +85,7 @@ class DataDecode extends AbstractDataDecode
      */
     public function validate(): void
     {
-        $this->_dataDecoder->validate();
+        $this->dataDecoder->validate();
     }
 
     /**
@@ -93,7 +95,7 @@ class DataDecode extends AbstractDataDecode
      */
     public function indexData(): void
     {
-        $this->_dataDecoder->indexData();
+        $this->dataDecoder->indexData();
     }
 
     /**
@@ -105,7 +107,7 @@ class DataDecode extends AbstractDataDecode
      */
     public function isset($keys = null): bool
     {
-        return $this->_dataDecoder->isset(keys: $keys);
+        return $this->dataDecoder->isset(keys: $keys);
     }
 
     /**
@@ -117,7 +119,7 @@ class DataDecode extends AbstractDataDecode
      */
     public function dataType($keys = null): string
     {
-        return $this->_dataDecoder->dataType(keys: $keys);
+        return $this->dataDecoder->dataType(keys: $keys);
     }
 
     /**
@@ -129,7 +131,7 @@ class DataDecode extends AbstractDataDecode
      */
     public function count($keys = null): int
     {
-        return $this->_dataDecoder->count(keys: $keys);
+        return $this->dataDecoder->count(keys: $keys);
     }
 
     /**
@@ -141,7 +143,7 @@ class DataDecode extends AbstractDataDecode
      */
     public function get($keys = ''): mixed
     {
-        return $this->_dataDecoder->get(keys: $keys);
+        return $this->dataDecoder->get(keys: $keys);
     }
 
     /**
@@ -153,7 +155,7 @@ class DataDecode extends AbstractDataDecode
      */
     public function getCompleteArray($keys = ''): mixed
     {
-        return $this->_dataDecoder->getCompleteArray(keys: $keys);
+        return $this->dataDecoder->getCompleteArray(keys: $keys);
     }
 
     /**
@@ -167,6 +169,6 @@ class DataDecode extends AbstractDataDecode
      */
     public function load($keys): void
     {
-        $this->_dataDecoder->load(keys: $keys);
+        $this->dataDecoder->load(keys: $keys);
     }
 }

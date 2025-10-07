@@ -1,4 +1,5 @@
 <?php
+
 /**
  * UploadAPI
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\Supplement\Upload;
 
 /**
@@ -34,7 +36,7 @@ trait UploadTrait
      *
      * @return bool
      */
-    private function _saveFile($absFilePath): bool
+    private function saveFile($absFilePath): bool
     {
         $src = fopen(filename: "php://input", mode: "rb");
         $dest = fopen(filename: $absFilePath, mode: 'wb');

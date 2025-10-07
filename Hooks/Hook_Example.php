@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Hook
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\Hooks;
 
 use Microservices\App\Common;
@@ -38,7 +40,7 @@ class Hook_Example implements HookInterface
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Constructor
@@ -47,7 +49,7 @@ class Hook_Example implements HookInterface
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
+        $this->c = &$common;
     }
 
     /**
@@ -67,7 +69,7 @@ class Hook_Example implements HookInterface
      */
     public function process(): bool
     {
-        $this->_execHook();
+        $this->execHook();
         return true;
     }
 
@@ -77,9 +79,9 @@ class Hook_Example implements HookInterface
      * @return void
      * @throws \Exception
      */
-    private function _execHook(): void
+    private function execHook(): void
     {
         // Change payload.
-        $this->_c->req->s['payload']['hook'] = 'Yes';
+        $this->c->req->s['payload']['hook'] = 'Yes';
     }
 }

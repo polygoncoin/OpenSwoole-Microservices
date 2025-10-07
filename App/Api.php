@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Initiating API
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 use Microservices\App\Constants;
@@ -37,21 +39,21 @@ class Api
      *
      * @var null|bool
      */
-    private $_beforePayload = null;
+    private $beforePayload = null;
 
     /**
      * Common object
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Hook object
      *
      * @var null|Hook
      */
-    private $_hook = null;
+    private $hook = null;
 
     /**
      * Constructor
@@ -60,7 +62,7 @@ class Api
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
+        $this->c = &$common;
     }
 
     /**
@@ -70,15 +72,15 @@ class Api
      */
     public function init(): bool
     {
-        $this->_c->req->loadClientDetails();
+        $this->c->req->loadClientDetails();
 
-        if (!$this->_c->req->open) {
-            $this->_c->req->auth->loadUserDetails();
-            $this->_c->req->auth->loadGroupDetails();
+        if (!$this->c->req->open) {
+            $this->c->req->auth->loadUserDetails();
+            $this->c->req->auth->loadGroupDetails();
         }
 
-        $this->_c->req->rParser->parseRoute();
-        $this->_c->req->setDatabaseCacheKey();
+        $this->c->req->rParser->parseRoute();
+        $this->c->req->setDatabaseCacheKey();
 
         return true;
     }
@@ -91,17 +93,17 @@ class Api
     public function process(): bool
     {
         // Execute Pre Route Hooks
-        if (isset($this->_c->req->rParser->routeHook['__PRE-ROUTE-HOOKS__'])) {
-            if ($this->_hook === null) {
-                $this->_hook = new Hook(common: $this->_c);
+        if (isset($this->c->req->rParser->routeHook['__PRE-ROUTE-HOOKS__'])) {
+            if ($this->hook === null) {
+                $this->hook = new Hook(common: $this->c);
             }
-            $this->_hook->triggerHook(
-                hookConfig: $this->_c->req->rParser->routeHook['__PRE-ROUTE-HOOKS__']
+            $this->hook->triggerHook(
+                hookConfig: $this->c->req->rParser->routeHook['__PRE-ROUTE-HOOKS__']
             );
         }
 
         try {
-            if ($this->_processBeforePayload()) {
+            if ($this->processBeforePayload()) {
                 return true;
             }
         } catch (\Exception $e) {
@@ -109,40 +111,40 @@ class Api
         }
 
         // Load Payloads
-        if (!$this->_c->req->rParser->isConfigRequest) {
-            $this->_c->req->loadPayload();
+        if (!$this->c->req->rParser->isConfigRequest) {
+            $this->c->req->loadPayload();
         }
 
         $class = null;
-        switch ($this->_c->req->METHOD) {
-        case Constants::$GET:
-            $class = __NAMESPACE__ . '\\Read';
-            break;
-        case Constants::$POST:
-        case Constants::$PUT:
-        case Constants::$PATCH:
-        case Constants::$DELETE:
-            $class = __NAMESPACE__ . '\\Write';
-            break;
+        switch ($this->c->req->METHOD) {
+            case Constants::$GET:
+                $class = __NAMESPACE__ . '\\Read';
+                break;
+            case Constants::$POST:
+            case Constants::$PUT:
+            case Constants::$PATCH:
+            case Constants::$DELETE:
+                $class = __NAMESPACE__ . '\\Write';
+                break;
         }
 
         if ($class !== null) {
-            $api = new $class(common: $this->_c);
+            $api = new $class(common: $this->c);
             if ($api->init()) {
                 $api->process();
             }
         }
 
         // Check & Process Cron / ThirdParty calls
-        $this->_processAfterPayload();
+        $this->processAfterPayload();
 
         // Execute Post Route Hooks
-        if (isset($this->_c->req->rParser->routeHook['__POST-ROUTE-HOOKS__'])) {
-            if ($this->_hook === null) {
-                $this->_hook = new Hook(common: $this->_c);
+        if (isset($this->c->req->rParser->routeHook['__POST-ROUTE-HOOKS__'])) {
+            if ($this->hook === null) {
+                $this->hook = new Hook(common: $this->c);
             }
-            $this->_hook->triggerHook(
-                hookConfig: $this->_c->req->rParser->routeHook['__POST-ROUTE-HOOKS__']
+            $this->hook->triggerHook(
+                hookConfig: $this->c->req->rParser->routeHook['__POST-ROUTE-HOOKS__']
             );
         }
 
@@ -154,50 +156,51 @@ class Api
      *
      * @return bool
      */
-    private function _processBeforePayload(): bool
+    private function processBeforePayload(): bool
     {
         $foundClass = false;
 
-        if (Env::$allowRoutesRequest
-            && Env::$routesRequestUri === $this->_c->req->rParser->routeElements[0]
+        if (
+            Env::$allowRoutesRequest
+            && Env::$routesRequestUri === $this->c->req->rParser->routeElements[0]
         ) {
-            $this->_beforePayload = true;
+            $this->beforePayload = true;
             $supplementApiClass = __NAMESPACE__ . '\\Routes';
-            $supplementObj = new $supplementApiClass(common: $this->_c);
+            $supplementObj = new $supplementApiClass(common: $this->c);
             if ($supplementObj->init()) {
                 $supplementObj->process();
             }
             $foundClass = true;
         } else {
             $supplementApiClass = null;
-            switch ($this->_c->req->rParser->routeElements[0]) {
-            case Env::$allowCustomRequest
-                && (Env::$customRequestUriPrefix 
-                    === $this->_c->req->rParser->routeElements[0]):
-                $supplementApiClass = __NAMESPACE__ . '\\Custom';
-                break;
-            case Env::$allowUploadRequest
-                && (Env::$uploadRequestUriPrefix 
-                    === $this->_c->req->rParser->routeElements[0]):
-                $supplementApiClass = __NAMESPACE__ . '\\Upload';
-                break;
-            case Env::$allowThirdPartyRequest
-                && (Env::$thirdPartyRequestUriPrefix 
-                    === $this->_c->req->rParser->routeElements[0]):
-                $supplementApiClass = __NAMESPACE__ . '\\ThirdParty';
-                break;
-            case Env::$allowCacheRequest
-                && (Env::$cacheRequestUriPrefix 
-                    === $this->_c->req->rParser->routeElements[0]):
-                $supplementApiClass = __NAMESPACE__ . '\\CacheHandler';
-                break;
+            switch ($this->c->req->rParser->routeElements[0]) {
+                case Env::$allowCustomRequest
+                    && (Env::$customRequestUriPrefix
+                        === $this->c->req->rParser->routeElements[0]):
+                    $supplementApiClass = __NAMESPACE__ . '\\Custom';
+                    break;
+                case Env::$allowUploadRequest
+                    && (Env::$uploadRequestUriPrefix
+                        === $this->c->req->rParser->routeElements[0]):
+                    $supplementApiClass = __NAMESPACE__ . '\\Upload';
+                    break;
+                case Env::$allowThirdPartyRequest
+                    && (Env::$thirdPartyRequestUriPrefix
+                        === $this->c->req->rParser->routeElements[0]):
+                    $supplementApiClass = __NAMESPACE__ . '\\ThirdParty';
+                    break;
+                case Env::$allowCacheRequest
+                    && (Env::$cacheRequestUriPrefix
+                        === $this->c->req->rParser->routeElements[0]):
+                    $supplementApiClass = __NAMESPACE__ . '\\CacheHandler';
+                    break;
             }
 
             if (!empty($supplementApiClass)) {
-                $this->_beforePayload = true;
-                $supplementObj = new $supplementApiClass(common: $this->_c);
+                $this->beforePayload = true;
+                $supplementObj = new $supplementApiClass(common: $this->c);
                 $supplementObj->init();
-                $supplement = new Supplement(common: $this->_c);
+                $supplement = new Supplement(common: $this->c);
                 if ($supplement->init(supplementObj: $supplementObj)) {
                     $supplement->process();
                 }
@@ -213,7 +216,7 @@ class Api
      *
      * @return bool
      */
-    private function _processAfterPayload(): bool
+    private function processAfterPayload(): bool
     {
         return true;
     }

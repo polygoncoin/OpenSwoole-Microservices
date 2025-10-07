@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Start
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices;
 
 if (!function_exists(function: 'processAuth')) {
@@ -64,4 +66,3 @@ if (!function_exists(function: 'processSupplement')) {
             DIRECTORY_SEPARATOR . 'SupplementTest.php';
     }
 }
-

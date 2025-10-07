@@ -1,4 +1,5 @@
 <?php
+
 /**
  * API Query config
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\Config\Queries\Auth\ClientDB\Common;
 
 return [
@@ -18,7 +20,7 @@ return [
     '__QUERY__' => 'UPDATE `address` SET __SET__ WHERE __WHERE__',
     '__VALIDATE__' => [
         [
-            'fn' => '_primaryKeyExist',
+            'fn' => 'primaryKeyExist',
             'fnArgs' => [
                 'table' => ['custom', 'address'],
                 'primary' => ['custom', 'id'],

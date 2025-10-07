@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Handling JSON Encode
  * php version 8.3
@@ -11,9 +12,11 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App\DataRepresentation\Json;
 
 use Microservices\App\DataRepresentation\AbstractDataEncode;
+use Microservices\App\DataRepresentation\Json\JsonEncode\JsonEncodeObject;
 use Microservices\App\HttpStatus;
 
 /**
@@ -35,28 +38,28 @@ class JsonEncode extends AbstractDataEncode
      *
      * @var null|resource
      */
-    private $_tempStream = null;
+    private $tempStream = null;
 
     /**
-     * Array of JsonEncoderObject objects
+     * Array of JsonEncodeObject objects
      *
-     * @var JsonEncoderObject[]
+     * @var JsonEncodeObject[]
      */
-    private $_objects = [];
+    private $objects = [];
 
     /**
-     * Current JsonEncoderObject object
+     * Current JsonEncodeObject object
      *
-     * @var null|JsonEncoderObject
+     * @var null|JsonEncodeObject
      */
-    private $_currentObject = null;
+    private $currentObject = null;
 
     /**
      * Characters that are escaped while creating JSON
      *
      * @var string[]
      */
-    private $_escapers = [
+    private $escapers = [
         "\\", "\"", "\n", "\r", "\t", "\x08", "\x0c", ' '
     ];
 
@@ -65,7 +68,7 @@ class JsonEncode extends AbstractDataEncode
      *
      * @var string[]
      */
-    private $_replacements = [
+    private $replacements = [
         "\\\\", "\\\"", "\\n", "\\r", "\\t", "\\f", "\\b", ' '
     ];
 
@@ -77,7 +80,7 @@ class JsonEncode extends AbstractDataEncode
      */
     public function __construct(&$tempStream, $header = true)
     {
-        $this->_tempStream = &$tempStream;
+        $this->tempStream = &$tempStream;
     }
 
     /**
@@ -98,9 +101,9 @@ class JsonEncode extends AbstractDataEncode
      *
      * @return void
      */
-    private function _write($data): void
+    private function write($data): void
     {
-        fwrite(stream: $this->_tempStream, data: $data);
+        fwrite(stream: $this->tempStream, data: $data);
     }
 
     /**
@@ -112,16 +115,16 @@ class JsonEncode extends AbstractDataEncode
      */
     public function encode($data): void
     {
-        if ($this->_currentObject) {
-            $this->_write(data: $this->_currentObject->comma);
+        if ($this->currentObject) {
+            $this->write(data: $this->currentObject->comma);
         }
         if (is_array(value: $data)) {
-            $this->_write(data: json_encode(value: $data));
+            $this->write(data: json_encode(value: $data));
         } else {
-            $this->_write(data: $this->_escape(data: $data));
+            $this->write(data: $this->escape(data: $data));
         }
-        if ($this->_currentObject) {
-            $this->_currentObject->comma = ', ';
+        if ($this->currentObject) {
+            $this->currentObject->comma = ', ';
         }
     }
 
@@ -132,14 +135,14 @@ class JsonEncode extends AbstractDataEncode
      *
      * @return string
      */
-    private function _escape($data): string
+    private function escape($data): string
     {
         if ($data === null) {
             return 'null';
         }
         $data = str_replace(
-            search: $this->_escapers,
-            replace: $this->_replacements,
+            search: $this->escapers,
+            replace: $this->replacements,
             subject: $data
         );
         return "\"{$data}\"";
@@ -154,10 +157,10 @@ class JsonEncode extends AbstractDataEncode
      */
     public function appendData(&$data): void
     {
-        if ($this->_currentObject) {
-            $this->_write(data: $this->_currentObject->comma);
-            $this->_write(data: $data);
-            $this->_currentObject->comma = ', ';
+        if ($this->currentObject) {
+            $this->write(data: $this->currentObject->comma);
+            $this->write(data: $data);
+            $this->currentObject->comma = ', ';
         }
     }
 
@@ -171,10 +174,10 @@ class JsonEncode extends AbstractDataEncode
      */
     public function appendKeyData($key, &$data): void
     {
-        if ($this->_currentObject && $this->_currentObject->mode === 'Object') {
-            $this->_write(data: $this->_currentObject->comma);
-            $this->_write(data: $this->_escape(data: $key) . ':' . $data);
-            $this->_currentObject->comma = ', ';
+        if ($this->currentObject && $this->currentObject->mode === 'Object') {
+            $this->write(data: $this->currentObject->comma);
+            $this->write(data: $this->escape(data: $key) . ':' . $data);
+            $this->currentObject->comma = ', ';
         }
     }
 
@@ -188,7 +191,7 @@ class JsonEncode extends AbstractDataEncode
      */
     public function addArrayData($data): void
     {
-        if ($this->_currentObject->mode !== 'Array') {
+        if ($this->currentObject->mode !== 'Array') {
             throw new \Exception(
                 message: 'Mode should be Array',
                 code: HttpStatus::$InternalServerError
@@ -208,15 +211,15 @@ class JsonEncode extends AbstractDataEncode
      */
     public function addKeyData($key, $data): void
     {
-        if ($this->_currentObject->mode !== 'Object') {
+        if ($this->currentObject->mode !== 'Object') {
             throw new \Exception(
                 message: 'Mode should be Object',
                 code: HttpStatus::$InternalServerError
             );
         }
-        $this->_write(data: $this->_currentObject->comma);
-        $this->_write(data: $this->_escape(data: $key) . ':');
-        $this->_currentObject->comma = '';
+        $this->write(data: $this->currentObject->comma);
+        $this->write(data: $this->escape(data: $key) . ':');
+        $this->currentObject->comma = '';
         $this->encode(data: $data);
     }
 
@@ -229,15 +232,15 @@ class JsonEncode extends AbstractDataEncode
      */
     public function startArray($key = null): void
     {
-        if ($this->_currentObject) {
-            $this->_write(data: $this->_currentObject->comma);
-            array_push($this->_objects, $this->_currentObject);
+        if ($this->currentObject) {
+            $this->write(data: $this->currentObject->comma);
+            array_push($this->objects, $this->currentObject);
         }
-        $this->_currentObject = new JsonEncoderObject(mode: 'Array');
+        $this->currentObject = new JsonEncodeObject(mode: 'Array');
         if ($key !== null) {
-            $this->_write(data: $this->_escape(data: $key) . ':');
+            $this->write(data: $this->escape(data: $key) . ':');
         }
-        $this->_write(data: '[');
+        $this->write(data: '[');
     }
 
     /**
@@ -247,11 +250,11 @@ class JsonEncode extends AbstractDataEncode
      */
     public function endArray(): void
     {
-        $this->_write(data: ']');
-        $this->_currentObject = null;
-        if (count(value: $this->_objects)>0) {
-            $this->_currentObject = array_pop(array: $this->_objects);
-            $this->_currentObject->comma = ', ';
+        $this->write(data: ']');
+        $this->currentObject = null;
+        if (count(value: $this->objects) > 0) {
+            $this->currentObject = array_pop(array: $this->objects);
+            $this->currentObject->comma = ', ';
         }
     }
 
@@ -265,21 +268,21 @@ class JsonEncode extends AbstractDataEncode
      */
     public function startObject($key = null): void
     {
-        if ($this->_currentObject) {
-            if ($this->_currentObject->mode === 'Object' && ($key === null)) {
+        if ($this->currentObject) {
+            if ($this->currentObject->mode === 'Object' && ($key === null)) {
                 throw new \Exception(
                     message: 'Object inside an Object should be supported with Key',
                     code: HttpStatus::$InternalServerError
                 );
             }
-            $this->_write(data: $this->_currentObject->comma);
-            array_push($this->_objects, $this->_currentObject);
+            $this->write(data: $this->currentObject->comma);
+            array_push($this->objects, $this->currentObject);
         }
-        $this->_currentObject = new JsonEncoderObject(mode: 'Object');
+        $this->currentObject = new JsonEncodeObject(mode: 'Object');
         if ($key !== null) {
-            $this->_write(data: $this->_escape(data: $key) . ':');
+            $this->write(data: $this->escape(data: $key) . ':');
         }
-        $this->_write(data: '{');
+        $this->write(data: '{');
     }
 
     /**
@@ -289,11 +292,11 @@ class JsonEncode extends AbstractDataEncode
      */
     public function endObject(): void
     {
-        $this->_write('}');
-        $this->_currentObject = null;
-        if (count(value: $this->_objects)>0) {
-            $this->_currentObject = array_pop(array: $this->_objects);
-            $this->_currentObject->comma = ', ';
+        $this->write(data: '}');
+        $this->currentObject = null;
+        if (count(value: $this->objects) > 0) {
+            $this->currentObject = array_pop(array: $this->objects);
+            $this->currentObject->comma = ', ';
         }
     }
 
@@ -304,45 +307,15 @@ class JsonEncode extends AbstractDataEncode
      */
     public function end(): void
     {
-        while ($this->_currentObject && $this->_currentObject->mode) {
-            switch ($this->_currentObject->mode) {
-            case 'Array':
-                $this->endArray();
-                break;
-            case 'Object':
-                $this->endObject();
-                break;
+        while ($this->currentObject && $this->currentObject->mode) {
+            switch ($this->currentObject->mode) {
+                case 'Array':
+                    $this->endArray();
+                    break;
+                case 'Object':
+                    $this->endObject();
+                    break;
             }
         }
-    }
-}
-
-/**
- * JSON object
- *
- * This class is built to help maintain state of simple/associative array
- * php version 8.3
- *
- * @category  Json_Encoder_Object
- * @package   Openswoole_Microservices
- * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
- * @copyright 2025 Ramesh N Jangid
- * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
- * @since     Class available since Release 1.0.0
- */
-class JsonEncoderObject
-{
-    public $mode = '';
-    public $comma = '';
-
-    /**
-     * Constructor
-     *
-     * @param string $mode Values can be one among Array/object
-     */
-    public function __construct($mode)
-    {
-        $this->mode = $mode;
     }
 }

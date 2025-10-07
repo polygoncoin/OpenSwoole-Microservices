@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTTP Request
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 use Microservices\App\Constants;
@@ -132,7 +134,8 @@ class HttpRequest extends DbFunctions
             characters: '/'
         );
 
-        if (isset($this->http['header'])
+        if (
+            isset($this->http['header'])
             && isset($this->http['header']['authorization'])
         ) {
             $this->HTTP_AUTHORIZATION = $this->http['header']['authorization'];
@@ -171,7 +174,7 @@ class HttpRequest extends DbFunctions
             return;
         }
 
-        $this->_loadCache();
+        $this->loadCache();
 
         if ($this->open) {
             $cKey = CacheKey::clientOpenToWeb(hostname: $this->HOST);
@@ -209,7 +212,7 @@ class HttpRequest extends DbFunctions
             $this->s['payloadType'] = 'Object';
             $this->s['payload'] = !empty($_GET) ? $_GET : [];
         } else {
-            $this->_setPayloadStream();
+            $this->setPayloadStream();
 
             $this->dataDecode = new DataDecode(
                 dataFileHandle: $this->payloadStream
@@ -226,7 +229,7 @@ class HttpRequest extends DbFunctions
      *
      * @return void
      */
-    private function _setPayloadStream(): void
+    private function setPayloadStream(): void
     {
         if (empty($this->http['post']['Payload'])) {
             $this->http['post']['Payload'] = '{}';
@@ -242,7 +245,7 @@ class HttpRequest extends DbFunctions
 
             $result = [];
 
-            $this->_formatXmlArray(array: $array, result: $result);
+            $this->formatXmlArray(array: $array, result: $result);
             $this->http['post']['Payload'] = json_encode(value: $result);
 
             unset($array);
@@ -265,7 +268,7 @@ class HttpRequest extends DbFunctions
      *
      * @return void
      */
-    private function _formatXmlArray(&$array, &$result): void
+    private function formatXmlArray(&$array, &$result): void
     {
         if (isset($array['Rows']) && is_array(value: $array['Rows'])) {
             $array = &$array['Rows'];
@@ -275,7 +278,8 @@ class HttpRequest extends DbFunctions
             $array = &$array['Row'];
         }
 
-        if (isset($array[0])
+        if (
+            isset($array[0])
             && is_array(value: $array[0]) && count(value: $array) === 1
         ) {
             $array = &$array[0];
@@ -297,7 +301,7 @@ class HttpRequest extends DbFunctions
             }
             if (is_array(value: $value)) {
                 $result[$key] = [];
-                $this->_formatXmlArray(array: $value, result: $result[$key]);
+                $this->formatXmlArray(array: $value, result: $result[$key]);
                 continue;
             }
             $result[$key] = $value;
@@ -335,7 +339,7 @@ class HttpRequest extends DbFunctions
      *
      * @return void
      */
-    private function _loadCache(): void
+    private function loadCache(): void
     {
         if ($this->cache !== null) {
             return;

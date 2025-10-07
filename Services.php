@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Service
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices;
 
 use Microservices\App\Constants;
@@ -38,14 +40,14 @@ class Services
      *
      * @var null|int
      */
-    private $_tsStart = null;
+    private $tsStart = null;
 
     /**
      * End micro timestamp;
      *
      * @var null|int
      */
-    private $_tsEnd = null;
+    private $tsEnd = null;
 
     /**
      * Microservices Request Details
@@ -95,7 +97,7 @@ class Services
         }
 
         if (Env::$OUTPUT_PERFORMANCE_STATS) {
-            $this->_tsStart = microtime(as_float: true);
+            $this->tsStart = microtime(as_float: true);
         }
 
         return true;
@@ -134,44 +136,43 @@ class Services
         $class = null;
 
         switch (true) {
+            case Env::$allowCronRequest && strpos(
+                haystack: $this->c->req->ROUTE,
+                needle: '/' . Env::$cronRequestUriPrefix
+            ) === 0:
+                if ($this->c->req->IP !== Env::$cronRestrictedIp) {
+                    throw new \Exception(
+                        message: 'Source IP is not supported',
+                        code: HttpStatus::$NotFound
+                    );
+                }
+                $class = __NAMESPACE__ . '\\App\\Cron';
+                break;
 
-        case Env::$allowCronRequest && strpos(
-            haystack: $this->c->req->ROUTE,
-            needle: '/' . Env::$cronRequestUriPrefix
-        ) === 0:
-            if ($this->c->req->IP !== Env::$cronRestrictedIp) {
-                throw new \Exception(
-                    message: 'Source IP is not supported',
-                    code: HttpStatus::$NotFound
-                );
-            }
-            $class = __NAMESPACE__ . '\\App\\Cron';
-            break;
+            // Requires HTTP auth username and password
+            case $this->c->req->ROUTE === '/reload':
+                if ($this->c->req->IP !== Env::$cronRestrictedIp) {
+                    throw new \Exception(
+                        message: 'Source IP is not supported',
+                        code: HttpStatus::$NotFound
+                    );
+                }
+                $class = __NAMESPACE__ . '\\App\\Reload';
+                break;
 
-        // Requires HTTP auth username and password
-        case $this->c->req->ROUTE === '/reload':
-            if ($this->c->req->IP !== Env::$cronRestrictedIp) {
-                throw new \Exception(
-                    message: 'Source IP is not supported',
-                    code: HttpStatus::$NotFound
-                );
-            }
-            $class = __NAMESPACE__ . '\\App\\Reload';
-            break;
+            // Generates auth token
+            case $this->c->req->ROUTE === '/login':
+                $class = __NAMESPACE__ . '\\App\\Login';
+                break;
 
-        // Generates auth token
-        case $this->c->req->ROUTE === '/login':
-            $class = __NAMESPACE__ . '\\App\\Login';
-            break;
+            // Requires auth token
+            default:
+                $gateway = new Gateway(req: $this->c->req);
+                $gateway->initGateway();
+                $gateway = null;
 
-        // Requires auth token
-        default:
-            $gateway = new Gateway(req: $this->c->req);
-            $gateway->initGateway();
-            $gateway = null;
-
-            $class = __NAMESPACE__ . '\\App\\Api';
-            break;
+                $class = __NAMESPACE__ . '\\App\\Api';
+                break;
         }
 
         // Class found
@@ -188,7 +189,7 @@ class Services
                 }
             }
         } catch (\Exception $e) {
-            $this->_log(e: $e);
+            $this->log(e: $e);
         }
 
         return true;
@@ -215,8 +216,8 @@ class Services
     public function addPerformance(): void
     {
         if (Env::$OUTPUT_PERFORMANCE_STATS) {
-            $this->_tsEnd = microtime(as_float: true);
-            $time = ceil(num: ($this->_tsEnd - $this->_tsStart) * 1000);
+            $this->tsEnd = microtime(as_float: true);
+            $time = ceil(num: ($this->tsEnd - $this->tsStart) * 1000);
             $memory = ceil(num: memory_get_peak_usage() / 1000);
 
             $this->c->res->dataEncode->startObject(key: 'Stats');
@@ -305,7 +306,7 @@ class Services
      * @return never
      * @throws \Exception
      */
-    private function _log($e): never
+    private function log($e): never
     {
         throw new \Exception(
             message: $e->getMessage(),

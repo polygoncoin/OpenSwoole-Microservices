@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CustomAPI
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\Supplement\Custom;
 
 use Microservices\App\Common;
@@ -46,7 +48,7 @@ class Category implements CustomInterface
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Constructor
@@ -55,9 +57,9 @@ class Category implements CustomInterface
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
-        $this->_c->req->db = $this->_c->req->setDbConnection(fetchFrom: $fetchFrom = 'Slave');
-        $this->db = &$this->_c->req->db;
+        $this->c = &$common;
+        $this->c->req->db = $this->c->req->setDbConnection(fetchFrom: $fetchFrom = 'Slave');
+        $this->db = &$this->c->req->db;
     }
 
     /**
@@ -91,7 +93,7 @@ class Category implements CustomInterface
         $this->db->execDbQuery(sql: $sql, params: $sqlParams);
         $rows = $this->db->fetchAll();
         $this->db->closeCursor();
-        $this->_c->res->dataEncode->addKeyData(key: 'Results', data: $rows);
+        $this->c->res->dataEncode->addKeyData(key: 'Results', data: $rows);
         return [true];
     }
 }

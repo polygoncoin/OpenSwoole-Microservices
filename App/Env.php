@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Environment
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 /**
@@ -67,7 +69,7 @@ class Env
 
     public static $allowGetRepresentation = null;
 
-    private static $_allowedRepresentation = ['JSON', 'XML'];
+    private static $allowedRepresentation = ['JSON', 'XML'];
 
     /**
      * Initialize
@@ -116,14 +118,16 @@ class Env
         self::$cacheRequestUriPrefix = getenv(name: 'cacheRequestUriPrefix');
 
         $iRepresentation = getenv(name: 'iRepresentation');
-        if ($iRepresentation !== false
+        if (
+            $iRepresentation !== false
             && self::isValidDataRep(dataRepresentation: $iRepresentation)
         ) {
             self::$iRepresentation = getenv(name: 'iRepresentation');
         }
 
         $oRepresentation = getenv(name: 'oRepresentation');
-        if ($oRepresentation !== false
+        if (
+            $oRepresentation !== false
             && self::isValidDataRep(dataRepresentation: $oRepresentation)
         ) {
             self::$oRepresentation = getenv(name: 'oRepresentation');
@@ -142,10 +146,11 @@ class Env
      */
     public static function isValidDataRep($dataRepresentation): bool
     {
-        if (in_array(
-            needle: $dataRepresentation,
-            haystack: self::$_allowedRepresentation
-        )
+        if (
+            in_array(
+                needle: $dataRepresentation,
+                haystack: self::$allowedRepresentation
+            )
         ) {
             return true;
         } else {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RouteParser
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 use Microservices\App\Constants;
@@ -72,14 +74,14 @@ class RouteParser
      *
      * @var null|HttpRequest
      */
-    private $_req = null;
+    private $req = null;
 
     /**
      * Session reference variable
      *
      * @var null|array
      */
-    private $_s = null;
+    private $s = null;
 
     /**
      * Constructor
@@ -88,8 +90,8 @@ class RouteParser
      */
     public function __construct(&$req)
     {
-        $this->_req = &$req;
-        $this->_s = &$this->_req->s;
+        $this->req = &$req;
+        $this->s = &$this->req->s;
     }
 
     /**
@@ -106,12 +108,12 @@ class RouteParser
         $Env = __NAMESPACE__ . '\Env';
 
         if ($routeFileLocation === null) {
-            if ($this->_req->open) {
+            if ($this->req->open) {
                 $routeFileLocation = Constants::$PUBLIC_HTML .
                     DIRECTORY_SEPARATOR . 'Config' .
                     DIRECTORY_SEPARATOR . 'Routes' .
                     DIRECTORY_SEPARATOR . 'Open' .
-                    DIRECTORY_SEPARATOR . $this->_req->METHOD . 'routes.php';
+                    DIRECTORY_SEPARATOR . $this->req->METHOD . 'routes.php';
             } else {
                 $routeFileLocation = Constants::$PUBLIC_HTML .
                     DIRECTORY_SEPARATOR . 'Config' .
@@ -119,8 +121,8 @@ class RouteParser
                     DIRECTORY_SEPARATOR . 'Auth' .
                     DIRECTORY_SEPARATOR . 'ClientDB' .
                     DIRECTORY_SEPARATOR . 'Groups' .
-                    DIRECTORY_SEPARATOR . $this->_s['gDetails']['name'] .
-                    DIRECTORY_SEPARATOR . $this->_req->METHOD . 'routes.php';
+                    DIRECTORY_SEPARATOR . $this->s['gDetails']['name'] .
+                    DIRECTORY_SEPARATOR . $this->req->METHOD . 'routes.php';
             }
         }
 
@@ -128,23 +130,24 @@ class RouteParser
             $routes = include $routeFileLocation;
         } else {
             throw new \Exception(
-                message: 'Route file missing: ' . $this->_req->METHOD . ' method',
+                message: 'Route file missing: ' . $this->req->METHOD . ' method',
                 code: HttpStatus::$InternalServerError
             );
         }
 
         $this->routeElements = explode(
             separator: '/',
-            string: trim(string: $this->_req->ROUTE, characters: '/')
+            string: trim(string: $this->req->ROUTE, characters: '/')
         );
         $routeLastElementPos = count(value: $this->routeElements) - 1;
         $configuredUri = [];
 
         foreach ($this->routeElements as $key => $element) {
-            if (in_array(
-                needle: $key,
-                haystack: ['__PRE-ROUTE-HOOKS__', '__POST-ROUTE-HOOKS__']
-            )
+            if (
+                in_array(
+                    needle: $key,
+                    haystack: ['__PRE-ROUTE-HOOKS__', '__POST-ROUTE-HOOKS__']
+                )
             ) {
                 $this->routeHook[$key] = $element;
                 continue;
@@ -153,16 +156,18 @@ class RouteParser
             if (isset($routes[$element])) {
                 $configuredUri[] = $element;
                 $routes = &$routes[$element];
-                $this->_checkPresenceOfDynamicString(element: $element);
+                $this->checkPresenceOfDynamicString(element: $element);
                 continue;
-            } elseif ($key === $routeLastElementPos
+            } elseif (
+                $key === $routeLastElementPos
                 && Env::$allowConfigRequest == 1
                 && Env::$configRequestUriKeyword === $element
             ) {
                 $this->isConfigRequest = true;
                 break;
             } else {
-                if ((isset($routes['__FILE__']) && count(value: $routes) > 1)
+                if (
+                    (isset($routes['__FILE__']) && count(value: $routes) > 1)
                     || (!isset($routes['__FILE__']) && count(value: $routes) > 0)
                 ) {
                     [
@@ -170,17 +175,17 @@ class RouteParser
                         $foundIntParamName,
                         $foundStringRoute,
                         $foundStringParamName
-                    ] = $this->_findRouteAndParamName(
+                    ] = $this->findRouteAndParamName(
                         routes: $routes,
                         element: $element
                     );
                     if ($foundIntRoute) {
                         $configuredUri[] = $foundIntRoute;
-                        $this->_s['uriParams'][$foundIntParamName]
+                        $this->s['uriParams'][$foundIntParamName]
                             = (int)$element;
                     } elseif ($foundStringRoute) {
                         $configuredUri[] = $foundStringRoute;
-                        $this->_s['uriParams'][$foundStringParamName]
+                        $this->s['uriParams'][$foundStringParamName]
                             = urldecode(string: $element);
                     } else {
                         throw new \Exception(
@@ -197,7 +202,8 @@ class RouteParser
                         code: HttpStatus::$BadRequest
                     );
                 }
-                if (isset($routes['iRepresentation'])
+                if (
+                    isset($routes['iRepresentation'])
                     && Env::isValidDataRep(
                         dataRepresentation: $routes['iRepresentation']
                     )
@@ -209,17 +215,18 @@ class RouteParser
 
         // Input data representation over rides global and routes settings
         // Switch Input data representation if set in URL param
-        if (Env::$allowGetRepresentation == 1
-            && isset($this->_req->http['get']['iRepresentation'])
+        if (
+            Env::$allowGetRepresentation == 1
+            && isset($this->req->http['get']['iRepresentation'])
             && Env::isValidDataRep(
-                dataRepresentation: $this->_req->http['get']['iRepresentation']
+                dataRepresentation: $this->req->http['get']['iRepresentation']
             )
         ) {
-            Env::$iRepresentation = $this->_req->http['get']['iRepresentation'];
+            Env::$iRepresentation = $this->req->http['get']['iRepresentation'];
         }
 
         $this->configuredUri = '/' . implode(separator: '/', array: $configuredUri);
-        $this->_validateConfigFile(routes: $routes);
+        $this->validateConfigFile(routes: $routes);
     }
 
     /**
@@ -235,7 +242,7 @@ class RouteParser
      * @return bool
      * @throws \Exception
      */
-    private function _processRouteElement(
+    private function processRouteElement(
         $routeElement,
         &$element,
         &$foundIntRoute,
@@ -281,22 +288,22 @@ class RouteParser
 
         if (count(value: $preferredValues) > 0) {
             switch ($mode) {
-            case 'include': // preferred values
-                if (!in_array(needle: $element, haystack: $preferredValues)) {
-                    throw new \Exception(
-                        message: "'{$element}' not allowed in {$routeElement}",
-                        code: HttpStatus::$InternalServerError
-                    );
-                }
-                break;
-            case 'exclude': // exclude set values
-                if (in_array(needle: $element, haystack: $preferredValues)) {
-                    throw new \Exception(
-                        message: "'{$element}' restricted in config {$routeElement}",
-                        code: HttpStatus::$InternalServerError
-                    );
-                }
-                break;
+                case 'include': // preferred values
+                    if (!in_array(needle: $element, haystack: $preferredValues)) {
+                        throw new \Exception(
+                            message: "'{$element}' not allowed in {$routeElement}",
+                            code: HttpStatus::$InternalServerError
+                        );
+                    }
+                    break;
+                case 'exclude': // exclude set values
+                    if (in_array(needle: $element, haystack: $preferredValues)) {
+                        throw new \Exception(
+                            message: "'{$element}' restricted in config {$routeElement}",
+                            code: HttpStatus::$InternalServerError
+                        );
+                    }
+                    break;
             }
         }
 
@@ -320,19 +327,22 @@ class RouteParser
      * @return void
      * @throws \Exception
      */
-    private function _validateConfigFile(&$routes): void
+    private function validateConfigFile(&$routes): void
     {
         // Set route code file
-        if (!(isset($routes['__FILE__']) && ($routes['__FILE__'] === false
+        if (
+            !(isset($routes['__FILE__'])
+            && ($routes['__FILE__'] === false
             || file_exists(filename: $routes['__FILE__'])))
         ) {
             throw new \Exception(
-                message: 'Missing config for ' . $this->_req->METHOD . ' method',
+                message: 'Missing config for ' . $this->req->METHOD . ' method',
                 code: HttpStatus::$InternalServerError
             );
         }
 
-        if (!empty($routes['__FILE__'])
+        if (
+            !empty($routes['__FILE__'])
             && file_exists(filename: $routes['__FILE__'])
         ) {
             $this->sqlConfigFile = $routes['__FILE__'];
@@ -340,7 +350,8 @@ class RouteParser
             // Output data representation over rides global
             // Output data representation set in Query config file
             $sqlConfig = include $this->sqlConfigFile;
-            if (isset($sqlConfig['oRepresentation'])
+            if (
+                isset($sqlConfig['oRepresentation'])
                 && Env::isValidDataRep(
                     dataRepresentation: $sqlConfig['oRepresentation']
                 )
@@ -350,13 +361,14 @@ class RouteParser
         }
 
         // Switch Output data representation if set in URL param
-        if (Env::$allowGetRepresentation == 1
-            && isset($this->_req->http['get']['oRepresentation'])
+        if (
+            Env::$allowGetRepresentation == 1
+            && isset($this->req->http['get']['oRepresentation'])
             && Env::isValidDataRep(
-                dataRepresentation: $this->_req->http['get']['oRepresentation']
+                dataRepresentation: $this->req->http['get']['oRepresentation']
             )
         ) {
-            Env::$oRepresentation = $this->_req->http['get']['oRepresentation'];
+            Env::$oRepresentation = $this->req->http['get']['oRepresentation'];
         }
     }
 
@@ -367,7 +379,7 @@ class RouteParser
      *
      * @return void
      */
-    private function _checkPresenceOfDynamicString($element): void
+    private function checkPresenceOfDynamicString($element): void
     {
         if (strpos(haystack: $element, needle: '{') === 0) {
             $param = substr(
@@ -375,7 +387,7 @@ class RouteParser
                 offset: 1,
                 length: strpos(haystack: $element, needle: ':') - 1
             );
-            $this->_s['uriParams'][$param] = $element;
+            $this->s['uriParams'][$param] = $element;
         }
     }
 
@@ -387,7 +399,7 @@ class RouteParser
      *
      * @return array
      */
-    private function _findRouteAndParamName(&$routes, &$element): array
+    private function findRouteAndParamName(&$routes, &$element): array
     {
         $foundIntRoute = false;
         $foundIntParamName = false;
@@ -396,7 +408,7 @@ class RouteParser
         foreach (array_keys(array: $routes) as $routeElement) {
             if (strpos(haystack: $routeElement, needle: '{') === 0) {
                 // Is a dynamic URI element
-                $this->_processRouteElement(
+                $this->processRouteElement(
                     routeElement: $routeElement,
                     element: $element,
                     foundIntRoute: $foundIntRoute,
@@ -414,5 +426,4 @@ class RouteParser
             $foundStringParamName
         ];
     }
-
 }

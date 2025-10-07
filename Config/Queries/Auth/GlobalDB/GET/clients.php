@@ -1,4 +1,5 @@
 <?php
+
 /**
  * API Query config
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\Config\Queries\Auth\GlobalDB\GET;
 
 return [
@@ -62,4 +64,4 @@ return [
         ],
         '__MODE__' => 'singleRowFormat'
     ],
-][isset($this->_c->req->s['uriParams']['id'])?'single':'all'];
+][isset($this->c->req->s['uriParams']['id'])?'single':'all'];

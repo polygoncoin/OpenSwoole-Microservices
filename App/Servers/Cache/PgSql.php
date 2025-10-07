@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Handling Cache via pgsql
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App\Servers\Cache;
 
 use Microservices\App\HttpStatus;
@@ -36,49 +38,49 @@ class PgSql extends AbstractCache
      *
      * @var null|string
      */
-    private $_hostname = null;
+    private $hostname = null;
 
     /**
      * Cache port
      *
      * @var null|int
      */
-    private $_port = null;
+    private $port = null;
 
     /**
      * Cache password
      *
      * @var null|string
      */
-    private $_username = null;
+    private $username = null;
 
     /**
      * Cache password
      *
      * @var null|string
      */
-    private $_password = null;
+    private $password = null;
 
     /**
      * Cache database
      *
      * @var null|string
      */
-    private $_database = null;
+    private $database = null;
 
     /**
      * Cache connection
      *
      * @var null|Pg_MySql
      */
-    private $_cache = null;
+    private $cache = null;
 
     /**
      * Current timestamp
      *
      * @var null|int
      */
-    private $_ts = null;
+    private $ts = null;
 
     /**
      * Cache connection
@@ -91,14 +93,14 @@ class PgSql extends AbstractCache
      */
     public function __construct($hostname, $port, $username, $password, $database)
     {
-        $this->_ts = time();
-        $this->_hostname = $hostname;
-        $this->_port = $port;
-        $this->_username = $username;
-        $this->_password = $password;
+        $this->ts = time();
+        $this->hostname = $hostname;
+        $this->port = $port;
+        $this->username = $username;
+        $this->password = $password;
 
         if ($database !== null) {
-            $this->_database = $database;
+            $this->database = $database;
         }
     }
 
@@ -110,17 +112,17 @@ class PgSql extends AbstractCache
      */
     public function connect(): void
     {
-        if ($this->_cache !== null) {
+        if ($this->cache !== null) {
             return;
         }
 
         try {
-            $this->_cache = new DB_PgSql(
-                hostname: $this->_hostname,
-                port: $this->_port,
-                username: $this->_username,
-                password: $this->_password,
-                database: $this->_database
+            $this->cache = new DB_PgSql(
+                hostname: $this->hostname,
+                port: $this->port,
+                username: $this->username,
+                password: $this->password,
+                database: $this->database
             );
         } catch (\Exception $e) {
             throw new \Exception(
@@ -138,8 +140,8 @@ class PgSql extends AbstractCache
     public function useDatabase(): void
     {
         $this->connect();
-        if ($this->_database !== null) {
-            $this->_cache->useDatabase();
+        if ($this->database !== null) {
+            $this->cache->useDatabase();
         }
     }
 
@@ -176,10 +178,10 @@ class PgSql extends AbstractCache
                 FROM `{$keyDetails['table']}`
                 WHERE `key` = ? AND (`ts` = 0 OR `ts` > ?)
             ";
-            $params = [$keyDetails['key'], $this->_ts];
-            $this->_cache->execDbQuery(sql: $sql, $params);
-            $row = $this->_cache->fetch();
-            $this->_cache->closeCursor();
+            $params = [$keyDetails['key'], $this->ts];
+            $this->cache->execDbQuery($sql, $params);
+            $row = $this->cache->fetch();
+            $this->cache->closeCursor();
             return $row['value'];
         } else {
             return false;
@@ -204,8 +206,8 @@ class PgSql extends AbstractCache
         if (isset($keyDetails['count']) && $keyDetails['count'] > 0) {
             $sql = "DELETE FROM `{$keyDetails['table']}` WHERE `key` = ?";
             $params = [$keyDetails['key']];
-            $this->_cache->execDbQuery(sql: $sql, $params);
-            $this->_cache->closeCursor();
+            $this->cache->execDbQuery($sql, $params);
+            $this->cache->closeCursor();
         }
 
         $sql = "
@@ -215,11 +217,11 @@ class PgSql extends AbstractCache
         if ($expire === null) {
             $params = [$value, 0, $keyDetails['key']];
         } else {
-            $params = [$value, $this->_ts + $expire, $keyDetails['key']];
+            $params = [$value, $this->ts + $expire, $keyDetails['key']];
         }
 
-        $this->_cache->execDbQuery(sql: $sql, $params);
-        $this->_cache->closeCursor();
+        $this->cache->execDbQuery($sql, $params);
+        $this->cache->closeCursor();
     }
 
     /**
@@ -238,8 +240,8 @@ class PgSql extends AbstractCache
         if (isset($keyDetails['count']) && $keyDetails['count'] > 0) {
             $sql = "DELETE FROM `{$keyDetails['table']}` WHERE `key` = ?";
             $params = [$keyDetails['key']];
-            $this->_cache->execDbQuery(sql: $sql, $params);
-            $this->_cache->closeCursor();
+            $this->cache->execDbQuery($sql, $params);
+            $this->cache->closeCursor();
         }
     }
 
@@ -256,24 +258,24 @@ class PgSql extends AbstractCache
         $tableKey = substr(string: $key, offset: 0, length: $pos);
 
         switch ($tableKey) {
-        case 'c':
-            $table = 'client';
-            break;
-        case 'cu':
-            $table = 'user';
-            break;
-        case 'g':
-            $table = 'group';
-            break;
-        case 'cidr':
-            $table = 'cidr';
-            break;
-        case 'ut':
-            $table = 'usertoken';
-            break;
-        case 't':
-            $table = 'token';
-            break;
+            case 'c':
+                $table = 'client';
+                break;
+            case 'cu':
+                $table = 'user';
+                break;
+            case 'g':
+                $table = 'group';
+                break;
+            case 'cidr':
+                $table = 'cidr';
+                break;
+            case 'ut':
+                $table = 'usertoken';
+                break;
+            case 't':
+                $table = 'token';
+                break;
         }
 
         $keyDetails = [
@@ -286,11 +288,11 @@ class PgSql extends AbstractCache
             FROM `{$keyDetails['table']}`
             WHERE `key` = ? AND (`ts` = 0 OR `ts` > ?)
         ";
-        $params = [$keyDetails['key'], $this->_ts];
+        $params = [$keyDetails['key'], $this->ts];
 
-        $this->_cache->execDbQuery(sql: $sql, $params);
-        $row = $this->_cache->fetch();
-        $this->_cache->closeCursor();
+        $this->cache->execDbQuery($sql, $params);
+        $row = $this->cache->fetch();
+        $this->cache->closeCursor();
 
         $keyDetails['count'] = $row['count'];
 

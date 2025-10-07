@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Load CacheServerKeys_Required
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 use Microservices\App\AppTrait;
@@ -54,7 +56,7 @@ class Reload
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Constructor
@@ -63,7 +65,7 @@ class Reload
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
+        $this->c = &$common;
     }
 
     /**
@@ -83,7 +85,7 @@ class Reload
      */
     public function process(): bool
     {
-        $this->cache = $this->_c->req->connectCache(
+        $this->cache = $this->c->req->connectCache(
             cacheType: getenv(name: 'cacheType'),
             cacheHostname: getenv(name: 'cacheHostname'),
             cachePort: getenv(name: 'cachePort'),
@@ -92,8 +94,8 @@ class Reload
             cacheDatabase: getenv(name: 'cacheDatabase')
         );
 
-        $this->_processDomainAndUser();
-        $this->_processGroup();
+        $this->processDomainAndUser();
+        $this->processGroup();
 
         return true;
     }
@@ -103,9 +105,9 @@ class Reload
      *
      * @return void
      */
-    private function _processDomainAndUser(): void
+    private function processDomainAndUser(): void
     {
-        $this->_c->req->db = $this->_c->req->connectDb(
+        $this->c->req->db = $this->c->req->connectDb(
             dbType: getenv(name: 'globalType'),
             dbHostname: getenv(name: 'globalHostname'),
             dbPort: getenv(name: 'globalPort'),
@@ -113,7 +115,7 @@ class Reload
             dbPassword: getenv(name: 'globalPassword'),
             dbDatabase: getenv(name: 'globalDatabase')
         );
-        $this->db = &$this->_c->req->db;
+        $this->db = &$this->c->req->db;
 
         $this->db->execDbQuery(
             sql: "
@@ -141,7 +143,7 @@ class Reload
                 key: $c_key,
                 value: json_encode(value: $cRows[$ci])
             );
-            $this->_c->req->db = $this->_c->req->connectDb(
+            $this->c->req->db = $this->c->req->connectDb(
                 dbType: getenv(name: $cRows[$ci]['master_db_server_type']),
                 dbHostname: getenv(name: $cRows[$ci]['master_db_hostname']),
                 dbPort: getenv(name: $cRows[$ci]['master_db_port']),
@@ -179,9 +181,9 @@ class Reload
      *
      * @return void
      */
-    private function _processGroup(): void
+    private function processGroup(): void
     {
-        $this->_c->req->db = $this->_c->req->connectDb(
+        $this->c->req->db = $this->c->req->connectDb(
             dbType: getenv(name: 'globalType'),
             dbHostname: getenv(name: 'globalHostname'),
             dbPort: getenv(name: 'globalPort'),
@@ -204,8 +206,8 @@ class Reload
             $g_key = CacheKey::group(gID: $gRows['id']);
             $this->cache->setCache(key: $g_key, value: json_encode(value: $gRows));
             if (!empty($gRows['allowed_ips'])) {
-                $cidrs = $this->_cidrsIpNumber(cidrs: $gRows['allowed_ips']);
-                if (count(value: $cidrs)>0) {
+                $cidrs = $this->cidrsIpNumber(cidrs: $gRows['allowed_ips']);
+                if (count(value: $cidrs) > 0) {
                     $cidrKey = CacheKey::cidr(gID: $gRows['id']);
                     $this->cache->setCache(
                         key: $cidrKey,
@@ -224,11 +226,10 @@ class Reload
      *
      * @return void
      */
-    private function _processToken($token): void
+    private function processToken($token): void
     {
         $this->cache->deleteCache(key: CacheKey::token(token: $token));
     }
-
 
     /**
      * Returns Start IP and End IP for a given CIDR
@@ -237,18 +238,20 @@ class Reload
      *
      * @return array
      */
-    private function _cidrsIpNumber($cidrs): array
+    private function cidrsIpNumber($cidrs): array
     {
         $response = [];
 
-        foreach (explode(
-            separator: ', ',
-            string: str_replace(
-                search: ' ',
-                replace: '',
-                subject: $cidrs
-            )
-        ) as $cidr) {
+        foreach (
+            explode(
+                separator: ', ',
+                string: str_replace(
+                    search: ' ',
+                    replace: '',
+                    subject: $cidrs
+                )
+            ) as $cidr
+        ) {
             if (strpos(haystack: $cidr, needle: '/')) {
                 [$cidrIp, $bits] = explode(
                     separator: '/',

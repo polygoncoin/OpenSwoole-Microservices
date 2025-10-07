@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CustomAPI
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\Supplement\Custom;
 
 use Microservices\App\CacheKey;
@@ -39,7 +41,7 @@ class Password implements CustomInterface
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Constructor
@@ -48,7 +50,7 @@ class Password implements CustomInterface
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
+        $this->c = &$common;
     }
 
     /**
@@ -58,7 +60,7 @@ class Password implements CustomInterface
      */
     public function init(): bool
     {
-        $this->_c->req->loadPayload();
+        $this->c->req->loadPayload();
         return true;
     }
 
@@ -71,19 +73,19 @@ class Password implements CustomInterface
      */
     public function process(array $payload = []): array
     {
-        if ($this->_c->req->s['payloadType'] === 'Object') {
-            $payload = $this->_c->req->dataDecode->get();
+        if ($this->c->req->s['payloadType'] === 'Object') {
+            $payload = $this->c->req->dataDecode->get();
         } else {
-            $payload = $this->_c->req->dataDecode->get('0');
+            $payload = $this->c->req->dataDecode->get('0');
         }
-        $this->_c->req->s['payload'] = $payload;
+        $this->c->req->s['payload'] = $payload;
 
-        $oldPassword = $this->_c->req->s['payload']['old_password'];
-        $oldPasswordHash = $this->_c->req->s['uDetails']['password_hash'];
+        $oldPassword = $this->c->req->s['payload']['old_password'];
+        $oldPasswordHash = $this->c->req->s['uDetails']['password_hash'];
 
         if (password_verify(password: $oldPassword, hash: $oldPasswordHash)) {
-            $userName = $this->_c->req->s['uDetails']['username'];
-            $newPassword = $this->_c->req->s['payload']['new_password'];
+            $userName = $this->c->req->s['uDetails']['username'];
+            $newPassword = $this->c->req->s['payload']['new_password'];
             $newPasswordHash = password_hash(
                 password: $newPassword,
                 algo: PASSWORD_DEFAULT
@@ -101,32 +103,32 @@ class Password implements CustomInterface
                 ':is_deleted' => 'No',
             ];
 
-            $this->_c->req->db->execDbQuery(sql: $sql, params: $sqlParams);
-            $this->_c->req->db->closeCursor();
+            $this->c->req->db->execDbQuery(sql: $sql, params: $sqlParams);
+            $this->c->req->db->closeCursor();
 
-            $cID = $this->_c->req->s['cDetails']['id'];
+            $cID = $this->c->req->s['cDetails']['id'];
             $cu_key = CacheKey::clientUser(
                 cID: $cID,
                 username: $userName
             );
-            if ($this->_c->req->cache->cacheExists(key: $cu_key)) {
+            if ($this->c->req->cache->cacheExists(key: $cu_key)) {
                 $uDetails = json_decode(
-                    json: $this->_c->req->cache->getCache(
+                    json: $this->c->req->cache->getCache(
                         key: $cu_key
                     ),
                     associative: true
                 );
                 $uDetails['password_hash'] = $newPasswordHash;
-                $this->_c->req->cache->setCache(
+                $this->c->req->cache->setCache(
                     key: $cu_key,
                     value: json_encode(value: $uDetails)
                 );
-                $this->_c->req->cache->deleteCache(
-                    key: CacheKey::token(token: $this->_c->req->s['token'])
+                $this->c->req->cache->deleteCache(
+                    key: CacheKey::token(token: $this->c->req->s['token'])
                 );
             }
 
-            $this->_c->res->dataEncode->addKeyData(
+            $this->c->res->dataEncode->addKeyData(
                 key: 'Results',
                 data: 'Password changed successfully'
             );

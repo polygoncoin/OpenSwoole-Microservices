@@ -1,4 +1,5 @@
 <?php
+
 /**
  * API Query config
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\Config\Queries\Auth\GlobalDB\PATCH\enable;
 
 use Microservices\App\DatabaseDataTypes;
@@ -55,7 +57,7 @@ return [
     ],
     '__VALIDATE__' => [
         [
-            'fn' => '_primaryKeyExist',
+            'fn' => 'primaryKeyExist',
             'fnArgs' => [
                 'table' => ['custom', Env::$groups],
                 'primary' => ['custom', 'id'],

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Rate Limiter
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 /**
@@ -32,14 +34,14 @@ class RateLimiter
      *
      * @var null|\Redis
      */
-    private $_redis = null;
+    private $redis = null;
 
     /**
      * Current timestamp
      *
      * @var null|int
      */
-    private $_currentTimestamp = null;
+    private $currentTimestamp = null;
 
     /**
      * Constructor
@@ -55,13 +57,13 @@ class RateLimiter
             );
         }
 
-        $this->_redis = new \Redis();
-        $this->_redis->connect(
+        $this->redis = new \Redis();
+        $this->redis->connect(
             getenv(name: 'rateLimitHost'),
             (int)getenv(name: 'rateLimitHostPort')
         );
 
-        $this->_currentTimestamp = time();
+        $this->currentTimestamp = time();
     }
 
     /**
@@ -83,25 +85,25 @@ class RateLimiter
         $maxRequests = (int)$maxRequests;
         $secondsWindow = (int)$secondsWindow;
 
-        $remainder = $this->_currentTimestamp % $secondsWindow;
+        $remainder = $this->currentTimestamp % $secondsWindow;
         $remainder = $remainder !== 0 ? $remainder : $secondsWindow;
 
         $key = $prefix . $key;
 
-        if ($this->_redis->exists($key)) {
-            $requestCount = (int)$this->_redis->get($key);
+        if ($this->redis->exists($key)) {
+            $requestCount = (int)$this->redis->get($key);
         } else {
             $requestCount = 0;
-            $this->_redis->set($key, $requestCount, $remainder);
+            $this->redis->set($key, $requestCount, $remainder);
         }
         $requestCount++;
 
         $allowed = $requestCount <= $maxRequests;
         $remaining = max(0, $maxRequests - $requestCount);
-        $resetAt = $this->_currentTimestamp + $remainder;
+        $resetAt = $this->currentTimestamp + $remainder;
 
         if ($allowed) {
-            $this->_redis->incr($key);
+            $this->redis->incr($key);
         }
 
         return [

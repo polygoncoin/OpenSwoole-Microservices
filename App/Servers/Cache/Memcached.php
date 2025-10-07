@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Handling Cache via Memcached
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App\Servers\Cache;
 
 use Microservices\App\HttpStatus;
@@ -35,21 +37,21 @@ class Memcached extends AbstractCache
      *
      * @var null|string
      */
-    private $_hostname = null;
+    private $hostname = null;
 
     /**
      * Cache port
      *
      * @var null|int
      */
-    private $_port = null;
+    private $port = null;
 
     /**
      * Cache connection
      *
      * @var null|\Memcached
      */
-    private $_cache = null;
+    private $cache = null;
 
     /**
      * Cache connection
@@ -59,8 +61,8 @@ class Memcached extends AbstractCache
      */
     public function __construct($hostname, $port)
     {
-        $this->_hostname = $hostname;
-        $this->_port = $port;
+        $this->hostname = $hostname;
+        $this->port = $port;
     }
 
     /**
@@ -71,7 +73,7 @@ class Memcached extends AbstractCache
      */
     public function connect(): void
     {
-        if ($this->_cache !== null) {
+        if ($this->cache !== null) {
             return;
         }
 
@@ -83,8 +85,8 @@ class Memcached extends AbstractCache
         }
 
         try {
-            $this->_cache = new \Memcached();
-            $this->_cache->addServer($this->_hostname, $this->_port);
+            $this->cache = new \Memcached();
+            $this->cache->addServer($this->hostname, $this->port);
         } catch (\Exception $e) {
             throw new \Exception(
                 message: $e->getMessage(),
@@ -130,7 +132,7 @@ class Memcached extends AbstractCache
     public function getCache($key): mixed
     {
         $this->connect();
-        return $this->_cache->get($key);
+        return $this->cache->get($key);
     }
 
     /**
@@ -147,9 +149,9 @@ class Memcached extends AbstractCache
         $this->connect();
 
         if ($expire === null) {
-            return $this->_cache->set($key, $value);
+            return $this->cache->set($key, $value);
         } else {
-            return $this->_cache->set($key, $value, $expire);
+            return $this->cache->set($key, $value, $expire);
         }
     }
 
@@ -163,6 +165,6 @@ class Memcached extends AbstractCache
     public function deleteCache($key): mixed
     {
         $this->connect();
-        return $this->_cache->delete($key);
+        return $this->cache->delete($key);
     }
 }

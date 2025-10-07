@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Logging
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 use Microservices\App\Constants;
@@ -29,7 +31,7 @@ use Microservices\App\Constants;
  */
 class Logs
 {
-    private string $_logsDir = DIRECTORY_SEPARATOR . 'Logs';
+    private string $logsDir = DIRECTORY_SEPARATOR . 'Logs';
 
     /**
      * Validates password from its hash present in cache
@@ -41,7 +43,7 @@ class Logs
     public function log(&$logDetails): void
     {
         $absLogsDir = Constants::$DOC_ROOT . DIRECTORY_SEPARATOR .
-            'Files' . $this->_logsDir;
+            'Files' . $this->logsDir;
         if (!is_dir(filename: $absLogsDir)) {
             mkdir(directory: $absLogsDir, permissions: 0755, recursive: true);
         }

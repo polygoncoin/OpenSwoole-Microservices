@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DataTypes
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 /* String Data Types */
@@ -389,69 +391,76 @@ class DatabaseDataTypes
         &$dataType
     ): bool {
         switch ($dataType['dataType']) {
-        case 'null':
-            $data = null;
-            break;
-        case 'bool':
-            $data = (bool)$data;
-            break;
-        case 'int':
-            $data = (int)$data;
-            break;
-        case 'float':
-            $data = (float)$data;
-            break;
-        case 'string':
-            $data = (string)$data;
-            break;
-        case 'json':
-            $data = (string)json_encode(value: $data);
-            break;
-        default:
-            throw new \Exception(
-                message: 'Invalid Data-type:'.$dataType['dataType'],
-                code: HttpStatus::$InternalServerError
-            );
+            case 'null':
+                $data = null;
+                break;
+            case 'bool':
+                $data = (bool)$data;
+                break;
+            case 'int':
+                $data = (int)$data;
+                break;
+            case 'float':
+                $data = (float)$data;
+                break;
+            case 'string':
+                $data = (string)$data;
+                break;
+            case 'json':
+                $data = (string)json_encode(value: $data);
+                break;
+            default:
+                throw new \Exception(
+                    message: 'Invalid Data-type:' . $dataType['dataType'],
+                    code: HttpStatus::$InternalServerError
+                );
         }
 
         $returnFlag = true;
-        if ($returnFlag
+        if (
+            $returnFlag
             && isset($dataType['minValue'])
             && $dataType['minValue'] <= $data
         ) {
             $returnFlag = false;
         }
-        if ($returnFlag
+        if (
+            $returnFlag
             && isset($dataType['maxValue'])
             && $data <= $dataType['maxValue']
         ) {
             $returnFlag = false;
         }
-        if ($returnFlag
+        if (
+            $returnFlag
             && isset($dataType['minLength'])
             && $dataType['minLength'] <= strlen(string: $data)
         ) {
             $returnFlag = false;
         }
-        if ($returnFlag
+        if (
+            $returnFlag
             && isset($dataType['maxLength'])
             && strlen(string: $data) <= $dataType['maxLength']
         ) {
             $returnFlag = false;
         }
-        if ($returnFlag
+        if (
+            $returnFlag
             && isset($dataType['enumValues'])
             && in_array(needle: $data, haystack: $dataType['enumValues'])
         ) {
             $returnFlag = false;
         }
-        if ($returnFlag
+        if (
+            $returnFlag
             && isset($dataType['setValues'])
             && empty(array_diff([$data], $dataType['setValues']))
         ) {
             $returnFlag = false;
         }
-        if ($returnFlag
+        if (
+            $returnFlag
             && isset($dataType['regex'])
             && preg_match(pattern: $dataType['regex'], subject: $data) === 0
         ) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Start
  * php version 8.3
@@ -11,18 +12,20 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices;
 
 use Microservices\Services;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\Logs;
-
 use Openswoole\Coroutine;
 use Openswoole\Http\Server;
 use Openswoole\Http\Request;
 use Openswoole\Http\Response;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'Autoload.php';
+
+spl_autoload_register(callback: __NAMESPACE__ . '\Autoload::register');
 
 // Set coroutine options before you start a server...
 Coroutine::set(
@@ -45,7 +48,8 @@ $server->on(
     'request',
     function (Request $request, Response $response): void {
 
-        if (isset($request->get['r'])
+        if (
+            isset($request->get['r'])
             && in_array(
                 needle: $request->get['r'],
                 haystack: [
@@ -58,18 +62,18 @@ $server->on(
         ) {
             include __DIR__ . '/Tests.php';
             switch ($request->get['r']) {
-            case '/auth-test':
-                $response->end(processAuth());
-                break;
-            case '/open-test':
-                $response->end(processOpen());
-                break;
-            case '/open-test-xml':
-                $response->end(processXml());
-                break;
-            case '/supp-test':
-                $response->end(processSupplement());
-                break;
+                case '/auth-test':
+                    $response->end(processAuth());
+                    break;
+                case '/open-test':
+                    $response->end(processOpen());
+                    break;
+                case '/open-test-xml':
+                    $response->end(processXml());
+                    break;
+                case '/supp-test':
+                    $response->end(processSupplement());
+                    break;
             }
             return;
         }
@@ -77,7 +81,6 @@ $server->on(
         $http = [];
         $http['server']['host'] = 'localhost';
         // $http['server']['host'] = 'public.localhost';
-        // $http['server']['host'] = OpenSwoole\Core\Psr\Uri->getHost();
         $http['server']['method'] = $request->server['request_method'];
         $http['server']['ip'] = $request->server['remote_addr'];
         if (isset($request->header['authorization'])) {
@@ -89,7 +92,8 @@ $server->on(
         $http['files'] = &$request->files;
 
         // Check version
-        if (!isset($request->header['x-api-version'])
+        if (
+            !isset($request->header['x-api-version'])
             || $request->header['x-api-version'] !== 'v1.0.0'
         ) {
             // Set response headers
@@ -141,7 +145,8 @@ $server->on(
                         'session' => $services->c->req->s
                     ]
                 ];
-                (new Logs)->log(logDetails: $logDetails);
+                $logsObj = new Logs();
+                $logsObj->log(logDetails: $logDetails);
             }
 
             $response->status($e->getCode());

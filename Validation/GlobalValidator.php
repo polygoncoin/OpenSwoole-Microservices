@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Validator
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\Validation;
 
 use Microservices\App\Common;
@@ -46,7 +48,7 @@ class GlobalValidator implements ValidatorInterface
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Constructor
@@ -55,8 +57,8 @@ class GlobalValidator implements ValidatorInterface
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
-        $this->db = &$this->_c->req->db;
+        $this->c = &$common;
+        $this->db = &$this->c->req->db;
     }
 
     /**
@@ -76,7 +78,7 @@ class GlobalValidator implements ValidatorInterface
                 if ($mode === 'custom') {
                     $args[$attr] = $key;
                 } else {
-                    $args[$attr] = $this->_c->req->s[$mode][$key];
+                    $args[$attr] = $this->c->req->s[$mode][$key];
                 }
             }
             $fn = $v['fn'];
@@ -95,7 +97,7 @@ class GlobalValidator implements ValidatorInterface
      *
      * @return int 0/1
      */
-    private function _primaryKeyExist(&$args): int
+    private function primaryKeyExist(&$args): int
     {
         extract(array: $args);
         $sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
@@ -113,7 +115,7 @@ class GlobalValidator implements ValidatorInterface
      *
      * @return bool
      */
-    private function _checkColumnValueExist(&$args): bool
+    private function checkColumnValueExist(&$args): bool
     {
         extract(array: $args);
         $sql = "

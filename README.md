@@ -601,7 +601,7 @@ return [
 
 #### Available configuration options for Supplement
 
-> Here one can configure and collect payload to perform customized operations (for Supplement folder in public_html)
+> Here one can configure and collect payload to perform customized operations (for Supplement folder)
 
 ```PHP
 //return represents root for sqlResults
@@ -1184,7 +1184,6 @@ var xmlPayload = '<?xml version="1.0" encoding="UTF-8" ?>' +
 '        </Row>' +
 '    </Rows>' +
 '</Payload>';
-
 
 var xmlhttp = new XMLHttpRequest();
 

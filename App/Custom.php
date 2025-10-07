@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Initialize Custom API
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 use Microservices\App\Common;
@@ -35,14 +37,14 @@ class Custom
      *
      * @var null|CustomInterface
      */
-    private $_api = null;
+    private $api = null;
 
     /**
      * Common object
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Constructor
@@ -51,7 +53,7 @@ class Custom
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
+        $this->c = &$common;
     }
 
     /**
@@ -62,11 +64,11 @@ class Custom
     public function init(): bool
     {
         $class = 'Microservices\\Supplement\\Custom\\' .
-            ucfirst(string: $this->_c->req->rParser->routeElements[1]);
+            ucfirst(string: $this->c->req->rParser->routeElements[1]);
 
-        $this->_api = new $class(common: $this->_c);
+        $this->api = new $class(common: $this->c);
 
-        return $this->_api->init();
+        return $this->api->init();
     }
 
     /**
@@ -79,6 +81,6 @@ class Custom
      */
     public function process($function, $payload): array
     {
-        return $this->_api->$function($payload);
+        return $this->api->$function($payload);
     }
 }

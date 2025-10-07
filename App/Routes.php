@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Routes - Available routes
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 use Microservices\App\Constants;
@@ -36,7 +38,7 @@ class Routes
      *
      * @var array
      */
-    private $_httpMethods = [
+    private $httpMethods = [
         'GET',
         'POST',
         'PUT',
@@ -49,7 +51,7 @@ class Routes
      *
      * @var string
      */
-    private $_routesFolder = DIRECTORY_SEPARATOR . 'Config' .
+    private $routesFolder = DIRECTORY_SEPARATOR . 'Config' .
         DIRECTORY_SEPARATOR . 'Routes';
 
     /**
@@ -57,14 +59,14 @@ class Routes
      *
      * @var array
      */
-    private $_reservedKeys = [];
+    private $reservedKeys = [];
 
     /**
      * Collection of Common Objects
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Constructor
@@ -73,7 +75,7 @@ class Routes
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
+        $this->c = &$common;
     }
 
     /**
@@ -102,18 +104,18 @@ class Routes
         $Env = __NAMESPACE__ . '\Env';
 
         $httpRoutes = [];
-        if ($this->_c->req->open) {
-            $userRoutesFolder = Constants::$PUBLIC_HTML . $this->_routesFolder .
+        if ($this->c->req->open) {
+            $userRoutesFolder = Constants::$PUBLIC_HTML . $this->routesFolder .
                 DIRECTORY_SEPARATOR . 'Open';
         } else {
-            $userRoutesFolder = Constants::$PUBLIC_HTML . $this->_routesFolder .
+            $userRoutesFolder = Constants::$PUBLIC_HTML . $this->routesFolder .
                 DIRECTORY_SEPARATOR . 'Auth' .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .
-                DIRECTORY_SEPARATOR . $this->_c->req->s['gDetails']['name'];
+                DIRECTORY_SEPARATOR . $this->c->req->s['gDetails']['name'];
         }
 
-        foreach ($this->_httpMethods as $method) {
+        foreach ($this->httpMethods as $method) {
             $httpRoutes[$method] = [];
             $routeFileLocation =  $userRoutesFolder .
                 DIRECTORY_SEPARATOR . $method . 'routes.php';
@@ -122,13 +124,13 @@ class Routes
             }
             $routes = include $routeFileLocation;
             $route = '';
-            $this->_getRoutes(
+            $this->getRoutes(
                 routes: $routes,
                 route: $route,
                 httpRoutes: $httpRoutes[$method]
             );
         }
-        $this->_c->res->dataEncode->addKeyData(
+        $this->c->res->dataEncode->addKeyData(
             key: 'Results',
             data: $httpRoutes
         );
@@ -145,20 +147,20 @@ class Routes
      *
      * @return void
      */
-    private function _getRoutes(&$routes, $route, &$httpRoutes): void
+    private function getRoutes(&$routes, $route, &$httpRoutes): void
     {
         foreach ($routes as $key => &$r) {
-            if (in_array(needle: $key, haystack: $this->_reservedKeys)) {
+            if (in_array(needle: $key, haystack: $this->reservedKeys)) {
                 continue;
             }
             if ($key === '__FILE__') {
                 $httpRoutes[] = $route;
             }
             if (is_array(value: $r)) {
-                $_route = $route . '/' . $key;
-                $this->_getRoutes(
+                $route = $route . '/' . $key;
+                $this->getRoutes(
                     routes: $r,
-                    route: $_route,
+                    route: $route,
                     httpRoutes: $httpRoutes
                 );
             }

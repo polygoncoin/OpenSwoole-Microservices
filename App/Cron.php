@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Initialize Cron
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\App;
 
 use Microservices\App\Constants;
@@ -36,14 +38,14 @@ class Cron
      *
      * @var null|CronInterface
      */
-    private $_api = null;
+    private $api = null;
 
     /**
      * Common object
      *
      * @var null|Common
      */
-    private $_c = null;
+    private $c = null;
 
     /**
      * Constructor
@@ -52,7 +54,7 @@ class Cron
      */
     public function __construct(Common &$common)
     {
-        $this->_c = &$common;
+        $this->c = &$common;
     }
 
     /**
@@ -62,7 +64,7 @@ class Cron
      */
     public function init(): bool
     {
-        $this->_c->initRequest();
+        $this->c->initRequest();
 
         $routeFileLocation = Constants::$PUBLIC_HTML .
             DIRECTORY_SEPARATOR . 'Config' .
@@ -71,15 +73,15 @@ class Cron
             DIRECTORY_SEPARATOR . 'ClientDB' .
             DIRECTORY_SEPARATOR . 'Common' .
             DIRECTORY_SEPARATOR . 'Cron' .
-            DIRECTORY_SEPARATOR . $this->_c->req->METHOD . 'routes.php';
-        $this->_c->req->rParser->parseRoute(routeFileLocation: $routeFileLocation);
+            DIRECTORY_SEPARATOR . $this->c->req->METHOD . 'routes.php';
+        $this->c->req->rParser->parseRoute(routeFileLocation: $routeFileLocation);
 
         $class = 'Microservices\\Supplement\\Cron\\' .
-            ucfirst(string: $this->_c->req->rParser->routeElements[1]);
+            ucfirst(string: $this->c->req->rParser->routeElements[1]);
 
-        $this->_api = new $class(common: $this->_c);
+        $this->api = new $class(common: $this->c);
 
-        return $this->_api->init();
+        return $this->api->init();
     }
 
     /**
@@ -92,6 +94,6 @@ class Cron
      */
     public function process($function, $payload): array
     {
-        return $this->_api->$function($payload);
+        return $this->api->$function($payload);
     }
 }

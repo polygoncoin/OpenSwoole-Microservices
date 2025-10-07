@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TestCases
  * php version 8.3
@@ -11,6 +12,7 @@
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
+
 namespace Microservices\TestCases;
 
 if (!defined(constant_name: 'GET')) {
@@ -68,7 +70,7 @@ if (!function_exists(function: 'httpParseHeaders')) {
                 $key = $h[0];
             } else {
                 if (substr(string: $h[0], offset: 0, length: 1) == "\t") {
-                    $headers[$key] .= "\r\n\t".trim(string: $h[0]);
+                    $headers[$key] .= "\r\n\t" . trim(string: $h[0]);
                 } elseif (!$key) {
                     $headers[0] = trim(string: $h[0]);
                 }
@@ -119,28 +121,28 @@ if (!function_exists(function: 'getCurlConfig')) {
         ];
 
         switch ($method) {
-        case 'GET':
-            break;
-        case 'POST':
-            $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
-            $curlConfig[CURLOPT_POST] = true;
-            $curlConfig[CURLOPT_POSTFIELDS] = $payload;
-            break;
-        case 'PUT':
-            $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
-            $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PUT';
-            $curlConfig[CURLOPT_POSTFIELDS] = $payload;
-            break;
-        case 'PATCH':
-            $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
-            $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PATCH';
-            $curlConfig[CURLOPT_POSTFIELDS] = $payload;
-            break;
-        case 'DELETE':
-            $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
-            $curlConfig[CURLOPT_CUSTOMREQUEST] = 'DELETE';
-            $curlConfig[CURLOPT_POSTFIELDS] = $payload;
-            break;
+            case 'GET':
+                break;
+            case 'POST':
+                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
+                $curlConfig[CURLOPT_POST] = true;
+                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
+                break;
+            case 'PUT':
+                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
+                $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PUT';
+                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
+                break;
+            case 'PATCH':
+                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
+                $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PATCH';
+                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
+                break;
+            case 'DELETE':
+                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
+                $curlConfig[CURLOPT_CUSTOMREQUEST] = 'DELETE';
+                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
+                break;
         }
         $curlConfig[CURLOPT_RETURNTRANSFER] = true;
 
@@ -211,10 +213,11 @@ if (!function_exists(function: 'trigger')) {
                 $responseBody
             ];
         } else {
-            if (strpos(
-                haystack: $responseContentType,
-                needle: 'application/json;'
-            ) !== false
+            if (
+                strpos(
+                    haystack: $responseContentType,
+                    needle: 'application/json;'
+                ) !== false
             ) {
                 $responseBody = json_decode(json: $responseBody, associative: true);
             }
