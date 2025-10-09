@@ -17,25 +17,11 @@ namespace Microservices\TestCases;
 
 if (!defined(constant_name: 'GET')) {
     define(constant_name: 'GET', value: __DIR__ . DIRECTORY_SEPARATOR . 'GET');
-}
-
-if (!defined(constant_name: 'POST')) {
     define(constant_name: 'POST', value: __DIR__ . DIRECTORY_SEPARATOR . 'POST');
-}
-
-if (!defined(constant_name: 'PUT')) {
     define(constant_name: 'PUT', value: __DIR__ . DIRECTORY_SEPARATOR . 'PUT');
-}
-
-if (!defined(constant_name: 'PATCH')) {
     define(constant_name: 'PATCH', value: __DIR__ . DIRECTORY_SEPARATOR . 'PATCH');
-}
-
-if (!defined(constant_name: 'DELETE')) {
     define(constant_name: 'DELETE', value: __DIR__ . DIRECTORY_SEPARATOR . 'DELETE');
-}
 
-if (!function_exists(function: 'httpParseHeaders')) {
     /**
      * Generates raw headers into array
      *
@@ -79,9 +65,7 @@ if (!function_exists(function: 'httpParseHeaders')) {
 
         return $headers;
     }
-}
 
-if (!function_exists(function: 'getCurlConfig')) {
     /**
      * Return cURL Config
      *
@@ -115,10 +99,7 @@ if (!function_exists(function: 'getCurlConfig')) {
             ]
         );
 
-        $contentType = [
-            // 'Content-Type: text/plain; charset=utf-8',
-            'Content-Type: application/x-www-form-urlencoded; charset=utf-8',
-        ];
+        $contentType = 'Content-Type: application/x-www-form-urlencoded; charset=utf-8';
 
         switch ($method) {
             case 'GET':
@@ -148,9 +129,7 @@ if (!function_exists(function: 'getCurlConfig')) {
 
         return $curlConfig;
     }
-}
 
-if (!function_exists(function: 'trigger')) {
     /**
      * Trigger cURL
      *
@@ -237,9 +216,7 @@ if (!function_exists(function: 'trigger')) {
             'responseBody' => $response
         ];
     }
-}
 
-if (!function_exists(function: 'genXmlPayload')) {
     /**
      * Generates XML Payload
      *

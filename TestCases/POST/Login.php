@@ -25,7 +25,7 @@ $res = trigger(
 
 if ($res) {
     $token = $res['responseBody']['Results']['Token'];
-    $header = ["Authorization: Bearer {$token}"];
+    $header[] = "Authorization: Bearer {$token}";
 }
 
 return $res;

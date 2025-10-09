@@ -352,6 +352,12 @@ trait AppTrait
                     haystack: ['sqlResults', 'sqlParams', 'sqlPayload']
                 )
             ) {
+                if (!isset($this->c->req->s[$fetchFrom])) {
+                    throw new \Exception(
+                        message: "Undefined array key '{$fetchFrom}'",
+                        code: HttpStatus::$InternalServerError
+                    );
+                }
                 $fetchFromKeys = explode(separator: ':', string: $fKey);
                 $value = $this->c->req->s[$fetchFrom];
                 foreach ($fetchFromKeys as $key) {
@@ -370,12 +376,16 @@ trait AppTrait
                 $sqlParams[$var] = $value;
                 continue;
             } elseif (isset($this->c->req->s[$fetchFrom][$fKey])) {
-                if (
-                    DatabaseDataTypes::validateDataType(
-                        data: $this->c->req->s[$fetchFrom][$fKey],
-                        dataType: $this->c->req->s['necessary'][$fetchFrom][$fKey]
-                    )
-                ) {
+                if (isset($this->c->req->s['necessary'][$fetchFrom][$fKey])) {
+                    if (
+                        DatabaseDataTypes::validateDataType(
+                            data: $this->c->req->s[$fetchFrom][$fKey],
+                            dataType: $this->c->req->s['necessary'][$fetchFrom][$fKey]
+                        )
+                    ) {
+                        $sqlParams[$var] = $this->c->req->s[$fetchFrom][$fKey];
+                    }
+                } else {
                     $sqlParams[$var] = $this->c->req->s[$fetchFrom][$fKey];
                 }
                 continue;

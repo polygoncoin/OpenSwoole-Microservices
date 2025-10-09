@@ -405,8 +405,13 @@ class Read
      */
     private function fetchRowsCount($rSqlConfig): void
     {
-        $rSqlConfig['__SQL-COMMENT__'] = $rSqlConfig['__COUNT-SQL-COMMENT__'];
+        if (!isset($rSqlConfig['countQuery'])) {
+            return;
+        }
         $rSqlConfig['__QUERY__'] = $rSqlConfig['countQuery'];
+        if (isset($rSqlConfig['__COUNT-SQL-COMMENT__'])) {
+            $rSqlConfig['__SQL-COMMENT__'] = $rSqlConfig['__COUNT-SQL-COMMENT__'];
+        }
         unset($rSqlConfig['__COUNT-SQL-COMMENT__']);
         unset($rSqlConfig['countQuery']);
 
