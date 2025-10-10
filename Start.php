@@ -48,6 +48,7 @@ $server->on(
     'request',
     function (Request $request, Response $response): void {
 
+        $version = 'v1.0.0';
         if (
             isset($request->get['r'])
             && in_array(
@@ -60,6 +61,7 @@ $server->on(
                 ]
             )
         ) {
+            $request->header['x-api-version'] = $version;
             include __DIR__ . '/Tests.php';
             switch ($request->get['r']) {
                 case '/auth-test':
@@ -94,7 +96,7 @@ $server->on(
         // Check version
         if (
             !isset($request->header['x-api-version'])
-            || $request->header['x-api-version'] !== 'v1.0.0'
+            || $request->header['x-api-version'] !== $version
         ) {
             // Set response headers
             $response->header('Content-Type', 'application/json; charset=utf-8');
