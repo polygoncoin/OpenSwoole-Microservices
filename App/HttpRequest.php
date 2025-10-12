@@ -213,6 +213,7 @@ class HttpRequest extends DbFunctions
             $this->s['payload'] = !empty($_GET) ? $_GET : [];
         } else {
             $this->setPayloadStream();
+            rewind(stream: $this->payloadStream);
 
             $this->dataDecode = new DataDecode(
                 dataFileHandle: $this->payloadStream
@@ -231,25 +232,10 @@ class HttpRequest extends DbFunctions
      */
     private function setPayloadStream(): void
     {
-        if (empty($this->http['post']['Payload'])) {
-            $this->http['post']['Payload'] = '{}';
-        }
-
         if (Env::$iRepresentation === 'XML') {
-            $xml = simplexml_load_string(data: $this->http['post']['Payload']);
-            $array = json_decode(
-                json: json_encode(value: $xml),
-                associative: true
+            $this->http['post']['Payload'] = $this->convertXmlToJson(
+                xmlString: $this->http['post']['Payload']
             );
-            unset($xml);
-
-            $result = [];
-
-            $this->formatXmlArray(array: $array, result: $result);
-            $this->http['post']['Payload'] = json_encode(value: $result);
-
-            unset($array);
-            unset($result);
         }
 
         $this->payloadStream = fopen(filename: "php://memory", mode: "rw+b");
@@ -257,7 +243,30 @@ class HttpRequest extends DbFunctions
             stream: $this->payloadStream,
             data: $this->http['post']['Payload']
         );
-        rewind(stream: $this->payloadStream);
+    }
+
+    /**
+     * Convert XML to JSON
+     *
+     * @param string $xmlString
+     *
+     * @return string
+     */
+    private function convertXmlToJson($xmlString): string
+    {
+        $xml = simplexml_load_string(
+            data: $xmlString
+        );
+        $array = json_decode(
+            json: json_encode(value: $xml),
+            associative: true
+        );
+        unset($xml);
+
+        $result = [];
+        $this->formatXmlArray(array: $array, result: $result);
+
+        return json_encode($result);
     }
 
     /**
