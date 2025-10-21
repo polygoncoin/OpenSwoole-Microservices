@@ -122,12 +122,14 @@ These DB/Cache configurations can be set in below columns respectively for each 
 `m001_master_clients`.`master_cache_username` varchar(255) NOT NULL,
 `m001_master_clients`.`master_cache_password` varchar(255) NOT NULL,
 `m001_master_clients`.`master_cache_database` varchar(255) NOT NULL,
+`m001_master_clients`.`master_cache_table` varchar(255) NOT NULL,
 `m001_master_clients`.`slave_cache_server_type` varchar(255) NOT NULL,
 `m001_master_clients`.`slave_cache_hostname` varchar(255) NOT NULL,
 `m001_master_clients`.`slave_cache_port` varchar(255) NOT NULL,
 `m001_master_clients`.`slave_cache_username` varchar(255) NOT NULL,
 `m001_master_clients`.`slave_cache_password` varchar(255) NOT NULL,
 `m001_master_clients`.`slave_cache_database` varchar(255) NOT NULL,
+`m001_master_clients`.`slave_cache_table` varchar(255) NOT NULL,
 ```
 
 ### The Rate Limiting configurations can be set as below.
@@ -136,37 +138,50 @@ These DB/Cache configurations can be set in below columns respectively for each 
 ```ini
 ; ---- Rate Limit Server Details (Redis)
 ;used to save Rate Limiting related details
-rateLimiterHost='127.0.0.1'     ; Redis host dealing with Rate limit
-rateLimiterHostPort=6379        ; Redis host port
+rateLimitHost='127.0.0.1'     ; Redis host dealing with Rate limit
+rateLimitHostPort=6379        ; Redis host port
 ```
 
 #### IP based Rate Limiting
 ```ini
-rateLimiterIPMaxRequests=600    ; Max request allowed per IP
-rateLimiterIPSecondsWindow=300  ; Window in seconds of Max request allowed per IP
-rateLimiterIPPrefix='IPRL:'     ; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to users)
+rateLimitIPMaxRequests=600    ; Max request allowed per IP
+rateLimitIPSecondsWindow=300  ; Window in seconds of Max request allowed per IP
+rateLimitIPPrefix='IPRL:'     ; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to users)
 ```
 
 #### Client/Group/User based Rate Limiting
 ```ini
-rateLimiterClientPrefix='CRL:'  ; Client based Rate Limitng (GRL) key prefix used in Redis
-rateLimiterGroupPrefix='GRL:'   ; Group based Rate Limitng (GRL) key prefix used in Redis
-rateLimiterUserPrefix='URL:'    ; User based Rate Limitng (URL) key prefix used in Redis
+rateLimitClientPrefix='CRL:'  ; Client based Rate Limitng (GRL) key prefix used in Redis
+rateLimitGroupPrefix='GRL:'   ; Group based Rate Limitng (GRL) key prefix used in Redis
+rateLimitUserPrefix='URL:'    ; User based Rate Limitng (URL) key prefix used in Redis
 ```
 
 ##### Configure these in tables below
 ```SQL
 # Client level
-`m001_master_clients`.`rateLimiterMaxRequests` int DEFAULT NULL,
-`m001_master_clients`.`rateLimiterSecondsWindow` int DEFAULT NULL,
+`m001_master_clients`.`rateLimitMaxRequests` int DEFAULT NULL,
+`m001_master_clients`.`rateLimitSecondsWindow` int DEFAULT NULL,
 
 # Group level
-`m002_master_groups`.`rateLimiterMaxRequests` int DEFAULT NULL,
-`m002_master_groups`.`rateLimiterSecondsWindow` int DEFAULT NULL,
+`m002_master_groups`.`rateLimitMaxRequests` int DEFAULT NULL,
+`m002_master_groups`.`rateLimitSecondsWindow` int DEFAULT NULL,
 
 # User level
-`master_users`.`rateLimiterMaxRequests` int DEFAULT NULL,
-`master_users`.`rateLimiterSecondsWindow` int DEFAULT NULL,
+`master_users`.`rateLimitMaxRequests` int DEFAULT NULL,
+`master_users`.`rateLimitSecondsWindow` int DEFAULT NULL,
+```
+
+### For Cache hits configurations can be set as below.
+
+```ini
+; Supported Containers - Redis / Memcached / MySql / PostgreSql / MongoDb
+queryCacheType='Redis'
+queryCacheHostname='127.0.0.1'
+queryCachePort=6379
+queryCacheUsername='ramesh'
+queryCachePassword='shames11'
+queryCacheDatabase=0
+queryCacheTable='api_cache' ; For MySql / PostgreSql / MongoDb
 ```
 
 #### Route based Rate Limiting
