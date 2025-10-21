@@ -91,7 +91,7 @@ class Password implements CustomInterface
                 algo: PASSWORD_DEFAULT
             );
 
-            $table = getenv(name: 'client_users');
+            $table = getenv(name: 'clientUsers');
             $sql = "
                 UPDATE `{$table}`
                 SET password_hash = :password_hash

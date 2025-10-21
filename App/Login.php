@@ -20,7 +20,6 @@ use Microservices\App\CacheKey;
 use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
-use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
  * Login
@@ -39,7 +38,7 @@ class Login
     /**
      * Database object
      *
-     * @var null|AbstractDatabase
+     * @var null|Object
      */
     public $db = null;
 
@@ -372,7 +371,7 @@ class Login
         $this->c->req->db = $this->c->req->setDbConnection(fetchFrom: 'Master');
         $this->db = &$this->c->req->db;
 
-        $userTable = Env::$client_users;
+        $userTable = Env::$clientUsers;
         $this->db->execDbQuery(
             sql: "
                 UPDATE

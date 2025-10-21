@@ -94,7 +94,7 @@ class Gateway
      */
     private function checkRateLimits(): void
     {
-        $this->rateLimiter = new RateLimiter();
+        $this->rateLimiter = new RateLimiter($this->req);
 
         // Client Rate Limiting
         $this->rateLimitClient();

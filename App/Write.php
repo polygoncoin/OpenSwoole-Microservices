@@ -22,7 +22,6 @@ use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\HttpStatus;
 use Microservices\App\Web;
-use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
  * Write APIs
@@ -43,7 +42,7 @@ class Write
     /**
      * Database object
      *
-     * @var null|AbstractDatabase
+     * @var null|Object
      */
     public $db = null;
 
@@ -161,7 +160,7 @@ class Write
                     $i < $iCount;
                     $i++
                 ) {
-                    $this->c->req->delDmlCache(
+                    $this->c->req->delQueryCache(
                         cacheKey: $wSqlConfig['affectedCacheKeys'][$i]
                     );
                 }
@@ -446,7 +445,7 @@ class Write
 
             if (!empty($errors)) {
                 $response['Error'] = $errors;
-                $this->db->rollback();
+                $this->db->rollBack();
                 return;
             }
 

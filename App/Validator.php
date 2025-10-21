@@ -58,7 +58,7 @@ class Validator
     {
         $this->c = &$common;
 
-        if ($this->c->req->db->database === Env::$globalDatabase) {
+        if ($this->c->req->db->database === Env::$globalDbDatabase) {
             $this->v = new GlobalValidator(common: $this->c);
         } else {
             $this->v = new ClientValidator(common: $this->c);

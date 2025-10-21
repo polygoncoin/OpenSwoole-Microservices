@@ -22,8 +22,6 @@ use Microservices\App\DbFunctions;
 use Microservices\App\HttpStatus;
 use Microservices\App\Middleware\Auth;
 use Microservices\App\RouteParser;
-use Microservices\App\Servers\Cache\AbstractCache;
-use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
  * HTTP Request
@@ -49,14 +47,14 @@ class HttpRequest extends DbFunctions
     /**
      * Cache object
      *
-     * @var null|AbstractCache
+     * @var null|Object
      */
     public $cache = null;
 
     /**
      * SQL Cache object
      *
-     * @var null|AbstractCache
+     * @var null|Object
      */
     public $sqlCache = null;
 
@@ -70,7 +68,7 @@ class HttpRequest extends DbFunctions
     /**
      * Database object
      *
-     * @var null|AbstractDatabase
+     * @var null|Object
      */
     public $db = null;
 
@@ -145,6 +143,7 @@ class HttpRequest extends DbFunctions
         } else {
             $this->open = true;
         }
+
         if (!$this->open) {
             $this->auth = new Auth(req: $this);
         }
@@ -355,12 +354,13 @@ class HttpRequest extends DbFunctions
         }
 
         $this->cache = $this->connectCache(
-            cacheType: getenv(name: 'cacheType'),
-            cacheHostname: getenv(name: 'cacheHostname'),
-            cachePort: getenv(name: 'cachePort'),
-            cacheUsername: getenv(name: 'cacheUsername'),
-            cachePassword: getenv(name: 'cachePassword'),
-            cacheDatabase: getenv(name: 'cacheDatabase')
+            cacheType: getenv(name: 'globalCacheType'),
+            cacheHostname: getenv(name: 'globalCacheHostname'),
+            cachePort: getenv(name: 'globalCachePort'),
+            cacheUsername: getenv(name: 'globalCacheUsername'),
+            cachePassword: getenv(name: 'globalCachePassword'),
+            cacheDatabase: getenv(name: 'globalCacheDatabase'),
+            cacheTable: getenv(name: 'globalCacheTable')
         );
     }
 }

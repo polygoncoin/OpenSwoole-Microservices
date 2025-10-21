@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Handling Database via MySQL
+ * Sql Database
  * php version 8.3
  *
- * @category  Database
+ * @category  Sql
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -13,16 +13,16 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App\Servers\Database;
+namespace Microservices\App\Servers\Containers\Sql;
 
 use Microservices\App\HttpStatus;
-use Microservices\App\Servers\Database\AbstractDatabase;
+use Microservices\App\Servers\Containers\Sql\SqlInterface;
 
 /**
- * MySQL Database
+ * PostgreSql Database
  * php version 8.3
  *
- * @category  Database_MySQL
+ * @category  PostgreSql
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -30,7 +30,7 @@ use Microservices\App\Servers\Database\AbstractDatabase;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class MySql extends AbstractDatabase
+class PostgreSql implements SqlInterface
 {
     /**
      * Database hostname
@@ -109,16 +109,13 @@ class MySql extends AbstractDatabase
         $port,
         $username,
         $password,
-        $database = null
+        $database
     ) {
         $this->hostname = $hostname;
         $this->port = $port;
         $this->username = $username;
         $this->password = $password;
-
-        if ($database !== null) {
-            $this->database = $database;
-        }
+        $this->database = $database;
     }
 
     /**
@@ -133,19 +130,13 @@ class MySql extends AbstractDatabase
         }
 
         try {
+            $pdo = new PDO($dsn, $user, $password);
             $this->pdo = new \PDO(
-                dsn: "mysql:host={$this->hostname};port={$this->port}",
+                dsn: "pgsql:host={$this->hostname};port={$this->port};dbname={$this->database}",
                 username: $this->username,
                 password: $this->password,
-                options: [
-                    \PDO::ATTR_EMULATE_PREPARES => false,
-                    // \PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false
-                ]
             );
-
-            if ($this->database !== null) {
-                $this->useDatabase();
-            }
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\PDOException $e) {
             if ((int)$this->pdo->errorCode()) {
                 $this->log(e: $e);
@@ -161,17 +152,6 @@ class MySql extends AbstractDatabase
     public function useDatabase(): void
     {
         $this->connect();
-
-        try {
-            if ($this->database !== null) {
-                $this->pdo->exec(statement: "USE `{$this->database}`");
-            }
-        } catch (\PDOException $e) {
-            if ((int)$this->pdo->errorCode()) {
-                $this->log(e: $e);
-                $this->rollback();
-            }
-        }
     }
 
     /**
@@ -181,7 +161,7 @@ class MySql extends AbstractDatabase
      */
     public function begin(): void
     {
-        $this->useDatabase();
+        $this->connect();
 
         $this->beganTransaction = true;
         try {
@@ -217,12 +197,12 @@ class MySql extends AbstractDatabase
      *
      * @return void
      */
-    public function rollback(): void
+    public function rollBack(): void
     {
         try {
             if ($this->beganTransaction) {
                 $this->beganTransaction = false;
-                $this->pdo->rollback();
+                $this->pdo->rollBack();
             }
         } catch (\PDOException $e) {
             if ((int)$this->pdo->errorCode()) {
@@ -240,11 +220,11 @@ class MySql extends AbstractDatabase
     {
         try {
             if ($this->stmt) {
-                return (int)$this->stmt->rowCount();
+                return $this->stmt->rowCount();
             }
         } catch (\PDOException $e) {
             if ($this->beganTransaction) {
-                $this->rollback();
+                $this->rollBack();
             }
             if ((int)$this->pdo->errorCode()) {
                 $this->log(e: $e);
@@ -261,12 +241,12 @@ class MySql extends AbstractDatabase
     public function lastInsertId(): bool|int
     {
         try {
-            if ($this->pdo->lastInsertId() !== false) {
-                return (int)$this->pdo->lastInsertId();
+            if ($this->stmt !== false) {
+                return $this->stmt->fetchColumn();
             }
         } catch (\PDOException $e) {
             if ($this->beganTransaction) {
-                $this->rollback();
+                $this->rollBack();
             }
             if ((int)$this->pdo->errorCode()) {
                 $this->log(e: $e);
@@ -286,7 +266,7 @@ class MySql extends AbstractDatabase
      */
     public function execDbQuery($sql, $params = [], $pushPop = false): void
     {
-        $this->useDatabase();
+        $this->connect();
 
         try {
             if ($pushPop && $this->stmt) {
@@ -301,7 +281,7 @@ class MySql extends AbstractDatabase
             }
         } catch (\PDOException $e) {
             if ($this->beganTransaction) {
-                $this->rollback();
+                $this->rollBack();
             }
             if ((int)$this->pdo->errorCode()) {
                 $this->log(e: $e);

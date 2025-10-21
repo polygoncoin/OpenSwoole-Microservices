@@ -22,7 +22,6 @@ use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\HttpStatus;
 use Microservices\App\Web;
-use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
  * Supplement APIs
@@ -43,7 +42,7 @@ class Supplement
     /**
      * Database object
      *
-     * @var null|AbstractDatabase
+     * @var null|Object
      */
     public $db = null;
 
@@ -171,7 +170,7 @@ class Supplement
                     $i < $iCount;
                     $i++
                 ) {
-                    $this->c->req->delDmlCache(
+                    $this->c->req->delQueryCache(
                         cacheKey: $sSqlConfig['affectedCacheKeys'][$i]
                     );
                 }

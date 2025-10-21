@@ -11,8 +11,8 @@ CREATE TABLE `master_users` (
   `group_id` int NOT NULL,
   `token` varchar(255) DEFAULT NULL,
   `token_ts` int UNSIGNED DEFAULT 0,
-  `rateLimiterMaxRequests` int DEFAULT NULL,
-  `rateLimiterSecondsWindow` int DEFAULT NULL,
+  `rateLimitMaxRequests` int DEFAULT NULL,
+  `rateLimitSecondsWindow` int DEFAULT NULL,
   `comments` varchar(255) DEFAULT NULL,
   `created_by` int DEFAULT NULL,
   `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -20,9 +20,9 @@ CREATE TABLE `master_users` (
   `approved_on` timestamp NULL DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
   `updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `is_approved` enum('Yes', 'No') NOT NULL DEFAULT 'No',
-  `is_disabled` enum('Yes', 'No') NOT NULL DEFAULT 'No',
-  `is_deleted` enum('Yes', 'No') NOT NULL DEFAULT 'No',
+  `is_approved` enum('Yes','No') NOT NULL DEFAULT 'No',
+  `is_disabled` enum('Yes','No') NOT NULL DEFAULT 'No',
+  `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
@@ -38,9 +38,9 @@ CREATE TABLE `address` (
   `approved_on` timestamp NULL DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
   `updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `is_approved` enum('Yes', 'No') NOT NULL DEFAULT 'No',
-  `is_disabled` enum('Yes', 'No') NOT NULL DEFAULT 'No',
-  `is_deleted` enum('Yes', 'No') NOT NULL DEFAULT 'No',
+  `is_approved` enum('Yes','No') NOT NULL DEFAULT 'No',
+  `is_disabled` enum('Yes','No') NOT NULL DEFAULT 'No',
+  `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -56,16 +56,24 @@ CREATE TABLE `category` (
   `approved_on` timestamp NULL DEFAULT NULL,
   `updated_by` int DEFAULT NULL,
   `updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `is_approved` enum('Yes', 'No') NOT NULL DEFAULT 'No',
-  `is_disabled` enum('Yes', 'No') NOT NULL DEFAULT 'No',
-  `is_deleted` enum('Yes', 'No') NOT NULL DEFAULT 'No',
+  `is_approved` enum('Yes','No') NOT NULL DEFAULT 'No',
+  `is_disabled` enum('Yes','No') NOT NULL DEFAULT 'No',
+  `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `api_cache`;
+
+CREATE TABLE IF NOT EXISTS `api_cache` (
+    `key` CHAR(256) NOT NULL,
+    `value` BLOB,
+    PRIMARY KEY (`key`)
+) ENGINE=InnoDB;
 
 LOCK TABLES `master_users` WRITE;
 /*!40000 ALTER TABLE `master_users` DISABLE KEYS */;
 INSERT INTO `master_users` VALUES
-(1, 'test1', 'test1', 'test1@test.com', 'client_1_group_1_user_1', '$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6', '127.0.0.1', 1, '', 0, NULL, NULL, NULL, 0, '2023-02-22 04:12:50', NULL, NULL, 0, '2023-04-20 16:53:57', 'Yes', 'No', 'No'),
-(2, 'admin1', 'admin1', 'admin1@test.com', 'client_1_admin_1', '$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6', '127.0.0.1', 2, '', 0, NULL, NULL, NULL, 0, '2023-02-22 04:12:50', NULL, NULL, 0, '2023-04-20 16:53:57', 'Yes', 'No', 'No');
+(1,'test1','test1','test1@test.com','client_1_group_1_user_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','127.0.0.1',1,'',0,NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','No','No'),
+(2,'admin1','admin1','admin1@test.com','client_1_admin_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','127.0.0.1',2,'',0,NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','No','No');
 /*!40000 ALTER TABLE `master_users` ENABLE KEYS */;
 UNLOCK TABLES;

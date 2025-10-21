@@ -30,11 +30,11 @@ namespace Microservices\App;
 class RateLimiter
 {
     /**
-     * Cache connection
+     * Caching object
      *
-     * @var null|\Redis
+     * @var null|Object
      */
-    private $redis = null;
+    private $cache = null;
 
     /**
      * Current timestamp
@@ -44,23 +44,33 @@ class RateLimiter
     private $currentTimestamp = null;
 
     /**
+     * Rate Limiter
+     *
+     * @var null|HttpRequest
+     */
+    private $req = null;
+
+    /**
      * Constructor
      *
-     * @throws \Exception
+     * @param HttpRequest $req HTTP Request object
      */
-    public function __construct()
+    public function __construct(&$req)
     {
-        if (!extension_loaded(extension: 'redis')) {
-            throw new \Exception(
-                message: 'Unable to find Redis extension',
-                code: HttpStatus::$InternalServerError
-            );
-        }
+        $this->req = &$req;
 
-        $this->redis = new \Redis();
-        $this->redis->connect(
-            getenv(name: 'rateLimitHost'),
-            (int)getenv(name: 'rateLimitHostPort')
+        $rateLimitHostType = getenv(name: 'rateLimitHostType');
+        $rateLimitHost = getenv(name: 'rateLimitHost');
+        $rateLimitHostPort = getenv(name: 'rateLimitHostPort');
+
+        $this->cache = $this->req->connectCache(
+            cacheType: $rateLimitHostType,
+            cacheHostname: $rateLimitHost,
+            cachePort: $rateLimitHostPort,
+            cacheUsername: '',
+            cachePassword: '',
+            cacheDatabase: '',
+            cacheTable: ''
         );
 
         $this->currentTimestamp = time();
@@ -90,11 +100,11 @@ class RateLimiter
 
         $key = $prefix . $key;
 
-        if ($this->redis->exists($key)) {
-            $requestCount = (int)$this->redis->get($key);
+        if ($this->cache->cacheExists($key)) {
+            $requestCount = (int)$this->cache->getCache($key);
         } else {
             $requestCount = 0;
-            $this->redis->set($key, $requestCount, $remainder);
+            $this->cache->setCache($key, $requestCount, $remainder);
         }
         $requestCount++;
 
@@ -103,7 +113,7 @@ class RateLimiter
         $resetAt = $this->currentTimestamp + $remainder;
 
         if ($allowed) {
-            $this->redis->incr($key);
+            $this->cache->incrementCache($key);
         }
 
         return [

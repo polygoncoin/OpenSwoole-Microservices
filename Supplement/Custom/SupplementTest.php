@@ -16,7 +16,6 @@
 namespace Microservices\Supplement\Custom;
 
 use Microservices\App\Common;
-use Microservices\App\Servers\Database\AbstractDatabase;
 use Microservices\Supplement\Custom\CustomInterface;
 use Microservices\Supplement\Custom\CustomTrait;
 
@@ -39,7 +38,7 @@ class SupplementTest implements CustomInterface
     /**
      * Database object
      *
-     * @var null|AbstractDatabase
+     * @var null|Object
      */
     public $db = null;
 

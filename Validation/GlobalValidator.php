@@ -16,7 +16,6 @@
 namespace Microservices\Validation;
 
 use Microservices\App\Common;
-use Microservices\App\Servers\Database\AbstractDatabase;
 use Microservices\Validation\ValidatorInterface;
 use Microservices\Validation\ValidatorTrait;
 
@@ -39,7 +38,7 @@ class GlobalValidator implements ValidatorInterface
     /**
      * Database object
      *
-     * @var null|AbstractDatabase
+     * @var null|Object
      */
     public $db = null;
 

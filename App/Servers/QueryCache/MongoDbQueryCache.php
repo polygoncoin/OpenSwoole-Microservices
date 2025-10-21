@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Handling Cache via Redis
+ * Handling Cache via MongoDb
  * php version 8.3
  *
  * @category  Cache
@@ -13,16 +13,17 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App\Servers\Cache;
+namespace Microservices\App\Servers\Containers\NoSql;
 
 use Microservices\App\HttpStatus;
-use Microservices\App\Servers\Cache\AbstractCache;
+use Microservices\App\Servers\QueryCache\QueryCacheInterface;
+use Microservices\App\Servers\Containers\NoSql\MongoDb as Cache_MongoDb;
 
 /**
- * Caching via Redis
+ * Caching via MongoDb
  * php version 8.3
  *
- * @category  Cache_Redis
+ * @category  Cache_MongoDb
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -30,8 +31,12 @@ use Microservices\App\Servers\Cache\AbstractCache;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class Redis extends AbstractCache
+class MongoDbQueryCache implements QueryCacheInterface
 {
+    // "mongodb://<username>:<password>@<cluster-url>:<port>/<database-name>
+    // ?retryWrites=true&w=majority"
+    private $uri = null;
+
     /**
      * Cache hostname
      *
@@ -68,11 +73,32 @@ class Redis extends AbstractCache
     private $database = null;
 
     /**
-     * Cache connection
+     * Cache collection
      *
-     * @var null|\Redis
+     * @var null|string
+     */
+    public $table = null;
+
+    /**
+     * Cache Object
+     *
+     * @var null|Cache_MongoDb
      */
     private $cache = null;
+
+    /**
+     * Database Object
+     *
+     * @var null|Object
+     */
+    private $databaseObj = null;
+
+    /**
+     * Collection Object
+     *
+     * @var null|Object
+     */
+    private $collectionObj = null;
 
     /**
      * Cache connection
@@ -82,17 +108,22 @@ class Redis extends AbstractCache
      * @param string $username Username .env string
      * @param string $password Password .env string
      * @param string $database Database .env string
+     * @param string $table    Table .env string
      */
-    public function __construct($hostname, $port, $username, $password, $database)
-    {
+    public function __construct(
+        $hostname,
+        $port,
+        $username,
+        $password,
+        $database,
+        $table
+    ) {
         $this->hostname = $hostname;
         $this->port = $port;
         $this->username = $username;
         $this->password = $password;
-
-        if ($database !== null) {
-            $this->database = $database;
-        }
+        $this->database = $database;
+        $this->table = $table;
     }
 
     /**
@@ -107,52 +138,20 @@ class Redis extends AbstractCache
              return;
         }
 
-        if (!extension_loaded(extension: 'redis')) {
-            throw new \Exception(
-                message: 'Unable to find Redis extension',
-                code: HttpStatus::$InternalServerError
-            );
-        }
-
         try {
-            // https://github.com/phpredis/phpredis?tab=readme-ov-file#class-redis
-            $this->cache = new \Redis(
-                [
-                    'host' => $this->hostname,
-                    'port' => (int)$this->port,
-                    'connectTimeout' => 2.5,
-                    'auth' => [$this->username, $this->password],
-                ]
+            $this->cache = new Cache_MongoDb(
+                hostname: $this->hostname,
+                port: $this->port,
+                username: $this->username,
+                password: $this->password,
+                database: $this->database,
+                table: $this->table
             );
-
-            if ($this->database !== null) {
-                $this->useDatabase();
-            }
-
-            if (!$this->cache->ping()) {
-                throw new \Exception(
-                    message: 'Unable to ping cache',
-                    code: HttpStatus::$InternalServerError
-                );
-            }
         } catch (\Exception $e) {
             throw new \Exception(
                 message: $e->getMessage(),
                 code: HttpStatus::$InternalServerError
             );
-        }
-    }
-
-    /**
-     * Use Database
-     *
-     * @return void
-     */
-    public function useDatabase(): void
-    {
-        $this->connect();
-        if ($this->database !== null) {
-            $this->cache->select($this->database);
         }
     }
 
@@ -165,8 +164,9 @@ class Redis extends AbstractCache
      */
     public function cacheExists($key): mixed
     {
-        $this->useDatabase();
-        return $this->cache->exists($key);
+        $this->connect();
+
+        return $this->cache->cacheExists(key: $key);
     }
 
     /**
@@ -178,8 +178,9 @@ class Redis extends AbstractCache
      */
     public function getCache($key): mixed
     {
-        $this->useDatabase();
-        return $this->cache->get($key);
+        $this->connect();
+
+        return $this->cache->getCache($key);
     }
 
     /**
@@ -187,19 +188,14 @@ class Redis extends AbstractCache
      *
      * @param string $key    Cache key
      * @param string $value  Cache value
-     * @param int    $expire Seconds to expire. Default 0 - doesn't expire
      *
      * @return mixed
      */
-    public function setCache($key, $value, $expire = null): mixed
+    public function setCache($key, $value): mixed
     {
-        $this->useDatabase();
+        $this->connect();
 
-        if ($expire === null) {
-            return $this->cache->set($key, $value);
-        } else {
-            return $this->cache->set($key, $value, $expire);
-        }
+        return $this->cache->setCache($key, $value);
     }
 
     /**
@@ -211,7 +207,8 @@ class Redis extends AbstractCache
      */
     public function deleteCache($key): mixed
     {
-        $this->useDatabase();
-        return $this->cache->del($key);
+        $this->connect();
+
+        return $this->cache->deleteCache($key);
     }
 }

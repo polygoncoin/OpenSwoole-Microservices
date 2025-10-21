@@ -59,6 +59,7 @@ $response[] = include DELETE . DIRECTORY_SEPARATOR . 'Address.php';
 $response[] = include POST . DIRECTORY_SEPARATOR . 'CategoryConfig.php';
 
 // Admin login
+$header = [];
 $payload = [
     'username' => 'client_1_admin_1',
     'password' => 'shames11'

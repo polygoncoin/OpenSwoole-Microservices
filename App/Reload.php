@@ -18,8 +18,6 @@ namespace Microservices\App;
 use Microservices\App\AppTrait;
 use Microservices\App\CacheKey;
 use Microservices\App\Common;
-use Microservices\App\Servers\Cache\AbstractCache;
-use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
  * Load CacheServerKeys_Required
@@ -40,14 +38,14 @@ class Reload
     /**
      * Database object
      *
-     * @var null|AbstractDatabase
+     * @var null|Object
      */
     public $db = null;
 
     /**
      * Caching object
      *
-     * @var null|AbstractCache
+     * @var null|Object
      */
     public $cache = null;
 
@@ -86,12 +84,13 @@ class Reload
     public function process(): bool
     {
         $this->cache = $this->c->req->connectCache(
-            cacheType: getenv(name: 'cacheType'),
-            cacheHostname: getenv(name: 'cacheHostname'),
-            cachePort: getenv(name: 'cachePort'),
-            cacheUsername: getenv(name: 'cacheUsername'),
-            cachePassword: getenv(name: 'cachePassword'),
-            cacheDatabase: getenv(name: 'cacheDatabase')
+            cacheType: getenv(name: 'globalCacheType'),
+            cacheHostname: getenv(name: 'globalCacheHostname'),
+            cachePort: getenv(name: 'globalCachePort'),
+            cacheUsername: getenv(name: 'globalCacheUsername'),
+            cachePassword: getenv(name: 'globalCachePassword'),
+            cacheDatabase: getenv(name: 'globalCacheDatabase'),
+            cacheTable: getenv(name: 'globalCacheTable')
         );
 
         $this->processDomainAndUser();
@@ -108,12 +107,12 @@ class Reload
     private function processDomainAndUser(): void
     {
         $this->c->req->db = $this->c->req->connectDb(
-            dbType: getenv(name: 'globalType'),
-            dbHostname: getenv(name: 'globalHostname'),
-            dbPort: getenv(name: 'globalPort'),
-            dbUsername: getenv(name: 'globalUsername'),
-            dbPassword: getenv(name: 'globalPassword'),
-            dbDatabase: getenv(name: 'globalDatabase')
+            dbType: getenv(name: 'globalDbType'),
+            dbHostname: getenv(name: 'globalDbHostname'),
+            dbPort: getenv(name: 'globalDbPort'),
+            dbUsername: getenv(name: 'globalDbUsername'),
+            dbPassword: getenv(name: 'globalDbPassword'),
+            dbDatabase: getenv(name: 'globalDbDatabase')
         );
         $this->db = &$this->c->req->db;
 
@@ -157,7 +156,7 @@ class Reload
                     SELECT
                         *
                     FROM
-                        `{$this->execPhpFunc(param: getenv(name: 'client_users'))}` U
+                        `{$this->execPhpFunc(param: getenv(name: 'clientUsers'))}` U
                     ",
                 params: []
             );
@@ -184,12 +183,12 @@ class Reload
     private function processGroup(): void
     {
         $this->c->req->db = $this->c->req->connectDb(
-            dbType: getenv(name: 'globalType'),
-            dbHostname: getenv(name: 'globalHostname'),
-            dbPort: getenv(name: 'globalPort'),
-            dbUsername: getenv(name: 'globalUsername'),
-            dbPassword: getenv(name: 'globalPassword'),
-            dbDatabase: getenv(name: 'globalDatabase')
+            dbType: getenv(name: 'globalDbType'),
+            dbHostname: getenv(name: 'globalDbHostname'),
+            dbPort: getenv(name: 'globalDbPort'),
+            dbUsername: getenv(name: 'globalDbUsername'),
+            dbPassword: getenv(name: 'globalDbPassword'),
+            dbDatabase: getenv(name: 'globalDbDatabase')
         );
 
         $this->db->execDbQuery(

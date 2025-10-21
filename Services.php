@@ -253,7 +253,7 @@ class Services
     /**
      * Output
      *
-     * @return void
+     * @return bool|string
      */
     public function outputResults(): bool|string
     {

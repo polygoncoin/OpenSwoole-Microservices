@@ -19,7 +19,6 @@ use Microservices\App\DatabaseCacheKey;
 use Microservices\App\DatabaseOpenCacheKey;
 use Microservices\App\HttpRequest;
 use Microservices\App\HttpStatus;
-use Microservices\App\Servers\Cache\AbstractCache;
 
 /**
  * DB Functions
@@ -43,6 +42,13 @@ class DbFunctions
     private $req = null;
 
     /**
+     * Query Cache Connection Object
+     *
+     * @var null|Object
+     */
+    private $queryCacheConnection = null;
+
+    /**
      * Constructor
      *
      * @param HttpRequest $req HTTP Request object
@@ -50,6 +56,39 @@ class DbFunctions
     public function __construct(&$req)
     {
         $this->req = &$req;
+    }
+
+
+    /**
+     * Init server connection based on $fetchFrom
+     *
+     * @param string $fetchFrom Master/Slave
+     *
+     * @return void
+     */
+    public function setQueryCacheConnection(): void
+    {
+        if ($this->queryCacheConnection !== null) {
+            return;
+        }
+
+        $cacheType = getenv(name: 'queryCacheType');
+        if (!in_array($cacheType, ['Redis', 'Memcached', 'MongoDb', 'MySql', 'PostgreSql'])) {
+            throw new \Exception(
+                message: 'Invalid query cache type',
+                code: HttpStatus::$InternalServerError
+            );
+        }
+
+        $queryCacheNS = 'Microservices\\App\\Servers\\QueryCache\\' . $cacheType . 'QueryCache';
+        $this->queryCacheConnection = new $queryCacheNS(
+            getenv(name: 'queryCacheHostname'),
+            getenv(name: 'queryCachePort'),
+            getenv(name: 'queryCacheUsername'),
+            getenv(name: 'queryCachePassword'),
+            getenv(name: 'queryCacheDatabase'),
+            getenv(name: 'queryCacheTable')
+        );
     }
 
     /**
@@ -61,6 +100,7 @@ class DbFunctions
      * @param string $cacheUsername Username
      * @param string $cachePassword Password
      * @param string $cacheDatabase Database
+     * @param string $cacheTable    Table
      *
      * @return object
      */
@@ -70,15 +110,23 @@ class DbFunctions
         $cachePort,
         $cacheUsername,
         $cachePassword,
-        $cacheDatabase
+        $cacheDatabase,
+        $cacheTable
     ): object {
-        $cacheNS = 'Microservices\\App\\Servers\\Cache\\' . $cacheType;
+        if (!in_array($cacheType, ['Redis', 'Memcached', 'MongoDb'])) {
+            throw new \Exception(
+                message: 'Invalid Cache type',
+                code: HttpStatus::$InternalServerError
+            );
+        }
+        $cacheNS = 'Microservices\\App\\Servers\\Cache\\' . $cacheType . 'Cache';
         return new $cacheNS(
             $cacheHostname,
             $cachePort,
             $cacheUsername,
             $cachePassword,
-            $cacheDatabase
+            $cacheDatabase,
+            $cacheTable
         );
     }
 
@@ -120,6 +168,9 @@ class DbFunctions
                     ),
                     cacheDatabase: getenv(
                         name: $this->req->s['cDetails']['master_cache_database']
+                    ),
+                    cacheTable:  getenv(
+                        name: $this->req->s['cDetails']['master_cache_table']
                     )
                 );
             case 'Slave':
@@ -141,6 +192,9 @@ class DbFunctions
                     ),
                     cacheDatabase: getenv(
                         name: $this->req->s['cDetails']['slave_cache_database']
+                    ),
+                    cacheTable:  getenv(
+                        name: $this->req->s['cDetails']['slave_cache_table']
                     )
                 );
             default:
@@ -171,7 +225,13 @@ class DbFunctions
         $dbPassword,
         $dbDatabase
     ): object {
-        $dbNS = 'Microservices\\App\\Servers\\Database\\' . $dbType;
+        if (!in_array($dbType, ['MySql', 'PostgreSql'])) {
+            throw new \Exception(
+                message: 'Invalid Database type',
+                code: HttpStatus::$InternalServerError
+            );
+        }
+        $dbNS = 'Microservices\\App\\Servers\\Database\\' . $dbType . 'Database';
         return new $dbNS(
             $dbHostname,
             $dbPort,
@@ -269,55 +329,49 @@ class DbFunctions
     }
 
     /**
-     * Set Cache prefix key
+     * Get Query cache
      *
      * @param string $cacheKey Cache Key from Queries configuration
      *
      * @return mixed
      */
-    public function getDqlCache($cacheKey): mixed
+    public function getQueryCache($cacheKey): mixed
     {
-        if ($this->req->sqlCache === null) {
-            $this->req->sqlCache = $this->setCacheConnection(fetchFrom: 'Slave');
-        }
+        $this->setQueryCacheConnection();
 
-        if ($this->req->sqlCache->cacheExists(key: $cacheKey)) {
-            return $json = $this->req->sqlCache->getCache(key: $cacheKey);
+        if ($this->queryCacheConnection->cacheExists(key: $cacheKey)) {
+            return $json = $this->queryCacheConnection->getCache(key: $cacheKey);
         } else {
             return $json = null;
         }
     }
 
     /**
-     * Set DQL Cache as JSON
+     * Set Query cache
      *
      * @param string $cacheKey Cache Key from Queries configuration
      * @param string $json     JSON
      *
      * @return void
      */
-    public function setDmlCache($cacheKey, &$json): void
+    public function setQueryCache($cacheKey, &$json): void
     {
-        if ($this->req->sqlCache === null) {
-            $this->req->sqlCache = $this->setCacheConnection(fetchFrom: 'Master');
-        }
+        $this->setQueryCacheConnection();
 
-        $this->req->sqlCache->setCache(key: $cacheKey, value: $json);
+        $this->queryCacheConnection->setCache(key: $cacheKey, value: $json);
     }
 
     /**
-     * Delete DQL Cache
+     * Delete Query Cache
      *
      * @param string $cacheKey Cache Key from Queries configuration
      *
      * @return void
      */
-    public function delDmlCache($cacheKey): void
+    public function delQueryCache($cacheKey): void
     {
-        if ($this->req->sqlCache === null) {
-            $this->req->sqlCache = $this->setCacheConnection(fetchFrom: 'Master');
-        }
+        $this->setQueryCacheConnection();
 
-        $this->req->sqlCache->deleteCache(key: $cacheKey);
+        $this->queryCacheConnection->deleteCache(key: $cacheKey);
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Handling Database via pgsql
+ * Sql Database
  * php version 8.3
  *
- * @category  Database
+ * @category  Sql
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -13,16 +13,16 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App\Servers\Database;
+namespace Microservices\App\Servers\Containers\Sql;
 
 use Microservices\App\HttpStatus;
-use Microservices\App\Servers\Database\AbstractDatabase;
+use Microservices\App\Servers\Containers\Sql\SqlInterface;
 
 /**
- * PgSQL Database
+ * MySql Database
  * php version 8.3
  *
- * @category  Database_PgSQL
+ * @category  MySql
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -30,7 +30,7 @@ use Microservices\App\Servers\Database\AbstractDatabase;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class PgSql extends AbstractDatabase
+class MySql implements SqlInterface
 {
     /**
      * Database hostname
@@ -70,16 +70,23 @@ class PgSql extends AbstractDatabase
     /**
      * Database connection
      *
-     * @var null|\PgSql\Connection
+     * @var null|\PDO
      */
-    private $db = null;
+    private $pdo = null;
 
     /**
      * Executed query statement
      *
-     * @var null|\PgSql\Result
+     * @var null|\PDOStatement
      */
     private $stmt = null;
+
+    /**
+     * Executed query statement
+     *
+     * @var \PDOStatement[]
+     */
+    private $stmts = [];
 
     /**
      * Transaction started flag
@@ -102,16 +109,13 @@ class PgSql extends AbstractDatabase
         $port,
         $username,
         $password,
-        $database = null
+        $database
     ) {
         $this->hostname = $hostname;
         $this->port = $port;
         $this->username = $username;
         $this->password = $password;
-
-        if ($database !== null) {
-            $this->database = $database;
-        }
+        $this->database = $database;
     }
 
     /**
@@ -121,23 +125,28 @@ class PgSql extends AbstractDatabase
      */
     public function connect(): void
     {
-        if ($this->db !== null) {
+        if ($this->pdo !== null) {
             return;
         }
 
         try {
-            $this->db = pg_connect(
-                "host={$this->hostname} \
-                port={$this->port} \
-                user={$this->username} \
-                password={$this->password}"
+            $this->pdo = new \PDO(
+                dsn: "mysql:host={$this->hostname};port={$this->port}",
+                username: $this->username,
+                password: $this->password,
+                options: [
+                    \PDO::ATTR_EMULATE_PREPARES => false,
+                    // \PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false
+                ]
             );
 
             if ($this->database !== null) {
                 $this->useDatabase();
             }
-        } catch (\Exception $e) {
-            $this->log(e: $e);
+        } catch (\PDOException $e) {
+            if ((int)$this->pdo->errorCode()) {
+                $this->log(e: $e);
+            }
         }
     }
 
@@ -152,11 +161,13 @@ class PgSql extends AbstractDatabase
 
         try {
             if ($this->database !== null) {
-                pg_query($this->db, "set schema '{$this->database}';");
+                $this->pdo->exec(statement: "USE `{$this->database}`");
             }
-        } catch (\Exception $e) {
-            $this->rollback();
-            $this->log(e: $e);
+        } catch (\PDOException $e) {
+            if ((int)$this->pdo->errorCode()) {
+                $this->log(e: $e);
+                $this->rollBack();
+            }
         }
     }
 
@@ -167,13 +178,15 @@ class PgSql extends AbstractDatabase
      */
     public function begin(): void
     {
-        $this->useDatabase();
+        $this->connect();
 
         $this->beganTransaction = true;
         try {
-            pg_query($this->db, 'BEGIN');
-        } catch (\Exception $e) {
-            $this->log(e: $e);
+            $this->pdo->beginTransaction();
+        } catch (\PDOException $e) {
+            if ((int)$this->pdo->errorCode()) {
+                $this->log(e: $e);
+            }
         }
     }
 
@@ -187,10 +200,12 @@ class PgSql extends AbstractDatabase
         try {
             if ($this->beganTransaction) {
                 $this->beganTransaction = false;
-                pg_query($this->db, 'COMMIT');
+                $this->pdo->commit();
             }
-        } catch (\Exception $e) {
-            $this->log(e: $e);
+        } catch (\PDOException $e) {
+            if ((int)$this->pdo->errorCode()) {
+                $this->log(e: $e);
+            }
         }
     }
 
@@ -199,15 +214,17 @@ class PgSql extends AbstractDatabase
      *
      * @return void
      */
-    public function rollback(): void
+    public function rollBack(): void
     {
         try {
             if ($this->beganTransaction) {
                 $this->beganTransaction = false;
-                pg_query($this->db, 'ROLLBACK');
+                $this->pdo->rollBack();
             }
-        } catch (\Exception $e) {
-            $this->log(e: $e);
+        } catch (\PDOException $e) {
+            if ((int)$this->pdo->errorCode()) {
+                $this->log(e: $e);
+            }
         }
     }
 
@@ -220,13 +237,15 @@ class PgSql extends AbstractDatabase
     {
         try {
             if ($this->stmt) {
-                return (int)pg_affected_rows($this->stmt);
+                return (int)$this->stmt->rowCount();
             }
-        } catch (\Exception $e) {
+        } catch (\PDOException $e) {
             if ($this->beganTransaction) {
-                $this->rollback();
+                $this->rollBack();
             }
-            $this->log(e: $e);
+            if ((int)$this->pdo->errorCode()) {
+                $this->log(e: $e);
+            }
         }
         return false;
     }
@@ -239,16 +258,16 @@ class PgSql extends AbstractDatabase
     public function lastInsertId(): bool|int
     {
         try {
-            $this->execDbQuery(sql: 'SELECT lastval()');
-            $row = pg_fetch_row();
-            if ($row[0]) {
-                return $row[0];
+            if ($this->pdo->lastInsertId() !== false) {
+                return (int)$this->pdo->lastInsertId();
             }
-        } catch (\Exception $e) {
+        } catch (\PDOException $e) {
             if ($this->beganTransaction) {
-                $this->rollback();
+                $this->rollBack();
             }
-            $this->log(e: $e);
+            if ((int)$this->pdo->errorCode()) {
+                $this->log(e: $e);
+            }
         }
         return false;
     }
@@ -264,16 +283,26 @@ class PgSql extends AbstractDatabase
      */
     public function execDbQuery($sql, $params = [], $pushPop = false): void
     {
-        $this->useDatabase();
+        $this->connect();
 
         try {
-            pg_prepare($this->db, 'pg_query', $sql);
-            pg_execute($this->db, 'pg_query', $params);
-        } catch (\Exception $e) {
-            if ($this->beganTransaction) {
-                $this->rollback();
+            if ($pushPop && $this->stmt) {
+                array_push($this->stmts, $this->stmt);
             }
-            $this->log(e: $e);
+            $this->stmt = $this->pdo->prepare(
+                query: $sql,
+                options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
+            );
+            if ($this->stmt) {
+                $this->stmt->execute(params: $params);
+            }
+        } catch (\PDOException $e) {
+            if ($this->beganTransaction) {
+                $this->rollBack();
+            }
+            if ((int)$this->pdo->errorCode()) {
+                $this->log(e: $e);
+            }
         }
     }
 
@@ -286,10 +315,12 @@ class PgSql extends AbstractDatabase
     {
         try {
             if ($this->stmt) {
-                return pg_fetch_assoc($this->stmt);
+                return $this->stmt->fetch(mode: \PDO::FETCH_ASSOC);
             }
-        } catch (\Exception $e) {
-            $this->log(e: $e);
+        } catch (\PDOException $e) {
+            if ((int)$this->pdo->errorCode()) {
+                $this->log(e: $e);
+            }
         }
         return false;
     }
@@ -303,10 +334,12 @@ class PgSql extends AbstractDatabase
     {
         try {
             if ($this->stmt) {
-                return pg_fetch_all($this->stmt);
+                return $this->stmt->fetchAll(mode: \PDO::FETCH_ASSOC);
             }
-        } catch (\Exception $e) {
-            $this->log(e: $e);
+        } catch (\PDOException $e) {
+            if ((int)$this->pdo->errorCode()) {
+                $this->log(e: $e);
+            }
         }
         return false;
     }
@@ -322,13 +355,15 @@ class PgSql extends AbstractDatabase
     {
         try {
             if ($this->stmt) {
-                pg_free_result($this->stmt);
+                $this->stmt->closeCursor();
+                if ($pushPop && count(value: $this->stmts)) {
+                    $this->stmt = array_pop(array: $this->stmts);
+                }
             }
-            if ($this->db) {
-                pg_flush($this->db);
+        } catch (\PDOException $e) {
+            if ((int)$this->pdo->errorCode()) {
+                $this->log(e: $e);
             }
-        } catch (\Exception $e) {
-            $this->log(e: $e);
         }
     }
 
@@ -343,7 +378,7 @@ class PgSql extends AbstractDatabase
     private function log($e): never
     {
         throw new \Exception(
-            message: pg_last_error($this->db),
+            message: $e->getMessage(),
             code: HttpStatus::$InternalServerError
         );
     }

@@ -19,6 +19,7 @@ use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\Hook;
+use Microservices\App\Supplement;
 
 /**
  * Class to initialize api HTTP request
@@ -102,17 +103,13 @@ class Api
             );
         }
 
-        try {
-            if ($this->processBeforePayload()) {
-                return true;
-            }
-        } catch (\Exception $e) {
-            return true;
-        }
-
         // Load Payloads
         if (!$this->c->req->rParser->isConfigRequest) {
             $this->c->req->loadPayload();
+        }
+
+        if ($this->processBeforePayload()) {
+            return true;
         }
 
         $class = null;

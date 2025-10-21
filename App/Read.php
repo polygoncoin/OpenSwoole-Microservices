@@ -22,7 +22,6 @@ use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\HttpStatus;
 use Microservices\App\Web;
-use Microservices\App\Servers\Database\AbstractDatabase;
 
 /**
  * Read APIs
@@ -43,7 +42,7 @@ class Read
     /**
      * Database object
      *
-     * @var null|AbstractDatabase
+     * @var null|Object
      */
     public $db = null;
 
@@ -119,7 +118,7 @@ class Read
             isset($rSqlConfig['cacheKey'])
             && !isset($this->c->req->s['payload']['orderBy'])
         ) {
-            $json = $this->c->req->getDqlCache(
+            $json = $this->c->req->getQueryCache(
                 cacheKey: $rSqlConfig['cacheKey']
             );
             if ($json !== null) {
@@ -169,7 +168,7 @@ class Read
 
         if ($toBeCached) {
             $json = $this->dataEncode->getData();
-            $this->c->req->setDmlCache(
+            $this->c->req->setQueryCache(
                 cacheKey: $rSqlConfig['cacheKey'],
                 json: $json
             );

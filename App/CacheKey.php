@@ -48,7 +48,7 @@ class CacheKey
      *
      * @return string
      */
-    public static function client(&$hostname): string
+    public static function client($hostname): string
     {
         return "c:{$hostname}";
     }
@@ -61,7 +61,7 @@ class CacheKey
      *
      * @return string
      */
-    public static function clientUser(&$cID, &$username): string
+    public static function clientUser($cID, $username): string
     {
         return "cu:{$cID}:u:{$username}";
     }
@@ -73,7 +73,7 @@ class CacheKey
      *
      * @return string
      */
-    public static function group(&$gID): string
+    public static function group($gID): string
     {
         return "g:{$gID}";
     }
@@ -85,7 +85,7 @@ class CacheKey
      *
      * @return string
      */
-    public static function cidr(&$gID): string
+    public static function cidr($gID): string
     {
         return "cidr:{$gID}";
     }
@@ -97,7 +97,7 @@ class CacheKey
      *
      * @return string
      */
-    public static function token(&$token): string
+    public static function token($token): string
     {
         return "t:{$token}";
     }
@@ -109,7 +109,7 @@ class CacheKey
      *
      * @return string
      */
-    public static function userToken(&$uID): string
+    public static function userToken($uID): string
     {
         return "ut:{$uID}";
     }

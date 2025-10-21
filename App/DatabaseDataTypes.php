@@ -223,14 +223,14 @@ namespace Microservices\App;
 
     A floating point number. The total number of digits is specified in size. The
     number of digits after the decimal point is specified in the d parameter.
-    This syntax is deprecated in MySQL 8.0.17, and it will be removed in future
-    MySQL versions
+    This syntax is deprecated in MySql 8.0.17, and it will be removed in future
+    MySql versions
     FLOAT(size, d)
     public static $FLOAT = [
         'dataType' => 'string'
     ];
 
-    A floating point number. MySQL uses the p value to determine whether to use
+    A floating point number. MySql uses the p value to determine whether to use
     FLOAT or DOUBLE for the resulting data type. If p is from 0 to 24, the data
     type becomes FLOAT(). If p is from 25 to 53, the data type becomes DOUBLE()
     FLOAT(p)
@@ -258,8 +258,8 @@ namespace Microservices\App;
     ];
 
     Note: All the numeric data types may have an extra option: UNSIGNED or
-    ZEROFILL. If you add the UNSIGNED option, MySQL disallows negative values
-    for the column. If you add the ZEROFILL option, MySQL automatically also adds
+    ZEROFILL. If you add the UNSIGNED option, MySql disallows negative values
+    for the column. If you add the ZEROFILL option, MySql automatically also adds
     the UNSIGNED attribute to the column
 */
 
@@ -311,7 +311,7 @@ namespace Microservices\App;
         'maxValue' => 2155
     ];
 
-    MySQL 8.0 does not support year in two-digit format
+    MySql 8.0 does not support year in two-digit format
 */
 
 /**

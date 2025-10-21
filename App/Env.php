@@ -29,7 +29,7 @@ namespace Microservices\App;
  */
 class Env
 {
-    public static $globalDatabase = null;
+    public static $globalDbDatabase = null;
     public static $cacheDatabase = null;
 
     public static $ENVIRONMENT = null;
@@ -39,7 +39,7 @@ class Env
     public static $configRequestUriKeyword = null;
 
     public static $groups = null;
-    public static $client_users = null;
+    public static $clientUsers = null;
     public static $clients = null;
 
     public static $maxPerPage = null;
@@ -80,8 +80,8 @@ class Env
      */
     public static function init(&$http): void
     {
-        self::$globalDatabase = getenv(name: 'globalDatabase');
-        self::$cacheDatabase = getenv(name: 'cacheDatabase');
+        self::$globalDbDatabase = getenv(name: 'globalDbDatabase');
+        self::$cacheDatabase = getenv(name: 'globalCacheDatabase');
 
         self::$ENVIRONMENT = getenv(name: 'ENVIRONMENT');
         self::$OUTPUT_PERFORMANCE_STATS = getenv(name: 'OUTPUT_PERFORMANCE_STATS');
@@ -90,7 +90,7 @@ class Env
         self::$configRequestUriKeyword = getenv(name: 'configRequestUriKeyword');
 
         self::$groups = getenv(name: 'groups');
-        self::$client_users = getenv(name: 'client_users');
+        self::$clientUsers = getenv(name: 'clientUsers');
         self::$clients = getenv(name: 'clients');
 
         self::$maxPerPage = getenv(name: 'maxPerPage');

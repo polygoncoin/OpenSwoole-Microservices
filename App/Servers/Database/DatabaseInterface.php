@@ -16,10 +16,10 @@
 namespace Microservices\App\Servers\Database;
 
 /**
- * Database Abstract Class
+ * Database Interface
  * php version 8.3
  *
- * @category  Database_Abstract_Class
+ * @category  Database_Interface
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -27,70 +27,56 @@ namespace Microservices\App\Servers\Database;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-abstract class AbstractDatabase
+interface DatabaseInterface
 {
-    /**
-     * Database database
-     *
-     * @var null|string
-     */
-    public $database = null;
-
-    /**
-     * Transaction started flag
-     *
-     * @var bool
-     */
-    public $beganTransaction = false;
-
     /**
      * Database connection
      *
      * @return void
      */
-    abstract public function connect(): void;
+    public function connect(): void;
 
     /**
      * Use Database
      *
      * @return void
      */
-    abstract public function useDatabase(): void;
+    public function useDatabase(): void;
 
     /**
      * Begin transaction
      *
      * @return void
      */
-    abstract public function begin(): void;
+    public function begin(): void;
 
     /**
      * Commit transaction
      *
      * @return void
      */
-    abstract public function commit(): void;
+    public function commit(): void;
 
     /**
      * Rollback transaction
      *
      * @return void
      */
-    abstract public function rollback(): void;
+    public function rollBack(): void;
 
     /**
      * Affected Rows by PDO
      *
      * @return bool|int
      */
-    abstract public function affectedRows(): bool|int;
+    public function affectedRows(): bool|int;
 
     /**
      * Last Insert Id by PDO
      *
      * @return bool|int
      */
-    abstract public function lastInsertId(): bool|int;
+    public function lastInsertId(): bool|int;
 
     /**
      * Execute Parameterized query
@@ -101,21 +87,21 @@ abstract class AbstractDatabase
      *
      * @return void
      */
-    abstract public function execDbQuery($sql, $params = [], $pushPop = false): void;
+    public function execDbQuery($sql, $params = [], $pushPop = false): void;
 
     /**
      * Fetch single row from statement
      *
      * @return mixed
      */
-    abstract public function fetch(): mixed;
+    public function fetch(): mixed;
 
     /**
      * Fetch all rows from statement
      *
      * @return array|bool
      */
-    abstract public function fetchAll(): array|bool;
+    public function fetchAll(): array|bool;
 
     /**
      * Close statement cursor
@@ -124,5 +110,5 @@ abstract class AbstractDatabase
      *
      * @return void
      */
-    abstract public function closeCursor($pushPop = false): void;
+    public function closeCursor($pushPop = false): void;
 }
