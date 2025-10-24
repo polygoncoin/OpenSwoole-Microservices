@@ -17,7 +17,7 @@ namespace Microservices\App;
 
 use Microservices\App\AppTrait;
 use Microservices\App\Common;
-use Microservices\App\DataRepresentation\AbstractDataEncode;
+use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\HttpStatus;
@@ -84,7 +84,7 @@ class Write
     /**
      * JSON Encode object
      *
-     * @var null|AbstractDataEncode
+     * @var null|DataEncode
      */
     public $dataEncode = null;
 
@@ -286,27 +286,31 @@ class Write
                 );
                 $bool = $this->operateAsTransaction
                     && ($this->db->beganTransaction === true);
+
+                $arr = [];
                 if (!$this->operateAsTransaction || $bool) {
                     if ($this->operateAsTransaction) {
                         $this->db->commit();
                     }
-                    $arr = [
-                        'Status' => HttpStatus::$Created,
-                        'Payload' => $this->c->req->dataDecode->getCompleteArray(
-                            keys: implode(
-                                separator: ':',
-                                array: $payloadIndexes
-                            )
-                        ),
-                        'Response' => $response
-                    ];
-                    if ($idempotentWindow) {
-                        $this->c->req->cache->setCache(
-                            key: $hashKey,
-                            value: json_encode(value: $arr),
-                            expire: $idempotentWindow
-                        );
-                    }
+                    if ($this->c->res->httpStatus === HttpStatus::$Ok) {
+                        $arr = [
+                            'Status' => HttpStatus::$Ok,
+                            'Payload' => $this->c->req->dataDecode->getCompleteArray(
+                                keys: implode(
+                                    separator: ':',
+                                    array: $payloadIndexes
+                                )
+                            ),
+                            'Response' => $response
+                        ];
+                        if ($idempotentWindow) {
+                            $this->c->req->cache->setCache(
+                                key: $hashKey,
+                                value: json_encode(value: $arr),
+                                expire: $idempotentWindow
+                            );
+                        }
+                    } // else error occured and output set.
                 } else { // Failure
                     $this->c->res->httpStatus = HttpStatus::$BadRequest;
                     $arr = [
@@ -324,19 +328,21 @@ class Write
                 $arr = json_decode(json: $hashJson, associative: true);
             }
 
-            if ($payloadIndexes[0] === '') {
-                foreach ($arr as $k => $v) {
-                    $this->dataEncode->addKeyData(key: $k, data: $v);
-                }
-            } else {
-                if (Env::$oRepresentation === 'XML') {
-                    $this->dataEncode->startObject(key: 'Row');
+            if (!empty($arr)) {
+                if ($payloadIndexes[0] === '') {
                     foreach ($arr as $k => $v) {
                         $this->dataEncode->addKeyData(key: $k, data: $v);
                     }
-                    $this->dataEncode->endObject();
                 } else {
-                    $this->dataEncode->addKeyData(key: $i, data: $arr);
+                    if (Env::$oRepresentation === 'XML') {
+                        $this->dataEncode->startObject(key: 'Row');
+                        foreach ($arr as $k => $v) {
+                            $this->dataEncode->addKeyData(key: $k, data: $v);
+                        }
+                        $this->dataEncode->endObject();
+                    } else {
+                        $this->dataEncode->addKeyData(key: $i, data: $arr);
+                    }
                 }
             }
         }
@@ -424,7 +430,10 @@ class Write
             }
 
             // Validation
-            if (!$this->isValidPayload(wSqlConfig: $wSqlConfig)) {
+            if (
+                isset($wSqlConfig['__VALIDATE__'])
+                && !$this->isValidPayload(wSqlConfig: $wSqlConfig)
+            ) {
                 continue;
             }
 
@@ -602,13 +611,15 @@ class Write
             );
             if ($isValidData !== true) {
                 $this->c->res->httpStatus = HttpStatus::$BadRequest;
-                $this->dataEncode->startObject();
+                $this->dataEncode->addKeyData(
+                    key: 'Status',
+                    data: $this->c->res->httpStatus
+                );
                 $this->dataEncode->addKeyData(
                     key: 'Payload',
                     data: $this->s['payload']
                 );
                 $this->dataEncode->addKeyData(key: 'Error', data: $errors);
-                $this->dataEncode->endObject();
                 $return = false;
             }
         }

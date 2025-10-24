@@ -90,7 +90,7 @@ trait AppTrait
                     }
                     if (!isset($necessaryFields[$fetchFrom][$fKey])) {
                         $dataType['dataKey'] = $fKey;
-                        $dataType['nec'] = $require;
+                        $dataType['necessary'] = $require;
                         $necessaryFields[$fetchFrom][$fKey] = $dataType;
                     }
                 }
@@ -389,7 +389,7 @@ trait AppTrait
                     $sqlParams[$var] = $this->c->req->s[$fetchFrom][$fKey];
                 }
                 continue;
-            } elseif ($this->c->req->s['necessary'][$fetchFrom][$fKey]['nec']) {
+            } elseif ($this->c->req->s['necessary'][$fetchFrom][$fKey]['necessary']) {
                 $errors[] = "Missing necessary field '{$fetchFrom}' for '{$fKey}'";
                 continue;
             } else {

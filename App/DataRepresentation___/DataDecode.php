@@ -5,18 +5,19 @@
  * php version 8.3
  *
  * @category  DataDecode
- * @package   Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Microservices
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 
 namespace Microservices\App\DataRepresentation;
 
-use Microservices\App\DataRepresentation\Decode\JsonDecode;
-use Microservices\App\DataRepresentation\Decode\XmlDecode;
+use Microservices\App\DataRepresentation\AbstractDataDecode;
+use Microservices\App\DataRepresentation\Json\JsonDecode;
+use Microservices\App\DataRepresentation\Xml\XmlDecode;
 use Microservices\App\Env;
 
 /**
@@ -24,14 +25,14 @@ use Microservices\App\Env;
  * php version 8.3
  *
  * @category  DataDecoder
- * @package   Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Microservices
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class DataDecode
+class DataDecode extends AbstractDataDecode
 {
     /**
      * JSON File Handle
@@ -43,7 +44,7 @@ class DataDecode
     /**
      * Temporary Stream
      *
-     * @var null|Object
+     * @var null|AbstractDataDecode
      */
     private $dataDecoder = null;
 

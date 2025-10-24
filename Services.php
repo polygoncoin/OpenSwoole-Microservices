@@ -257,7 +257,7 @@ class Services
      */
     public function outputResults(): bool|string
     {
-        return $this->c->res->dataEncode->streamData();
+        return $this->c->res->dataEncode->getData();
     }
 
     /**

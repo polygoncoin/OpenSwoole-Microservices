@@ -17,7 +17,7 @@ namespace Microservices\App;
 
 use Microservices\App\AppTrait;
 use Microservices\App\Common;
-use Microservices\App\DataRepresentation\AbstractDataEncode;
+use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\HttpStatus;
@@ -84,7 +84,7 @@ class Supplement
     /**
      * JSON Encode object
      *
-     * @var null|AbstractDataEncode
+     * @var null|DataEncode
      */
     public $dataEncode = null;
 
