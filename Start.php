@@ -80,6 +80,8 @@ $server->on(
             return;
         }
 
+        echo PHP_EOL . $request->server['request_method'] . ':' . $request->get['r'];
+
         $http = [];
         $http['server']['host'] = 'localhost';
         // $http['server']['host'] = 'public.localhost';
