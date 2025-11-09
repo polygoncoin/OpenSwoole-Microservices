@@ -1055,7 +1055,6 @@ var handlerUrl = "http://127.0.0.1:9501?r=/login";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "POST", handlerUrl);
-xmlhttp . setRequestHeader('X-API-Version', 'v1.0.0');
 xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
 
 xmlhttp . onreadystatechange = function() {
@@ -1090,7 +1089,6 @@ var handlerUrl = "http://127.0.0.1:9501?r=/routes";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "GET", handlerUrl);
-xmlhttp . setRequestHeader('X-API-Version', 'v1.0.0');
 xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 xmlhttp . setRequestHeader('Authorization', 'Bearer <Token-from-login-api>');
 
@@ -1112,7 +1110,6 @@ var handlerUrl = "http://127.0.0.1:9501?r=/ajax-handler-route";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "POST", handlerUrl);
-xmlhttp . setRequestHeader('X-API-Version', 'v1.0.0');
 xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
 xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
 
@@ -1144,7 +1141,6 @@ var handlerUrl = "http://127.0.0.1:9501?r=/custom/password";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "PUT", handlerUrl);
-xmlhttp . setRequestHeader('X-API-Version', 'v1.0.0');
 xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
 xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
 
@@ -1203,7 +1199,6 @@ var xmlPayload = '<?xml version="1.0" encoding="UTF-8" ?>' +
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "POST", handlerUrl);
-xmlhttp . setRequestHeader('X-API-Version', 'v1.0.0');
 xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 
 xmlhttp . onreadystatechange = function() {

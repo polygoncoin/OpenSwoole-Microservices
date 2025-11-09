@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Client side Cache
+ * Cache Handler
  * php version 8.3
  *
- * @category  ClientCache
+ * @category  Cache Handler
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -16,13 +16,12 @@
 namespace Microservices\App;
 
 use Microservices\App\Constants;
-use Microservices\App\Common;
 
 /**
  * Client side Caching via E-tags
  * php version 8.3
  *
- * @category  ClientCache_Etag
+ * @category  Cache Handler
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -32,6 +31,13 @@ use Microservices\App\Common;
  */
 class CacheHandler
 {
+    /**
+     * File request details
+     *
+     * @var array
+     */
+    private $http = null;
+
     /**
      * File Location
      *
@@ -52,8 +58,9 @@ class CacheHandler
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(&$http)
     {
+        $this->http = &$http;
     }
 
     /**
@@ -71,7 +78,7 @@ class CacheHandler
             string: str_replace(
                 search: ['../', '..\\', '/', '\\'],
                 replace: ['', '', DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR],
-                subject: urldecode(string: Common::$req->ROUTE)
+                subject: urldecode(string: $this->http['get'][Constants::$ROUTE_URL_PARAM])
             ),
             characters: './\\'
         );
@@ -97,10 +104,11 @@ class CacheHandler
      *
      * @return bool
      */
-    public function process(): bool
+    public function process(): array
     {
-        // File name requested for download
-        $fileName = basename(path: $this->fileLocation);
+        $headers = [];
+        $status = HttpStatus::$Ok;
+        $data = '';
 
         // Get the $fileLocation file mime
         $fileInfo = finfo_open(flags: FILEINFO_MIME_TYPE);
@@ -112,39 +120,37 @@ class CacheHandler
         $eTag = "{$modifiedTime}";
 
         if (
-            (isset($_SERVER['HTTP_IF_NONE_MATCH'])
+            (isset($this->http['header']['HTTP_IF_NONE_MATCH'])
                 && strpos(
-                    haystack: $_SERVER['HTTP_IF_NONE_MATCH'],
+                    haystack: $this->http['header']['HTTP_IF_NONE_MATCH'],
                     needle: $eTag
                 ) !== false
             )
-            || (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
+            || (isset($this->http['header']['HTTP_IF_MODIFIED_SINCE'])
             && @strtotime(
-                datetime: $_SERVER['HTTP_IF_MODIFIED_SINCE']
+                datetime: $this->http['header']['HTTP_IF_MODIFIED_SINCE']
             ) == $modifiedTime)
         ) {
-            header(header: 'HTTP/1.1 304 Not Modified');
-            return true;
+            $status = HttpStatus::$NotModified;
+            return [$headers, $data, $status];
         }
 
-        // send the headers
-        //header("Content-Disposition: attachment;filename='$fileName';");
-        header(header: 'Cache-Control: max-age=0, must-revalidate');
-        header(
-            header: 'Last-Modified: ' . gmdate(
-                format: 'D, d M Y H:i:s',
-                timestamp: $modifiedTime
-            ) . ' GMT'
-        );
-        header(header: "Etag:\"{$eTag}\"");
-        header(header: 'Expires: -1');
-        header(header: "Content-Type: {$mime}");
-        header(header: 'Content-Length: ' . filesize(filename: $this->fileLocation));
+        // Set headers
+        
+        // File name requested for download
+        // $fileName = basename(path: $this->fileLocation);
+        // $headers['Content-Disposition'] = "attachment;filename='$fileName';";
+        
+        $headers['Cache-Control'] = 'max-age=0, must-revalidate';
+        $headers['Last-Modified'] = gmdate(
+            format: 'D, d M Y H:i:s',
+            timestamp: $modifiedTime
+        ) . ' GMT';
+        $headers['Etag'] = "\"{$eTag}\"";
+        $headers['Expires'] = -1;
+        $headers['Content-Type'] = "{$mime}";
+        $headers['Content-Length'] = filesize(filename: $this->fileLocation);
 
-        // Send file content as stream
-        $fp = fopen(filename: $this->fileLocation, mode: 'rb');
-        fpassthru(stream: $fp);
-
-        return true;
+        return [$headers, file_get_contents($this->fileLocation), $status];
     }
 }

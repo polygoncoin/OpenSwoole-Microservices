@@ -864,8 +864,8 @@ trait AppTrait
         $triggerOutput = [];
         if ($isAssoc) {
             $http = $this->getTriggerDetails($triggerConfig);
-            [$headers, $data, $status] = Start::http($http);
-            $triggerOutput = &$data;
+            [$responseheaders, $responseContent, $responseCode] = Start::http(http: $http);
+            $triggerOutput = &$responseContent;
         } else {
             for (
                 $iTrigger = 0, $iTriggerCount = count($triggerConfig);
@@ -873,8 +873,8 @@ trait AppTrait
                 $iTrigger++
             ) {
                 $http = $this->getTriggerDetails($triggerConfig[$iTrigger]);
-                [$headers, $data, $status] = Start::http($http);
-                $triggerOutput[] = &$data;
+                [$responseheaders, $responseContent, $responseCode] = Start::http(http: $http);
+                $triggerOutput[] = &$responseContent;
             }
         }
 
@@ -928,7 +928,6 @@ trait AppTrait
         if (isset(Common::$http['header']['authorization'])) {
             $http['header']['authorization'] = Common::$http['header']['authorization'];
         }
-        $http['server']['api_version'] = Common::$http['server']['api_version'];
         $http['post'] = json_encode($payloadArr);
         $http['get'] = $queryStringArr;
         $http['get'][Constants::$ROUTE_URL_PARAM] = $route;

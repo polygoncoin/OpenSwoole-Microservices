@@ -45,7 +45,6 @@ $server->on(
     'request',
     function (Request $request, Response $response): void {
 
-        $version = 'v1.0.0';
         if (
             isset($request->get['r'])
             && in_array(
@@ -58,7 +57,6 @@ $server->on(
                 ]
             )
         ) {
-            $request->header['x-api-version'] = $version;
             $tests = new Tests();
             switch ($request->get['r']) {
                 case '/auth-test':
@@ -85,7 +83,6 @@ $server->on(
         if (isset($request->header['authorization'])) {
             $http['header']['authorization'] = $request->header['authorization'];
         }
-        $http['server']['api_version'] = $request->header['x-api-version'];
         $http['get'] = &$request->get;
         $http['post'] = &$request->post;
         $http['files'] = &$request->files;
@@ -96,13 +93,13 @@ $server->on(
             putenv(assignment: "{$key}={$value}");
         }
 
-        [$headers, $data, $status] = Start::http(http: $http, streamData: true);
+        [$responseheaders, $responseContent, $responseCode] = Start::http(http: $http, streamData: true);
 
-        foreach ($headers as $k => $v) {
+        $response->status($responseCode);
+        foreach ($responseheaders as $k => $v) {
             $response->header($k, $v);
         }
-        $response->status($status);
-        $response->end($data);
+        $response->end($responseContent);
     }
 );
 

@@ -15,7 +15,10 @@
 
 namespace Microservices;
 
+use Microservices\App\CacheHandler;
 use Microservices\App\Common;
+use Microservices\App\Constants;
+use Microservices\App\Env;
 use Microservices\App\Logs;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\HttpStatus;
@@ -33,28 +36,21 @@ class Start
      */
     public static function http($http, $streamData = false)
     {
+        Constants::init();
+        Env::init(http: $http);
+
+        if ($http['server']['method'] === Constants::$GET) {
+            $cacheHandler = new CacheHandler(http: $http);
+            if ($cacheHandler->init(mode: 'Open')) {
+                // File exists - Serve from Dropbox
+                return $cacheHandler->process();
+            }
+            $cacheHandler = null;
+        }
+
         $headers = [];
-        $version = 'v1.0.0';
 
         echo PHP_EOL . $http['server']['method'] . ':' . $http['get']['r'];
-
-        // Check version
-        if (
-            !isset($http['server']['api_version'])
-            || $http['server']['api_version'] !== $version
-        ) {
-            if ($streamData) {
-                // Set response headers
-                $headers['Content-Type'] = 'application/json; charset=utf-8';
-                $headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0';
-                $headers['Pragma'] = 'no-cache';
-            }
-
-            $data = '{"Status": 400, "Message": "Bad Request"}';
-            $status = HttpStatus::$BadRequest;
-
-            return [$headers, $data, $status];
-        }
 
         try {
             $services = new Services(http: $http);
@@ -62,9 +58,7 @@ class Start
             if ($streamData && $http['server']['method'] == 'OPTIONS') {
                 // Setting CORS
                 $headers = $services->getHeaders();
-
                 $data = '{}';
-
                 $status = HttpStatus::$Ok;
 
                 return [$headers, $data, $status];
@@ -76,7 +70,10 @@ class Start
                     $headers = $services->getHeaders();
                 }
 
-                $services->process();
+                $return = $services->process();
+                if (is_array($return) && count($return) === 3) {
+                    return $return;
+                }
 
                 $data = $services->returnResults();
                 $status = Common::$res->httpStatus;
@@ -101,7 +98,7 @@ class Start
                     ],
                     'Details' => [
                         '$_GET' => $_GET,
-                        'php:input' => @file_get_contents(filename: 'php://input'),
+                        'php:input' => '',
                         'session' => Common::$req->s
                     ]
                 ];

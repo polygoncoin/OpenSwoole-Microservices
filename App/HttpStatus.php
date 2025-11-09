@@ -35,6 +35,7 @@ class HttpStatus
 
     public static $MovedPermanently     = 301;
     public static $Found                = 302;
+    public static $NotModified          = 304;
     public static $TemporaryRedirect    = 307;
     public static $PermanentRedirect    = 308;
 

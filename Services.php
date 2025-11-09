@@ -15,7 +15,6 @@
 
 namespace Microservices;
 
-use Microservices\App\CacheHandler;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
@@ -67,9 +66,6 @@ class Services
     public function __construct(&$http)
     {
         $this->http = &$http;
-
-        Constants::init();
-        Env::init(http: $http);
     }
 
     /**
@@ -100,13 +96,11 @@ class Services
     /**
      * Process
      *
-     * @return bool
+     * @return mixed
      */
-    public function process(): bool
+    public function process(): mixed
     {
-        $this->processApi();
-
-        return true;
+        return $this->processApi();
     }
 
     /**
@@ -122,21 +116,11 @@ class Services
     /**
      * Process API request
      *
-     * @return bool
+     * @return mixed
      * @throws \Exception
      */
-    public function processApi(): bool
+    public function processApi(): mixed
     {
-        if (Common::$req->METHOD === Constants::$GET) {
-            $cacheHandler = new CacheHandler();
-            if ($cacheHandler->init(mode: 'Open')) {
-                // File exists - Serve from Dropbox
-                $cacheHandler->process();
-                return true;
-            }
-            $cacheHandler = null;
-        }
-
         $class = null;
 
         switch (true) {
@@ -190,7 +174,10 @@ class Services
                 if ($api->init()) {
                     Common::initResponse();
                     $this->startData();
-                    $api->process();
+                    $return = $api->process();
+                    if (is_array($return) && count($return) === 3) {
+                        return $return;
+                    }
                     $this->addStatus();
                     $this->addPerformance();
                     $this->endData();

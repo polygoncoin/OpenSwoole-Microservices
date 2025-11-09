@@ -86,11 +86,10 @@ class Api
     public function process(): bool
     {
         if (Common::$req->METHOD === Constants::$GET) {
-            $cacheHandler = new CacheHandler();
+            $cacheHandler = new CacheHandler(http: Common::$http);
             if ($cacheHandler->init(mode: 'Closed')) {
                 // File exists - Serve from Dropbox
-                $cacheHandler->process();
-                return true;
+                return $cacheHandler->process();
             }
             $cacheHandler = null;
         }
