@@ -72,6 +72,10 @@ class CacheHandler
      */
     public function init($mode): bool
     {
+        if (!isset($this->http['get'][Constants::$ROUTE_URL_PARAM])) {
+            return false;
+        }
+
         $this->cacheLocation = Constants::$DROP_BOX_DIR .
             DIRECTORY_SEPARATOR . $mode;
         $filePath = DIRECTORY_SEPARATOR . trim(

@@ -15,11 +15,6 @@
 
 namespace Microservices\TestCases;
 
-define('PUBLIC_HTML', realpath(path: __DIR__ . DIRECTORY_SEPARATOR . '..'));
-
-require_once PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Autoload.php';
-spl_autoload_register(callback:  'Microservices\Autoload::register');
-
 define('GET', __DIR__ . DIRECTORY_SEPARATOR . 'GET');
 define('POST', __DIR__ . DIRECTORY_SEPARATOR . 'POST');
 define('PUT', __DIR__ . DIRECTORY_SEPARATOR . 'PUT');

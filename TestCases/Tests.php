@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Start
+ * TestCases
  * php version 8.3
  *
- * @category  Start
+ * @category  Tests
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -13,7 +13,20 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices;
+namespace Microservices\TestCases;
+
+/**
+ * Tests
+ * php version 8.3
+ *
+ * @category  Tests
+ * @package   Openswoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 
 class Tests
 {
@@ -24,8 +37,7 @@ class Tests
      */
     function processAuth(): string
     {
-        return include __DIR__ . DIRECTORY_SEPARATOR . 'TestCases' .
-            DIRECTORY_SEPARATOR . 'AuthTests.php';
+        return include __DIR__ . DIRECTORY_SEPARATOR . 'AuthTests.php';
     }
 
     /**
@@ -35,8 +47,7 @@ class Tests
      */
     function processOpen(): string
     {
-        return include __DIR__ . DIRECTORY_SEPARATOR . 'TestCases' .
-            DIRECTORY_SEPARATOR . 'OpenTests.php';
+        return include __DIR__ . DIRECTORY_SEPARATOR . 'OpenTests.php';
     }
 
     /**
@@ -46,8 +57,7 @@ class Tests
      */
     function processXml(): string
     {
-        return include __DIR__ . DIRECTORY_SEPARATOR . 'TestCases' .
-            DIRECTORY_SEPARATOR . 'OpenTestsXml.php';
+        return include __DIR__ . DIRECTORY_SEPARATOR . 'OpenTestsXml.php';
     }
 
     /**
@@ -57,7 +67,6 @@ class Tests
      */
     function processSupplement(): string
     {
-        return include __DIR__ . DIRECTORY_SEPARATOR . 'TestCases' .
-            DIRECTORY_SEPARATOR . 'SupplementTest.php';
+        return include __DIR__ . DIRECTORY_SEPARATOR . 'SupplementTest.php';
     }
 }

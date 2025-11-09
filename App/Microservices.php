@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Service
+ * Microservices
  * php version 8.3
  *
  * @category  Service
@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices;
+namespace Microservices\App;
 
 use Microservices\App\Constants;
 use Microservices\App\Common;
@@ -22,10 +22,10 @@ use Microservices\App\Gateway;
 use Microservices\App\HttpStatus;
 
 /**
- * Services
+ * Microservices
  * php version 8.3
  *
- * @category  Services
+ * @category  Microservices
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -33,7 +33,7 @@ use Microservices\App\HttpStatus;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class Services
+class Microservices
 {
     /**
      * Start micro timestamp;
@@ -134,11 +134,11 @@ class Services
                         code: HttpStatus::$NotFound
                     );
                 }
-                $class = __NAMESPACE__ . '\\App\\Cron';
+                $class = __NAMESPACE__ . '\\Cron';
                 break;
 
             case Common::$req->ROUTE === '/logout':
-                $class = __NAMESPACE__ . '\\App\\Logout';
+                $class = __NAMESPACE__ . '\\Logout';
                 break;
 
             // Requires HTTP auth username and password
@@ -149,12 +149,12 @@ class Services
                         code: HttpStatus::$NotFound
                     );
                 }
-                $class = __NAMESPACE__ . '\\App\\Reload';
+                $class = __NAMESPACE__ . '\\Reload';
                 break;
 
             // Generates auth token
             case Common::$req->ROUTE === '/login':
-                $class = __NAMESPACE__ . '\\App\\Login';
+                $class = __NAMESPACE__ . '\\Login';
                 break;
 
             // Requires auth token
@@ -163,7 +163,7 @@ class Services
                 $gateway->initGateway();
                 $gateway = null;
 
-                $class = __NAMESPACE__ . '\\App\\Api';
+                $class = __NAMESPACE__ . '\\Api';
                 break;
         }
 

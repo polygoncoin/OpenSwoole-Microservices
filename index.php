@@ -18,11 +18,13 @@ use Openswoole\Http\Server;
 use Openswoole\Http\Request;
 use Openswoole\Http\Response;
 
-use Microservices\Start;
-use Microservices\Tests;
+use Microservices\App\Start;
+use Microservices\TestCases\Tests;
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'Autoload.php';
-spl_autoload_register(callback: 'Microservices\Autoload::register');
+define('PUBLIC_HTML', __DIR__);
+
+require_once PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Autoload.php';
+spl_autoload_register(callback:  'Microservices\Autoload::register');
 
 // Set coroutine options before you start a server...
 Coroutine::set(
@@ -45,10 +47,22 @@ $server->on(
     'request',
     function (Request $request, Response $response): void {
 
+        $http = [];
+        $http['server']['host'] = 'localhost';
+        // $http['server']['host'] = 'public.localhost';
+        $http['server']['method'] = $request->server['request_method'];
+        $http['server']['ip'] = $request->server['remote_addr'];
+        if (isset($request->header['authorization'])) {
+            $http['header']['authorization'] = $request->header['authorization'];
+        }
+        $http['get'] = &$request->get;
+        $http['post'] = &$request->post;
+        $http['files'] = &$request->files;
+
         if (
-            isset($request->get['r'])
+            isset($http['get']['r'])
             && in_array(
-                needle: $request->get['r'],
+                needle: $http['get']['r'],
                 haystack: [
                     '/auth-test',
                     '/open-test',
@@ -72,34 +86,21 @@ $server->on(
                     $response->end($tests->processSupplement());
                     break;
             }
-            return;
-        }
+        } else {
+            // Load .env
+            $env = parse_ini_file(filename: __DIR__ . DIRECTORY_SEPARATOR . '.env');
+            foreach ($env as $key => $value) {
+                putenv(assignment: "{$key}={$value}");
+            }
 
-        $http = [];
-        $http['server']['host'] = 'localhost';
-        // $http['server']['host'] = 'public.localhost';
-        $http['server']['method'] = $request->server['request_method'];
-        $http['server']['ip'] = $request->server['remote_addr'];
-        if (isset($request->header['authorization'])) {
-            $http['header']['authorization'] = $request->header['authorization'];
-        }
-        $http['get'] = &$request->get;
-        $http['post'] = &$request->post;
-        $http['files'] = &$request->files;
+            [$responseheaders, $responseContent, $responseCode] = Start::http(http: $http, streamData: true);
 
-        // Load .env
-        $env = parse_ini_file(filename: __DIR__ . DIRECTORY_SEPARATOR . '.env');
-        foreach ($env as $key => $value) {
-            putenv(assignment: "{$key}={$value}");
+            $response->status($responseCode);
+            foreach ($responseheaders as $k => $v) {
+                $response->header($k, $v);
+            }
+            $response->end($responseContent);
         }
-
-        [$responseheaders, $responseContent, $responseCode] = Start::http(http: $http, streamData: true);
-
-        $response->status($responseCode);
-        foreach ($responseheaders as $k => $v) {
-            $response->header($k, $v);
-        }
-        $response->end($responseContent);
     }
 );
 

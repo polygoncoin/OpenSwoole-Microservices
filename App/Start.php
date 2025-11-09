@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices;
+namespace Microservices\App;
 
 use Microservices\App\CacheHandler;
 use Microservices\App\Common;
@@ -22,7 +22,7 @@ use Microservices\App\Env;
 use Microservices\App\Logs;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\HttpStatus;
-use Microservices\Services;
+use Microservices\App\Microservices;
 
 class Start
 {
@@ -53,29 +53,29 @@ class Start
         echo PHP_EOL . $http['server']['method'] . ':' . $http['get']['r'];
 
         try {
-            $services = new Services(http: $http);
+            $Microservices = new Microservices(http: $http);
 
             if ($streamData && $http['server']['method'] == 'OPTIONS') {
                 // Setting CORS
-                $headers = $services->getHeaders();
+                $headers = $Microservices->getHeaders();
                 $data = '{}';
                 $status = HttpStatus::$Ok;
 
                 return [$headers, $data, $status];
             }
 
-            if ($services->init()) {
+            if ($Microservices->init()) {
                 // Setting CORS
                 if ($streamData) {
-                    $headers = $services->getHeaders();
+                    $headers = $Microservices->getHeaders();
                 }
 
-                $return = $services->process();
+                $return = $Microservices->process();
                 if (is_array($return) && count($return) === 3) {
                     return $return;
                 }
 
-                $data = $services->returnResults();
+                $data = $Microservices->returnResults();
                 $status = Common::$res->httpStatus;
 
                 return [$headers, $data, $status];
