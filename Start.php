@@ -64,7 +64,7 @@ class Start
                 $headers = $services->getHeaders();
 
                 $data = '{}';
-                
+
                 $status = HttpStatus::$Ok;
 
                 return [$headers, $data, $status];
@@ -132,7 +132,7 @@ class Start
             $data = $dataEncode->getData();
             $status = $e->getCode();
 
-            return [$headers, $data, $status];        
+            return [$headers, $data, $status];
         }
     }
 }

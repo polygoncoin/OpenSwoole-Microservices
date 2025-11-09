@@ -21,9 +21,7 @@ use Openswoole\Http\Response;
 use Microservices\Start;
 use Microservices\Tests;
 
-
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'Autoload.php';
-
 spl_autoload_register(callback: 'Microservices\Autoload::register');
 
 // Set coroutine options before you start a server...

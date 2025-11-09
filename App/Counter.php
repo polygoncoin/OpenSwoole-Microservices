@@ -44,10 +44,10 @@ class Counter
         $table = Env::$globalDbDatabase . '.' . Env::$counter;
         $sql = "INSERT INTO {$table}() VALUES()";
         $sqlParams = [];
-        
+
         DbFunctions::$globalDb->execDbQuery(sql: $sql, params: $sqlParams);
         $id = DbFunctions::$globalDb->lastInsertId();
-        
+
         return $id;
     }
 }

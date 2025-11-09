@@ -15,6 +15,8 @@
 
 namespace Microservices\TestCases;
 
+use Microservices\TestCases\TestFunctions;
+
 $header = $defaultHeaders;
 
 return TestFunctions::trigger(
