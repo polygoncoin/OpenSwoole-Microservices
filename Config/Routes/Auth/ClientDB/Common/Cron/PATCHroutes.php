@@ -15,8 +15,10 @@
 
 namespace Microservices\Config\Routes\Auth\ClientDB\Common\Cron;
 
+use Microservices\App\Env;
+
 return [
-    $Env::$cronRequestUriPrefix => [
+    Env::$cronRequestUriPrefix => [
         '{cron:string}' => [
             '{id:int|!0}'  => [
                 '__FILE__' => false

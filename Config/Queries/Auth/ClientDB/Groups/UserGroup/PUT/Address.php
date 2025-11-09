@@ -19,10 +19,7 @@ use Microservices\App\Constants;
 use Microservices\App\DatabaseDataTypes;
 
 return array_merge(
-    require Constants::$DOC_ROOT .
-                DIRECTORY_SEPARATOR . 'Config' .
-                DIRECTORY_SEPARATOR . 'Queries' .
-                DIRECTORY_SEPARATOR . 'Auth' .
+    require Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Common' .
                 DIRECTORY_SEPARATOR . 'Address.php',

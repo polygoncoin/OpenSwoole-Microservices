@@ -63,4 +63,4 @@ return [
         ],
         '__MODE__' => 'singleRowFormat'
     ]
-][isset($this->c->req->s['uriParams']['id'])?'single':'all'];
+][isset(Common::$req->s['uriParams']['id'])?'single':'all'];

@@ -36,20 +36,10 @@ class Hook_Example implements HookInterface
     use HookTrait;
 
     /**
-     * Common object
-     *
-     * @var null|Common
-     */
-    private $c = null;
-
-    /**
      * Constructor
-     *
-     * @param Common $common Common object
      */
-    public function __construct(Common &$common)
+    public function __construct()
     {
-        $this->c = &$common;
     }
 
     /**
@@ -82,6 +72,6 @@ class Hook_Example implements HookInterface
     private function execHook(): void
     {
         // Change payload.
-        $this->c->req->s['payload']['hook'] = 'Yes';
+        Common::$req->s['payload']['hook'] = 'Yes';
     }
 }

@@ -15,6 +15,8 @@
 
 namespace Microservices\App;
 
+use Microservices\App\DbFunctions;
+
 /**
  * Rate Limiter
  * php version 8.3
@@ -44,26 +46,17 @@ class RateLimiter
     private $currentTimestamp = null;
 
     /**
-     * Rate Limiter
-     *
-     * @var null|HttpRequest
-     */
-    private $req = null;
-
-    /**
      * Constructor
      *
      * @param HttpRequest $req HTTP Request object
      */
-    public function __construct(&$req)
+    public function __construct()
     {
-        $this->req = &$req;
-
         $rateLimitHostType = getenv(name: 'rateLimitHostType');
         $rateLimitHost = getenv(name: 'rateLimitHost');
         $rateLimitHostPort = getenv(name: 'rateLimitHostPort');
 
-        $this->cache = $this->req->connectCache(
+        $this->cache = DbFunctions::connectCache(
             cacheType: $rateLimitHostType,
             cacheHostname: $rateLimitHost,
             cachePort: $rateLimitHostPort,

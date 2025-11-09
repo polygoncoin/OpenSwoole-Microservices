@@ -15,7 +15,7 @@
 
 namespace Microservices\Supplement\Custom;
 
-use Microservices\App\Common;
+use Microservices\App\DbFunctions;
 use Microservices\Supplement\Custom\CustomInterface;
 use Microservices\Supplement\Custom\CustomTrait;
 
@@ -36,29 +36,11 @@ class SupplementTest implements CustomInterface
     use CustomTrait;
 
     /**
-     * Database object
-     *
-     * @var null|Object
-     */
-    public $db = null;
-
-    /**
-     * Common object
-     *
-     * @var null|Common
-     */
-    private $c = null;
-
-    /**
      * Constructor
-     *
-     * @param Common $common Common object Common object
      */
-    public function __construct(Common &$common)
+    public function __construct()
     {
-        $this->c = &$common;
-        $this->c->req->db = $this->c->req->setDbConnection(fetchFrom: $fetchFrom = 'Slave');
-        $this->db = &$this->c->req->db;
+        DbFunctions::setDbConnection(fetchFrom: 'Slave');
     }
 
     /**

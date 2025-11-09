@@ -113,4 +113,16 @@ class CacheKey
     {
         return "ut:{$uID}";
     }
+
+    /**
+     * Get User Token Key
+     *
+     * @param int $uID User Id
+     *
+     * @return string
+     */
+    public static function userSessionId($uID): string
+    {
+        return "u:sId:{$uID}";
+    }
 }

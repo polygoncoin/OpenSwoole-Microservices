@@ -15,13 +15,12 @@
 
 namespace Microservices\Config\Routes\Auth\CommonRoutes\GlobalDB;
 
+use Microservices\App\Constants;
+
 return [
     'group' => [
         '{id:int|!0}'  => [
-            '__FILE__' => $Constants::$DOC_ROOT .
-                DIRECTORY_SEPARATOR . 'Config' .
-                DIRECTORY_SEPARATOR . 'Queries' .
-                DIRECTORY_SEPARATOR . 'Auth' .
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'GlobalDB' .
                 DIRECTORY_SEPARATOR . 'DELETE' .
                 DIRECTORY_SEPARATOR . 'groups.php',
@@ -29,10 +28,7 @@ return [
     ],
     'client' => [
         '{id:int|!0}'  => [
-            '__FILE__' => $Constants::$DOC_ROOT .
-                DIRECTORY_SEPARATOR . 'Config' .
-                DIRECTORY_SEPARATOR . 'Queries' .
-                DIRECTORY_SEPARATOR . 'Auth' .
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'GlobalDB' .
                 DIRECTORY_SEPARATOR . 'DELETE' .
                 DIRECTORY_SEPARATOR . 'clients.php',

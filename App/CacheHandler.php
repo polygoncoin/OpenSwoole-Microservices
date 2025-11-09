@@ -47,46 +47,38 @@ class CacheHandler
      *
      * @var string
      */
-    private $cacheLocation = DIRECTORY_SEPARATOR . 'Files' .
-        DIRECTORY_SEPARATOR . 'Dropbox';
-
-    /**
-     * Common object
-     *
-     * @var null|Common
-     */
-    private $c = null;
+    private $cacheLocation = null;
 
     /**
      * Constructor
-     *
-     * @param Common $common Common object
      */
-    public function __construct(Common &$common)
+    public function __construct()
     {
-        $this->c = &$common;
     }
 
     /**
      * Initialize check and serve file
      *
+     * @param string $mode Open (Public access) / Closed (Requires Auth)
+     *
      * @return bool
      */
-    public function init(): bool
+    public function init($mode): bool
     {
-        $this->cacheLocation = Constants::$DOC_ROOT . $this->cacheLocation;
-        $this->filePath = DIRECTORY_SEPARATOR . trim(
+        $this->cacheLocation = Constants::$DROP_BOX_DIR .
+            DIRECTORY_SEPARATOR . $mode;
+        $filePath = DIRECTORY_SEPARATOR . trim(
             string: str_replace(
                 search: ['../', '..\\', '/', '\\'],
                 replace: ['', '', DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR],
-                subject: urldecode(string: $this->c->req->ROUTE)
+                subject: urldecode(string: Common::$req->ROUTE)
             ),
             characters: './\\'
         );
         $this->validateFileRequest();
-        $this->fileLocation = $this->cacheLocation . $this->filePath;
+        $this->fileLocation = $this->cacheLocation . $filePath;
 
-        return true;
+        return file_exists($this->fileLocation);
     }
 
     /**
@@ -96,8 +88,8 @@ class CacheHandler
      */
     public function validateFileRequest(): void
     {
-        // check logic for user is allowed to access the file as per $this->c->req->s
-        // $this->filePath;
+        // check logic for user is allowed to access the file as per Common::$req->s
+        // $this->fileLocation;
     }
 
     /**

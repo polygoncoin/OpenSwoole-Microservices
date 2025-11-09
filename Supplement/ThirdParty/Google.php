@@ -16,6 +16,7 @@
 namespace Microservices\Supplement\ThirdParty;
 
 use Microservices\App\Common;
+use Microservices\App\DbFunctions;
 use Microservices\App\HttpStatus;
 use Microservices\Supplement\ThirdParty\ThirdPartyInterface;
 use Microservices\Supplement\ThirdParty\ThirdPartyTrait;
@@ -38,21 +39,11 @@ class Google implements ThirdPartyInterface
     use ThirdPartyTrait;
 
     /**
-     * Common object
-     *
-     * @var null|Common
-     */
-    private $c = null;
-
-    /**
      * Constructor
-     *
-     * @param Common $common Common object
      */
-    public function __construct(Common &$common)
+    public function __construct()
     {
-        $this->c = &$common;
-        $this->c->req->db = $this->c->req->setDbConnection(fetchFrom: 'Slave');
+        DbFunctions::setDbConnection(fetchFrom: 'Slave');
     }
 
     /**
@@ -88,7 +79,7 @@ class Google implements ThirdPartyInterface
         curl_close(handle: $curl_handle);
         if (empty($output)) {
             $output = ['Error' => 'Nothing returned by ipify'];
-            $this->c->res->httpStatus = HttpStatus::$InternalServerError;
+            Common::$res->httpStatus = HttpStatus::$InternalServerError;
         } else {
             $output = json_decode(json: $output, associative: true);
         }
@@ -107,6 +98,6 @@ class Google implements ThirdPartyInterface
      */
     private function endProcess($output): void
     {
-        $this->c->res->dataEncode->addKeyData(key: 'Results', data: $output);
+        Common::$res->dataEncode->addKeyData(key: 'Results', data: $output);
     }
 }

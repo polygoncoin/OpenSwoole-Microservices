@@ -38,9 +38,10 @@ class Env
     public static $allowConfigRequest = null;
     public static $configRequestUriKeyword = null;
 
+    public static $counter = null;
+    public static $clients = null;
     public static $groups = null;
     public static $clientUsers = null;
-    public static $clients = null;
 
     public static $maxPerPage = null;
     public static $defaultPerPage = null;
@@ -69,7 +70,11 @@ class Env
 
     public static $allowGetRepresentation = null;
 
-    private static $allowedRepresentation = ['JSON', 'XML'];
+    public static $authMode = null;
+    public static $sessionMode = null;
+
+    private static $iAllowedRepresentation = ['JSON', 'XML'];
+    private static $oAllowedRepresentation = ['JSON', 'XML', 'HTML'];
 
     /**
      * Initialize
@@ -89,9 +94,10 @@ class Env
         self::$allowConfigRequest = getenv(name: 'allowConfigRequest');
         self::$configRequestUriKeyword = getenv(name: 'configRequestUriKeyword');
 
+        self::$counter = getenv(name: 'counter');
+        self::$clients = getenv(name: 'clients');
         self::$groups = getenv(name: 'groups');
         self::$clientUsers = getenv(name: 'clientUsers');
-        self::$clients = getenv(name: 'clients');
 
         self::$maxPerPage = getenv(name: 'maxPerPage');
         self::$defaultPerPage = getenv(name: 'defaultPerPage');
@@ -120,7 +126,7 @@ class Env
         $iRepresentation = getenv(name: 'iRepresentation');
         if (
             $iRepresentation !== false
-            && self::isValidDataRep(dataRepresentation: $iRepresentation)
+            && self::isValidDataRep(dataRepresentation: $iRepresentation, mode: 'input')
         ) {
             self::$iRepresentation = getenv(name: 'iRepresentation');
         }
@@ -128,36 +134,60 @@ class Env
         $oRepresentation = getenv(name: 'oRepresentation');
         if (
             $oRepresentation !== false
-            && self::isValidDataRep(dataRepresentation: $oRepresentation)
+            && self::isValidDataRep(dataRepresentation: $oRepresentation, mode: 'output')
         ) {
             self::$oRepresentation = getenv(name: 'oRepresentation');
         }
 
         self::$allowGetRepresentation = getenv(name: 'allowGetRepresentation');
+
+        self::$authMode = getenv(name: 'authMode');
+        self::$sessionMode = getenv(name: 'sessionMode');
     }
 
     /**
      * Validate Data Representation
      *
      * @param string $dataRepresentation Data Representation
+     * @param string $mode               input / output
      *
      * @return bool
      * @throws \Exception
      */
-    public static function isValidDataRep($dataRepresentation): bool
+    public static function isValidDataRep($dataRepresentation, $mode): bool
     {
-        if (
-            in_array(
-                needle: $dataRepresentation,
-                haystack: self::$allowedRepresentation
-            )
-        ) {
-            return true;
-        } else {
-            throw new \Exception(
-                message: "Invalid Data Representation '{$dataRepresentation}'",
-                code: HttpStatus::$InternalServerError
-            );
+        switch ($mode) {
+            case 'input':
+                if (
+                    in_array(
+                        needle: $dataRepresentation,
+                        haystack: self::$iAllowedRepresentation
+                    )
+                ) {
+                    return true;
+                } else {
+                    throw new \Exception(
+                        message: "Invalid Data Representation '{$dataRepresentation}'",
+                        code: HttpStatus::$InternalServerError
+                    );
+                }
+                break;
+            case 'output':
+                if (
+                    in_array(
+                        needle: $dataRepresentation,
+                        haystack: self::$oAllowedRepresentation
+                    )
+                ) {
+                    return true;
+                } else {
+                    throw new \Exception(
+                        message: "Invalid Data Representation '{$dataRepresentation}'",
+                        code: HttpStatus::$InternalServerError
+                    );
+                }
+                break;
         }
+        return false;
     }
 }

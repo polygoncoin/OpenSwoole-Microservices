@@ -15,6 +15,12 @@
 
 namespace Microservices\TestCases;
 
+$header = $defaultHeaders;
+$header[] = $contentType;
+if (isset($token)) {
+    $header[] = "Authorization: Bearer {$token}";
+}
+
 $params = [
     [
         'payload-id-1' => 1,
@@ -42,7 +48,7 @@ $params = [
     ],
 ];
 
-return trigger(
+return TestFunctions::trigger(
     homeURL: $homeURL,
     method: 'POST',
     route: '/custom/SupplementTest',

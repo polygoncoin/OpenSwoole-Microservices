@@ -31,8 +31,6 @@ use Microservices\App\Constants;
  */
 class Logs
 {
-    private string $logsDir = DIRECTORY_SEPARATOR . 'Logs';
-
     /**
      * Validates password from its hash present in cache
      *
@@ -42,8 +40,7 @@ class Logs
      */
     public function log(&$logDetails): void
     {
-        $absLogsDir = Constants::$DOC_ROOT . DIRECTORY_SEPARATOR .
-            'Files' . $this->logsDir;
+        $absLogsDir = Constants::$LOGS_DIR;
         if (!is_dir(filename: $absLogsDir)) {
             mkdir(directory: $absLogsDir, permissions: 0755, recursive: true);
         }

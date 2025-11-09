@@ -22,7 +22,7 @@ use Microservices\App\DbFunctions;
 use Microservices\App\HttpStatus;
 use Microservices\App\Middleware\Auth;
 use Microservices\App\RouteParser;
-
+use Microservices\App\SessionHandlers\Session;
 /**
  * HTTP Request
  * php version 8.3
@@ -35,22 +35,8 @@ use Microservices\App\RouteParser;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class HttpRequest extends DbFunctions
+class HttpRequest
 {
-    /**
-     * Session details of a request
-     *
-     * @var null|array
-     */
-    public $s = null;
-
-    /**
-     * Cache object
-     *
-     * @var null|Object
-     */
-    public $cache = null;
-
     /**
      * SQL Cache object
      *
@@ -66,13 +52,6 @@ class HttpRequest extends DbFunctions
     public $auth = null;
 
     /**
-     * Database object
-     *
-     * @var null|Object
-     */
-    public $db = null;
-
-    /**
      * JSON Decode object
      *
      * @var null|DataDecode
@@ -85,6 +64,13 @@ class HttpRequest extends DbFunctions
      * @var null|array
      */
     public $http = null;
+
+    /**
+     * Session details of a request
+     *
+     * @var null|array
+     */
+    public $s = null;
 
     /**
      * Open To World Request
@@ -122,7 +108,6 @@ class HttpRequest extends DbFunctions
     public function __construct(&$http)
     {
         $this->http = &$http;
-        parent::__construct(req: $this);
 
         $this->HOST = $this->http['server']['host'];
         $this->METHOD = $this->http['server']['method'];
@@ -132,23 +117,48 @@ class HttpRequest extends DbFunctions
             characters: '/'
         );
 
-        if (
-            isset($this->http['header'])
-            && isset($this->http['header']['authorization'])
-        ) {
-            $this->HTTP_AUTHORIZATION = $this->http['header']['authorization'];
-            $this->open = false;
-        } elseif ($this->ROUTE === '/login') {
-            $this->open = false;
-        } else {
-            $this->open = true;
+        switch (Env::$authMode) {
+            case 'Token':
+                if (
+                    isset($this->http['header'])
+                    && isset($this->http['header']['authorization'])
+                ) {
+                    $this->HTTP_AUTHORIZATION = $this->http['header']['authorization'];
+                    $this->open = false;
+                } elseif ($this->ROUTE === '/login') {
+                    $this->open = false;
+                } else {
+                    $this->open = true;
+                }
+                break;
+            case 'Session':
+                // Session Runtime Configuration
+                $options = [];
+
+                // Initialize Session Handler
+                Session::initSessionHandler(sessionMode: Env::$sessionMode, options: $options);
+
+                // Start session in readonly mode
+                Session::sessionStartReadonly();
+
+                if (
+                    isset($_SESSION)
+                    && isset($_SESSION['id'])
+                ) {
+                    $this->open = false;
+                } elseif ($this->ROUTE === '/login') {
+                    $this->open = false;
+                } else {
+                    $this->open = true;
+                }
+                break;
         }
 
         if (!$this->open) {
-            $this->auth = new Auth(req: $this);
+            $this->auth = new Auth();
         }
 
-        $this->rParser = new RouteParser(req: $this);
+        $this->rParser = new RouteParser();
     }
 
     /**
@@ -180,7 +190,7 @@ class HttpRequest extends DbFunctions
         } else {
             $cKey = CacheKey::client(hostname: $this->HOST);
         }
-        if (!$this->cache->cacheExists(key: $cKey)) {
+        if (!DbFunctions::$globalCache->cacheExists(key: $cKey)) {
             throw new \Exception(
                 message: "Invalid Host '{$this->HOST}'",
                 code: HttpStatus::$InternalServerError
@@ -188,7 +198,7 @@ class HttpRequest extends DbFunctions
         }
 
         $this->s['cDetails'] = json_decode(
-            json: $this->cache->getCache(
+            json: DbFunctions::$globalCache->getCache(
                 key: $cKey
             ),
             associative: true
@@ -349,18 +359,6 @@ class HttpRequest extends DbFunctions
      */
     private function loadCache(): void
     {
-        if ($this->cache !== null) {
-            return;
-        }
-
-        $this->cache = $this->connectCache(
-            cacheType: getenv(name: 'globalCacheType'),
-            cacheHostname: getenv(name: 'globalCacheHostname'),
-            cachePort: getenv(name: 'globalCachePort'),
-            cacheUsername: getenv(name: 'globalCacheUsername'),
-            cachePassword: getenv(name: 'globalCachePassword'),
-            cacheDatabase: getenv(name: 'globalCacheDatabase'),
-            cacheTable: getenv(name: 'globalCacheTable')
-        );
+        DbFunctions::connectGlobalCache();
     }
 }

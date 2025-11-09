@@ -15,9 +15,9 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Common;
 use Microservices\App\DatabaseCacheKey;
 use Microservices\App\DatabaseOpenCacheKey;
-use Microservices\App\HttpRequest;
 use Microservices\App\HttpStatus;
 
 /**
@@ -35,29 +35,55 @@ use Microservices\App\HttpStatus;
 class DbFunctions
 {
     /**
-     * Rate Limiter
-     *
-     * @var null|HttpRequest
-     */
-    private $req = null;
-
-    /**
      * Query Cache Connection Object
      *
      * @var null|Object
      */
-    private $queryCacheConnection = null;
+    private static $queryCache = null;
+
+    /** Database Connection */
+    /**
+     * Global
+     *
+     * @var null|Object
+     */
+    public static $globalDb = null;
 
     /**
-     * Constructor
+     * Client Master
      *
-     * @param HttpRequest $req HTTP Request object
+     * @var null|Object
      */
-    public function __construct(&$req)
-    {
-        $this->req = &$req;
-    }
+    public static $masterDb = null;
 
+    /**
+     * Client Slave
+     *
+     * @var null|Object
+     */
+    public static $slaveDb = null;
+
+    /** Cache Connection */
+    /**
+     * Global
+     *
+     * @var null|Object
+     */
+    public static $globalCache = null;
+
+    /**
+     * Client Master
+     *
+     * @var null|Object
+     */
+    public static $masterCache = null;
+
+    /**
+     * Client Slave
+     *
+     * @var null|Object
+     */
+    public static $slaveCache = null;
 
     /**
      * Init server connection based on $fetchFrom
@@ -66,9 +92,9 @@ class DbFunctions
      *
      * @return void
      */
-    public function setQueryCacheConnection(): void
+    public static function connectQueryCache(): void
     {
-        if ($this->queryCacheConnection !== null) {
+        if (self::$queryCache !== null) {
             return;
         }
 
@@ -81,7 +107,7 @@ class DbFunctions
         }
 
         $queryCacheNS = 'Microservices\\App\\Servers\\QueryCache\\' . $cacheType . 'QueryCache';
-        $this->queryCacheConnection = new $queryCacheNS(
+        self::$queryCache = new $queryCacheNS(
             getenv(name: 'queryCacheHostname'),
             getenv(name: 'queryCachePort'),
             getenv(name: 'queryCacheUsername'),
@@ -104,7 +130,7 @@ class DbFunctions
      *
      * @return object
      */
-    public function connectCache(
+    public static function connectCache(
         $cacheType,
         $cacheHostname,
         $cachePort,
@@ -131,16 +157,37 @@ class DbFunctions
     }
 
     /**
+     * Initialize Global DB Connection
+     *
+     * @return void
+     */
+    public static function connectGlobalCache(): void
+    {
+        if (self::$globalCache !== null) {
+            return;
+        }
+        self::$globalCache = self::connectCache(
+            cacheType: getenv(name: 'globalCacheType'),
+            cacheHostname: getenv(name: 'globalCacheHostname'),
+            cachePort: getenv(name: 'globalCachePort'),
+            cacheUsername: getenv(name: 'globalCacheUsername'),
+            cachePassword: getenv(name: 'globalCachePassword'),
+            cacheDatabase: getenv(name: 'globalCacheDatabase'),
+            cacheTable: getenv(name: 'globalCacheTable')
+        );
+    }
+
+    /**
      * Init server connection based on $fetchFrom
      *
      * @param string $fetchFrom Master/Slave
      *
-     * @return object
+     * @return void
      * @throws \Exception
      */
-    public function setCacheConnection($fetchFrom): object
+    public static function setCacheConnection($fetchFrom): void
     {
-        if ($this->req->s['cDetails'] === null) {
+        if (Common::$req->s['cDetails'] === null) {
             throw new \Exception(
                 message: 'Yet to set connection params',
                 code: HttpStatus::$InternalServerError
@@ -150,59 +197,69 @@ class DbFunctions
         // Set Database credentials
         switch ($fetchFrom) {
             case 'Master':
-                return $this->connectCache(
+                if (self::$masterCache !== null) {
+                    return;
+                }
+                self::$masterCache = self::connectCache(
                     cacheType: getenv(
-                        name: $this->req->s['cDetails']['master_cache_server_type']
+                        name: Common::$req->s['cDetails']['master_cache_server_type']
                     ),
                     cacheHostname: getenv(
-                        name: $this->req->s['cDetails']['master_cache_hostname']
+                        name: Common::$req->s['cDetails']['master_cache_hostname']
                     ),
                     cachePort: getenv(
-                        name: $this->req->s['cDetails']['master_cache_port']
+                        name: Common::$req->s['cDetails']['master_cache_port']
                     ),
                     cacheUsername: getenv(
-                        name: $this->req->s['cDetails']['master_cache_username']
+                        name: Common::$req->s['cDetails']['master_cache_username']
                     ),
                     cachePassword: getenv(
-                        name: $this->req->s['cDetails']['master_cache_password']
+                        name: Common::$req->s['cDetails']['master_cache_password']
                     ),
                     cacheDatabase: getenv(
-                        name: $this->req->s['cDetails']['master_cache_database']
+                        name: Common::$req->s['cDetails']['master_cache_database']
                     ),
                     cacheTable:  getenv(
-                        name: $this->req->s['cDetails']['master_cache_table']
+                        name: Common::$req->s['cDetails']['master_cache_table']
                     )
                 );
+                break;
             case 'Slave':
-                return $this->connectCache(
+                if (self::$slaveCache !== null) {
+                    return;
+                }
+                self::$slaveCache = self::connectCache(
                     cacheType: getenv(
-                        name: $this->req->s['cDetails']['slave_cache_server_type']
+                        name: Common::$req->s['cDetails']['slave_cache_server_type']
                     ),
                     cacheHostname: getenv(
-                        name: $this->req->s['cDetails']['slave_cache_hostname']
+                        name: Common::$req->s['cDetails']['slave_cache_hostname']
                     ),
                     cachePort: getenv(
-                        name: $this->req->s['cDetails']['slave_cache_port']
+                        name: Common::$req->s['cDetails']['slave_cache_port']
                     ),
                     cacheUsername: getenv(
-                        name: $this->req->s['cDetails']['slave_cache_username']
+                        name: Common::$req->s['cDetails']['slave_cache_username']
                     ),
                     cachePassword: getenv(
-                        name: $this->req->s['cDetails']['slave_cache_password']
+                        name: Common::$req->s['cDetails']['slave_cache_password']
                     ),
                     cacheDatabase: getenv(
-                        name: $this->req->s['cDetails']['slave_cache_database']
+                        name: Common::$req->s['cDetails']['slave_cache_database']
                     ),
                     cacheTable:  getenv(
-                        name: $this->req->s['cDetails']['slave_cache_table']
+                        name: Common::$req->s['cDetails']['slave_cache_table']
                     )
                 );
+                break;
             default:
                 throw new \Exception(
                     message: "Invalid fetchFrom value '{$fetchFrom}'",
                     code: HttpStatus::$InternalServerError
                 );
         }
+
+        return;
     }
 
     /**
@@ -217,7 +274,7 @@ class DbFunctions
      *
      * @return object
      */
-    public function connectDb(
+    public static function connectDb(
         $dbType,
         $dbHostname,
         $dbPort,
@@ -242,16 +299,36 @@ class DbFunctions
     }
 
     /**
+     * Initialize Global DB Connection
+     *
+     * @return void
+     */
+    public static function connectGlobalDb(): void
+    {
+        if (self::$globalDb !== null) {
+            return;
+        }
+        self::$globalDb = self::connectDb(
+            dbType: getenv(name: 'globalDbType'),
+            dbHostname: getenv(name: 'globalDbHostname'),
+            dbPort: getenv(name: 'globalDbPort'),
+            dbUsername: getenv(name: 'globalDbUsername'),
+            dbPassword: getenv(name: 'globalDbPassword'),
+            dbDatabase: getenv(name: 'globalDbDatabase')
+        );
+    }
+
+    /**
      * Init server connection based on $fetchFrom
      *
      * @param string $fetchFrom Master/Slave
      *
-     * @return object
+     * @return void
      * @throws \Exception
      */
-    public function setDbConnection($fetchFrom): object
+    public static function setDbConnection($fetchFrom): void
     {
-        if ($this->req->s['cDetails'] === null) {
+        if (Common::$req->s['cDetails'] === null) {
             throw new \Exception(
                 message: 'Yet to set connection params',
                 code: HttpStatus::$InternalServerError
@@ -261,53 +338,63 @@ class DbFunctions
         // Set Database credentials
         switch ($fetchFrom) {
             case 'Master':
-                return $this->connectDb(
+                if (self::$masterDb !== null) {
+                    return;
+                }
+                self::$masterDb = self::connectDb(
                     dbType: getenv(
-                        name: $this->req->s['cDetails']['master_db_server_type']
+                        name: Common::$req->s['cDetails']['master_db_server_type']
                     ),
                     dbHostname: getenv(
-                        name: $this->req->s['cDetails']['master_db_hostname']
+                        name: Common::$req->s['cDetails']['master_db_hostname']
                     ),
                     dbPort: getenv(
-                        name: $this->req->s['cDetails']['master_db_port']
+                        name: Common::$req->s['cDetails']['master_db_port']
                     ),
                     dbUsername: getenv(
-                        name: $this->req->s['cDetails']['master_db_username']
+                        name: Common::$req->s['cDetails']['master_db_username']
                     ),
                     dbPassword: getenv(
-                        name: $this->req->s['cDetails']['master_db_password']
+                        name: Common::$req->s['cDetails']['master_db_password']
                     ),
                     dbDatabase: getenv(
-                        name: $this->req->s['cDetails']['master_db_database']
+                        name: Common::$req->s['cDetails']['master_db_database']
                     )
                 );
+                break;
             case 'Slave':
-                return $this->connectDb(
+                if (self::$slaveDb !== null) {
+                    return;
+                }
+                self::$slaveDb = self::connectDb(
                     dbType: getenv(
-                        name: $this->req->s['cDetails']['slave_db_server_type']
+                        name: Common::$req->s['cDetails']['slave_db_server_type']
                     ),
                     dbHostname: getenv(
-                        name: $this->req->s['cDetails']['slave_db_hostname']
+                        name: Common::$req->s['cDetails']['slave_db_hostname']
                     ),
                     dbPort: getenv(
-                        name: $this->req->s['cDetails']['slave_db_port']
+                        name: Common::$req->s['cDetails']['slave_db_port']
                     ),
                     dbUsername: getenv(
-                        name: $this->req->s['cDetails']['slave_db_username']
+                        name: Common::$req->s['cDetails']['slave_db_username']
                     ),
                     dbPassword: getenv(
-                        name: $this->req->s['cDetails']['slave_db_password']
+                        name: Common::$req->s['cDetails']['slave_db_password']
                     ),
                     dbDatabase: getenv(
-                        name: $this->req->s['cDetails']['slave_db_database']
+                        name: Common::$req->s['cDetails']['slave_db_database']
                     )
                 );
+                break;
             default:
                 throw new \Exception(
                     message: "Invalid fetchFrom value '{$fetchFrom}'",
                     code: HttpStatus::$InternalServerError
                 );
         }
+
+        return;
     }
 
     /**
@@ -315,15 +402,15 @@ class DbFunctions
      *
      * @return void
      */
-    public function setDatabaseCacheKey(): void
+    public static function setDatabaseCacheKey(): void
     {
-        if ($this->req->open) {
-            DatabaseOpenCacheKey::init(cID: $this->req->s['cDetails']['id']);
+        if (Common::$req->open) {
+            DatabaseOpenCacheKey::init(cID: Common::$req->s['cDetails']['id']);
         } else {
             DatabaseCacheKey::init(
-                cID: $this->req->s['cDetails']['id'],
-                gID: $this->req->s['gDetails']['id'],
-                uID: $this->req->s['uDetails']['id']
+                cID: Common::$req->s['cDetails']['id'],
+                gID: Common::$req->s['gDetails']['id'],
+                uID: Common::$req->s['uDetails']['id']
             );
         }
     }
@@ -335,15 +422,16 @@ class DbFunctions
      *
      * @return mixed
      */
-    public function getQueryCache($cacheKey): mixed
+    public static function getQueryCache($cacheKey): mixed
     {
-        $this->setQueryCacheConnection();
+        self::connectQueryCache();
 
-        if ($this->queryCacheConnection->cacheExists(key: $cacheKey)) {
-            return $json = $this->queryCacheConnection->getCache(key: $cacheKey);
-        } else {
-            return $json = null;
+        $json = null;
+        if (self::$queryCache->cacheExists(key: $cacheKey)) {
+            $json = self::$queryCache->getCache(key: $cacheKey);
         }
+
+        return $json;
     }
 
     /**
@@ -354,11 +442,11 @@ class DbFunctions
      *
      * @return void
      */
-    public function setQueryCache($cacheKey, &$json): void
+    public static function setQueryCache($cacheKey, &$json): void
     {
-        $this->setQueryCacheConnection();
+        self::connectQueryCache();
 
-        $this->queryCacheConnection->setCache(key: $cacheKey, value: $json);
+        self::$queryCache->setCache(key: $cacheKey, value: $json);
     }
 
     /**
@@ -368,10 +456,10 @@ class DbFunctions
      *
      * @return void
      */
-    public function delQueryCache($cacheKey): void
+    public static function delQueryCache($cacheKey): void
     {
-        $this->setQueryCacheConnection();
+        self::connectQueryCache();
 
-        $this->queryCacheConnection->deleteCache(key: $cacheKey);
+        self::$queryCache->deleteCache(key: $cacheKey);
     }
 }

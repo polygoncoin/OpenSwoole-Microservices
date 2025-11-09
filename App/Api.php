@@ -15,8 +15,10 @@
 
 namespace Microservices\App;
 
+use Microservices\App\CacheHandler;
 use Microservices\App\Constants;
 use Microservices\App\Common;
+use Microservices\App\DbFunctions;
 use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\Supplement;
@@ -43,13 +45,6 @@ class Api
     private $beforePayload = null;
 
     /**
-     * Common object
-     *
-     * @var null|Common
-     */
-    private $c = null;
-
-    /**
      * Hook object
      *
      * @var null|Hook
@@ -58,12 +53,9 @@ class Api
 
     /**
      * Constructor
-     *
-     * @param Common $common Common object
      */
-    public function __construct(Common &$common)
+    public function __construct()
     {
-        $this->c = &$common;
     }
 
     /**
@@ -73,15 +65,15 @@ class Api
      */
     public function init(): bool
     {
-        $this->c->req->loadClientDetails();
+        Common::$req->loadClientDetails();
 
-        if (!$this->c->req->open) {
-            $this->c->req->auth->loadUserDetails();
-            $this->c->req->auth->loadGroupDetails();
+        if (!Common::$req->open) {
+            Common::$req->auth->loadUserDetails();
+            Common::$req->auth->loadGroupDetails();
         }
 
-        $this->c->req->rParser->parseRoute();
-        $this->c->req->setDatabaseCacheKey();
+        Common::$req->rParser->parseRoute();
+        DbFunctions::setDatabaseCacheKey();
 
         return true;
     }
@@ -93,19 +85,29 @@ class Api
      */
     public function process(): bool
     {
+        if (Common::$req->METHOD === Constants::$GET) {
+            $cacheHandler = new CacheHandler();
+            if ($cacheHandler->init(mode: 'Closed')) {
+                // File exists - Serve from Dropbox
+                $cacheHandler->process();
+                return true;
+            }
+            $cacheHandler = null;
+        }
+
         // Execute Pre Route Hooks
-        if (isset($this->c->req->rParser->routeHook['__PRE-ROUTE-HOOKS__'])) {
+        if (isset(Common::$req->rParser->routeHook['__PRE-ROUTE-HOOKS__'])) {
             if ($this->hook === null) {
-                $this->hook = new Hook(common: $this->c);
+                $this->hook = new Hook();
             }
             $this->hook->triggerHook(
-                hookConfig: $this->c->req->rParser->routeHook['__PRE-ROUTE-HOOKS__']
+                hookConfig: Common::$req->rParser->routeHook['__PRE-ROUTE-HOOKS__']
             );
         }
 
         // Load Payloads
-        if (!$this->c->req->rParser->isConfigRequest) {
-            $this->c->req->loadPayload();
+        if (!Common::$req->rParser->isConfigRequest) {
+            Common::$req->loadPayload();
         }
 
         if ($this->processBeforePayload()) {
@@ -113,7 +115,7 @@ class Api
         }
 
         $class = null;
-        switch ($this->c->req->METHOD) {
+        switch (Common::$req->METHOD) {
             case Constants::$GET:
                 $class = __NAMESPACE__ . '\\Read';
                 break;
@@ -126,7 +128,7 @@ class Api
         }
 
         if ($class !== null) {
-            $api = new $class(common: $this->c);
+            $api = new $class();
             if ($api->init()) {
                 $api->process();
             }
@@ -136,12 +138,12 @@ class Api
         $this->processAfterPayload();
 
         // Execute Post Route Hooks
-        if (isset($this->c->req->rParser->routeHook['__POST-ROUTE-HOOKS__'])) {
+        if (isset(Common::$req->rParser->routeHook['__POST-ROUTE-HOOKS__'])) {
             if ($this->hook === null) {
-                $this->hook = new Hook(common: $this->c);
+                $this->hook = new Hook();
             }
             $this->hook->triggerHook(
-                hookConfig: $this->c->req->rParser->routeHook['__POST-ROUTE-HOOKS__']
+                hookConfig: Common::$req->rParser->routeHook['__POST-ROUTE-HOOKS__']
             );
         }
 
@@ -159,45 +161,45 @@ class Api
 
         if (
             Env::$allowRoutesRequest
-            && Env::$routesRequestUri === $this->c->req->rParser->routeElements[0]
+            && Env::$routesRequestUri === Common::$req->rParser->routeElements[0]
         ) {
             $this->beforePayload = true;
             $supplementApiClass = __NAMESPACE__ . '\\Routes';
-            $supplementObj = new $supplementApiClass(common: $this->c);
+            $supplementObj = new $supplementApiClass();
             if ($supplementObj->init()) {
                 $supplementObj->process();
             }
             $foundClass = true;
         } else {
             $supplementApiClass = null;
-            switch ($this->c->req->rParser->routeElements[0]) {
+            switch (Common::$req->rParser->routeElements[0]) {
                 case Env::$allowCustomRequest
                     && (Env::$customRequestUriPrefix
-                        === $this->c->req->rParser->routeElements[0]):
+                        === Common::$req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\Custom';
                     break;
                 case Env::$allowUploadRequest
                     && (Env::$uploadRequestUriPrefix
-                        === $this->c->req->rParser->routeElements[0]):
+                        === Common::$req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\Upload';
                     break;
                 case Env::$allowThirdPartyRequest
                     && (Env::$thirdPartyRequestUriPrefix
-                        === $this->c->req->rParser->routeElements[0]):
+                        === Common::$req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\ThirdParty';
                     break;
                 case Env::$allowCacheRequest
                     && (Env::$cacheRequestUriPrefix
-                        === $this->c->req->rParser->routeElements[0]):
+                        === Common::$req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\CacheHandler';
                     break;
             }
 
             if (!empty($supplementApiClass)) {
                 $this->beforePayload = true;
-                $supplementObj = new $supplementApiClass(common: $this->c);
+                $supplementObj = new $supplementApiClass();
                 $supplementObj->init();
-                $supplement = new Supplement(common: $this->c);
+                $supplement = new Supplement();
                 if ($supplement->init(supplementObj: $supplementObj)) {
                     $supplement->process();
                 }

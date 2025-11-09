@@ -40,20 +40,10 @@ class ThirdParty
     private $api = null;
 
     /**
-     * Common object
-     *
-     * @var null|Common
-     */
-    private $c = null;
-
-    /**
      * Constructor
-     *
-     * @param Common $common Common object
      */
-    public function __construct(Common &$common)
+    public function __construct()
     {
-        $this->c = &$common;
     }
 
     /**
@@ -63,10 +53,10 @@ class ThirdParty
      */
     public function init(): bool
     {
-        $class = 'Microservices\\Supplement\\ThirdParty\\' .
-            ucfirst(string: $this->c->req->rParser->routeElements[1]);
+        $class = 'Microservices\\\Supplement\\ThirdParty\\' .
+            ucfirst(string: Common::$req->rParser->routeElements[1]);
 
-        $this->api = new $class(common: $this->c);
+        $this->api = new $class();
 
         return $this->api->init();
     }

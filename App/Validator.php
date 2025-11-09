@@ -16,6 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\Common;
+use Microservices\App\DbFunctions;
 use Microservices\App\Env;
 use Microservices\Validation\ClientValidator;
 use Microservices\Validation\GlobalValidator;
@@ -43,25 +44,14 @@ class Validator
     private $v = null;
 
     /**
-     * Common object
-     *
-     * @var null|Common
-     */
-    private $c = null;
-
-    /**
      * Constructor
-     *
-     * @param Common $common Common object
      */
-    public function __construct(Common &$common)
+    public function __construct()
     {
-        $this->c = &$common;
-
-        if ($this->c->req->db->database === Env::$globalDbDatabase) {
-            $this->v = new GlobalValidator(common: $this->c);
+        if (DbFunctions::$masterDb->database === Env::$globalDbDatabase) {
+            $this->v = new GlobalValidator();
         } else {
-            $this->v = new ClientValidator(common: $this->c);
+            $this->v = new ClientValidator();
         }
     }
 
@@ -75,8 +65,8 @@ class Validator
     public function validate(&$validationConfig): array
     {
         if (
-            isset(($this->c->req->s['necessary']))
-            && count(value: $this->c->req->s['necessary']) > 0
+            isset((Common::$req->s['necessary']))
+            && count(value: Common::$req->s['necessary']) > 0
         ) {
             if (
                 ([$isValidData, $errors] = $this->validateRequired())
@@ -99,9 +89,9 @@ class Validator
         $isValidData = true;
         $errors = [];
         // Required fields payload validation
-        if (!empty($this->c->req->s['necessary']['payload'])) {
-            foreach ($this->c->req->s['necessary']['payload'] as $column => &$arr) {
-                if ($arr['necessary'] && !isset($this->c->req->s['payload'][$column])) {
+        if (!empty(Common::$req->s['necessary']['payload'])) {
+            foreach (Common::$req->s['necessary']['payload'] as $column => &$arr) {
+                if ($arr['necessary'] && !isset(Common::$req->s['payload'][$column])) {
                     $errors[] = 'Missing necessary payload: ' . $column;
                     $isValidData = false;
                 }

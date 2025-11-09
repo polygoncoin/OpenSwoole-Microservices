@@ -5,15 +5,15 @@
  * php version 8.3
  *
  * @category  DataEncode_XML
- * @package   Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Microservices
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App\DataRepresentation\Xml;
+namespace Microservices\App\DataRepresentation\Encode;
 
 use Microservices\App\DataRepresentation\Encode\DataEncodeInterface;
 use Microservices\App\DataRepresentation\Encode\XmlEncoder\XmlEncoderObject;
@@ -24,11 +24,11 @@ use Microservices\App\HttpStatus;
  * php version 8.3
  *
  * @category  Xml_Encoder
- * @package   Microservices
+ * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Microservices
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 class XmlEncode implements DataEncodeInterface

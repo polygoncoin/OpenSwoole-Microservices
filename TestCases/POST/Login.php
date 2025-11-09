@@ -15,17 +15,22 @@
 
 namespace Microservices\TestCases;
 
-$res = trigger(
+$header = $defaultHeaders;
+$header[] = $contentType;
+
+$res = TestFunctions::trigger(
     homeURL: $homeURL,
     method: 'POST',
     route: '/login',
-    header: [],
+    header: $header,
     payload: json_encode(value: $payload)
 );
 
-if ($res) {
+if (
+    !isset($res['responseHeaders']['Set-Cookie'])
+    && $res
+) {
     $token = $res['responseBody']['Results']['Token'];
-    $header[] = "Authorization: Bearer {$token}";
 }
 
 return $res;

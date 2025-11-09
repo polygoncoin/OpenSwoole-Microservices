@@ -37,32 +37,34 @@ class Common
      *
      * @var null|HttpRequest
      */
-    public $req = null;
+    public static $req = null;
 
     /**
      * Microservices HTTP Response
      *
      * @var null|HttpResponse
      */
-    public $res = null;
+    public static $res = null;
 
     /**
      * Microservices Request Details
      *
      * @var null|array
      */
-    public $http = null;
+    public static $http = null;
 
     /**
-     * Constructor
+     * Initialize
      *
      * @param array $http HTTP request details
+     *
+     * @return void
      */
-    public function __construct(&$http)
+    public static function init(&$http): void
     {
-        $this->http = &$http;
-        $this->req = new HttpRequest(http: $this->http);
-        $this->res = new HttpResponse(http: $this->http);
+        self::$http = &$http;
+        self::$req = new HttpRequest(http: self::$http);
+        self::$res = new HttpResponse(http: self::$http);
     }
 
     /**
@@ -70,9 +72,9 @@ class Common
      *
      * @return bool
      */
-    public function initRequest(): void
+    public static function initRequest(): void
     {
-        $this->req->init();
+        self::$req->init();
     }
 
     /**
@@ -80,8 +82,8 @@ class Common
      *
      * @return bool
      */
-    public function initResponse(): void
+    public static function initResponse(): void
     {
-        $this->res->init();
+        self::$res->init();
     }
 }

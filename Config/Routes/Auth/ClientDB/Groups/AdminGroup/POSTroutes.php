@@ -15,12 +15,11 @@
 
 namespace Microservices\Config\Routes\Auth\ClientDB\Groups\AdminGroup;
 
+use Microservices\App\Constants;
+
 return [
     'category' => [
-        '__FILE__' => $Constants::$DOC_ROOT .
-            DIRECTORY_SEPARATOR . 'Config' .
-            DIRECTORY_SEPARATOR . 'Queries' .
-            DIRECTORY_SEPARATOR . 'Auth' .
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
             DIRECTORY_SEPARATOR . 'Groups' .
             DIRECTORY_SEPARATOR . 'AdminGroup' .
@@ -28,10 +27,7 @@ return [
             DIRECTORY_SEPARATOR . 'Category.php',
     ],
     'registration' => [
-        '__FILE__' => $Constants::$DOC_ROOT .
-            DIRECTORY_SEPARATOR . 'Config' .
-            DIRECTORY_SEPARATOR . 'Queries' .
-            DIRECTORY_SEPARATOR . 'Auth' .
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
             DIRECTORY_SEPARATOR . 'Groups' .
             DIRECTORY_SEPARATOR . 'AdminGroup' .
@@ -39,10 +35,7 @@ return [
             DIRECTORY_SEPARATOR . 'Registration.php',
     ],
     'address' => [
-        '__FILE__' => $Constants::$DOC_ROOT .
-            DIRECTORY_SEPARATOR . 'Config' .
-            DIRECTORY_SEPARATOR . 'Queries' .
-            DIRECTORY_SEPARATOR . 'Auth' .
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
             DIRECTORY_SEPARATOR . 'Groups' .
             DIRECTORY_SEPARATOR . 'AdminGroup' .
@@ -50,10 +43,7 @@ return [
             DIRECTORY_SEPARATOR . 'Address.php',
     ],
     'registration-with-address' => [
-        '__FILE__' => $Constants::$DOC_ROOT .
-            DIRECTORY_SEPARATOR . 'Config' .
-            DIRECTORY_SEPARATOR . 'Queries' .
-            DIRECTORY_SEPARATOR . 'Auth' .
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
             DIRECTORY_SEPARATOR . 'Groups' .
             DIRECTORY_SEPARATOR . 'AdminGroup' .

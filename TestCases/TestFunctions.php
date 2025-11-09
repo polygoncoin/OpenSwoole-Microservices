@@ -15,13 +15,8 @@
 
 namespace Microservices\TestCases;
 
-if (!defined(constant_name: 'GET')) {
-    define(constant_name: 'GET', value: __DIR__ . DIRECTORY_SEPARATOR . 'GET');
-    define(constant_name: 'POST', value: __DIR__ . DIRECTORY_SEPARATOR . 'POST');
-    define(constant_name: 'PUT', value: __DIR__ . DIRECTORY_SEPARATOR . 'PUT');
-    define(constant_name: 'PATCH', value: __DIR__ . DIRECTORY_SEPARATOR . 'PATCH');
-    define(constant_name: 'DELETE', value: __DIR__ . DIRECTORY_SEPARATOR . 'DELETE');
-
+class TestFunctions
+{
     /**
      * Generates raw headers into array
      *
@@ -30,7 +25,7 @@ if (!defined(constant_name: 'GET')) {
      * @return array
      * @throws \Exception
      */
-    function httpParseHeaders($rawHeaders): array
+    public static function httpParseHeaders($rawHeaders): array
     {
         $headers = [];
         $key = '';
@@ -78,7 +73,7 @@ if (!defined(constant_name: 'GET')) {
      *
      * @return array
      */
-    function getCurlConfig(
+    public static function getCurlConfig(
         $homeURL,
         $method,
         $route,
@@ -86,11 +81,8 @@ if (!defined(constant_name: 'GET')) {
         $header = [],
         $payload = ''
     ): array {
-        $queryString = empty($queryString) ? '' : '&' . $queryString;
         $curlConfig[CURLOPT_URL] = "{$homeURL}?r={$route}{$queryString}";
         $curlConfig[CURLOPT_HTTPHEADER] = $header;
-        $curlConfig[CURLOPT_HTTPHEADER][] = 'x-api-version: v1.0.0';
-        $curlConfig[CURLOPT_HTTPHEADER][] = 'Cache-Control: no-cache';
         $curlConfig[CURLOPT_HEADER] = 1;
 
         $payload = http_build_query(
@@ -99,33 +91,31 @@ if (!defined(constant_name: 'GET')) {
             ]
         );
 
-        $contentType = 'Content-Type: application/x-www-form-urlencoded; charset=utf-8';
-
         switch ($method) {
             case 'GET':
                 break;
             case 'POST':
-                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
                 $curlConfig[CURLOPT_POST] = true;
                 $curlConfig[CURLOPT_POSTFIELDS] = $payload;
                 break;
             case 'PUT':
-                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
                 $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PUT';
                 $curlConfig[CURLOPT_POSTFIELDS] = $payload;
                 break;
             case 'PATCH':
-                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
                 $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PATCH';
                 $curlConfig[CURLOPT_POSTFIELDS] = $payload;
                 break;
             case 'DELETE':
-                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
                 $curlConfig[CURLOPT_CUSTOMREQUEST] = 'DELETE';
                 $curlConfig[CURLOPT_POSTFIELDS] = $payload;
                 break;
         }
         $curlConfig[CURLOPT_RETURNTRANSFER] = true;
+
+        $cookieFile = __DIR__ . '/cookies.txt';
+        $curlConfig[CURLOPT_COOKIEJAR] = $cookieFile; // Store cookies
+        $curlConfig[CURLOPT_COOKIEFILE] = $cookieFile; // Read cookies
 
         return $curlConfig;
     }
@@ -141,36 +131,42 @@ if (!defined(constant_name: 'GET')) {
      *
      * @return mixed
      */
-    function trigger(
+    public static function trigger(
         $homeURL,
         $method,
         $route,
         $header = [],
         $payload = ''
     ): mixed {
+        $queryString = '';
+
         $curl = curl_init();
-        $curlConfig = getCurlConfig(
+        $curlConfig = self::getCurlConfig(
             homeURL: $homeURL,
             method: $method,
             route: $route,
-            queryString: $queryString = '',
+            queryString: $queryString,
             header: $header,
             payload: $payload
         );
+
         curl_setopt_array(handle: $curl, options: $curlConfig);
+
         $curlResponse = curl_exec(handle: $curl);
 
         $responseHttpCode = curl_getinfo(
             handle: $curl,
             option: CURLINFO_HTTP_CODE
         );
+
         $responseContentType = curl_getinfo(
             handle: $curl,
             option: CURLINFO_CONTENT_TYPE
         );
 
         $headerSize = curl_getinfo(handle: $curl, option: CURLINFO_HEADER_SIZE);
-        $responseHeaders = httpParseHeaders(
+
+        $responseHeaders = self::httpParseHeaders(
             rawHeaders: substr(
                 string: $curlResponse,
                 offset: 0,
@@ -227,7 +223,7 @@ if (!defined(constant_name: 'GET')) {
      * @return array
      * @throws \Exception
      */
-    function genXmlPayload(&$params, &$payload, $rowsFlag = false): void
+    public static function genXmlPayload(&$params, &$payload, $rowsFlag = false): void
     {
         if (empty($params)) {
             return;
@@ -258,7 +254,7 @@ if (!defined(constant_name: 'GET')) {
                 $payload .= "<{$key}>";
             }
             if (is_array(value: $value)) {
-                genXmlPayload(params: $value, payload: $payload, rowsFlag: $rows);
+                self::genXmlPayload(params: $value, payload: $payload, rowsFlag: $rows);
             } else {
                 $payload .= htmlspecialchars(string: $value);
             }

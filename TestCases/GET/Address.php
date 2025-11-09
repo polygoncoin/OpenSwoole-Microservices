@@ -15,7 +15,12 @@
 
 namespace Microservices\TestCases;
 
-return trigger(
+$header = $defaultHeaders;
+if (isset($token)) {
+    $header[] = "Authorization: Bearer {$token}";
+}
+
+return TestFunctions::trigger(
     homeURL: $homeURL,
     method: 'GET',
     route: '/address',

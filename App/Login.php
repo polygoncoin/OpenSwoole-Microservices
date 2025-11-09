@@ -18,8 +18,10 @@ namespace Microservices\App;
 use Microservices\App\Constants;
 use Microservices\App\CacheKey;
 use Microservices\App\Common;
+use Microservices\App\DbFunctions;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
+use Microservices\App\SessionHandlers\Session;
 
 /**
  * Login
@@ -35,13 +37,6 @@ use Microservices\App\HttpStatus;
  */
 class Login
 {
-    /**
-     * Database object
-     *
-     * @var null|Object
-     */
-    public $db = null;
-
     /**
      * Username for login
      *
@@ -78,20 +73,10 @@ class Login
     private $payload = [];
 
     /**
-     * Common object
-     *
-     * @var null|Common
-     */
-    private $c = null;
-
-    /**
      * Constructor
-     *
-     * @param Common $common Common object
      */
-    public function __construct(Common &$common)
+    public function __construct()
     {
-        $this->c = &$common;
     }
 
     /**
@@ -101,7 +86,7 @@ class Login
      */
     public function init(): bool
     {
-        $this->c->req->loadClientDetails();
+        Common::$req->loadClientDetails();
 
         return true;
     }
@@ -114,7 +99,7 @@ class Login
     public function process(): bool
     {
         // Check request method is POST
-        if ($this->c->req->METHOD !== Constants::$POST) {
+        if (Common::$req->METHOD !== Constants::$POST) {
             throw new \Exception(
                 message: 'Invalid request method',
                 code: HttpStatus::$NotFound
@@ -125,7 +110,16 @@ class Login
         $this->loadUserDetails();
         $this->validateRequestIp();
         $this->validatePassword();
-        $this->outputTokenDetails();
+
+        $this->timestamp = time();
+        switch (Env::$authMode) {
+            case 'Token':
+                $this->outputTokenDetails();
+                break;
+            case 'Session':
+                $this->startSession();
+                break;
+        }
 
         return true;
     }
@@ -139,15 +133,15 @@ class Login
     private function loadPayload(): void
     {
         // Check request method is POST
-        if ($this->c->req->METHOD !== Constants::$POST) {
+        if (Common::$req->METHOD !== Constants::$POST) {
             throw new \Exception(
                 message: 'Invalid request method',
                 code: HttpStatus::$NotFound
             );
         }
 
-        $this->c->req->loadPayload();
-        $this->payload = $this->c->req->dataDecode->get();
+        Common::$req->loadPayload();
+        $this->payload = Common::$req->dataDecode->get();
 
         // Check for necessary conditions variables
         foreach (['username', 'password'] as $value) {
@@ -170,20 +164,20 @@ class Login
      */
     private function loadUserDetails(): void
     {
-        $cID = $this->c->req->s['cDetails']['id'];
+        $cID = Common::$req->s['cDetails']['id'];
         $clientUserKey = CacheKey::clientUser(
             cID: $cID,
             username: $this->payload['username']
         );
         // Redis - one can find the userID from client username
-        if (!$this->c->req->cache->cacheExists(key: $clientUserKey)) {
+        if (!DbFunctions::$globalCache->cacheExists(key: $clientUserKey)) {
             throw new \Exception(
                 message: 'Invalid credentials',
                 code: HttpStatus::$Unauthorized
             );
         }
         $this->userDetails = json_decode(
-            json: $this->c->req->cache->getCache(
+            json: DbFunctions::$globalCache->getCache(
                 key: $clientUserKey
             ),
             associative: true
@@ -209,14 +203,14 @@ class Login
     {
         // Redis - one can find the userID from username
         $cidrKey = CacheKey::cidr(gID: $this->userDetails['group_id']);
-        if ($this->c->req->cache->cacheExists(key: $cidrKey)) {
+        if (DbFunctions::$globalCache->cacheExists(key: $cidrKey)) {
             $cidrs = json_decode(
-                json: $this->c->req->cache->getCache(
+                json: DbFunctions::$globalCache->getCache(
                     key: $cidrKey
                 ),
                 associative: true
             );
-            $ipNumber = ip2long(ip: $this->c->req->IP);
+            $ipNumber = ip2long(ip: Common::$req->IP);
             $isValidIp = false;
             foreach ($cidrs as $cidr) {
                 if ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
@@ -267,11 +261,11 @@ class Login
             $token = bin2hex(string: random_bytes(length: 32));
 
             if (
-                !$this->c->req->cache->cacheExists(
+                !DbFunctions::$globalCache->cacheExists(
                     key: CacheKey::token(token: $token)
                 )
             ) {
-                $this->c->req->cache->setCache(
+                DbFunctions::$globalCache->setCache(
                     key: CacheKey::token(token: $token),
                     value: '{}',
                     expire: Constants::$TOKEN_EXPIRY_TIME
@@ -293,22 +287,21 @@ class Login
      */
     private function outputTokenDetails(): void
     {
-        $this->timestamp = time();
         $tokenFound = false;
 
         $userTokenKey = CacheKey::userToken(
             uID: $this->userDetails['id']
         );
-        if ($this->c->req->cache->cacheExists(key: $userTokenKey)) {
+        if (DbFunctions::$globalCache->cacheExists(key: $userTokenKey)) {
             $tokenDetails = json_decode(
-                json: $this->c->req->cache->getCache(
+                json: DbFunctions::$globalCache->getCache(
                     key: $userTokenKey
                 ),
                 associative: true
             );
 
             if (
-                $this->c->req->cache->cacheExists(
+                DbFunctions::$globalCache->cacheExists(
                     key: CacheKey::token(
                         token: $tokenDetails['token']
                     )
@@ -318,7 +311,7 @@ class Login
                 if ((Constants::$TOKEN_EXPIRY_TIME - $time) > 0) {
                     $tokenFound = true;
                 } else {
-                    $this->c->req->cache->deleteCache(
+                    DbFunctions::$globalCache->deleteCache(
                         key: CacheKey::token(
                             token: $tokenDetails['token']
                         )
@@ -330,7 +323,7 @@ class Login
         if (!$tokenFound) {
             $tokenDetails = $this->generateToken();
             // We set this to have a check first if multiple request/attack occurs
-            $this->c->req->cache->setCache(
+            DbFunctions::$globalCache->setCache(
                 key: $userTokenKey,
                 value: json_encode(
                     value: $tokenDetails
@@ -338,7 +331,7 @@ class Login
                 expire: Constants::$TOKEN_EXPIRY_TIME
             );
             unset($this->userDetails['password_hash']);
-            $this->c->req->cache->setCache(
+            DbFunctions::$globalCache->setCache(
                 key: CacheKey::token(token: $tokenDetails['token']),
                 value: json_encode(
                     value: $this->userDetails
@@ -354,9 +347,9 @@ class Login
             'Expires' => (Constants::$TOKEN_EXPIRY_TIME - $time)
         ];
 
-        $this->c->initResponse();
-        $this->c->res->dataEncode->startObject();
-        $this->c->res->dataEncode->addKeyData(key: 'Results', data: $output);
+        Common::initResponse();
+        Common::$res->dataEncode->startObject();
+        Common::$res->dataEncode->addKeyData(key: 'Results', data: $output);
     }
 
     /**
@@ -368,11 +361,10 @@ class Login
      */
     private function updateDB(&$tokenDetails): void
     {
-        $this->c->req->db = $this->c->req->setDbConnection(fetchFrom: 'Master');
-        $this->db = &$this->c->req->db;
+        DbFunctions::setDbConnection(fetchFrom: 'Master');
 
         $userTable = Env::$clientUsers;
-        $this->db->execDbQuery(
+        DbFunctions::$masterDb->execDbQuery(
             sql: "
                 UPDATE
                     `{$userTable}`
@@ -387,5 +379,82 @@ class Login
                 ':id' => $this->userDetails['id']
             ]
         );
+    }
+
+    /**
+     * Outputs active/newly generated token details
+     *
+     * @return void
+     */
+    private function startSession(): void
+    {
+        // Session Runtime Configuration
+        $options = [];
+
+        // Initialize Session Handler
+        Session::initSessionHandler(sessionMode: Env::$sessionMode, options: $options);
+
+        // Start session in readonly mode
+        // Use when user is already logged in and we need to authorize the client cookie.
+        Session::sessionStartReadonly();
+
+        $isLoggedIn = false;
+        if (isset($_SESSION['id'])) {
+            $isLoggedIn = true;
+        }
+
+        if (!$isLoggedIn) {
+            $userSessionIdKey = CacheKey::userSessionId(
+                uID: $this->userDetails['id']
+            );
+            $expire = Constants::$TOKEN_EXPIRY_TIME;
+            $timestamp = $this->timestamp;
+            if (DbFunctions::$globalCache->cacheExists(key: $userSessionIdKey)) {
+                $userSessionIdKeyData = json_decode(
+                    json: DbFunctions::$globalCache->getCache(
+                        key: $userSessionIdKey
+                    ),
+                    associative: true
+                );
+                DbFunctions::$globalCache->deleteCache(
+                    key: $userSessionIdKey
+                );
+                Session::deleteSession(sessionId: $userSessionIdKeyData['sessionId']);
+                $expire = $this->timestamp - $userSessionIdKeyData['timestamp'];
+                $expire = ($expire > Constants::$TOKEN_EXPIRY_TIME)
+                    ? Constants::$TOKEN_EXPIRY_TIME : $expire;
+                $timestamp = $userSessionIdKeyData['timestamp'];
+            }
+            unset($this->userDetails['password_hash']);
+            $this->userDetails['timestamp'] = $timestamp;
+
+            // Start session in normal (read/write) mode.
+            // Use once client is authorized and want to make changes in $_SESSION
+            Session::sessionStartReadWrite();
+            $_SESSION = $this->userDetails;
+
+            DbFunctions::$globalCache->setCache(
+                key: $userSessionIdKey,
+                value: json_encode(
+                    value: [
+                        'timestamp' => $timestamp,
+                        'sessionId' => session_id()
+                    ]
+                ),
+                expire: $expire
+            );
+
+            $isLoggedIn = true;
+        }
+
+        $time = $this->timestamp - $_SESSION['timestamp'];
+        $output = [
+            'Session' => 'Active',
+            'Expires' => (Constants::$TOKEN_EXPIRY_TIME - $time)
+        ];
+
+        Common::initResponse();
+        Common::$res->dataEncode->startObject();
+        Common::$res->dataEncode->addKeyData(key: 'Results', data: $output);
     }
 }

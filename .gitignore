@@ -1,2 +1,6 @@
 .env
-Files/*
+.session.env
+/Logs/*
+/App/SessionHandlers/sessions/*
+/TestCases/cookies.txt
+/vendor/

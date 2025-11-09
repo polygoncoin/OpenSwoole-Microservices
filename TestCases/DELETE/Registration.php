@@ -15,7 +15,13 @@
 
 namespace Microservices\TestCases;
 
-return trigger(
+$header = $defaultHeaders;
+$header[] = $contentType;
+if (isset($token)) {
+    $header[] = "Authorization: Bearer {$token}";
+}
+
+return TestFunctions::trigger(
     homeURL: $homeURL,
     method: 'DELETE',
     route: '/registration/1',

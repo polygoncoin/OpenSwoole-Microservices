@@ -15,7 +15,8 @@
 
 namespace Microservices;
 
-if (!function_exists(function: 'processAuth')) {
+class Tests
+{
     /**
      * Process Auth based requests
      *
@@ -26,9 +27,7 @@ if (!function_exists(function: 'processAuth')) {
         return include __DIR__ . DIRECTORY_SEPARATOR . 'TestCases' .
             DIRECTORY_SEPARATOR . 'AuthTests.php';
     }
-}
 
-if (!function_exists(function: 'processOpen')) {
     /**
      * Process Open to web api requests
      *
@@ -39,9 +38,7 @@ if (!function_exists(function: 'processOpen')) {
         return include __DIR__ . DIRECTORY_SEPARATOR . 'TestCases' .
             DIRECTORY_SEPARATOR . 'OpenTests.php';
     }
-}
 
-if (!function_exists(function: 'processXml')) {
     /**
      * Process Open to web api requests - Request/Response are in XML format
      *
@@ -52,9 +49,7 @@ if (!function_exists(function: 'processXml')) {
         return include __DIR__ . DIRECTORY_SEPARATOR . 'TestCases' .
             DIRECTORY_SEPARATOR . 'OpenTestsXml.php';
     }
-}
 
-if (!function_exists(function: 'processSupplement')) {
     /**
      * Process Auth based requests
      *

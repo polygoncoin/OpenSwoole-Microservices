@@ -43,6 +43,17 @@ class Constants
 
     public static $DOC_ROOT = null;
     public static $PUBLIC_HTML = null;
+    public static $LOGS_DIR = null;
+    public static $FILES_DIR = null;
+    public static $DROP_BOX_DIR = null;
+    public static $HTML_DIR = null;
+    public static $XSLT_DIR = null;
+
+    public static $AUTH_ROUTES_DIR = null;
+    public static $OPEN_ROUTES_DIR = null;
+    public static $AUTH_QUERIES_DIR = null;
+    public static $OPEN_QUERIES_DIR = null;
+
     public static $ROUTE_URL_PARAM = 'r';
 
     private static $initialized = false;
@@ -60,6 +71,31 @@ class Constants
 
         self::$DOC_ROOT = dirname(path: __DIR__ . '..' . DIRECTORY_SEPARATOR);
         self::$PUBLIC_HTML = self::$DOC_ROOT;
+
+        self::$LOGS_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Logs';
+
+        self::$FILES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Files';
+        self::$DROP_BOX_DIR = self::$FILES_DIR . DIRECTORY_SEPARATOR . 'Dropbox';
+        self::$HTML_DIR = self::$FILES_DIR . DIRECTORY_SEPARATOR . 'HTML';
+        self::$XSLT_DIR = self::$FILES_DIR . DIRECTORY_SEPARATOR . 'XSLT';
+
+        self::$AUTH_ROUTES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config' .
+            DIRECTORY_SEPARATOR . 'Routes' .
+            DIRECTORY_SEPARATOR . 'Auth';
+
+        self::$OPEN_ROUTES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config' .
+            DIRECTORY_SEPARATOR . 'Routes' .
+            DIRECTORY_SEPARATOR . 'Open';
+
+        self::$AUTH_QUERIES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config' .
+            DIRECTORY_SEPARATOR . 'Queries' .
+            DIRECTORY_SEPARATOR . 'Auth';
+
+        self::$OPEN_QUERIES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config' .
+            DIRECTORY_SEPARATOR . 'Queries' .
+            DIRECTORY_SEPARATOR . 'Open';
+
+
         self::$initialized = true;
     }
 }

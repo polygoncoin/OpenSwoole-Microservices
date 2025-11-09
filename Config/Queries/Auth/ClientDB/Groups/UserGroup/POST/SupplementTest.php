@@ -15,6 +15,8 @@
 
 namespace Microservices\Config\Queries\Auth\ClientDB\Common;
 
+use Microservices\App\Constants;
+
 return [
     // Details of data to perform task
     '__PAYLOAD__' => [

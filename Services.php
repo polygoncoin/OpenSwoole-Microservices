@@ -15,6 +15,7 @@
 
 namespace Microservices;
 
+use Microservices\App\CacheHandler;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
@@ -22,10 +23,10 @@ use Microservices\App\Gateway;
 use Microservices\App\HttpStatus;
 
 /**
- * Service
+ * Services
  * php version 8.3
  *
- * @category  Service
+ * @category  Services
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -57,13 +58,6 @@ class Services
     public $http = null;
 
     /**
-     * Common object
-     *
-     * @var null|Common
-     */
-    public $c = null;
-
-    /**
      * Constructor
      *
      * @param array $http HTTP request details
@@ -86,8 +80,8 @@ class Services
      */
     public function init(): bool
     {
-        $this->c = new Common(http: $this->http);
-        $this->c->initRequest();
+        Common::init(http: $this->http);
+        Common::initRequest();
 
         if (!isset($this->http['get'][Constants::$ROUTE_URL_PARAM])) {
             throw new \Exception(
@@ -122,7 +116,7 @@ class Services
      */
     public function startData(): void
     {
-        $this->c->res->dataEncode->startObject();
+        Common::$res->dataEncode->startObject();
     }
 
     /**
@@ -133,14 +127,24 @@ class Services
      */
     public function processApi(): bool
     {
+        if (Common::$req->METHOD === Constants::$GET) {
+            $cacheHandler = new CacheHandler();
+            if ($cacheHandler->init(mode: 'Open')) {
+                // File exists - Serve from Dropbox
+                $cacheHandler->process();
+                return true;
+            }
+            $cacheHandler = null;
+        }
+
         $class = null;
 
         switch (true) {
             case Env::$allowCronRequest && strpos(
-                haystack: $this->c->req->ROUTE,
+                haystack: Common::$req->ROUTE,
                 needle: '/' . Env::$cronRequestUriPrefix
             ) === 0:
-                if ($this->c->req->IP !== Env::$cronRestrictedIp) {
+                if (Common::$req->IP !== Env::$cronRestrictedIp) {
                     throw new \Exception(
                         message: 'Source IP is not supported',
                         code: HttpStatus::$NotFound
@@ -149,9 +153,13 @@ class Services
                 $class = __NAMESPACE__ . '\\App\\Cron';
                 break;
 
+            case Common::$req->ROUTE === '/logout':
+                $class = __NAMESPACE__ . '\\App\\Logout';
+                break;
+
             // Requires HTTP auth username and password
-            case $this->c->req->ROUTE === '/reload':
-                if ($this->c->req->IP !== Env::$cronRestrictedIp) {
+            case Common::$req->ROUTE === '/reload':
+                if (Common::$req->IP !== Env::$cronRestrictedIp) {
                     throw new \Exception(
                         message: 'Source IP is not supported',
                         code: HttpStatus::$NotFound
@@ -161,13 +169,13 @@ class Services
                 break;
 
             // Generates auth token
-            case $this->c->req->ROUTE === '/login':
+            case Common::$req->ROUTE === '/login':
                 $class = __NAMESPACE__ . '\\App\\Login';
                 break;
 
             // Requires auth token
             default:
-                $gateway = new Gateway(req: $this->c->req);
+                $gateway = new Gateway();
                 $gateway->initGateway();
                 $gateway = null;
 
@@ -178,9 +186,9 @@ class Services
         // Class found
         try {
             if ($class !== null) {
-                $api = new $class($this->c);
+                $api = new $class();
                 if ($api->init()) {
-                    $this->c->initResponse();
+                    Common::initResponse();
                     $this->startData();
                     $api->process();
                     $this->addStatus();
@@ -202,9 +210,9 @@ class Services
      */
     public function addStatus(): void
     {
-        $this->c->res->dataEncode->addKeyData(
+        Common::$res->dataEncode->addKeyData(
             key: 'Status',
-            data: $this->c->res->httpStatus
+            data: Common::$res->httpStatus
         );
     }
 
@@ -220,22 +228,22 @@ class Services
             $time = ceil(num: ($this->tsEnd - $this->tsStart) * 1000);
             $memory = ceil(num: memory_get_peak_usage() / 1000);
 
-            $this->c->res->dataEncode->startObject(key: 'Stats');
-            $this->c->res->dataEncode->startObject(key: 'Performance');
-            $this->c->res->dataEncode->addKeyData(
+            Common::$res->dataEncode->startObject(key: 'Stats');
+            Common::$res->dataEncode->startObject(key: 'Performance');
+            Common::$res->dataEncode->addKeyData(
                 key: 'total-time-taken',
                 data: "{$time} ms"
             );
-            $this->c->res->dataEncode->addKeyData(
+            Common::$res->dataEncode->addKeyData(
                 key: 'peak-memory-usage',
                 data: "{$memory} KB"
             );
-            $this->c->res->dataEncode->endObject();
-            $this->c->res->dataEncode->addKeyData(
+            Common::$res->dataEncode->endObject();
+            Common::$res->dataEncode->addKeyData(
                 key: 'getrusage',
                 data: getrusage()
             );
-            $this->c->res->dataEncode->endObject();
+            Common::$res->dataEncode->endObject();
         }
     }
 
@@ -246,8 +254,19 @@ class Services
      */
     public function endData(): void
     {
-        $this->c->res->dataEncode->endObject();
-        $this->c->res->dataEncode->end();
+        Common::$res->dataEncode->endObject();
+        Common::$res->dataEncode->end();
+    }
+
+    /**
+     * Output
+     *
+     * @return void
+     */
+    public function outputResults(): void
+    {
+        http_response_code(response_code: Common::$res->httpStatus);
+        Common::$res->dataEncode->streamData();
     }
 
     /**
@@ -255,9 +274,9 @@ class Services
      *
      * @return bool|string
      */
-    public function outputResults(): bool|string
+    public function returnResults(): bool|string
     {
-        return $this->c->res->dataEncode->getData();
+        return Common::$res->dataEncode->getData();
     }
 
     /**
@@ -285,10 +304,16 @@ class Services
             $methods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
             $headers['Access-Control-Allow-Methods'] = $methods;
         } else {
-            if (Env::$oRepresentation === 'XML') { // XML headers
-                $headers['Content-Type'] = 'text/xml; charset=utf-8';
-            } else { // JSON headers
-                $headers['Content-Type'] = 'application/json; charset=utf-8';
+            switch (Env::$oRepresentation) {
+                case 'XML':
+                    $headers['Content-Type'] = 'text/xml; charset=utf-8';
+                    break;
+                case 'JSON':
+                    $headers['Content-Type'] = 'application/json; charset=utf-8';
+                    break;
+                case 'HTML':
+                    $headers['Content-Type'] = 'text/html; charset=utf-8';
+                    break;
             }
             $cacheControl = 'no-store, no-cache, must-revalidate, max-age=0';
             $headers['Cache-Control'] = $cacheControl;

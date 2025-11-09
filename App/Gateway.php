@@ -15,6 +15,8 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Common;
+use Microservices\App\DbFunctions;
 use Microservices\App\HttpRequest;
 use Microservices\App\HttpStatus;
 use Microservices\App\RateLimiter;
@@ -55,20 +57,12 @@ class Gateway
     private $rateLimitChecked = false;
 
     /**
-     * Rate Limiter
-     *
-     * @var null|HttpRequest
-     */
-    private $req = null;
-
-    /**
      * Constructor
      *
      * @param HttpRequest $req HTTP Request object
      */
-    public function __construct(&$req)
+    public function __construct()
     {
-        $this->req = &$req;
     }
 
     /**
@@ -78,10 +72,10 @@ class Gateway
      */
     public function initGateway(): void
     {
-        $this->req->loadClientDetails();
+        Common::$req->loadClientDetails();
 
-        if (!$this->req->open) {
-            $this->req->auth->loadUserDetails();
+        if (!Common::$req->open) {
+            Common::$req->auth->loadUserDetails();
             $this->checkRemoteIp();
         }
         $this->checkRateLimits();
@@ -94,12 +88,12 @@ class Gateway
      */
     private function checkRateLimits(): void
     {
-        $this->rateLimiter = new RateLimiter($this->req);
+        $this->rateLimiter = new RateLimiter();
 
         // Client Rate Limiting
         $this->rateLimitClient();
 
-        if (!$this->req->open) {
+        if (!Common::$req->open) {
             // Group Rate Limiting
             $this->rateLimitGroup();
 
@@ -168,17 +162,17 @@ class Gateway
     public function checkRemoteIp(): void
     {
         $cidrKey = CacheKey::cidr(
-            gID: $this->req->s['uDetails']['group_id']
+            gID: Common::$req->s['uDetails']['group_id']
         );
-        if ($this->req->cache->cacheExists(key: $cidrKey)) {
+        if (DbFunctions::$globalCache->cacheExists(key: $cidrKey)) {
             $this->cidrChecked = true;
             $cidrs = json_decode(
-                json: $this->req->cache->getCache(
+                json: DbFunctions::$globalCache->getCache(
                     key: $cidrKey
                 ),
                 associative: true
             );
-            $ipNumber = ip2long(ip: $this->req->IP);
+            $ipNumber = ip2long(ip: Common::$req->IP);
             $isValidIp = false;
             foreach ($cidrs as $cidr) {
                 if ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
@@ -203,15 +197,15 @@ class Gateway
     private function rateLimitClient(): void
     {
         if (
-            !empty($this->req->s['cDetails']['rateLimitMaxRequests'])
-            && !empty($this->req->s['cDetails']['rateLimitSecondsWindow'])
+            !empty(Common::$req->s['cDetails']['rateLimitMaxRequests'])
+            && !empty(Common::$req->s['cDetails']['rateLimitSecondsWindow'])
         ) {
             $rateLimitClientPrefix = getenv(name: 'rateLimitClientPrefix');
             $rateLimitMaxRequests
-                = $this->req->s['cDetails']['rateLimitMaxRequests'];
+                = Common::$req->s['cDetails']['rateLimitMaxRequests'];
             $rateLimitSecondsWindow
-                = $this->req->s['cDetails']['rateLimitSecondsWindow'];
-            $key = $this->req->s['cDetails']['id'];
+                = Common::$req->s['cDetails']['rateLimitSecondsWindow'];
+            $key = Common::$req->s['cDetails']['id'];
 
             $this->rateLimitChecked = $this->checkRateLimit(
                 rateLimitPrefix: $rateLimitClientPrefix,
@@ -230,17 +224,17 @@ class Gateway
     private function rateLimitGroup(): void
     {
         if (
-            !empty($this->req->s['gDetails']['rateLimitMaxRequests'])
-            && !empty($this->req->s['gDetails']['rateLimitSecondsWindow'])
+            !empty(Common::$req->s['gDetails']['rateLimitMaxRequests'])
+            && !empty(Common::$req->s['gDetails']['rateLimitSecondsWindow'])
         ) {
             $rateLimitGroupPrefix
                 = getenv(name: 'rateLimitGroupPrefix');
             $rateLimitMaxRequests
-                = $this->req->s['gDetails']['rateLimitMaxRequests'];
+                = Common::$req->s['gDetails']['rateLimitMaxRequests'];
             $rateLimitSecondsWindow
-                = $this->req->s['gDetails']['rateLimitSecondsWindow'];
-            $key = $this->req->s['cDetails']['id'] . ':' .
-                $this->req->s['uDetails']['id'];
+                = Common::$req->s['gDetails']['rateLimitSecondsWindow'];
+            $key = Common::$req->s['cDetails']['id'] . ':' .
+                Common::$req->s['uDetails']['id'];
 
             $this->rateLimitChecked = $this->checkRateLimit(
                 rateLimitPrefix: $rateLimitGroupPrefix,
@@ -259,17 +253,17 @@ class Gateway
     private function rateLimitUser(): void
     {
         if (
-            !empty($this->req->s['uDetails']['rateLimitMaxRequests'])
-            && !empty($this->req->s['uDetails']['rateLimitSecondsWindow'])
+            !empty(Common::$req->s['uDetails']['rateLimitMaxRequests'])
+            && !empty(Common::$req->s['uDetails']['rateLimitSecondsWindow'])
         ) {
             $rateLimitUserPrefix = getenv(name: 'rateLimitUserPrefix');
             $rateLimitMaxRequests
-                = $this->req->s['gDetails']['rateLimitMaxRequests'];
+                = Common::$req->s['gDetails']['rateLimitMaxRequests'];
             $rateLimitSecondsWindow
-                = $this->req->s['gDetails']['rateLimitSecondsWindow'];
-            $key = $this->req->s['cDetails']['id'] . ':' .
-                $this->req->s['uDetails']['id'] . ':' .
-                $this->req->s['uDetails']['user_id'];
+                = Common::$req->s['gDetails']['rateLimitSecondsWindow'];
+            $key = Common::$req->s['cDetails']['id'] . ':' .
+                Common::$req->s['uDetails']['id'] . ':' .
+                Common::$req->s['uDetails']['user_id'];
 
             $this->rateLimitChecked = $this->checkRateLimit(
                 rateLimitPrefix: $rateLimitUserPrefix,
@@ -290,7 +284,7 @@ class Gateway
         $rateLimitIPPrefix = getenv(name: 'rateLimitIPPrefix');
         $rateLimitIPMaxRequests = getenv(name: 'rateLimitIPMaxRequests');
         $rateLimitIPSecondsWindow = getenv(name: 'rateLimitIPSecondsWindow');
-        $key = $this->req->IP;
+        $key = Common::$req->IP;
 
         $this->checkRateLimit(
             rateLimitPrefix: $rateLimitIPPrefix,

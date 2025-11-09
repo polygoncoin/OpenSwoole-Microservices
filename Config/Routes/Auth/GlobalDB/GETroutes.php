@@ -15,38 +15,28 @@
 
 namespace Microservices\Config\Routes\Auth\CommonRoutes\GlobalDB;
 
+use Microservices\App\Constants;
+
 return [
     'groups' => [
-        '__FILE__' => $Constants::$DOC_ROOT .
-            DIRECTORY_SEPARATOR . 'Config' .
-            DIRECTORY_SEPARATOR . 'Queries' .
-            DIRECTORY_SEPARATOR . 'Auth' .
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'GlobalDB' .
             DIRECTORY_SEPARATOR . 'GET' .
             DIRECTORY_SEPARATOR . 'groups.php',
         '{id:int|!0}'  => [
-            '__FILE__' => $Constants::$DOC_ROOT .
-                DIRECTORY_SEPARATOR . 'Config' .
-                DIRECTORY_SEPARATOR . 'Queries' .
-                DIRECTORY_SEPARATOR . 'Auth' .
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'GlobalDB' .
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'groups.php',
         ],
     ],
     'clients' => [
-        '__FILE__' => $Constants::$DOC_ROOT .
-            DIRECTORY_SEPARATOR . 'Config' .
-            DIRECTORY_SEPARATOR . 'Queries' .
-            DIRECTORY_SEPARATOR . 'Auth' .
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'GlobalDB' .
             DIRECTORY_SEPARATOR . 'GET' .
             DIRECTORY_SEPARATOR . 'clients.php',
         '{id:int|!0}'  => [
-            '__FILE__' => $Constants::$DOC_ROOT .
-                DIRECTORY_SEPARATOR . 'Config' .
-                DIRECTORY_SEPARATOR . 'Queries' .
-                DIRECTORY_SEPARATOR . 'Auth' .
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'GlobalDB' .
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'clients.php',

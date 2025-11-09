@@ -17,6 +17,7 @@ namespace Microservices\Supplement\Custom;
 
 use Microservices\App\CacheKey;
 use Microservices\App\Common;
+use Microservices\App\DbFunctions;
 use Microservices\Supplement\Custom\CustomInterface;
 use Microservices\Supplement\Custom\CustomTrait;
 
@@ -37,20 +38,10 @@ class Password implements CustomInterface
     use CustomTrait;
 
     /**
-     * Common object
-     *
-     * @var null|Common
-     */
-    private $c = null;
-
-    /**
      * Constructor
-     *
-     * @param Common $common Common object
      */
-    public function __construct(Common &$common)
+    public function __construct()
     {
-        $this->c = &$common;
     }
 
     /**
@@ -60,7 +51,7 @@ class Password implements CustomInterface
      */
     public function init(): bool
     {
-        $this->c->req->loadPayload();
+        Common::$req->loadPayload();
         return true;
     }
 
@@ -73,19 +64,19 @@ class Password implements CustomInterface
      */
     public function process(array $payload = []): array
     {
-        if ($this->c->req->s['payloadType'] === 'Object') {
-            $payload = $this->c->req->dataDecode->get();
+        if (Common::$req->s['payloadType'] === 'Object') {
+            $payload = Common::$req->dataDecode->get();
         } else {
-            $payload = $this->c->req->dataDecode->get('0');
+            $payload = Common::$req->dataDecode->get('0');
         }
-        $this->c->req->s['payload'] = $payload;
+        Common::$req->s['payload'] = $payload;
 
-        $oldPassword = $this->c->req->s['payload']['old_password'];
-        $oldPasswordHash = $this->c->req->s['uDetails']['password_hash'];
+        $oldPassword = Common::$req->s['payload']['old_password'];
+        $oldPasswordHash = Common::$req->s['uDetails']['password_hash'];
 
         if (password_verify(password: $oldPassword, hash: $oldPasswordHash)) {
-            $userName = $this->c->req->s['uDetails']['username'];
-            $newPassword = $this->c->req->s['payload']['new_password'];
+            $userName = Common::$req->s['uDetails']['username'];
+            $newPassword = Common::$req->s['payload']['new_password'];
             $newPasswordHash = password_hash(
                 password: $newPassword,
                 algo: PASSWORD_DEFAULT
@@ -103,32 +94,32 @@ class Password implements CustomInterface
                 ':is_deleted' => 'No',
             ];
 
-            $this->c->req->db->execDbQuery(sql: $sql, params: $sqlParams);
-            $this->c->req->db->closeCursor();
+            Common::$req->db->execDbQuery(sql: $sql, params: $sqlParams);
+            Common::$req->db->closeCursor();
 
-            $cID = $this->c->req->s['cDetails']['id'];
+            $cID = Common::$req->s['cDetails']['id'];
             $cu_key = CacheKey::clientUser(
                 cID: $cID,
                 username: $userName
             );
-            if ($this->c->req->cache->cacheExists(key: $cu_key)) {
+            if (DbFunctions::$globalCache->cacheExists(key: $cu_key)) {
                 $uDetails = json_decode(
-                    json: $this->c->req->cache->getCache(
+                    json: DbFunctions::$globalCache->getCache(
                         key: $cu_key
                     ),
                     associative: true
                 );
                 $uDetails['password_hash'] = $newPasswordHash;
-                $this->c->req->cache->setCache(
+                DbFunctions::$globalCache->setCache(
                     key: $cu_key,
                     value: json_encode(value: $uDetails)
                 );
-                $this->c->req->cache->deleteCache(
-                    key: CacheKey::token(token: $this->c->req->s['token'])
+                DbFunctions::$globalCache->deleteCache(
+                    key: CacheKey::token(token: Common::$req->s['token'])
                 );
             }
 
-            $this->c->res->dataEncode->addKeyData(
+            Common::$res->dataEncode->addKeyData(
                 key: 'Results',
                 data: 'Password changed successfully'
             );

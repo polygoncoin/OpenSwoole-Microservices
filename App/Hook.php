@@ -15,7 +15,6 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Common;
 use Microservices\App\Constants;
 use Microservices\App\HttpStatus;
 
@@ -34,20 +33,10 @@ use Microservices\App\HttpStatus;
 class Hook
 {
     /**
-     * Common object
-     *
-     * @var null|Common
-     */
-    private $c = null;
-
-    /**
      * Constructor
-     *
-     * @param Common $common Common object
      */
-    public function __construct(Common &$common)
+    public function __construct()
     {
-        $this->c = &$common;
     }
 
     /**
@@ -66,8 +55,8 @@ class Hook
                     DIRECTORY_SEPARATOR . 'Hooks' .
                     DIRECTORY_SEPARATOR . $hook . '.php';
                 if (file_exists(filename: $hookFile)) {
-                    $hookClass = 'Microservices\\Hooks\\' . $hook;
-                    $hookObj = new $hookClass(common: $this->c);
+                    $hookClass = 'Microservices\\\Hooks\\' . $hook;
+                    $hookObj = new $hookClass();
                     if ($hookObj->init()) {
                         $hookObj->process();
                     }

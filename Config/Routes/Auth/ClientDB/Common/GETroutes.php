@@ -15,22 +15,19 @@
 
 namespace Microservices\Config\Routes\Auth\CommonRoutes\Client;
 
+use Microservices\App\Constants;
+use Microservices\App\Env;
+
 return [
     'category' => [
-        '__FILE__' => $Constants::$PUBLIC_HTML .
-            DIRECTORY_SEPARATOR . 'Config' .
-            DIRECTORY_SEPARATOR . 'Queries' .
-            DIRECTORY_SEPARATOR . 'Auth' .
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
             DIRECTORY_SEPARATOR . 'Groups' .
             DIRECTORY_SEPARATOR . 'UserGroup' .
             DIRECTORY_SEPARATOR . 'GET' .
             DIRECTORY_SEPARATOR . 'Category-all.php',
         'search' => [
-            '__FILE__' => $Constants::$PUBLIC_HTML .
-                DIRECTORY_SEPARATOR . 'Config' .
-                DIRECTORY_SEPARATOR . 'Queries' .
-                DIRECTORY_SEPARATOR . 'Auth' .
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .
                 DIRECTORY_SEPARATOR . 'UserGroup' .
@@ -38,10 +35,7 @@ return [
                 DIRECTORY_SEPARATOR . 'SearchCategory.php',
         ],
         '{id:int|!0}' => [
-            '__FILE__' => $Constants::$PUBLIC_HTML .
-                DIRECTORY_SEPARATOR . 'Config' .
-                DIRECTORY_SEPARATOR . 'Queries' .
-                DIRECTORY_SEPARATOR . 'Auth' .
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .
                 DIRECTORY_SEPARATOR . 'UserGroup' .
@@ -51,10 +45,7 @@ return [
     ],
     'registration' => [
         '{id:int|!0}'  => [
-            '__FILE__' => $Constants::$PUBLIC_HTML .
-                DIRECTORY_SEPARATOR . 'Config' .
-                DIRECTORY_SEPARATOR . 'Queries' .
-                DIRECTORY_SEPARATOR . 'Auth' .
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .
                 DIRECTORY_SEPARATOR . 'UserGroup' .
@@ -64,10 +55,7 @@ return [
     ],
     'address' => [
         '{id:int|!0}'  => [
-            '__FILE__' => $Constants::$PUBLIC_HTML .
-                DIRECTORY_SEPARATOR . 'Config' .
-                DIRECTORY_SEPARATOR . 'Queries' .
-                DIRECTORY_SEPARATOR . 'Auth' .
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .
                 DIRECTORY_SEPARATOR . 'UserGroup' .
@@ -77,10 +65,7 @@ return [
     ],
     'registration-with-address' => [
         '{id:int|!0}'  => [
-            '__FILE__' => $Constants::$PUBLIC_HTML .
-                DIRECTORY_SEPARATOR . 'Config' .
-                DIRECTORY_SEPARATOR . 'Queries' .
-                DIRECTORY_SEPARATOR . 'Auth' .
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .
                 DIRECTORY_SEPARATOR . 'UserGroup' .
@@ -88,7 +73,7 @@ return [
                 DIRECTORY_SEPARATOR . 'Registration-With-Address-single.php',
         ],
     ],
-    $Env::$routesRequestUri => [
+    Env::$routesRequestUri => [
         '__FILE__' => false,
         '{method:string|GET, POST, PUT, PATCH, DELETE}' => [
             '__FILE__' => false

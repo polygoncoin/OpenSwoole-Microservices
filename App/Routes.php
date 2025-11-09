@@ -62,20 +62,10 @@ class Routes
     private $reservedKeys = [];
 
     /**
-     * Collection of Common Objects
-     *
-     * @var null|Common
-     */
-    private $c = null;
-
-    /**
      * Constructor
-     *
-     * @param Common $common Common object
      */
-    public function __construct(Common &$common)
+    public function __construct()
     {
-        $this->c = &$common;
     }
 
     /**
@@ -104,7 +94,7 @@ class Routes
         $Env = __NAMESPACE__ . '\Env';
 
         $httpRoutes = [];
-        if ($this->c->req->open) {
+        if (Common::$req->open) {
             $userRoutesFolder = Constants::$PUBLIC_HTML . $this->routesFolder .
                 DIRECTORY_SEPARATOR . 'Open';
         } else {
@@ -112,7 +102,7 @@ class Routes
                 DIRECTORY_SEPARATOR . 'Auth' .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .
-                DIRECTORY_SEPARATOR . $this->c->req->s['gDetails']['name'];
+                DIRECTORY_SEPARATOR . Common::$req->s['gDetails']['name'];
         }
 
         foreach ($this->httpMethods as $method) {
@@ -130,7 +120,7 @@ class Routes
                 httpRoutes: $httpRoutes[$method]
             );
         }
-        $this->c->res->dataEncode->addKeyData(
+        Common::$res->dataEncode->addKeyData(
             key: 'Results',
             data: $httpRoutes
         );

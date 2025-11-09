@@ -15,9 +15,24 @@
 
 namespace Microservices\TestCases;
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'TestFunctions.php';
+use Microservices\TestCases\TestFunctions;
 
-$header = [];
+define('GET', __DIR__ . DIRECTORY_SEPARATOR . 'GET');
+define('POST', __DIR__ . DIRECTORY_SEPARATOR . 'POST');
+define('PUT', __DIR__ . DIRECTORY_SEPARATOR . 'PUT');
+define('PATCH', __DIR__ . DIRECTORY_SEPARATOR . 'PATCH');
+define('DELETE', __DIR__ . DIRECTORY_SEPARATOR . 'DELETE');
+
+$apiVersion = 'X-API-Version: v1.0.0';
+$cacheControl = 'Cache-Control: no-cache';
+$contentType = 'Content-Type: application/x-www-form-urlencoded; charset=utf-8';
+// $contentType = 'Content-Type: multipart/form-data; charset=utf-8';
+// $contentType = 'Content-Type: text/plain; charset=utf-8';
+
+$defaultHeaders = [];
+$defaultHeaders[] = $apiVersion;
+$defaultHeaders[] = $cacheControl;
+
 $response = [];
 
 $homeURL = 'http://127.0.0.1:9501';

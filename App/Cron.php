@@ -41,20 +41,10 @@ class Cron
     private $api = null;
 
     /**
-     * Common object
-     *
-     * @var null|Common
-     */
-    private $c = null;
-
-    /**
      * Constructor
-     *
-     * @param Common $common Common object
      */
-    public function __construct(Common &$common)
+    public function __construct()
     {
-        $this->c = &$common;
     }
 
     /**
@@ -64,22 +54,19 @@ class Cron
      */
     public function init(): bool
     {
-        $this->c->initRequest();
+        Common::initRequest();
 
-        $routeFileLocation = Constants::$PUBLIC_HTML .
-            DIRECTORY_SEPARATOR . 'Config' .
-            DIRECTORY_SEPARATOR . 'Routes' .
-            DIRECTORY_SEPARATOR . 'Auth' .
+        $routeFileLocation = Constants::$AUTH_ROUTES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
             DIRECTORY_SEPARATOR . 'Common' .
             DIRECTORY_SEPARATOR . 'Cron' .
-            DIRECTORY_SEPARATOR . $this->c->req->METHOD . 'routes.php';
-        $this->c->req->rParser->parseRoute(routeFileLocation: $routeFileLocation);
+            DIRECTORY_SEPARATOR . Common::$req->METHOD . 'routes.php';
+        Common::$req->rParser->parseRoute(routeFileLocation: $routeFileLocation);
 
-        $class = 'Microservices\\Supplement\\Cron\\' .
-            ucfirst(string: $this->c->req->rParser->routeElements[1]);
+        $class = 'Microservices\\\Supplement\\Cron\\' .
+            ucfirst(string: Common::$req->rParser->routeElements[1]);
 
-        $this->api = new $class(common: $this->c);
+        $this->api = new $class();
 
         return $this->api->init();
     }

@@ -18,6 +18,7 @@ namespace Microservices\App;
 use Microservices\App\AppTrait;
 use Microservices\App\Common;
 use Microservices\App\DataRepresentation\DataEncode;
+use Microservices\App\DbFunctions;
 use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\HttpStatus;
@@ -40,27 +41,6 @@ class Read
     use AppTrait;
 
     /**
-     * Database object
-     *
-     * @var null|Object
-     */
-    public $db = null;
-
-    /**
-     * Common object
-     *
-     * @var null|Common
-     */
-    private $c = null;
-
-    /**
-     * Trigger Web API object
-     *
-     * @var null|Web
-     */
-    private $web = null;
-
-    /**
      * Hook object
      *
      * @var null|Hook
@@ -75,13 +55,17 @@ class Read
     public $dataEncode = null;
 
     /**
-     * Constructor
+     * Fetch mode Db Obj variable name in DbFunctions
      *
-     * @param Common $common Common object
+     * @var null|string
      */
-    public function __construct(Common &$common)
+    public $dbObj = null;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
     {
-        $this->c = &$common;
     }
 
     /**
@@ -104,7 +88,7 @@ class Read
         $Env = __NAMESPACE__ . '\Env';
 
         // Load Queries
-        $rSqlConfig = include $this->c->req->rParser->sqlConfigFile;
+        $rSqlConfig = include Common::$req->rParser->sqlConfigFile;
 
         // Rate Limiting request if configured for Route Queries.
         $this->rateLimitRoute(sqlConfig: $rSqlConfig);
@@ -116,18 +100,18 @@ class Read
         $toBeCached = false;
         if (
             isset($rSqlConfig['cacheKey'])
-            && !isset($this->c->req->s['payload']['orderBy'])
+            && !isset(Common::$req->s['payload']['orderBy'])
         ) {
-            $json = $this->c->req->getQueryCache(
+            $json = DbFunctions::getQueryCache(
                 cacheKey: $rSqlConfig['cacheKey']
             );
             if ($json !== null) {
                 $cacheHit = 'true';
-                $this->c->res->dataEncode->appendKeyData(
+                Common::$res->dataEncode->appendKeyData(
                     key: 'cacheHit',
                     data: $cacheHit
                 );
-                $this->c->res->dataEncode->appendData(data: $json);
+                Common::$res->dataEncode->appendData(data: $json);
                 return true;
             } else {
                 $toBeCached = true;
@@ -135,18 +119,18 @@ class Read
         }
 
         if ($toBeCached) {
-            $this->dataEncode = new DataEncode(http: $this->c->http);
+            $this->dataEncode = new DataEncode(http: Common::$http);
             $this->dataEncode->init(header: false);
         } else {
-            $this->dataEncode = &$this->c->res->dataEncode;
+            $this->dataEncode = &Common::$res->dataEncode;
         }
         $this->dataEncode->XSLT = isset($rSqlConfig['XSLT']) ?
             $rSqlConfig['XSLT'] : null;
 
         // Set Server mode to execute query on - Read / Write Server
         $fetchFrom = $rSqlConfig['fetchFrom'] ?? 'Slave';
-        $this->c->req->db = $this->c->req->setDbConnection(fetchFrom: $fetchFrom);
-        $this->db = &$this->c->req->db;
+        DbFunctions::setDbConnection(fetchFrom: $fetchFrom);
+        $this->dbObj = strtolower($fetchFrom) . 'Db';
 
         // Use result set recursively flag
         $useResultSet = $this->getUseHierarchy(
@@ -154,7 +138,7 @@ class Read
             keyword: 'useResultSet'
         );
 
-        if (Env::$allowConfigRequest && $this->c->req->rParser->isConfigRequest) {
+        if (Env::$allowConfigRequest && Common::$req->rParser->isConfigRequest) {
             $this->processReadConfig(
                 rSqlConfig: $rSqlConfig,
                 useResultSet: $useResultSet
@@ -168,11 +152,11 @@ class Read
 
         if ($toBeCached) {
             $json = $this->dataEncode->getData();
-            $this->c->req->setQueryCache(
+            DbFunctions::setQueryCache(
                 cacheKey: $rSqlConfig['cacheKey'],
                 json: $json
             );
-            $this->c->res->dataEncode->appendData(data: $json);
+            Common::$res->dataEncode->appendData(data: $json);
         }
 
         return true;
@@ -191,7 +175,7 @@ class Read
         $this->dataEncode->startObject(key: 'Config');
         $this->dataEncode->addKeyData(
             key: 'Route',
-            data: $this->c->req->rParser->configuredUri
+            data: Common::$req->rParser->configuredUri
         );
         $this->dataEncode->addKeyData(
             key: 'Payload',
@@ -214,16 +198,16 @@ class Read
      */
     private function processRead(&$rSqlConfig, $useResultSet): void
     {
-        $this->c->req->s['necessaryArr'] = $this->getRequired(
+        Common::$req->s['necessaryArr'] = $this->getRequired(
             sqlConfig: $rSqlConfig,
             isFirstCall: true,
             flag: $useResultSet
         );
 
-        if (isset($this->c->req->s['necessaryArr'])) {
-            $this->c->req->s['necessary'] = $this->c->req->s['necessaryArr'];
+        if (isset(Common::$req->s['necessaryArr'])) {
+            Common::$req->s['necessary'] = Common::$req->s['necessaryArr'];
         } else {
-            $this->c->req->s['necessary'] = [];
+            Common::$req->s['necessary'] = [];
         }
 
         // Start Read operation
@@ -257,7 +241,7 @@ class Read
         // Execute Pre Sql Hooks
         if (isset($rSqlConfig['__PRE-SQL-HOOKS__'])) {
             if ($this->hook === null) {
-                $this->hook = new Hook(common: $this->c);
+                $this->hook = new Hook();
             }
             $this->hook->triggerHook(
                 hookConfig: $rSqlConfig['__PRE-SQL-HOOKS__']
@@ -310,12 +294,9 @@ class Read
 
         // triggers
         if (isset($rSqlConfig['__TRIGGERS__'])) {
-            if ($this->web === null) {
-                $this->web = new Web(common: $this->c);
-            }
             $this->dataEncode->addKeyData(
                 key: '__TRIGGERS__',
-                data: $this->web->triggerConfig(
+                data: $this->getTriggerData(
                     triggerConfig: $rSqlConfig['__TRIGGERS__']
                 )
             );
@@ -324,7 +305,7 @@ class Read
         // Execute Post Sql Hooks
         if (isset($rSqlConfig['__POST-SQL-HOOKS__'])) {
             if ($this->hook === null) {
-                $this->hook = new Hook(common: $this->c);
+                $this->hook = new Hook();
             }
             $this->hook->triggerHook(
                 hookConfig: $rSqlConfig['__POST-SQL-HOOKS__']
@@ -349,7 +330,7 @@ class Read
         &$configKeys,
         $useResultSet
     ): void {
-        [$sql, $sqlParams, $errors] = $this->getSqlAndParams(
+        [$id, $sql, $sqlParams, $errors, $missExecution] = $this->getSqlAndParams(
             sqlDetails: $rSqlConfig,
             isFirstCall: $isFirstCall,
             configKeys: $configKeys,
@@ -363,8 +344,13 @@ class Read
             );
         }
 
-        $this->db->execDbQuery(sql: $sql, params: $sqlParams);
-        if ($row =  $this->db->fetch()) {
+        if ($missExecution) {
+            return;
+        }
+
+        $dbObj = $this->dbObj;
+        DbFunctions::$$dbObj->execDbQuery(sql: $sql, params: $sqlParams);
+        if ($row =  DbFunctions::$$dbObj->fetch()) {
             foreach ($row as $key => $value) {
                 $this->dataEncode->addKeyData(key: $key, data: $value);
             }
@@ -382,7 +368,7 @@ class Read
                 }
             }
         }
-        $this->db->closeCursor();
+        DbFunctions::$$dbObj->closeCursor();
 
         if (isset($rSqlConfig['__SUB-QUERY__'])) {
             $this->callReadDB(
@@ -414,22 +400,22 @@ class Read
         unset($rSqlConfig['__COUNT-SQL-COMMENT__']);
         unset($rSqlConfig['countQuery']);
 
-        $this->c->req->s['payload']['page']  = $_GET['page'] ?? 1;
-        $this->c->req->s['payload']['perPage']  = $_GET['perPage'] ??
+        Common::$req->s['payload']['page']  = $_GET['page'] ?? 1;
+        Common::$req->s['payload']['perPage']  = $_GET['perPage'] ??
             Env::$defaultPerPage;
 
-        if ($this->c->req->s['payload']['perPage'] > Env::$maxPerPage) {
+        if (Common::$req->s['payload']['perPage'] > Env::$maxPerPage) {
             throw new \Exception(
                 message: 'perPage exceeds max perPage value of ' . Env::$maxPerPage,
                 code: HttpStatus::$Forbidden
             );
         }
 
-        $this->c->req->s['payload']['start'] = (
-            ($this->c->req->s['payload']['page'] - 1) *
-            $this->c->req->s['payload']['perPage']
+        Common::$req->s['payload']['start'] = (
+            (Common::$req->s['payload']['page'] - 1) *
+            Common::$req->s['payload']['perPage']
         );
-        [$sql, $sqlParams, $errors] = $this->getSqlAndParams(
+        [$id, $sql, $sqlParams, $errors, $missExecution] = $this->getSqlAndParams(
             sqlDetails: $rSqlConfig
         );
 
@@ -440,22 +426,27 @@ class Read
             );
         }
 
-        $this->db->execDbQuery(sql: $sql, params: $sqlParams);
-        $row = $this->db->fetch();
-        $this->db->closeCursor();
+        if ($missExecution) {
+            return;
+        }
+
+        $dbObj = $this->dbObj;
+        DbFunctions::$$dbObj->execDbQuery(sql: $sql, params: $sqlParams);
+        $row = DbFunctions::$$dbObj->fetch();
+        DbFunctions::$$dbObj->closeCursor();
 
         $totalRowsCount = $row['count'];
         $totalPages = ceil(
-            num: $totalRowsCount / $this->c->req->s['payload']['perPage']
+            num: $totalRowsCount / Common::$req->s['payload']['perPage']
         );
 
         $this->dataEncode->addKeyData(
             key: 'page',
-            data: $this->c->req->s['payload']['page']
+            data: Common::$req->s['payload']['page']
         );
         $this->dataEncode->addKeyData(
             key: 'perPage',
-            data: $this->c->req->s['payload']['perPage']
+            data: Common::$req->s['payload']['perPage']
         );
         $this->dataEncode->addKeyData(
             key: 'totalPages',
@@ -484,12 +475,13 @@ class Read
         &$configKeys,
         $useResultSet
     ): void {
-        [$sql, $sqlParams, $errors] = $this->getSqlAndParams(
+        [$id, $sql, $sqlParams, $errors, $missExecution] = $this->getSqlAndParams(
             sqlDetails: $rSqlConfig,
             isFirstCall: $isFirstCall,
             configKeys: $configKeys,
             flag: $useResultSet
         );
+
         if (!empty($errors)) {
             throw new \Exception(
                 message: $errors,
@@ -497,10 +489,14 @@ class Read
             );
         }
 
+        if ($missExecution) {
+            return;
+        }
+
         if ($isFirstCall) {
-            if (isset($this->c->req->s['payload']['orderBy'])) {
+            if (isset(Common::$req->s['payload']['orderBy'])) {
                 $orderByStrArr = [];
-                $orderByArr = $this->c->req->s['payload']['orderBy'];
+                $orderByArr = Common::$req->s['payload']['orderBy'];
                 foreach ($orderByArr as $k => $v) {
                     $k = str_replace(search: ['`', ' '], replace: '', subject: $k);
                     $v = strtoupper(string: $v);
@@ -518,15 +514,16 @@ class Read
         }
 
         if (isset($rSqlConfig['countQuery'])) {
-            $start = $this->c->req->s['payload']['start'];
-            $offset = $this->c->req->s['payload']['perPage'];
+            $start = Common::$req->s['payload']['start'];
+            $offset = Common::$req->s['payload']['perPage'];
             $sql .= " LIMIT {$start}, {$offset}";
         }
 
         $singleColumn = false;
         $pushPop = true;
-        $this->db->execDbQuery(sql: $sql, params: $sqlParams, pushPop: $pushPop);
-        for ($i = 0; $row = $this->db->fetch();) {
+        $dbObj = $this->dbObj;
+        DbFunctions::$$dbObj->execDbQuery(sql: $sql, params: $sqlParams, pushPop: $pushPop);
+        for ($i = 0; $row = DbFunctions::$$dbObj->fetch();) {
             if ($i === 0) {
                 if (count(value: $row) === 1) {
                     $singleColumn = true;
@@ -553,7 +550,7 @@ class Read
                 $this->dataEncode->encode(data: $row);
             }
         }
-        $this->db->closeCursor(pushPop: $pushPop);
+        DbFunctions::$$dbObj->closeCursor(pushPop: $pushPop);
     }
 
     /**

@@ -16,6 +16,7 @@
 namespace Microservices\Validation;
 
 use Microservices\App\Common;
+use Microservices\App\DbFunctions;
 use Microservices\Validation\ValidatorInterface;
 use Microservices\Validation\ValidatorTrait;
 
@@ -36,28 +37,10 @@ class GlobalValidator implements ValidatorInterface
     use ValidatorTrait;
 
     /**
-     * Database object
-     *
-     * @var null|Object
-     */
-    public $db = null;
-
-    /**
-     * Common object
-     *
-     * @var null|Common
-     */
-    private $c = null;
-
-    /**
      * Constructor
-     *
-     * @param Common $common Common object
      */
-    public function __construct(Common &$common)
+    public function __construct()
     {
-        $this->c = &$common;
-        $this->db = &$this->c->req->db;
     }
 
     /**
@@ -77,7 +60,7 @@ class GlobalValidator implements ValidatorInterface
                 if ($mode === 'custom') {
                     $args[$attr] = $key;
                 } else {
-                    $args[$attr] = $this->c->req->s[$mode][$key];
+                    $args[$attr] = Common::$req->s[$mode][$key];
                 }
             }
             $fn = $v['fn'];
@@ -101,9 +84,9 @@ class GlobalValidator implements ValidatorInterface
         extract(array: $args);
         $sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
         $params = [$id];
-        $this->db->execDbQuery(sql: $sql, params: $params);
-        $row = $this->db->fetch();
-        $this->db->closeCursor();
+        DbFunctions::$masterDb->execDbQuery(sql: $sql, params: $params);
+        $row = DbFunctions::$masterDb->fetch();
+        DbFunctions::$masterDb->closeCursor();
         return (int)(($row['count'] === 0) ? false : true);
     }
 
@@ -123,9 +106,9 @@ class GlobalValidator implements ValidatorInterface
             WHERE `{$column}` = ? AND`{$primary}` = ?
         ";
         $params = [$columnValue, $id];
-        $this->db->execDbQuery(sql: $sql, params: $params);
-        $row = $this->db->fetch();
-        $this->db->closeCursor();
+        DbFunctions::$masterDb->execDbQuery(sql: $sql, params: $params);
+        $row = DbFunctions::$masterDb->fetch();
+        DbFunctions::$masterDb->closeCursor();
         return ($row['count'] === 0) ? false : true;
     }
 }

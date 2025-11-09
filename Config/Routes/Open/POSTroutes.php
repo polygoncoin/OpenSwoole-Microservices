@@ -15,20 +15,16 @@
 
 namespace Microservices\Config\Routes\Auth\GroupRoutes\AdminGroup;
 
+use Microservices\App\Constants;
+
 return [
     'registration' => [
-        '__FILE__' => $Constants::$DOC_ROOT .
-            DIRECTORY_SEPARATOR . 'Config' .
-            DIRECTORY_SEPARATOR . 'Queries' .
-            DIRECTORY_SEPARATOR . 'Open' .
+        '__FILE__' => Constants::$OPEN_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'POST' .
             DIRECTORY_SEPARATOR . 'Registration.php',
     ],
     'registration-with-address' => [
-        '__FILE__' => $Constants::$DOC_ROOT .
-            DIRECTORY_SEPARATOR . 'Config' .
-            DIRECTORY_SEPARATOR . 'Queries' .
-            DIRECTORY_SEPARATOR . 'Open' .
+        '__FILE__' => Constants::$OPEN_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'POST' .
             DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
     ],
