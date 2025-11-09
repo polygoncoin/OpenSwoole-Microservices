@@ -72,7 +72,7 @@ $server->on(
             )
         ) {
             $tests = new Tests();
-            switch ($request->get['r']) {
+            switch ($http['get']['r']) {
                 case '/auth-test':
                     $response->end($tests->processAuth());
                     break;
