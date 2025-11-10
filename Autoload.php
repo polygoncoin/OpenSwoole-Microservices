@@ -50,7 +50,8 @@ class Autoload
         $file = __DIR__ . $className . '.php';
         if (!file_exists(filename: $file)) {
             echo PHP_EOL . "File '{$file}' missing" . PHP_EOL;
+        } else {
+            include_once $file;
         }
-        include_once $file;
     }
 }

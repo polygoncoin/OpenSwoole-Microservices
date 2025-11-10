@@ -23,6 +23,7 @@ use Microservices\App\HttpStatus;
 use Microservices\App\Middleware\Auth;
 use Microservices\App\RouteParser;
 use Microservices\App\SessionHandlers\Session;
+
 /**
  * HTTP Request
  * php version 8.3
@@ -132,12 +133,6 @@ class HttpRequest
                 }
                 break;
             case 'Session':
-                // Session Runtime Configuration
-                $options = [];
-
-                // Initialize Session Handler
-                Session::initSessionHandler(sessionMode: Env::$sessionMode, options: $options);
-
                 // Start session in readonly mode
                 Session::sessionStartReadonly();
 

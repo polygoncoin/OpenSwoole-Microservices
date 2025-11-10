@@ -15,6 +15,8 @@
 
 namespace Microservices\App;
 
+use Microservices\App\SessionHandlers\Session;
+
 /**
  * Environment
  * php version 8.3
@@ -141,8 +143,13 @@ class Env
 
         self::$allowGetRepresentation = getenv(name: 'allowGetRepresentation');
 
-        self::$authMode = getenv(name: 'authMode');
         self::$sessionMode = getenv(name: 'sessionMode');
+
+        self::$authMode = getenv(name: 'authMode');
+        if (self::$authMode === 'Session') {
+            // Initialize Session Handler
+            Session::initSessionHandler(sessionMode: Env::$sessionMode, options: []);
+        }
     }
 
     /**

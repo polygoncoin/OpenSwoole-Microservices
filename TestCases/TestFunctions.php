@@ -182,7 +182,6 @@ class TestFunctions
         curl_close(handle: $curl);
 
         if ($error) {
-            echo PHP_EOL . '===>' . $responseBody . PHP_EOL;
             $response = [
                 'cURL Error #:' . $error,
                 $responseBody

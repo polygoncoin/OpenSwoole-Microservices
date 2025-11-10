@@ -391,9 +391,6 @@ class Login
         // Session Runtime Configuration
         $options = [];
 
-        // Initialize Session Handler
-        Session::initSessionHandler(sessionMode: Env::$sessionMode, options: $options);
-
         // Start session in readonly mode
         // Use when user is already logged in and we need to authorize the client cookie.
         Session::sessionStartReadonly();

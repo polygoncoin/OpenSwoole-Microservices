@@ -34,6 +34,13 @@ use Microservices\App\SessionHandlers\Containers\SessionContainerInterface;
 class Session
 {
     /**
+     * Domain Name
+     *
+     * @var null|string
+     */
+    public static $sessionDomain = null;
+
+    /**
      * SET THESE TO ENABLE ENCRYPTION
      * ENCRYPTION PASS PHRASE
      *
@@ -368,10 +375,12 @@ class Session
             'cookie_lifetime' => 0,
             'cookie_path' => '/',
             'cookie_domain' => '',
-            'cookie_secure' => ((strpos(
-                haystack: $_SERVER['HTTP_HOST'],
-                needle: 'localhost'
-            ) === false) ? true : false),
+            'cookie_secure' => (
+                in_array(
+                    'localhost',
+                    explode('.', self::$sessionDomain)
+                ) === false
+            ) ? true : false,
             'cookie_httponly' => true,
             'cookie_samesite' => 'Strict'
         ];
@@ -451,8 +460,8 @@ class Session
         ) {
             $options = self::$options;
             $options['read_and_close'] = true;
-
-            return session_start(options: $options);
+return true;
+            // return session_start(options: self::$options);
         }
         return false;
     }
@@ -463,8 +472,8 @@ class Session
      * @return bool
      */
     public static function sessionStartReadWrite(): bool
-    {
-        return session_start(options: self::$options);
+    {return true;
+        // return session_start(options: self::$options);
     }
 
     /**

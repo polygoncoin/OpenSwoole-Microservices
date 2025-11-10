@@ -30,6 +30,7 @@ $res = TestFunctions::trigger(
 
 if (
     !isset($res['responseHeaders']['Set-Cookie'])
+    && isset($res['responseBody']['Results']['Token'])
     && $res
 ) {
     $token = $res['responseBody']['Results']['Token'];
