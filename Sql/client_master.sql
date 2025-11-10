@@ -64,10 +64,10 @@ CREATE TABLE `category` (
 
 DROP TABLE IF EXISTS `api_cache`;
 
-CREATE TABLE IF NOT EXISTS `api_cache` (
-    `key` CHAR(256) NOT NULL,
+CREATE TABLE `api_cache` (
+    `key` CHAR(128) NOT NULL,
     `value` BLOB,
-    PRIMARY KEY (`key`)
+    UNIQUE INDEX api_cache_key (`key`)
 ) ENGINE=InnoDB;
 
 LOCK TABLES `master_users` WRITE;

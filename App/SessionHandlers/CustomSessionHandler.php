@@ -387,6 +387,13 @@ class CustomSessionHandler implements
         // Remove all Set-Cookie headers
         header_remove(name: 'Set-Cookie');
 
+        if (
+            isset($this->container->sessionOptions['read_adnd_close'])
+            && $this->container->sessionOptions['read_adnd_close'] === true
+        ) {
+            return;
+        }
+
         // Set Unique Set-Cookie headers
         for (; $header = array_shift(array: $headers);) {
             if (!in_array(needle: $header, haystack: $headers)) {

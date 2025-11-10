@@ -388,13 +388,6 @@ class Login
      */
     private function startSession(): void
     {
-        // Session Runtime Configuration
-        $options = [];
-
-        // Start session in readonly mode
-        // Use when user is already logged in and we need to authorize the client cookie.
-        Session::sessionStartReadonly();
-
         $isLoggedIn = false;
         if (isset($_SESSION['id'])) {
             $isLoggedIn = true;

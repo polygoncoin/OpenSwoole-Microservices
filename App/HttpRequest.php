@@ -133,9 +133,6 @@ class HttpRequest
                 }
                 break;
             case 'Session':
-                // Start session in readonly mode
-                Session::sessionStartReadonly();
-
                 if (
                     isset($_SESSION)
                     && isset($_SESSION['id'])

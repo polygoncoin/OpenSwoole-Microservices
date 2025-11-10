@@ -149,6 +149,9 @@ class Env
         if (self::$authMode === 'Session') {
             // Initialize Session Handler
             Session::initSessionHandler(sessionMode: Env::$sessionMode, options: []);
+
+            // Start session in readonly mode
+            Session::sessionStartReadonly();
         }
     }
 

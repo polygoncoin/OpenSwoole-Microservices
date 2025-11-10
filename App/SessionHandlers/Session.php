@@ -460,8 +460,8 @@ class Session
         ) {
             $options = self::$options;
             $options['read_and_close'] = true;
-return true;
-            // return session_start(options: self::$options);
+
+            return session_start(options: self::$options);
         }
         return false;
     }
@@ -472,8 +472,8 @@ return true;
      * @return bool
      */
     public static function sessionStartReadWrite(): bool
-    {return true;
-        // return session_start(options: self::$options);
+    {
+        return session_start(options: self::$options);
     }
 
     /**

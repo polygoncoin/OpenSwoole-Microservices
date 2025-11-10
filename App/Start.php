@@ -18,7 +18,6 @@ namespace Microservices\App;
 use Microservices\App\CacheHandler;
 use Microservices\App\Common;
 use Microservices\App\Constants;
-use Microservices\App\Env;
 use Microservices\App\Logs;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\HttpStatus;
@@ -36,9 +35,6 @@ class Start
      */
     public static function http($http, $streamData = false)
     {
-        Constants::init();
-        Env::init(http: $http);
-
         if ($http['server']['method'] === Constants::$GET) {
             $cacheHandler = new CacheHandler(http: $http);
             if ($cacheHandler->init(mode: 'Open')) {
