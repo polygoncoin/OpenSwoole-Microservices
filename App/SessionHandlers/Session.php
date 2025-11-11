@@ -376,10 +376,10 @@ class Session
             'cookie_path' => '/',
             'cookie_domain' => '',
             'cookie_secure' => (
-                in_array(
+                !in_array(
                     'localhost',
                     explode('.', self::$sessionDomain)
-                ) === false
+                )
             ) ? true : false,
             'cookie_httponly' => true,
             'cookie_samesite' => 'Strict'
