@@ -461,7 +461,8 @@ class Session
             $options = self::$options;
             $options['read_and_close'] = true;
 
-            return session_start(options: self::$options);
+            self::$sessionContainer->sessionOptions = $options;
+            return session_start(options: $options);
         }
         return false;
     }
@@ -473,6 +474,7 @@ class Session
      */
     public static function sessionStartReadWrite(): bool
     {
+        self::$sessionContainer->sessionOptions = self::$options;
         return session_start(options: self::$options);
     }
 
