@@ -17,6 +17,8 @@ use Openswoole\Http\Server;
 use Openswoole\Http\Request;
 use Openswoole\Http\Response;
 
+use Microservices\App\Constants;
+use Microservices\App\Env;
 use Microservices\App\Start;
 use Microservices\TestCases\Tests;
 
@@ -83,6 +85,9 @@ $server->on(
             foreach ($env as $key => $value) {
                 putenv(assignment: "{$key}={$value}");
             }
+
+            Constants::init();
+            Env::init(http: $http);
 
             [$responseheaders, $responseContent, $responseCode] = Start::http(http: $http, streamData: true);
 
