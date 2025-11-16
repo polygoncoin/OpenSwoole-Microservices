@@ -208,7 +208,7 @@ class StreamVideo
     public function serveContent(): array
     {
         [$headers, $status] = $this->setHeaders();
-        
+
         $totalBytes = $this->streamTill - $this->streamFrom + 1;
         $data = file_get_contents(
             $this->file,

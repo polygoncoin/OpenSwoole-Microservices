@@ -192,11 +192,11 @@ class CacheHandler
         }
 
         // Set headers
-        
+
         // File name requested for download
         // $fileName = basename(path: $this->fileLocation);
         // $headers['Content-Disposition'] = "attachment;filename='$fileName';";
-        
+
         $headers['Cache-Control'] = 'max-age=0, must-revalidate';
         $headers['Last-Modified'] = gmdate(
             format: 'D, d M Y H:i:s',
