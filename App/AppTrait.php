@@ -235,7 +235,14 @@ trait AppTrait
             $sql .= $sqlDetails['__SQL-COMMENT__'];
             $sql .= ' */';
         }
-        $sql .= $sqlDetails['__QUERY__'];
+        switch (true) {
+            case isset($sqlDetails['__QUERY__']):
+                $sql .= $sqlDetails['__QUERY__'];
+                break;
+            case isset($sqlDetails['__DOWNLOAD__']):
+                $sql .= $sqlDetails['__DOWNLOAD__'];
+                break;
+        }
         $sqlParams = [];
         $paramKeys = [];
         $errors = [];

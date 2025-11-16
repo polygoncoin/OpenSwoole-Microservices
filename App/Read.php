@@ -22,7 +22,6 @@ use Microservices\App\DbFunctions;
 use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\HttpStatus;
-use Microservices\App\Web;
 
 /**
  * Read APIs
@@ -81,9 +80,9 @@ class Read
     /**
      * Process
      *
-     * @return bool
+     * @return bool|array
      */
-    public function process(): bool
+    public function process(): bool|array
     {
         $Env = __NAMESPACE__ . '\Env';
 
@@ -95,6 +94,10 @@ class Read
 
         // Lag Response
         $this->lagResponse(sqlConfig: $rSqlConfig);
+
+        if (isset($rSqlConfig['__DOWNLOAD__'])) {
+            return $this->download($rSqlConfig);
+        }
 
         // Check for cache
         $toBeCached = false;
@@ -597,5 +600,74 @@ class Read
                 );
             }
         }
+    }
+
+    /**
+     * Validate and call readDB
+     *
+     * @param array $rSqlConfig   Read SQL configuration
+     *
+     * @return array
+     */
+    private function download($rSqlConfig): array
+    {
+        $return = [[], '', HttpStatus::$Ok];
+
+        [$id, $sql, $sqlParams, $errors, $missExecution] = $this->getSqlAndParams(
+            sqlDetails: $rSqlConfig
+        );
+        $serverMode = isset($rSqlConfig['fetchFrom'])
+            ? $rSqlConfig['fetchFrom'] : 'Slave';
+
+        $dbDetails = [];
+        switch ($serverMode) {
+            case 'Master':
+                $dbDetails = DbFunctions::getDbMasterDetails();
+                break;
+            case 'Slave':
+                $dbDetails = DbFunctions::getDbSlaveDetails();
+                break;
+        }
+
+        // Export
+        $export = new Export(dbType: $dbDetails['dbType']);
+        $export->init(
+            hostname: $dbDetails['dbHostname'],
+            port: $dbDetails['dbPort'],
+            username: $dbDetails['dbUsername'],
+            password: $dbDetails['dbPassword'],
+            database: $dbDetails['dbDatabase']
+        );
+
+        if (isset($rSqlConfig['downloadFile'])) {
+            $downloadFile = date('Ymd-His') . '-' . $rSqlConfig['downloadFile'];
+            if (
+                isset($rSqlConfig['exportFile'])
+                && !empty($rSqlConfig['exportFile'])
+            ) {
+                $return = $export->initDownload(
+                    downloadFile: $downloadFile,
+                    sql: $sql,
+                    params: $sqlParams,
+                    exportFile: $rSqlConfig['exportFile']
+                );
+            } else {
+                $return = $export->initDownload(
+                    downloadFile: $downloadFile,
+                    sql: $sql,
+                    params: $sqlParams
+                );
+            }
+        } else {
+            if (isset($rSqlConfig['exportFile'])) {
+                $return = $export->saveExport(
+                    sql: $sql,
+                    params: $sqlParams,
+                    exportFile: $rSqlConfig['exportFile']
+                );
+            }
+        }
+
+        return $return;
     }
 }

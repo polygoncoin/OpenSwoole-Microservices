@@ -63,7 +63,7 @@ class Cron
             DIRECTORY_SEPARATOR . Common::$req->METHOD . 'routes.php';
         Common::$req->rParser->parseRoute(routeFileLocation: $routeFileLocation);
 
-        $class = 'Microservices\\\Supplement\\Cron\\' .
+        $class = 'Microservices\\Supplement\\Cron\\' .
             ucfirst(string: Common::$req->rParser->routeElements[1]);
 
         $this->api = new $class();

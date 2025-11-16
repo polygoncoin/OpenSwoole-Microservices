@@ -200,56 +200,32 @@ class DbFunctions
                 if (self::$masterCache !== null) {
                     return;
                 }
+
+                $masterCacheDetails = self::getCacheMasterDetails();
                 self::$masterCache = self::connectCache(
-                    cacheType: getenv(
-                        name: Common::$req->s['cDetails']['master_cache_server_type']
-                    ),
-                    cacheHostname: getenv(
-                        name: Common::$req->s['cDetails']['master_cache_hostname']
-                    ),
-                    cachePort: getenv(
-                        name: Common::$req->s['cDetails']['master_cache_port']
-                    ),
-                    cacheUsername: getenv(
-                        name: Common::$req->s['cDetails']['master_cache_username']
-                    ),
-                    cachePassword: getenv(
-                        name: Common::$req->s['cDetails']['master_cache_password']
-                    ),
-                    cacheDatabase: getenv(
-                        name: Common::$req->s['cDetails']['master_cache_database']
-                    ),
-                    cacheTable:  getenv(
-                        name: Common::$req->s['cDetails']['master_cache_table']
-                    )
+                    cacheType: $masterCacheDetails['cacheType'],
+                    cacheHostname: $masterCacheDetails['cacheHostname'],
+                    cachePort: $masterCacheDetails['cachePort'],
+                    cacheUsername: $masterCacheDetails['cacheUsername'],
+                    cachePassword: $masterCacheDetails['cachePassword'],
+                    cacheDatabase: $masterCacheDetails['cacheDatabase'],
+                    cacheTable: $masterCacheDetails['cacheTable']
                 );
                 break;
             case 'Slave':
                 if (self::$slaveCache !== null) {
                     return;
                 }
+
+                $slaveCacheDetails = self::getCacheSlaveDetails();
                 self::$slaveCache = self::connectCache(
-                    cacheType: getenv(
-                        name: Common::$req->s['cDetails']['slave_cache_server_type']
-                    ),
-                    cacheHostname: getenv(
-                        name: Common::$req->s['cDetails']['slave_cache_hostname']
-                    ),
-                    cachePort: getenv(
-                        name: Common::$req->s['cDetails']['slave_cache_port']
-                    ),
-                    cacheUsername: getenv(
-                        name: Common::$req->s['cDetails']['slave_cache_username']
-                    ),
-                    cachePassword: getenv(
-                        name: Common::$req->s['cDetails']['slave_cache_password']
-                    ),
-                    cacheDatabase: getenv(
-                        name: Common::$req->s['cDetails']['slave_cache_database']
-                    ),
-                    cacheTable:  getenv(
-                        name: Common::$req->s['cDetails']['slave_cache_table']
-                    )
+                    cacheType: $slaveCacheDetails['cacheType'],
+                    cacheHostname: $slaveCacheDetails['cacheHostname'],
+                    cachePort: $slaveCacheDetails['cachePort'],
+                    cacheUsername: $slaveCacheDetails['cacheUsername'],
+                    cachePassword: $slaveCacheDetails['cachePassword'],
+                    cacheDatabase: $slaveCacheDetails['cacheDatabase'],
+                    cacheTable: $slaveCacheDetails['cacheTable']
                 );
                 break;
             default:
@@ -341,50 +317,30 @@ class DbFunctions
                 if (self::$masterDb !== null) {
                     return;
                 }
+
+                $masterDbDetails = self::getDbMasterDetails();
                 self::$masterDb = self::connectDb(
-                    dbType: getenv(
-                        name: Common::$req->s['cDetails']['master_db_server_type']
-                    ),
-                    dbHostname: getenv(
-                        name: Common::$req->s['cDetails']['master_db_hostname']
-                    ),
-                    dbPort: getenv(
-                        name: Common::$req->s['cDetails']['master_db_port']
-                    ),
-                    dbUsername: getenv(
-                        name: Common::$req->s['cDetails']['master_db_username']
-                    ),
-                    dbPassword: getenv(
-                        name: Common::$req->s['cDetails']['master_db_password']
-                    ),
-                    dbDatabase: getenv(
-                        name: Common::$req->s['cDetails']['master_db_database']
-                    )
+                    dbType: $masterDbDetails['dbType'],
+                    dbHostname: $masterDbDetails['dbHostname'],
+                    dbPort: $masterDbDetails['dbPort'],
+                    dbUsername: $masterDbDetails['dbUsername'],
+                    dbPassword: $masterDbDetails['dbPassword'],
+                    dbDatabase: $masterDbDetails['dbDatabase']
                 );
                 break;
             case 'Slave':
                 if (self::$slaveDb !== null) {
                     return;
                 }
+
+                $slaveDbDetails = self::getDbSlaveDetails();
                 self::$slaveDb = self::connectDb(
-                    dbType: getenv(
-                        name: Common::$req->s['cDetails']['slave_db_server_type']
-                    ),
-                    dbHostname: getenv(
-                        name: Common::$req->s['cDetails']['slave_db_hostname']
-                    ),
-                    dbPort: getenv(
-                        name: Common::$req->s['cDetails']['slave_db_port']
-                    ),
-                    dbUsername: getenv(
-                        name: Common::$req->s['cDetails']['slave_db_username']
-                    ),
-                    dbPassword: getenv(
-                        name: Common::$req->s['cDetails']['slave_db_password']
-                    ),
-                    dbDatabase: getenv(
-                        name: Common::$req->s['cDetails']['slave_db_database']
-                    )
+                    dbType: $slaveDbDetails['dbType'],
+                    dbHostname: $slaveDbDetails['dbHostname'],
+                    dbPort: $slaveDbDetails['dbPort'],
+                    dbUsername: $slaveDbDetails['dbUsername'],
+                    dbPassword: $slaveDbDetails['dbPassword'],
+                    dbDatabase: $slaveDbDetails['dbDatabase']
                 );
                 break;
             default:
@@ -461,5 +417,83 @@ class DbFunctions
         self::connectQueryCache();
 
         self::$queryCache->deleteCache(key: $cacheKey);
+    }
+
+    /**
+     * Returns Cache Master Server Details
+     *
+     * @param string $cacheKey Cache Key from Queries configuration
+     *
+     * @return array
+     */
+    public static function getCacheMasterDetails(): array
+    {
+        return [
+            'cacheType' => getenv(name: Common::$req->s['cDetails']['master_cache_server_type']),
+            'cacheHostname' => getenv(name: Common::$req->s['cDetails']['master_cache_hostname']),
+            'cachePort' => getenv(name: Common::$req->s['cDetails']['master_cache_port']),
+            'cacheUsername' => getenv(name: Common::$req->s['cDetails']['master_cache_username']),
+            'cachePassword' => getenv(name: Common::$req->s['cDetails']['master_cache_password']),
+            'cacheDatabase' => getenv(name: Common::$req->s['cDetails']['master_cache_database']),
+            'cacheTable' => getenv(name: Common::$req->s['cDetails']['master_cache_table'])
+        ];
+    }
+
+    /**
+     * Returns Cache Slave Server Details
+     *
+     * @param string $cacheKey Cache Key from Queries configuration
+     *
+     * @return array
+     */
+    public static function getCacheSlaveDetails(): array
+    {
+        return [
+            'cacheType' => getenv(name: Common::$req->s['cDetails']['slave_cache_server_type']),
+            'cacheHostname' => getenv(name: Common::$req->s['cDetails']['slave_cache_hostname']),
+            'cachePort' => getenv(name: Common::$req->s['cDetails']['slave_cache_port']),
+            'cacheUsername' => getenv(name: Common::$req->s['cDetails']['slave_cache_username']),
+            'cachePassword' => getenv(name: Common::$req->s['cDetails']['slave_cache_password']),
+            'cacheDatabase' => getenv(name: Common::$req->s['cDetails']['slave_cache_database']),
+            'cacheTable' => getenv(name: Common::$req->s['cDetails']['slave_cache_table'])
+        ];
+    }
+
+    /**
+     * Returns Db Master Server Details
+     *
+     * @param string $cacheKey Cache Key from Queries configuration
+     *
+     * @return array
+     */
+    public static function getDbMasterDetails(): array
+    {
+        return [
+            'dbType' => getenv(name: Common::$req->s['cDetails']['master_db_server_type']),
+            'dbHostname' => getenv(name: Common::$req->s['cDetails']['master_db_hostname']),
+            'dbPort' => getenv(name: Common::$req->s['cDetails']['master_db_port']),
+            'dbUsername' => getenv(name: Common::$req->s['cDetails']['master_db_username']),
+            'dbPassword' => getenv(name: Common::$req->s['cDetails']['master_db_password']),
+            'dbDatabase' => getenv(name: Common::$req->s['cDetails']['master_db_database']),
+        ];
+    }
+
+    /**
+     * Returns Database Slave Server Details
+     *
+     * @param string $cacheKey Cache Key from Queries configuration
+     *
+     * @return array
+     */
+    public static function getDbSlaveDetails(): array
+    {
+        return [
+            'dbType' => getenv(name: Common::$req->s['cDetails']['slave_db_server_type']),
+            'dbHostname' => getenv(name: Common::$req->s['cDetails']['slave_db_hostname']),
+            'dbPort' => getenv(name: Common::$req->s['cDetails']['slave_db_port']),
+            'dbUsername' => getenv(name: Common::$req->s['cDetails']['slave_db_username']),
+            'dbPassword' => getenv(name: Common::$req->s['cDetails']['slave_db_password']),
+            'dbDatabase' => getenv(name: Common::$req->s['cDetails']['slave_db_database']),
+        ];
     }
 }

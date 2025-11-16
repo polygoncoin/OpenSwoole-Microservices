@@ -36,6 +36,11 @@ return [
             '__FILE__' => Constants::$OPEN_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'Category-Single.php',
+        ],
+        'download' => [
+            '__FILE__' => Constants::$OPEN_QUERIES_DIR .
+                DIRECTORY_SEPARATOR . 'GET' .
+                DIRECTORY_SEPARATOR . 'Download.php',
         ]
     ]
 ];

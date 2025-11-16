@@ -81,9 +81,9 @@ class Api
     /**
      * Process
      *
-     * @return bool
+     * @return mixed
      */
-    public function process(): bool
+    public function process(): mixed
     {
         if (Common::$req->METHOD === Constants::$GET) {
             $cacheHandler = new CacheHandler(http: Common::$http);
@@ -129,7 +129,13 @@ class Api
         if ($class !== null) {
             $api = new $class();
             if ($api->init()) {
-                $api->process();
+                $return = $api->process();
+                if (
+                    is_array($return)
+                    && count($return) === 3
+                ) {
+                    return $return;
+                }
             }
         }
 
