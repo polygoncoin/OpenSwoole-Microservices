@@ -54,9 +54,7 @@ $server->on(
         // $http['server']['host'] = 'public.localhost';
         $http['server']['method'] = $request->server['request_method'];
         $http['server']['ip'] = $request->server['remote_addr'];
-        if (isset($request->header['authorization'])) {
-            $http['header']['authorization'] = $request->header['authorization'];
-        }
+        $http['header'] = $request->header;
         $http['get'] = &$request->get;
         $http['post'] = &$request->post;
         $http['files'] = &$request->files;

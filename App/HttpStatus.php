@@ -32,6 +32,7 @@ class HttpStatus
     public static $Ok                   = 200;
     public static $Created              = 201;
     public static $NoContent            = 204;
+    public static $PartialContent       = 206;
 
     public static $MovedPermanently     = 301;
     public static $Found                = 302;
@@ -49,6 +50,7 @@ class HttpStatus
     public static $Gone                 = 410;
     public static $PreconditionFailed   = 412;
     public static $UnsupportedMediaType = 415;
+    public static $RangeNotSatisfiable  = 416;
     public static $UnprocessableEntity  = 422;
     public static $TooEarly             = 425;
     public static $TooManyRequests      = 429;

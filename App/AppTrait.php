@@ -925,9 +925,7 @@ trait AppTrait
         $http['server']['host'] = Common::$http['server']['host'];
         $http['server']['method'] = $method;
         $http['server']['ip'] = Common::$http['server']['ip'];
-        if (isset(Common::$http['header']['authorization'])) {
-            $http['header']['authorization'] = Common::$http['header']['authorization'];
-        }
+        $http['header'] = Common::$http['header'];
         $http['post'] = json_encode($payloadArr);
         $http['get'] = $queryStringArr;
         $http['get'][Constants::$ROUTE_URL_PARAM] = $route;

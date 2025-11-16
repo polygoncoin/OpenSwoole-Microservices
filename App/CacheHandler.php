@@ -16,6 +16,8 @@
 namespace Microservices\App;
 
 use Microservices\App\Constants;
+use Microservices\App\HttpStatus;
+use Microservices\App\CacheHandlers\StreamVideo;
 
 /**
  * Client side Caching via E-tags
@@ -34,7 +36,7 @@ class CacheHandler
     /**
      * File request details
      *
-     * @var array
+     * @var null|array
      */
     private $http = null;
 
@@ -46,6 +48,22 @@ class CacheHandler
     private $fileLocation;
 
     /**
+     * File mime type
+     *
+     * @var null|string
+     */
+    private $mimeType = null;
+
+    /**
+     * Supported Video mime types
+     *
+     * @var array
+     */
+    private $supportedVideoMimes = [
+        'video/quicktime'
+    ];
+
+    /**
      * Cache Folder
      *
      * The folder location outside docroot
@@ -53,7 +71,7 @@ class CacheHandler
      *
      * @var string
      */
-    private $cacheLocation = null;
+    private $modeDropBox = null;
 
     /**
      * Constructor
@@ -76,8 +94,9 @@ class CacheHandler
             return false;
         }
 
-        $this->cacheLocation = Constants::$DROP_BOX_DIR .
+        $this->modeDropBox = Constants::$DROP_BOX_DIR .
             DIRECTORY_SEPARATOR . $mode;
+
         $filePath = DIRECTORY_SEPARATOR . trim(
             string: str_replace(
                 search: ['../', '..\\', '/', '\\'],
@@ -87,9 +106,12 @@ class CacheHandler
             characters: './\\'
         );
         $this->validateFileRequest();
-        $this->fileLocation = $this->cacheLocation . $filePath;
+        $this->fileLocation = $this->modeDropBox . $filePath;
 
-        return file_exists($this->fileLocation);
+        return (
+            is_file(filename: $this->fileLocation)
+            && file_exists(filename: $this->fileLocation)
+        );
     }
 
     /**
@@ -106,7 +128,7 @@ class CacheHandler
     /**
      * Serve File content
      *
-     * @return bool
+     * @return array
      */
     public function process(): array
     {
@@ -115,9 +137,39 @@ class CacheHandler
         $data = '';
 
         // Get the $fileLocation file mime
-        $fileInfo = finfo_open(flags: FILEINFO_MIME_TYPE);
-        $mime = finfo_file(finfo: $fileInfo, filename: $this->fileLocation);
-        finfo_close(finfo: $fileInfo);
+        $this->mimeType = mime_content_type($this->fileLocation);
+
+        switch (true) {
+            case in_array($this->mimeType, $this->supportedVideoMimes):
+                // Serve Video
+                $videoStream = new StreamVideo($this->http);
+                if (
+                    (
+                        $httpStatus = $videoStream->init($this->fileLocation)
+                    ) !== HttpStatus::$Ok
+                ) {
+                    $return = [$headers, $data, $httpStatus];
+                } else {
+                    $return = $videoStream->serveContent();
+                }
+                break;
+            default:
+                $return = $this->serveDefault();
+        }
+
+        return $return;
+    }
+
+    /**
+     * Serve default
+     *
+     * @return array
+     */
+    public function serveDefault(): array
+    {
+        $headers = [];
+        $status = HttpStatus::$Ok;
+        $data = '';
 
         // Let Etag be last modified timestamp of file
         $modifiedTime = filemtime(filename: $this->fileLocation);
@@ -152,7 +204,7 @@ class CacheHandler
         ) . ' GMT';
         $headers['Etag'] = "\"{$eTag}\"";
         $headers['Expires'] = -1;
-        $headers['Content-Type'] = "{$mime}";
+        $headers['Content-Type'] = "{$this->mimeType}";
         $headers['Content-Length'] = filesize(filename: $this->fileLocation);
 
         return [$headers, file_get_contents($this->fileLocation), $status];
