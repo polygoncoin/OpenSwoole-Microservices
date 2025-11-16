@@ -87,7 +87,9 @@ $server->on(
             Constants::init();
             Env::init(http: $http);
 
+            ob_start();
             [$responseheaders, $responseContent, $responseCode] = Start::http(http: $http, streamData: true);
+            ob_clean();
 
             $response->status($responseCode);
             foreach ($responseheaders as $k => $v) {
