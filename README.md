@@ -614,6 +614,48 @@ return [
 
 > For POST, PUT, PATCH, and DELETE methods one can configure both INSERT as well as UPDATE queries if required for sub modules.
 
+#### Available configuration options for Download CSV
+
+```PHP
+return [
+    // Query to perform task
+    '__SQL-COMMENT__' => 'Comment prepended to query for monitoring queries in logs',
+    '__DOWNLOAD__' => 'SELECT columns FROM TableName WHERE __WHERE__',
+    // Where clause of the Query to perform task
+    '__WHERE__' => [
+        [ // Fetch value from parsed route
+            'column' => 'id',
+            'fetchFrom' => 'uriParams',                     // uriParams / payload
+            'fetchFromValue' => 'id',                       // key (id)
+            'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
+            'required' => Constants::$REQUIRED              // Represents required field
+        ],
+        [ // Fetch value from payload
+            'column' => 'id',
+            'fetchFrom' => 'payload',                       // payload
+            'fetchFromValue' => '<key>',                    // key (<key>)
+        ],
+        [ // Fetch value from function
+            'column' => 'password',
+            'fetchFrom' => 'function',                      // function
+            'fetchFromValue' => function ($session) {        // execute a function and return value
+                return 'value';
+            }
+        ],
+        [ // Fetch value from uDetails session
+            'column' => 'id',
+            'fetchFrom' => 'uDetails',                   // uDetails from session
+            'fetchFromValue' => 'id'                   // id Key
+        ],
+        [ // Fetch value of last insert ids
+            'column' => 'is_deleted',
+            'fetchFrom' => 'custom',                        // custom
+            'fetchFromValue' => '<static-value>'            // Static values
+        ]
+    ]
+];
+```
+
 #### Available configuration options for Supplement
 
 > Here one can configure and collect payload to perform customized operations (for Supplement folder)
