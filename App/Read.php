@@ -178,7 +178,7 @@ class Read
         $this->dataEncode->startObject(key: 'Config');
         $this->dataEncode->addKeyData(
             key: 'Route',
-            data: Common::$req->rParser->configuredUri
+            data: Common::$req->rParser->configuredPath
         );
         $this->dataEncode->addKeyData(
             key: 'Payload',

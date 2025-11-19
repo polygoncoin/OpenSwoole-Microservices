@@ -126,7 +126,7 @@ class Microservices
         switch (true) {
             case Env::$allowCronRequest && strpos(
                 haystack: Common::$req->ROUTE,
-                needle: '/' . Env::$cronRequestUriPrefix
+                needle: '/' . Env::$cronRequestPathPrefix
             ) === 0:
                 if (Common::$req->IP !== Env::$cronRestrictedIp) {
                     throw new \Exception(

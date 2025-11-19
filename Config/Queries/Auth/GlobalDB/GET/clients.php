@@ -58,10 +58,10 @@ return [
             ],
             [
                 'column' => 'id',
-                'fetchFrom' => 'uriParams',
+                'fetchFrom' => 'pathParams',
                 'fetchFromValue' => 'id'
             ]
         ],
         '__MODE__' => 'singleRowFormat'
     ],
-][isset(Common::$req->s['uriParams']['id'])?'single':'all'];
+][isset(Common::$req->s['pathParams']['id'])?'single':'all'];

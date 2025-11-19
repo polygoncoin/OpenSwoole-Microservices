@@ -19,7 +19,7 @@ use Microservices\App\Constants;
 use Microservices\App\Env;
 
 return [
-    Env::$customRequestUriPrefix => [
+    Env::$customRequestPathPrefix => [
         '{custom:string}' => [
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .

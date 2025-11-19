@@ -64,7 +64,7 @@ return array_merge(
             ],
             [
                 'column' => 'id',
-                'fetchFrom' => 'uriParams',
+                'fetchFrom' => 'pathParams',
                 'fetchFromValue' => 'id',
                 'dataType' => DatabaseDataTypes::$PrimaryKey
             ]

@@ -73,7 +73,7 @@ return [
                 DIRECTORY_SEPARATOR . 'Registration-With-Address-single.php',
         ],
     ],
-    Env::$routesRequestUri => [
+    Env::$routesRequestPath => [
         '__FILE__' => false,
         '{method:string|GET, POST, PUT, PATCH, DELETE}' => [
             '__FILE__' => false

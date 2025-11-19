@@ -57,11 +57,11 @@ class RouteParser
     public $isConfigRequest = false;
 
     /**
-     * Raw route / Configured Uri
+     * Raw route / Configured Path
      *
      * @var string
      */
-    public $configuredUri = '';
+    public $configuredPath = '';
 
     /**
      * Location of File containing code for route
@@ -117,7 +117,7 @@ class RouteParser
             string: trim(string: Common::$req->ROUTE, characters: '/')
         );
         $routeLastElementPos = count(value: $this->routeElements) - 1;
-        $configuredUri = [];
+        $configuredPath = [];
 
         foreach ($this->routeElements as $key => $element) {
             if (
@@ -131,14 +131,14 @@ class RouteParser
             }
             $pos = false;
             if (isset($routes[$element])) {
-                $configuredUri[] = $element;
+                $configuredPath[] = $element;
                 $routes = &$routes[$element];
                 $this->checkPresenceOfDynamicString(element: $element);
                 continue;
             } elseif (
                 $key === $routeLastElementPos
                 && Env::$allowConfigRequest == 1
-                && Env::$configRequestUriKeyword === $element
+                && Env::$configRequestPathKeyword === $element
             ) {
                 $this->isConfigRequest = true;
                 break;
@@ -157,12 +157,12 @@ class RouteParser
                         element: $element
                     );
                     if ($foundIntRoute) {
-                        $configuredUri[] = $foundIntRoute;
-                        Common::$req->s['uriParams'][$foundIntParamName]
+                        $configuredPath[] = $foundIntRoute;
+                        Common::$req->s['pathParams'][$foundIntParamName]
                             = (int)$element;
                     } elseif ($foundStringRoute) {
-                        $configuredUri[] = $foundStringRoute;
-                        Common::$req->s['uriParams'][$foundStringParamName]
+                        $configuredPath[] = $foundStringRoute;
+                        Common::$req->s['pathParams'][$foundStringParamName]
                             = urldecode(string: $element);
                     } else {
                         throw new \Exception(
@@ -204,7 +204,7 @@ class RouteParser
             Env::$iRepresentation = Common::$req->http['get']['iRepresentation'];
         }
 
-        $this->configuredUri = '/' . implode(separator: '/', array: $configuredUri);
+        $this->configuredPath = '/' . implode(separator: '/', array: $configuredPath);
         $this->validateConfigFile(routes: $routes);
     }
 
@@ -368,7 +368,7 @@ class RouteParser
                 offset: 1,
                 length: strpos(haystack: $element, needle: ':') - 1
             );
-            Common::$req->s['uriParams'][$param] = $element;
+            Common::$req->s['pathParams'][$param] = $element;
         }
     }
 

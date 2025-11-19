@@ -18,7 +18,7 @@ namespace Microservices\Config\Routes\Auth\ClientDB\Common\ThirdParty;
 use Microservices\App\Env;
 
 return [
-    Env::$thirdPartyRequestUriPrefix => [
+    Env::$thirdPartyRequestPathPrefix => [
         '{thirdParty:string}' => [
             '__FILE__' => false,
             '{id:int|!0}'  => [

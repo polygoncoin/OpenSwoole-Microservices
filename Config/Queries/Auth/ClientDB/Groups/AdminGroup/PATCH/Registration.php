@@ -44,7 +44,7 @@ return array_merge(
         '__WHERE__' => [
             [
                 'column' => 'id',
-                'fetchFrom' => 'uriParams',
+                'fetchFrom' => 'pathParams',
                 'fetchFromValue' => 'id',
                 'dataType' => DatabaseDataTypes::$PrimaryKey
             ]

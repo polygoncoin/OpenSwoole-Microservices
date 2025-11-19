@@ -18,7 +18,7 @@ namespace Microservices\Config\Routes\Auth\ClientDB\Common\Custom;
 use Microservices\App\Env;
 
 return [
-    Env::$customRequestUriPrefix => [
+    Env::$customRequestPathPrefix => [
         'password' => [
             '__FILE__' => false
         ],

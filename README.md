@@ -383,7 +383,7 @@ return [
     '__SET__' => [
         [ // Fetch value from parsed route
             'column' => 'id',
-            'fetchFrom' => 'uriParams',                     // uriParams / payload
+            'fetchFrom' => 'pathParams',                     // pathParams / payload
             'fetchFromValue' => 'id',                       // key (id)
             'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
             'required' => Constants::$REQUIRED              // Represents required field
@@ -416,7 +416,7 @@ return [
     '__WHERE__' => [
         [ // Fetch value from parsed route
             'column' => 'id',
-            'fetchFrom' => 'uriParams',                     // uriParams / payload
+            'fetchFrom' => 'pathParams',                     // pathParams / payload
             'fetchFromValue' => 'id',                       // key (id)
             'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
             'required' => Constants::$REQUIRED              // Represents required field
@@ -625,7 +625,7 @@ return [
     '__WHERE__' => [
         [ // Fetch value from parsed route
             'column' => 'id',
-            'fetchFrom' => 'uriParams',                     // uriParams / payload
+            'fetchFrom' => 'pathParams',                     // pathParams / payload
             'fetchFromValue' => 'id',                       // key (id)
             'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
             'required' => Constants::$REQUIRED              // Represents required field
@@ -667,7 +667,7 @@ return [
     '__PAYLOAD__' => [
         [ // Fetch value from parsed route
             'column' => 'id',
-            'fetchFrom' => 'uriParams',                     // uriParams / payload
+            'fetchFrom' => 'pathParams',                     // pathParams / payload
             'fetchFromValue' => 'id',                       // key (id)
             'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
             'required' => Constants::$REQUIRED              // Represents required field
@@ -947,8 +947,8 @@ var payload = [
 - **$sess\['userDetails'\]** Session Data.
 > This remains same for every request and contains keys like id, group\_id, client\_id
 
-- **$sess\['uriParams'\]** Data passed in URI.
-> Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $sess\['uriParams'\] will hold these dynamic values as below.
+- **$sess\['pathParams'\]** Data passed in URI.
+> Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $sess\['pathParams'\] will hold these dynamic values as below.
 
 - **$sess\['payload'\]** Request data.
 > For **GET** method, the **$\_GET** is the payload.
@@ -1070,7 +1070,7 @@ One need to enable same in .env file as below
 
 ```ini
 allowConfigRequest=1
-configRequestUriKeyword='config' ;for appending /config at end of URI
+configRequestPathKeyword='config' ;for appending /config at end of URI
 ```
 
 >For controlling globally there is a flag in env file labled **allowConfigRequest**

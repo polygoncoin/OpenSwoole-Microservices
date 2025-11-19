@@ -59,7 +59,7 @@ return [
         ],
         [
             'column' => 'id',
-            'fetchFrom' => 'uriParams',
+            'fetchFrom' => 'pathParams',
             'fetchFromValue' => 'id',
             'dataType' => DatabaseDataTypes::$PrimaryKey
         ]
@@ -95,7 +95,7 @@ return [
             'fnArgs' => [
                 'table' => ['custom', 'master_users'],
                 'primary' => ['custom', 'id'],
-                'id' => ['uriParams', 'id']
+                'id' => ['pathParams', 'id']
             ],
             'errorMessage' => 'Invalid registration id'
         ],
