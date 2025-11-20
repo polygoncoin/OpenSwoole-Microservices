@@ -212,10 +212,10 @@ class HttpRequest
             return;
         }
 
+        $this->s['queryParams'] = $this->http['get'];
         if ($this->METHOD === Constants::$GET) {
             $this->urlDecode(arr: $_GET);
             $this->s['payloadType'] = 'Object';
-            $this->s['payload'] = !empty($_GET) ? $_GET : [];
         } else {
             $this->setPayloadStream();
             rewind(stream: $this->payloadStream);

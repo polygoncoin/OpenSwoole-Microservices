@@ -15,6 +15,8 @@
 
 namespace Microservices\Config\Queries\Auth\GlobalDB\GET;
 
+use Microservices\App\Common;
+
 return [
     'all' => [
         '__QUERY__' => 'SELECT * FROM `{$Env::$groups}` WHERE __WHERE__ ORDER BY id ASC',

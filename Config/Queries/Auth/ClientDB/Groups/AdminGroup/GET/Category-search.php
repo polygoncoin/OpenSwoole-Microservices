@@ -20,7 +20,7 @@ return [
     '__WHERE__' => [
         [
             'column' => 'name',
-            'fetchFrom' => 'payload',
+            'fetchFrom' => 'queryParams',
             'fetchFromValue' => 'name'
         ]
     ],

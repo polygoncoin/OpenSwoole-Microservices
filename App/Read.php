@@ -103,7 +103,7 @@ class Read
         $toBeCached = false;
         if (
             isset($rSqlConfig['cacheKey'])
-            && !isset(Common::$req->s['payload']['orderBy'])
+            && !isset(Common::$req->s['queryParams']['orderBy'])
         ) {
             $json = DbFunctions::getQueryCache(
                 cacheKey: $rSqlConfig['cacheKey']
@@ -403,20 +403,20 @@ class Read
         unset($rSqlConfig['__COUNT-SQL-COMMENT__']);
         unset($rSqlConfig['countQuery']);
 
-        Common::$req->s['payload']['page']  = $_GET['page'] ?? 1;
-        Common::$req->s['payload']['perPage']  = $_GET['perPage'] ??
+        Common::$req->s['queryParams']['page']  = $_GET['page'] ?? 1;
+        Common::$req->s['queryParams']['perPage']  = $_GET['perPage'] ??
             Env::$defaultPerPage;
 
-        if (Common::$req->s['payload']['perPage'] > Env::$maxPerPage) {
+        if (Common::$req->s['queryParams']['perPage'] > Env::$maxPerPage) {
             throw new \Exception(
                 message: 'perPage exceeds max perPage value of ' . Env::$maxPerPage,
                 code: HttpStatus::$Forbidden
             );
         }
 
-        Common::$req->s['payload']['start'] = (
-            (Common::$req->s['payload']['page'] - 1) *
-            Common::$req->s['payload']['perPage']
+        Common::$req->s['queryParams']['start'] = (
+            (Common::$req->s['queryParams']['page'] - 1) *
+            Common::$req->s['queryParams']['perPage']
         );
         [$id, $sql, $sqlParams, $errors, $missExecution] = $this->getSqlAndParams(
             sqlDetails: $rSqlConfig
@@ -440,16 +440,16 @@ class Read
 
         $totalRowsCount = $row['count'];
         $totalPages = ceil(
-            num: $totalRowsCount / Common::$req->s['payload']['perPage']
+            num: $totalRowsCount / Common::$req->s['queryParams']['perPage']
         );
 
         $this->dataEncode->addKeyData(
             key: 'page',
-            data: Common::$req->s['payload']['page']
+            data: Common::$req->s['queryParams']['page']
         );
         $this->dataEncode->addKeyData(
             key: 'perPage',
-            data: Common::$req->s['payload']['perPage']
+            data: Common::$req->s['queryParams']['perPage']
         );
         $this->dataEncode->addKeyData(
             key: 'totalPages',
@@ -497,9 +497,9 @@ class Read
         }
 
         if ($isFirstCall) {
-            if (isset(Common::$req->s['payload']['orderBy'])) {
+            if (isset(Common::$req->s['queryParams']['orderBy'])) {
                 $orderByStrArr = [];
-                $orderByArr = Common::$req->s['payload']['orderBy'];
+                $orderByArr = Common::$req->s['queryParams']['orderBy'];
                 foreach ($orderByArr as $k => $v) {
                     $k = str_replace(search: ['`', ' '], replace: '', subject: $k);
                     $v = strtoupper(string: $v);
@@ -517,8 +517,8 @@ class Read
         }
 
         if (isset($rSqlConfig['countQuery'])) {
-            $start = Common::$req->s['payload']['start'];
-            $offset = Common::$req->s['payload']['perPage'];
+            $start = Common::$req->s['queryParams']['start'];
+            $offset = Common::$req->s['queryParams']['perPage'];
             $sql .= " LIMIT {$start}, {$offset}";
         }
 

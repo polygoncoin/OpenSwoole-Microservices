@@ -506,14 +506,14 @@ trait AppTrait
         if (isset($sqlConfig['countQuery'])) {
             $sqlConfig['__CONFIG__'][] = [
                 'column' => 'page',
-                'fetchFrom' => 'payload',
+                'fetchFrom' => 'queryParams',
                 'fetchFromValue' => 'page',
                 'dataType' => DatabaseDataTypes::$INT,
                 'necessary' => Constants::$REQUIRED
             ];
             $sqlConfig['__CONFIG__'][] = [
                 'column' => 'perPage',
-                'fetchFrom' => 'payload',
+                'fetchFrom' => 'queryParams',
                 'fetchFromValue' => 'perPage',
                 'dataType' => DatabaseDataTypes::$INT
             ];
