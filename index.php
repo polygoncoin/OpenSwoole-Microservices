@@ -24,6 +24,7 @@ use Microservices\App\Start;
 use Microservices\TestCases\Tests;
 
 define('PUBLIC_HTML', __DIR__);
+define('ROUTE_URL_PARAM', 'route');
 
 require_once PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Autoload.php';
 spl_autoload_register(callback:  'Microservices\Autoload::register');
@@ -60,9 +61,9 @@ $server->on(
         $http['files'] = &$request->files;
 
         if (
-            isset($http['get']['r'])
+            isset($http['get'][ROUTE_URL_PARAM])
             && in_array(
-                needle: $http['get']['r'],
+                needle: $http['get'][ROUTE_URL_PARAM],
                 haystack: [
                     '/auth-test',
                     '/open-test',
@@ -72,7 +73,7 @@ $server->on(
             )
         ) {
             $tests = new Tests();
-            switch ($http['get']['r']) {
+            switch ($http['get'][ROUTE_URL_PARAM]) {
                 case '/auth-test':
                     $response->end($tests->processAuth());
                     break;

@@ -22,7 +22,7 @@ return [
     '__PAYLOAD__' => [
         // [
         //     'column' => 'id',
-        //     'fetchFrom' => 'pathParams',
+        //     'fetchFrom' => 'routeParams',
         //     'fetchFromValue' => 'id',
         //     'dataType' => DatabaseDataTypes::$PrimaryKey,
         //     'required' => Constants::$REQUIRED

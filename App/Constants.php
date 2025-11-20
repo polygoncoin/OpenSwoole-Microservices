@@ -54,8 +54,6 @@ class Constants
     public static $AUTH_QUERIES_DIR = null;
     public static $OPEN_QUERIES_DIR = null;
 
-    public static $ROUTE_URL_PARAM = 'r';
-
     private static $initialized = false;
 
     /**

@@ -81,7 +81,7 @@ class TestFunctions
         $header = [],
         $payload = ''
     ): array {
-        $curlConfig[CURLOPT_URL] = "{$homeURL}?r={$route}{$queryString}";
+        $curlConfig[CURLOPT_URL] = "{$homeURL}?route={$route}{$queryString}";
         $curlConfig[CURLOPT_HTTPHEADER] = $header;
         $curlConfig[CURLOPT_HEADER] = 1;
 
@@ -201,7 +201,7 @@ class TestFunctions
         $queryString = empty($queryString) ? '' : '&' . $queryString;
 
         return [
-            'route' => htmlspecialchars(string: "{$homeURL}?r={$route}{$queryString}"),
+            'route' => htmlspecialchars(string: "{$homeURL}?route={$route}{$queryString}"),
             'httpMethod' => $method,
             'requestHeaders' => $curlConfig[CURLOPT_HTTPHEADER],
             'requestPayload' => htmlspecialchars(string: $payload),

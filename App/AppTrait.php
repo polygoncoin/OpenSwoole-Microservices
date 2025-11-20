@@ -935,7 +935,7 @@ trait AppTrait
         $http['header'] = Common::$http['header'];
         $http['post'] = json_encode($payloadArr);
         $http['get'] = $queryStringArr;
-        $http['get'][Constants::$ROUTE_URL_PARAM] = $route;
+        $http['get'][ROUTE_URL_PARAM] = $route;
         $http['isWebRequest'] = false;
 
         return $http;

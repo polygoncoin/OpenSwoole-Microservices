@@ -46,7 +46,7 @@ class Start
 
         $headers = [];
 
-        // echo PHP_EOL . $http['server']['method'] . ':' . $http['get']['r'];
+        // echo PHP_EOL . $http['server']['method'] . ':' . $http['get'][ROUTE_URL_PARAM];
 
         try {
             $Microservices = new Microservices(http: $http);

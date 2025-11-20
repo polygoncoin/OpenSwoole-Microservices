@@ -23,7 +23,7 @@ return [
       'fnArgs' => [
                 'table' => ['custom', 'master_users'],
                 'primary' => ['custom', 'id'],
-                'id' => ['pathParams', 'id']
+                'id' => ['routeParams', 'id']
             ],
           'errorMessage' => 'Invalid registration id'
     ],

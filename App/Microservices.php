@@ -79,7 +79,7 @@ class Microservices
         Common::init(http: $this->http);
         Common::initRequest();
 
-        if (!isset($this->http['get'][Constants::$ROUTE_URL_PARAM])) {
+        if (!isset($this->http['get'][ROUTE_URL_PARAM])) {
             throw new \Exception(
                 message: 'Missing route',
                 code: HttpStatus::$NotFound
@@ -126,7 +126,7 @@ class Microservices
         switch (true) {
             case Env::$allowCronRequest && strpos(
                 haystack: Common::$req->ROUTE,
-                needle: '/' . Env::$cronRequestPathPrefix
+                needle: '/' . Env::$cronRequestRoutePrefix
             ) === 0:
                 if (Common::$req->IP !== Env::$cronRestrictedIp) {
                     throw new \Exception(

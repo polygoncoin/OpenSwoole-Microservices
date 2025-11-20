@@ -90,7 +90,7 @@ class CacheHandler
      */
     public function init($mode): bool
     {
-        if (!isset($this->http['get'][Constants::$ROUTE_URL_PARAM])) {
+        if (!isset($this->http['get'][ROUTE_URL_PARAM])) {
             return false;
         }
 
@@ -101,7 +101,7 @@ class CacheHandler
             string: str_replace(
                 search: ['../', '..\\', '/', '\\'],
                 replace: ['', '', DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR],
-                subject: urldecode(string: $this->http['get'][Constants::$ROUTE_URL_PARAM])
+                subject: urldecode(string: $this->http['get'][ROUTE_URL_PARAM])
             ),
             characters: './\\'
         );

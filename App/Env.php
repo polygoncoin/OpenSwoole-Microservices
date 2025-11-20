@@ -38,7 +38,7 @@ class Env
     public static $OUTPUT_PERFORMANCE_STATS = null;
 
     public static $allowConfigRequest = null;
-    public static $configRequestPathKeyword = null;
+    public static $configRequestRouteKeyword = null;
 
     public static $counter = null;
     public static $clients = null;
@@ -49,23 +49,23 @@ class Env
     public static $defaultPerPage = null;
 
     public static $allowCronRequest = null;
-    public static $cronRequestPathPrefix = null;
+    public static $cronRequestRoutePrefix = null;
     public static $cronRestrictedIp = null;
 
     public static $allowRoutesRequest = null;
-    public static $routesRequestPath = null;
+    public static $routesRequestRoute = null;
 
     public static $allowCustomRequest = null;
-    public static $customRequestPathPrefix = null;
+    public static $customRequestRoutePrefix = null;
 
     public static $allowUploadRequest = null;
-    public static $uploadRequestPathPrefix = null;
+    public static $uploadRequestRoutePrefix = null;
 
     public static $allowThirdPartyRequest = null;
-    public static $thirdPartyRequestPathPrefix = null;
+    public static $thirdPartyRequestRoutePrefix = null;
 
     public static $allowCacheRequest = null;
-    public static $cacheRequestPathPrefix = null;
+    public static $cacheRequestRoutePrefix = null;
 
     public static $iRepresentation = null;
     public static $oRepresentation = null;
@@ -94,7 +94,7 @@ class Env
         self::$OUTPUT_PERFORMANCE_STATS = getenv(name: 'OUTPUT_PERFORMANCE_STATS');
 
         self::$allowConfigRequest = getenv(name: 'allowConfigRequest');
-        self::$configRequestPathKeyword = getenv(name: 'configRequestPathKeyword');
+        self::$configRequestRouteKeyword = getenv(name: 'configRequestRouteKeyword');
 
         self::$counter = getenv(name: 'counter');
         self::$clients = getenv(name: 'clients');
@@ -105,25 +105,25 @@ class Env
         self::$defaultPerPage = getenv(name: 'defaultPerPage');
 
         self::$allowCronRequest = getenv(name: 'allowCronRequest');
-        self::$cronRequestPathPrefix = getenv(name: 'cronRequestPathPrefix');
+        self::$cronRequestRoutePrefix = getenv(name: 'cronRequestRoutePrefix');
         self::$cronRestrictedIp = getenv(name: 'cronRestrictedIp');
 
         self::$allowRoutesRequest = getenv(name: 'allowRoutesRequest');
-        self::$routesRequestPath = getenv(name: 'routesRequestPath');
+        self::$routesRequestRoute = getenv(name: 'routesRequestRoute');
 
         self::$allowCustomRequest = getenv(name: 'allowCustomRequest');
-        self::$customRequestPathPrefix = getenv(name: 'customRequestPathPrefix');
+        self::$customRequestRoutePrefix = getenv(name: 'customRequestRoutePrefix');
 
         self::$allowUploadRequest = getenv(name: 'allowUploadRequest');
-        self::$uploadRequestPathPrefix = getenv(name: 'uploadRequestPathPrefix');
+        self::$uploadRequestRoutePrefix = getenv(name: 'uploadRequestRoutePrefix');
 
         self::$allowThirdPartyRequest = getenv(name: 'allowThirdPartyRequest');
-        self::$thirdPartyRequestPathPrefix = getenv(
-            name: 'thirdPartyRequestPathPrefix'
+        self::$thirdPartyRequestRoutePrefix = getenv(
+            name: 'thirdPartyRequestRoutePrefix'
         );
 
         self::$allowCacheRequest = getenv(name: 'allowCacheRequest');
-        self::$cacheRequestPathPrefix = getenv(name: 'cacheRequestPathPrefix');
+        self::$cacheRequestRoutePrefix = getenv(name: 'cacheRequestRoutePrefix');
 
         $iRepresentation = getenv(name: 'iRepresentation');
         if (

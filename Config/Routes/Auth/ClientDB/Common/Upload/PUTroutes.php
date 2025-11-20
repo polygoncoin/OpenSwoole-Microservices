@@ -18,7 +18,7 @@ namespace Microservices\Config\Routes\Auth\ClientDB\Common\Client;
 use Microservices\App\Env;
 
 return [
-    Env::$uploadRequestPathPrefix => [
+    Env::$uploadRequestRoutePrefix => [
         '{module:string}' => [
             '{id:int|!0}'  => [
                 '__FILE__' => false

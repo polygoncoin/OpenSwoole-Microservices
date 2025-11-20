@@ -166,7 +166,7 @@ class Api
 
         if (
             Env::$allowRoutesRequest
-            && Env::$routesRequestPath === Common::$req->rParser->routeElements[0]
+            && Env::$routesRequestRoute === Common::$req->rParser->routeElements[0]
         ) {
             $this->beforePayload = true;
             $supplementApiClass = __NAMESPACE__ . '\\Routes';
@@ -179,22 +179,22 @@ class Api
             $supplementApiClass = null;
             switch (Common::$req->rParser->routeElements[0]) {
                 case Env::$allowCustomRequest
-                    && (Env::$customRequestPathPrefix
+                    && (Env::$customRequestRoutePrefix
                         === Common::$req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\Custom';
                     break;
                 case Env::$allowUploadRequest
-                    && (Env::$uploadRequestPathPrefix
+                    && (Env::$uploadRequestRoutePrefix
                         === Common::$req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\Upload';
                     break;
                 case Env::$allowThirdPartyRequest
-                    && (Env::$thirdPartyRequestPathPrefix
+                    && (Env::$thirdPartyRequestRoutePrefix
                         === Common::$req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\ThirdParty';
                     break;
                 case Env::$allowCacheRequest
-                    && (Env::$cacheRequestPathPrefix
+                    && (Env::$cacheRequestRoutePrefix
                         === Common::$req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\CacheHandler';
                     break;

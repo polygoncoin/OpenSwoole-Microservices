@@ -39,7 +39,7 @@ return array_merge(
             ],
             [
                 'column' => 'id',
-                'fetchFrom' => 'pathParams',
+                'fetchFrom' => 'routeParams',
                 'fetchFromValue' => 'id',
                 'dataType' => DatabaseDataTypes::$PrimaryKey
             ]

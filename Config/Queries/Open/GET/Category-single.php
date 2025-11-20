@@ -25,7 +25,7 @@ return [
         ],
         [
             'column' => 'id',
-            'fetchFrom' => 'pathParams',
+            'fetchFrom' => 'routeParams',
             'fetchFromValue' => 'id'
         ],
     ],

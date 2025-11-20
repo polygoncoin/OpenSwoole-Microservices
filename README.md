@@ -383,7 +383,7 @@ return [
     '__SET__' => [
         [ // Fetch value from parsed route
             'column' => 'id',
-            'fetchFrom' => 'pathParams',                     // pathParams / payload
+            'fetchFrom' => 'routeParams',                     // routeParams / payload
             'fetchFromValue' => 'id',                       // key (id)
             'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
             'required' => Constants::$REQUIRED              // Represents required field
@@ -416,7 +416,7 @@ return [
     '__WHERE__' => [
         [ // Fetch value from parsed route
             'column' => 'id',
-            'fetchFrom' => 'pathParams',                     // pathParams / payload
+            'fetchFrom' => 'routeParams',                     // routeParams / payload
             'fetchFromValue' => 'id',                       // key (id)
             'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
             'required' => Constants::$REQUIRED              // Represents required field
@@ -625,7 +625,7 @@ return [
     '__WHERE__' => [
         [ // Fetch value from parsed route
             'column' => 'id',
-            'fetchFrom' => 'pathParams',                     // pathParams / payload
+            'fetchFrom' => 'routeParams',                     // routeParams / payload
             'fetchFromValue' => 'id',                       // key (id)
             'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
             'required' => Constants::$REQUIRED              // Represents required field
@@ -667,7 +667,7 @@ return [
     '__PAYLOAD__' => [
         [ // Fetch value from parsed route
             'column' => 'id',
-            'fetchFrom' => 'pathParams',                     // pathParams / payload
+            'fetchFrom' => 'routeParams',                     // routeParams / payload
             'fetchFromValue' => 'id',                       // key (id)
             'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
             'required' => Constants::$REQUIRED              // Represents required field
@@ -892,9 +892,9 @@ One can set these details for respective user in master_users table of respectiv
 
 ### GET Request
 
-- [http://127.0.0.1:9501?r=/reload](http://127.0.0.1:9501?r=/reload)
+- [http://127.0.0.1:9501?route=/reload](http://127.0.0.1:9501?route=/reload)
 
-- [http://127.0.0.1:9501?r=/tableName/1](http://127.0.0.1:9501?r=/tableName/1)
+- [http://127.0.0.1:9501?route=/tableName/1](http://127.0.0.1:9501?route=/tableName/1)
 
 > One can clean the URL by making the necessary changes in the web server .conf file.
 
@@ -906,9 +906,9 @@ defaultPerPage=10
 maxPerPage=1000
 ```
 
-- [http://127.0.0.1:9501?r=/tableName?page=1](http://127.0.0.1:9501?r=/tableName/1?page=1)
-- [http://127.0.0.1:9501?r=/tableName?page=1&perPage=25](http://127.0.0.1:9501?r=/tableName/1?page=1&perPage=25)
-- [http://127.0.0.1:9501?r=/tableName?page=1&perPage=25&orderBy={"field1":"ASC","field2":"DESC"}](http://127.0.0.1:9501?r=/tableName/1?page=1&perPage=25&orderBy={"field1":"ASC","field2":"DESC"})
+- [http://127.0.0.1:9501?route=/tableName?page=1](http://127.0.0.1:9501?route=/tableName/1?page=1)
+- [http://127.0.0.1:9501?route=/tableName?page=1&perPage=25](http://127.0.0.1:9501?route=/tableName/1?page=1&perPage=25)
+- [http://127.0.0.1:9501?route=/tableName?page=1&perPage=25&orderBy={"field1":"ASC","field2":"DESC"}](http://127.0.0.1:9501?route=/tableName/1?page=1&perPage=25&orderBy={"field1":"ASC","field2":"DESC"})
 
 >One need to urlencode orderBy value
 
@@ -947,8 +947,8 @@ var payload = [
 - **$sess\['userDetails'\]** Session Data.
 > This remains same for every request and contains keys like id, group\_id, client\_id
 
-- **$sess\['pathParams'\]** Data passed in URI.
-> Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $sess\['pathParams'\] will hold these dynamic values as below.
+- **$sess\['routeParams'\]** Data passed in URI.
+> Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $sess\['routeParams'\] will hold these dynamic values as below.
 
 - **$sess\['payload'\]** Request data.
 > For **GET** method, the **$\_GET** is the payload.
@@ -1063,19 +1063,19 @@ var payload = [
 
 Examples:
 
-- r=/registration/config
-- r=/category/config
+- route=/registration/config
+- route=/category/config
 
 One need to enable same in .env file as below
 
 ```ini
 allowConfigRequest=1
-configRequestPathKeyword='config' ;for appending /config at end of URI
+configRequestRouteKeyword='config' ;for appending /config at end of URI
 ```
 
 >For controlling globally there is a flag in env file labled **allowConfigRequest**
 
-### r=/routes
+### route=/routes
 
 This lists down all allowed routes for HTTP methods respectively.
 
@@ -1093,7 +1093,7 @@ This lists down all allowed routes for HTTP methods respectively.
 ### Login
 
 ````javascript
-var handlerUrl = "http://127.0.0.1:9501?r=/login";
+var handlerUrl = "http://127.0.0.1:9501?route=/login";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "POST", handlerUrl);
@@ -1127,7 +1127,7 @@ xmlhttp . send( params);
 * GET Request
 
 ````javascript
-var handlerUrl = "http://127.0.0.1:9501?r=/routes";
+var handlerUrl = "http://127.0.0.1:9501?route=/routes";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "GET", handlerUrl);
@@ -1148,7 +1148,7 @@ xmlhttp . send();
 * POST Request
 
 ````javascript
-var handlerUrl = "http://127.0.0.1:9501?r=/ajax-handler-route";
+var handlerUrl = "http://127.0.0.1:9501?route=/ajax-handler-route";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "POST", handlerUrl);
@@ -1179,7 +1179,7 @@ xmlhttp . send( params);
 * PUT Request
 
 ````javascript
-var handlerUrl = "http://127.0.0.1:9501?r=/custom/password";
+var handlerUrl = "http://127.0.0.1:9501?route=/custom/password";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "PUT", handlerUrl);
@@ -1210,7 +1210,7 @@ xmlhttp . send( params);
 * XML Request example
 
 ```javascript
-var handlerUrl = "http://127.0.0.1:9501?r=/registration-with-address&iRepresentation=XML&oRepresentation=XML";
+var handlerUrl = "http://127.0.0.1:9501?route=/registration-with-address&iRepresentation=XML&oRepresentation=XML";
 
 var xmlPayload = '<?xml version="1.0" encoding="UTF-8" ?>' +
 '<Payload>' +

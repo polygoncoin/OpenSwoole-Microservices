@@ -161,7 +161,7 @@ class Supplement
         $this->dataEncode->startObject(key: 'Config');
         $this->dataEncode->addKeyData(
             key: 'Route',
-            data: Common::$req->rParser->configuredPath
+            data: Common::$req->rParser->configuredRoute
         );
         $this->dataEncode->addKeyData(
             key: 'Payload',

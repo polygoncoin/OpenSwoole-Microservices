@@ -113,9 +113,9 @@ class HttpRequest
         $this->HOST = $this->http['server']['host'];
         $this->METHOD = $this->http['server']['method'];
         $this->IP = $this->http['server']['ip'];
-        if (isset($this->http['get'][Constants::$ROUTE_URL_PARAM])) {
+        if (isset($this->http['get'][ROUTE_URL_PARAM])) {
             $this->ROUTE = '/' . trim(
-                string: $this->http['get'][Constants::$ROUTE_URL_PARAM],
+                string: $this->http['get'][ROUTE_URL_PARAM],
                 characters: '/'
             );
         } else {
