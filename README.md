@@ -381,68 +381,47 @@ return [
 
     // Details of data to be set by Query to perform task
     '__SET__' => [
-        [ // Fetch value from parsed route
+        [
             'column' => 'id',
-            'fetchFrom' => 'routeParams',                     // routeParams / payload
+            'fetchFrom' => 'routeParams', // Fetch value from parsed route
+            // 'fetchFrom' => 'queryParams', // Fetch value from query string
+            // 'fetchFrom' => 'payload', // Fetch value from payload
+            // 'fetchFrom' => 'function', // Fetch value from function
+            // 'fetchFrom' => 'uDetails', // Fetch value from uDetails session
+            // 'fetchFrom' => 'custom', // Static values
             'fetchFromValue' => 'id',                       // key (id)
             'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
             'required' => Constants::$REQUIRED              // Represents required field
         ],
-        [ // Fetch value from payload
-            'column' => 'id',
-            'fetchFrom' => 'payload',                       // payload
-            'fetchFromValue' => '<key>',                    // key (<key>)
-        ],
         [ // Fetch value from function
             'column' => 'password',
-            'fetchFrom' => 'function',                      // function
+            'fetchFrom' => 'function',                       // function
             'fetchFromValue' => function ($session) {        // execute a function and return value
                 return 'value';
             }
         ],
-        [ // Fetch value from uDetails session
-            'column' => 'id',
-            'fetchFrom' => 'uDetails',                   // uDetails from session
-            'fetchFromValue' => 'id'                   // id Key
-        ],
         [ // Fetch value of last insert ids
             'column' => 'is_deleted',
             'fetchFrom' => 'custom',                        // custom
-            'fetchFromValue' => '<static-value>'            // Static values
+            'fetchFromValue' => 'No'                        // Static values
         ]
     ],
 
     // Where clause of the Query to perform task
     '__WHERE__' => [
-        [ // Fetch value from parsed route
+        [
             'column' => 'id',
-            'fetchFrom' => 'routeParams',                     // routeParams / payload
+            'fetchFrom' => 'routeParams', // Fetch value from parsed route
+            // 'fetchFrom' => 'queryParams', // Fetch value from query string
+            // 'fetchFrom' => 'payload', // Fetch value from payload
+            // 'fetchFrom' => 'function', // Fetch value from function
+            // 'fetchFrom' => 'uDetails', // Fetch value from uDetails session
+            // 'fetchFrom' => 'custom', // Static values
             'fetchFromValue' => 'id',                       // key (id)
             'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
             'required' => Constants::$REQUIRED              // Represents required field
         ],
-        [ // Fetch value from payload
-            'column' => 'id',
-            'fetchFrom' => 'payload',                       // payload
-            'fetchFromValue' => '<key>',                    // key (<key>)
-        ],
-        [ // Fetch value from function
-            'column' => 'password',
-            'fetchFrom' => 'function',                      // function
-            'fetchFromValue' => function ($session) {        // execute a function and return value
-                return 'value';
-            }
-        ],
-        [ // Fetch value from uDetails session
-            'column' => 'id',
-            'fetchFrom' => 'uDetails',                   // uDetails from session
-            'fetchFromValue' => 'id'                   // id Key
-        ],
-        [ // Fetch value of last insert ids
-            'column' => 'is_deleted',
-            'fetchFrom' => 'custom',                        // custom
-            'fetchFromValue' => '<static-value>'            // Static values
-        ]
+        [...]
     ],
 
     // Last insert id to be made available as $session['__INSERT-IDs__'][uniqueParamString];
@@ -474,7 +453,18 @@ return [
             '__QUERY__' => 'SQL',
             '__SQL-COMMENT__' => 'Comment prepended to query for monitoring queries in logs',
             '__SET__/__WHERE__' => [
-                [...]
+                [
+                    'column' => 'id',
+                    'fetchFrom' => 'routeParams', // Fetch value from parsed route
+                    // 'fetchFrom' => 'queryParams', // Fetch value from query string
+                    // 'fetchFrom' => 'payload', // Fetch value from payload
+                    // 'fetchFrom' => 'function', // Fetch value from function
+                    // 'fetchFrom' => 'uDetails', // Fetch value from uDetails session
+                    // 'fetchFrom' => 'custom', // Static values
+                    'fetchFromValue' => 'id',                       // key (id)
+                    'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
+                    'required' => Constants::$REQUIRED              // Represents required field
+                ],
                 // Database DataTypes settings required when useHierarchy is true
                 // to validate each data set before procedding forward
                 [ // Fetch value of last insert ids
@@ -517,27 +507,48 @@ return [
         [
             '__ROUTE__' => [
                 [
-                    'fetchFrom' => 'custom', 'fetchFromValue' => 'address'
+                    'fetchFrom' => 'routeParams', // Fetch value from parsed route
+                    // 'fetchFrom' => 'queryParams', // Fetch value from query string
+                    // 'fetchFrom' => 'payload', // Fetch value from payload
+                    // 'fetchFrom' => 'function', // Fetch value from function
+                    // 'fetchFrom' => 'uDetails', // Fetch value from uDetails session
+                    // 'fetchFrom' => 'custom', // Static values
+                    // 'fetchFrom' => '__INSERT-IDs__', // Sql Insert Ids
+                    'fetchFromValue' => 'address'
                 ],
-                [
-                    'fetchFrom' => '__INSERT-IDs__', 'fetchFromValue' => 'address:id'
+                [ // Sql Insert Ids
+                    'fetchFrom' => '__INSERT-IDs__',
+                    'fetchFromValue' => 'address:id'
                 ]
             ],
             '__QUERY-STRING__' => [
                 [
-                    'column' => 'param-1', 'fetchFrom' => 'custom', 'fetchFromValue' => 'address'
+                    'column' => 'param-1',
+                    'fetchFrom' => 'routeParams', // Fetch value from parsed route
+                    // 'fetchFrom' => 'queryParams', // Fetch value from query string
+                    // 'fetchFrom' => 'payload', // Fetch value from payload
+                    // 'fetchFrom' => 'function', // Fetch value from function
+                    // 'fetchFrom' => 'uDetails', // Fetch value from uDetails session
+                    // 'fetchFrom' => 'custom', // Static values
+                    // 'fetchFrom' => '__INSERT-IDs__', // Sql Insert Ids
+                    'fetchFromValue' => 'address'
                 ],
-                [
-                    'column' => 'param-2', 'fetchFrom' => '__INSERT-IDs__', 'fetchFromValue' => 'address:id'
-                ]
+                [...]
             ],
             '__METHOD__' => 'PATCH',
             '__PAYLOAD__' => [
                 [
-                    'column' => 'address',
-                    'fetchFrom' => 'custom',
-                    'fetchFromValue' => 'updated-address'
-                ]
+                    'column' => 'param-1',
+                    'fetchFrom' => 'routeParams', // Fetch value from parsed route
+                    // 'fetchFrom' => 'queryParams', // Fetch value from query string
+                    // 'fetchFrom' => 'payload', // Fetch value from payload
+                    // 'fetchFrom' => 'function', // Fetch value from function
+                    // 'fetchFrom' => 'uDetails', // Fetch value from uDetails session
+                    // 'fetchFrom' => 'custom', // Static values
+                    // 'fetchFrom' => '__INSERT-IDs__', // Sql Insert Ids
+                    'fetchFromValue' => 'address'
+                ],
+                [...]
             ]
         ]
         [...]
@@ -623,77 +634,45 @@ return [
     '__DOWNLOAD__' => 'SELECT columns FROM TableName WHERE __WHERE__',
     // Where clause of the Query to perform task
     '__WHERE__' => [
-        [ // Fetch value from parsed route
+        [
             'column' => 'id',
-            'fetchFrom' => 'routeParams',                     // routeParams / payload
+            'fetchFrom' => 'routeParams', // Fetch value from parsed route
+            // 'fetchFrom' => 'queryParams', // Fetch value from query string
+            // 'fetchFrom' => 'payload', // Fetch value from payload
+            // 'fetchFrom' => 'function', // Fetch value from function
+            // 'fetchFrom' => 'uDetails', // Fetch value from uDetails session
+            // 'fetchFrom' => 'custom', // Static values
             'fetchFromValue' => 'id',                       // key (id)
             'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
             'required' => Constants::$REQUIRED              // Represents required field
         ],
-        [ // Fetch value from payload
-            'column' => 'id',
-            'fetchFrom' => 'payload',                       // payload
-            'fetchFromValue' => '<key>',                    // key (<key>)
-        ],
-        [ // Fetch value from function
-            'column' => 'password',
-            'fetchFrom' => 'function',                      // function
-            'fetchFromValue' => function ($session) {        // execute a function and return value
-                return 'value';
-            }
-        ],
-        [ // Fetch value from uDetails session
-            'column' => 'id',
-            'fetchFrom' => 'uDetails',                   // uDetails from session
-            'fetchFromValue' => 'id'                   // id Key
-        ],
-        [ // Fetch value of last insert ids
-            'column' => 'is_deleted',
-            'fetchFrom' => 'custom',                        // custom
-            'fetchFromValue' => '<static-value>'            // Static values
-        ]
+        [...]
     ]
 ];
 ```
 
 #### Available configuration options for Supplement
 
-> Here one can configure and collect payload to perform customized operations (for Supplement folder)
+> Here one can configure and collect payload to perform customized operations (for Supplement folder in public_html)
 
 ```PHP
 //return represents root for sqlResults
 return [
     // Details of data to perform task
     '__PAYLOAD__' => [
-        [ // Fetch value from parsed route
+        [
             'column' => 'id',
-            'fetchFrom' => 'routeParams',                     // routeParams / payload
+            'fetchFrom' => 'routeParams', // Fetch value from parsed route
+            // 'fetchFrom' => 'queryParams', // Fetch value from query string
+            // 'fetchFrom' => 'payload', // Fetch value from payload
+            // 'fetchFrom' => 'function', // Fetch value from function
+            // 'fetchFrom' => 'uDetails', // Fetch value from uDetails session
+            // 'fetchFrom' => 'custom', // Static values
             'fetchFromValue' => 'id',                       // key (id)
             'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
             'required' => Constants::$REQUIRED              // Represents required field
         ],
-        [ // Fetch value from payload
-            'column' => 'id',
-            'fetchFrom' => 'payload',                       // payload
-            'fetchFromValue' => '<key>',                    // key (<key>)
-        ],
-        [ // Fetch value from function
-            'column' => 'password',
-            'fetchFrom' => 'function',                      // function
-            'fetchFromValue' => function ($session) {        // execute a function and return value
-                return 'value';
-            }
-        ],
-        [ // Fetch value from uDetails session
-            'column' => 'id',
-            'fetchFrom' => 'uDetails',                   // uDetails from session
-            'fetchFromValue' => 'id'                   // id Key
-        ],
-        [ // Fetch value of last insert ids
-            'column' => 'is_deleted',
-            'fetchFrom' => 'custom',                        // custom
-            'fetchFromValue' => '<static-value>'            // Static values
-        ]
+        [...]
     ],
     '__FUNCTION__' => 'process',
     // subQuery is a keyword to perform recursive operations
@@ -713,7 +692,18 @@ return [
         '<sub-key>' => [
             // Payload to perform task
             '__PAYLOAD__' => [
-                [...]
+                [
+                    'column' => 'id',
+                    'fetchFrom' => 'routeParams', // Fetch value from parsed route
+                    // 'fetchFrom' => 'queryParams', // Fetch value from query string
+                    // 'fetchFrom' => 'payload', // Fetch value from payload
+                    // 'fetchFrom' => 'function', // Fetch value from function
+                    // 'fetchFrom' => 'uDetails', // Fetch value from uDetails session
+                    // 'fetchFrom' => 'custom', // Static values
+                    'fetchFromValue' => 'id',                       // key (id)
+                    'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
+                    'required' => Constants::$REQUIRED              // Represents required field
+                ],
                 // Database DataTypes settings required when useHierarchy is true
                 // to validate each data set before procedding forward
                 [ // Fetch value of last insert ids
@@ -757,29 +747,44 @@ return [
         [
             '__ROUTE__' => [
                 [
-                    'fetchFrom' => 'custom', 'fetchFromValue' => 'address'
+                    'fetchFrom' => 'routeParams', // Fetch value from parsed route
+                    // 'fetchFrom' => 'queryParams', // Fetch value from query string
+                    // 'fetchFrom' => 'payload', // Fetch value from payload
+                    // 'fetchFrom' => 'function', // Fetch value from function
+                    // 'fetchFrom' => 'uDetails', // Fetch value from uDetails session
+                    // 'fetchFrom' => 'custom', // Static values
+                    'fetchFromValue' => 'address'
                 ],
-                [
-                    'fetchFrom' => '__INSERT-IDs__', 'fetchFromValue' => 'address:id'
-                ]
+                [...]
             ],
             '__QUERY-STRING__' => [
                 [
-                    'column' => 'param-1', 'fetchFrom' => 'custom', 'fetchFromValue' => 'address'
+                    'column' => 'param-1',
+                    'fetchFrom' => 'routeParams', // Fetch value from parsed route
+                    // 'fetchFrom' => 'queryParams', // Fetch value from query string
+                    // 'fetchFrom' => 'payload', // Fetch value from payload
+                    // 'fetchFrom' => 'function', // Fetch value from function
+                    // 'fetchFrom' => 'uDetails', // Fetch value from uDetails session
+                    // 'fetchFrom' => 'custom', // Static values
+                    'fetchFromValue' => 'address'
                 ],
-                [
-                    'column' => 'param-2', 'fetchFrom' => '__INSERT-IDs__', 'fetchFromValue' => 'address:id'
-                ]
+                [...]
             ],
             '__METHOD__' => 'PATCH',
             '__PAYLOAD__' => [
                 [
-                    'column' => 'address',
-                    'fetchFrom' => 'custom',
-                    'fetchFromValue' => 'updated-address'
-                ]
+                    'column' => 'param-1',
+                    'fetchFrom' => 'routeParams', // Fetch value from parsed route
+                    // 'fetchFrom' => 'queryParams', // Fetch value from query string
+                    // 'fetchFrom' => 'payload', // Fetch value from payload
+                    // 'fetchFrom' => 'function', // Fetch value from function
+                    // 'fetchFrom' => 'uDetails', // Fetch value from uDetails session
+                    // 'fetchFrom' => 'custom', // Static values
+                    'fetchFromValue' => 'address'
+                ],
+                [...]
             ]
-        ]
+        ],
         [...]
     ],
 
