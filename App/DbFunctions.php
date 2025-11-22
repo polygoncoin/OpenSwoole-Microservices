@@ -39,7 +39,7 @@ class DbFunctions
      *
      * @var null|Object
      */
-    private static $queryCache = null;
+    private static $sqlResultsCacheServer = null;
 
     /** Database Connection */
     /**
@@ -47,7 +47,7 @@ class DbFunctions
      *
      * @var null|Object
      */
-    public static $globalDb = null;
+    public static $gDbServer = null;
 
     /**
      * Client Master
@@ -69,7 +69,7 @@ class DbFunctions
      *
      * @var null|Object
      */
-    public static $globalCache = null;
+    public static $gCacheServer = null;
 
     /**
      * Client Master
@@ -94,11 +94,11 @@ class DbFunctions
      */
     public static function connectQueryCache(): void
     {
-        if (self::$queryCache !== null) {
+        if (self::$sqlResultsCacheServer !== null) {
             return;
         }
 
-        $cacheType = getenv(name: 'queryCacheType');
+        $cacheType = getenv(name: 'sqlResultsCacheServerType');
         if (!in_array($cacheType, ['Redis', 'Memcached', 'MongoDb', 'MySql', 'PostgreSql'])) {
             throw new \Exception(
                 message: 'Invalid query cache type',
@@ -106,14 +106,14 @@ class DbFunctions
             );
         }
 
-        $queryCacheNS = 'Microservices\\App\\Servers\\QueryCache\\' . $cacheType . 'QueryCache';
-        self::$queryCache = new $queryCacheNS(
-            getenv(name: 'queryCacheHostname'),
-            getenv(name: 'queryCachePort'),
-            getenv(name: 'queryCacheUsername'),
-            getenv(name: 'queryCachePassword'),
-            getenv(name: 'queryCacheDatabase'),
-            getenv(name: 'queryCacheTable')
+        $sqlResultsCacheServerNS = 'Microservices\\App\\Servers\\QueryCache\\' . $cacheType . 'QueryCache';
+        self::$sqlResultsCacheServer = new $sqlResultsCacheServerNS(
+            getenv(name: 'sqlResultsCacheServerHostname'),
+            getenv(name: 'sqlResultsCacheServerPort'),
+            getenv(name: 'sqlResultsCacheServerUsername'),
+            getenv(name: 'sqlResultsCacheServerPassword'),
+            getenv(name: 'sqlResultsCacheServerDatabase'),
+            getenv(name: 'sqlResultsCacheServerTable')
         );
     }
 
@@ -163,17 +163,17 @@ class DbFunctions
      */
     public static function connectGlobalCache(): void
     {
-        if (self::$globalCache !== null) {
+        if (self::$gCacheServer !== null) {
             return;
         }
-        self::$globalCache = self::connectCache(
-            cacheType: getenv(name: 'globalCacheType'),
-            cacheHostname: getenv(name: 'globalCacheHostname'),
-            cachePort: getenv(name: 'globalCachePort'),
-            cacheUsername: getenv(name: 'globalCacheUsername'),
-            cachePassword: getenv(name: 'globalCachePassword'),
-            cacheDatabase: getenv(name: 'globalCacheDatabase'),
-            cacheTable: getenv(name: 'globalCacheTable')
+        self::$gCacheServer = self::connectCache(
+            cacheType: getenv(name: 'gCacheServerType'),
+            cacheHostname: getenv(name: 'gCacheServerHostname'),
+            cachePort: getenv(name: 'gCacheServerPort'),
+            cacheUsername: getenv(name: 'gCacheServerUsername'),
+            cachePassword: getenv(name: 'gCacheServerPassword'),
+            cacheDatabase: getenv(name: 'gCacheServerDatabase'),
+            cacheTable: getenv(name: 'gCacheServerTable')
         );
     }
 
@@ -281,16 +281,16 @@ class DbFunctions
      */
     public static function connectGlobalDb(): void
     {
-        if (self::$globalDb !== null) {
+        if (self::$gDbServer !== null) {
             return;
         }
-        self::$globalDb = self::connectDb(
-            dbType: getenv(name: 'globalDbType'),
-            dbHostname: getenv(name: 'globalDbHostname'),
-            dbPort: getenv(name: 'globalDbPort'),
-            dbUsername: getenv(name: 'globalDbUsername'),
-            dbPassword: getenv(name: 'globalDbPassword'),
-            dbDatabase: getenv(name: 'globalDbDatabase')
+        self::$gDbServer = self::connectDb(
+            dbType: getenv(name: 'gDbServerType'),
+            dbHostname: getenv(name: 'gDbServerHostname'),
+            dbPort: getenv(name: 'gDbServerPort'),
+            dbUsername: getenv(name: 'gDbServerUsername'),
+            dbPassword: getenv(name: 'gDbServerPassword'),
+            dbDatabase: getenv(name: 'gDbServerDatabase')
         );
     }
 
@@ -383,8 +383,8 @@ class DbFunctions
         self::connectQueryCache();
 
         $json = null;
-        if (self::$queryCache->cacheExists(key: $cacheKey)) {
-            $json = self::$queryCache->getCache(key: $cacheKey);
+        if (self::$sqlResultsCacheServer->cacheExists(key: $cacheKey)) {
+            $json = self::$sqlResultsCacheServer->getCache(key: $cacheKey);
         }
 
         return $json;
@@ -402,7 +402,7 @@ class DbFunctions
     {
         self::connectQueryCache();
 
-        self::$queryCache->setCache(key: $cacheKey, value: $json);
+        self::$sqlResultsCacheServer->setCache(key: $cacheKey, value: $json);
     }
 
     /**
@@ -416,7 +416,7 @@ class DbFunctions
     {
         self::connectQueryCache();
 
-        self::$queryCache->deleteCache(key: $cacheKey);
+        self::$sqlResultsCacheServer->deleteCache(key: $cacheKey);
     }
 
     /**

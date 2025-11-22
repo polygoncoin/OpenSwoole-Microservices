@@ -69,7 +69,7 @@ class Reload
     {
         DbFunctions::connectGlobalDb();
 
-        DbFunctions::$globalDb->execDbQuery(
+        DbFunctions::$gDbServer->execDbQuery(
             sql: "
                 SELECT
                     *
@@ -78,20 +78,20 @@ class Reload
                 ",
             params: []
         );
-        $cRows = DbFunctions::$globalDb->fetchAll();
-        DbFunctions::$globalDb->closeCursor();
+        $cRows = DbFunctions::$gDbServer->fetchAll();
+        DbFunctions::$gDbServer->closeCursor();
         for ($ci = 0, $ciCount = count(value: $cRows); $ci < $ciCount; $ci++) {
             if (!empty($cRows[$ci]['open_api_domain'])) {
                 $c_key = CacheKey::clientOpenToWeb(
                     hostname: $cRows[$ci]['open_api_domain']
                 );
-                DbFunctions::$globalCache->setCache(
+                DbFunctions::$gCacheServer->setCache(
                     key: $c_key,
                     value: json_encode(value: $cRows[$ci])
                 );
             }
             $c_key = CacheKey::client(hostname: $cRows[$ci]['api_domain']);
-            DbFunctions::$globalCache->setCache(
+            DbFunctions::$gCacheServer->setCache(
                 key: $c_key,
                 value: json_encode(value: $cRows[$ci])
             );
@@ -120,7 +120,7 @@ class Reload
                     cID: $cRows[$ci]['id'],
                     username: $uRows[$ui]['username']
                 );
-                DbFunctions::$globalCache->setCache(
+                DbFunctions::$gCacheServer->setCache(
                     key: $cu_key,
                     value: json_encode(value: $uRows[$ui])
                 );
@@ -137,7 +137,7 @@ class Reload
     {
         DbFunctions::connectGlobalCache();
 
-        DbFunctions::$globalDb->execDbQuery(
+        DbFunctions::$gDbServer->execDbQuery(
             sql: "
                 SELECT
                     *
@@ -147,21 +147,21 @@ class Reload
             params: []
         );
 
-        while ($gRows = DbFunctions::$globalDb->fetch(\PDO::FETCH_ASSOC)) {
+        while ($gRows = DbFunctions::$gDbServer->fetch(\PDO::FETCH_ASSOC)) {
             $g_key = CacheKey::group(gID: $gRows['id']);
-            DbFunctions::$globalCache->setCache(key: $g_key, value: json_encode(value: $gRows));
+            DbFunctions::$gCacheServer->setCache(key: $g_key, value: json_encode(value: $gRows));
             if (!empty($gRows['allowed_ips'])) {
                 $cidrs = $this->cidrsIpNumber(cidrs: $gRows['allowed_ips']);
                 if (count(value: $cidrs) > 0) {
                     $cidrKey = CacheKey::cidr(gID: $gRows['id']);
-                    DbFunctions::$globalCache->setCache(
+                    DbFunctions::$gCacheServer->setCache(
                         key: $cidrKey,
                         value: json_encode(value: $cidrs)
                     );
                 }
             }
         }
-        DbFunctions::$globalDb->closeCursor();
+        DbFunctions::$gDbServer->closeCursor();
     }
 
     /**
@@ -173,7 +173,7 @@ class Reload
      */
     private function processToken($token): void
     {
-        DbFunctions::$globalCache->deleteCache(key: CacheKey::token(token: $token));
+        DbFunctions::$gCacheServer->deleteCache(key: CacheKey::token(token: $token));
     }
 
     /**

@@ -102,19 +102,19 @@ class Password implements CustomInterface
                 cID: $cID,
                 username: $userName
             );
-            if (DbFunctions::$globalCache->cacheExists(key: $cu_key)) {
+            if (DbFunctions::$gCacheServer->cacheExists(key: $cu_key)) {
                 $uDetails = json_decode(
-                    json: DbFunctions::$globalCache->getCache(
+                    json: DbFunctions::$gCacheServer->getCache(
                         key: $cu_key
                     ),
                     associative: true
                 );
                 $uDetails['password_hash'] = $newPasswordHash;
-                DbFunctions::$globalCache->setCache(
+                DbFunctions::$gCacheServer->setCache(
                     key: $cu_key,
                     value: json_encode(value: $uDetails)
                 );
-                DbFunctions::$globalCache->deleteCache(
+                DbFunctions::$gCacheServer->deleteCache(
                     key: CacheKey::token(token: Common::$req->s['token'])
                 );
             }

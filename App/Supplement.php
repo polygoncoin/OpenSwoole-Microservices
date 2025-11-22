@@ -283,7 +283,7 @@ class Supplement
                         'Response' => $response
                     ];
                     if ($idempotentWindow) {
-                        DbFunctions::$globalCache->setCache(
+                        DbFunctions::$gCacheServer->setCache(
                             key: $hashKey,
                             value: json_encode(value: $arr),
                             expire: $idempotentWindow

@@ -31,7 +31,7 @@ use Microservices\App\SessionHandlers\Session;
  */
 class Env
 {
-    public static $globalDbDatabase = null;
+    public static $gDbServerDatabase = null;
     public static $cacheDatabase = null;
 
     public static $ENVIRONMENT = null;
@@ -45,7 +45,7 @@ class Env
     public static $groups = null;
     public static $clientUsers = null;
 
-    public static $maxPerPage = null;
+    public static $maxResultsPerPage = null;
     public static $defaultPerPage = null;
 
     public static $allowCronRequest = null;
@@ -87,8 +87,8 @@ class Env
      */
     public static function init(&$http): void
     {
-        self::$globalDbDatabase = getenv(name: 'globalDbDatabase');
-        self::$cacheDatabase = getenv(name: 'globalCacheDatabase');
+        self::$gDbServerDatabase = getenv(name: 'gDbServerDatabase');
+        self::$cacheDatabase = getenv(name: 'gCacheServerDatabase');
 
         self::$ENVIRONMENT = getenv(name: 'ENVIRONMENT');
         self::$OUTPUT_PERFORMANCE_STATS = getenv(name: 'OUTPUT_PERFORMANCE_STATS');
@@ -101,7 +101,7 @@ class Env
         self::$groups = getenv(name: 'groups');
         self::$clientUsers = getenv(name: 'clientUsers');
 
-        self::$maxPerPage = getenv(name: 'maxPerPage');
+        self::$maxResultsPerPage = getenv(name: 'maxResultsPerPage');
         self::$defaultPerPage = getenv(name: 'defaultPerPage');
 
         self::$allowCronRequest = getenv(name: 'allowCronRequest');

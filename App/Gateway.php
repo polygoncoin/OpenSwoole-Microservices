@@ -164,10 +164,10 @@ class Gateway
         $cidrKey = CacheKey::cidr(
             gID: Common::$req->s['uDetails']['group_id']
         );
-        if (DbFunctions::$globalCache->cacheExists(key: $cidrKey)) {
+        if (DbFunctions::$gCacheServer->cacheExists(key: $cidrKey)) {
             $this->cidrChecked = true;
             $cidrs = json_decode(
-                json: DbFunctions::$globalCache->getCache(
+                json: DbFunctions::$gCacheServer->getCache(
                     key: $cidrKey
                 ),
                 associative: true

@@ -36,70 +36,72 @@ Below are the configuration settings details in .env
 ```ini
 ENVIRONMENT=0                   ;Environment PRODUCTION = 1 / DEVELOPMENT = 0
 OUTPUT_PERFORMANCE_STATS=1      ;Add Performance Stats in JSON output: 1 = true / 0 = false
+
+; API authentication modes - Token / Session (Cookie based Sessions)
+authMode='Token'
+sessionMode='File'  ; For Cookie based Session - 'File', 'MySql', 'PostgreSql', 'MongoDb', 'Redis', 'Memcached', 'Cookie'
+
 allowConfigRequest=1            ;Allow config request (global flag): 1 = true / 0 = false
 cronRestrictedIp='127.0.0.1'    ;Crons Details
-maxPerPage=10000                ;Maximum value of perPage (records per page)
+maxResultsPerPage=10000                ;Maximum value of per page (records per page)
 
-;Data Representation: JSON/XML
-;To override below setting pass below params with route separated with &
-iRepresentation='JSON'
-oRepresentation='JSON'
-allowGetRepresentation=1
+; Data Representation: JSON/XML/HTML
+iRepresentation='JSON'          ; JSON/XML - Input Data Representation
+oRepresentation='JSON'          ; JSON/XML/HTML - Output Data Representation
+allowGetRepresentation=1        ; Allow iRepresentation / oRepresentation as GET query params
 ```
 
 ### Cache Server Details (Redis)
 ```ini
-cacheType='Redis'
-cacheHostname='127.0.0.1'
-cachePort=6379
-cacheUsername='ramesh'
-cachePassword='shames11'
-cacheDatabase=0
+gCacheServerType='Redis'
+gCacheServerHostname='127.0.0.1'
+gCacheServerPort=6379
+gCacheServerUsername=''
+gCacheServerPassword=''
+gCacheServerDatabase=0
 ```
 
 ### Global Database details - global.sql
 ```ini
-globalType='MySql'
-globalHostname='127.0.0.1'
-globalPort=3306
-globalUsername='root'
-globalPassword='shames11'
-globalDatabase='global'
-```
+gDbServerType='MySql'
+gDbServerHostname='127.0.0.1'
+gDbServerPort=3306
+gDbServerUsername='username'
+gDbServerPassword='password'
+gDbServerDatabase='global'
 
-### global Database tables details
-```ini
+; Tables
 groups='m002_master_groups'
 clients='m001_master_clients'
 ```
 
 ### Default database shared by most of the clients
 ```ini
-defaultDbType='MySql'
-defaultDbHostname='127.0.0.1'
-defaultDbPort=3306
-defaultDbUsername='root'
-defaultDbPassword='shames11'
-defaultDbDatabase='global'
+cDbServerType='MySql'
+cDbServerHostname='127.0.0.1'
+cDbServerPort=3306
+cDbServerUsername='username'
+cDbServerPassword='password'
+cDbServerDatabase='common'
 ```
 
 ### Example of seperate database for client 1 on Default database server
 ```ini
-dbDatabaseClient001='client_001'
+cDbServerDatabase001='client_001'
 ```
 
 ### Example of a dedicated database server for client 1
 ```ini
-dbHostnameClient001='127.0.0.1'
-dbUsernameClient001='root'
-dbPasswordClient001='shames11'
-dbDatabaseClient001='client_001'
+cDbServerHostname001='127.0.0.1'
+cDbServerUsername001='username'
+cDbServerPassword001='password'
+cDbServerDatabase001='client_001'
 ```
 
 ### Additional table details for database server
 ```ini
-clientMasterDbName='client_master'  ;contains all entities necessary for a new client.
-client_users='master_users'         ;Table in client database containing user details.
+clientMasterDbName='client_master'  ;contains all entities required for a new client.
+clientUsers='master_users'         ;Table in client database containing user details.
 ```
 
 These DB/Cache configurations can be set in below columns respectively for each client.
@@ -175,26 +177,26 @@ rateLimitUserPrefix='URL:'    ; User based Rate Limitng (URL) key prefix used in
 
 ```ini
 ; Supported Containers - Redis / Memcached / MySql / PostgreSql / MongoDb
-queryCacheType='Redis'
-queryCacheHostname='127.0.0.1'
-queryCachePort=6379
-queryCacheUsername='ramesh'
-queryCachePassword='shames11'
-queryCacheDatabase=0
-queryCacheTable='api_cache' ; For MySql / PostgreSql / MongoDb
+sqlResultsCacheServerType='Redis'
+sqlResultsCacheServerHostname='127.0.0.1'
+sqlResultsCacheServerPort=6379
+sqlResultsCacheServerUsername='username'
+sqlResultsCacheServerPassword='password'
+sqlResultsCacheServerDatabase=0
+sqlResultsCacheServerTable='api_cache' ; For MySql / PostgreSql / MongoDb
 ```
 
 #### Route based Rate Limiting
 ```ini
-rateLimiterRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) key prefix used in Redis
+rateLimitRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) key prefix used in Redis
 ```
 
 ##### Configure these in SQL configuration as below
 ```PHP
 return [
     [...]
-    'rateLimiterMaxRequests' => 1, // Allowed number of requests
-    'rateLimiterSecondsWindow' => 3600, // Window in Seconds for allowed number of requests
+    'rateLimitMaxRequests' => 1, // Allowed number of requests
+    'rateLimitSecondsWindow' => 3600, // Window in Seconds for allowed number of requests
     [...]
 ];
 ```
@@ -915,7 +917,7 @@ One can set these details for respective user in master_users table of respectiv
 Requires **countQuery** SQL in the configuration for GET request
 ```ini
 defaultPerPage=10
-maxPerPage=1000
+maxResultsPerPage=1000
 ```
 
 - [http://127.0.0.1:9501?route=/tableName?page=1](http://127.0.0.1:9501?route=/tableName/1?page=1)

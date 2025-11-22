@@ -48,7 +48,7 @@ class Validator
      */
     public function __construct()
     {
-        if (DbFunctions::$masterDb->database === Env::$globalDbDatabase) {
+        if (DbFunctions::$masterDb->database === Env::$gDbServerDatabase) {
             $this->v = new GlobalValidator();
         } else {
             $this->v = new ClientValidator();

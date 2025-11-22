@@ -41,12 +41,12 @@ class Counter
     {
         DbFunctions::connectGlobalDb();
 
-        $table = Env::$globalDbDatabase . '.' . Env::$counter;
+        $table = Env::$gDbServerDatabase . '.' . Env::$counter;
         $sql = "INSERT INTO {$table}() VALUES()";
         $sqlParams = [];
 
-        DbFunctions::$globalDb->execDbQuery(sql: $sql, params: $sqlParams);
-        $id = DbFunctions::$globalDb->lastInsertId();
+        DbFunctions::$gDbServer->execDbQuery(sql: $sql, params: $sqlParams);
+        $id = DbFunctions::$gDbServer->lastInsertId();
 
         return $id;
     }

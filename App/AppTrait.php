@@ -724,10 +724,10 @@ trait AppTrait
 
                 $hash = json_encode(value: $payloadSignature);
                 $hashKey = md5(string: $hash);
-                if (DbFunctions::$globalCache->cacheExists(key: $hashKey)) {
+                if (DbFunctions::$gCacheServer->cacheExists(key: $hashKey)) {
                     $hashJson = str_replace(
                         search: 'JSON',
-                        replace: DbFunctions::$globalCache->getCache(key: $hashKey),
+                        replace: DbFunctions::$gCacheServer->getCache(key: $hashKey),
                         subject: '{"Idempotent": JSON, "Status": 200}'
                     );
                 }
@@ -764,13 +764,13 @@ trait AppTrait
             $hash = json_encode(value: $payloadSignature);
             $hashKey = 'LAG:' . md5(string: $hash);
 
-            if (DbFunctions::$globalCache->cacheExists(key: $hashKey)) {
-                $noOfRequests = DbFunctions::$globalCache->getCache(key: $hashKey);
+            if (DbFunctions::$gCacheServer->cacheExists(key: $hashKey)) {
+                $noOfRequests = DbFunctions::$gCacheServer->getCache(key: $hashKey);
             } else {
                 $noOfRequests = 0;
             }
 
-            DbFunctions::$globalCache->setCache(
+            DbFunctions::$gCacheServer->setCache(
                 key: $hashKey,
                 value: ++$noOfRequests,
                 expire: 3600

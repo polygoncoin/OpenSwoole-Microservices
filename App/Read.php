@@ -407,9 +407,9 @@ class Read
         Common::$req->s['queryParams']['perPage']  = $_GET['perPage'] ??
             Env::$defaultPerPage;
 
-        if (Common::$req->s['queryParams']['perPage'] > Env::$maxPerPage) {
+        if (Common::$req->s['queryParams']['perPage'] > Env::$maxResultsPerPage) {
             throw new \Exception(
-                message: 'perPage exceeds max perPage value of ' . Env::$maxPerPage,
+                message: 'perPage exceeds max perPage value of ' . Env::$maxResultsPerPage,
                 code: HttpStatus::$Forbidden
             );
         }

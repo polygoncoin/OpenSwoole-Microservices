@@ -72,7 +72,7 @@ class Auth
                 token: Common::$req->s['token']
             );
             if (
-                !DbFunctions::$globalCache->cacheExists(
+                !DbFunctions::$gCacheServer->cacheExists(
                     key: $tokenKey
                 )
             ) {
@@ -82,7 +82,7 @@ class Auth
                 );
             }
             Common::$req->s['uDetails'] = json_decode(
-                json: DbFunctions::$globalCache->getCache(
+                json: DbFunctions::$gCacheServer->getCache(
                     key: $tokenKey
                 ),
                 associative: true
@@ -122,7 +122,7 @@ class Auth
         $gKey = CacheKey::group(
             gID: Common::$req->s['uDetails']['group_id']
         );
-        if (!DbFunctions::$globalCache->cacheExists(key: $gKey)) {
+        if (!DbFunctions::$gCacheServer->cacheExists(key: $gKey)) {
             throw new \Exception(
                 message: "Cache '{$gKey}' missing",
                 code: HttpStatus::$InternalServerError
@@ -130,7 +130,7 @@ class Auth
         }
 
         Common::$req->s['gDetails'] = json_decode(
-            json: DbFunctions::$globalCache->getCache(
+            json: DbFunctions::$gCacheServer->getCache(
                 key: $gKey
             ),
             associative: true

@@ -170,14 +170,14 @@ class Login
             username: $this->payload['username']
         );
         // Redis - one can find the userID from client username
-        if (!DbFunctions::$globalCache->cacheExists(key: $clientUserKey)) {
+        if (!DbFunctions::$gCacheServer->cacheExists(key: $clientUserKey)) {
             throw new \Exception(
                 message: 'Invalid credentials',
                 code: HttpStatus::$Unauthorized
             );
         }
         $this->userDetails = json_decode(
-            json: DbFunctions::$globalCache->getCache(
+            json: DbFunctions::$gCacheServer->getCache(
                 key: $clientUserKey
             ),
             associative: true
@@ -203,9 +203,9 @@ class Login
     {
         // Redis - one can find the userID from username
         $cidrKey = CacheKey::cidr(gID: $this->userDetails['group_id']);
-        if (DbFunctions::$globalCache->cacheExists(key: $cidrKey)) {
+        if (DbFunctions::$gCacheServer->cacheExists(key: $cidrKey)) {
             $cidrs = json_decode(
-                json: DbFunctions::$globalCache->getCache(
+                json: DbFunctions::$gCacheServer->getCache(
                     key: $cidrKey
                 ),
                 associative: true
@@ -261,11 +261,11 @@ class Login
             $token = bin2hex(string: random_bytes(length: 32));
 
             if (
-                !DbFunctions::$globalCache->cacheExists(
+                !DbFunctions::$gCacheServer->cacheExists(
                     key: CacheKey::token(token: $token)
                 )
             ) {
-                DbFunctions::$globalCache->setCache(
+                DbFunctions::$gCacheServer->setCache(
                     key: CacheKey::token(token: $token),
                     value: '{}',
                     expire: Constants::$TOKEN_EXPIRY_TIME
@@ -292,16 +292,16 @@ class Login
         $userTokenKey = CacheKey::userToken(
             uID: $this->userDetails['id']
         );
-        if (DbFunctions::$globalCache->cacheExists(key: $userTokenKey)) {
+        if (DbFunctions::$gCacheServer->cacheExists(key: $userTokenKey)) {
             $tokenDetails = json_decode(
-                json: DbFunctions::$globalCache->getCache(
+                json: DbFunctions::$gCacheServer->getCache(
                     key: $userTokenKey
                 ),
                 associative: true
             );
 
             if (
-                DbFunctions::$globalCache->cacheExists(
+                DbFunctions::$gCacheServer->cacheExists(
                     key: CacheKey::token(
                         token: $tokenDetails['token']
                     )
@@ -311,7 +311,7 @@ class Login
                 if ((Constants::$TOKEN_EXPIRY_TIME - $time) > 0) {
                     $tokenFound = true;
                 } else {
-                    DbFunctions::$globalCache->deleteCache(
+                    DbFunctions::$gCacheServer->deleteCache(
                         key: CacheKey::token(
                             token: $tokenDetails['token']
                         )
@@ -323,7 +323,7 @@ class Login
         if (!$tokenFound) {
             $tokenDetails = $this->generateToken();
             // We set this to have a check first if multiple request/attack occurs
-            DbFunctions::$globalCache->setCache(
+            DbFunctions::$gCacheServer->setCache(
                 key: $userTokenKey,
                 value: json_encode(
                     value: $tokenDetails
@@ -331,7 +331,7 @@ class Login
                 expire: Constants::$TOKEN_EXPIRY_TIME
             );
             unset($this->userDetails['password_hash']);
-            DbFunctions::$globalCache->setCache(
+            DbFunctions::$gCacheServer->setCache(
                 key: CacheKey::token(token: $tokenDetails['token']),
                 value: json_encode(
                     value: $this->userDetails
@@ -399,14 +399,14 @@ class Login
             );
             $expire = Constants::$TOKEN_EXPIRY_TIME;
             $timestamp = $this->timestamp;
-            if (DbFunctions::$globalCache->cacheExists(key: $userSessionIdKey)) {
+            if (DbFunctions::$gCacheServer->cacheExists(key: $userSessionIdKey)) {
                 $userSessionIdKeyData = json_decode(
-                    json: DbFunctions::$globalCache->getCache(
+                    json: DbFunctions::$gCacheServer->getCache(
                         key: $userSessionIdKey
                     ),
                     associative: true
                 );
-                DbFunctions::$globalCache->deleteCache(
+                DbFunctions::$gCacheServer->deleteCache(
                     key: $userSessionIdKey
                 );
                 Session::deleteSession(sessionId: $userSessionIdKeyData['sessionId']);
@@ -423,7 +423,7 @@ class Login
             Session::sessionStartReadWrite();
             $_SESSION = $this->userDetails;
 
-            DbFunctions::$globalCache->setCache(
+            DbFunctions::$gCacheServer->setCache(
                 key: $userSessionIdKey,
                 value: json_encode(
                     value: [
