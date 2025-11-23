@@ -258,9 +258,11 @@ return [
 return [
     'tableName' => [
         '{id:int}' => [
+            'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => 'SQL file location for int data type'
         ],
         '{id:string}' => [
+            'dataType' => DatabaseDataTypes::$Default,
             '__FILE__' => 'SQL file location for string data type'
         ]
     ]
@@ -270,8 +272,9 @@ return [
 * To restrict dynamic values to a certain set of values. One can do the same by appending comma-separated values after OR key.
 ```PHP
 return [
-    '{tableName:string|admin, group, client, routes}' => [
+    '{tableName:string}' => [
         '{id:int}' => [
+            'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => 'SQL file location'
         ]
     ]
@@ -294,6 +297,7 @@ return [
 ```PHP
 return [
     '{tableName:string}' => [
+        'dataType' => DatabaseDataTypes::$Tables,
         '__FILE__' => 'SQL file location',
         '__PRE-ROUTE-HOOKS__' => [// These will apply recursively
             'Hook_1',
