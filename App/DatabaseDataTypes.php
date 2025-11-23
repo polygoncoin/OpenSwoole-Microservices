@@ -377,6 +377,11 @@ class DatabaseDataTypes
         'dataType' => 'string'
     ];
 
+    public static $HttpMethods = [
+        'dataType' => 'string',
+        'enumValues' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+    ];
+
     /**
      * Validates DataType
      *

@@ -16,10 +16,12 @@
 namespace Microservices\Config\Routes\Auth\ClientDB\Common\Cron;
 
 use Microservices\App\Env;
+use Microservices\App\DatabaseDataTypes;
 
 return [
     Env::$cronRequestRoutePrefix => [
         '{cron:string}' => [
+            'dataType' => DatabaseDataTypes::$Default,
             '__FILE__' => false
         ]
     ]

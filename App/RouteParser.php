@@ -18,21 +18,8 @@ namespace Microservices\App;
 use Microservices\App\Common;
 use Microservices\App\Constants;
 use Microservices\App\Env;
-use Microservices\App\HttpRequest;
 use Microservices\App\HttpStatus;
 
-/**
- * RouteParser
- * php version 8.3
- *
- * @category  RouteParser
- * @package   Openswoole_Microservices
- * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
- * @copyright 2025 Ramesh N Jangid
- * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
- * @since     Class available since Release 1.0.0
- */
 class RouteParser
 {
     /**
@@ -223,6 +210,7 @@ class RouteParser
      */
     private function processRouteElement(
         $routeElement,
+        $dataType,
         &$element,
         &$foundIntRoute,
         &$foundIntParamName,
@@ -233,31 +221,13 @@ class RouteParser
         if (strpos(haystack: $routeElement, needle: '{') !== 0) {
             return false;
         }
-
-        // Check for compulsory values
+        
         $dynamicRoute = trim(string: $routeElement, characters: '{}');
-        $mode = 'include';
-        $preferredValues = [];
-        if (strpos(haystack: $routeElement, needle: '|') !== false) {
-            [$dynamicRoute, $preferredValuesString] = explode(
-                separator: '|',
-                string: $dynamicRoute
-            );
-            if (strpos(haystack: $preferredValuesString, needle: '!') === 0) {
-                $mode = 'exclude';
-                $preferredValuesString = substr(
-                    string: $preferredValuesString,
-                    offset: 1
-                );
-            }
-            $preferredValues = strlen(string: $preferredValuesString) > 0 ?
-                explode(separator: ', ', string: $preferredValuesString) : [];
-        }
-
         [$paramName, $paramDataType] = explode(
             separator: ':',
             string: $dynamicRoute
         );
+
         if (!in_array(needle: $paramDataType, haystack: ['int', 'string'])) {
             throw new \Exception(
                 message: 'Invalid datatype set for Route',
@@ -265,34 +235,21 @@ class RouteParser
             );
         }
 
-        if (count(value: $preferredValues) > 0) {
-            switch ($mode) {
-                case 'include': // preferred values
-                    if (!in_array(needle: $element, haystack: $preferredValues)) {
-                        throw new \Exception(
-                            message: "'{$element}' not allowed in {$routeElement}",
-                            code: HttpStatus::$InternalServerError
-                        );
-                    }
-                    break;
-                case 'exclude': // exclude set values
-                    if (in_array(needle: $element, haystack: $preferredValues)) {
-                        throw new \Exception(
-                            message: "'{$element}' restricted in config {$routeElement}",
-                            code: HttpStatus::$InternalServerError
-                        );
-                    }
-                    break;
-            }
-        }
-
         if ($paramDataType === 'int' && ctype_digit(text: $element)) {
             $foundIntRoute = $routeElement;
             $foundIntParamName = $paramName;
+            DatabaseDataTypes::validateDataType(
+                data: $element,
+                dataType: $dataType
+            );
         }
         if ($paramDataType === 'string') {
             $foundStringRoute = $routeElement;
             $foundStringParamName = $paramName;
+            DatabaseDataTypes::validateDataType(
+                data: $element,
+                dataType: $dataType
+            );
         }
 
         return true;
@@ -387,10 +344,15 @@ class RouteParser
         $foundStringRoute = false;
         $foundStringParamName = false;
         foreach (array_keys(array: $routes) as $routeElement) {
-            if (strpos(haystack: $routeElement, needle: '{') === 0) {
+            if (
+                strpos(haystack: $routeElement, needle: '{') === 0
+                && isset($routes[$routeElement]['dataType'])
+            ) {
+                $dataType = $routes[$routeElement]['dataType'];
                 // Is a dynamic URI element
                 $this->processRouteElement(
                     routeElement: $routeElement,
+                    dataType: $dataType,
                     element: $element,
                     foundIntRoute: $foundIntRoute,
                     foundIntParamName: $foundIntParamName,

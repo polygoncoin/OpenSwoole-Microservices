@@ -16,6 +16,7 @@
 namespace Microservices\Config\Routes\Open;
 
 use Microservices\App\Constants;
+use Microservices\App\DatabaseDataTypes;
 
 return [
     'login' => [
@@ -32,7 +33,8 @@ return [
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'Category-search.php',
         ],
-        '{id:int|!0}' => [
+        '{id:int}' => [
+            'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$OPEN_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'Category-Single.php',

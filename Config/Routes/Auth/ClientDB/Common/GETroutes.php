@@ -16,6 +16,7 @@
 namespace Microservices\Config\Routes\Auth\CommonRoutes\Client;
 
 use Microservices\App\Constants;
+use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
 return [
@@ -34,7 +35,8 @@ return [
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'SearchCategory.php',
         ],
-        '{id:int|!0}' => [
+        '{id:int}' => [
+            'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .
@@ -44,7 +46,8 @@ return [
         ]
     ],
     'registration' => [
-        '{id:int|!0}'  => [
+        '{id:int}'  => [
+            'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .
@@ -54,7 +57,8 @@ return [
         ],
     ],
     'address' => [
-        '{id:int|!0}'  => [
+        '{id:int}'  => [
+            'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .
@@ -64,7 +68,8 @@ return [
         ],
     ],
     'registration-with-address' => [
-        '{id:int|!0}'  => [
+        '{id:int}'  => [
+            'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .
@@ -75,7 +80,8 @@ return [
     ],
     Env::$routesRequestRoute => [
         '__FILE__' => false,
-        '{method:string|GET, POST, PUT, PATCH, DELETE}' => [
+        '{method:string}' => [
+            'dataType' => DatabaseDataTypes::$HttpMethods,
             '__FILE__' => false
         ]
     ]

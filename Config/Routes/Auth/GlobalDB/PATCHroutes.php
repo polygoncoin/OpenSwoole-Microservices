@@ -16,10 +16,12 @@
 namespace Microservices\Config\Routes\Auth\CommonRoutes\GlobalDB;
 
 use Microservices\App\Constants;
+use Microservices\App\DatabaseDataTypes;
 
 return [
     'group' => [
-        '{id:int|!0}'  => [
+        '{id:int}'  => [
+            'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'GlobalDB' .
                 DIRECTORY_SEPARATOR . 'PATCH' .
@@ -48,7 +50,8 @@ return [
         ],
     ],
     'client' => [
-        '{id:int|!0}'  => [
+        '{id:int}'  => [
+            'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'GlobalDB' .
                 DIRECTORY_SEPARATOR . 'PATCH' .

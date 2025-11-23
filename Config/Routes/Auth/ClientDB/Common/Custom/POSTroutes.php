@@ -16,11 +16,13 @@
 namespace Microservices\Config\Routes\Auth\ClientDB\Common\Custom;
 
 use Microservices\App\Constants;
+use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
 return [
     Env::$customRequestRoutePrefix => [
         '{custom:string}' => [
+            'dataType' => DatabaseDataTypes::$Default,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .

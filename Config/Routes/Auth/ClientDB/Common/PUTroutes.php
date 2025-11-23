@@ -16,10 +16,12 @@
 namespace Microservices\Config\Routes\Auth\CommonRoutes\Client;
 
 use Microservices\App\Constants;
+use Microservices\App\DatabaseDataTypes;
 
 return [
     'registration' => [
-        '{id:int|!0}'  => [
+        '{id:int}'  => [
+            'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .
@@ -29,7 +31,8 @@ return [
         ],
     ],
     'address' => [
-        '{id:int|!0}'  => [
+        '{id:int}'  => [
+            'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .
