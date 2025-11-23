@@ -633,7 +633,7 @@ class Read
         }
 
         // Export
-        $export = new Export(dbType: $dbDetails['dbType']);
+        $export = new Export(dbServerType: $dbDetails['dbServerType']);
         $export->init(
             hostname: $dbDetails['dbHostname'],
             port: $dbDetails['dbPort'],

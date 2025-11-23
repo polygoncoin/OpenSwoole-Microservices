@@ -59,7 +59,7 @@ class Export
      *
      * @var null|string
      */
-    public $dbType = null;
+    public $dbServerType = null;
 
     /**
      * DB Object
@@ -71,14 +71,14 @@ class Export
     /**
      * Constructor
      *
-     * @param string $dbType Database Type (eg. MySql)
+     * @param string $dbServerType Database Type (eg. MySql)
      *
      * @throws \Exception
      */
-    public function __construct($dbType)
+    public function __construct($dbServerType)
     {
-        $this->dbType = $dbType;
-        $this->db = new Db(dbType: $this->dbType);
+        $this->dbServerType = $dbServerType;
+        $this->db = new Db(dbServerType: $this->dbServerType);
     }
 
     /**
@@ -127,12 +127,12 @@ class Export
         switch ($this->exportMode) {
             case 'TSV':
                 if ($linesArr[1] !== '1') {
-                    throw new \Exception(message: "Issue while connecting to {$this->dbType} TSV Host");
+                    throw new \Exception(message: "Issue while connecting to {$this->dbServerType} TSV Host");
                 }
                 break;
             case 'CSV':
                 if ($linesArr[1] !== '"1"') {
-                    throw new \Exception(message: "Issue while connecting to {$this->dbType} CSV Host");
+                    throw new \Exception(message: "Issue while connecting to {$this->dbServerType} CSV Host");
                 }
                 break;
         }

@@ -39,14 +39,23 @@ class Counter
      */
     public static function getGlobalCounter(): int
     {
-        DbFunctions::connectGlobalDb();
+        switch (Env::$gCounterMode) {
+            case 'Cache':
+                $key = Env::$gCounter;
+                DbFunctions::connectGlobalCache();
+                $id = DbFunctions::$gCacheServer->incrementCache($key);
+                break;
+            case 'Database':
+                DbFunctions::connectGlobalDb();
 
-        $table = Env::$gDbServerDatabase . '.' . Env::$counter;
-        $sql = "INSERT INTO {$table}() VALUES()";
-        $sqlParams = [];
+                $table = Env::$gDbServerDatabase . '.' . Env::$gCounter;
+                $sql = "INSERT INTO {$table}() VALUES()";
+                $sqlParams = [];
 
-        DbFunctions::$gDbServer->execDbQuery(sql: $sql, params: $sqlParams);
-        $id = DbFunctions::$gDbServer->lastInsertId();
+                DbFunctions::$gDbServer->execDbQuery(sql: $sql, params: $sqlParams);
+                $id = DbFunctions::$gDbServer->lastInsertId();
+                break;
+        }
 
         return $id;
     }

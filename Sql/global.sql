@@ -78,7 +78,7 @@ CREATE TABLE `m002_master_groups` (
 LOCK TABLES `m001_master_clients` WRITE;
 /*!40000 ALTER TABLE `m001_master_clients` DISABLE KEYS */;
 INSERT INTO `m001_master_clients` VALUES
-(1,'Client 001','localhost', 'public.localhost','cDbTypeClient001','cDbServerHostname001','dbPortClient001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbTypeClient001','cDbServerHostname001','dbPortClient001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','No','No');
+(1,'Client 001','localhost', 'public.localhost','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','No','No');
 /*!40000 ALTER TABLE `m001_master_clients` ENABLE KEYS */;
 UNLOCK TABLES;
 

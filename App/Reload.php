@@ -96,7 +96,7 @@ class Reload
                 value: json_encode(value: $cRows[$ci])
             );
             $db = DbFunctions::connectDb(
-                dbType: getenv(name: $cRows[$ci]['master_db_server_type']),
+                dbServerType: getenv(name: $cRows[$ci]['master_db_server_type']),
                 dbHostname: getenv(name: $cRows[$ci]['master_db_hostname']),
                 dbPort: getenv(name: $cRows[$ci]['master_db_port']),
                 dbUsername: getenv(name: $cRows[$ci]['master_db_username']),

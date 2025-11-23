@@ -43,10 +43,10 @@ class Db
      *
      * @var null|string
      */
-    public $dbType = null;
+    public $dbServerType = null;
 
     /**
-     * DB Class Object as per dbType
+     * DB Class Object as per dbServerType
      *
      * @var null|DbInterface
      */
@@ -55,12 +55,12 @@ class Db
     /**
      * Constructor
      *
-     * @param string $dbType Database Type (eg. MySql)
+     * @param string $dbServerType Database Type (eg. MySql)
      */
-    public function __construct($dbType)
+    public function __construct($dbServerType)
     {
-        $this->dbType = $dbType;
-        $class = "Microservices\\App\\Export\\Containers\\" . $this->dbType;
+        $this->dbServerType = $dbServerType;
+        $class = "Microservices\\App\\Export\\Containers\\" . $this->dbServerType;
         $this->containerObj = new $class();
     }
 

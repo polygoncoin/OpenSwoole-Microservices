@@ -52,12 +52,12 @@ class RateLimiter
      */
     public function __construct()
     {
-        $rateLimitHostType = getenv(name: 'rateLimitHostType');
+        $rateLimitServerType = getenv(name: 'rateLimitServerType');
         $rateLimitHost = getenv(name: 'rateLimitHost');
         $rateLimitHostPort = getenv(name: 'rateLimitHostPort');
 
         $this->cache = DbFunctions::connectCache(
-            cacheType: $rateLimitHostType,
+            cacheServerType: $rateLimitServerType,
             cacheHostname: $rateLimitHost,
             cachePort: $rateLimitHostPort,
             cacheUsername: '',

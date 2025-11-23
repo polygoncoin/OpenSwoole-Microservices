@@ -98,15 +98,15 @@ class DbFunctions
             return;
         }
 
-        $cacheType = getenv(name: 'sqlResultsCacheServerType');
-        if (!in_array($cacheType, ['Redis', 'Memcached', 'MongoDb', 'MySql', 'PostgreSql'])) {
+        $cacheServerType = getenv(name: 'sqlResultsCacheServerType');
+        if (!in_array($cacheServerType, ['Redis', 'Memcached', 'MongoDb', 'MySql', 'PostgreSql'])) {
             throw new \Exception(
                 message: 'Invalid query cache type',
                 code: HttpStatus::$InternalServerError
             );
         }
 
-        $sqlResultsCacheServerNS = 'Microservices\\App\\Servers\\QueryCache\\' . $cacheType . 'QueryCache';
+        $sqlResultsCacheServerNS = 'Microservices\\App\\Servers\\QueryCache\\' . $cacheServerType . 'QueryCache';
         self::$sqlResultsCacheServer = new $sqlResultsCacheServerNS(
             getenv(name: 'sqlResultsCacheServerHostname'),
             getenv(name: 'sqlResultsCacheServerPort'),
@@ -120,18 +120,18 @@ class DbFunctions
     /**
      * Set Cache
      *
-     * @param string $cacheType     Cache type
-     * @param string $cacheHostname Hostname
-     * @param int    $cachePort     Port
-     * @param string $cacheUsername Username
-     * @param string $cachePassword Password
-     * @param string $cacheDatabase Database
-     * @param string $cacheTable    Table
+     * @param string $cacheServerType Cache type
+     * @param string $cacheHostname   Hostname
+     * @param int    $cachePort       Port
+     * @param string $cacheUsername   Username
+     * @param string $cachePassword   Password
+     * @param string $cacheDatabase   Database
+     * @param string $cacheTable      Table
      *
      * @return object
      */
     public static function connectCache(
-        $cacheType,
+        $cacheServerType,
         $cacheHostname,
         $cachePort,
         $cacheUsername,
@@ -139,13 +139,13 @@ class DbFunctions
         $cacheDatabase,
         $cacheTable
     ): object {
-        if (!in_array($cacheType, ['Redis', 'Memcached', 'MongoDb'])) {
+        if (!in_array($cacheServerType, ['Redis', 'Memcached', 'MongoDb'])) {
             throw new \Exception(
                 message: 'Invalid Cache type',
                 code: HttpStatus::$InternalServerError
             );
         }
-        $cacheNS = 'Microservices\\App\\Servers\\Cache\\' . $cacheType . 'Cache';
+        $cacheNS = 'Microservices\\App\\Servers\\Cache\\' . $cacheServerType . 'Cache';
         return new $cacheNS(
             $cacheHostname,
             $cachePort,
@@ -167,7 +167,7 @@ class DbFunctions
             return;
         }
         self::$gCacheServer = self::connectCache(
-            cacheType: getenv(name: 'gCacheServerType'),
+            cacheServerType: getenv(name: 'gCacheServerType'),
             cacheHostname: getenv(name: 'gCacheServerHostname'),
             cachePort: getenv(name: 'gCacheServerPort'),
             cacheUsername: getenv(name: 'gCacheServerUsername'),
@@ -203,7 +203,7 @@ class DbFunctions
 
                 $masterCacheDetails = self::getCacheMasterDetails();
                 self::$masterCache = self::connectCache(
-                    cacheType: $masterCacheDetails['cacheType'],
+                    cacheServerType: $masterCacheDetails['cacheServerType'],
                     cacheHostname: $masterCacheDetails['cacheHostname'],
                     cachePort: $masterCacheDetails['cachePort'],
                     cacheUsername: $masterCacheDetails['cacheUsername'],
@@ -219,7 +219,7 @@ class DbFunctions
 
                 $slaveCacheDetails = self::getCacheSlaveDetails();
                 self::$slaveCache = self::connectCache(
-                    cacheType: $slaveCacheDetails['cacheType'],
+                    cacheServerType: $slaveCacheDetails['cacheServerType'],
                     cacheHostname: $slaveCacheDetails['cacheHostname'],
                     cachePort: $slaveCacheDetails['cachePort'],
                     cacheUsername: $slaveCacheDetails['cacheUsername'],
@@ -241,30 +241,30 @@ class DbFunctions
     /**
      * Set DB
      *
-     * @param string $dbType     Cache type
-     * @param string $dbHostname Hostname
-     * @param int    $dbPort     Port
-     * @param string $dbUsername Username
-     * @param string $dbPassword Password
-     * @param string $dbDatabase Database
+     * @param string $dbServerType Cache type
+     * @param string $dbHostname   Hostname
+     * @param int    $dbPort       Port
+     * @param string $dbUsername   Username
+     * @param string $dbPassword   Password
+     * @param string $dbDatabase   Database
      *
      * @return object
      */
     public static function connectDb(
-        $dbType,
+        $dbServerType,
         $dbHostname,
         $dbPort,
         $dbUsername,
         $dbPassword,
         $dbDatabase
     ): object {
-        if (!in_array($dbType, ['MySql', 'PostgreSql'])) {
+        if (!in_array($dbServerType, ['MySql', 'PostgreSql'])) {
             throw new \Exception(
-                message: 'Invalid Database type',
+                message: "Invalid Database type '{$dbServerType}'",
                 code: HttpStatus::$InternalServerError
             );
         }
-        $dbNS = 'Microservices\\App\\Servers\\Database\\' . $dbType . 'Database';
+        $dbNS = 'Microservices\\App\\Servers\\Database\\' . $dbServerType . 'Database';
         return new $dbNS(
             $dbHostname,
             $dbPort,
@@ -285,7 +285,7 @@ class DbFunctions
             return;
         }
         self::$gDbServer = self::connectDb(
-            dbType: getenv(name: 'gDbServerType'),
+            dbServerType: getenv(name: 'gDbServerType'),
             dbHostname: getenv(name: 'gDbServerHostname'),
             dbPort: getenv(name: 'gDbServerPort'),
             dbUsername: getenv(name: 'gDbServerUsername'),
@@ -320,7 +320,7 @@ class DbFunctions
 
                 $masterDbDetails = self::getDbMasterDetails();
                 self::$masterDb = self::connectDb(
-                    dbType: $masterDbDetails['dbType'],
+                    dbServerType: $masterDbDetails['dbServerType'],
                     dbHostname: $masterDbDetails['dbHostname'],
                     dbPort: $masterDbDetails['dbPort'],
                     dbUsername: $masterDbDetails['dbUsername'],
@@ -335,7 +335,7 @@ class DbFunctions
 
                 $slaveDbDetails = self::getDbSlaveDetails();
                 self::$slaveDb = self::connectDb(
-                    dbType: $slaveDbDetails['dbType'],
+                    dbServerType: $slaveDbDetails['dbServerType'],
                     dbHostname: $slaveDbDetails['dbHostname'],
                     dbPort: $slaveDbDetails['dbPort'],
                     dbUsername: $slaveDbDetails['dbUsername'],
@@ -429,7 +429,7 @@ class DbFunctions
     public static function getCacheMasterDetails(): array
     {
         return [
-            'cacheType' => getenv(name: Common::$req->s['cDetails']['master_cache_server_type']),
+            'cacheServerType' => getenv(name: Common::$req->s['cDetails']['master_cache_server_type']),
             'cacheHostname' => getenv(name: Common::$req->s['cDetails']['master_cache_hostname']),
             'cachePort' => getenv(name: Common::$req->s['cDetails']['master_cache_port']),
             'cacheUsername' => getenv(name: Common::$req->s['cDetails']['master_cache_username']),
@@ -449,7 +449,7 @@ class DbFunctions
     public static function getCacheSlaveDetails(): array
     {
         return [
-            'cacheType' => getenv(name: Common::$req->s['cDetails']['slave_cache_server_type']),
+            'cacheServerType' => getenv(name: Common::$req->s['cDetails']['slave_cache_server_type']),
             'cacheHostname' => getenv(name: Common::$req->s['cDetails']['slave_cache_hostname']),
             'cachePort' => getenv(name: Common::$req->s['cDetails']['slave_cache_port']),
             'cacheUsername' => getenv(name: Common::$req->s['cDetails']['slave_cache_username']),
@@ -469,7 +469,7 @@ class DbFunctions
     public static function getDbMasterDetails(): array
     {
         return [
-            'dbType' => getenv(name: Common::$req->s['cDetails']['master_db_server_type']),
+            'dbServerType' => getenv(name: Common::$req->s['cDetails']['master_db_server_type']),
             'dbHostname' => getenv(name: Common::$req->s['cDetails']['master_db_hostname']),
             'dbPort' => getenv(name: Common::$req->s['cDetails']['master_db_port']),
             'dbUsername' => getenv(name: Common::$req->s['cDetails']['master_db_username']),
@@ -488,7 +488,7 @@ class DbFunctions
     public static function getDbSlaveDetails(): array
     {
         return [
-            'dbType' => getenv(name: Common::$req->s['cDetails']['slave_db_server_type']),
+            'dbServerType' => getenv(name: Common::$req->s['cDetails']['slave_db_server_type']),
             'dbHostname' => getenv(name: Common::$req->s['cDetails']['slave_db_hostname']),
             'dbPort' => getenv(name: Common::$req->s['cDetails']['slave_db_port']),
             'dbUsername' => getenv(name: Common::$req->s['cDetails']['slave_db_username']),
