@@ -140,8 +140,8 @@ These DB/Cache configurations can be set in below columns respectively for each 
 ```ini
 ; ---- Rate Limit Server Details (Redis)
 ;used to save Rate Limiting related details
-rateLimitHost='127.0.0.1'     ; Redis host dealing with Rate limit
-rateLimitHostPort=6379        ; Redis host port
+rateLimitServerHostname='127.0.0.1'     ; Redis host dealing with Rate limit
+rateLimitServerPort=6379        ; Redis host port
 ```
 
 #### IP based Rate Limiting
