@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS `master_users`;
 
 CREATE TABLE `master_users` (
-  `id` BIGINT UNSIGNED NOT NULL,
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `firstname` varchar(255) NOT NULL,
   `lastname` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
@@ -22,14 +22,13 @@ CREATE TABLE `master_users` (
   `updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `is_approved` enum('Yes','No') NOT NULL DEFAULT 'No',
   `is_disabled` enum('Yes','No') NOT NULL DEFAULT 'No',
-  `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No',
-  UNIQUE INDEX users_id (`id`)
+  `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `address`;
 
 CREATE TABLE `address` (
-  `id` BIGINT UNSIGNED NOT NULL,
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `user_id` int NOT NULL DEFAULT 0,
   `address` varchar(255) NOT NULL,
   `created_by` int DEFAULT NULL,
@@ -40,14 +39,13 @@ CREATE TABLE `address` (
   `updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `is_approved` enum('Yes','No') NOT NULL DEFAULT 'No',
   `is_disabled` enum('Yes','No') NOT NULL DEFAULT 'No',
-  `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No',
-  UNIQUE INDEX address_id (`id`)
+  `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `category`;
 
 CREATE TABLE `category` (
-  `id` BIGINT UNSIGNED NOT NULL,
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `parent_id` int NOT NULL DEFAULT 0,
   `name` varchar(255) NOT NULL,
   `created_by` int DEFAULT NULL,
@@ -58,8 +56,7 @@ CREATE TABLE `category` (
   `updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `is_approved` enum('Yes','No') NOT NULL DEFAULT 'No',
   `is_disabled` enum('Yes','No') NOT NULL DEFAULT 'No',
-  `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No',
-  UNIQUE INDEX category_id (`id`)
+  `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `api_cache`;

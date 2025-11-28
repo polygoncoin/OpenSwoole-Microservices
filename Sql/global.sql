@@ -1,14 +1,13 @@
 DROP TABLE IF EXISTS `m000_counter`;
 
 CREATE TABLE `m000_counter` (
-  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8mb4;
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY AUTO_INCREMENT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `m001_master_clients`;
 
 CREATE TABLE `m001_master_clients` (
-  `id` BIGINT UNSIGNED NOT NULL,
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `name` varchar(255) DEFAULT NULL,
   `api_domain` varchar(255) DEFAULT NULL,
   `open_api_domain` varchar(255) DEFAULT NULL,
@@ -49,14 +48,13 @@ CREATE TABLE `m001_master_clients` (
   `updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `is_approved` enum('Yes','No') NOT NULL DEFAULT 'No',
   `is_disabled` enum('Yes','No') NOT NULL DEFAULT 'No',
-  `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No',
-  UNIQUE INDEX client_id (`id`)
+  `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `m002_master_groups`;
 
 CREATE TABLE `m002_master_groups` (
-  `id` BIGINT UNSIGNED NOT NULL,
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `name` varchar(100) NOT NULL,
   `client_id` int DEFAULT NULL,
   `allowed_ips` text,
@@ -71,9 +69,8 @@ CREATE TABLE `m002_master_groups` (
   `updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `is_approved` enum('Yes','No') NOT NULL DEFAULT 'No',
   `is_disabled` enum('Yes','No') NOT NULL DEFAULT 'No',
-  `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No',
-  UNIQUE INDEX group_id (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+  `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 LOCK TABLES `m001_master_clients` WRITE;
 /*!40000 ALTER TABLE `m001_master_clients` DISABLE KEYS */;

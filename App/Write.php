@@ -441,6 +441,9 @@ class Write
             }
 
             if (isset($wSqlConfig['__INSERT-IDs__'])) {
+                if (!Env::$useGlobalCounter) {
+                    $id = DbFunctions::$masterDb->lastInsertId();
+                }
                 $_response[$wSqlConfig['__INSERT-IDs__']] = $id;
                 Common::$req->s['__INSERT-IDs__'][$wSqlConfig['__INSERT-IDs__']] = $id;
             } else {

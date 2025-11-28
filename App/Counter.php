@@ -39,6 +39,13 @@ class Counter
      */
     public static function getGlobalCounter(): int
     {
+        if (!Env::$useGlobalCounter) {
+            throw new \Exception(
+                message: 'Enable use of Global Counter',
+                code: HttpStatus::$InternalServerError
+            );
+        }
+
         switch (Env::$gCounterMode) {
             case 'Cache':
                 $key = Env::$gCounter;

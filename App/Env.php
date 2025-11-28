@@ -40,6 +40,7 @@ class Env
     public static $allowConfigRequest = null;
     public static $configRequestRouteKeyword = null;
 
+    public static $useGlobalCounter = null;
     public static $gCounter = null;
     public static $gCounterMode = null;
 
@@ -98,6 +99,7 @@ class Env
         self::$allowConfigRequest = getenv(name: 'allowConfigRequest');
         self::$configRequestRouteKeyword = getenv(name: 'configRequestRouteKeyword');
 
+        self::$useGlobalCounter = (int)getenv(name: 'useGlobalCounter');
         self::$gCounter = getenv(name: 'gCounter');
         self::$gCounterMode = getenv(name: 'gCounterMode');
 
