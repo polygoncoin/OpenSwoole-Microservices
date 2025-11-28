@@ -572,7 +572,7 @@ class Write
      *
      * @return bool
      */
-    private function isValidPayload($wSqlConfig, $response): bool
+    private function isValidPayload($wSqlConfig, &$response): bool
     {
         $return = true;
         $isValidData = true;
@@ -582,7 +582,7 @@ class Write
             );
             if ($isValidData !== true) {
                 Common::$res->httpStatus = HttpStatus::$BadRequest;
-                $response['Error'] = $errors;
+                $response = $errors;
                 $return = false;
             }
         }

@@ -117,9 +117,9 @@ class ClientValidator implements ValidatorInterface
      *
      * @param array $args Arguments
      *
-     * @return int 0/1
+     * @return bool
      */
-    private function primaryKeyExist(&$args): int
+    private function primaryKeyExist(&$args): bool
     {
         extract(array: $args);
         $sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
@@ -127,6 +127,6 @@ class ClientValidator implements ValidatorInterface
         DbFunctions::$masterDb->execDbQuery(sql: $sql, params: $params);
         $row = DbFunctions::$masterDb->fetch();
         DbFunctions::$masterDb->closeCursor();
-        return (int)($row['count'] === 0) ? false : true;
+        return ($row['count'] === 0) ? false : true;
     }
 }

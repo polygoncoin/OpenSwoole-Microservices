@@ -271,11 +271,13 @@ class Read
                 // Query will return multiple rows
                 case 'multipleRowFormat':
                     if ($isFirstCall) {
-                        $this->dataEncode->startObject(key: 'Results');
                         if (isset($rSqlConfig['countQuery'])) {
+                            $this->dataEncode->startObject(key: 'Results');
                             $this->fetchRowsCount(rSqlConfig: $rSqlConfig);
+                            $this->dataEncode->startArray(key: 'Data');
+                        } else {
+                            $this->dataEncode->startArray(key: 'Results');
                         }
-                        $this->dataEncode->startArray(key: 'Data');
                     } else {
                         $this->dataEncode->startArray(
                             key: $configKeys[count(value: $configKeys) - 1]
@@ -369,6 +371,11 @@ class Read
                         );
                     }
                 }
+            }
+        } else {
+            if ($isFirstCall) {
+                Common::$res->httpStatus = HttpStatus::$NotFound;
+                return;
             }
         }
         DbFunctions::$$dbObj->closeCursor();
@@ -497,12 +504,12 @@ class Read
         }
 
         if ($isFirstCall) {
-            if (
-                isset(Common::$req->s['queryParams']['orderBy'])
-                && is_array(Common::$req->s['queryParams']['orderBy'])
-            ) {
+            if (isset(Common::$req->s['queryParams']['orderBy'])) {
                 $orderByStrArr = [];
-                $orderByArr = Common::$req->s['queryParams']['orderBy'];
+                $orderByArr = json_decode(
+                    json: Common::$req->s['queryParams']['orderBy'],
+                    associative: true
+                );
                 foreach ($orderByArr as $k => $v) {
                     $k = str_replace(search: ['`', ' '], replace: '', subject: $k);
                     $v = strtoupper(string: $v);
