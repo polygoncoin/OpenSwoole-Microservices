@@ -40,6 +40,11 @@ class Env
     public static $allowConfigRequest = null;
     public static $configRequestRouteKeyword = null;
 
+    // Export CSV
+    public static $allowExport = null;
+    public static $mySqlBinaryLocationOnWebServer = null;
+
+    // Global counter
     public static $useGlobalCounter = null;
     public static $gCounter = null;
     public static $gCounterMode = null;
@@ -99,6 +104,11 @@ class Env
         self::$allowConfigRequest = getenv(name: 'allowConfigRequest');
         self::$configRequestRouteKeyword = getenv(name: 'configRequestRouteKeyword');
 
+        // Export CSV
+        self::$allowExport = (int)getenv(name: 'allowExport');
+        self::$mySqlBinaryLocationOnWebServer = getenv(name: 'mySqlBinaryLocationOnWebServer');
+
+        // Global counter
         self::$useGlobalCounter = (int)getenv(name: 'useGlobalCounter');
         self::$gCounter = getenv(name: 'gCounter');
         self::$gCounterMode = getenv(name: 'gCounterMode');

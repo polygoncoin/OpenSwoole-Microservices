@@ -623,6 +623,10 @@ class Read
     {
         $return = [[], '', HttpStatus::$Ok];
 
+        if (!Env::$allowExport) {
+            return [[], '', HttpStatus::$NotFound];
+        }
+
         [$id, $sql, $sqlParams, $errors, $missExecution] = $this->getSqlAndParams(
             sqlDetails: $rSqlConfig
         );

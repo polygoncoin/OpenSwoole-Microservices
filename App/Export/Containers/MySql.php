@@ -15,6 +15,7 @@
 
 namespace Microservices\App\Export\Containers;
 
+use Microservices\App\Env;
 use Microservices\App\Export\DbInterface;
 
 /**
@@ -69,9 +70,9 @@ class MySql implements DbInterface
     /**
      * Mysql Client binary location (One can find this by "which mysql" command)
      *
-     * @var string
+     * @var null|string
      */
-    private $binaryLoc = '/opt/homebrew/Cellar/mysql@8.0/8.0.44/bin/mysql';
+    private $binaryLoc = null;
 
     /**
      * Constructor
@@ -89,6 +90,7 @@ class MySql implements DbInterface
                 );
             }
         }
+        $this->binaryLoc = Env::$mySqlBinaryLocationOnWebServer;
         if (!file_exists(filename: $this->binaryLoc)) {
             throw new \Exception(message: 'Issue: missing MySql Client locally');
         }
@@ -191,7 +193,8 @@ class MySql implements DbInterface
             hostname: $this->hostname,
             username: $this->username,
             password: $this->password,
-            database: $this->database
+            database: $this->database,
+            port: $this->port,
         );
         if (!$mysqli) {
             throw new \Exception(
@@ -267,6 +270,7 @@ class MySql implements DbInterface
         // Shell command.
         $shellCommand = $this->binaryLoc . ' '
             . '--host=' . escapeshellarg(arg: $this->hostname) . ' '
+            . '--port=' . escapeshellarg(arg: $this->port) . ' '
             . '--user=' . escapeshellarg(arg: $this->username) . ' '
             . '--password=' . escapeshellarg(arg: $this->password) . ' '
             . '--database=' . escapeshellarg(arg: $this->database) . ' '
