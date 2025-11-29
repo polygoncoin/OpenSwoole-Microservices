@@ -48,8 +48,7 @@ $server->on(
         $http['server']['ip'] = $request->server['remote_addr'];
         $http['header'] = $request->header;
         $http['get'] = &$request->get;
-        $http['post'] = &$request->post;
-        $http['files'] = &$request->files;
+        $http['post'] = $request->rawContent();
 
         if (
             isset($http['get'][ROUTE_URL_PARAM])

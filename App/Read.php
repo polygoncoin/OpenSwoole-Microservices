@@ -410,8 +410,8 @@ class Read
         unset($rSqlConfig['__COUNT-SQL-COMMENT__']);
         unset($rSqlConfig['countQuery']);
 
-        Common::$req->s['queryParams']['page']  = $_GET['page'] ?? 1;
-        Common::$req->s['queryParams']['perPage']  = $_GET['perPage'] ??
+        Common::$req->s['queryParams']['page']  = Common::$http['get']['page'] ?? 1;
+        Common::$req->s['queryParams']['perPage']  = Common::$http['get']['perPage'] ??
             Env::$defaultPerPage;
 
         if (Common::$req->s['queryParams']['perPage'] > Env::$maxResultsPerPage) {

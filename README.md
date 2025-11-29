@@ -1112,14 +1112,14 @@ This lists down all allowed routes for HTTP methods respectively.
 
 ### Login
 
-````javascript
-var handlerUrl = "http://127.0.0.1:9501?route=/login";
+```javascript
+var handlerUrl = "http://api.client001.localhost/Microservices/public_html/index.php?route=/login";
 var xmlhttp = new XMLHttpRequest();
 
-xmlhttp . open( "POST", handlerUrl);
-xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
+xmlhttp . open( "POST", handlerUrl );
+xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 
-xmlhttp . onreadystatechange = function() {
+xmlhttp . onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var responseJson = this.responseText;
         var responseArr = JSON.parse(responseJson);
@@ -1129,32 +1129,27 @@ xmlhttp . onreadystatechange = function() {
     }
 };
 
-// Payload data which is to be made available on the server for the "/ajax-handler".
 var payload = {
     "username":"client_1_user_1",
     "password":"shames11"
 };
 
-var jsonString = JSON.stringify(payload);
-var urlencodeJsonString = encodeURIComponent(jsonString);
-var params = "Payload="+urlencodeJsonString;
-
-xmlhttp . send( params);
-````
+xmlhttp . send( JSON.stringify(payload) );
+```
 
 ### For other API's
 
 * GET Request
 
-````javascript
-var handlerUrl = "http://127.0.0.1:9501?route=/routes";
+```javascript
+var handlerUrl = "http://api.client001.localhost/Microservices/public_html/index.php?route=/routes";
 var xmlhttp = new XMLHttpRequest();
 
-xmlhttp . open( "GET", handlerUrl);
+xmlhttp . open( "GET", handlerUrl );
 xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 xmlhttp . setRequestHeader('Authorization', 'Bearer <Token-from-login-api>');
 
-xmlhttp . onreadystatechange = function() {
+xmlhttp . onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var responseJson = this.responseText;
         var responseArr = JSON.parse(responseJson);
@@ -1163,19 +1158,19 @@ xmlhttp . onreadystatechange = function() {
 };
 
 xmlhttp . send();
-````
+```
 
 * POST Request
 
-````javascript
-var handlerUrl = "http://127.0.0.1:9501?route=/ajax-handler-route";
+```javascript
+var handlerUrl = "http://api.client001.localhost/Microservices/public_html/index.php?route=/ajax-handler-route";
 var xmlhttp = new XMLHttpRequest();
 
-xmlhttp . open( "POST", handlerUrl);
-xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
+xmlhttp . open( "POST", handlerUrl );
+xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
 
-xmlhttp . onreadystatechange = function() {
+xmlhttp . onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var responseJson = this.responseText;
         var responseArr = JSON.parse(responseJson);
@@ -1183,30 +1178,25 @@ xmlhttp . onreadystatechange = function() {
     }
 };
 
-// Payload data which is to be made available on the server for the "/ajax-handler".
 var payload = {
     "key1": "value1",
     "key2": "value2",
 };
 
-var jsonString = JSON.stringify(payload);
-var urlencodeJsonString = encodeURIComponent(jsonString);
-var params = "Payload="+urlencodeJsonString;
-
-xmlhttp . send( params);
-````
+xmlhttp . send( JSON.stringify(payload) );
+```
 
 * PUT Request
 
-````javascript
-var handlerUrl = "http://127.0.0.1:9501?route=/custom/password";
+```javascript
+var handlerUrl = "http://api.client001.localhost/Microservices/public_html/index.php?route=/custom/password";
 var xmlhttp = new XMLHttpRequest();
 
-xmlhttp . open( "PUT", handlerUrl);
-xmlhttp . setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
+xmlhttp . open( "PUT", handlerUrl );
+xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
 
-xmlhttp . onreadystatechange = function() {
+xmlhttp . onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var responseJson = this.responseText;
         var responseArr = JSON.parse(responseJson);
@@ -1214,25 +1204,20 @@ xmlhttp . onreadystatechange = function() {
     }
 };
 
-// Payload data which is to be made available on the server for the "/ajax-handler".
 var payload = {
     "old_password": "shames11",
     "new_password": "ramesh",
 };
 
-var jsonString = JSON.stringify(payload);
-var urlencodeJsonString = encodeURIComponent(jsonString);
-var params = "Payload="+urlencodeJsonString;
-
-xmlhttp . send( params);
-````
+xmlhttp . send( JSON.stringify(payload) );
+```
 
 * XML Request example
 
 ```javascript
-var handlerUrl = "http://127.0.0.1:9501?route=/registration-with-address&iRepresentation=XML&oRepresentation=XML";
+var handlerUrl = "http://public.localhost/Microservices/public_html/index.php?route=/registration-with-address&iRepresentation=XML&oRepresentation=XML";
 
-var xmlPayload = '<?xml version="1.0" encoding="UTF-8" ?>' +
+var payload = '<?xml version="1.0" encoding="UTF-8" ?>' +
 '<Payload>' +
 '    <Rows>' +
 '        <Row>' +
@@ -1260,21 +1245,18 @@ var xmlPayload = '<?xml version="1.0" encoding="UTF-8" ?>' +
 
 var xmlhttp = new XMLHttpRequest();
 
-xmlhttp . open( "POST", handlerUrl);
+xmlhttp . open( "POST", handlerUrl );
 xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 
-xmlhttp . onreadystatechange = function() {
+xmlhttp . onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         console.log(this.responseText);
     }
 };
 
-var urlencodeJsonString = encodeURIComponent(xmlPayload);
-var payload = "Payload="+urlencodeJsonString;
-
-xmlhttp . send( payload);
+xmlhttp . send( payload );
 ```
 
 ## License
 
-[MIT](LICENSE)
+[MIT](License)

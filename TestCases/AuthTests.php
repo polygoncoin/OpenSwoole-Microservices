@@ -25,9 +25,9 @@ if (!defined('GET')) {
 
 // $apiVersion = 'X-API-Version: v1.0.0';
 $cacheControl = 'Cache-Control: no-cache';
-$contentType = 'Content-Type: application/x-www-form-urlencoded; charset=utf-8';
+// $contentType = 'Content-Type: application/x-www-form-urlencoded; charset=utf-8';
 // $contentType = 'Content-Type: multipart/form-data; charset=utf-8';
-// $contentType = 'Content-Type: text/plain; charset=utf-8';
+$contentType = 'Content-Type: text/plain; charset=utf-8';
 
 $defaultHeaders = [];
 // $defaultHeaders[] = $apiVersion;
