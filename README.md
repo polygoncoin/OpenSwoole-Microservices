@@ -1095,6 +1095,13 @@ configRequestRouteKeyword='config' ;for appending /config at end of URI
 
 >For controlling globally there is a flag in env file labled **allowConfigRequest**
 
+Similarly, we have global configs for importing CSV
+```ini
+; Allow import CSV - 1 = true / 0 = false
+allowImportRequest=1
+importRequestRouteKeyword='import' ; to append /import at the end of route
+```
+
 ### route=/routes
 
 This lists down all allowed routes for HTTP methods respectively.
