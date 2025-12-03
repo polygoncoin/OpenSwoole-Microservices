@@ -17,9 +17,22 @@ namespace Microservices\App;
 
 use Microservices\App\Common;
 use Microservices\App\Constants;
+use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 
+/**
+ * RouteParser
+ * php version 8.3
+ *
+ * @category  RouteParser
+ * @package   Openswoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 class RouteParser
 {
     /**
@@ -42,6 +55,13 @@ class RouteParser
      * @var bool
      */
     public $isConfigRequest = false;
+
+    /**
+     * Is a import request flag
+     *
+     * @var bool
+     */
+    public $isImportRequest = false;
 
     /**
      * Raw route / Configured Path
@@ -116,7 +136,7 @@ class RouteParser
                 $this->routeHook[$key] = $element;
                 continue;
             }
-            $pos = false;
+
             if (isset($routes[$element])) {
                 $configuredRoute[] = $element;
                 $routes = &$routes[$element];
@@ -128,6 +148,13 @@ class RouteParser
                 && Env::$configRequestRouteKeyword === $element
             ) {
                 $this->isConfigRequest = true;
+                break;
+            } elseif (
+                $key === $routeLastElementPos
+                && Env::$allowImportRequest == 1
+                && Env::$importRequestRouteKeyword === $element
+            ) {
+                $this->isImportRequest = true;
                 break;
             } else {
                 if (
@@ -267,9 +294,13 @@ class RouteParser
     {
         // Set route code file
         if (
-            !(isset($routes['__FILE__'])
-            && ($routes['__FILE__'] === false
-            || file_exists(filename: $routes['__FILE__'])))
+            !(
+                isset($routes['__FILE__'])
+                && (
+                    $routes['__FILE__'] === false
+                    || file_exists(filename: $routes['__FILE__'])
+                )
+            )
         ) {
             throw new \Exception(
                 message: 'Missing config for ' . Common::$req->METHOD . ' method',

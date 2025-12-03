@@ -37,7 +37,7 @@ class Custom
      *
      * @var null|CustomInterface
      */
-    private $api = null;
+    private $customApi = null;
 
     /**
      * Constructor
@@ -56,9 +56,9 @@ class Custom
         $class = 'Microservices\\Supplement\\Custom\\' .
             ucfirst(string: Common::$req->rParser->routeElements[1]);
 
-        $this->api = new $class();
+        $this->customApi = new $class();
 
-        return $this->api->init();
+        return $this->customApi->init();
     }
 
     /**
@@ -71,6 +71,6 @@ class Custom
      */
     public function process($function, $payload): array
     {
-        return $this->api->$function($payload);
+        return $this->customApi->$function($payload);
     }
 }

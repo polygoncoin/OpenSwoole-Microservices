@@ -127,12 +127,18 @@ class Export
         switch ($this->exportMode) {
             case 'TSV':
                 if ($linesArr[1] !== '1') {
-                    throw new \Exception(message: "Issue while connecting to {$this->dbServerType} TSV Host");
+                    throw new \Exception(
+                        message: "Issue while connecting to {$this->dbServerType} TSV Host",
+                        code: HttpStatus::$InternalServerError
+                    );
                 }
                 break;
             case 'CSV':
                 if ($linesArr[1] !== '"1"') {
-                    throw new \Exception(message: "Issue while connecting to {$this->dbServerType} CSV Host");
+                    throw new \Exception(
+                        message: "Issue while connecting to {$this->dbServerType} CSV Host",
+                        code: HttpStatus::$InternalServerError
+                    );
                 }
                 break;
         }
@@ -150,13 +156,15 @@ class Export
     {
         if (!is_file(filename: $filename)) {
             throw new \Exception(
-                message: "File '{$filename}' is not a file"
+                message: "File '{$filename}' is not a file",
+                code: HttpStatus::$InternalServerError
             );
         }
 
         if (file_exists(filename: $filename)) {
             throw new \Exception(
-                message: "File '{$filename}' already exists"
+                message: "File '{$filename}' already exists",
+                code: HttpStatus::$InternalServerError
             );
         }
     }

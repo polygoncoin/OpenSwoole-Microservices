@@ -19,7 +19,7 @@ use Microservices\App\Common;
 use Microservices\Supplement\Upload\UploadInterface;
 
 /**
- * Cron API
+ * Upload API
  * php version 8.3
  *
  * @category  UploadAPI
@@ -37,7 +37,7 @@ class Upload
      *
      * @var null|UploadInterface
      */
-    private $api = null;
+    private $uploadApi = null;
 
     /**
      * Constructor
@@ -56,9 +56,9 @@ class Upload
         $class = 'Microservices\\Supplement\\Upload\\' .
             ucfirst(string: Common::$req->rParser->routeElements[1]);
 
-        $this->api = new $class();
+        $this->uploadApi = new $class();
 
-        return $this->api->init();
+        return $this->uploadApi->init();
     }
 
     /**
@@ -71,6 +71,6 @@ class Upload
      */
     public function process($function, $payload): array
     {
-        return $this->api->$function($payload);
+        return $this->uploadApi->$function($payload);
     }
 }

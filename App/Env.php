@@ -40,6 +40,9 @@ class Env
     public static $allowConfigRequest = null;
     public static $configRequestRouteKeyword = null;
 
+    public static $allowImportRequest = null;
+    public static $importRequestRouteKeyword = null;
+
     // Export CSV
     public static $allowExport = null;
     public static $mySqlBinaryLocationOnWebServer = null;
@@ -101,8 +104,11 @@ class Env
         self::$ENVIRONMENT = getenv(name: 'ENVIRONMENT');
         self::$OUTPUT_PERFORMANCE_STATS = getenv(name: 'OUTPUT_PERFORMANCE_STATS');
 
-        self::$allowConfigRequest = getenv(name: 'allowConfigRequest');
+        self::$allowConfigRequest = (int)getenv(name: 'allowConfigRequest');
         self::$configRequestRouteKeyword = getenv(name: 'configRequestRouteKeyword');
+
+        self::$allowImportRequest = (int)getenv(name: 'allowImportRequest');
+        self::$importRequestRouteKeyword = getenv(name: 'importRequestRouteKeyword');
 
         // Export CSV
         self::$allowExport = (int)getenv(name: 'allowExport');
@@ -117,28 +123,28 @@ class Env
         self::$groups = getenv(name: 'groups');
         self::$clientUsers = getenv(name: 'clientUsers');
 
-        self::$maxResultsPerPage = getenv(name: 'maxResultsPerPage');
-        self::$defaultPerPage = getenv(name: 'defaultPerPage');
+        self::$maxResultsPerPage = (int)getenv(name: 'maxResultsPerPage');
+        self::$defaultPerPage = (int)getenv(name: 'defaultPerPage');
 
-        self::$allowCronRequest = getenv(name: 'allowCronRequest');
+        self::$allowCronRequest = (int)getenv(name: 'allowCronRequest');
         self::$cronRequestRoutePrefix = getenv(name: 'cronRequestRoutePrefix');
         self::$cronRestrictedIp = getenv(name: 'cronRestrictedIp');
 
-        self::$allowRoutesRequest = getenv(name: 'allowRoutesRequest');
+        self::$allowRoutesRequest = (int)getenv(name: 'allowRoutesRequest');
         self::$routesRequestRoute = getenv(name: 'routesRequestRoute');
 
-        self::$allowCustomRequest = getenv(name: 'allowCustomRequest');
+        self::$allowCustomRequest = (int)getenv(name: 'allowCustomRequest');
         self::$customRequestRoutePrefix = getenv(name: 'customRequestRoutePrefix');
 
-        self::$allowUploadRequest = getenv(name: 'allowUploadRequest');
+        self::$allowUploadRequest = (int)getenv(name: 'allowUploadRequest');
         self::$uploadRequestRoutePrefix = getenv(name: 'uploadRequestRoutePrefix');
 
-        self::$allowThirdPartyRequest = getenv(name: 'allowThirdPartyRequest');
+        self::$allowThirdPartyRequest = (int)getenv(name: 'allowThirdPartyRequest');
         self::$thirdPartyRequestRoutePrefix = getenv(
             name: 'thirdPartyRequestRoutePrefix'
         );
 
-        self::$allowCacheRequest = getenv(name: 'allowCacheRequest');
+        self::$allowCacheRequest = (int)getenv(name: 'allowCacheRequest');
         self::$cacheRequestRoutePrefix = getenv(name: 'cacheRequestRoutePrefix');
 
         $iRepresentation = getenv(name: 'iRepresentation');
@@ -157,7 +163,7 @@ class Env
             self::$oRepresentation = getenv(name: 'oRepresentation');
         }
 
-        self::$allowGetRepresentation = getenv(name: 'allowGetRepresentation');
+        self::$allowGetRepresentation = (int)getenv(name: 'allowGetRepresentation');
 
         self::$sessionMode = getenv(name: 'sessionMode');
 

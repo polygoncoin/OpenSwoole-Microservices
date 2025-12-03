@@ -528,37 +528,56 @@ class Write
         ) {
             foreach ($wSqlConfig['__SUB-QUERY__'] as $module => &$wSqlConfig) {
                 $dataExists = false;
-                $payloadIndexes = $payloadIndexes;
-                $configKeys = $configKeys;
-                array_push($payloadIndexes, $module);
-                array_push($configKeys, $module);
-                $modulePayloadKey = is_array(value: $payloadIndexes) ?
-                    implode(separator: ':', array: $payloadIndexes) : '';
-                $dataExists = Common::$req->dataDecode->isset(
-                    keys: $modulePayloadKey
-                );
-                if ($useHierarchy && !$dataExists) { // use parent data of a payload
-                    throw new \Exception(
-                        message: "Invalid payload: Module '{$module}' missing",
-                        code: HttpStatus::$NotFound
+                $modulePayloadIndex = $payloadIndexes;
+                $moduleConfigKeys = $configKeys;
+                array_push($modulePayloadIndex, $module);
+                array_push($moduleConfigKeys, $module);
+
+                $modulePayloadIndexKey = is_array(value: $modulePayloadIndex) ?
+                    implode(separator: ':', array: $modulePayloadIndex) : '';
+                $isObject = Common::$req->dataDecode->dataType(
+                    keys: $modulePayloadIndexKey
+                ) === 'Object';
+
+                $iCount = $isObject ?
+                    1 : Common::$req->dataDecode->count(keys: $modulePayloadIndexKey);
+                
+                for ($i = 0; $i < $iCount; $i++) {
+                    $modulePayloadIndexItt = $modulePayloadIndex;
+                    if ($isObject) {
+                        $modulePayloadIndexIttKey = $modulePayloadIndexKey;
+                    } else {
+                        $modulePayloadIndexIttKey = "{$modulePayloadIndexKey}:{$i}";
+                        array_push($modulePayloadIndexItt, $i);
+                    }
+
+                    $dataExists = Common::$req->dataDecode->isset(
+                        keys: $modulePayloadIndexIttKey
                     );
-                }
-                if ($dataExists) {
-                    $necessary = $necessary[$module] ?? $necessary;
-                    $useHierarchy = $useHierarchy ?? $this->getUseHierarchy(
-                        sqlConfig: $wSqlConfig,
-                        keyword: 'useHierarchy'
-                    );
-                    $response[$module] = [];
-                    $response = &$response[$module];
-                    $this->writeDB(
-                        wSqlConfig: $wSqlConfig,
-                        payloadIndexes: $payloadIndexes,
-                        configKeys: $configKeys,
-                        useHierarchy: $useHierarchy,
-                        response: $response,
-                        necessary: $necessary
-                    );
+
+                    if ($useHierarchy && !$dataExists) { // use parent data of a payload
+                        throw new \Exception(
+                            message: "Invalid payload: Module '{$module}' missing",
+                            code: HttpStatus::$NotFound
+                        );
+                    }
+                    if ($dataExists) {
+                        $necessary = $necessary[$module] ?? $necessary;
+                        $useHierarchy = $useHierarchy ?? $this->getUseHierarchy(
+                            sqlConfig: $wSqlConfig,
+                            keyword: 'useHierarchy'
+                        );
+                        $response[$module] = [];
+                        $response = &$response[$module];
+                        $this->writeDB(
+                            wSqlConfig: $wSqlConfig,
+                            payloadIndexes: $modulePayloadIndexItt,
+                            configKeys: $moduleConfigKeys,
+                            useHierarchy: $useHierarchy,
+                            response: $response,
+                            necessary: $necessary
+                        );
+                    }
                 }
             }
         }

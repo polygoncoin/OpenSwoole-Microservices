@@ -1,10 +1,10 @@
 <?php
 
 /**
- * TestCases
+ * TestFunctions
  * php version 8.3
  *
- * @category  TestCases
+ * @category  TestFunctions
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -15,6 +15,18 @@
 
 namespace Microservices\TestCases;
 
+/**
+ * Test Functions
+ * php version 8.3
+ *
+ * @category  TestFunctions
+ * @package   Openswoole_Microservices
+ * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @copyright 2025 Ramesh N Jangid
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 class TestFunctions
 {
     /**
@@ -79,7 +91,8 @@ class TestFunctions
         $route,
         $queryString,
         $header = [],
-        $payload = ''
+        $payload = '',
+        $file = null
     ): array {
         $curlConfig[CURLOPT_URL] = "{$homeURL}?route={$route}{$queryString}";
         $curlConfig[CURLOPT_HTTPHEADER] = $header;
@@ -90,19 +103,17 @@ class TestFunctions
                 break;
             case 'POST':
                 $curlConfig[CURLOPT_POST] = true;
-                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
+                if ($file === null) {
+                    $curlConfig[CURLOPT_POSTFIELDS] = $payload;
+                }
                 break;
             case 'PUT':
-                $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PUT';
-                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
-                break;
             case 'PATCH':
-                $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PATCH';
-                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
-                break;
             case 'DELETE':
-                $curlConfig[CURLOPT_CUSTOMREQUEST] = 'DELETE';
-                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
+                $curlConfig[CURLOPT_CUSTOMREQUEST] = $method;
+                if ($file === null) {
+                    $curlConfig[CURLOPT_POSTFIELDS] = $payload;
+                }
                 break;
         }
         $curlConfig[CURLOPT_RETURNTRANSFER] = true;
@@ -130,7 +141,8 @@ class TestFunctions
         $method,
         $route,
         $header = [],
-        $payload = ''
+        $payload = '',
+        $file = null
     ): mixed {
         $queryString = '';
 
@@ -141,8 +153,14 @@ class TestFunctions
             route: $route,
             queryString: $queryString,
             header: $header,
-            payload: $payload
+            payload: $payload,
+            file: $file
         );
+        if ($file !== null) {
+            $fp = fopen($file, 'rb');
+            $curlConfig[CURLOPT_INFILE] = $fp;
+            $curlConfig[CURLOPT_INFILESIZE] = filesize($file);
+        }
 
         curl_setopt_array(handle: $curl, options: $curlConfig);
 
@@ -168,9 +186,6 @@ class TestFunctions
             )
         );
         $responseBody = substr(string: $curlResponse, offset: $headerSize);
-
-        $error = curl_error(handle: $curl);
-        curl_close(handle: $curl);
 
         $error = curl_error(handle: $curl);
         curl_close(handle: $curl);

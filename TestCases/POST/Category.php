@@ -52,7 +52,8 @@ $params = [
 return TestFunctions::trigger(
     homeURL: $homeURL,
     method: 'POST',
-    route: '/category',
+    route: '/category/import',
     header: $header,
-    payload: json_encode(value: $params)
+    payload: '',//json_encode(value: $params),
+    file: $curlFile
 );

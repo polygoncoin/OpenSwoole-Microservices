@@ -18,11 +18,11 @@ namespace Microservices\App;
 use Microservices\App\Constants;
 use Microservices\App\CacheKey;
 use Microservices\App\DataRepresentation\DataDecode;
+use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\DbFunctions;
 use Microservices\App\HttpStatus;
 use Microservices\App\Middleware\Auth;
 use Microservices\App\RouteParser;
-use Microservices\App\SessionHandlers\Session;
 
 /**
  * HTTP Request
@@ -237,9 +237,17 @@ class HttpRequest
      */
     private function setPayloadStream(): void
     {
-        $content = $this->http['post'];
-        if (Env::$iRepresentation === 'XML') {
-            $content = $this->convertXmlToJson(xmlString: $content);
+        switch (true) {
+            case Common::$req->rParser->isImportRequest:
+                $content = $this->formatCsvPayload(
+                    csvContent: $this->http['post']
+                );
+                break;
+            case Env::$iRepresentation === 'XML':
+                $content = $this->convertXmlToJson(xmlString: $this->http['post']);
+                break;
+            default:
+                $content = $this->http['post'];
         }
         $this->payloadStream = fopen(
             filename: "php://memory",
@@ -353,5 +361,152 @@ class HttpRequest
     private function loadCache(): void
     {
         DbFunctions::connectGlobalCache();
+    }
+
+    /**
+     * Format Csv Payload
+     *
+     * @param string $csvContent CSV
+     *
+     * @return string
+     */
+    public function formatCsvPayload(&$csvContent): string
+    {
+        $dataEncode = new DataEncode(http: $this->http);
+        $dataEncode->init(header: false);
+        $dataEncode->startObject();
+
+        $header = false;
+        $counter = null;
+        $modeArr = [];
+
+        foreach (explode("\n", $csvContent) as $line) {
+            $line = trim($line, "\r\n");
+            if (empty($line)) {
+                continue;
+            }
+            $data = str_getcsv($line, ",", "\"", "\\");
+            if (empty($data)) {
+                continue;
+            }
+            if ($header === false) {
+                $headerData = [];
+                foreach ($data as $key => $value) {
+                    $v = explode(':', $value);
+                    $_headerData = &$headerData;
+                    for (
+                        $i = 0, $i_count = count($v);
+                        $i < $i_count;
+                        $i++
+                    ) {
+                        if (($i+1) === $i_count) {
+                            $_headerData['__column__'][$v[$i]] = $key;
+                        } else {
+                            if (!isset($_headerData[$v[$i]])) {
+                                $_headerData[$v[$i]] = [];
+                            }
+                            $_headerData = &$_headerData[$v[$i]];
+                        }
+                    }
+                }
+                $header = $headerData;
+                $counter = 0;
+                continue;
+            }
+
+            [$_mode, $_data] = $this->formatCsvArray($header, $data);
+
+            if ($counter === 0) {
+                $modeArr = $_mode;
+                $dataEncode->startArray(key: $_mode[0]);
+                $dataEncode->startObject();
+                foreach ($_data as $k => $v) {
+                    $dataEncode->addKeyData(key: $k, data: $v);
+                }
+                $counter = 1;
+                continue;
+            }
+
+            if ($modeArr === $_mode) {
+                $dataEncode->endObject();
+                $dataEncode->startObject();
+            } else {
+                $_modeArr = [];
+                $modeCount = count($modeArr);
+                $_modeCount = count($_mode);
+
+                for (
+                    $i = 0;
+                    $i < $_modeCount;
+                    $i++
+                ) {
+                    if (
+                        !isset($modeArr[$i])
+                        || ($modeArr[$i] !== $_mode[$i])
+                    ) {
+                        break;
+                    }
+                    $_modeArr[$i] = $_mode[$i];
+                }
+                if ($_modeCount < $modeCount) {
+                    for ($_i = $_modeCount; $_i < $modeCount; $_i++) {
+                        $dataEncode->endObject();
+                        $dataEncode->endArray();
+                    }
+                    $dataEncode->endObject();
+                    $dataEncode->startObject();
+                }
+                if ($i < $_modeCount) {
+                    for ($_i = $i; $_i < $modeCount; $_i++) {
+                        $dataEncode->endObject();
+                        $dataEncode->endArray();
+                    }
+                    for ($_i = $i; $_i < $_modeCount; $_i++) {
+                        $_modeArr[$_i] = $_mode[$_i];
+                        $dataEncode->startArray(key: $_mode[$_i]);
+                        $dataEncode->startObject();
+                    }
+                }
+                $modeArr = $_modeArr;
+            }
+            foreach ($_data as $k => $v) {
+                $dataEncode->addKeyData(key: $k, data: $v);
+            }
+        }
+        $dataEncode->endObject();
+        $json = $dataEncode->getData();
+        $dataEncode = null;
+        $json = substr($json, 7, (strlen($json)-8));
+
+        return $json;
+    }
+
+    /**
+     * Format Csv Payload
+     *
+     * @param string $csvContent CSV string
+     *
+     * @return array
+     */
+    public function formatCsvArray($header, $data): array
+    {
+        $_data = [];
+        $_mode = explode(':', $data[0]);
+        $_header = &$header;
+
+        foreach ($_mode as $v) {
+            if (!isset($_header[$v])) {
+                return [];
+            }
+            $_header = &$_header[$v];
+        }
+        
+        foreach ($_header['__column__'] as $field => $col) {
+            if (!isset($data[$col])) {
+                return [];
+            }
+            $_data[$field] = $data[$col];
+        }
+        return [$_mode, $_data];
     }
 }

@@ -37,7 +37,7 @@ class ThirdParty
      *
      * @var null|ThirdPartyInterface
      */
-    private $api = null;
+    private $thirdPartyApi = null;
 
     /**
      * Constructor
@@ -56,9 +56,9 @@ class ThirdParty
         $class = 'Microservices\\Supplement\\ThirdParty\\' .
             ucfirst(string: Common::$req->rParser->routeElements[1]);
 
-        $this->api = new $class();
+        $this->thirdPartyApi = new $class();
 
-        return $this->api->init();
+        return $this->thirdPartyApi->init();
     }
 
     /**
@@ -71,6 +71,6 @@ class ThirdParty
      */
     public function process($function, $payload): array
     {
-        return $this->api->$function($payload);
+        return $this->thirdPartyApi->$function($payload);
     }
 }

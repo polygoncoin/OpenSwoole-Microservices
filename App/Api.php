@@ -38,13 +38,6 @@ use Microservices\App\Supplement;
 class Api
 {
     /**
-     * Route matched for processing before payload was collected
-     *
-     * @var null|bool
-     */
-    private $beforePayload = null;
-
-    /**
      * Hook object
      *
      * @var null|Hook
@@ -162,19 +155,18 @@ class Api
      */
     private function processBeforePayload(): bool
     {
-        $foundClass = false;
+        $supplementProcessed = false;
 
         if (
             Env::$allowRoutesRequest
             && Env::$routesRequestRoute === Common::$req->rParser->routeElements[0]
         ) {
-            $this->beforePayload = true;
             $supplementApiClass = __NAMESPACE__ . '\\Routes';
             $supplementObj = new $supplementApiClass();
             if ($supplementObj->init()) {
                 $supplementObj->process();
+                $supplementProcessed = true;
             }
-            $foundClass = true;
         } else {
             $supplementApiClass = null;
             switch (Common::$req->rParser->routeElements[0]) {
@@ -201,18 +193,17 @@ class Api
             }
 
             if (!empty($supplementApiClass)) {
-                $this->beforePayload = true;
                 $supplementObj = new $supplementApiClass();
                 $supplementObj->init();
                 $supplement = new Supplement();
                 if ($supplement->init(supplementObj: $supplementObj)) {
                     $supplement->process();
+                    $supplementProcessed = true;
                 }
-                $foundClass = true;
             }
         }
 
-        return $foundClass;
+        return $supplementProcessed;
     }
 
     /**

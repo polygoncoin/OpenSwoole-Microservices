@@ -38,7 +38,7 @@ class Cron
      *
      * @var null|CronInterface
      */
-    private $api = null;
+    private $cronApi = null;
 
     /**
      * Constructor
@@ -66,9 +66,9 @@ class Cron
         $class = 'Microservices\\Supplement\\Cron\\' .
             ucfirst(string: Common::$req->rParser->routeElements[1]);
 
-        $this->api = new $class();
+        $this->cronApi = new $class();
 
-        return $this->api->init();
+        return $this->cronApi->init();
     }
 
     /**
@@ -81,6 +81,6 @@ class Cron
      */
     public function process($function, $payload): array
     {
-        return $this->api->$function($payload);
+        return $this->cronApi->$function($payload);
     }
 }
