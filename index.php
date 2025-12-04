@@ -58,6 +58,7 @@ $server->on(
         $http['header'] = $request->header;
         $http['get'] = &$request->get;
         $http['post'] = $request->rawContent();
+        $http['files'] = &$request->files;
 
         if (
             isset($http['get'][ROUTE_URL_PARAM])

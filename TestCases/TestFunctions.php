@@ -157,11 +157,34 @@ class TestFunctions
             file: $file
         );
         if ($file !== null) {
-            $fp = fopen($file, 'rb');
-            $curlConfig[CURLOPT_INFILE] = $fp;
-            $curlConfig[CURLOPT_INFILESIZE] = filesize($file);
+            switch ($method) {
+                case 'POST':
+                    // // Create a CURLFile object
+                    // if (function_exists('curl_file_create')) {
+                    //     $cFile = curl_file_create($file, mime_content_type($file), basename($file));
+                    // } else {
+                    //     // Fallback for very old PHP versions (deprecated)
+                    //     $cFile = '@' . realpath($file);
+                    // }
+                    // $postData = array(
+                    //     'description' => 'A file upload test', // Other form fields go here
+                    //     'file' => $cFile // This name must match what your server expects
+                    // );
+                    // $curlConfig[CURLOPT_POSTFIELDS] = $postData;
+                    $curlFile = new \CURLFile($file, 'text/plain', 'uploaded_file.txt');
+                    $curlConfig[CURLOPT_POSTFIELDS] = [
+                        'file' => $curlFile
+                    ];
+                    break;
+                case 'PUT':
+                case 'PATCH':
+                case 'DELETE':
+                    $fp = fopen($file, 'rb');
+                    $curlConfig[CURLOPT_INFILE] = $fp;
+                    $curlConfig[CURLOPT_INFILESIZE] = filesize($file);
+                    break;
+            }
         }
-
         curl_setopt_array(handle: $curl, options: $curlConfig);
 
         $curlResponse = curl_exec(handle: $curl);
@@ -187,10 +210,11 @@ class TestFunctions
         );
         $responseBody = substr(string: $curlResponse, offset: $headerSize);
 
+        $errorNo = curl_errno($curl);
         $error = curl_error(handle: $curl);
         curl_close(handle: $curl);
 
-        if ($error) {
+        if ($errorNo) {
             echo PHP_EOL . '===>' . $responseBody . PHP_EOL;
             $response = [
                 'cURL Error #:' . $error,

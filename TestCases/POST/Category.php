@@ -18,7 +18,7 @@ namespace Microservices\TestCases;
 use Microservices\TestCases\TestFunctions;
 
 $header = $defaultHeaders;
-$header[] = $contentType;
+// $header[] = 'Content-Type: multipart/form-data; charset=utf-8';
 if (isset($token)) {
     $header[] = "Authorization: Bearer {$token}";
 }

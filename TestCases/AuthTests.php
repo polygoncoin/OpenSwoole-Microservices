@@ -29,9 +29,7 @@ $cacheControl = 'Cache-Control: no-cache';
 // $contentType = 'Content-Type: multipart/form-data; charset=utf-8';
 $contentType = 'Content-Type: text/plain; charset=utf-8';
 
-$filePath = __DIR__ . '/category.csv';
-$curlFile = $filePath;
-// $curlFile = new \CURLFile($filePath, 'text/plain', 'uploaded_file.txt');
+$curlFile = __DIR__ . '/category.csv';
 
 $defaultHeaders = [];
 // $defaultHeaders[] = $apiVersion;
@@ -50,10 +48,11 @@ $payload = [
 ];
 $response[] = include POST . DIRECTORY_SEPARATOR . 'Login.php';
 
-$response[] = include GET . DIRECTORY_SEPARATOR . 'Routes.php';
+// $response[] = include GET . DIRECTORY_SEPARATOR . 'Routes.php';
 
-$response[] = include POST . DIRECTORY_SEPARATOR . 'Config.php';
+// $response[] = include POST . DIRECTORY_SEPARATOR . 'Config.php';
 $response[] = include POST . DIRECTORY_SEPARATOR . 'Category.php';
+return '<pre>' . print_r(value: $response, return: true);
 $response[] = include POST . DIRECTORY_SEPARATOR . 'Registration.php';
 $response[] = include POST . DIRECTORY_SEPARATOR . 'Address.php';
 $response[] = include POST . DIRECTORY_SEPARATOR . 'RegistrationWithAddress.php';
