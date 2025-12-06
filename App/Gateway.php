@@ -99,6 +99,9 @@ class Gateway
 
             // User Rate Limiting
             $this->rateLimitUser();
+
+            // User Rate Limiting Request Delay
+            $this->rateLimitReqDelay();
         }
 
         // Rate limit open traffic (not limited by allowed IPs/CIDR and allowed
@@ -281,6 +284,27 @@ class Gateway
                 key: $key
             );
         }
+    }
+
+    /**
+     * Rate Limit Client Group User Request Delay
+     *
+     * @return void
+     */
+    private function rateLimitReqDelay(): void
+    {
+        $rateLimitUserPrefix = getenv(name: 'rateLimitUsersRequestPrefix');
+        $rateLimitMaxRequests = getenv(name: 'rateLimitUsersMaxRequests');
+        $rateLimitSecondsWindow = getenv(name: 'rateLimitUsersMaxRequestsWindow');
+        $key = Common::$req->s['cDetails']['id'] . ':' .
+            Common::$req->s['uDetails']['id'];
+
+        $this->rateLimitChecked = $this->checkRateLimit(
+            rateLimitPrefix: $rateLimitUserPrefix,
+            rateLimitMaxRequests: $rateLimitMaxRequests,
+            rateLimitSecondsWindow: $rateLimitSecondsWindow,
+            key: $key
+        );
     }
 
     /**

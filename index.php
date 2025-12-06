@@ -50,11 +50,35 @@ $server->on(
     'request',
     function(Request $request, Response $response): void {
 
+        // Load .env
+        $env = parse_ini_file(filename: __DIR__ . DIRECTORY_SEPARATOR . '.env');
+        foreach ($env as $key => $value) {
+            putenv(assignment: "{$key}={$value}");
+        }
+
         $http = [];
         $http['server']['host'] = 'localhost';
         // $http['server']['host'] = 'public.localhost';
         $http['server']['method'] = $request->server['request_method'];
-        $http['server']['ip'] = $request->server['remote_addr'];
+
+        if (
+            ((int)getenv('DISABLE_REQUESTS_VIA_VPN')) === 1
+            && !isset($request->server['remote_addr'])
+        ) {
+            $response->end("Invalid request");
+            return;
+        }
+
+        if (isset($request->server['remote_addr'])) {
+            $http['server']['ip'] = $request->server['remote_addr'];    
+        } else {// check proxy headers
+            if (isset($request->header['x-forwarded-for'])) {
+                $http['server']['ip'] = $request->header['x-forwarded-for'];
+            } elseif (isset($request->header['x-real-ip'])) {
+                $http['server']['ip'] = $request->header['x-real-ip'];
+            }
+        }
+
         $http['header'] = $request->header;
         $http['get'] = &$request->get;
         $http['post'] = $request->rawContent();
@@ -88,11 +112,6 @@ $server->on(
                     break;
             }
         } else {
-            // Load .env
-            $env = parse_ini_file(filename: __DIR__ . DIRECTORY_SEPARATOR . '.env');
-            foreach ($env as $key => $value) {
-                putenv(assignment: "{$key}={$value}");
-            }
 
             Constants::init();
             Env::init(http: $http);

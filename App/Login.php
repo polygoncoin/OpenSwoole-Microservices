@@ -21,6 +21,7 @@ use Microservices\App\Common;
 use Microservices\App\DbFunctions;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
+use Microservices\App\RateLimiter;
 use Microservices\App\SessionHandlers\Session;
 
 /**
@@ -95,6 +96,7 @@ class Login
      * Process
      *
      * @return bool
+     * @throws \Exception
      */
     public function process(): bool
     {
@@ -111,6 +113,23 @@ class Login
         $this->validateRequestIp();
         $this->validatePassword();
 
+        $rateLimiter = new RateLimiter();
+        $result = $rateLimiter->check(
+            prefix: getenv('rateLimitUsersPerIpPrefix'),
+            maxRequests: getenv('rateLimitUsersPerIpMaxUsers'),
+            secondsWindow: getenv('rateLimitUsersPerIpSecondsWindow'),
+            key: Common::$req->IP
+        );
+        if ($result['allowed']) {
+            // Process the request
+        } else {
+            // Return 429 Too Many Requests
+            throw new \Exception(
+                message: $result['resetAt'] - time(),
+                code: HttpStatus::$TooManyRequests
+            );
+        }
+        
         $this->timestamp = time();
         switch (Env::$authMode) {
             case 'Token':
