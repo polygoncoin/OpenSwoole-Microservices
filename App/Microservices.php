@@ -77,7 +77,6 @@ class Microservices
     public function init(): bool
     {
         Common::init(http: $this->http);
-        Common::initRequest();
 
         if (!isset($this->http['get'][ROUTE_URL_PARAM])) {
             throw new \Exception(
@@ -128,7 +127,7 @@ class Microservices
                 haystack: Common::$req->ROUTE,
                 needle: '/' . Env::$cronRequestRoutePrefix
             ) === 0:
-                if (Common::$req->IP !== Env::$cronRestrictedIp) {
+                if (Common::$req->IP !== Env::$cronRestrictedCidr) {
                     throw new \Exception(
                         message: 'Source IP is not supported',
                         code: HttpStatus::$NotFound
@@ -143,7 +142,7 @@ class Microservices
 
             // Requires HTTP auth username and password
             case Common::$req->ROUTE === '/reload':
-                if (Common::$req->IP !== Env::$cronRestrictedIp) {
+                if (Common::$req->IP !== Env::$cronRestrictedCidr) {
                     throw new \Exception(
                         message: 'Source IP is not supported',
                         code: HttpStatus::$NotFound

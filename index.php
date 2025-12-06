@@ -41,14 +41,14 @@ $server = new Server('127.0.0.1', 9501);
 
 $server->on(
     'start',
-    function (Server $server): void {
+    function(Server $server): void {
         echo 'Openswoole http server is started at http://127.0.0.1:9501' . "\n";
     }
 );
 
 $server->on(
     'request',
-    function (Request $request, Response $response): void {
+    function(Request $request, Response $response): void {
 
         $http = [];
         $http['server']['host'] = 'localhost';

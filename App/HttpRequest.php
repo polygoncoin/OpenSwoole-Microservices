@@ -164,6 +164,16 @@ class HttpRequest
      */
     public function init(): bool
     {
+        $this->loadClientDetails();
+
+        if (!$this->open) {
+            $this->auth->loadUserDetails();
+            $this->auth->loadGroupDetails();
+        }
+
+        $this->rParser->parseRoute();
+        DbFunctions::setDatabaseCacheKey();
+
         return true;
     }
 
@@ -503,7 +513,7 @@ class HttpRequest
             }
             $_header = &$_header[$v];
         }
-        
+
         foreach ($_header['__column__'] as $field => $col) {
             if (!isset($data[$col])) {
                 return [];

@@ -85,7 +85,7 @@ class CacheKey
      *
      * @return string
      */
-    public static function cidr($gID): string
+    public static function gCidr($gID): string
     {
         return "cidr:{$gID}";
     }

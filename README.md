@@ -13,7 +13,7 @@ This is a light & easy Openswoole based low code API generator using configurati
 - [Security](#security)
 - [HTTP Request](#http-request)
 - [Hierarchy Data](#hierarchy-data)
-- [Configuration Route](#configuration-route)
+- [Config and Import Route](#config-and-import-route)
 - [Database](#database)
 - [Javascript HTTP request example](#javascript-http-request-example)
 - [License](#license)
@@ -41,14 +41,20 @@ OUTPUT_PERFORMANCE_STATS=1      ;Add Performance Stats in JSON output: 1 = true 
 authMode='Token'
 sessionMode='File'  ; For Cookie based Session - 'File', 'MySql', 'PostgreSql', 'MongoDb', 'Redis', 'Memcached', 'Cookie'
 
-allowConfigRequest=1            ;Allow config request (global flag): 1 = true / 0 = false
-cronRestrictedIp='127.0.0.1'    ;Crons Details
-maxResultsPerPage=10000                ;Maximum value of per page (records per page)
+; Allow particular route config request (global flag) - 1 = true / 0 = false
+; Useful to get details of the payload for the API
+allowConfigRequest=1
+configRequestRouteKeyword='config' ; to append /config at the end of route
+
+; Allow import CSV - 1 = true / 0 = false
+allowImportRequest=1
+importRequestRouteKeyword='import' ; to append /import at the end of route
+importSampleRouteKeyword='import-sample'
 
 ; Data Representation: JSON/XML/HTML
 iRepresentation='JSON'          ; JSON/XML - Input Data Representation
 oRepresentation='JSON'          ; JSON/XML/HTML - Output Data Representation
-allowGetRepresentation=1        ; Allow iRepresentation / oRepresentation as GET query params
+allowRepresentationAsQueryParam=1        ; Allow iRepresentation / oRepresentation as GET query params
 ```
 
 ### Cache Server Details (Redis)
@@ -405,7 +411,7 @@ return [
         [ // Fetch value from function
             'column' => 'password',
             'fetchFrom' => 'function',                       // function
-            'fetchFromValue' => function ($session) {        // execute a function and return value
+            'fetchFromValue' => function($session) {        // execute a function and return value
                 return 'value';
             }
         ],
@@ -864,10 +870,17 @@ return [
 
 ### Allowed IPs
 
-Classless Inter-Domain Routing (CIDR) is a method for assigning IP addresses to devices on the internet. Multiple CIDR separated by comma can be set in (groups table) in **global** database.
+Classless Inter-Domain Routing (CIDR) is a method for assigning IP addresses to devices on the internet. Multiple CIDR separated by comma can be set in tables
 
 ```SQL
-`m002_master_groups`.`allowed_ips` text
+# Client level
+`m001_master_clients`.`allowed_cidrs` text DEFAULT NULL,
+
+# Group level
+`m002_master_groups`.`allowed_cidrs` text DEFAULT NULL,
+
+# User level
+`master_users`.`allowed_cidrs` text DEFAULT NULL,
 ```
 
 ### Rate Limiting
@@ -1077,7 +1090,7 @@ var payload = [
 ]
 ```
 
-## Configuration Route
+## Config and Import Route
 
 * Appending route with **/config** returns the payload information that should be supplied; both necessary and optional with desired format.
 
@@ -1100,6 +1113,7 @@ Similarly, we have global configs for importing CSV
 ; Allow import CSV - 1 = true / 0 = false
 allowImportRequest=1
 importRequestRouteKeyword='import' ; to append /import at the end of route
+importSampleRouteKeyword='import-sample'
 ```
 
 ### route=/routes
@@ -1126,7 +1140,7 @@ var xmlhttp = new XMLHttpRequest();
 xmlhttp . open( "POST", handlerUrl );
 xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 
-xmlhttp . onreadystatechange = function () {
+xmlhttp . onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         var responseJson = this.responseText;
         var responseArr = JSON.parse(responseJson);
@@ -1156,7 +1170,7 @@ xmlhttp . open( "GET", handlerUrl );
 xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 xmlhttp . setRequestHeader('Authorization', 'Bearer <Token-from-login-api>');
 
-xmlhttp . onreadystatechange = function () {
+xmlhttp . onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         var responseJson = this.responseText;
         var responseArr = JSON.parse(responseJson);
@@ -1177,7 +1191,7 @@ xmlhttp . open( "POST", handlerUrl );
 xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
 
-xmlhttp . onreadystatechange = function () {
+xmlhttp . onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         var responseJson = this.responseText;
         var responseArr = JSON.parse(responseJson);
@@ -1203,7 +1217,7 @@ xmlhttp . open( "PUT", handlerUrl );
 xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
 
-xmlhttp . onreadystatechange = function () {
+xmlhttp . onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         var responseJson = this.responseText;
         var responseArr = JSON.parse(responseJson);
@@ -1255,7 +1269,7 @@ var xmlhttp = new XMLHttpRequest();
 xmlhttp . open( "POST", handlerUrl );
 xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 
-xmlhttp . onreadystatechange = function () {
+xmlhttp . onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         console.log(this.responseText);
     }

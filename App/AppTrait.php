@@ -1020,4 +1020,74 @@ trait AppTrait
 
         return [$sqlParams, $errors];
     }
+
+    /**
+     * Process import function of configuration
+     *
+     * @param array $wSqlConfig   Config from file
+     * @param bool  $useHierarchy Use results in where clause of sub queries
+     *
+     * @return string
+     */
+    private function processImportConfig(&$wSqlConfig, $useHierarchy): string
+    {
+        $configParams = $this->getConfigParams(
+            sqlConfig: $wSqlConfig,
+            isFirstCall: true,
+            flag: $useHierarchy
+        );
+        $params = $this->genCsvHelper(
+            header: 'CSV',
+            configParams: $configParams
+        );
+
+        $header = [];
+        $header[] = '__mode__';
+        foreach ($params as $r => $p) {
+            if (is_array($p)) {
+                for ($i = 0, $iCount = count($p); $i < $iCount; $i++) {
+                    $header[] = $p[$i];
+                }
+            } else {
+                $header[] = $p;
+            }
+        }
+        $csv = '"' . implode(separator: '","', array: $header) . '"' . PHP_EOL;
+        $blankStr = '';
+        foreach ($params as $r => $p) {
+            if ($r === 'CSV') {
+                for ($i = 1, $iCount = count($header); $i < $iCount; $i++) {
+                    $blankStr = ',""';
+                }
+            }
+            $csv .= "{$r}{$blankStr}" . PHP_EOL;
+        }
+
+        return $csv;
+    }
+
+    /**
+     * Generate sample CSV helper
+     *
+     * @param string $header
+     * @param array  $configParams
+     *
+     * @return array
+     */
+    private function genCsvHelper($header, $configParams): array
+    {
+        $fields = [];
+        foreach ($configParams as $key => $value) {
+            if (isset($value['dataType'])) {
+                $fields[$header][] = "{$header}:{$key}";
+            } else {
+                $returnHeader = $this->genCsvHelper("{$header}:{$key}", $value);
+                foreach ($returnHeader as $k => $v) {
+                    $fields[$k] = $v;
+                }
+            }
+        }
+
+        return $fields;
+    }
 }

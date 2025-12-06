@@ -81,6 +81,16 @@ class Reload
         $cRows = DbFunctions::$gDbServer->fetchAll();
         DbFunctions::$gDbServer->closeCursor();
         for ($ci = 0, $ciCount = count(value: $cRows); $ci < $ciCount; $ci++) {
+            if ($cRows['allowed_cidrs'] !== null) {
+                $cCidrs = $this->cidrsIpNumber(cidrs: $cRows['allowed_cidrs']);
+                if (count(value: $cCidrs) > 0) {
+                    $cCidrKey = CacheKey::cCidr(cID: $cRows['id']);
+                    DbFunctions::$gCacheServer->setCache(
+                        key: $cCidrKey,
+                        value: json_encode(value: $cCidrs)
+                    );
+                }
+            }
             if (!empty($cRows[$ci]['open_api_domain'])) {
                 $c_key = CacheKey::clientOpenToWeb(
                     hostname: $cRows[$ci]['open_api_domain']
@@ -116,6 +126,16 @@ class Reload
             $uRows = $db->fetchAll();
             $db->closeCursor();
             for ($ui = 0, $uiCount = count(value: $uRows); $ui < $uiCount; $ui++) {
+                if ($uRows['allowed_cidrs'] !== null) {
+                    $uCidrs = $this->cidrsIpNumber(cidrs: $uRows['allowed_cidrs']);
+                    if (count(value: $uCidrs) > 0) {
+                        $uCidrKey = CacheKey::uCidr(uID: $uRows['id']);
+                        DbFunctions::$gCacheServer->setCache(
+                            key: $uCidrKey,
+                            value: json_encode(value: $uCidrs)
+                        );
+                    }
+                }
                 $cu_key = CacheKey::clientUser(
                     cID: $cRows[$ci]['id'],
                     username: $uRows[$ui]['username']
@@ -150,10 +170,10 @@ class Reload
         while ($gRows = DbFunctions::$gDbServer->fetch(\PDO::FETCH_ASSOC)) {
             $g_key = CacheKey::group(gID: $gRows['id']);
             DbFunctions::$gCacheServer->setCache(key: $g_key, value: json_encode(value: $gRows));
-            if (!empty($gRows['allowed_ips'])) {
-                $cidrs = $this->cidrsIpNumber(cidrs: $gRows['allowed_ips']);
+            if ($gRows['allowed_cidrs'] !== null) {
+                $cidrs = $this->cidrsIpNumber(cidrs: $gRows['allowed_cidrs']);
                 if (count(value: $cidrs) > 0) {
-                    $cidrKey = CacheKey::cidr(gID: $gRows['id']);
+                    $cidrKey = CacheKey::gCidr(gID: $gRows['id']);
                     DbFunctions::$gCacheServer->setCache(
                         key: $cidrKey,
                         value: json_encode(value: $cidrs)

@@ -92,9 +92,9 @@ class Supplement
     /**
      * Process
      *
-     * @return bool
+     * @return bool|array
      */
-    public function process(): bool
+    public function process(): bool|array
     {
         $Env = __NAMESPACE__ . '\Env';
 
@@ -103,6 +103,38 @@ class Supplement
 
         // Rate Limiting request if configured for Route Queries.
         $this->rateLimitRoute(sqlConfig: $sSqlConfig);
+
+        // Use results in where clause of sub queries recursively
+        $useHierarchy = $this->getUseHierarchy(
+            sqlConfig: $sSqlConfig,
+            keyword: 'useHierarchy'
+        );
+
+        if (Env::$allowConfigRequest) {
+            if (Common::$req->rParser->isConfigRequest) {
+                $this->processSupplementConfig(
+                    sSqlConfig: $sSqlConfig,
+                    useHierarchy: $useHierarchy
+                );
+                return true;
+            }
+            if (Common::$req->rParser->isImportSampleRequest) {
+                $filename = date('Ymd-His') . '-import-sample.csv';
+                $headers = [];
+                // Export headers
+                $headers['Content-type'] = 'text/csv';
+                $headers['Content-Disposition'] = "attachment; filename={$filename}";
+                $headers['Pragma'] = 'no-cache';
+                $headers['Expires'] = '0';
+
+                $csv = $this->processImportConfig(
+                    wSqlConfig: $wSqlConfig,
+                    useHierarchy: $useHierarchy
+                );
+
+                return [$headers, $csv, HttpStatus::$Ok];
+            }
+        }
 
         $this->dataEncode->XSLT = $sSqlConfig['XSLT'] ?? null;
 
@@ -116,32 +148,19 @@ class Supplement
         // Set Server mode to execute query on - Read / Write Server
         DbFunctions::setDbConnection(fetchFrom: 'Master');
 
-        // Use results in where clause of sub queries recursively
-        $useHierarchy = $this->getUseHierarchy(
-            sqlConfig: $sSqlConfig,
-            keyword: 'useHierarchy'
+        $this->processSupplement(
+            sSqlConfig: $sSqlConfig,
+            useHierarchy: $useHierarchy
         );
-
-        if (Env::$allowConfigRequest && Common::$req->rParser->isConfigRequest) {
-            $this->processSupplementConfig(
-                sSqlConfig: $sSqlConfig,
-                useHierarchy: $useHierarchy
-            );
-        } else {
-            $this->processSupplement(
-                sSqlConfig: $sSqlConfig,
-                useHierarchy: $useHierarchy
-            );
-            if (isset($sSqlConfig['affectedCacheKeys'])) {
-                for (
-                    $i = 0, $iCount = count(value: $sSqlConfig['affectedCacheKeys']);
-                    $i < $iCount;
-                    $i++
-                ) {
-                    DbFunctions::delQueryCache(
-                        cacheKey: $sSqlConfig['affectedCacheKeys'][$i]
-                    );
-                }
+        if (isset($sSqlConfig['affectedCacheKeys'])) {
+            for (
+                $i = 0, $iCount = count(value: $sSqlConfig['affectedCacheKeys']);
+                $i < $iCount;
+                $i++
+            ) {
+                DbFunctions::delQueryCache(
+                    cacheKey: $sSqlConfig['affectedCacheKeys'][$i]
+                );
             }
         }
 

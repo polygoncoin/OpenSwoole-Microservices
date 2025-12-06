@@ -58,15 +58,7 @@ class Api
      */
     public function init(): bool
     {
-        Common::$req->loadClientDetails();
-
-        if (!Common::$req->open) {
-            Common::$req->auth->loadUserDetails();
-            Common::$req->auth->loadGroupDetails();
-        }
-
-        Common::$req->rParser->parseRoute();
-        DbFunctions::setDatabaseCacheKey();
+        Common::initRequest();
 
         return true;
     }
@@ -98,7 +90,10 @@ class Api
         }
 
         // Load Payloads
-        if (!Common::$req->rParser->isConfigRequest) {
+        if (
+            !Common::$req->rParser->isConfigRequest
+            && !Common::$req->rParser->isImportSampleRequest
+        ) {
             Common::$req->loadPayload();
         }
 

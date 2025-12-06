@@ -54,8 +54,6 @@ class Cron
      */
     public function init(): bool
     {
-        Common::initRequest();
-
         $routeFileLocation = Constants::$AUTH_ROUTES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
             DIRECTORY_SEPARATOR . 'Common' .

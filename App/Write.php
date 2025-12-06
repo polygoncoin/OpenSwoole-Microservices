@@ -82,9 +82,9 @@ class Write
     /**
      * Process
      *
-     * @return bool
+     * @return bool|array
      */
-    public function process(): bool
+    public function process(): bool|array
     {
         $Env = __NAMESPACE__ . '\Env';
 
@@ -93,6 +93,38 @@ class Write
 
         // Rate Limiting request if configured for Route Queries.
         $this->rateLimitRoute(sqlConfig: $wSqlConfig);
+
+        // Use results in where clause of sub queries recursively
+        $useHierarchy = $this->getUseHierarchy(
+            sqlConfig: $wSqlConfig,
+            keyword: 'useHierarchy'
+        );
+
+        if (Env::$allowConfigRequest) {
+            if (Common::$req->rParser->isConfigRequest) {
+                $this->processWriteConfig(
+                    wSqlConfig: $wSqlConfig,
+                    useHierarchy: $useHierarchy
+                );
+                return true;
+            }
+            if (Common::$req->rParser->isImportSampleRequest) {
+                $filename = date('Ymd-His') . '-import-sample.csv';
+                $headers = [];
+                // Export headers
+                $headers['Content-type'] = 'text/csv';
+                $headers['Content-Disposition'] = "attachment; filename={$filename}";
+                $headers['Pragma'] = 'no-cache';
+                $headers['Expires'] = '0';
+
+                $csv = $this->processImportConfig(
+                    wSqlConfig: $wSqlConfig,
+                    useHierarchy: $useHierarchy
+                );
+
+                return [$headers, $csv, HttpStatus::$Ok];
+            }
+        }
 
         $this->dataEncode->XSLT = $wSqlConfig['XSLT'] ?? null;
 
@@ -106,32 +138,19 @@ class Write
         // Set Server mode to execute query on - Read / Write Server
         DbFunctions::setDbConnection(fetchFrom: 'Master');
 
-        // Use results in where clause of sub queries recursively
-        $useHierarchy = $this->getUseHierarchy(
-            sqlConfig: $wSqlConfig,
-            keyword: 'useHierarchy'
+        $this->processWrite(
+            wSqlConfig: $wSqlConfig,
+            useHierarchy: $useHierarchy
         );
-
-        if (Env::$allowConfigRequest && Common::$req->rParser->isConfigRequest) {
-            $this->processWriteConfig(
-                wSqlConfig: $wSqlConfig,
-                useHierarchy: $useHierarchy
-            );
-        } else {
-            $this->processWrite(
-                wSqlConfig: $wSqlConfig,
-                useHierarchy: $useHierarchy
-            );
-            if (isset($wSqlConfig['affectedCacheKeys'])) {
-                for (
-                    $i = 0, $iCount = count(value: $wSqlConfig['affectedCacheKeys']);
-                    $i < $iCount;
-                    $i++
-                ) {
-                    DbFunctions::delQueryCache(
-                        cacheKey: $wSqlConfig['affectedCacheKeys'][$i]
-                    );
-                }
+        if (isset($wSqlConfig['affectedCacheKeys'])) {
+            for (
+                $i = 0, $iCount = count(value: $wSqlConfig['affectedCacheKeys']);
+                $i < $iCount;
+                $i++
+            ) {
+                DbFunctions::delQueryCache(
+                    cacheKey: $wSqlConfig['affectedCacheKeys'][$i]
+                );
             }
         }
 
@@ -541,7 +560,7 @@ class Write
 
                 $iCount = $isObject ?
                     1 : Common::$req->dataDecode->count(keys: $modulePayloadIndexKey);
-                
+
                 for ($i = 0; $i < $iCount; $i++) {
                     $modulePayloadIndexItt = $modulePayloadIndex;
                     if ($isObject) {

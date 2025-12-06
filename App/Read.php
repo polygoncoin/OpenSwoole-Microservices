@@ -141,7 +141,10 @@ class Read
             keyword: 'useResultSet'
         );
 
-        if (Env::$allowConfigRequest && Common::$req->rParser->isConfigRequest) {
+        if (
+            Env::$allowConfigRequest
+            && Common::$req->rParser->isConfigRequest
+        ) {
             $this->processReadConfig(
                 rSqlConfig: $rSqlConfig,
                 useResultSet: $useResultSet

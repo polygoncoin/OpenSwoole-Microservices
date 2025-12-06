@@ -42,6 +42,7 @@ class Env
 
     public static $allowImportRequest = null;
     public static $importRequestRouteKeyword = null;
+    public static $importSampleRouteKeyword = null;
 
     // Export CSV
     public static $allowExport = null;
@@ -61,7 +62,7 @@ class Env
 
     public static $allowCronRequest = null;
     public static $cronRequestRoutePrefix = null;
-    public static $cronRestrictedIp = null;
+    public static $cronRestrictedCidr = null;
 
     public static $allowRoutesRequest = null;
     public static $routesRequestRoute = null;
@@ -81,7 +82,7 @@ class Env
     public static $iRepresentation = null;
     public static $oRepresentation = null;
 
-    public static $allowGetRepresentation = null;
+    public static $allowRepresentationAsQueryParam = null;
 
     public static $authMode = null;
     public static $sessionMode = null;
@@ -109,6 +110,7 @@ class Env
 
         self::$allowImportRequest = (int)getenv(name: 'allowImportRequest');
         self::$importRequestRouteKeyword = getenv(name: 'importRequestRouteKeyword');
+        self::$importSampleRouteKeyword = getenv(name: 'importSampleRouteKeyword');
 
         // Export CSV
         self::$allowExport = (int)getenv(name: 'allowExport');
@@ -128,7 +130,7 @@ class Env
 
         self::$allowCronRequest = (int)getenv(name: 'allowCronRequest');
         self::$cronRequestRoutePrefix = getenv(name: 'cronRequestRoutePrefix');
-        self::$cronRestrictedIp = getenv(name: 'cronRestrictedIp');
+        self::$cronRestrictedCidr = getenv(name: 'cronRestrictedCidr');
 
         self::$allowRoutesRequest = (int)getenv(name: 'allowRoutesRequest');
         self::$routesRequestRoute = getenv(name: 'routesRequestRoute');
@@ -163,7 +165,7 @@ class Env
             self::$oRepresentation = getenv(name: 'oRepresentation');
         }
 
-        self::$allowGetRepresentation = (int)getenv(name: 'allowGetRepresentation');
+        self::$allowRepresentationAsQueryParam = (int)getenv(name: 'allowRepresentationAsQueryParam');
 
         self::$sessionMode = getenv(name: 'sessionMode');
 

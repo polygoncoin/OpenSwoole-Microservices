@@ -39,9 +39,9 @@ return [
             'dataType' => DatabaseDataTypes::$INT
         ],
         [
-            'column' => 'allowed_ips',
+            'column' => 'allowed_cidrs',
             'fetchFrom' => 'payload',
-            'fetchFromValue' => 'allowed_ips'
+            'fetchFromValue' => 'allowed_cidrs'
         ],
         [
             'column' => 'comments',

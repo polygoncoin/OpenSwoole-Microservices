@@ -48,7 +48,7 @@ return array_merge(
             [
                 'column' => 'password_hash',
                 'fetchFrom' => 'function',
-                'fetchFromValue' => function ($session): string {
+                'fetchFromValue' => function($session): string {
                     return password_hash(
                         password: $session['payload']['password'],
                         algo: PASSWORD_DEFAULT

@@ -56,7 +56,7 @@ class Login
      *
      * @var array
      */
-    private $userDetails;
+    private $uDetails;
 
     /**
      * Current timestamp
@@ -176,15 +176,15 @@ class Login
                 code: HttpStatus::$Unauthorized
             );
         }
-        $this->userDetails = json_decode(
+        $this->uDetails = json_decode(
             json: DbFunctions::$gCacheServer->getCache(
                 key: $clientUserKey
             ),
             associative: true
         );
         if (
-            empty($this->userDetails['id'])
-            || empty($this->userDetails['id'])
+            empty($this->uDetails['id'])
+            || empty($this->uDetails['id'])
         ) {
             throw new \Exception(
                 message: 'Invalid credentials',
@@ -201,28 +201,38 @@ class Login
      */
     private function validateRequestIp(): void
     {
-        // Redis - one can find the userID from username
-        $cidrKey = CacheKey::cidr(gID: $this->userDetails['group_id']);
-        if (DbFunctions::$gCacheServer->cacheExists(key: $cidrKey)) {
-            $cidrs = json_decode(
-                json: DbFunctions::$gCacheServer->getCache(
-                    key: $cidrKey
-                ),
-                associative: true
-            );
-            $ipNumber = ip2long(ip: Common::$req->IP);
-            $isValidIp = false;
-            foreach ($cidrs as $cidr) {
-                if ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
-                    $isValidIp = true;
-                    break;
-                }
-            }
-            if (!$isValidIp) {
-                throw new \Exception(
-                    message: 'IP not supported',
-                    code: HttpStatus::$Unauthorized
+        $ipNumber = ip2long(ip: Common::$req->IP);
+    
+        $cCidrKey = CacheKey::cCidr(
+            cID: Common::$req->s['cDetails']['id']
+        );
+        $gCidrKey = CacheKey::gCidr(
+            gID: $this->uDetails['group_id']
+        );
+        $uCidrKey = CacheKey::uCidr(
+            uID: $this->uDetails['id']
+        );
+        foreach ([$cCidrKey, $gCidrKey, $uCidrKey] as $key) {
+            if (DbFunctions::$gCacheServer->cacheExists(key: $key)) {
+                $cidrs = json_decode(
+                    json: DbFunctions::$gCacheServer->getCache(
+                        key: $key
+                    ),
+                    associative: true
                 );
+                $isValidIp = false;
+                foreach ($cidrs as $cidr) {
+                    if ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
+                        $isValidIp = true;
+                        break;
+                    }
+                }
+                if (!$isValidIp) {
+                    throw new \Exception(
+                        message: 'IP not supported',
+                        code: HttpStatus::$BadRequest
+                    );
+                }
             }
         }
     }
@@ -239,7 +249,7 @@ class Login
         if (
             !password_verify(
                 password: $this->password,
-                hash: $this->userDetails['password_hash']
+                hash: $this->uDetails['password_hash']
             )
         ) {
             throw new \Exception(
@@ -290,7 +300,7 @@ class Login
         $tokenFound = false;
 
         $userTokenKey = CacheKey::userToken(
-            uID: $this->userDetails['id']
+            uID: $this->uDetails['id']
         );
         if (DbFunctions::$gCacheServer->cacheExists(key: $userTokenKey)) {
             $tokenDetails = json_decode(
@@ -330,11 +340,11 @@ class Login
                 ),
                 expire: Constants::$TOKEN_EXPIRY_TIME
             );
-            unset($this->userDetails['password_hash']);
+            unset($this->uDetails['password_hash']);
             DbFunctions::$gCacheServer->setCache(
                 key: CacheKey::token(token: $tokenDetails['token']),
                 value: json_encode(
-                    value: $this->userDetails
+                    value: $this->uDetails
                 ),
                 expire: Constants::$TOKEN_EXPIRY_TIME
             );
@@ -376,7 +386,7 @@ class Login
             params: [
                 ':token' => $tokenDetails['token'],
                 ':token_ts' => $tokenDetails['timestamp'],
-                ':id' => $this->userDetails['id']
+                ':id' => $this->uDetails['id']
             ]
         );
     }
@@ -395,7 +405,7 @@ class Login
 
         if (!$isLoggedIn) {
             $userSessionIdKey = CacheKey::userSessionId(
-                uID: $this->userDetails['id']
+                uID: $this->uDetails['id']
             );
             $expire = Constants::$TOKEN_EXPIRY_TIME;
             $timestamp = $this->timestamp;
@@ -415,13 +425,13 @@ class Login
                     ? Constants::$TOKEN_EXPIRY_TIME : $expire;
                 $timestamp = $userSessionIdKeyData['timestamp'];
             }
-            unset($this->userDetails['password_hash']);
-            $this->userDetails['timestamp'] = $timestamp;
+            unset($this->uDetails['password_hash']);
+            $this->uDetails['timestamp'] = $timestamp;
 
             // Start session in normal (read/write) mode.
             // Use once client is authorized and want to make changes in $_SESSION
             Session::sessionStartReadWrite();
-            $_SESSION = $this->userDetails;
+            $_SESSION = $this->uDetails;
 
             DbFunctions::$gCacheServer->setCache(
                 key: $userSessionIdKey,

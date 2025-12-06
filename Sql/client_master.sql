@@ -7,7 +7,7 @@ CREATE TABLE `master_users` (
   `email` varchar(255) NOT NULL,
   `username` varchar(255) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
-  `ip` varchar(255) NOT NULL,
+  `allowed_cidrs` text DEFAULT NULL,
   `group_id` int NOT NULL,
   `token` varchar(255) DEFAULT NULL,
   `token_ts` int UNSIGNED DEFAULT 0,

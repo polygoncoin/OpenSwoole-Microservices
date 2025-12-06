@@ -161,30 +161,39 @@ class Gateway
      */
     public function checkRemoteIp(): void
     {
-        $cidrKey = CacheKey::cidr(
+        $ipNumber = ip2long(ip: Common::$req->IP);
+    
+        $cCidrKey = CacheKey::cCidr(
+            cID: Common::$req->s['cDetails']['id']
+        );
+        $gCidrKey = CacheKey::gCidr(
             gID: Common::$req->s['uDetails']['group_id']
         );
-        if (DbFunctions::$gCacheServer->cacheExists(key: $cidrKey)) {
-            $this->cidrChecked = true;
-            $cidrs = json_decode(
-                json: DbFunctions::$gCacheServer->getCache(
-                    key: $cidrKey
-                ),
-                associative: true
-            );
-            $ipNumber = ip2long(ip: Common::$req->IP);
-            $isValidIp = false;
-            foreach ($cidrs as $cidr) {
-                if ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
-                    $isValidIp = true;
-                    break;
-                }
-            }
-            if (!$isValidIp) {
-                throw new \Exception(
-                    message: 'IP not supported',
-                    code: HttpStatus::$BadRequest
+        $uCidrKey = CacheKey::uCidr(
+            uID: Common::$req->s['uDetails']['id']
+        );
+        foreach ([$cCidrKey, $gCidrKey, $uCidrKey] as $key) {
+            if (DbFunctions::$gCacheServer->cacheExists(key: $key)) {
+                $this->cidrChecked = true;
+                $cidrs = json_decode(
+                    json: DbFunctions::$gCacheServer->getCache(
+                        key: $key
+                    ),
+                    associative: true
                 );
+                $isValidIp = false;
+                foreach ($cidrs as $cidr) {
+                    if ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
+                        $isValidIp = true;
+                        break;
+                    }
+                }
+                if (!$isValidIp) {
+                    throw new \Exception(
+                        message: 'IP not supported',
+                        code: HttpStatus::$BadRequest
+                    );
+                }
             }
         }
     }
