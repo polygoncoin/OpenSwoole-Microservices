@@ -19,6 +19,7 @@ This is a light & easy Openswoole based low code API generator using configurati
 ## Important Files
 
 - **.env.example** Create a copy of this file as **.env**
+- **.session.env.example** Create a copy of this file as **.session.env**
 - **Sql/global.sql** Import this SQL file on your **MySql global** instance
 - **Sql/client\_master.sql** Import this SQL file on your **MySql client** instance
 
