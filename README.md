@@ -142,6 +142,29 @@ These DB/Cache configurations can be set in below columns respectively for each 
 
 ### The Rate Limiting configurations can be set as below.
 
+```ini
+rateLimitServerType='Memcached'     ; Redis/Memcached host dealing for Rate limit
+rateLimitServerHostname='127.0.0.1' ; Redis host dealing with Rate limit
+rateLimitServerPort=11211           ; Redis-6379 / Memcached-11211
+rateLimitIPMaxRequests=600          ; Max request allowed per IP
+rateLimitIPSecondsWindow=300        ; Window in seconds of Max request allowed per IP
+rateLimitIPPrefix='IPRL:'           ; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to users)
+rateLimitClientPrefix='CRL:'        ; Client based Rate Limitng (GRL) key prefix used in Redis
+rateLimitGroupPrefix='GRL:'         ; Group based Rate Limitng (GRL) key prefix used in Redis
+rateLimitUserPrefix='URL:'          ; User based Rate Limitng (URL) key prefix used in Redis
+rateLimitRoutePrefix='RRL:'         ; Route based Rate Limiting (RRL) key prefix used in Redis
+
+; User Per IP based Rate Limiting
+rateLimitUsersPerIpPrefix='UIRL:'   ; User Per IP based Rate Limiting (UIRL) key prefix used in Redis
+rateLimitUsersPerIpMaxUsers=10      ; Max Users allowed per IP
+rateLimitUsersPerIpSecondsWindow=300; Window in seconds of Max Users allowed per IP
+
+; Delay Between Consecutive Requests (allow n requests only for seconds configured for each user)
+rateLimitUsersRequestPrefix='URRL:' ; User Per IP based Rate Limiting (UIRL) key prefix used in Redis
+rateLimitUsersMaxRequests=1         ; Max one request allowed for 10 seconds
+rateLimitUsersMaxRequestsWindow=10  ; Max one request allowed for 10 seconds
+```
+
 #### Cache server configuration for Rate Limiting
 ```ini
 ; ---- Rate Limit Server Details (Redis)
