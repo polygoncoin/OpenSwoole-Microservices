@@ -7,13 +7,10 @@ This is a light & easy Openswoole based low code API generator using configurati
 - [Important Files](#important-files)
 - [Environment File](#environment-file)
 - [Folders](#folders)
-- [Routes Folder](#routes-folder)
-- [Params Data Types Configuration Rules](#params-data-types-configuration-rules)
 - [Configuration Rules](#configuration-rules)
 - [HTTP Request](#http-request)
-- [Hierarchy Data](#hierarchy-data)
-- [Config and Import Route](#config-and-import-route)
-- [Database](#database)
+- [Hierarchy Configs](#hierarchy-configs)
+- [Special Routes](#special-routes)
 - [Javascript HTTP request example](#javascript-http-request-example)
 - [License](#license)
 
@@ -241,33 +238,30 @@ sqlResultsCacheServerTable='api_cache' ; For MySql / PostgreSql / MongoDb
 
 ### Files Folder
 
-- **Dropbox** Folder for uploaded files.
+- **Files** Folder for uploaded files.
 - **Logs** Folder for application Logs.
-
-### public\_html Folder
-
 - **Config** Basic configuration folder
 - **Hooks** Hooks.
 - **Supplement** Customised coding for APIs
 - **Validation** Contains validation classes.
 
-#### public\_html/Supplement Folder
+#### Supplement Folder
 
 - **Crons** Contains classes for cron API's
 - **Custom** Contains classes for custom API's
 - **ThirdParty** Contains classes for third-party API's
 - **Upload** Contains classes for upload file API's
 
-## Routes Folder
+### Routes Folder
 
-### public\_html/Config/Routes
+#### Config/Routes
 
 - **/Config/Routes/Auth/&lt;GroupName&gt;**
 - **/Config/Routes/Open**
 
 **&lt;GroupName&gt;** is the group user belongs to for accessing the API's
 
-### Files
+#### Files
 
 - **/GETroutes.php** for all GET method routes configuration.
 - **/POSTroutes.php** for all POST method routes configuration.
@@ -275,7 +269,7 @@ sqlResultsCacheServerTable='api_cache' ; For MySql / PostgreSql / MongoDb
 - **/PATCHroutes.php** for all PATCH method routes configuration.
 - **/DELETEroutes.php** for all DELETE method routes configuration.
 
-### Routes Configuration Rules
+#### Routes Configuration Rules
 
 * For configuring route **/tableName/parts** GET method
 ```PHP
@@ -357,15 +351,15 @@ return [
 
 > This '{id:int|!0}' means id is integer but can't be zero.
 
-## Queries Folder
+### Queries Folder
 
-### public\_html/Config/Queries
+#### Config/Queries
 
 - **/Config/Queries/Auth/GlobalDB** for global database.
 - **/Config/Queries/Auth/ClientDB** for Clients (including all hosts and their databases).
 - **/Config/Queries/Open** for Open to Web API's (No Authentication).
 
-### Files
+#### Files
 
 - **/GET/&lt;filenames&gt;.php** GET method SQL.
 - **/POST/&lt;filenames&gt;;.php** POST method SQL.
@@ -705,7 +699,7 @@ return [
 
 #### Available configuration options for Supplement
 
-> Here one can configure and collect payload to perform customized operations (for Supplement folder in public_html)
+> Here one can configure and collect payload to perform customized operations
 
 ```PHP
 //return represents root for sqlResults
@@ -897,6 +891,15 @@ return [
 ];
 ```
 
+#### Database
+
+- Dedicated database for respective client can be configured
+- This can also handle Master / Slave implementaion respectively
+
+###### fetchFrom
+
+- **fetchFrom** is a SQL config feature where one can force the fetch from Master (Since usually it is Slave)
+
 ## HTTP Request
 
 ### GET Request
@@ -968,7 +971,7 @@ var payload = [
 * **$sess\['sqlResults'\]** Hierarchy data.
 >For **GET** method, one can use previous query results if configured to use hierarchy.
 
-## Hierarchy Data
+## Hierarchy Configs
 
 - Config/Queries/ClientDB/GET/Category.php
 >In this file one can confirm how previous select data is used recursively in subQuery select as indicated by useHierarchy flag.
@@ -1066,8 +1069,9 @@ var payload = [
 ]
 ```
 
-## Config and Import Route
+## Special Routes
 
+### Config
 * Appending route with **/config** returns the payload information that should be supplied; both necessary and optional with desired format.
 
 Examples:
@@ -1084,6 +1088,7 @@ configRequestRouteKeyword='config' ;for appending /config at end of URI
 
 >For controlling globally there is a flag in env file labled **allowConfigRequest**
 
+### Import
 Similarly, we have global configs for importing CSV
 ```ini
 ; Allow import CSV - 1 = true / 0 = false
@@ -1094,23 +1099,14 @@ importSampleRouteKeyword='import-sample'
 
 ### route=/routes
 
-This lists down all allowed routes for HTTP methods respectively.
-
-## Database
-
-- Dedicated database for respective client can be configured
-- This can also handle Master / Slave implementaion respectively
-
-### fetchFrom
-
-- **fetchFrom** is a SQL config feature where one can force the fetch from Master (Since usually it is Slave)
+Lists down all the available routes with HTTP methods.
 
 ## Javascript HTTP request example
 
 ### Login
 
 ```javascript
-var handlerUrl = "http://api.client001.localhost/Microservices/public_html/index.php?route=/login";
+var handlerUrl = "http://127.0.0.1:9501?route=/login";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "POST", handlerUrl );
@@ -1139,7 +1135,7 @@ xmlhttp . send( JSON.stringify(payload) );
 * GET Request
 
 ```javascript
-var handlerUrl = "http://api.client001.localhost/Microservices/public_html/index.php?route=/routes";
+var handlerUrl = "http://127.0.0.1:9501?route=/routes";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "GET", handlerUrl );
@@ -1160,7 +1156,7 @@ xmlhttp . send();
 * POST Request
 
 ```javascript
-var handlerUrl = "http://api.client001.localhost/Microservices/public_html/index.php?route=/ajax-handler-route";
+var handlerUrl = "http://127.0.0.1:9501?route=/ajax-handler-route";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "POST", handlerUrl );
@@ -1186,7 +1182,7 @@ xmlhttp . send( JSON.stringify(payload) );
 * PUT Request
 
 ```javascript
-var handlerUrl = "http://api.client001.localhost/Microservices/public_html/index.php?route=/custom/password";
+var handlerUrl = "http://127.0.0.1:9501?route=/custom/password";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "PUT", handlerUrl );
@@ -1212,7 +1208,7 @@ xmlhttp . send( JSON.stringify(payload) );
 * XML Request example
 
 ```javascript
-var handlerUrl = "http://public.localhost/Microservices/public_html/index.php?route=/registration-with-address&iRepresentation=XML&oRepresentation=XML";
+var handlerUrl = "http://127.0.0.1:9501?route=/registration-with-address&iRepresentation=XML&oRepresentation=XML";
 
 var payload = '<?xml version="1.0" encoding="UTF-8" ?>' +
 '<Payload>' +
