@@ -10,7 +10,6 @@ This is a light & easy Openswoole based low code API generator using configurati
 - [Routes Folder](#routes-folder)
 - [Params Data Types Configuration Rules](#params-data-types-configuration-rules)
 - [SQL Configuration Rules](#sql-configuration-rules)
-- [Security](#security)
 - [HTTP Request](#http-request)
 - [Hierarchy Data](#hierarchy-data)
 - [Config and Import Route](#config-and-import-route)
@@ -34,12 +33,13 @@ This is a light & easy Openswoole based low code API generator using configurati
 Below are the configuration settings details in .env
 
 ```ini
-ENVIRONMENT=0                   ;Environment PRODUCTION = 1 / DEVELOPMENT = 0
-OUTPUT_PERFORMANCE_STATS=1      ;Add Performance Stats in JSON output: 1 = true / 0 = false
+ENVIRONMENT=0                       ;Environment PRODUCTION = 1 / DEVELOPMENT = 0
+OUTPUT_PERFORMANCE_STATS=1          ;Add Performance Stats in JSON output: 1 = true / 0 = false
+DISABLE_REQUESTS_VIA_PROXIES=1      ; 1 = true / 0 = false
 
 ; API authentication modes - Token / Session (Cookie based Sessions)
 authMode='Token'
-sessionMode='File'  ; For Cookie based Session - 'File', 'MySql', 'PostgreSql', 'MongoDb', 'Redis', 'Memcached', 'Cookie'
+sessionMode='File'                  ; For Cookie based Session - 'File', 'MySql', 'PostgreSql', 'MongoDb', 'Redis', 'Memcached', 'Cookie'
 
 ; Allow particular route config request (global flag) - 1 = true / 0 = false
 ; Useful to get details of the payload for the API
@@ -140,6 +140,21 @@ These DB/Cache configurations can be set in below columns respectively for each 
 `m001_master_clients`.`slave_cache_table` varchar(255) NOT NULL,
 ```
 
+### Allowed IPs
+
+Classless Inter-Domain Routing (CIDR) is a method for assigning IP addresses to devices on the internet. Multiple CIDR separated by comma can be set in tables.
+
+```SQL
+# Client level
+`m001_master_clients`.`allowed_cidrs` text DEFAULT NULL,
+
+# Group level
+`m002_master_groups`.`allowed_cidrs` text DEFAULT NULL,
+
+# User level
+`master_users`.`allowed_cidrs` text DEFAULT NULL,
+```
+
 ### The Rate Limiting configurations can be set as below.
 
 ```ini
@@ -194,7 +209,6 @@ rateLimitUsersMaxRequestsWindow=10  ; Max one request allowed for 10 seconds
 `master_users`.`rateLimitSecondsWindow` int DEFAULT NULL,
 ```
 
-
 #### Route based Rate Limiting
 ```ini
 rateLimitRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) key prefix used in Redis
@@ -225,18 +239,28 @@ sqlResultsCacheServerTable='api_cache' ; For MySql / PostgreSql / MongoDb
 
 ## Folders
 
-- **App** Basic application folder
-- **Config** Basic configuration folder
+### Files Folder
+
 - **Dropbox** Folder for uploaded files.
+- **Logs** Folder for application Logs.
+
+### public\_html Folder
+
+- **Config** Basic configuration folder
 - **Hooks** Hooks.
-- **public\_html** Applicatipn doc root folder
-- **Supplement/Crons** Contains classes for cron API's
-- **Supplement/Custom** Contains classes for custom API's
-- **Supplement/ThirdParty** Contains classes for third-party API's
-- **Supplement/Upload** Contains classes for upload file API's
+- **Supplement** Customised coding for APIs
 - **Validation** Contains validation classes.
 
+#### public\_html/Supplement Folder
+
+- **Crons** Contains classes for cron API's
+- **Custom** Contains classes for custom API's
+- **ThirdParty** Contains classes for third-party API's
+- **Upload** Contains classes for upload file API's
+
 ## Routes Folder
+
+### public\_html/Config/Routes
 
 - **/Config/Routes/Auth/&lt;GroupName&gt;**
 - **/Config/Routes/Open**
@@ -264,40 +288,29 @@ return [
 ];
 ```
 
-* For configuring route **/tableName/{id}** where id is dynamic **int** value to be collected.
+* For configuring route **/tableName/{id}** where id is dynamic **integer** value to be collected.
 ```PHP
 return [
     'tableName' => [
         '{id:int}' => [
+            'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => 'SQL file location'
         ]
     ]
 ];
 ```
 
-* Same dynamic variable but with a different data type, for e.g. **{id}** will be treated differently for **string** and **int** values to be collected.
+* Same dynamic variable but with a different data type, for e.g. **{id}** will be treated differently for **string** and **integer** values to be collected.
 ```PHP
 return [
     'tableName' => [
         '{id:int}' => [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => 'SQL file location for int data type'
+            '__FILE__' => 'SQL file location for integer data type'
         ],
         '{id:string}' => [
             'dataType' => DatabaseDataTypes::$Default,
             '__FILE__' => 'SQL file location for string data type'
-        ]
-    ]
-];
-```
-
-* To restrict dynamic values to a certain set of values. One can do the same by appending comma-separated values after OR key.
-```PHP
-return [
-    '{tableName:string}' => [
-        '{id:int}' => [
-            'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => 'SQL file location'
         ]
     ]
 ];
@@ -342,9 +355,11 @@ return [
 ];
 ```
 
-> This '{id:int|!0}' means id is int but can't be zero.
+> This '{id:int|!0}' means id is integer but can't be zero.
 
 ## Queries Folder
+
+### public\_html/Config/Queries
 
 - **/Config/Queries/Auth/GlobalDB** for global database.
 - **/Config/Queries/Auth/ClientDB** for Clients (including all hosts and their databases).
@@ -360,9 +375,9 @@ return [
 
 > One can replace **&lt;filenames&gt;** tag with desired name as per functionality.
 
-## Params Data Types Configuration Rules
+## Configuration Rules
 
-### Database Field DataTypes Configuration in DatabaseDataTypes class
+### Dynamic Field DataTypes Configuration
 
 ```PHP
 public static $CustomINT = [
@@ -882,23 +897,6 @@ return [
 ];
 ```
 
-## Security
-
-### Allowed IPs
-
-Classless Inter-Domain Routing (CIDR) is a method for assigning IP addresses to devices on the internet. Multiple CIDR separated by comma can be set in tables
-
-```SQL
-# Client level
-`m001_master_clients`.`allowed_cidrs` text DEFAULT NULL,
-
-# Group level
-`m002_master_groups`.`allowed_cidrs` text DEFAULT NULL,
-
-# User level
-`master_users`.`allowed_cidrs` text DEFAULT NULL,
-```
-
 ## HTTP Request
 
 ### GET Request
@@ -955,7 +953,7 @@ var payload = [
 
 ### HttpRequest Variables
 
-- **$sess\['userDetails'\]** Session Data.
+- **$sess\['uDetails'\]** Session Data.
 > This remains same for every request and contains keys like id, group\_id, client\_id
 
 - **$sess\['routeParams'\]** Data passed in URI.
@@ -983,7 +981,7 @@ var payload = [
 
 ```PHP
 return [
-    '__QUERY__' => 'INSERT INTO `category` SET __SET__",
+    '__QUERY__' => 'INSERT INTO `category` SET __SET__',
     '__SET__' => [
         'name' => ['payload', 'name'],
         'parent_id' => ['custom', 0],
@@ -991,7 +989,7 @@ return [
     '__INSERT-IDs__' => 'category:id',
     '__SUB-QUERY__' => [
         'module1' => [
-            '__QUERY__' => 'INSERT INTO `category` SET __SET__",
+            '__QUERY__' => 'INSERT INTO `category` SET __SET__',
             '__SET__' => [
                 'name' => ['payload', 'subname'],
                 'parent_id' => ['__INSERT-IDs__', 'category:id'],
@@ -1011,7 +1009,7 @@ return [
 var payload = {
     "name":"name",
     "module1": {
-        "subname":"subname",
+        "subname":"subname-value",
     }
 }
 ```

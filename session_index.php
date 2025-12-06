@@ -53,7 +53,7 @@ $server->on(
         $http['server']['method'] = $request->server['request_method'];
 
         if (
-            ((int)getenv('DISABLE_REQUESTS_VIA_VPN')) === 1
+            ((int)getenv('DISABLE_REQUESTS_VIA_PROXIES')) === 1
             && !isset($request->server['remote_addr'])
         ) {
             $response->end("Invalid request");
