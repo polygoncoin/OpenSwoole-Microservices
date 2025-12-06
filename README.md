@@ -21,7 +21,6 @@ This is a light & easy Openswoole based low code API generator using configurati
 - **.env.example** Create a copy of this file as **.env**
 - **Sql/global.sql** Import this SQL file on your **MySql global** instance
 - **Sql/client\_master.sql** Import this SQL file on your **MySql client** instance
-- **Sql/cache.sql** Import this SQL file for cache in **MySql cache** instance if Redis is not the choice (To be configured in .env)
 
 > **Note**: One can import all three sql's in a single database to start with. Just configure the same details in the .env file.
 
