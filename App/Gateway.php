@@ -101,7 +101,7 @@ class Gateway
             $this->rateLimitUser();
 
             // User Rate Limiting Request Delay
-            $this->rateLimitReqDelay();
+            $this->rateLimitUsersRequest();
         }
 
         // Rate limit open traffic (not limited by allowed IPs/CIDR and allowed
@@ -209,23 +209,26 @@ class Gateway
     private function rateLimitClient(): void
     {
         if (
-            !empty(Common::$req->s['cDetails']['rateLimitMaxRequests'])
-            && !empty(Common::$req->s['cDetails']['rateLimitSecondsWindow'])
+            ((int)getenv(name: 'enableRateLimitAtClientLevel')) === 0
+            || empty(Common::$req->s['cDetails']['rateLimitMaxRequests'])
+            || empty(Common::$req->s['cDetails']['rateLimitSecondsWindow'])
         ) {
-            $rateLimitClientPrefix = getenv(name: 'rateLimitClientPrefix');
-            $rateLimitMaxRequests
-                = Common::$req->s['cDetails']['rateLimitMaxRequests'];
-            $rateLimitSecondsWindow
-                = Common::$req->s['cDetails']['rateLimitSecondsWindow'];
-            $key = Common::$req->s['cDetails']['id'];
-
-            $this->rateLimitChecked = $this->checkRateLimit(
-                rateLimitPrefix: $rateLimitClientPrefix,
-                rateLimitMaxRequests: $rateLimitMaxRequests,
-                rateLimitSecondsWindow: $rateLimitSecondsWindow,
-                key: $key
-            );
+            return;
         }
+
+        $rateLimitClientPrefix = getenv(name: 'rateLimitClientPrefix');
+        $rateLimitMaxRequests
+            = Common::$req->s['cDetails']['rateLimitMaxRequests'];
+        $rateLimitSecondsWindow
+            = Common::$req->s['cDetails']['rateLimitSecondsWindow'];
+        $key = Common::$req->s['cDetails']['id'];
+
+        $this->rateLimitChecked = $this->checkRateLimit(
+            rateLimitPrefix: $rateLimitClientPrefix,
+            rateLimitMaxRequests: $rateLimitMaxRequests,
+            rateLimitSecondsWindow: $rateLimitSecondsWindow,
+            key: $key
+        );
     }
 
     /**
@@ -236,25 +239,28 @@ class Gateway
     private function rateLimitGroup(): void
     {
         if (
-            !empty(Common::$req->s['gDetails']['rateLimitMaxRequests'])
-            && !empty(Common::$req->s['gDetails']['rateLimitSecondsWindow'])
+            ((int)getenv(name: 'enableRateLimitAtGroupLevel')) === 0
+            || empty(Common::$req->s['gDetails']['rateLimitMaxRequests'])
+            || empty(Common::$req->s['gDetails']['rateLimitSecondsWindow'])
         ) {
-            $rateLimitGroupPrefix
-                = getenv(name: 'rateLimitGroupPrefix');
-            $rateLimitMaxRequests
-                = Common::$req->s['gDetails']['rateLimitMaxRequests'];
-            $rateLimitSecondsWindow
-                = Common::$req->s['gDetails']['rateLimitSecondsWindow'];
-            $key = Common::$req->s['cDetails']['id'] . ':' .
-                Common::$req->s['uDetails']['id'];
-
-            $this->rateLimitChecked = $this->checkRateLimit(
-                rateLimitPrefix: $rateLimitGroupPrefix,
-                rateLimitMaxRequests: $rateLimitMaxRequests,
-                rateLimitSecondsWindow: $rateLimitSecondsWindow,
-                key: $key
-            );
+            return;
         }
+
+        $rateLimitGroupPrefix
+            = getenv(name: 'rateLimitGroupPrefix');
+        $rateLimitMaxRequests
+            = Common::$req->s['gDetails']['rateLimitMaxRequests'];
+        $rateLimitSecondsWindow
+            = Common::$req->s['gDetails']['rateLimitSecondsWindow'];
+        $key = Common::$req->s['cDetails']['id'] . ':' .
+            Common::$req->s['uDetails']['id'];
+
+        $this->rateLimitChecked = $this->checkRateLimit(
+            rateLimitPrefix: $rateLimitGroupPrefix,
+            rateLimitMaxRequests: $rateLimitMaxRequests,
+            rateLimitSecondsWindow: $rateLimitSecondsWindow,
+            key: $key
+        );
     }
 
     /**
@@ -265,25 +271,28 @@ class Gateway
     private function rateLimitUser(): void
     {
         if (
-            !empty(Common::$req->s['uDetails']['rateLimitMaxRequests'])
-            && !empty(Common::$req->s['uDetails']['rateLimitSecondsWindow'])
+            ((int)getenv(name: 'enableRateLimitAtUserLevel')) === 0
+            || empty(Common::$req->s['uDetails']['rateLimitMaxRequests'])
+            || empty(Common::$req->s['uDetails']['rateLimitSecondsWindow'])
         ) {
-            $rateLimitUserPrefix = getenv(name: 'rateLimitUserPrefix');
-            $rateLimitMaxRequests
-                = Common::$req->s['gDetails']['rateLimitMaxRequests'];
-            $rateLimitSecondsWindow
-                = Common::$req->s['gDetails']['rateLimitSecondsWindow'];
-            $key = Common::$req->s['cDetails']['id'] . ':' .
-                Common::$req->s['uDetails']['id'] . ':' .
-                Common::$req->s['uDetails']['user_id'];
-
-            $this->rateLimitChecked = $this->checkRateLimit(
-                rateLimitPrefix: $rateLimitUserPrefix,
-                rateLimitMaxRequests: $rateLimitMaxRequests,
-                rateLimitSecondsWindow: $rateLimitSecondsWindow,
-                key: $key
-            );
+            return;
         }
+
+        $rateLimitUserPrefix = getenv(name: 'rateLimitUserPrefix');
+        $rateLimitMaxRequests
+            = Common::$req->s['gDetails']['rateLimitMaxRequests'];
+        $rateLimitSecondsWindow
+            = Common::$req->s['gDetails']['rateLimitSecondsWindow'];
+        $key = Common::$req->s['cDetails']['id'] . ':' .
+            Common::$req->s['uDetails']['id'] . ':' .
+            Common::$req->s['uDetails']['user_id'];
+
+        $this->rateLimitChecked = $this->checkRateLimit(
+            rateLimitPrefix: $rateLimitUserPrefix,
+            rateLimitMaxRequests: $rateLimitMaxRequests,
+            rateLimitSecondsWindow: $rateLimitSecondsWindow,
+            key: $key
+        );
     }
 
     /**
@@ -291,8 +300,12 @@ class Gateway
      *
      * @return void
      */
-    private function rateLimitReqDelay(): void
+    private function rateLimitUsersRequest(): void
     {
+        if (((int)getenv(name: 'enableRateLimitAtUsersRequestLevel')) === 0) {
+            return;
+        }
+
         $rateLimitUserPrefix = getenv(name: 'rateLimitUsersRequestPrefix');
         $rateLimitMaxRequests = getenv(name: 'rateLimitUsersMaxRequests');
         $rateLimitSecondsWindow = getenv(name: 'rateLimitUsersMaxRequestsWindow');
@@ -314,6 +327,10 @@ class Gateway
      */
     private function rateLimitIp(): void
     {
+        if (((int)getenv(name: 'enableRateLimitAtIpLevel')) === 0) {
+            return;
+        }
+
         $rateLimitIPPrefix = getenv(name: 'rateLimitIPPrefix');
         $rateLimitIPMaxRequests = getenv(name: 'rateLimitIPMaxRequests');
         $rateLimitIPSecondsWindow = getenv(name: 'rateLimitIPSecondsWindow');

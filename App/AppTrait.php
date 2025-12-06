@@ -659,35 +659,38 @@ trait AppTrait
     private function rateLimitRoute(&$sqlConfig): void
     {
         if (
-            isset($sqlConfig['rateLimitMaxRequests'])
-            && isset($sqlConfig['rateLimitSecondsWindow'])
+            ((int)getenv(name: 'enableRateLimitAtRouteLevel')) === 0
+            || !isset($sqlConfig['rateLimitMaxRequests'])
+            || !isset($sqlConfig['rateLimitSecondsWindow'])
         ) {
-            $payloadSignature = [
-                'IP' => Common::$req->IP,
-                'cID' => Common::$req->s['cDetails']['id'],
-                'gID' => (Common::$req->s['gDetails']['id'] !== null ?
-                    Common::$req->s['gDetails']['id'] : 0),
-                'uID' => (Common::$req->s['uDetails']['id'] !== null ?
-                    Common::$req->s['uDetails']['id'] : 0),
-                'httpMethod' => Common::$req->METHOD,
-                'Route' => Common::$req->ROUTE,
-            ];
-            // $hash = hash_hmac(
-            // 'sha256',
-            // json_encode($payloadSignature),
-            // getenv(name: 'IdempotentSecret')
-            // );
-            $hash = json_encode(value: $payloadSignature);
-            $hashKey = md5(string: $hash);
-
-            // @throws \Exception
-            $rateLimitChecked = $this->checkRateLimit(
-                rateLimitPrefix: getenv(name: 'rateLimitRoutePrefix'),
-                rateLimitMaxRequests: $sqlConfig['rateLimitMaxRequests'],
-                rateLimitSecondsWindow: $sqlConfig['rateLimitSecondsWindow'],
-                key: $hashKey
-            );
+            return;
         }
+
+        $payloadSignature = [
+            'IP' => Common::$req->IP,
+            'cID' => Common::$req->s['cDetails']['id'],
+            'gID' => (Common::$req->s['gDetails']['id'] !== null ?
+                Common::$req->s['gDetails']['id'] : 0),
+            'uID' => (Common::$req->s['uDetails']['id'] !== null ?
+                Common::$req->s['uDetails']['id'] : 0),
+            'httpMethod' => Common::$req->METHOD,
+            'Route' => Common::$req->ROUTE,
+        ];
+        // $hash = hash_hmac(
+        // 'sha256',
+        // json_encode($payloadSignature),
+        // getenv(name: 'IdempotentSecret')
+        // );
+        $hash = json_encode(value: $payloadSignature);
+        $hashKey = md5(string: $hash);
+
+        // @throws \Exception
+        $rateLimitChecked = $this->checkRateLimit(
+            rateLimitPrefix: getenv(name: 'rateLimitRoutePrefix'),
+            rateLimitMaxRequests: $sqlConfig['rateLimitMaxRequests'],
+            rateLimitSecondsWindow: $sqlConfig['rateLimitSecondsWindow'],
+            key: $hashKey
+        );
     }
 
     /**

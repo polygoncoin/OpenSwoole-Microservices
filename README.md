@@ -146,20 +146,32 @@ These DB/Cache configurations can be set in below columns respectively for each 
 rateLimitServerType='Memcached'     ; Redis/Memcached host dealing for Rate limit
 rateLimitServerHostname='127.0.0.1' ; Redis host dealing with Rate limit
 rateLimitServerPort=11211           ; Redis-6379 / Memcached-11211
+
+enableRateLimitAtIpLevel=1          ; 1 = true / 0 = false
 rateLimitIPMaxRequests=600          ; Max request allowed per IP
 rateLimitIPSecondsWindow=300        ; Window in seconds of Max request allowed per IP
 rateLimitIPPrefix='IPRL:'           ; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to users)
+
+enableRateLimitAtClientLevel=1      ; 1 = true / 0 = false
 rateLimitClientPrefix='CRL:'        ; Client based Rate Limitng (GRL) key prefix used in Redis
+
+enableRateLimitAtGroupLevel=1       ; 1 = true / 0 = false
 rateLimitGroupPrefix='GRL:'         ; Group based Rate Limitng (GRL) key prefix used in Redis
+
+enableRateLimitAtUserLevel=1        ; 1 = true / 0 = false
 rateLimitUserPrefix='URL:'          ; User based Rate Limitng (URL) key prefix used in Redis
+
+enableRateLimitAtRouteLevel=1       ; 1 = true / 0 = false
 rateLimitRoutePrefix='RRL:'         ; Route based Rate Limiting (RRL) key prefix used in Redis
 
 ; User Per IP based Rate Limiting
+enableRateLimitAtUsersPerIpLevel=1  ; 1 = true / 0 = false
 rateLimitUsersPerIpPrefix='UIRL:'   ; User Per IP based Rate Limiting (UIRL) key prefix used in Redis
 rateLimitUsersPerIpMaxUsers=10      ; Max Users allowed per IP
 rateLimitUsersPerIpSecondsWindow=300; Window in seconds of Max Users allowed per IP
 
 ; Delay Between Consecutive Requests (allow n requests only for seconds configured for each user)
+enableRateLimitAtUsersRequestLevel=1; 1 = true / 0 = false
 rateLimitUsersRequestPrefix='URRL:' ; User Per IP based Rate Limiting (UIRL) key prefix used in Redis
 rateLimitUsersMaxRequests=1         ; Max one request allowed for 10 seconds
 rateLimitUsersMaxRequestsWindow=10  ; Max one request allowed for 10 seconds
