@@ -9,7 +9,7 @@ This is a light & easy Openswoole based low code API generator using configurati
 - [Folders](#folders)
 - [Routes Folder](#routes-folder)
 - [Params Data Types Configuration Rules](#params-data-types-configuration-rules)
-- [SQL Configuration Rules](#sql-configuration-rules)
+- [Configuration Rules](#configuration-rules)
 - [HTTP Request](#http-request)
 - [Hierarchy Data](#hierarchy-data)
 - [Config and Import Route](#config-and-import-route)
@@ -377,7 +377,7 @@ return [
 
 ## Configuration Rules
 
-### Dynamic Field DataTypes Configuration
+### Defining Custom DataTypes
 
 ```PHP
 public static $CustomINT = [
