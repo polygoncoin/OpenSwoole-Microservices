@@ -15,6 +15,7 @@
 
 namespace Microservices\App\SessionHandlers\Containers;
 
+use Microservices\App\Common;
 use Microservices\App\SessionHandlers\Containers\SessionContainerInterface;
 use Microservices\App\SessionHandlers\Containers\SessionContainerHelper;
 
@@ -47,7 +48,6 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
             die('Please set encryption details in Session.php');
         }
 
-        $this->currentTimestamp = time();
     }
 
     /**
@@ -70,7 +70,7 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
             if (
                 isset($sessionDataArr['_TS_'])
                 && ($time = $sessionDataArr['_TS_'] + $this->sessionMaxLifetime)
-                && $time > $this->currentTimestamp
+                && $time > Common::$timestamp
             ) {
                 return $sessionData;
             }
@@ -89,7 +89,7 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
     public function setSession($sessionId, $sessionData): bool|int
     {
         $sessionDataArr = unserialize(data: $sessionData);
-        $sessionDataArr['_TS_'] = $this->currentTimestamp;
+        $sessionDataArr['_TS_'] = Common::$timestamp;
         $sessionData = serialize(value: $sessionDataArr);
 
         $cookieData = $this->encryptData(plainText: $sessionData);
@@ -149,7 +149,7 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
     public function touchSession($sessionId, $sessionData): bool
     {
         $sessionDataArr = unserialize(data: $sessionData);
-        $sessionDataArr['_TS_'] = $this->currentTimestamp;
+        $sessionDataArr['_TS_'] = Common::$timestamp;
         $sessionData = serialize(value: $sessionDataArr);
 
         $cookieData = $this->encryptData(plainText: $sessionData);

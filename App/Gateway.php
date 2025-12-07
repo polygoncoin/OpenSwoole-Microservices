@@ -143,7 +143,7 @@ class Gateway
             } else {
                 // Return 429 Too Many Requests
                 throw new \Exception(
-                    message: $result['resetAt'] - time(),
+                    message: $result['resetAt'] - Common::$timestamp,
                     code: HttpStatus::$TooManyRequests
                 );
             }

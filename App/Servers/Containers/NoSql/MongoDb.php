@@ -15,6 +15,7 @@
 
 namespace Microservices\App\Servers\Containers\NoSql;
 
+use Microservices\App\Common;
 use Microservices\App\HttpStatus;
 use Microservices\App\Servers\Containers\NoSql\NoSqlInterface;
 
@@ -227,7 +228,7 @@ class MongoDb implements NoSqlInterface
         } else {
             // Current UTC timestamp
             $document['expireAt'] = new MongoDB\BSON\UTCDateTime(
-                (time() + $expire) * 1000
+                (Common::$timestamp + $expire) * 1000
             );
             if ($this->collectionObj->insertOne($document)) {
                 return true;
@@ -250,7 +251,7 @@ class MongoDb implements NoSqlInterface
 
         $filter = ['key' => $key];
         $update = ['$inc' => ['value' => $offset]];
-        $result = $collectionObj->updateOne($filter, $update);
+        $result = $this->collectionObj->updateOne($filter, $update);
 
         return $result->getModifiedCount();
     }

@@ -15,6 +15,7 @@
 
 namespace Microservices\App\SessionHandlers\Containers;
 
+use Microservices\App\Common;
 use Microservices\App\SessionHandlers\Containers\SessionContainerInterface;
 use Microservices\App\SessionHandlers\Containers\SessionContainerHelper;
 
@@ -59,7 +60,6 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
     public function init($sessionSavePath, $sessionName): void
     {
         $this->connect();
-        $this->currentTimestamp = time();
     }
 
     /**
@@ -75,7 +75,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
             $filter = ['sessionId' => $sessionId];
 
             if ($document = $this->collection->findOne($filter)) {
-                $lastAccessed = $this->currentTimestamp - $this->sessionMaxLifetime;
+                $lastAccessed = Common::$timestamp - $this->sessionMaxLifetime;
                 if ($document['lastAccessed'] > $lastAccessed) {
                     return $this->decryptData(cipherText: $document['sessionData']);
                 }
@@ -99,7 +99,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
         try {
             $document = [
                 "sessionId" => $sessionId,
-                "lastAccessed" => $this->currentTimestamp,
+                "lastAccessed" => Common::$timestamp,
                 "sessionData" => $this->encryptData(plainText: $sessionData)
             ];
             if ($this->collection->insertOne($document)) {
@@ -125,7 +125,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
             $filter = ['sessionId' => $sessionId];
             $update = [
                 '$set' => [
-                    'lastAccessed' => $this->currentTimestamp,
+                    'lastAccessed' => Common::$timestamp,
                     "sessionData" => $this->encryptData(plainText: $sessionData)
                 ]
             ];
@@ -152,7 +152,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
             $filter = ['sessionId' => $sessionId];
             $update = [
                 '$set' => [
-                    'lastAccessed' => $this->currentTimestamp
+                    'lastAccessed' => Common::$timestamp
                 ]
             ];
 

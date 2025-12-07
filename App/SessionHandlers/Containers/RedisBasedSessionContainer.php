@@ -52,7 +52,6 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
     public function init($sessionSavePath, $sessionName): void
     {
         $this->connect();
-        $this->currentTimestamp = time();
     }
 
     /**

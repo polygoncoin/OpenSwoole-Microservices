@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Common;
 use Microservices\App\DbFunctions;
 
 /**
@@ -39,13 +40,6 @@ class RateLimiter
     private $cache = null;
 
     /**
-     * Current timestamp
-     *
-     * @var null|int
-     */
-    private $currentTimestamp = null;
-
-    /**
      * Constructor
      *
      * @param HttpRequest $req HTTP Request object
@@ -65,8 +59,6 @@ class RateLimiter
             cacheDatabase: '',
             cacheTable: ''
         );
-
-        $this->currentTimestamp = time();
     }
 
     /**
@@ -88,7 +80,7 @@ class RateLimiter
         $maxRequests = (int)$maxRequests;
         $secondsWindow = (int)$secondsWindow;
 
-        $remainder = $this->currentTimestamp % $secondsWindow;
+        $remainder = Common::$timestamp % $secondsWindow;
         $remainder = $remainder !== 0 ? $remainder : $secondsWindow;
 
         $key = $prefix . $key;
@@ -103,7 +95,7 @@ class RateLimiter
 
         $allowed = $requestCount <= $maxRequests;
         $remaining = max(0, $maxRequests - $requestCount);
-        $resetAt = $this->currentTimestamp + $remainder;
+        $resetAt = Common::$timestamp + $remainder;
 
         if ($allowed) {
             $this->cache->incrementCache($key);

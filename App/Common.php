@@ -33,6 +33,13 @@ use Microservices\App\HttpResponse;
 class Common
 {
     /**
+     * Unix timestamp
+     *
+     * @var null|int
+     */
+    public static $timestamp = null;
+
+    /**
      * Microservices HTTP Request
      *
      * @var null|HttpRequest
@@ -62,6 +69,7 @@ class Common
      */
     public static function init(&$http): void
     {
+        self::$timestamp = time();
         self::$http = &$http;
         self::$req = new HttpRequest(http: self::$http);
         self::$res = new HttpResponse(http: self::$http);

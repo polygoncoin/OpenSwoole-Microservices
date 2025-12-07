@@ -15,6 +15,7 @@
 
 namespace Microservices\App\CacheHandlers;
 
+use Microservices\App\Common;
 use Microservices\App\HttpStatus;
 
 /**
@@ -144,7 +145,7 @@ class StreamVideo
 
         $gmDate = gmdate(
             format: 'D, d M Y H:i:s',
-            timestamp: time() + $this->cacheDuration
+            timestamp: Common::$timestamp + $this->cacheDuration
         );
         $headers['Content-Type'] = $this->mimeType;
         $headers['Cache-Control'] = 'max-age=' . $this->cacheDuration . ', public';

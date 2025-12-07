@@ -42,9 +42,6 @@ class SessionContainerHelper
     // Usually 128-bit iv
     public $iv = null;
 
-    // Current timestamp
-    public $currentTimestamp = null;
-
     // Session Start $options param
     public $sessionOptions = null;
 

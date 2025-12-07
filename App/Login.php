@@ -60,13 +60,6 @@ class Login
     private $uDetails;
 
     /**
-     * Current timestamp
-     *
-     * @var int
-     */
-    private $timestamp;
-
-    /**
      * Payload
      *
      * @var array
@@ -126,13 +119,12 @@ class Login
             } else {
                 // Return 429 Too Many Requests
                 throw new \Exception(
-                    message: $result['resetAt'] - time(),
+                    message: $result['resetAt'] - Common::$timestamp,
                     code: HttpStatus::$TooManyRequests
                 );
             }
         }
         
-        $this->timestamp = time();
         switch (Env::$authMode) {
             case 'Token':
                 $this->outputTokenDetails();
@@ -303,7 +295,7 @@ class Login
                 );
                 $tokenDetails = [
                     'token' => $token,
-                    'timestamp' => $this->timestamp
+                    'timestamp' => Common::$timestamp
                 ];
                 break;
             }
@@ -338,7 +330,7 @@ class Login
                     )
                 )
             ) {
-                $time = $this->timestamp - $tokenDetails['timestamp'];
+                $time = Common::$timestamp - $tokenDetails['timestamp'];
                 if ((Constants::$TOKEN_EXPIRY_TIME - $time) > 0) {
                     $tokenFound = true;
                 } else {
@@ -372,7 +364,7 @@ class Login
             $this->updateDB(tokenDetails: $tokenDetails);
         }
 
-        $time = $this->timestamp - $tokenDetails['timestamp'];
+        $time = Common::$timestamp - $tokenDetails['timestamp'];
         $output = [
             'Token' => $tokenDetails['token'],
             'Expires' => (Constants::$TOKEN_EXPIRY_TIME - $time)
@@ -429,7 +421,7 @@ class Login
                 uID: $this->uDetails['id']
             );
             $expire = Constants::$TOKEN_EXPIRY_TIME;
-            $timestamp = $this->timestamp;
+            $timestamp = Common::$timestamp;
             if (DbFunctions::$gCacheServer->cacheExists(key: $userSessionIdKey)) {
                 $userSessionIdKeyData = json_decode(
                     json: DbFunctions::$gCacheServer->getCache(
@@ -441,7 +433,7 @@ class Login
                     key: $userSessionIdKey
                 );
                 Session::deleteSession(sessionId: $userSessionIdKeyData['sessionId']);
-                $expire = $this->timestamp - $userSessionIdKeyData['timestamp'];
+                $expire = Common::$timestamp - $userSessionIdKeyData['timestamp'];
                 $expire = ($expire > Constants::$TOKEN_EXPIRY_TIME)
                     ? Constants::$TOKEN_EXPIRY_TIME : $expire;
                 $timestamp = $userSessionIdKeyData['timestamp'];
@@ -468,7 +460,7 @@ class Login
             $isLoggedIn = true;
         }
 
-        $time = $this->timestamp - $_SESSION['timestamp'];
+        $time = Common::$timestamp - $_SESSION['timestamp'];
         $output = [
             'Session' => 'Active',
             'Expires' => (Constants::$TOKEN_EXPIRY_TIME - $time)

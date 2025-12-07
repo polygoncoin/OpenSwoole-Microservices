@@ -15,6 +15,7 @@
 
 namespace Microservices\App\SessionHandlers\Containers;
 
+use Microservices\App\Common;
 use Microservices\App\SessionHandlers\Containers\SessionContainerInterface;
 use Microservices\App\SessionHandlers\Containers\SessionContainerHelper;
 
@@ -53,7 +54,6 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
     public function init($sessionSavePath, $sessionName): void
     {
         $this->connect();
-        $this->currentTimestamp = time();
     }
 
     /**
@@ -72,7 +72,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
         ";
         $params = [
             $sessionId,
-            ($this->currentTimestamp - $this->sessionMaxLifetime)
+            (Common::$timestamp - $this->sessionMaxLifetime)
         ];
 
         $row = $this->getSql(sql: $sql, params: $params);
@@ -98,7 +98,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
         ";
         $params = [
             $sessionId,
-            $this->currentTimestamp,
+            Common::$timestamp,
             $this->encryptData(plainText: $sessionData),
         ];
 
@@ -124,7 +124,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
                 session_id = $3
         ";
         $params = [
-            $this->currentTimestamp,
+            Common::$timestamp,
             $this->encryptData(plainText: $sessionData),
             $sessionId
         ];
@@ -148,7 +148,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
             WHERE session_id = $2
         ";
         $params = [
-            $this->currentTimestamp,
+            Common::$timestamp,
             $sessionId
         ];
         return $this->execSql(sql: $sql, params: $params);
@@ -168,7 +168,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
             WHERE last_accessed < $1
         ";
         $params = [
-            ($this->currentTimestamp - $sessionMaxLifetime)
+            (Common::$timestamp - $sessionMaxLifetime)
         ];
         return $this->execSql(sql: $sql, params: $params);
     }
