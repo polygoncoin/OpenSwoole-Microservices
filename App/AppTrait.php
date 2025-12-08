@@ -220,7 +220,7 @@ trait AppTrait
      *
      * @return array
      */
-    private function getSqlAndParams(
+    private function getSqlAndParamsAssocMode(
         &$sqlDetails,
         $configKeys = null
     ): array {
@@ -329,6 +329,131 @@ trait AppTrait
                 $row['id'] = $id;
 
                 $__SET__[] = "`id` = :id";
+            }
+        }
+        if (!empty($__SET__)) {
+            $sql = str_replace(
+                search: '__SET__',
+                replace: implode(separator: ', ', array: $__SET__),
+                subject: $sql
+            );
+        }
+
+        if (!empty($row)) {
+            $this->resetFetchData('sqlParams', $configKeys, $row);
+        }
+
+        return [$id, $sql, $sqlParams, $errors, ($missExecution || $wMissExecution)];
+    }
+
+    /**
+     * Returns Query and Params for execution
+     *
+     * @param array      $sqlDetails  Config from file
+     * @param array|null $configKeys  Config Keys
+     *
+     * @return array
+     */
+    private function getSqlAndParamsArrayMode(
+        &$sqlDetails,
+        $configKeys = null
+    ): array {
+        $id = null;
+        $sql = '';
+        /*!999999 comment goes here */
+        if (isset($sqlDetails['__SQL-COMMENT__'])) {
+            $sql .= '/' . '*!999999 ';
+            $sql .= $sqlDetails['__SQL-COMMENT__'];
+            $sql .= ' */';
+        }
+        switch (true) {
+            case isset($sqlDetails['__QUERY__']):
+                $sql .= $sqlDetails['__QUERY__'];
+                break;
+            case isset($sqlDetails['__DOWNLOAD__']):
+                $sql .= $sqlDetails['__DOWNLOAD__'];
+                break;
+        }
+        $sqlParams = [];
+        $paramKeys = [];
+        $errors = [];
+        $row = [];
+        $__SET__ = [];
+
+        $missExecution = $wMissExecution = false;
+        // Check __SET__
+        if (
+            isset($sqlDetails['__SET__'])
+            && count(value: $sqlDetails['__SET__']) !== 0
+        ) {
+            [$params, $errors, $missExecution] = $this->getSqlParams($sqlDetails['__SET__']);
+            if (empty($errors) && !$missExecution) {
+                if (!empty($params)) {
+                    // __SET__ not compulsory in query
+                    $found = strpos(haystack: $sql, needle: '__SET__') !== false;
+                    foreach ($params as $param => &$v) {
+                        $paramKeys[] = $param;
+                        if ($found) {
+                            $__SET__[] = "{$param} = ?";
+                        }
+                        $sqlParams[] = $v;
+                        $row[$param] = $v;
+                    }
+                }
+            }
+        }
+
+        // Check __WHERE__
+        if (
+            empty($errors)
+            && !$missExecution
+            && isset($sqlDetails['__WHERE__'])
+            && count(value: $sqlDetails['__WHERE__']) !== 0
+        ) {
+            $wErrors = [];
+            [$sqlWhereParams, $wErrors, $wMissExecution] = $this->getSqlParams(
+                $sqlDetails['__WHERE__']
+            );
+            if (empty($wErrors) && !$wMissExecution) {
+                if (!empty($sqlWhereParams)) {
+                    // __WHERE__ not compulsory in query
+                    $wfound = strpos(haystack: $sql, needle: '__WHERE__') !== false;
+                    if ($wfound) {
+                        $__WHERE__ = [];
+                        foreach ($sqlWhereParams as $param => &$v) {
+                            $wparam = $param;
+                            $i = 0;
+                            while (in_array(needle: $wparam, haystack: $paramKeys)) {
+                                $i++;
+                                $wparam = "{$param}{$i}";
+                            }
+                            $paramKeys[] = $wparam;
+                            $__WHERE__[] = "{$param} = ?";
+                            $sqlParams[] = $v;
+                            $row[$wparam] = $v;
+                        }
+                        $sql = str_replace(
+                            search: '__WHERE__',
+                            replace: implode(separator: ' AND ', array: $__WHERE__),
+                            subject: $sql
+                        );
+                    }
+                }
+            } else {
+                $errors = array_merge($errors, $wErrors);
+            }
+        } else {
+            if (
+                Env::$useGlobalCounter
+                && strpos(trim(strtolower($sql)), 'insert') === 0
+                && !isset($sqlParams[':id'])
+                && !isset($row['id'])
+            ) {
+                $id = Counter::getGlobalCounter();
+                $sqlParams[] = $id;
+                $row['id'] = $id;
+
+                $__SET__[] = "id = ?";
             }
         }
         if (!empty($__SET__)) {
