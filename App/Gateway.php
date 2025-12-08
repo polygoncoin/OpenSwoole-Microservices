@@ -76,7 +76,7 @@ class Gateway
 
         if (!Common::$req->open) {
             Common::$req->auth->loadUserDetails();
-            $this->checkRemoteIp();
+            $this->checkCidr();
         }
         $this->checkRateLimits();
     }
@@ -157,13 +157,17 @@ class Gateway
     }
 
     /**
-     * Validate request IP
+     * Validate remote IP
      *
      * @return void
      * @throws \Exception
      */
-    public function checkRemoteIp(): void
+    public function checkCidr(): void
     {
+        if (((int)getenv(name: 'activateCidrChecks')) === 0) {
+            return;
+        }
+
         $ipNumber = ip2long(ip: Common::$req->IP);
     
         $cCidrKey = CacheKey::cCidr(
