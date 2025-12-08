@@ -51,7 +51,7 @@ return [
             }
         ],
         [
-            'column' => 'ip',
+            'column' => 'allowed_cidrs',
             'fetchFrom' => 'custom',
             'fetchFromValue' => '127.0.0.1'
         ],

@@ -306,12 +306,12 @@ trait AppTrait
                             $__WHERE__[] = "`{$param}` = :{$wparam}";
                             $sqlParams[":{$wparam}"] = $v;
                             $row[$wparam] = $v;
-                            $sql = str_replace(
-                                search: '__WHERE__',
-                                replace: implode(separator: ' AND ', array: $__WHERE__),
-                                subject: $sql
-                            );
                         }
+                        $sql = str_replace(
+                            search: '__WHERE__',
+                            replace: implode(separator: ' AND ', array: $__WHERE__),
+                            subject: $sql
+                        );
                     }
                 }
             } else {

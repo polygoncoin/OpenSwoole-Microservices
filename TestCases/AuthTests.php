@@ -47,12 +47,10 @@ $payload = [
     'password' => 'shames11'
 ];
 $response[] = include POST . DIRECTORY_SEPARATOR . 'Login.php';
+$response[] = include GET . DIRECTORY_SEPARATOR . 'Routes.php';
 
-// $response[] = include GET . DIRECTORY_SEPARATOR . 'Routes.php';
-
-// $response[] = include POST . DIRECTORY_SEPARATOR . 'Config.php';
+$response[] = include POST . DIRECTORY_SEPARATOR . 'Config.php';
 $response[] = include POST . DIRECTORY_SEPARATOR . 'Category.php';
-return '<pre>' . print_r(value: $response, return: true);
 $response[] = include POST . DIRECTORY_SEPARATOR . 'Registration.php';
 $response[] = include POST . DIRECTORY_SEPARATOR . 'Address.php';
 $response[] = include POST . DIRECTORY_SEPARATOR . 'RegistrationWithAddress.php';
