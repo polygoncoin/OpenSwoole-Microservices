@@ -340,9 +340,7 @@ class Read
     ): void {
         [$id, $sql, $sqlParams, $errors, $missExecution] = $this->getSqlAndParams(
             sqlDetails: $rSqlConfig,
-            isFirstCall: $isFirstCall,
-            configKeys: $configKeys,
-            flag: $useResultSet
+            configKeys: $configKeys
         );
 
         if (!empty($errors)) {
@@ -490,9 +488,7 @@ class Read
     ): void {
         [$id, $sql, $sqlParams, $errors, $missExecution] = $this->getSqlAndParams(
             sqlDetails: $rSqlConfig,
-            isFirstCall: $isFirstCall,
-            configKeys: $configKeys,
-            flag: $useResultSet
+            configKeys: $configKeys
         );
 
         if (!empty($errors)) {

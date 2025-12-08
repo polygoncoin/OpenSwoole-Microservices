@@ -216,17 +216,13 @@ trait AppTrait
      * Returns Query and Params for execution
      *
      * @param array      $sqlDetails  Config from file
-     * @param bool|null  $isFirstCall true to represent the first call in recursion
      * @param array|null $configKeys  Config Keys
-     * @param bool|null  $flag        useHierarchy / useResultSet flag
      *
      * @return array
      */
     private function getSqlAndParams(
         &$sqlDetails,
-        $isFirstCall = null,
-        $configKeys = null,
-        $flag = null
+        $configKeys = null
     ): array {
         $id = null;
         $sql = '';
@@ -293,31 +289,29 @@ trait AppTrait
                 if (!empty($sqlWhereParams)) {
                     // __WHERE__ not compulsory in query
                     $wfound = strpos(haystack: $sql, needle: '__WHERE__') !== false;
-                    $__WHERE__ = [];
-                    foreach ($sqlWhereParams as $param => &$v) {
-                        $wparam = $param = str_replace(
-                            search: ['`', ' '],
-                            replace: '',
-                            subject: $param
-                        );
-                        $i = 0;
-                        while (in_array(needle: $wparam, haystack: $paramKeys)) {
-                            $i++;
-                            $wparam = "{$param}{$i}";
-                        }
-                        $paramKeys[] = $wparam;
-                        if ($wfound) {
-                            $__WHERE__[] = "`{$param}` = :{$wparam}";
-                        }
-                        $sqlParams[":{$wparam}"] = $v;
-                        $row[$wparam] = $v;
-                    }
                     if ($wfound) {
-                        $sql = str_replace(
-                            search: '__WHERE__',
-                            replace: implode(separator: ' AND ', array: $__WHERE__),
-                            subject: $sql
-                        );
+                        $__WHERE__ = [];
+                        foreach ($sqlWhereParams as $param => &$v) {
+                            $wparam = $param = str_replace(
+                                search: ['`', ' '],
+                                replace: '',
+                                subject: $param
+                            );
+                            $i = 0;
+                            while (in_array(needle: $wparam, haystack: $paramKeys)) {
+                                $i++;
+                                $wparam = "{$param}{$i}";
+                            }
+                            $paramKeys[] = $wparam;
+                            $__WHERE__[] = "`{$param}` = :{$wparam}";
+                            $sqlParams[":{$wparam}"] = $v;
+                            $row[$wparam] = $v;
+                            $sql = str_replace(
+                                search: '__WHERE__',
+                                replace: implode(separator: ' AND ', array: $__WHERE__),
+                                subject: $sql
+                            );
+                        }
                     }
                 }
             } else {
