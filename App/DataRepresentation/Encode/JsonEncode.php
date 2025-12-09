@@ -73,7 +73,7 @@ class JsonEncode implements DataEncodeInterface
     ];
 
     /**
-     * JsonEncode constructor
+     * Constructor
      *
      * @param resource $tempStream Temp stream Temporary stream
      * @param bool     $header     Append XML header flag

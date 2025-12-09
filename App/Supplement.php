@@ -77,6 +77,8 @@ class Supplement
 
     /**
      * Constructor
+     *
+     * @param Common $api
      */
     public function __construct(Common &$api)
     {
@@ -455,7 +457,7 @@ class Supplement
             // Execute Pre Sql Hooks
             if (isset($sSqlConfig['__PRE-SQL-HOOKS__'])) {
                 if ($this->hook === null) {
-                    $this->hook = new Hook();
+                    $this->hook = new Hook($this->api);
                 }
                 $this->hook->triggerHook(
                     hookConfig: $sSqlConfig['__PRE-SQL-HOOKS__']
@@ -488,7 +490,7 @@ class Supplement
             // Execute Post Sql Hooks
             if (isset($sSqlConfig['__POST-SQL-HOOKS__'])) {
                 if ($this->hook === null) {
-                    $this->hook = new Hook();
+                    $this->hook = new Hook($this->api);
                 }
                 $this->hook->triggerHook(
                     hookConfig: $sSqlConfig['__POST-SQL-HOOKS__']

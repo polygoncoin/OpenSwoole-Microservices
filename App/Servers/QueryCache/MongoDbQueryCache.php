@@ -101,7 +101,7 @@ class MongoDbQueryCache implements QueryCacheInterface
     private $collectionObj = null;
 
     /**
-     * Cache connection
+     * Constructor
      *
      * @param string $hostname Hostname .env string
      * @param string $port     Port .env string

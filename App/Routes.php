@@ -70,6 +70,8 @@ class Routes
 
     /**
      * Constructor
+     *
+     * @param Common $api
      */
     public function __construct(Common &$api)
     {

@@ -46,6 +46,8 @@ class Module1 implements UploadInterface
 
     /**
      * Constructor
+     *
+     * @param Common $api
      */
     public function __construct(Common &$api)
     {

@@ -46,6 +46,8 @@ class Category implements CronInterface
 
     /**
      * Constructor
+     *
+     * @param Common $api
      */
     public function __construct(Common &$api)
     {

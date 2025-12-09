@@ -100,7 +100,7 @@ class JsonDecodeEngine
     private $charCounter = null;
 
     /**
-     * JsonDecode constructor
+     * Constructor
      *
      * @param null|resource $jsonFileHandle JSON file handle
      */

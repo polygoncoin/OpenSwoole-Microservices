@@ -66,6 +66,8 @@ class Gateway
 
     /**
      * Constructor
+     *
+     * @param Common $api
      */
     public function __construct(Common &$api)
     {

@@ -69,6 +69,8 @@ class Read
 
     /**
      * Constructor
+     *
+     * @param Common $api
      */
     public function __construct(Common &$api)
     {
@@ -255,7 +257,7 @@ class Read
         // Execute Pre Sql Hooks
         if (isset($rSqlConfig['__PRE-SQL-HOOKS__'])) {
             if ($this->hook === null) {
-                $this->hook = new Hook();
+                $this->hook = new Hook($this->api);
             }
             $this->hook->triggerHook(
                 hookConfig: $rSqlConfig['__PRE-SQL-HOOKS__']
@@ -321,7 +323,7 @@ class Read
         // Execute Post Sql Hooks
         if (isset($rSqlConfig['__POST-SQL-HOOKS__'])) {
             if ($this->hook === null) {
-                $this->hook = new Hook();
+                $this->hook = new Hook($this->api);
             }
             $this->hook->triggerHook(
                 hookConfig: $rSqlConfig['__POST-SQL-HOOKS__']
@@ -655,7 +657,7 @@ class Read
         }
 
         // Export
-        $export = new Export(dbServerType: $dbDetails['dbServerType']);
+        $export = new Export(api: $this->api, dbServerType: $dbDetails['dbServerType']);
         $export->init(
             hostname: $dbDetails['dbHostname'],
             port: $dbDetails['dbPort'],

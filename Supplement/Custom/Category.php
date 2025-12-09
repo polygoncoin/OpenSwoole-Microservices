@@ -45,6 +45,8 @@ class Category implements CustomInterface
 
     /**
      * Constructor
+     *
+     * @param Common $api
      */
     public function __construct(Common &$api)
     {

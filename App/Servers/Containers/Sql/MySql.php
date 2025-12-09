@@ -96,7 +96,7 @@ class MySql implements SqlInterface
     public $beganTransaction = false;
 
     /**
-     * Database constructor
+     * Constructor
      *
      * @param string      $hostname Hostname .env string
      * @param string      $port     Port .env string

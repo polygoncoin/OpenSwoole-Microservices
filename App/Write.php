@@ -70,6 +70,8 @@ class Write
 
     /**
      * Constructor
+     *
+     * @param Common $api
      */
     public function __construct(Common &$api)
     {
@@ -438,7 +440,7 @@ class Write
             // Execute Pre Sql Hooks
             if (isset($wSqlConfig['__PRE-SQL-HOOKS__'])) {
                 if ($this->hook === null) {
-                    $this->hook = new Hook();
+                    $this->hook = new Hook($this->api);
                 }
                 $this->hook->triggerHook(
                     hookConfig: $wSqlConfig['__PRE-SQL-HOOKS__']
@@ -493,7 +495,7 @@ class Write
             // Execute Post Sql Hooks
             if (isset($wSqlConfig['__POST-SQL-HOOKS__'])) {
                 if ($this->hook === null) {
-                    $this->hook = new Hook();
+                    $this->hook = new Hook($this->api);
                 }
                 $this->hook->triggerHook(
                     hookConfig: $wSqlConfig['__POST-SQL-HOOKS__']

@@ -64,7 +64,7 @@ class JsonDecode implements DataDecodeInterface
     private $jsonDecodeEngine = null;
 
     /**
-     * JsonDecode constructor
+     * Constructor
      *
      * @param resource $jsonFileHandle File handle
      */

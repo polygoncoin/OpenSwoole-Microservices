@@ -82,7 +82,7 @@ class MongoDbCache implements CacheInterface
     private $cache = null;
 
     /**
-     * Cache connection
+     * Constructor
      *
      * @param string $hostname Hostname .env string
      * @param string $port     Port .env string

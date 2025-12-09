@@ -52,6 +52,8 @@ class Api
 
     /**
      * Constructor
+     *
+     * @param Common $api
      */
     public function __construct(Common &$api)
     {
@@ -89,7 +91,7 @@ class Api
         // Execute Pre Route Hooks
         if (isset($this->api->req->rParser->routeHook['__PRE-ROUTE-HOOKS__'])) {
             if ($this->hook === null) {
-                $this->hook = new Hook();
+                $this->hook = new Hook($this->api);
             }
             $this->hook->triggerHook(
                 hookConfig: $this->api->req->rParser->routeHook['__PRE-ROUTE-HOOKS__']
@@ -140,7 +142,7 @@ class Api
         // Execute Post Route Hooks
         if (isset($this->api->req->rParser->routeHook['__POST-ROUTE-HOOKS__'])) {
             if ($this->hook === null) {
-                $this->hook = new Hook();
+                $this->hook = new Hook($this->api);
             }
             $this->hook->triggerHook(
                 hookConfig: $this->api->req->rParser->routeHook['__POST-ROUTE-HOOKS__']

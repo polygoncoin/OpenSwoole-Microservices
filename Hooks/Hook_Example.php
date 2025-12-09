@@ -44,6 +44,8 @@ class Hook_Example implements HookInterface
 
     /**
      * Constructor
+     *
+     * @param Common $api
      */
     public function __construct(Common &$api)
     {

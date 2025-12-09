@@ -55,7 +55,7 @@ class XmlEncode implements DataEncodeInterface
     private $currentObject = null;
 
     /**
-     * XmlEncode constructor
+     * Constructor
      *
      * @param resource $tempStream Temp stream Temporary stream
      * @param bool     $header     Append XML header flag

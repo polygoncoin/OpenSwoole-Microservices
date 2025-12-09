@@ -33,10 +33,20 @@ use Microservices\App\HttpStatus;
 class Hook
 {
     /**
-     * Constructor
+     * Api common Object
+     *
+     * @var null|Common
      */
-    public function __construct()
+    private $api = null;
+
+    /**
+     * Constructor
+     *
+     * @param Common $api
+     */
+    public function __construct(Common &$api)
     {
+        $this->api = &$api;
     }
 
     /**
@@ -56,7 +66,7 @@ class Hook
                     DIRECTORY_SEPARATOR . $hook . '.php';
                 if (file_exists(filename: $hookFile)) {
                     $hookClass = 'Microservices\\\Hooks\\' . $hook;
-                    $hookObj = new $hookClass();
+                    $hookObj = new $hookClass($this->api);
                     if ($hookObj->init()) {
                         $hookObj->process();
                     }

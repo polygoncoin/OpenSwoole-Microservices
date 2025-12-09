@@ -83,7 +83,7 @@ class MySqlQueryCache implements QueryCacheInterface
     private $cache = null;
 
     /**
-     * Cache connection
+     * Constructor
      *
      * @param string $hostname Hostname .env string
      * @param int    $port     Port .env string

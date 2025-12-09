@@ -73,6 +73,8 @@ class StreamVideo
 
     /**
      * Constructor
+     *
+     * @param array $http HTTP request details
      */
     public function __construct(&$http)
     {
