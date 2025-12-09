@@ -34,6 +34,8 @@ class Env
     public static $gDbServerDatabase = null;
     public static $cacheDatabase = null;
 
+    public static $parameterisedQueryMode = null;
+
     public static $ENVIRONMENT = null;
     public static $OUTPUT_PERFORMANCE_STATS = null;
 
@@ -101,6 +103,8 @@ class Env
     {
         self::$gDbServerDatabase = getenv(name: 'gDbServerDatabase');
         self::$cacheDatabase = getenv(name: 'gCacheServerDatabase');
+
+        self::$parameterisedQueryMode = getenv(name: 'parameterisedQueryMode');
 
         self::$ENVIRONMENT = getenv(name: 'ENVIRONMENT');
         self::$OUTPUT_PERFORMANCE_STATS = getenv(name: 'OUTPUT_PERFORMANCE_STATS');

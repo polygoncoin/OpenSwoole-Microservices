@@ -438,7 +438,8 @@ class Write
             }
 
             // Get Sql and Params
-            [$id, $sql, $sqlParams, $errors, $missExecution] = $this->getSqlAndParamsAssocMode(
+            $fn = 'getSqlAndParams' . Env::$parameterisedQueryMode . 'Mode';
+            [$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
                 sqlDetails: $wSqlConfig
             );
 
