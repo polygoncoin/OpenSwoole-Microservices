@@ -102,6 +102,13 @@ class HttpRequest
     public $rParser = null;
 
     /**
+     * Client Id
+     *
+     * @var null|int
+     */
+    public $cId = null;
+
+    /**
      * Constructor
      *
      * @param array $http HTTP request details
@@ -209,6 +216,7 @@ class HttpRequest
             ),
             associative: true
         );
+        $this->cId = $this->s['cDetails']['id'];
     }
 
     /**

@@ -82,9 +82,9 @@ class Category implements CustomInterface
             ':is_deleted' => 'No',
             ':parent_id' => 0,
         ];
-        DbFunctions::$slaveDb[$this->api->req->s['cDetails']['id']]->execDbQuery(sql: $sql, params: $sqlParams);
-        $rows = DbFunctions::$slaveDb[$this->api->req->s['cDetails']['id']]->fetchAll();
-        DbFunctions::$slaveDb[$this->api->req->s['cDetails']['id']]->closeCursor();
+        DbFunctions::$slaveDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
+        $rows = DbFunctions::$slaveDb[$this->api->req->cId]->fetchAll();
+        DbFunctions::$slaveDb[$this->api->req->cId]->closeCursor();
         $this->api->res->dataEncode->addKeyData(key: 'Results', data: $rows);
         return [true];
     }

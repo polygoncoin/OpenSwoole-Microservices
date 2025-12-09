@@ -397,7 +397,7 @@ class Login
         DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
 
         $userTable = Env::$clientUsers;
-        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->execDbQuery(
+        DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(
             sql: "
                 UPDATE
                     `{$userTable}`

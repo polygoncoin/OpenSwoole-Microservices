@@ -111,15 +111,15 @@ class ClientValidator implements ValidatorInterface
      */
     private function getPrimaryCount(&$table, $primary, &$id): int
     {
-        $db = DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->database;
+        $db = DbFunctions::$masterDb[$this->api->req->cId]->database;
         $sql = "
             SELECT count(1) as `count`
             FROM `{$db}`.`{$table}`
             WHERE `{$primary}` = ?
         ";
         $params = [$id];
-        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->execDbQuery(sql: $sql, params: $params);
-        return (int)(DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->fetch())['count'];
+        DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $params);
+        return (int)(DbFunctions::$masterDb[$this->api->req->cId]->fetch())['count'];
     }
 
     /**
@@ -134,9 +134,9 @@ class ClientValidator implements ValidatorInterface
         extract(array: $args);
         $sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
         $params = [$id];
-        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->execDbQuery(sql: $sql, params: $params);
-        $row = DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->fetch();
-        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->closeCursor();
+        DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $params);
+        $row = DbFunctions::$masterDb[$this->api->req->cId]->fetch();
+        DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
         return ($row['count'] === 0) ? false : true;
     }
 }

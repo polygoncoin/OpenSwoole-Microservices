@@ -270,7 +270,7 @@ class Write
             // Begin DML operation
             if ($hashJson === null) {
                 if ($this->operateAsTransaction) {
-                    DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->begin();
+                    DbFunctions::$masterDb[$this->api->req->cId]->begin();
                 }
                 $response = [];
                 $this->writeDB(
@@ -286,9 +286,9 @@ class Write
                 {
                     if (
                         $this->operateAsTransaction
-                        && (DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->beganTransaction === true)
+                        && (DbFunctions::$masterDb[$this->api->req->cId]->beganTransaction === true)
                     ) {
-                        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->commit();
+                        DbFunctions::$masterDb[$this->api->req->cId]->commit();
                     }
 
                     $arr = [
@@ -397,7 +397,7 @@ class Write
             }
 
             $payloadIndexes = $payloadIndexes;
-            if ($this->operateAsTransaction && !DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->beganTransaction) {
+            if ($this->operateAsTransaction && !DbFunctions::$masterDb[$this->api->req->cId]->beganTransaction) {
                 $_response['Error'] = 'Transaction rolled back';
                 return;
             }
@@ -455,7 +455,7 @@ class Write
 
             if (!empty($errors)) {
                 $_response['Error'] = $errors;
-                DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->rollBack();
+                DbFunctions::$masterDb[$this->api->req->cId]->rollBack();
                 return;
             }
 
@@ -464,23 +464,23 @@ class Write
             }
 
             // Execute Query
-            DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->execDbQuery(sql: $sql, params: $sqlParams);
-            if ($this->operateAsTransaction && !DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->beganTransaction) {
+            DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
+            if ($this->operateAsTransaction && !DbFunctions::$masterDb[$this->api->req->cId]->beganTransaction) {
                 $_response['Error'] = 'Something went wrong';
                 return;
             }
 
             if (isset($wSqlConfig['__INSERT-IDs__'])) {
                 if (!Env::$useGlobalCounter) {
-                    $id = DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->lastInsertId();
+                    $id = DbFunctions::$masterDb[$this->api->req->cId]->lastInsertId();
                 }
                 $_response[$wSqlConfig['__INSERT-IDs__']] = $id;
                 $this->api->req->s['__INSERT-IDs__'][$wSqlConfig['__INSERT-IDs__']] = $id;
             } else {
-                $affectedRows = DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->affectedRows();
+                $affectedRows = DbFunctions::$masterDb[$this->api->req->cId]->affectedRows();
                 $_response['affectedRows'] = $affectedRows;
             }
-            DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->closeCursor();
+            DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
 
             // triggers
             if (isset($wSqlConfig['__TRIGGERS__'])) {

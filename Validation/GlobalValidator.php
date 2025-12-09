@@ -94,9 +94,9 @@ class GlobalValidator implements ValidatorInterface
         extract(array: $args);
         $sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
         $params = [$id];
-        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->execDbQuery(sql: $sql, params: $params);
-        $row = DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->fetch();
-        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->closeCursor();
+        DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $params);
+        $row = DbFunctions::$masterDb[$this->api->req->cId]->fetch();
+        DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
         return (int)(($row['count'] === 0) ? false : true);
     }
 
@@ -116,9 +116,9 @@ class GlobalValidator implements ValidatorInterface
             WHERE `{$column}` = ? AND`{$primary}` = ?
         ";
         $params = [$columnValue, $id];
-        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->execDbQuery(sql: $sql, params: $params);
-        $row = DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->fetch();
-        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->closeCursor();
+        DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $params);
+        $row = DbFunctions::$masterDb[$this->api->req->cId]->fetch();
+        DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
         return ($row['count'] === 0) ? false : true;
     }
 }

@@ -104,8 +104,8 @@ class Password implements CustomInterface
                 ':is_deleted' => 'No',
             ];
 
-            DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->execDbQuery(sql: $sql, params: $sqlParams);
-            DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->closeCursor();
+            DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
+            DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
 
             $cID = $this->api->req->s['cDetails']['id'];
             $cu_key = CacheKey::clientUser(

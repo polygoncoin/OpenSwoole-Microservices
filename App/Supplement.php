@@ -280,7 +280,7 @@ class Supplement
             // Begin DML operation
             if ($hashJson === null) {
                 if ($this->operateAsTransaction) {
-                    DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->begin();
+                    DbFunctions::$masterDb[$this->api->req->cId]->begin();
                 }
                 $response = [];
                 $this->execSupplement(
@@ -296,9 +296,9 @@ class Supplement
                 {
                     if (
                         $this->operateAsTransaction
-                        && (DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->beganTransaction === true)
+                        && (DbFunctions::$masterDb[$this->api->req->cId]->beganTransaction === true)
                     ) {
-                        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->commit();
+                        DbFunctions::$masterDb[$this->api->req->cId]->commit();
                     }
 
                     $arr = [
@@ -412,7 +412,7 @@ class Supplement
             }
 
             $payloadIndexes = $payloadIndexes;
-            if ($this->operateAsTransaction && !DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->beganTransaction) {
+            if ($this->operateAsTransaction && !DbFunctions::$masterDb[$this->api->req->cId]->beganTransaction) {
                 $_response['Error'] = 'Transaction rolled back';
                 return;
             }
@@ -470,12 +470,12 @@ class Supplement
                 $this->api->req->s['payload']
             );
 
-            if ($this->operateAsTransaction && !DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->beganTransaction) {
+            if ($this->operateAsTransaction && !DbFunctions::$masterDb[$this->api->req->cId]->beganTransaction) {
                 $_response['Error'] = 'Something went wrong';
                 return;
             }
 
-            DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->closeCursor();
+            DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
 
             // triggers
             if (isset($sSqlConfig['__TRIGGERS__'])) {
