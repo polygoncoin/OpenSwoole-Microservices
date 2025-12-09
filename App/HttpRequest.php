@@ -151,10 +151,10 @@ class HttpRequest
         }
 
         if (!$this->open) {
-            $this->auth = new Auth();
+            $this->auth = new Auth($this);
         }
 
-        $this->rParser = new RouteParser();
+        $this->rParser = new RouteParser($this);
     }
 
     /**
@@ -172,7 +172,7 @@ class HttpRequest
         }
 
         $this->rParser->parseRoute();
-        DbFunctions::setDatabaseCacheKey();
+        DbFunctions::setDatabaseCacheKey($this);
 
         return true;
     }
@@ -249,7 +249,7 @@ class HttpRequest
     {
         switch (true) {
             case (
-                Common::$req->rParser->isImportRequest
+                $this->rParser->isImportRequest
                 && isset($this->http['files']['file']['tmp_name'])
             ):
                 $content = $this->formatCsvPayload(

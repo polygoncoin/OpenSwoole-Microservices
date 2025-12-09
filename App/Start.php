@@ -72,7 +72,7 @@ class Start
                 }
 
                 $data = $Microservices->returnResults();
-                $status = Common::$res->httpStatus;
+                $status = $Microservices->api->res->httpStatus;
 
                 return [$headers, $data, $status];
             }
@@ -92,7 +92,7 @@ class Start
                         'HttpCode' => $e->getCode(),
                         'HttpMessage' => $e->getMessage()
                     ],
-                    'Details' => Common::$req->s
+                    'Details' => $Microservices->api->req->s
                 ];
                 $logsObj = new Logs();
                 $logsObj->log(logDetails: $logDetails);

@@ -33,32 +33,25 @@ use Microservices\App\HttpResponse;
 class Common
 {
     /**
-     * Unix timestamp
-     *
-     * @var null|int
-     */
-    public static $timestamp = null;
-
-    /**
      * Microservices HTTP Request
      *
      * @var null|HttpRequest
      */
-    public static $req = null;
+    public $req = null;
 
     /**
      * Microservices HTTP Response
      *
      * @var null|HttpResponse
      */
-    public static $res = null;
+    public $res = null;
 
     /**
      * Microservices Request Details
      *
      * @var null|array
      */
-    public static $http = null;
+    public $http = null;
 
     /**
      * Initialize
@@ -67,12 +60,11 @@ class Common
      *
      * @return void
      */
-    public static function init(&$http): void
+    public function init(&$http): void
     {
-        self::$timestamp = time();
-        self::$http = &$http;
-        self::$req = new HttpRequest(http: self::$http);
-        self::$res = new HttpResponse(http: self::$http);
+        $this->http = &$http;
+        $this->req = new HttpRequest(http: $this->http);
+        $this->res = new HttpResponse(http: $this->http);
     }
 
     /**
@@ -80,9 +72,9 @@ class Common
      *
      * @return bool
      */
-    public static function initRequest(): void
+    public function initRequest(): void
     {
-        self::$req->init();
+        $this->req->init();
     }
 
     /**
@@ -90,8 +82,8 @@ class Common
      *
      * @return bool
      */
-    public static function initResponse(): void
+    public function initResponse(): void
     {
-        self::$res->init();
+        $this->res->init();
     }
 }

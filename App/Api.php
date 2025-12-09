@@ -18,7 +18,6 @@ namespace Microservices\App;
 use Microservices\App\CacheHandler;
 use Microservices\App\Constants;
 use Microservices\App\Common;
-use Microservices\App\DbFunctions;
 use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\Supplement;
@@ -45,10 +44,18 @@ class Api
     private $hook = null;
 
     /**
+     * Api common Object
+     *
+     * @var null|Common
+     */
+    private $api = null;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Common &$api)
     {
+        $this->api = &$api;
     }
 
     /**
@@ -58,7 +65,7 @@ class Api
      */
     public function init(): bool
     {
-        Common::initRequest();
+        $this->api->initRequest();
 
         return true;
     }
@@ -70,8 +77,8 @@ class Api
      */
     public function process(): mixed
     {
-        if (Common::$req->METHOD === Constants::$GET) {
-            $cacheHandler = new CacheHandler(http: Common::$http);
+        if ($this->api->req->METHOD === Constants::$GET) {
+            $cacheHandler = new CacheHandler(http: $this->api->http);
             if ($cacheHandler->init(mode: 'Closed')) {
                 // File exists - Serve from Dropbox
                 return $cacheHandler->process();
@@ -80,21 +87,21 @@ class Api
         }
 
         // Execute Pre Route Hooks
-        if (isset(Common::$req->rParser->routeHook['__PRE-ROUTE-HOOKS__'])) {
+        if (isset($this->api->req->rParser->routeHook['__PRE-ROUTE-HOOKS__'])) {
             if ($this->hook === null) {
                 $this->hook = new Hook();
             }
             $this->hook->triggerHook(
-                hookConfig: Common::$req->rParser->routeHook['__PRE-ROUTE-HOOKS__']
+                hookConfig: $this->api->req->rParser->routeHook['__PRE-ROUTE-HOOKS__']
             );
         }
 
         // Load Payloads
         if (
-            !Common::$req->rParser->isConfigRequest
-            && !Common::$req->rParser->isImportSampleRequest
+            !$this->api->req->rParser->isConfigRequest
+            && !$this->api->req->rParser->isImportSampleRequest
         ) {
-            Common::$req->loadPayload();
+            $this->api->req->loadPayload();
         }
 
         if ($this->processBeforePayload()) {
@@ -102,7 +109,7 @@ class Api
         }
 
         $class = null;
-        switch (Common::$req->METHOD) {
+        switch ($this->api->req->METHOD) {
             case Constants::$GET:
                 $class = __NAMESPACE__ . '\\Read';
                 break;
@@ -115,7 +122,7 @@ class Api
         }
 
         if ($class !== null) {
-            $api = new $class();
+            $api = new $class($this->api);
             if ($api->init()) {
                 $return = $api->process();
                 if (
@@ -131,12 +138,12 @@ class Api
         $this->processAfterPayload();
 
         // Execute Post Route Hooks
-        if (isset(Common::$req->rParser->routeHook['__POST-ROUTE-HOOKS__'])) {
+        if (isset($this->api->req->rParser->routeHook['__POST-ROUTE-HOOKS__'])) {
             if ($this->hook === null) {
                 $this->hook = new Hook();
             }
             $this->hook->triggerHook(
-                hookConfig: Common::$req->rParser->routeHook['__POST-ROUTE-HOOKS__']
+                hookConfig: $this->api->req->rParser->routeHook['__POST-ROUTE-HOOKS__']
             );
         }
 
@@ -154,43 +161,43 @@ class Api
 
         if (
             Env::$allowRoutesRequest
-            && Env::$routesRequestRoute === Common::$req->rParser->routeElements[0]
+            && Env::$routesRequestRoute === $this->api->req->rParser->routeElements[0]
         ) {
             $supplementApiClass = __NAMESPACE__ . '\\Routes';
-            $supplementObj = new $supplementApiClass();
+            $supplementObj = new $supplementApiClass($this->api);
             if ($supplementObj->init()) {
                 $supplementObj->process();
                 $supplementProcessed = true;
             }
         } else {
             $supplementApiClass = null;
-            switch (Common::$req->rParser->routeElements[0]) {
+            switch ($this->api->req->rParser->routeElements[0]) {
                 case Env::$allowCustomRequest
                     && (Env::$customRequestRoutePrefix
-                        === Common::$req->rParser->routeElements[0]):
+                        === $this->api->req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\Custom';
                     break;
                 case Env::$allowUploadRequest
                     && (Env::$uploadRequestRoutePrefix
-                        === Common::$req->rParser->routeElements[0]):
+                        === $this->api->req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\Upload';
                     break;
                 case Env::$allowThirdPartyRequest
                     && (Env::$thirdPartyRequestRoutePrefix
-                        === Common::$req->rParser->routeElements[0]):
+                        === $this->api->req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\ThirdParty';
                     break;
                 case Env::$allowCacheRequest
                     && (Env::$cacheRequestRoutePrefix
-                        === Common::$req->rParser->routeElements[0]):
+                        === $this->api->req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\CacheHandler';
                     break;
             }
 
             if (!empty($supplementApiClass)) {
-                $supplementObj = new $supplementApiClass();
+                $supplementObj = new $supplementApiClass($this->api);
                 $supplementObj->init();
-                $supplement = new Supplement();
+                $supplement = new Supplement($this->api);
                 if ($supplement->init(supplementObj: $supplementObj)) {
                     $supplement->process();
                     $supplementProcessed = true;

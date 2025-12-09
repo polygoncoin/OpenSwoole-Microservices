@@ -38,10 +38,18 @@ class ClientValidator implements ValidatorInterface
     use ValidatorTrait;
 
     /**
+     * Api common Object
+     *
+     * @var null|Common
+     */
+    private $api = null;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Common &$api)
     {
+        $this->api = &$api;
     }
 
     /**
@@ -61,7 +69,7 @@ class ClientValidator implements ValidatorInterface
                 if ($mode === 'custom') {
                     $args[$attr] = $key;
                 } else {
-                    $args[$attr] = Common::$req->s[$mode][$key];
+                    $args[$attr] = $this->api->req->s[$mode][$key];
                 }
             }
             $fn = $v['fn'];
@@ -101,15 +109,15 @@ class ClientValidator implements ValidatorInterface
      */
     private function getPrimaryCount(&$table, $primary, &$id): int
     {
-        $db = DbFunctions::$masterDb->database;
+        $db = DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->database;
         $sql = "
             SELECT count(1) as `count`
             FROM `{$db}`.`{$table}`
             WHERE `{$primary}` = ?
         ";
         $params = [$id];
-        DbFunctions::$masterDb->execDbQuery(sql: $sql, params: $params);
-        return (int)(DbFunctions::$masterDb->fetch())['count'];
+        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->execDbQuery(sql: $sql, params: $params);
+        return (int)(DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->fetch())['count'];
     }
 
     /**
@@ -124,9 +132,9 @@ class ClientValidator implements ValidatorInterface
         extract(array: $args);
         $sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
         $params = [$id];
-        DbFunctions::$masterDb->execDbQuery(sql: $sql, params: $params);
-        $row = DbFunctions::$masterDb->fetch();
-        DbFunctions::$masterDb->closeCursor();
+        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->execDbQuery(sql: $sql, params: $params);
+        $row = DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->fetch();
+        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->closeCursor();
         return ($row['count'] === 0) ? false : true;
     }
 }

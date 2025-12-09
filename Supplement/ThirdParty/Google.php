@@ -39,11 +39,19 @@ class Google implements ThirdPartyInterface
     use ThirdPartyTrait;
 
     /**
+     * Api common Object
+     *
+     * @var null|Common
+     */
+    private $api = null;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Common &$api)
     {
-        DbFunctions::setDbConnection(fetchFrom: 'Slave');
+        $this->api = &$api;
+        DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Slave');
     }
 
     /**
@@ -79,7 +87,7 @@ class Google implements ThirdPartyInterface
         curl_close(handle: $curl_handle);
         if (empty($output)) {
             $output = ['Error' => 'Nothing returned by ipify'];
-            Common::$res->httpStatus = HttpStatus::$InternalServerError;
+            $this->api->res->httpStatus = HttpStatus::$InternalServerError;
         } else {
             $output = json_decode(json: $output, associative: true);
         }
@@ -98,6 +106,6 @@ class Google implements ThirdPartyInterface
      */
     private function endProcess($output): void
     {
-        Common::$res->dataEncode->addKeyData(key: 'Results', data: $output);
+        $this->api->res->dataEncode->addKeyData(key: 'Results', data: $output);
     }
 }

@@ -37,11 +37,19 @@ class Category implements CustomInterface
     use CustomTrait;
 
     /**
+     * Api common Object
+     *
+     * @var null|Common
+     */
+    private $api = null;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Common &$api)
     {
-        DbFunctions::setDbConnection(fetchFrom: 'Slave');
+        $this->api = &$api;
+        DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Slave');
     }
 
     /**
@@ -72,10 +80,10 @@ class Category implements CustomInterface
             ':is_deleted' => 'No',
             ':parent_id' => 0,
         ];
-        DbFunctions::$slaveDb->execDbQuery(sql: $sql, params: $sqlParams);
-        $rows = DbFunctions::$slaveDb->fetchAll();
-        DbFunctions::$slaveDb->closeCursor();
-        Common::$res->dataEncode->addKeyData(key: 'Results', data: $rows);
+        DbFunctions::$slaveDb[$this->api->req->s['cDetails']['id']]->execDbQuery(sql: $sql, params: $sqlParams);
+        $rows = DbFunctions::$slaveDb[$this->api->req->s['cDetails']['id']]->fetchAll();
+        DbFunctions::$slaveDb[$this->api->req->s['cDetails']['id']]->closeCursor();
+        $this->api->res->dataEncode->addKeyData(key: 'Results', data: $rows);
         return [true];
     }
 }

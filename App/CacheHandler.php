@@ -75,6 +75,10 @@ class CacheHandler
 
     /**
      * Constructor
+     *
+     * @param array $http HTTP request details
+     *
+     * @return void
      */
     public function __construct(&$http)
     {
@@ -121,7 +125,7 @@ class CacheHandler
      */
     public function validateFileRequest(): void
     {
-        // check logic for user is allowed to access the file as per Common::$req->s
+        // check logic for user is allowed to access the file as per $this->api->req->s
         // $this->fileLocation;
     }
 

@@ -41,10 +41,18 @@ class Cron
     private $cronApi = null;
 
     /**
+     * Api common Object
+     *
+     * @var null|Common
+     */
+    private $api = null;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Common &$api)
     {
+        $this->api = &$api;
     }
 
     /**
@@ -58,13 +66,13 @@ class Cron
             DIRECTORY_SEPARATOR . 'ClientDB' .
             DIRECTORY_SEPARATOR . 'Common' .
             DIRECTORY_SEPARATOR . 'Cron' .
-            DIRECTORY_SEPARATOR . Common::$req->METHOD . 'routes.php';
-        Common::$req->rParser->parseRoute(routeFileLocation: $routeFileLocation);
+            DIRECTORY_SEPARATOR . $this->api->req->METHOD . 'routes.php';
+        $this->api->req->rParser->parseRoute(routeFileLocation: $routeFileLocation);
 
         $class = 'Microservices\\Supplement\\Cron\\' .
-            ucfirst(string: Common::$req->rParser->routeElements[1]);
+            ucfirst(string: $this->api->req->rParser->routeElements[1]);
 
-        $this->cronApi = new $class();
+        $this->cronApi = new $class($this->api);
 
         return $this->cronApi->init();
     }

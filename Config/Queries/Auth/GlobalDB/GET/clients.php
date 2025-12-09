@@ -66,4 +66,4 @@ return [
         ],
         '__MODE__' => 'singleRowFormat'
     ],
-][isset(Common::$req->s['routeParams']['id'])?'single':'all'];
+][isset($this->api->req->s['routeParams']['id'])?'single':'all'];

@@ -15,7 +15,7 @@
 
 namespace Microservices\App\SessionHandlers\Containers;
 
-use Microservices\App\Common;
+use Microservices\App\Env;
 use Microservices\App\SessionHandlers\Containers\SessionContainerInterface;
 use Microservices\App\SessionHandlers\Containers\SessionContainerHelper;
 
@@ -72,7 +72,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
         ";
         $params = [
             $sessionId,
-            (Common::$timestamp - $this->sessionMaxLifetime)
+            (Env::$timestamp - $this->sessionMaxLifetime)
         ];
 
         $row = $this->getSql(sql: $sql, params: $params);
@@ -98,7 +98,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
         ";
         $params = [
             $sessionId,
-            Common::$timestamp,
+            Env::$timestamp,
             $this->encryptData(plainText: $sessionData),
         ];
 
@@ -124,7 +124,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
                 session_id = $3
         ";
         $params = [
-            Common::$timestamp,
+            Env::$timestamp,
             $this->encryptData(plainText: $sessionData),
             $sessionId
         ];
@@ -148,7 +148,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
             WHERE session_id = $2
         ";
         $params = [
-            Common::$timestamp,
+            Env::$timestamp,
             $sessionId
         ];
         return $this->execSql(sql: $sql, params: $params);
@@ -168,7 +168,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
             WHERE last_accessed < $1
         ";
         $params = [
-            (Common::$timestamp - $sessionMaxLifetime)
+            (Env::$timestamp - $sessionMaxLifetime)
         ];
         return $this->execSql(sql: $sql, params: $params);
     }

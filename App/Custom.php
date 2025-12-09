@@ -40,10 +40,18 @@ class Custom
     private $customApi = null;
 
     /**
+     * Api common Object
+     *
+     * @var null|Common
+     */
+    private $api = null;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Common &$api)
     {
+        $this->api = &$api;
     }
 
     /**
@@ -54,9 +62,9 @@ class Custom
     public function init(): bool
     {
         $class = 'Microservices\\Supplement\\Custom\\' .
-            ucfirst(string: Common::$req->rParser->routeElements[1]);
+            ucfirst(string: $this->api->req->rParser->routeElements[1]);
 
-        $this->customApi = new $class();
+        $this->customApi = new $class($this->api);
 
         return $this->customApi->init();
     }

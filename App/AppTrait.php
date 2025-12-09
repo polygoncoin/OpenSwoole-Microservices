@@ -15,7 +15,6 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Common;
 use Microservices\App\Counter;
 use Microservices\App\Constants;
 use Microservices\App\DatabaseDataTypes;
@@ -206,7 +205,7 @@ trait AppTrait
     public function validate(&$validationConfig): array
     {
         if ($this->validator === null) {
-            $this->validator = new Validator();
+            $this->validator = new Validator($this->api);
         }
 
         return $this->validator->validate(validationConfig: $validationConfig);
@@ -492,7 +491,7 @@ trait AppTrait
             $fKey = $config['fetchFromValue'];
             if ($fetchFrom === 'function') {
                 $function = $fKey;
-                $value = $function(Common::$req->s);
+                $value = $function($this->api->req->s);
                 $sqlParams[$var] = $value;
                 continue;
             } elseif (
@@ -501,12 +500,12 @@ trait AppTrait
                     haystack: ['sqlParams', 'sqlPayload']
                 )
             ) {
-                if (!isset(Common::$req->s[$fetchFrom])) {
+                if (!isset($this->api->req->s[$fetchFrom])) {
                     $errors[] = "Missing key '{$fKey}' in '{$fetchFrom}'";
                     continue;
                 }
                 $fetchFromKeys = explode(separator: ':', string: $fKey);
-                $value = Common::$req->s[$fetchFrom];
+                $value = $this->api->req->s[$fetchFrom];
                 foreach ($fetchFromKeys as $key) {
                     if (!isset($value[$key])) {
                         $errors[] = "Missing hierarchy key '{$key}' of '{$fKey}' in '{$fetchFrom}'";
@@ -517,12 +516,12 @@ trait AppTrait
                 $sqlParams[$var] = $value;
                 continue;
             } elseif ($fetchFrom === 'sqlResults') {
-                if (!isset(Common::$req->s[$fetchFrom])) {
+                if (!isset($this->api->req->s[$fetchFrom])) {
                     $missExecution = true;
                     continue;
                 }
                 $fetchFromKeys = explode(separator: ':', string: $fKey);
-                $value = Common::$req->s[$fetchFrom];
+                $value = $this->api->req->s[$fetchFrom];
                 foreach ($fetchFromKeys as $key) {
                     if (!isset($value[$key])) {
                         $missExecution = true;
@@ -536,21 +535,21 @@ trait AppTrait
                 $value = $fKey;
                 $sqlParams[$var] = $value;
                 continue;
-            } elseif (isset(Common::$req->s[$fetchFrom][$fKey])) {
-                if (isset(Common::$req->s['necessary'][$fetchFrom][$fKey])) {
+            } elseif (isset($this->api->req->s[$fetchFrom][$fKey])) {
+                if (isset($this->api->req->s['necessary'][$fetchFrom][$fKey])) {
                     if (
                         DatabaseDataTypes::validateDataType(
-                            data: Common::$req->s[$fetchFrom][$fKey],
-                            dataType: Common::$req->s['necessary'][$fetchFrom][$fKey]
+                            data: $this->api->req->s[$fetchFrom][$fKey],
+                            dataType: $this->api->req->s['necessary'][$fetchFrom][$fKey]
                         )
                     ) {
-                        $sqlParams[$var] = Common::$req->s[$fetchFrom][$fKey];
+                        $sqlParams[$var] = $this->api->req->s[$fetchFrom][$fKey];
                     }
                 } else {
-                    $sqlParams[$var] = Common::$req->s[$fetchFrom][$fKey];
+                    $sqlParams[$var] = $this->api->req->s[$fetchFrom][$fKey];
                 }
                 continue;
-            } elseif (Common::$req->s['necessary'][$fetchFrom][$fKey]['necessary']) {
+            } elseif ($this->api->req->s['necessary'][$fetchFrom][$fKey]['necessary']) {
                 $errors[] = "Missing necessary field '{$fetchFrom}' for '{$fKey}'";
                 continue;
             } else {
@@ -752,10 +751,10 @@ trait AppTrait
     private function resetFetchData($fetchFrom, $keys, $row): void
     {
         if (empty($keys) || count(value: $keys) === 0) {
-            Common::$req->s[$fetchFrom] = [];
-            Common::$req->s[$fetchFrom]['return'] = [];
+            $this->api->req->s[$fetchFrom] = [];
+            $this->api->req->s[$fetchFrom]['return'] = [];
         }
-        $httpReq = &Common::$req->s[$fetchFrom]['return'];
+        $httpReq = &$this->api->req->s[$fetchFrom]['return'];
         if (!empty($keys)) {
             foreach ($keys as $k) {
                 if (!isset($httpReq[$k])) {
@@ -786,14 +785,14 @@ trait AppTrait
         }
 
         $payloadSignature = [
-            'IP' => Common::$req->IP,
-            'cID' => Common::$req->s['cDetails']['id'],
-            'gID' => (Common::$req->s['gDetails']['id'] !== null ?
-                Common::$req->s['gDetails']['id'] : 0),
-            'uID' => (Common::$req->s['uDetails']['id'] !== null ?
-                Common::$req->s['uDetails']['id'] : 0),
-            'httpMethod' => Common::$req->METHOD,
-            'Route' => Common::$req->ROUTE,
+            'IP' => $this->api->req->IP,
+            'cID' => $this->api->req->s['cDetails']['id'],
+            'gID' => ($this->api->req->s['gDetails']['id'] !== null ?
+                $this->api->req->s['gDetails']['id'] : 0),
+            'uID' => ($this->api->req->s['uDetails']['id'] !== null ?
+                $this->api->req->s['uDetails']['id'] : 0),
+            'httpMethod' => $this->api->req->METHOD,
+            'Route' => $this->api->req->ROUTE,
         ];
         // $hash = hash_hmac(
         // 'sha256',
@@ -835,15 +834,15 @@ trait AppTrait
                 $payloadSignature = [
                     'IdempotentSecret' => getenv(name: 'IdempotentSecret'),
                     'idempotentWindow' => $idempotentWindow,
-                    'IP' => Common::$req->IP,
-                    'cID' => Common::$req->s['cDetails']['id'],
-                    'gID' => (Common::$req->s['gDetails']['id'] !== null ?
-                        Common::$req->s['gDetails']['id'] : 0),
-                    'uID' => (Common::$req->s['uDetails']['id'] !== null ?
-                        Common::$req->s['uDetails']['id'] : 0),
-                    'httpMethod' => Common::$req->METHOD,
-                    'Route' => Common::$req->ROUTE,
-                    'payload' => Common::$req->dataDecode->get(
+                    'IP' => $this->api->req->IP,
+                    'cID' => $this->api->req->s['cDetails']['id'],
+                    'gID' => ($this->api->req->s['gDetails']['id'] !== null ?
+                        $this->api->req->s['gDetails']['id'] : 0),
+                    'uID' => ($this->api->req->s['uDetails']['id'] !== null ?
+                        $this->api->req->s['uDetails']['id'] : 0),
+                    'httpMethod' => $this->api->req->METHOD,
+                    'Route' => $this->api->req->ROUTE,
+                    'payload' => $this->api->req->dataDecode->get(
                         implode(separator: ':', array: $payloadIndexes)
                     )
                 ];
@@ -877,14 +876,14 @@ trait AppTrait
             && isset($sqlConfig['responseLag'])
         ) {
             $payloadSignature = [
-                'IP' => Common::$req->IP,
-                'cID' => Common::$req->s['cDetails']['id'],
-                'gID' => (Common::$req->s['gDetails']['id'] !== null ?
-                    Common::$req->s['gDetails']['id'] : 0),
-                'uID' => (Common::$req->s['uDetails']['id'] !== null ?
-                    Common::$req->s['uDetails']['id'] : 0),
-                'httpMethod' => Common::$req->METHOD,
-                'Route' => Common::$req->ROUTE,
+                'IP' => $this->api->req->IP,
+                'cID' => $this->api->req->s['cDetails']['id'],
+                'gID' => ($this->api->req->s['gDetails']['id'] !== null ?
+                    $this->api->req->s['gDetails']['id'] : 0),
+                'uID' => ($this->api->req->s['uDetails']['id'] !== null ?
+                    $this->api->req->s['uDetails']['id'] : 0),
+                'httpMethod' => $this->api->req->METHOD,
+                'Route' => $this->api->req->ROUTE,
             ];
 
             $hash = json_encode(value: $payloadSignature);
@@ -936,7 +935,7 @@ trait AppTrait
         $key
     ): bool {
         if ($this->rateLimiter === null) {
-            $this->rateLimiter = new RateLimiter(Common::$req);
+            $this->rateLimiter = new RateLimiter($this->api->req);
         }
 
         try {
@@ -953,7 +952,7 @@ trait AppTrait
             } else {
                 // Return 429 Too Many Requests
                 throw new \Exception(
-                    message: $result['resetAt'] - Common::$timestamp,
+                    message: $result['resetAt'] - Env::$timestamp,
                     code: HttpStatus::$TooManyRequests
                 );
             }
@@ -975,7 +974,7 @@ trait AppTrait
      */
     public function getTriggerData($triggerConfig): mixed
     {
-        if (!isset(Common::$req->s['token'])) {
+        if (!isset($this->api->req->s['token'])) {
             throw new \Exception(
                 message: 'Missing token',
                 code: HttpStatus::$InternalServerError
@@ -1055,10 +1054,10 @@ trait AppTrait
             }
         }
 
-        $http['server']['host'] = Common::$http['server']['host'];
+        $http['server']['host'] = $this->api->http['server']['host'];
         $http['server']['method'] = $method;
-        $http['server']['ip'] = Common::$http['server']['ip'];
-        $http['header'] = Common::$http['header'];
+        $http['server']['ip'] = $this->api->http['server']['ip'];
+        $http['header'] = $this->api->http['header'];
         $http['post'] = json_encode($payloadArr);
         $http['get'] = $queryStringArr;
         $http['get'][ROUTE_URL_PARAM] = $route;
@@ -1088,7 +1087,7 @@ trait AppTrait
             $fKey = $config['fetchFromValue'];
             if ($fetchFrom === 'function') {
                 $function = $fKey;
-                $value = $function(Common::$req->s);
+                $value = $function($this->api->req->s);
                 if ($var === null) {
                     $sqlParams[] = $value;
                 } else {
@@ -1102,7 +1101,7 @@ trait AppTrait
                 )
             ) {
                 $fetchFromKeys = explode(separator: ':', string: $fKey);
-                $value = Common::$req->s[$fetchFrom];
+                $value = $this->api->req->s[$fetchFrom];
                 foreach ($fetchFromKeys as $key) {
                     if (!isset($value[$key])) {
                         throw new \Exception(
@@ -1126,8 +1125,8 @@ trait AppTrait
                     $sqlParams[$var] = $value;
                 }
                 continue;
-            } elseif (isset(Common::$req->s[$fetchFrom][$fKey])) {
-                $value = Common::$req->s[$fetchFrom][$fKey];
+            } elseif (isset($this->api->req->s[$fetchFrom][$fKey])) {
+                $value = $this->api->req->s[$fetchFrom][$fKey];
                 if ($var === null) {
                     $sqlParams[] = $value;
                 } else {

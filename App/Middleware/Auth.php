@@ -15,7 +15,7 @@
 
 namespace Microservices\App\Middleware;
 
-use Microservices\App\Common;
+use Microservices\App\HttpRequest;
 use Microservices\App\CacheKey;
 use Microservices\App\DbFunctions;
 use Microservices\App\HttpStatus;
@@ -35,10 +35,18 @@ use Microservices\App\HttpStatus;
 class Auth
 {
     /**
+     * Api common Object
+     *
+     * @var null|HttpRequest
+     */
+    private $req = null;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(HttpRequest &$req)
     {
+        $this->req = &$req;
     }
 
     /**
@@ -49,7 +57,7 @@ class Auth
      */
     public function loadUserDetails(): void
     {
-        if (isset(Common::$req->s['uDetails'])) {
+        if (isset($this->req->s['uDetails'])) {
              return;
         }
 
@@ -57,19 +65,19 @@ class Auth
             isset($_SESSION)
             && isset($_SESSION['id'])
         ) {
-            Common::$req->s['uDetails'] = $_SESSION;
-            Common::$req->s['token'] = 'sessions';
+            $this->req->s['uDetails'] = $_SESSION;
+            $this->req->s['token'] = 'sessions';
         } elseif (
-            (Common::$req->HTTP_AUTHORIZATION !== null)
+            ($this->req->HTTP_AUTHORIZATION !== null)
             && preg_match(
                 pattern: '/Bearer\s(\S+)/',
-                subject: Common::$req->HTTP_AUTHORIZATION,
+                subject: $this->req->HTTP_AUTHORIZATION,
                 matches: $matches
             )
         ) {
-            Common::$req->s['token'] = $matches[1];
+            $this->req->s['token'] = $matches[1];
             $tokenKey = CacheKey::token(
-                token: Common::$req->s['token']
+                token: $this->req->s['token']
             );
             if (
                 !DbFunctions::$gCacheServer->cacheExists(
@@ -81,14 +89,14 @@ class Auth
                     code: HttpStatus::$BadRequest
                 );
             }
-            Common::$req->s['uDetails'] = json_decode(
+            $this->req->s['uDetails'] = json_decode(
                 json: DbFunctions::$gCacheServer->getCache(
                     key: $tokenKey
                 ),
                 associative: true
             );
         }
-        if (empty(Common::$req->s['token'])) {
+        if (empty($this->req->s['token'])) {
             throw new \Exception(
                 message: 'Token missing',
                 code: HttpStatus::$BadRequest
@@ -104,14 +112,14 @@ class Auth
      */
     public function loadGroupDetails(): void
     {
-        if (isset(Common::$req->s['gDetails'])) {
+        if (isset($this->req->s['gDetails'])) {
              return;
         }
 
         // Load gDetails
         if (
-            empty(Common::$req->s['uDetails']['id'])
-            || empty(Common::$req->s['uDetails']['id'])
+            empty($this->req->s['uDetails']['id'])
+            || empty($this->req->s['uDetails']['id'])
         ) {
             throw new \Exception(
                 message: 'Invalid session',
@@ -120,7 +128,7 @@ class Auth
         }
 
         $gKey = CacheKey::group(
-            gID: Common::$req->s['uDetails']['group_id']
+            gID: $this->req->s['uDetails']['group_id']
         );
         if (!DbFunctions::$gCacheServer->cacheExists(key: $gKey)) {
             throw new \Exception(
@@ -129,7 +137,7 @@ class Auth
             );
         }
 
-        Common::$req->s['gDetails'] = json_decode(
+        $this->req->s['gDetails'] = json_decode(
             json: DbFunctions::$gCacheServer->getCache(
                 key: $gKey
             ),

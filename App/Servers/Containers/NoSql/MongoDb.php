@@ -15,7 +15,7 @@
 
 namespace Microservices\App\Servers\Containers\NoSql;
 
-use Microservices\App\Common;
+use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\Servers\Containers\NoSql\NoSqlInterface;
 
@@ -228,7 +228,7 @@ class MongoDb implements NoSqlInterface
         } else {
             // Current UTC timestamp
             $document['expireAt'] = new MongoDB\BSON\UTCDateTime(
-                (Common::$timestamp + $expire) * 1000
+                (Env::$timestamp + $expire) * 1000
             );
             if ($this->collectionObj->insertOne($document)) {
                 return true;

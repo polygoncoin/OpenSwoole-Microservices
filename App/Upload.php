@@ -40,10 +40,18 @@ class Upload
     private $uploadApi = null;
 
     /**
+     * Api common Object
+     *
+     * @var null|Common
+     */
+    private $api = null;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Common &$api)
     {
+        $this->api = &$api;
     }
 
     /**
@@ -54,9 +62,9 @@ class Upload
     public function init(): bool
     {
         $class = 'Microservices\\Supplement\\Upload\\' .
-            ucfirst(string: Common::$req->rParser->routeElements[1]);
+            ucfirst(string: $this->api->req->rParser->routeElements[1]);
 
-        $this->uploadApi = new $class();
+        $this->uploadApi = new $class($this->api);
 
         return $this->uploadApi->init();
     }

@@ -44,14 +44,22 @@ class Validator
     private $v = null;
 
     /**
+     * Api common Object
+     *
+     * @var null|Common
+     */
+    private $api = null;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Common &$api)
     {
-        if (DbFunctions::$masterDb->database === Env::$gDbServerDatabase) {
-            $this->v = new GlobalValidator();
+        $this->api = &$api;
+        if (DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->database === Env::$gDbServerDatabase) {
+            $this->v = new GlobalValidator($this->api);
         } else {
-            $this->v = new ClientValidator();
+            $this->v = new ClientValidator($this->api);
         }
     }
 
@@ -65,8 +73,8 @@ class Validator
     public function validate(&$validationConfig): array
     {
         if (
-            isset((Common::$req->s['necessary']))
-            && count(value: Common::$req->s['necessary']) > 0
+            isset(($this->api->req->s['necessary']))
+            && count(value: $this->api->req->s['necessary']) > 0
         ) {
             if (
                 ([$isValidData, $errors] = $this->validateRequired())
@@ -89,9 +97,9 @@ class Validator
         $isValidData = true;
         $errors = [];
         // Required fields payload validation
-        if (!empty(Common::$req->s['necessary']['payload'])) {
-            foreach (Common::$req->s['necessary']['payload'] as $column => &$arr) {
-                if ($arr['necessary'] && !isset(Common::$req->s['payload'][$column])) {
+        if (!empty($this->api->req->s['necessary']['payload'])) {
+            foreach ($this->api->req->s['necessary']['payload'] as $column => &$arr) {
+                if ($arr['necessary'] && !isset($this->api->req->s['payload'][$column])) {
                     $errors[] = 'Missing necessary payload: ' . $column;
                     $isValidData = false;
                 }

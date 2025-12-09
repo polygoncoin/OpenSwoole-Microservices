@@ -62,10 +62,18 @@ class Routes
     private $reservedKeys = [];
 
     /**
+     * Api common Object
+     *
+     * @var null|Common
+     */
+    private $api = null;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Common &$api)
     {
+        $this->api = &$api;
     }
 
     /**
@@ -94,7 +102,7 @@ class Routes
         $Env = __NAMESPACE__ . '\Env';
 
         $httpRoutes = [];
-        if (Common::$req->open) {
+        if ($this->api->req->open) {
             $userRoutesFolder = Constants::$PUBLIC_HTML . $this->routesFolder .
                 DIRECTORY_SEPARATOR . 'Open';
         } else {
@@ -102,7 +110,7 @@ class Routes
                 DIRECTORY_SEPARATOR . 'Auth' .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
                 DIRECTORY_SEPARATOR . 'Groups' .
-                DIRECTORY_SEPARATOR . Common::$req->s['gDetails']['name'];
+                DIRECTORY_SEPARATOR . $this->api->req->s['gDetails']['name'];
         }
 
         foreach ($this->httpMethods as $method) {
@@ -120,7 +128,7 @@ class Routes
                 httpRoutes: $httpRoutes[$method]
             );
         }
-        Common::$res->dataEncode->addKeyData(
+        $this->api->res->dataEncode->addKeyData(
             key: 'Results',
             data: $httpRoutes
         );

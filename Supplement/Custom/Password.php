@@ -38,10 +38,18 @@ class Password implements CustomInterface
     use CustomTrait;
 
     /**
+     * Api common Object
+     *
+     * @var null|Common
+     */
+    private $api = null;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Common &$api)
     {
+        $this->api = &$api;
     }
 
     /**
@@ -51,7 +59,7 @@ class Password implements CustomInterface
      */
     public function init(): bool
     {
-        Common::$req->loadPayload();
+        $this->api->req->loadPayload();
         return true;
     }
 
@@ -64,19 +72,19 @@ class Password implements CustomInterface
      */
     public function process(array $payload = []): array
     {
-        if (Common::$req->s['payloadType'] === 'Object') {
-            $payload = Common::$req->dataDecode->get();
+        if ($this->api->req->s['payloadType'] === 'Object') {
+            $payload = $this->api->req->dataDecode->get();
         } else {
-            $payload = Common::$req->dataDecode->get('0');
+            $payload = $this->api->req->dataDecode->get('0');
         }
-        Common::$req->s['payload'] = $payload;
+        $this->api->req->s['payload'] = $payload;
 
-        $oldPassword = Common::$req->s['payload']['old_password'];
-        $oldPasswordHash = Common::$req->s['uDetails']['password_hash'];
+        $oldPassword = $this->api->req->s['payload']['old_password'];
+        $oldPasswordHash = $this->api->req->s['uDetails']['password_hash'];
 
         if (password_verify(password: $oldPassword, hash: $oldPasswordHash)) {
-            $userName = Common::$req->s['uDetails']['username'];
-            $newPassword = Common::$req->s['payload']['new_password'];
+            $userName = $this->api->req->s['uDetails']['username'];
+            $newPassword = $this->api->req->s['payload']['new_password'];
             $newPasswordHash = password_hash(
                 password: $newPassword,
                 algo: PASSWORD_DEFAULT
@@ -94,10 +102,10 @@ class Password implements CustomInterface
                 ':is_deleted' => 'No',
             ];
 
-            Common::$req->db->execDbQuery(sql: $sql, params: $sqlParams);
-            Common::$req->db->closeCursor();
+            DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->execDbQuery(sql: $sql, params: $sqlParams);
+            DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->closeCursor();
 
-            $cID = Common::$req->s['cDetails']['id'];
+            $cID = $this->api->req->s['cDetails']['id'];
             $cu_key = CacheKey::clientUser(
                 cID: $cID,
                 username: $userName
@@ -115,11 +123,11 @@ class Password implements CustomInterface
                     value: json_encode(value: $uDetails)
                 );
                 DbFunctions::$gCacheServer->deleteCache(
-                    key: CacheKey::token(token: Common::$req->s['token'])
+                    key: CacheKey::token(token: $this->api->req->s['token'])
                 );
             }
 
-            Common::$res->dataEncode->addKeyData(
+            $this->api->res->dataEncode->addKeyData(
                 key: 'Results',
                 data: 'Password changed successfully'
             );

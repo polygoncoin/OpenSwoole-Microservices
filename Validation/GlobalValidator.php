@@ -37,10 +37,18 @@ class GlobalValidator implements ValidatorInterface
     use ValidatorTrait;
 
     /**
+     * Api common Object
+     *
+     * @var null|Common
+     */
+    private $api = null;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Common &$api)
     {
+        $this->api = &$api;
     }
 
     /**
@@ -60,7 +68,7 @@ class GlobalValidator implements ValidatorInterface
                 if ($mode === 'custom') {
                     $args[$attr] = $key;
                 } else {
-                    $args[$attr] = Common::$req->s[$mode][$key];
+                    $args[$attr] = $this->api->req->s[$mode][$key];
                 }
             }
             $fn = $v['fn'];
@@ -84,9 +92,9 @@ class GlobalValidator implements ValidatorInterface
         extract(array: $args);
         $sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
         $params = [$id];
-        DbFunctions::$masterDb->execDbQuery(sql: $sql, params: $params);
-        $row = DbFunctions::$masterDb->fetch();
-        DbFunctions::$masterDb->closeCursor();
+        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->execDbQuery(sql: $sql, params: $params);
+        $row = DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->fetch();
+        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->closeCursor();
         return (int)(($row['count'] === 0) ? false : true);
     }
 
@@ -106,9 +114,9 @@ class GlobalValidator implements ValidatorInterface
             WHERE `{$column}` = ? AND`{$primary}` = ?
         ";
         $params = [$columnValue, $id];
-        DbFunctions::$masterDb->execDbQuery(sql: $sql, params: $params);
-        $row = DbFunctions::$masterDb->fetch();
-        DbFunctions::$masterDb->closeCursor();
+        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->execDbQuery(sql: $sql, params: $params);
+        $row = DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->fetch();
+        DbFunctions::$masterDb[$this->api->req->s['cDetails']['id']]->closeCursor();
         return ($row['count'] === 0) ? false : true;
     }
 }

@@ -31,6 +31,8 @@ use Microservices\App\SessionHandlers\Session;
  */
 class Env
 {
+    public static $timestamp = null;
+
     public static $gDbServerDatabase = null;
     public static $cacheDatabase = null;
 
@@ -101,6 +103,8 @@ class Env
      */
     public static function init(&$http): void
     {
+        self::$timestamp = time();
+
         self::$gDbServerDatabase = getenv(name: 'gDbServerDatabase');
         self::$cacheDatabase = getenv(name: 'gCacheServerDatabase');
 

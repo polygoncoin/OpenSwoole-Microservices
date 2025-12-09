@@ -15,7 +15,7 @@
 
 namespace Microservices\App\SessionHandlers\Containers;
 
-use Microservices\App\Common;
+use Microservices\App\Env;
 use Microservices\App\SessionHandlers\Containers\SessionContainerInterface;
 use Microservices\App\SessionHandlers\Containers\SessionContainerHelper;
 
@@ -69,7 +69,7 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 
         if (file_exists(filename: $filepath)) {
             $fileatime = fileatime(filename: $filepath);
-            if ((Common::$timestamp - $fileatime) < $this->sessionMaxLifetime) {
+            if ((Env::$timestamp - $fileatime) < $this->sessionMaxLifetime) {
                 return $this->decryptData(
                     cipherText: file_get_contents(filename: $filepath)
                 );
@@ -139,7 +139,7 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
     {
         $datetime = date(
             format: 'Y-m-dTH:i:s+0000',
-            timestamp: (Common::$timestamp - $sessionMaxLifetime)
+            timestamp: (Env::$timestamp - $sessionMaxLifetime)
         );
         shell_exec(
             command: "find {$this->sessionSavePath} -name \

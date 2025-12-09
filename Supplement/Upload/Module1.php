@@ -15,6 +15,7 @@
 
 namespace Microservices\Supplement\Upload;
 
+use Microservices\App\Common;
 use Microservices\App\Constants;
 use Microservices\App\DbFunctions;
 use Microservices\Supplement\Upload\UploadInterface;
@@ -37,11 +38,19 @@ class Module1 implements UploadInterface
     use UploadTrait;
 
     /**
+     * Api common Object
+     *
+     * @var null|Common
+     */
+    private $api = null;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Common &$api)
     {
-        DbFunctions::setDbConnection(fetchFrom: 'Master');
+        $this->api = &$api;
+        DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
     }
 
     /**

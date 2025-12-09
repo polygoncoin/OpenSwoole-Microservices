@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Common;
+use Microservices\App\Env;
 use Microservices\App\DbFunctions;
 
 /**
@@ -80,7 +80,7 @@ class RateLimiter
         $maxRequests = (int)$maxRequests;
         $secondsWindow = (int)$secondsWindow;
 
-        $remainder = Common::$timestamp % $secondsWindow;
+        $remainder = Env::$timestamp % $secondsWindow;
         $remainder = $remainder !== 0 ? $remainder : $secondsWindow;
 
         $key = $prefix . $key;
@@ -95,7 +95,7 @@ class RateLimiter
 
         $allowed = $requestCount <= $maxRequests;
         $remaining = max(0, $maxRequests - $requestCount);
-        $resetAt = Common::$timestamp + $remainder;
+        $resetAt = Env::$timestamp + $remainder;
 
         if ($allowed) {
             $this->cache->incrementCache($key);

@@ -15,7 +15,7 @@
 
 namespace Microservices\App\SessionHandlers\Containers;
 
-use Microservices\App\Common;
+use Microservices\App\Env;
 use Microservices\App\SessionHandlers\Containers\SessionContainerInterface;
 use Microservices\App\SessionHandlers\Containers\SessionContainerHelper;
 
@@ -72,7 +72,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
         ";
         $params = [
             ':sessionId' => $sessionId,
-            ':lastAccessed' => (Common::$timestamp - $this->sessionMaxLifetime)
+            ':lastAccessed' => (Env::$timestamp - $this->sessionMaxLifetime)
         ];
         if (
             ($row = $this->getSql(sql: $sql, params: $params))
@@ -103,7 +103,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
         $params = [
             ':sessionId' => $sessionId,
             ':sessionData' => $this->encryptData(plainText: $sessionData),
-            ':lastAccessed' => Common::$timestamp
+            ':lastAccessed' => Env::$timestamp
         ];
 
         return $this->execSql(sql: $sql, params: $params);
@@ -130,7 +130,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
         $params = [
             ':sessionId' => $sessionId,
             ':sessionData' => $this->encryptData(plainText: $sessionData),
-            ':lastAccessed' => Common::$timestamp
+            ':lastAccessed' => Env::$timestamp
         ];
 
         return $this->execSql(sql: $sql, params: $params);
@@ -153,7 +153,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
         ";
         $params = [
             ':sessionId' => $sessionId,
-            ':lastAccessed' => Common::$timestamp
+            ':lastAccessed' => Env::$timestamp
         ];
         return $this->execSql(sql: $sql, params: $params);
     }
@@ -167,7 +167,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
      */
     public function gcSession($sessionMaxLifetime): bool
     {
-        $lastAccessed = Common::$timestamp - $sessionMaxLifetime;
+        $lastAccessed = Env::$timestamp - $sessionMaxLifetime;
         $sql = "
             DELETE FROM `{$this->MYSQL_DATABASE}`.`{$this->MYSQL_TABLE}`
             WHERE `lastAccessed` < :lastAccessed

@@ -15,7 +15,7 @@
 
 namespace Microservices\App\SessionHandlers\Containers;
 
-use Microservices\App\Common;
+use Microservices\App\Env;
 use Microservices\App\SessionHandlers\Containers\SessionContainerInterface;
 use Microservices\App\SessionHandlers\Containers\SessionContainerHelper;
 
@@ -75,7 +75,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
             $filter = ['sessionId' => $sessionId];
 
             if ($document = $this->collection->findOne($filter)) {
-                $lastAccessed = Common::$timestamp - $this->sessionMaxLifetime;
+                $lastAccessed = Env::$timestamp - $this->sessionMaxLifetime;
                 if ($document['lastAccessed'] > $lastAccessed) {
                     return $this->decryptData(cipherText: $document['sessionData']);
                 }
@@ -99,7 +99,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
         try {
             $document = [
                 "sessionId" => $sessionId,
-                "lastAccessed" => Common::$timestamp,
+                "lastAccessed" => Env::$timestamp,
                 "sessionData" => $this->encryptData(plainText: $sessionData)
             ];
             if ($this->collection->insertOne($document)) {
@@ -125,7 +125,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
             $filter = ['sessionId' => $sessionId];
             $update = [
                 '$set' => [
-                    'lastAccessed' => Common::$timestamp,
+                    'lastAccessed' => Env::$timestamp,
                     "sessionData" => $this->encryptData(plainText: $sessionData)
                 ]
             ];
@@ -152,7 +152,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
             $filter = ['sessionId' => $sessionId];
             $update = [
                 '$set' => [
-                    'lastAccessed' => Common::$timestamp
+                    'lastAccessed' => Env::$timestamp
                 ]
             ];
 
