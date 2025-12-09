@@ -169,7 +169,7 @@ class Gateway
         }
 
         $ipNumber = ip2long(ip: Common::$req->IP);
-    
+
         $cCidrKey = CacheKey::cCidr(
             cID: Common::$req->s['cDetails']['id']
         );

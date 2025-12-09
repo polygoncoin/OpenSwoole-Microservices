@@ -61,7 +61,7 @@ $server->on(
         }
 
         if (isset($request->server['remote_addr'])) {
-            $http['server']['ip'] = $request->server['remote_addr'];    
+            $http['server']['ip'] = $request->server['remote_addr'];
         } else {// check proxy headers
             if (isset($request->header['x-forwarded-for'])) {
                 $http['server']['ip'] = $request->header['x-forwarded-for'];

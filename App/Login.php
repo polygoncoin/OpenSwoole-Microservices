@@ -124,7 +124,7 @@ class Login
                 );
             }
         }
-        
+
         switch (Env::$authMode) {
             case 'Token':
                 $this->outputTokenDetails();
@@ -215,7 +215,7 @@ class Login
     private function validateRequestIp(): void
     {
         $ipNumber = ip2long(ip: Common::$req->IP);
-    
+
         $cCidrKey = CacheKey::cCidr(
             cID: Common::$req->s['cDetails']['id']
         );

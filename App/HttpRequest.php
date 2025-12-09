@@ -408,11 +408,11 @@ class HttpRequest
                     $v = explode(':', $value);
                     $_headerData = &$headerData;
                     for (
-                        $i = 0, $i_count = count($v);
-                        $i < $i_count;
+                        $i = 0, $iCount = count($v);
+                        $i < $iCount;
                         $i++
                     ) {
-                        if (($i+1) === $i_count) {
+                        if (($i+1) === $iCount) {
                             $_headerData['__column__'][$v[$i]] = $key;
                         } else {
                             if (!isset($_headerData[$v[$i]])) {
