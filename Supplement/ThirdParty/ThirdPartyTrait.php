@@ -32,55 +32,51 @@ trait ThirdPartyTrait
     /**
      * Return cURL Config
      *
-     * @param array  $header        Header
-     * @param string $contentType   Content-Type
-     * @param string $method        HTTP method
-     * @param string $url           URL
-     * @param array  $urlParams     Query String Params array
-     * @param array  $payloadParams Payload array
+     * @param string $homeURL     Site URL
+     * @param string $method      HTTP method
+     * @param string $route       Route
+     * @param string $queryString Query String
+     * @param array  $header      Header
+     * @param string $payload     Payload
      *
      * @return array
      */
-    private function getCurlConfig(
-        $header,
-        $contentType,
+    public static function getCurlConfig(
+        $homeURL,
         $method,
-        $url,
-        $urlParams,
-        $payloadParams
+        $route,
+        $queryString,
+        $header = [],
+        $payload = '',
+        $file = null
     ): array {
-        $queryString = empty($urlParams) ? '' :
-            '?' . http_build_query(data: $urlParams);
-        $curlConfig[CURLOPT_URL] = "{$url}{$queryString}";
-        $curlConfig[CURLOPT_HTTPHEADER] = $header;
-        $curlConfig[CURLOPT_HTTPHEADER][] = 'Cache-Control: no-cache';
-        $curlConfig[CURLOPT_HEADER] = 1;
+        $curlConfig[\CURLOPT_URL] = "{$homeURL}?route={$route}{$queryString}";
+        $curlConfig[\CURLOPT_HTTPHEADER] = $header;
+        $curlConfig[\CURLOPT_HEADER] = 1;
 
         switch ($method) {
             case 'GET':
                 break;
             case 'POST':
-                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
-                $curlConfig[CURLOPT_POST] = true;
-                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
+                $curlConfig[\CURLOPT_POST] = true;
+                if ($file === null) {
+                    $curlConfig[\CURLOPT_POSTFIELDS] = $payload;
+                }
                 break;
             case 'PUT':
-                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
-                $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PUT';
-                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
-                break;
             case 'PATCH':
-                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
-                $curlConfig[CURLOPT_CUSTOMREQUEST] = 'PATCH';
-                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
-                break;
             case 'DELETE':
-                $curlConfig[CURLOPT_HTTPHEADER][] = $contentType;
-                $curlConfig[CURLOPT_CUSTOMREQUEST] = 'DELETE';
-                $curlConfig[CURLOPT_POSTFIELDS] = $payload;
+                $curlConfig[\CURLOPT_CUSTOMREQUEST] = $method;
+                if ($file === null) {
+                    $curlConfig[\CURLOPT_POSTFIELDS] = $payload;
+                }
                 break;
         }
-        $curlConfig[CURLOPT_RETURNTRANSFER] = true;
+        $curlConfig[\CURLOPT_RETURNTRANSFER] = true;
+
+        $cookieFile = __DIR__ . '/cookies.txt';
+        $curlConfig[\CURLOPT_COOKIEJAR] = $cookieFile; // Store cookies
+        $curlConfig[\CURLOPT_COOKIEFILE] = $cookieFile; // Read cookies
 
         return $curlConfig;
     }
@@ -88,48 +84,100 @@ trait ThirdPartyTrait
     /**
      * Trigger cURL
      *
-     * @param array  $header        Header
-     * @param string $contentType   Content-Type
-     * @param string $method        HTTP method
-     * @param string $url           URL
-     * @param array  $urlParams     Query String Params array
-     * @param array  $payloadParams Payload array
+     * @param string $homeURL Site URL
+     * @param string $method  HTTP method
+     * @param string $route   Route
+     * @param array  $header  Header
+     * @param string $payload Payload
+     * @param string $file    File path
      *
-     * @return array
+     * @return mixed
      */
-    private function trigger(
-        $header,
-        $contentType,
+    public static function trigger(
+        $homeURL,
         $method,
-        $url,
-        $urlParams,
-        $payloadParams
-    ): array {
-
-        // $contentType = 'Content-Type: text/plain; charset=utf-8';
+        $route,
+        $header = [],
+        $payload = '',
+        $file = null
+    ): mixed {
+        $queryString = '';
 
         $curl = curl_init();
-        $curlConfig = $this->getCurlConfig(
-            header: $header,
-            contentType: $contentType,
+        $curlConfig = self::getCurlConfig(
+            homeURL: $homeURL,
             method: $method,
-            url: $url,
-            urlParams: $urlParams,
-            payloadParams: $payloadParams
+            route: $route,
+            queryString: $queryString,
+            header: $header,
+            payload: $payload,
+            file: $file
         );
+        if ($file !== null) {
+            switch ($method) {
+                case 'POST':
+                    // // Create a CURLFile object
+                    // if (function_exists('curl_file_create')) {
+                    //     $cFile = curl_file_create($file, mime_content_type($file), basename($file));
+                    // } else {
+                    //     // Fallback for very old PHP versions (deprecated)
+                    //     $cFile = '@' . realpath($file);
+                    // }
+                    // $postData = array(
+                    //     'description' => 'A file upload test', // Other form fields go here
+                    //     'file' => $cFile // This name must match what your server expects
+                    // );
+                    // $curlConfig[\CURLOPT_POSTFIELDS] = $postData;
+                    $curlFile = new \CURLFile($file, 'text/plain', 'uploaded_file.txt');
+                    $curlConfig[\CURLOPT_POSTFIELDS] = [
+                        'file' => $curlFile
+                    ];
+                    break;
+                case 'PUT':
+                case 'PATCH':
+                case 'DELETE':
+                    $fp = fopen($file, 'rb');
+                    $curlConfig[\CURLOPT_INFILE] = $fp;
+                    $curlConfig[\CURLOPT_INFILESIZE] = filesize($file);
+                    break;
+            }
+        }
         curl_setopt_array(handle: $curl, options: $curlConfig);
+
         $curlResponse = curl_exec(handle: $curl);
 
+        $responseHttpCode = curl_getinfo(
+            handle: $curl,
+            option: \CURLINFO_HTTP_CODE
+        );
+
+        $responseContentType = curl_getinfo(
+            handle: $curl,
+            option: \CURLINFO_CONTENT_TYPE
+        );
+
+        $headerSize = curl_getinfo(handle: $curl, option: \CURLINFO_HEADER_SIZE);
+
+        $responseHeaders = self::httpParseHeaders(
+            rawHeaders: substr(
+                string: $curlResponse,
+                offset: 0,
+                length: $headerSize
+            )
+        );
+        $responseBody = substr(string: $curlResponse, offset: $headerSize);
+
+        $queryString = empty($queryString) ? '' : '&' . $queryString;
         $return['request'] = [
-            'url' => $curlConfig[CURLOPT_URL],
-            'method' => $method,
-            'headers' => $curlConfig[CURLOPT_HTTPHEADER],
-            'payload' => $payloadParams
+            'URI' => htmlspecialchars(string: "{$homeURL}?route={$route}{$queryString}"),
+            'httpMethod' => $method,
+            'requestHeaders' => $curlConfig[\CURLOPT_HTTPHEADER],
+            'requestPayload' => nl2br(htmlspecialchars(string: $payload)),
         ];
 
         if ($curlResponse === false) {
-            $errorCode = curl_errno($ch);
-            $errorMessage = curl_error($ch);
+            $errorCode = curl_errno(handle: $curl);
+            $errorMessage = curl_error(handle: $curl);
 
             $errorConstants = [];
 
@@ -148,32 +196,25 @@ trait ThirdPartyTrait
                 'errorConstants' => $errorConstants
             ];
         } else {
-            $responseHttpCode = curl_getinfo(
-                handle: $curl,
-                option: CURLINFO_HTTP_CODE
-            );
-            $responseContentType = curl_getinfo(
-                handle: $curl,
-                option: CURLINFO_CONTENT_TYPE
-            );
+            if (
+                strpos(
+                    haystack: $responseContentType,
+                    needle: 'application/json;'
+                ) !== false
+            ) {
+                $responseBody = json_decode(json: $responseBody, associative: true);
+            }
+            $response = $responseBody;
 
-            $headerSize = curl_getinfo(handle: $curl, option: CURLINFO_HEADER_SIZE);
-            $responseHeaders = $this->httpParseHeaders(
-                rawHeaders: substr(
-                    string: $curlResponse,
-                    offset: 0,
-                    length: $headerSize
-                )
-            );
-            $responseBody = substr(string: $curlResponse, offset: $headerSize);
             $return['response'] = [
-                'httpCode' => $responseHttpCode,
-                'headers' => $responseHeaders,
-                'contentType' => $responseContentType,
-                'body' => $responseBody
+                'responseHttpCode' => $responseHttpCode,
+                'responseHeaders' => $responseHeaders,
+                'responseContentType' => $responseContentType,
+                'responseBody' => $response
             ];
         }
         curl_close(handle: $curl);
+
 
         return $return;
     }

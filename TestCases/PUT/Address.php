@@ -15,7 +15,7 @@
 
 namespace Microservices\TestCases;
 
-use Microservices\TestCases\TestFunctions;
+use Microservices\App\Web;
 
 $header = $defaultHeaders;
 $header[] = $contentType;
@@ -28,7 +28,7 @@ $params = [
     'address' => 'A-203'
 ];
 
-return TestFunctions::trigger(
+return Web::trigger(
     homeURL: $homeURL,
     method: 'PUT',
     route: '/address/1',

@@ -15,7 +15,7 @@
 
 namespace Microservices\TestCases;
 
-use Microservices\TestCases\TestFunctions;
+use Microservices\App\Web;
 
 $header = $defaultHeaders;
 $header[] = $contentType;
@@ -50,7 +50,7 @@ $params = [
     ],
 ];
 
-return TestFunctions::trigger(
+return Web::trigger(
     homeURL: $homeURL,
     method: 'POST',
     route: '/custom/SupplementTest',

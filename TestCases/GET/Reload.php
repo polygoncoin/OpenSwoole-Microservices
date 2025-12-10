@@ -15,11 +15,11 @@
 
 namespace Microservices\TestCases;
 
-use Microservices\TestCases\TestFunctions;
+use Microservices\App\Web;
 
 $header = $defaultHeaders;
 
-return TestFunctions::trigger(
+return Web::trigger(
     homeURL: $homeURL,
     method: 'GET',
     route: '/reload',

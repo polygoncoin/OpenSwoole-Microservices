@@ -80,11 +80,11 @@ class Google implements ThirdPartyInterface
         $curl_handle = curl_init();
         curl_setopt(
             handle: $curl_handle,
-            option: CURLOPT_URL,
+            option: \CURLOPT_URL,
             value: 'https://api.ipify.org?format=json'
         );
-        curl_setopt(handle: $curl_handle, option: CURLOPT_CONNECTTIMEOUT, value: 2);
-        curl_setopt(handle: $curl_handle, option: CURLOPT_RETURNTRANSFER, value: 1);
+        curl_setopt(handle: $curl_handle, option: \CURLOPT_CONNECTTIMEOUT, value: 2);
+        curl_setopt(handle: $curl_handle, option: \CURLOPT_RETURNTRANSFER, value: 1);
         $output = curl_exec(handle: $curl_handle);
         curl_close(handle: $curl_handle);
         if (empty($output)) {

@@ -15,7 +15,7 @@
 
 namespace Microservices\TestCases;
 
-use Microservices\TestCases\TestFunctions;
+use Microservices\App\Web;
 
 $header = $defaultHeaders;
 // $header[] = 'Content-Type: multipart/form-data; charset=utf-8';
@@ -49,7 +49,7 @@ $params = [
     ]
 ];
 
-return TestFunctions::trigger(
+return Web::trigger(
     homeURL: $homeURL,
     method: 'POST',
     route: '/category/import',

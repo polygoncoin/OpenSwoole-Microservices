@@ -15,12 +15,12 @@
 
 namespace Microservices\TestCases;
 
-use Microservices\TestCases\TestFunctions;
+use Microservices\App\Web;
 
 $header = $defaultHeaders;
 $header[] = $contentType;
 
-$res = TestFunctions::trigger(
+$res = Web::trigger(
     homeURL: $homeURL,
     method: 'POST',
     route: '/login',
@@ -29,11 +29,11 @@ $res = TestFunctions::trigger(
 );
 
 if (
-    !isset($res['responseHeaders']['Set-Cookie'])
-    && isset($res['responseBody']['Results']['Token'])
+    !isset($res['response']['responseHeaders']['Set-Cookie'])
+    && isset($res['response']['responseBody']['Results']['Token'])
     && $res
 ) {
-    $token = $res['responseBody']['Results']['Token'];
+    $token = $res['response']['responseBody']['Results']['Token'];
 }
 
 return $res;
