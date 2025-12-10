@@ -227,7 +227,7 @@ class Web
      * @return array
      * @throws \Exception
      */
-    private function httpParseHeaders($rawHeaders): array
+    private static function httpParseHeaders($rawHeaders): array
     {
         $headers = [];
         $key = '';
