@@ -46,4 +46,3 @@ return array_merge(
         ],
     ]
 );
-

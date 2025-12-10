@@ -25,7 +25,6 @@ use Microservices\App\RateLimiter;
 use Microservices\App\Validator;
 use Microservices\App\Start;
 
-
 /**
  * Trait for API
  * php version 8.3

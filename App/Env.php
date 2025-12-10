@@ -103,8 +103,6 @@ class Env
      */
     public static function init(&$http): void
     {
-        self::$timestamp = time();
-
         self::$gDbServerDatabase = getenv(name: 'gDbServerDatabase');
         self::$cacheDatabase = getenv(name: 'gCacheServerDatabase');
 

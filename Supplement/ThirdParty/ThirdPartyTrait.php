@@ -222,4 +222,3 @@ trait ThirdPartyTrait
         return $headers;
     }
 }
-
