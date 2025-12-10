@@ -186,6 +186,7 @@ class Gateway
             gID: $this->api->req->s['uDetails']['group_id']
         );
         $uCidrKey = CacheKey::uCidr(
+            cID: $this->api->req->s['cDetails']['id'],
             uID: $this->api->req->s['uDetails']['id']
         );
         foreach ([$cCidrKey, $gCidrKey, $uCidrKey] as $key) {

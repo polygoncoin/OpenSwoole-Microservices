@@ -65,7 +65,7 @@ class Hook
                     DIRECTORY_SEPARATOR . 'Hooks' .
                     DIRECTORY_SEPARATOR . $hook . '.php';
                 if (file_exists(filename: $hookFile)) {
-                    $hookClass = 'Microservices\\\Hooks\\' . $hook;
+                    $hookClass = 'Microservices\\Hooks\\' . $hook;
                     $hookObj = new $hookClass($this->api);
                     if ($hookObj->init()) {
                         $hookObj->process();

@@ -80,6 +80,7 @@ $server->on(
             && in_array(
                 needle: $http['get'][ROUTE_URL_PARAM],
                 haystack: [
+                    '/tests',
                     '/auth-test',
                     '/open-test',
                     '/open-test-xml',
@@ -89,17 +90,20 @@ $server->on(
         ) {
             $tests = new Tests();
             switch ($http['get'][ROUTE_URL_PARAM]) {
+                case '/tests':
+                    $response->end('<pre>'.print_r(value: $tests->processTests(), return: true));
+                    break;
                 case '/auth-test':
-                    $response->end($tests->processAuth());
+                    $response->end('<pre>'.print_r(value: $tests->processAuth(), return: true));
                     break;
                 case '/open-test':
-                    $response->end($tests->processOpen());
+                    $response->end('<pre>'.print_r(value: $tests->processOpen(), return: true));
                     break;
                 case '/open-test-xml':
-                    $response->end($tests->processXml());
+                    $response->end('<pre>'.print_r(value: $tests->processXml(), return: true));
                     break;
                 case '/supp-test':
-                    $response->end($tests->processSupplement());
+                    $response->end('<pre>'.print_r(value: $tests->processSupplement(), return: true));
                     break;
             }
         } else {

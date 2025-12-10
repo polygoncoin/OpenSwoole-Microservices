@@ -18,12 +18,14 @@ CREATE TABLE `m001_master_clients` (
   `master_db_username` varchar(255) NOT NULL,
   `master_db_password` varchar(255) NOT NULL,
   `master_db_database` varchar(255) NOT NULL,
+  `master_parameterized_query_mode` varchar(255) NOT NULL,
   `slave_db_server_type` varchar(255) NOT NULL,
   `slave_db_hostname` varchar(255) NOT NULL,
   `slave_db_port` varchar(255) NOT NULL,
   `slave_db_username` varchar(255) NOT NULL,
   `slave_db_password` varchar(255) NOT NULL,
   `slave_db_database` varchar(255) NOT NULL,
+  `slave_parameterized_query_mode` varchar(255) NOT NULL,
   `master_cache_server_type` varchar(255) NOT NULL,
   `master_cache_hostname` varchar(255) NOT NULL,
   `master_cache_port` varchar(255) NOT NULL,
@@ -76,7 +78,7 @@ CREATE TABLE `m002_master_groups` (
 LOCK TABLES `m001_master_clients` WRITE;
 /*!40000 ALTER TABLE `m001_master_clients` DISABLE KEYS */;
 INSERT INTO `m001_master_clients` VALUES
-(1,'Client 001','127.0.0.1, 127.0.0.1/32','localhost', 'public.localhost','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','No','No');
+(1,'Client 001','127.0.0.1, 127.0.0.1/32','localhost', 'public.localhost','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerParamQueryMode','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerParamQueryMode','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','No','No');
 /*!40000 ALTER TABLE `m001_master_clients` ENABLE KEYS */;
 UNLOCK TABLES;
 

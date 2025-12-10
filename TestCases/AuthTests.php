@@ -116,4 +116,4 @@ $response[] = include DELETE . DIRECTORY_SEPARATOR . 'RegistrationWithAddress.ph
 
 $response[] = include POST . DIRECTORY_SEPARATOR . 'CategoryConfig.php';
 
-return '<pre>' . print_r(value: $response, return: true);
+return $response;

@@ -105,13 +105,14 @@ class CacheKey
     /**
      * Get User CIDR Key
      *
+     * @param int $cID Client Id
      * @param int $uID User Id
      *
      * @return string
      */
-    public static function uCidr($uID): string
+    public static function uCidr($cID, $uID): string
     {
-        return "u:cidr:{$uID}";
+        return "u:cidr:{$cID}:{$uID}";
     }
 
     /**

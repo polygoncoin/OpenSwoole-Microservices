@@ -388,6 +388,10 @@ class Write
         $iCount = $isObject ?
             1 : $this->api->req->dataDecode->count(keys: $payloadIndex);
 
+        $modeColumn = 'master_parameterized_query_mode';
+        $mode = getenv(name: $this->api->req->s['cDetails'][$modeColumn]);
+        $fn = "getSqlAndParams{$mode}Mode";
+
         for ($i = 0; $i < $iCount; $i++) {
             if ($isObject) {
                 $_response = &$response;
@@ -448,7 +452,6 @@ class Write
             }
 
             // Get Sql and Params
-            $fn = 'getSqlAndParams' . Env::$parameterisedQueryMode . 'Mode';
             [$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
                 sqlDetails: $wSqlConfig
             );

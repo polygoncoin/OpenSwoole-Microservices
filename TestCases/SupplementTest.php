@@ -48,4 +48,4 @@ $response[] = include POST . DIRECTORY_SEPARATOR . 'Login.php';
 
 $response[] = include POST . DIRECTORY_SEPARATOR . 'SupplementTest.php';
 
-return '<pre>' . print_r(value: $response, return: true);
+return $response;

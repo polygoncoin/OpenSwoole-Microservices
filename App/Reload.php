@@ -129,7 +129,10 @@ class Reload
                 if ($uRow['allowed_cidrs'] !== null) {
                     $uCidrs = $this->cidrsIpNumber(cidrs: $uRow['allowed_cidrs']);
                     if (count(value: $uCidrs) > 0) {
-                        $uCidrKey = CacheKey::uCidr(uID: $uRow['id']);
+                        $uCidrKey = CacheKey::uCidr(
+                            cID: $cRow['id'],
+                            uID: $uRow['id']
+                        );
                         DbFunctions::$gCacheServer->setCache(
                             key: $uCidrKey,
                             value: json_encode(value: $uCidrs)

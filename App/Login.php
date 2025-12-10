@@ -233,6 +233,7 @@ class Login
             gID: $this->uDetails['group_id']
         );
         $uCidrKey = CacheKey::uCidr(
+            cID: $this->api->req->s['cDetails']['id'],
             uID: $this->uDetails['id']
         );
         foreach ([$cCidrKey, $gCidrKey, $uCidrKey] as $key) {
