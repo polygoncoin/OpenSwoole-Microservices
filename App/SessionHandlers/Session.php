@@ -125,7 +125,7 @@ class Session
      *
      * @var null|string
      */
-    public static $sessionSavePath = __DIR__ . '/sessions';//null;
+    public static $sessionSavePath = null;
 
     /**
      * Session Handler mode

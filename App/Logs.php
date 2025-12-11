@@ -40,12 +40,7 @@ class Logs
      */
     public function log(&$logDetails): void
     {
-        $absLogsDir = Constants::$LOGS_DIR;
-        if (!is_dir(filename: $absLogsDir)) {
-            mkdir(directory: $absLogsDir, permissions: 0755, recursive: true);
-        }
-
-        $logFile = $absLogsDir .
+        $logFile = Constants::$LOG_DIR .
             DIRECTORY_SEPARATOR . 'logs-' . date(format: 'YmdH');
         if (!file_exists(filename: $logFile)) {
             touch(filename: $logFile);
