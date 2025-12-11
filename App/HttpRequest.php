@@ -196,7 +196,7 @@ class HttpRequest
             return;
         }
 
-        $this->loadCache();
+        DbFunctions::connectGlobalCache();
 
         if ($this->open) {
             $cKey = CacheKey::clientOpenToWeb(hostname: $this->HOST);
@@ -372,16 +372,6 @@ class HttpRequest
         } else {
             $value = urldecode(string: $value);
         }
-    }
-
-    /**
-     * Load cache server
-     *
-     * @return void
-     */
-    private function loadCache(): void
-    {
-        DbFunctions::connectGlobalCache();
     }
 
     /**

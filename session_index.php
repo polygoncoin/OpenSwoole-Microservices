@@ -75,6 +75,10 @@ $server->on(
         $http['post'] = $request->rawContent();
         $http['files'] = &$request->files;
 
+        Constants::init();
+        Env::$timestamp = time();
+        Env::init(http: $http);
+
         if (
             isset($http['get'][ROUTE_URL_PARAM])
             && in_array(
@@ -107,11 +111,6 @@ $server->on(
                     break;
             }
         } else {
-
-            Constants::init();
-            Env::$timestamp = time();
-            Env::init(http: $http);
-
             ob_start();
             [$responseheaders, $responseContent, $responseCode] = Start::http(http: $http, streamData: true);
             ob_clean();

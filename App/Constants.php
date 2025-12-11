@@ -96,6 +96,9 @@ class Constants
             DIRECTORY_SEPARATOR . 'Open';
 
         self::$WEB_COOKIES_DIR = self::$DOC_ROOT . DIRECTORY_SEPARATOR . 'WebCookies';
+        if (!is_dir(filename: self::$WEB_COOKIES_DIR)) {
+            mkdir(directory: self::$WEB_COOKIES_DIR, permissions: 0755, recursive: true);
+        }
 
         self::$initialized = true;
     }
