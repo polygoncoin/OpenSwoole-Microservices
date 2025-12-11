@@ -1,6 +1,6 @@
 .env
 .session.env
-/Logs/*
 /App/SessionHandlers/sessions/*
-/TestCases/cookies.txt
+/Logs/*
 /vendor/
+/WebCookies/*
