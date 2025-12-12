@@ -347,7 +347,7 @@ class Read
         &$configKeys,
         $useResultSet
     ): void {
-        $modeColumn = $this->fetchFrom . '_parameterized_query_mode';
+        $modeColumn = $this->fetchFrom . '_query_placeholder';
         $mode = getenv(name: $this->api->req->s['cDetails'][$modeColumn]);
         $fn = "getSqlAndParams{$mode}Mode";
         [$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
@@ -439,7 +439,7 @@ class Read
             $this->api->req->s['queryParams']['perPage']
         );
 
-        $modeColumn = $this->fetchFrom . '_parameterized_query_mode';
+        $modeColumn = $this->fetchFrom . '_query_placeholder';
         $mode = getenv(name: $this->api->req->s['cDetails'][$modeColumn]);
         $fn = "getSqlAndParams{$mode}Mode";
         [$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
@@ -502,7 +502,7 @@ class Read
         &$configKeys,
         $useResultSet
     ): void {
-        $modeColumn = $this->fetchFrom . '_parameterized_query_mode';
+        $modeColumn = $this->fetchFrom . '_query_placeholder';
         $mode = getenv(name: $this->api->req->s['cDetails'][$modeColumn]);
         $fn = "getSqlAndParams{$mode}Mode";
         [$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
@@ -645,7 +645,7 @@ class Read
             return [[], '', HttpStatus::$NotFound];
         }
 
-        $modeColumn = $this->fetchFrom . '_parameterized_query_mode';
+        $modeColumn = $this->fetchFrom . '_query_placeholder';
         $mode = getenv(name: $this->api->req->s['cDetails'][$modeColumn]);
         $fn = "getSqlAndParams{$mode}Mode";
         [$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(

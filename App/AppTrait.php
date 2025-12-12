@@ -218,7 +218,7 @@ trait AppTrait
      *
      * @return array
      */
-    private function getSqlAndParamsAssocMode(
+    private function getSqlAndParamsNamedMode(
         &$sqlDetails,
         $configKeys = null
     ): array {
@@ -352,7 +352,7 @@ trait AppTrait
      *
      * @return array
      */
-    private function getSqlAndParamsArrayMode(
+    private function getSqlAndParamsUnnamedMode(
         &$sqlDetails,
         $configKeys = null
     ): array {

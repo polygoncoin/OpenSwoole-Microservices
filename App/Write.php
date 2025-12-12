@@ -388,7 +388,7 @@ class Write
         $iCount = $isObject ?
             1 : $this->api->req->dataDecode->count(keys: $payloadIndex);
 
-        $modeColumn = 'master_parameterized_query_mode';
+        $modeColumn = 'master_query_placeholder';
         $mode = getenv(name: $this->api->req->s['cDetails'][$modeColumn]);
         $fn = "getSqlAndParams{$mode}Mode";
 
