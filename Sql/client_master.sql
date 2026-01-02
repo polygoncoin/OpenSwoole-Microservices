@@ -1,13 +1,13 @@
-DROP TABLE IF EXISTS `master_users`;
+DROP TABLE IF EXISTS `users`;
 
-CREATE TABLE `master_users` (
+CREATE TABLE `users` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `firstname` varchar(255) NOT NULL,
   `lastname` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `username` varchar(255) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
-  `allowed_cidrs` text DEFAULT NULL,
+  `allowed_cidrs` text DEFAULT '0.0.0.0/0',
   `group_id` int NOT NULL,
   `token` varchar(255) DEFAULT NULL,
   `token_ts` int UNSIGNED DEFAULT 0,
@@ -67,10 +67,10 @@ CREATE TABLE `api_cache` (
     UNIQUE INDEX api_cache_key (`key`)
 ) ENGINE=InnoDB;
 
-LOCK TABLES `master_users` WRITE;
-/*!40000 ALTER TABLE `master_users` DISABLE KEYS */;
-INSERT INTO `master_users` VALUES
-(4,'test1','test1','test1@test.com','client_1_group_1_user_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','127.0.0.1',2,'',0,NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','No','No'),
-(5,'admin1','admin1','admin1@test.com','client_1_admin_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','127.0.0.1',3,'',0,NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','No','No');
-/*!40000 ALTER TABLE `master_users` ENABLE KEYS */;
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES
+(4,'test1','test1','test1@test.com','client_1_group_1_user_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','0.0.0.0/0',2,'',0,NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','No','No'),
+(5,'admin1','admin1','admin1@test.com','client_1_admin_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','0.0.0.0/0',3,'',0,NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','No','No');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;

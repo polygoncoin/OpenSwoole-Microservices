@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Routes\Auth\ClientDB\Groups\AdminGroup;
+namespace Microservices\Config\Routes\Auth\ClientDB\groups\AdminGroup;
 
 use Microservices\App\Constants;
 use Microservices\App\DatabaseDataTypes;
@@ -23,14 +23,14 @@ return [
     'category' => [
         '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'Groups' .
+            DIRECTORY_SEPARATOR . 'groups' .
             DIRECTORY_SEPARATOR . 'AdminGroup' .
             DIRECTORY_SEPARATOR . 'GET' .
             DIRECTORY_SEPARATOR . 'Category-all.php',
         'search' => [
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
+                DIRECTORY_SEPARATOR . 'groups' .
                 DIRECTORY_SEPARATOR . 'AdminGroup' .
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'Category-search.php',
@@ -39,7 +39,7 @@ return [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
+                DIRECTORY_SEPARATOR . 'groups' .
                 DIRECTORY_SEPARATOR . 'AdminGroup' .
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'Category-Single.php',
@@ -48,7 +48,7 @@ return [
     'registration' => [
         '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'Groups' .
+            DIRECTORY_SEPARATOR . 'groups' .
             DIRECTORY_SEPARATOR . 'AdminGroup' .
             DIRECTORY_SEPARATOR . 'GET' .
             DIRECTORY_SEPARATOR . 'Registration-all.php',
@@ -56,7 +56,7 @@ return [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
+                DIRECTORY_SEPARATOR . 'groups' .
                 DIRECTORY_SEPARATOR . 'AdminGroup' .
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'Registration-single.php',
@@ -65,7 +65,7 @@ return [
     'address' => [
         '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'Groups' .
+            DIRECTORY_SEPARATOR . 'groups' .
             DIRECTORY_SEPARATOR . 'AdminGroup' .
             DIRECTORY_SEPARATOR . 'GET' .
             DIRECTORY_SEPARATOR . 'Address-all.php',
@@ -73,7 +73,7 @@ return [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
+                DIRECTORY_SEPARATOR . 'groups' .
                 DIRECTORY_SEPARATOR . 'AdminGroup' .
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'Address-single.php',
@@ -82,7 +82,7 @@ return [
     'registration-with-address' => [
         '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'Groups' .
+            DIRECTORY_SEPARATOR . 'groups' .
             DIRECTORY_SEPARATOR . 'AdminGroup' .
             DIRECTORY_SEPARATOR . 'GET' .
             DIRECTORY_SEPARATOR . 'Registration-With-Address-all.php',
@@ -90,7 +90,7 @@ return [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
+                DIRECTORY_SEPARATOR . 'groups' .
                 DIRECTORY_SEPARATOR . 'AdminGroup' .
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'Registration-With-Address-single.php',

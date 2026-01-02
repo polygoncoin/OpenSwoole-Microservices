@@ -110,7 +110,7 @@ class Write
             keyword: 'useHierarchy'
         );
 
-        if (Env::$allowConfigRequest) {
+        if (Env::$enableConfigRequest) {
             if ($this->api->req->rParser->isConfigRequest) {
                 $this->processWriteConfig(
                     wSqlConfig: $wSqlConfig,
@@ -182,14 +182,16 @@ class Write
             key: 'Route',
             data: $this->api->req->rParser->configuredRoute
         );
-        $this->dataEncode->addKeyData(
-            key: 'Payload',
-            data: $this->getConfigParams(
-                sqlConfig: $wSqlConfig,
-                isFirstCall: true,
-                flag: $useHierarchy
-            )
-        );
+        if (Env::$enablePayloadInResponse) {
+            $this->dataEncode->addKeyData(
+                key: Env::$payloadKeyInResponse,
+                data: $this->getConfigParams(
+                    sqlConfig: $wSqlConfig,
+                    isFirstCall: true,
+                    flag: $useHierarchy
+                )
+            );
+        }
         $this->dataEncode->endObject();
     }
 
@@ -291,16 +293,18 @@ class Write
                         DbFunctions::$masterDb[$this->api->req->cId]->commit();
                     }
 
-                    $arr = [
-                        'Status' => HttpStatus::$Ok,
-                        'Payload' => $this->api->req->dataDecode->getCompleteArray(
+                    $arr = [];
+                    $arr['Status'] = HttpStatus::$Ok;
+                    if (Env::$enablePayloadInResponse) {
+                        $arr[Env::$payloadKeyInResponse] = $this->api->req->dataDecode->getCompleteArray(
                             keys: implode(
                                 separator: ':',
                                 array: $payloadIndexes
                             )
-                        ),
-                        'Response' => $response
-                    ];
+                        );
+                    }
+                    $arr['Response'] = $response;
+                    
                     if ($idempotentWindow) {
                         DbFunctions::$gCacheServer->setCache(
                             key: $hashKey,
@@ -309,16 +313,17 @@ class Write
                         );
                     }
                 } else { // Failure
-                    $arr = [
-                        'Status' => $this->api->res->httpStatus,
-                        'Payload' => $this->api->req->dataDecode->getCompleteArray(
+                    $arr = [];
+                    $arr['Status'] = $this->api->res->httpStatus;
+                    if (Env::$enablePayloadInResponse) {
+                        $arr[Env::$payloadKeyInResponse] = $this->api->req->dataDecode->getCompleteArray(
                             keys: implode(
                                 separator: ':',
                                 array: $payloadIndexes
                             )
-                        ),
-                        'Error' => $response
-                    ];
+                        );
+                    }
+                    $arr['Error'] = $response;
                 }
             } else {
                 $arr = json_decode(json: $hashJson, associative: true);
@@ -474,7 +479,7 @@ class Write
             }
 
             if (isset($wSqlConfig['__INSERT-IDs__'])) {
-                if (!Env::$useGlobalCounter) {
+                if (!Env::$enableGlobalCounter) {
                     $id = DbFunctions::$masterDb[$this->api->req->cId]->lastInsertId();
                 }
                 $_response[$wSqlConfig['__INSERT-IDs__']] = $id;

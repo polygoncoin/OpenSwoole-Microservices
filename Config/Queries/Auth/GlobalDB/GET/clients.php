@@ -19,8 +19,8 @@ use Microservices\App\Common;
 
 return [
     'all' => [
-        'countQuery' => 'SELECT count(1) as `count` FROM `{$Env::$clients}` WHERE __WHERE__',
-        '__QUERY__' => 'SELECT * FROM `{$Env::$clients}` WHERE __WHERE__ ORDER BY id ASC',
+        'countQuery' => "SELECT count(1) as `count` FROM `{$Env::$clientsTable}` WHERE __WHERE__",
+        '__QUERY__' => "SELECT * FROM `{$Env::$clientsTable}` WHERE __WHERE__ ORDER BY id ASC",
         '__WHERE__' => [
             [
                 'column' => 'is_approved',
@@ -41,7 +41,7 @@ return [
         '__MODE__' => 'multipleRowFormat'
     ],
     'single' => [
-        '__QUERY__' => 'SELECT * FROM `{$Env::$clients}` WHERE __WHERE__',
+        '__QUERY__' => "SELECT * FROM `{$Env::$clientsTable}` WHERE __WHERE__",
         '__WHERE__' => [
             [
                 'column' => 'is_approved',

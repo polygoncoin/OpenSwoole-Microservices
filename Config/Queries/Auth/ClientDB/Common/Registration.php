@@ -16,12 +16,12 @@
 namespace Microservices\Config\Queries\Auth\ClientDB\Common;
 
 return [
-  '__QUERY__' => 'UPDATE `master_users` SET __SET__ WHERE __WHERE__',
+  '__QUERY__' => "UPDATE `{$Env::$clientUsersTable}` SET __SET__ WHERE __WHERE__",
   '__VALIDATE__' => [
     [
       'fn' => 'primaryKeyExist',
       'fnArgs' => [
-                'table' => ['custom', 'master_users'],
+                'table' => ['custom', 'users'],
                 'primary' => ['custom', 'id'],
                 'id' => ['routeParams', 'id']
             ],

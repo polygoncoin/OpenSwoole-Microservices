@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Queries\Auth\ClientDB\Groups\AdminGroup\DELETE;
+namespace Microservices\Config\Queries\Auth\ClientDB\groups\AdminGroup\DELETE;
 
 return [
     '__QUERY__' => 'TRUNCATE TABLE `category`;',

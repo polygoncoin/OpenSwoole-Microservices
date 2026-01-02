@@ -4,7 +4,7 @@
  * CustomAPI
  * php version 8.3
  *
- * @category  CustomAPI_Interface
+ * @category  CustomAPI_Trait
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid

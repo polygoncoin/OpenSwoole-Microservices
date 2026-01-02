@@ -23,14 +23,14 @@ return [
     'category' => [
         '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'Groups' .
+            DIRECTORY_SEPARATOR . 'groups' .
             DIRECTORY_SEPARATOR . 'UserGroup' .
             DIRECTORY_SEPARATOR . 'GET' .
             DIRECTORY_SEPARATOR . 'Category-all.php',
         'search' => [
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
+                DIRECTORY_SEPARATOR . 'groups' .
                 DIRECTORY_SEPARATOR . 'UserGroup' .
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'SearchCategory.php',
@@ -39,7 +39,7 @@ return [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
+                DIRECTORY_SEPARATOR . 'groups' .
                 DIRECTORY_SEPARATOR . 'UserGroup' .
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'Category-single.php',
@@ -50,7 +50,7 @@ return [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
+                DIRECTORY_SEPARATOR . 'groups' .
                 DIRECTORY_SEPARATOR . 'UserGroup' .
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'Registration-single.php',
@@ -61,7 +61,7 @@ return [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
+                DIRECTORY_SEPARATOR . 'groups' .
                 DIRECTORY_SEPARATOR . 'UserGroup' .
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'Address-single.php',
@@ -72,7 +72,7 @@ return [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
+                DIRECTORY_SEPARATOR . 'groups' .
                 DIRECTORY_SEPARATOR . 'UserGroup' .
                 DIRECTORY_SEPARATOR . 'GET' .
                 DIRECTORY_SEPARATOR . 'Registration-With-Address-single.php',

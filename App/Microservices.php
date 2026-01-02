@@ -15,9 +15,9 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
+use Microservices\App\Functions;
 use Microservices\App\Gateway;
 use Microservices\App\HttpStatus;
 
@@ -129,7 +129,7 @@ class Microservices
         $class = null;
 
         switch (true) {
-            case Env::$allowCronRequest && strpos(
+            case Env::$enableCronRequest && strpos(
                 haystack: $this->api->req->ROUTE,
                 needle: '/' . Env::$cronRequestRoutePrefix
             ) === 0:
@@ -147,8 +147,12 @@ class Microservices
                 break;
 
             // Requires HTTP auth username and password
-            case $this->api->req->ROUTE === '/reload':
-                if ($this->api->req->IP !== Env::$cronRestrictedCidr) {
+            case Env::$enableReloadRequest && $this->api->req->ROUTE === '/' . Env::$reloadRequestRoutePrefix:
+                $isValidIp = Functions::checkCidr(
+                    IP: $this->api->req->IP,
+                    cidrString: Env::$reloadRestrictedCidr
+                );
+                if (!$isValidIp) {
                     throw new \Exception(
                         message: 'Source IP is not supported',
                         code: HttpStatus::$NotFound

@@ -20,6 +20,7 @@ use Microservices\App\CacheKey;
 use Microservices\App\Common;
 use Microservices\App\DbFunctions;
 use Microservices\App\Env;
+use Microservices\App\Functions;
 use Microservices\App\HttpStatus;
 use Microservices\App\RateLimiter;
 use Microservices\App\SessionHandlers\Session;
@@ -236,27 +237,13 @@ class Login
             cID: $this->api->req->s['cDetails']['id'],
             uID: $this->uDetails['id']
         );
+        $cidrChecked = false;
         foreach ([$cCidrKey, $gCidrKey, $uCidrKey] as $key) {
-            if (DbFunctions::$gCacheServer->cacheExists(key: $key)) {
-                $cidrs = json_decode(
-                    json: DbFunctions::$gCacheServer->getCache(
-                        key: $key
-                    ),
-                    associative: true
+            if (!$cidrChecked) {
+                $cidrChecked = Functions::checkCacheCidr(
+                    IP: $this->api->req->IP,
+                    againstCacheKey: $key
                 );
-                $isValidIp = false;
-                foreach ($cidrs as $cidr) {
-                    if ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
-                        $isValidIp = true;
-                        break;
-                    }
-                }
-                if (!$isValidIp) {
-                    throw new \Exception(
-                        message: 'IP not supported',
-                        code: HttpStatus::$BadRequest
-                    );
-                }
             }
         }
     }
@@ -397,7 +384,7 @@ class Login
     {
         DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
 
-        $userTable = Env::$clientUsers;
+        $userTable = Env::$clientUsersTable;
         DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(
             sql: "
                 UPDATE

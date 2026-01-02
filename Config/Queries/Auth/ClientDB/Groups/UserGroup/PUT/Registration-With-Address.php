@@ -13,12 +13,12 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Queries\Auth\ClientDB\Groups\UserGroup\PUT;
+namespace Microservices\Config\Queries\Auth\ClientDB\groups\UserGroup\PUT;
 
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    '__QUERY__' => 'UPDATE `master_users` SET __SET__ WHERE __WHERE__',
+    '__QUERY__' => "UPDATE `{$Env::$clientUsersTable}` SET __SET__ WHERE __WHERE__",
     '__SET__' => [
         [
             'column' => 'firstname',
@@ -93,7 +93,7 @@ return [
         [
             'fn' => 'primaryKeyExist',
             'fnArgs' => [
-                'table' => ['custom', 'master_users'],
+                'table' => ['custom', 'users'],
                 'primary' => ['custom', 'id'],
                 'id' => ['routeParams', 'id']
             ],

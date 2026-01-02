@@ -151,7 +151,7 @@ class Read
         );
 
         if (
-            Env::$allowConfigRequest
+            Env::$enableConfigRequest
             && $this->api->req->rParser->isConfigRequest
         ) {
             $this->processReadConfig(
@@ -641,7 +641,7 @@ class Read
     {
         $return = [[], '', HttpStatus::$Ok];
 
-        if (!Env::$allowExport) {
+        if (!Env::$enableExportRequest) {
             return [[], '', HttpStatus::$NotFound];
         }
 

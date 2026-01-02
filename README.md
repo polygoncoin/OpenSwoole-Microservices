@@ -40,18 +40,18 @@ sessionMode='File'                  ; For Cookie based Session - 'File', 'MySql'
 
 ; Allow particular route config request (global flag) - 1 = true / 0 = false
 ; Useful to get details of the payload for the API
-allowConfigRequest=1
+enableConfigRequest=1
 configRequestRouteKeyword='config' ; to append /config at the end of route
 
 ; Allow import CSV - 1 = true / 0 = false
-allowImportRequest=1
+enableImportRequest=1
 importRequestRouteKeyword='import' ; to append /import at the end of route
 importSampleRouteKeyword='import-sample'
 
 ; Data Representation: JSON/XML/HTML
 iRepresentation='JSON'          ; JSON/XML - Input Data Representation
 oRepresentation='JSON'          ; JSON/XML/HTML - Output Data Representation
-allowRepresentationAsQueryParam=1        ; Allow iRepresentation / oRepresentation as GET query params
+enableRepresentationAsQueryParam=1        ; Allow iRepresentation / oRepresentation as GET query params
 ```
 
 ### Cache Server Details (Redis)
@@ -74,8 +74,8 @@ gDbServerPassword='password'
 gDbServerDatabase='global'
 
 ; Tables
-groups='m002_master_groups'
-clients='m001_master_clients'
+groupsTable='groups'
+clientsTable='clients'
 ```
 
 ### Default database shared by most of the clients
@@ -103,40 +103,40 @@ cDbServerDatabase001='client_001'
 
 ### Additional table details for database server
 ```ini
-clientMasterDbName='client_master'  ;contains all entities required for a new client.
-clientUsers='master_users'         ;Table in client database containing user details.
+masterDatabase='master'  ;contains all entities required for a new client.
+clientUsersTable='users'         ;Table in client database containing user details.
 ```
 
 These DB/Cache configurations can be set in below columns respectively for each client.
 ```SQL
-`m001_master_clients`.`master_db_server_type` varchar(255) NOT NULL,
-`m001_master_clients`.`master_db_hostname` varchar(255) NOT NULL,
-`m001_master_clients`.`master_db_port` varchar(255) NOT NULL,
-`m001_master_clients`.`master_db_username` varchar(255) NOT NULL,
-`m001_master_clients`.`master_db_password` varchar(255) NOT NULL,
-`m001_master_clients`.`master_db_database` varchar(255) NOT NULL,
-`m001_master_clients`.`master_query_placeholder` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_db_server_type` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_db_hostname` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_db_port` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_db_username` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_db_password` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_db_database` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_query_placeholder` varchar(255) NOT NULL,
-`m001_master_clients`.`master_cache_server_type` varchar(255) NOT NULL,
-`m001_master_clients`.`master_cache_hostname` varchar(255) NOT NULL,
-`m001_master_clients`.`master_cache_port` varchar(255) NOT NULL,
-`m001_master_clients`.`master_cache_username` varchar(255) NOT NULL,
-`m001_master_clients`.`master_cache_password` varchar(255) NOT NULL,
-`m001_master_clients`.`master_cache_database` varchar(255) NOT NULL,
-`m001_master_clients`.`master_cache_table` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_cache_server_type` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_cache_hostname` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_cache_port` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_cache_username` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_cache_password` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_cache_database` varchar(255) NOT NULL,
-`m001_master_clients`.`slave_cache_table` varchar(255) NOT NULL,
+`clients`.`master_db_server_type` varchar(255) NOT NULL,
+`clients`.`master_db_hostname` varchar(255) NOT NULL,
+`clients`.`master_db_port` varchar(255) NOT NULL,
+`clients`.`master_db_username` varchar(255) NOT NULL,
+`clients`.`master_db_password` varchar(255) NOT NULL,
+`clients`.`master_db_database` varchar(255) NOT NULL,
+`clients`.`master_query_placeholder` varchar(255) NOT NULL,
+`clients`.`slave_db_server_type` varchar(255) NOT NULL,
+`clients`.`slave_db_hostname` varchar(255) NOT NULL,
+`clients`.`slave_db_port` varchar(255) NOT NULL,
+`clients`.`slave_db_username` varchar(255) NOT NULL,
+`clients`.`slave_db_password` varchar(255) NOT NULL,
+`clients`.`slave_db_database` varchar(255) NOT NULL,
+`clients`.`slave_query_placeholder` varchar(255) NOT NULL,
+`clients`.`master_cache_server_type` varchar(255) NOT NULL,
+`clients`.`master_cache_hostname` varchar(255) NOT NULL,
+`clients`.`master_cache_port` varchar(255) NOT NULL,
+`clients`.`master_cache_username` varchar(255) NOT NULL,
+`clients`.`master_cache_password` varchar(255) NOT NULL,
+`clients`.`master_cache_database` varchar(255) NOT NULL,
+`clients`.`master_cache_table` varchar(255) NOT NULL,
+`clients`.`slave_cache_server_type` varchar(255) NOT NULL,
+`clients`.`slave_cache_hostname` varchar(255) NOT NULL,
+`clients`.`slave_cache_port` varchar(255) NOT NULL,
+`clients`.`slave_cache_username` varchar(255) NOT NULL,
+`clients`.`slave_cache_password` varchar(255) NOT NULL,
+`clients`.`slave_cache_database` varchar(255) NOT NULL,
+`clients`.`slave_cache_table` varchar(255) NOT NULL,
 ```
 
 ### Allowed IPs
@@ -145,48 +145,53 @@ Classless Inter-Domain Routing (CIDR) is a method for assigning IP addresses to 
 
 ```SQL
 # Client level
-`m001_master_clients`.`allowed_cidrs` text DEFAULT NULL,
+`clients`.`allowed_cidrs` text DEFAULT '0.0.0.0/0',
 
 # Group level
-`m002_master_groups`.`allowed_cidrs` text DEFAULT NULL,
+`groups`.`allowed_cidrs` text DEFAULT '0.0.0.0/0',
 
 # User level
-`master_users`.`allowed_cidrs` text DEFAULT NULL,
+`users`.`allowed_cidrs` text DEFAULT '0.0.0.0/0',
 ```
 
 ### The Rate Limiting configurations can be set as below.
 
 ```ini
+; ---- Rate Limiting enable/disable Config
+enableRateLimiting=1                ; 1 = true / 0 = false
+enableRateLimitAtIpLevel=0          ; 1 = true / 0 = false
+enableRateLimitAtClientLevel=0      ; 1 = true / 0 = false
+enableRateLimitAtGroupLevel=0       ; 1 = true / 0 = false
+enableRateLimitAtUserLevel=0        ; 1 = true / 0 = false
+enableRateLimitAtRouteLevel=0       ; 1 = true / 0 = false
+enableRateLimitAtUsersPerIpLevel=0  ; 1 = true / 0 = false
+enableRateLimitAtUsersRequestLevel=0; 1 = true / 0 = false
+
+; ---- Rate Limit Server Details (Redis)
+; Supported Containers - Memcached / Redis without AUTH
 rateLimitServerType='Memcached'     ; Redis/Memcached host dealing for Rate limit
 rateLimitServerHostname='127.0.0.1' ; Redis host dealing with Rate limit
 rateLimitServerPort=11211           ; Redis-6379 / Memcached-11211
 
-enableRateLimitAtIpLevel=1          ; 1 = true / 0 = false
+; Rate Limiting Key Prefix
+rateLimitIPPrefix='IPRL:'           ; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to users)
+rateLimitClientPrefix='CRL:'        ; Client based Rate Limitng (GRL) key prefix used in Redis
+rateLimitGroupPrefix='GRL:'         ; Group based Rate Limitng (GRL) key prefix used in Redis
+rateLimitUserPrefix='URL:'          ; User based Rate Limitng (URL) key prefix used in Redis
+rateLimitRoutePrefix='RRL:'         ; Route based Rate Limiting (RRL) key prefix used in Redis
+rateLimitUsersPerIpPrefix='UIRL:'   ; User Per IP based Rate Limiting (UIRL) key prefix used in Redis
+rateLimitUsersRequestPrefix='URRL:' ; User Per IP based Rate Limiting (UIRL) key prefix used in Redis
+
+; Rate Limiting No. of Requests per IP ('IPRL:')
 rateLimitIPMaxRequests=600          ; Max request allowed per IP
 rateLimitIPSecondsWindow=300        ; Window in seconds of Max request allowed per IP
-rateLimitIPPrefix='IPRL:'           ; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to users)
 
-enableRateLimitAtClientLevel=1      ; 1 = true / 0 = false
-rateLimitClientPrefix='CRL:'        ; Client based Rate Limitng (GRL) key prefix used in Redis
-
-enableRateLimitAtGroupLevel=1       ; 1 = true / 0 = false
-rateLimitGroupPrefix='GRL:'         ; Group based Rate Limitng (GRL) key prefix used in Redis
-
-enableRateLimitAtUserLevel=1        ; 1 = true / 0 = false
-rateLimitUserPrefix='URL:'          ; User based Rate Limitng (URL) key prefix used in Redis
-
-enableRateLimitAtRouteLevel=1       ; 1 = true / 0 = false
-rateLimitRoutePrefix='RRL:'         ; Route based Rate Limiting (RRL) key prefix used in Redis
-
-; User Per IP based Rate Limiting
-enableRateLimitAtUsersPerIpLevel=1  ; 1 = true / 0 = false
-rateLimitUsersPerIpPrefix='UIRL:'   ; User Per IP based Rate Limiting (UIRL) key prefix used in Redis
+; Rate Limiting No. of User Per IP ('UIRL:')
 rateLimitUsersPerIpMaxUsers=10      ; Max Users allowed per IP
 rateLimitUsersPerIpSecondsWindow=300; Window in seconds of Max Users allowed per IP
 
+; Rate Limiting No. of Requests per User ('URRL:')
 ; Delay Between Consecutive Requests (allow n requests only for seconds configured for each user)
-enableRateLimitAtUsersRequestLevel=1; 1 = true / 0 = false
-rateLimitUsersRequestPrefix='URRL:' ; User Per IP based Rate Limiting (UIRL) key prefix used in Redis
 rateLimitUsersMaxRequests=1         ; Max one request allowed for 10 seconds
 rateLimitUsersMaxRequestsWindow=10  ; Max one request allowed for 10 seconds
 ```
@@ -196,16 +201,16 @@ rateLimitUsersMaxRequestsWindow=10  ; Max one request allowed for 10 seconds
 ##### Configure these in tables below
 ```SQL
 # Client level
-`m001_master_clients`.`rateLimitMaxRequests` int DEFAULT NULL,
-`m001_master_clients`.`rateLimitSecondsWindow` int DEFAULT NULL,
+`clients`.`rateLimitMaxRequests` int DEFAULT NULL,
+`clients`.`rateLimitSecondsWindow` int DEFAULT NULL,
 
 # Group level
-`m002_master_groups`.`rateLimitMaxRequests` int DEFAULT NULL,
-`m002_master_groups`.`rateLimitSecondsWindow` int DEFAULT NULL,
+`groups`.`rateLimitMaxRequests` int DEFAULT NULL,
+`groups`.`rateLimitSecondsWindow` int DEFAULT NULL,
 
 # User level
-`master_users`.`rateLimitMaxRequests` int DEFAULT NULL,
-`master_users`.`rateLimitSecondsWindow` int DEFAULT NULL,
+`users`.`rateLimitMaxRequests` int DEFAULT NULL,
+`users`.`rateLimitSecondsWindow` int DEFAULT NULL,
 ```
 
 #### Route based Rate Limiting
@@ -358,7 +363,7 @@ return [
 #### Config/Queries
 
 - **/Config/Queries/Auth/GlobalDB** for global database.
-- **/Config/Queries/Auth/ClientDB** for Clients (including all hosts and their databases).
+- **/Config/Queries/Auth/ClientDB** for clients (including all hosts and their databases).
 - **/Config/Queries/Open** for Open to Web API's (No Authentication).
 
 #### Files
@@ -1073,35 +1078,27 @@ var payload = [
 
 ## Special Routes
 
-### Config
 * Appending route with **/config** returns the payload information that should be supplied; both necessary and optional with desired format.
 
 Examples:
 
-- route=/registration/config
-- route=/category/config
+- route=/registration/config (returns the payload information)
+- route=/registration/import (import CSV)
+- route=/registration/import-sample (sample CSV download for respective HTTP Method)
 
 One need to enable same in .env file as below
 
 ```ini
-allowConfigRequest=1
-configRequestRouteKeyword='config' ;for appending /config at end of URI
-```
+; Allow particular route config request (global flag)
+; Useful to get details of the  payload necessary by the API
+enableConfigRequest=1               ; 1 = true / 0 = false
+enableImportRequest=1               ; 1 = true / 0 = false
 
->For controlling globally there is a flag in env file labled **allowConfigRequest**
-
-### Import
-Similarly, we have global configs for importing CSV
-```ini
-; Allow import CSV - 1 = true / 0 = false
-allowImportRequest=1
-importRequestRouteKeyword='import' ; to append /import at the end of route
+; Keyword to append with in route with slash.
+configRequestRouteKeyword='config'  ; to append "/config" at the end of route
+importRequestRouteKeyword='import'  ; to append "/import" at the end of route
 importSampleRouteKeyword='import-sample'
 ```
-
-### route=/routes
-
-Lists down all the available routes with HTTP methods.
 
 ## Javascript HTTP request example
 

@@ -19,7 +19,7 @@ use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
 return [
-    '__QUERY__' => 'UPDATE `{$Env::$groups}` SET __SET__ WHERE __WHERE__',
+    '__QUERY__' => "UPDATE `{$Env::$groupsTable}` SET __SET__ WHERE __WHERE__",
     '__SET__' => [
         [
             'column' => 'is_disabled',
@@ -59,7 +59,7 @@ return [
         [
             'fn' => 'primaryKeyExist',
             'fnArgs' => [
-                'table' => ['custom', Env::$groups],
+                'table' => ['custom', Env::$groupsTable],
                 'primary' => ['custom', 'id'],
                 'id' => ['payload', 'id', DatabaseDataTypes::$INT]
             ],
@@ -68,7 +68,7 @@ return [
         [
             'fn' => '_checkColumnValueExist',
             'fnArgs' => [
-                'table' => ['custom', Env::$groups],
+                'table' => ['custom', Env::$groupsTable],
                 'column' => ['custom', 'is_deleted'],
                 'columnValue' => ['custom', 'No'],
                 'primary' => ['custom', 'id'],
@@ -79,7 +79,7 @@ return [
         [
             'fn' => '_checkColumnValueExist',
             'fnArgs' => [
-                'table' => ['custom', Env::$groups],
+                'table' => ['custom', Env::$groupsTable],
                 'column' => ['custom', 'is_disabled'],
                 'columnValue' => ['custom', 'Yes'],
                 'primary' => ['custom', 'id'],

@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Queries\Auth\ClientDB\Groups\UserGroup\PATCH;
+namespace Microservices\Config\Queries\Auth\ClientDB\groups\UserGroup\PATCH;
 
 use Microservices\App\Constants;
 use Microservices\App\DatabaseDataTypes;

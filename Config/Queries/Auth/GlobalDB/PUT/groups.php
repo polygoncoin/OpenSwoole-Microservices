@@ -19,7 +19,7 @@ use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
 return [
-    '__QUERY__' => 'UPDATE `{$Env::$groups}` SET __SET__ WHERE __WHERE__',
+    '__QUERY__' => "UPDATE `{$Env::$groupsTable}` SET __SET__ WHERE __WHERE__",
     '__SET__' => [
         [
             'column' => 'name',
@@ -86,7 +86,7 @@ return [
         [
             'fn' => 'primaryKeyExist',
             'fnArgs' => [
-                'table' => ['custom', Env::$groups],
+                'table' => ['custom', Env::$groupsTable],
                 'primary' => ['custom', 'id'],
                 'id' => ['payload', 'id', DatabaseDataTypes::$INT]
             ],

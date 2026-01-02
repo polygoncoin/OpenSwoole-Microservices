@@ -16,7 +16,7 @@
 namespace Microservices\Config\Queries\Open\POST;
 
 return [
-    '__QUERY__' => 'INSERT INTO `master_users` SET __SET__',
+    '__QUERY__' => "INSERT INTO `{$Env::$clientUsersTable}` SET __SET__",
     '__SET__' => [
         [
             'column' => 'firstname',
@@ -51,7 +51,7 @@ return [
         [
             'column' => 'allowed_cidrs',
             'fetchFrom' => 'custom',
-            'fetchFromValue' => '127.0.0.1'
+            'fetchFromValue' => '0.0.0.0/0'
         ],
         [
             'column' => 'group_id',

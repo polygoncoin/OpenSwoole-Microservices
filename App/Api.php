@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\CacheHandler;
+use Microservices\App\Cache;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
@@ -80,12 +80,12 @@ class Api
     public function process(): mixed
     {
         if ($this->api->req->METHOD === Constants::$GET) {
-            $cacheHandler = new CacheHandler(http: $this->api->http);
-            if ($cacheHandler->init(mode: 'Closed')) {
+            $cache = new Cache(http: $this->api->http);
+            if ($cache->init(mode: 'Closed')) {
                 // File exists - Serve from Dropbox
-                return $cacheHandler->process();
+                return $cache->process();
             }
-            $cacheHandler = null;
+            $cache = null;
         }
 
         // Execute Pre Route Hooks
@@ -162,7 +162,7 @@ class Api
         $supplementProcessed = false;
 
         if (
-            Env::$allowRoutesRequest
+            Env::$enableRoutesRequest
             && Env::$routesRequestRoute === $this->api->req->rParser->routeElements[0]
         ) {
             $supplementApiClass = __NAMESPACE__ . '\\Routes';
@@ -173,26 +173,26 @@ class Api
             }
         } else {
             $supplementApiClass = null;
-            switch ($this->api->req->rParser->routeElements[0]) {
-                case Env::$allowCustomRequest
+            switch (true) {
+                case Env::$enableCustomRequest
                     && (Env::$customRequestRoutePrefix
                         === $this->api->req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\Custom';
                     break;
-                case Env::$allowUploadRequest
+                case Env::$enableUploadRequest
                     && (Env::$uploadRequestRoutePrefix
                         === $this->api->req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\Upload';
                     break;
-                case Env::$allowThirdPartyRequest
+                case Env::$enableThirdPartyRequest
                     && (Env::$thirdPartyRequestRoutePrefix
                         === $this->api->req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\ThirdParty';
                     break;
-                case Env::$allowCacheRequest
+                case Env::$enableCacheRequest
                     && (Env::$cacheRequestRoutePrefix
                         === $this->api->req->rParser->routeElements[0]):
-                    $supplementApiClass = __NAMESPACE__ . '\\CacheHandler';
+                    $supplementApiClass = __NAMESPACE__ . '\\Cache';
                     break;
             }
 

@@ -16,9 +16,8 @@
 namespace Microservices\App;
 
 use Microservices\App\Common;
-use Microservices\App\DbFunctions;
 use Microservices\App\Env;
-use Microservices\App\HttpRequest;
+use Microservices\App\Functions;
 use Microservices\App\HttpStatus;
 use Microservices\App\RateLimiter;
 
@@ -173,11 +172,9 @@ class Gateway
      */
     public function checkCidr(): void
     {
-        if (((int)getenv(name: 'activateCidrChecks')) === 0) {
+        if (Env::$enableCidrChecks === 0) {
             return;
         }
-
-        $ipNumber = ip2long(ip: $this->api->req->IP);
 
         $cCidrKey = CacheKey::cCidr(
             cID: $this->api->req->s['cDetails']['id']
@@ -190,27 +187,11 @@ class Gateway
             uID: $this->api->req->s['uDetails']['id']
         );
         foreach ([$cCidrKey, $gCidrKey, $uCidrKey] as $key) {
-            if (DbFunctions::$gCacheServer->cacheExists(key: $key)) {
-                $this->cidrChecked = true;
-                $cidrs = json_decode(
-                    json: DbFunctions::$gCacheServer->getCache(
-                        key: $key
-                    ),
-                    associative: true
+            if (!$this->cidrChecked) {
+                $this->cidrChecked = Functions::checkCacheCidr(
+                    IP: $this->api->req->IP,
+                    againstCacheKey: $key
                 );
-                $isValidIp = false;
-                foreach ($cidrs as $cidr) {
-                    if ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
-                        $isValidIp = true;
-                        break;
-                    }
-                }
-                if (!$isValidIp) {
-                    throw new \Exception(
-                        message: 'IP not supported',
-                        code: HttpStatus::$BadRequest
-                    );
-                }
             }
         }
     }

@@ -1,15 +1,15 @@
-DROP TABLE IF EXISTS `m000_counter`;
+DROP TABLE IF EXISTS `global_counter`;
 
-CREATE TABLE `m000_counter` (
+CREATE TABLE `global_counter` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY AUTO_INCREMENT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `m001_master_clients`;
+DROP TABLE IF EXISTS `clients`;
 
-CREATE TABLE `m001_master_clients` (
+CREATE TABLE `clients` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `name` varchar(255) DEFAULT NULL,
-  `allowed_cidrs` text DEFAULT NULL,
+  `allowed_cidrs` text DEFAULT '0.0.0.0/0',
   `api_domain` varchar(255) DEFAULT NULL,
   `open_api_domain` varchar(255) DEFAULT NULL,
   `master_db_server_type` varchar(255) NOT NULL,
@@ -54,13 +54,13 @@ CREATE TABLE `m001_master_clients` (
   `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `m002_master_groups`;
+DROP TABLE IF EXISTS `groups`;
 
-CREATE TABLE `m002_master_groups` (
+CREATE TABLE `groups` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `name` varchar(100) NOT NULL,
   `client_id` int DEFAULT NULL,
-  `allowed_cidrs` text DEFAULT NULL,
+  `allowed_cidrs` text DEFAULT '0.0.0.0/0',
   `rateLimitMaxRequests` int DEFAULT NULL,
   `rateLimitSecondsWindow` int DEFAULT NULL,
   `comments` varchar(255) DEFAULT NULL,
@@ -75,17 +75,17 @@ CREATE TABLE `m002_master_groups` (
   `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-LOCK TABLES `m001_master_clients` WRITE;
-/*!40000 ALTER TABLE `m001_master_clients` DISABLE KEYS */;
-INSERT INTO `m001_master_clients` VALUES
-(1,'Client 001','127.0.0.1, 127.0.0.1/32','localhost', 'public.localhost','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','No','No');
-/*!40000 ALTER TABLE `m001_master_clients` ENABLE KEYS */;
+LOCK TABLES `clients` WRITE;
+/*!40000 ALTER TABLE `clients` DISABLE KEYS */;
+INSERT INTO `clients` VALUES
+(1,'Client 001','0.0.0.0/0','localhost', 'public.localhost','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','No','No');
+/*!40000 ALTER TABLE `clients` ENABLE KEYS */;
 UNLOCK TABLES;
 
-LOCK TABLES `m002_master_groups` WRITE;
-/*!40000 ALTER TABLE `m002_master_groups` DISABLE KEYS */;
-INSERT INTO `m002_master_groups` VALUES
-(2,'Client001UserGroup1',1,'127.0.0.1, 127.0.0.1/32',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes','No','No'),
-(3,'AdminGroup',1,'127.0.0.1, 127.0.0.1/32',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes','No','No');
-/*!40000 ALTER TABLE `m002_master_groups` ENABLE KEYS */;
+LOCK TABLES `groups` WRITE;
+/*!40000 ALTER TABLE `groups` DISABLE KEYS */;
+INSERT INTO `groups` VALUES
+(2,'Client001UserGroup1',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes','No','No'),
+(3,'AdminGroup',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes','No','No');
+/*!40000 ALTER TABLE `groups` ENABLE KEYS */;
 UNLOCK TABLES;

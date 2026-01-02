@@ -13,10 +13,10 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Queries\Auth\ClientDB\Groups\AdminGroup\GET;
+namespace Microservices\Config\Queries\Auth\ClientDB\groups\AdminGroup\GET;
 
 return [
-    '__QUERY__' => 'SELECT * FROM `master_users` WHERE __WHERE__',
+    '__QUERY__' => "SELECT * FROM `{$Env::$clientUsersTable}` WHERE __WHERE__",
     '__WHERE__' => [
         [
             'column' => 'is_deleted',

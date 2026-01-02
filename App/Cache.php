@@ -31,7 +31,7 @@ use Microservices\App\CacheHandlers\StreamVideo;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class CacheHandler
+class Cache
 {
     /**
      * File request details

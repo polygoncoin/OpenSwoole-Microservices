@@ -317,7 +317,7 @@ trait AppTrait
             }
         } else {
             if (
-                Env::$useGlobalCounter
+                Env::$enableGlobalCounter
                 && strpos(trim(strtolower($sql)), 'insert') === 0
                 && !isset($sqlParams[':id'])
                 && !isset($row['id'])
@@ -442,7 +442,7 @@ trait AppTrait
             }
         } else {
             if (
-                Env::$useGlobalCounter
+                Env::$enableGlobalCounter
                 && strpos(trim(strtolower($sql)), 'insert') === 0
                 && !isset($sqlParams[':id'])
                 && !isset($row['id'])

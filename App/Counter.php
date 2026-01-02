@@ -39,7 +39,7 @@ class Counter
      */
     public static function getGlobalCounter(): int
     {
-        if (!Env::$useGlobalCounter) {
+        if (!Env::$enableGlobalCounter) {
             throw new \Exception(
                 message: 'Enable use of Global Counter',
                 code: HttpStatus::$InternalServerError

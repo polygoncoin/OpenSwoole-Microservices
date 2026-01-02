@@ -37,13 +37,19 @@ class RateLimiter
      *
      * @var null|Object
      */
-    private $cache = null;
+    public $cache = null;
 
     /**
      * Constructor
+     *
+     * @param HttpRequest $req HTTP Request object
      */
     public function __construct()
     {
+        if (((int)getenv(name: 'enableRateLimiting')) === 0) {
+            return;
+        }
+
         $rateLimitServerType = getenv(name: 'rateLimitServerType');
         $rateLimitServerHostname = getenv(name: 'rateLimitServerHostname');
         $rateLimitServerPort = getenv(name: 'rateLimitServerPort');
@@ -75,6 +81,17 @@ class RateLimiter
         $secondsWindow,
         $key
     ): array {
+        if (
+            $this->cache === null
+            && (((int)getenv(name: 'enableRateLimiting')) === 0)
+        ) {
+            return [
+                'allowed' => true,
+                'remaining' => 1,
+                'resetAt' => 1
+            ];
+        }
+
         $maxRequests = (int)$maxRequests;
         $secondsWindow = (int)$secondsWindow;
 

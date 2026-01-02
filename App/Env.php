@@ -41,52 +41,72 @@ class Env
     public static $ENVIRONMENT = null;
     public static $OUTPUT_PERFORMANCE_STATS = null;
 
-    public static $allowConfigRequest = null;
+    public static $enableConfigRequest = null;
     public static $configRequestRouteKeyword = null;
 
-    public static $allowImportRequest = null;
+    public static $enableImportRequest = null;
     public static $importRequestRouteKeyword = null;
-    public static $importSampleRouteKeyword = null;
 
-    // Export CSV
-    public static $allowExport = null;
+    public static $enableImportSampleRequest = null;
+    public static $importSampleRequestRouteKeyword = null;
+
+    public static $enableExportRequest = null;
     public static $mySqlBinaryLocationOnWebServer = null;
 
+    public static $enableCronRequest = null;
+    public static $cronRequestRoutePrefix = null;
+
+    public static $enableReloadRequest = null;
+    public static $reloadRequestRoutePrefix = null;
+
+    public static $enableRoutesRequest = null;
+    public static $routesRequestRoute = null;
+
+    public static $enableCustomRequest = null;
+    public static $customRequestRoutePrefix = null;
+
+    public static $enableUploadRequest = null;
+    public static $uploadRequestRoutePrefix = null;
+
+    public static $enableThirdPartyRequest = null;
+    public static $thirdPartyRequestRoutePrefix = null;
+
+    public static $enableCacheRequest = null;
+    public static $cacheRequestRoutePrefix = null;
+
+    public static $enableCidrChecks = null;
+    public static $configRestrictedCidr = null;
+    public static $exportRestrictedCidr = null;
+    public static $importRestrictedCidr = null;
+    public static $importSampleRestrictedCidr = null;
+    public static $routesRestrictedCidr = null;
+    public static $cacheRestrictedCidr = null;
+    public static $cronRestrictedCidr = null;
+    public static $customRestrictedCidr = null;
+    public static $reloadRestrictedCidr = null;
+    public static $thirdPatyRestrictedCidr = null;
+    public static $uploadRestrictedCidr = null;
+
+    public static $reservedRoutesPrefix = null;
+    public static $reservedRoutesCidrString = null;
+
     // Global counter
-    public static $useGlobalCounter = null;
+    public static $enableGlobalCounter = null;
     public static $gCounter = null;
     public static $gCounterMode = null;
 
-    public static $clients = null;
-    public static $groups = null;
-    public static $clientUsers = null;
+    public static $clientsTable = null;
+    public static $groupsTable = null;
+    public static $clientUsersTable = null;
 
     public static $maxResultsPerPage = null;
     public static $defaultPerPage = null;
 
-    public static $allowCronRequest = null;
-    public static $cronRequestRoutePrefix = null;
-    public static $cronRestrictedCidr = null;
-
-    public static $allowRoutesRequest = null;
-    public static $routesRequestRoute = null;
-
-    public static $allowCustomRequest = null;
-    public static $customRequestRoutePrefix = null;
-
-    public static $allowUploadRequest = null;
-    public static $uploadRequestRoutePrefix = null;
-
-    public static $allowThirdPartyRequest = null;
-    public static $thirdPartyRequestRoutePrefix = null;
-
-    public static $allowCacheRequest = null;
-    public static $cacheRequestRoutePrefix = null;
-
     public static $iRepresentation = null;
     public static $oRepresentation = null;
-
-    public static $allowRepresentationAsQueryParam = null;
+    public static $enableRepresentationAsQueryParam = null;
+    public static $enablePayloadInResponse = null;
+    public static $payloadKeyInResponse = null;
 
     public static $authMode = null;
     public static $sessionMode = null;
@@ -111,49 +131,85 @@ class Env
         self::$ENVIRONMENT = getenv(name: 'ENVIRONMENT');
         self::$OUTPUT_PERFORMANCE_STATS = getenv(name: 'OUTPUT_PERFORMANCE_STATS');
 
-        self::$allowConfigRequest = (int)getenv(name: 'allowConfigRequest');
+        self::$enableConfigRequest = (int)getenv(name: 'enableConfigRequest');
         self::$configRequestRouteKeyword = getenv(name: 'configRequestRouteKeyword');
 
-        self::$allowImportRequest = (int)getenv(name: 'allowImportRequest');
+        self::$enableImportRequest = (int)getenv(name: 'enableImportRequest');
         self::$importRequestRouteKeyword = getenv(name: 'importRequestRouteKeyword');
-        self::$importSampleRouteKeyword = getenv(name: 'importSampleRouteKeyword');
 
-        // Export CSV
-        self::$allowExport = (int)getenv(name: 'allowExport');
+        self::$enableImportSampleRequest = (int)getenv(name: 'enableImportRequest');
+        self::$importSampleRequestRouteKeyword = getenv(name: 'importSampleRequestRouteKeyword');
+
+        self::$enableExportRequest = (int)getenv(name: 'enableExportRequest');
         self::$mySqlBinaryLocationOnWebServer = getenv(name: 'mySqlBinaryLocationOnWebServer');
 
-        // Global counter
-        self::$useGlobalCounter = (int)getenv(name: 'useGlobalCounter');
-        self::$gCounter = getenv(name: 'gCounter');
-        self::$gCounterMode = getenv(name: 'gCounterMode');
-
-        self::$clients = getenv(name: 'clients');
-        self::$groups = getenv(name: 'groups');
-        self::$clientUsers = getenv(name: 'clientUsers');
-
-        self::$maxResultsPerPage = (int)getenv(name: 'maxResultsPerPage');
-        self::$defaultPerPage = (int)getenv(name: 'defaultPerPage');
-
-        self::$allowCronRequest = (int)getenv(name: 'allowCronRequest');
+        self::$enableCronRequest = (int)getenv(name: 'enableCronRequest');
         self::$cronRequestRoutePrefix = getenv(name: 'cronRequestRoutePrefix');
-        self::$cronRestrictedCidr = getenv(name: 'cronRestrictedCidr');
 
-        self::$allowRoutesRequest = (int)getenv(name: 'allowRoutesRequest');
+        self::$enableReloadRequest = (int)getenv(name: 'enableReloadRequest');
+        self::$reloadRequestRoutePrefix = getenv(name: 'reloadRequestRoutePrefix');
+
+        self::$enableRoutesRequest = (int)getenv(name: 'enableRoutesRequest');
         self::$routesRequestRoute = getenv(name: 'routesRequestRoute');
 
-        self::$allowCustomRequest = (int)getenv(name: 'allowCustomRequest');
+        self::$enableCustomRequest = (int)getenv(name: 'enableCustomRequest');
         self::$customRequestRoutePrefix = getenv(name: 'customRequestRoutePrefix');
 
-        self::$allowUploadRequest = (int)getenv(name: 'allowUploadRequest');
+        self::$enableUploadRequest = (int)getenv(name: 'enableUploadRequest');
         self::$uploadRequestRoutePrefix = getenv(name: 'uploadRequestRoutePrefix');
 
-        self::$allowThirdPartyRequest = (int)getenv(name: 'allowThirdPartyRequest');
+        self::$enableThirdPartyRequest = (int)getenv(name: 'enableThirdPartyRequest');
         self::$thirdPartyRequestRoutePrefix = getenv(
             name: 'thirdPartyRequestRoutePrefix'
         );
 
-        self::$allowCacheRequest = (int)getenv(name: 'allowCacheRequest');
+        self::$enableCacheRequest = (int)getenv(name: 'enableCacheRequest');
         self::$cacheRequestRoutePrefix = getenv(name: 'cacheRequestRoutePrefix');
+
+        self::$enableCidrChecks = (int)getenv(name: 'enableCidrChecks');
+        self::$configRestrictedCidr = getenv(name: 'configRestrictedCidr');
+        self::$exportRestrictedCidr = getenv(name: 'exportRestrictedCidr');
+        self::$importRestrictedCidr = getenv(name: 'importRestrictedCidr');
+        self::$importSampleRestrictedCidr = getenv(name: 'importSampleRestrictedCidr');
+        self::$routesRestrictedCidr = getenv(name: 'routesRestrictedCidr');
+        self::$cacheRestrictedCidr = getenv(name: 'cacheRestrictedCidr');
+        self::$cronRestrictedCidr = getenv(name: 'cronRestrictedCidr');
+        self::$customRestrictedCidr = getenv(name: 'customRestrictedCidr');
+        self::$reloadRestrictedCidr = getenv(name: 'reloadRestrictedCidr');
+        self::$thirdPatyRestrictedCidr = getenv(name: 'thirdPatyRestrictedCidr');
+        self::$uploadRestrictedCidr = getenv(name: 'uploadRestrictedCidr');
+
+        self::$reservedRoutesPrefix = [
+            self::$routesRequestRoute,
+            self::$cacheRequestRoutePrefix,
+            self::$cronRequestRoutePrefix,
+            self::$customRequestRoutePrefix,
+            self::$reloadRequestRoutePrefix,
+            self::$thirdPartyRequestRoutePrefix,
+            self::$uploadRequestRoutePrefix
+        ];
+
+        self::$reservedRoutesCidrString = [
+            self::$routesRequestRoute => self::$routesRestrictedCidr,
+            self::$cacheRequestRoutePrefix => self::$cacheRestrictedCidr,
+            self::$cronRequestRoutePrefix => self::$cronRestrictedCidr,
+            self::$customRequestRoutePrefix => self::$customRestrictedCidr,
+            self::$reloadRequestRoutePrefix => self::$reloadRestrictedCidr,
+            self::$thirdPartyRequestRoutePrefix => self::$thirdPatyRestrictedCidr,
+            self::$uploadRequestRoutePrefix => self::$uploadRestrictedCidr
+        ];
+
+        // Global counter
+        self::$enableGlobalCounter = (int)getenv(name: 'enableGlobalCounter');
+        self::$gCounter = getenv(name: 'gCounter');
+        self::$gCounterMode = getenv(name: 'gCounterMode');
+
+        self::$clientsTable = getenv(name: 'clientsTable');
+        self::$groupsTable = getenv(name: 'groupsTable');
+        self::$clientUsersTable = getenv(name: 'clientUsersTable');
+
+        self::$maxResultsPerPage = (int)getenv(name: 'maxResultsPerPage');
+        self::$defaultPerPage = (int)getenv(name: 'defaultPerPage');
 
         $iRepresentation = getenv(name: 'iRepresentation');
         if (
@@ -162,7 +218,6 @@ class Env
         ) {
             self::$iRepresentation = getenv(name: 'iRepresentation');
         }
-
         $oRepresentation = getenv(name: 'oRepresentation');
         if (
             $oRepresentation !== false
@@ -170,8 +225,9 @@ class Env
         ) {
             self::$oRepresentation = getenv(name: 'oRepresentation');
         }
-
-        self::$allowRepresentationAsQueryParam = (int)getenv(name: 'allowRepresentationAsQueryParam');
+        self::$enableRepresentationAsQueryParam = (int)getenv(name: 'enableRepresentationAsQueryParam');
+        self::$enablePayloadInResponse = (int)getenv(name: 'enablePayloadInResponse');
+        self::$payloadKeyInResponse = getenv(name: 'payloadKeyInResponse');
 
         self::$sessionMode = getenv(name: 'sessionMode');
 

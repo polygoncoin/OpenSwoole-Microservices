@@ -120,7 +120,7 @@ class Supplement
             keyword: 'useHierarchy'
         );
 
-        if (Env::$allowConfigRequest) {
+        if (Env::$enableConfigRequest) {
             if ($this->api->req->rParser->isConfigRequest) {
                 $this->processSupplementConfig(
                     sSqlConfig: $sSqlConfig,

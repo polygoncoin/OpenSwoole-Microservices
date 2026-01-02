@@ -13,12 +13,12 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Queries\Auth\ClientDB\Groups\UserGroup\DELETE;
+namespace Microservices\Config\Queries\Auth\ClientDB\groups\UserGroup\DELETE;
 
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    '__QUERY__' => 'UPDATE `master_users` SET __SET__ WHERE __WHERE__',
+    '__QUERY__' => "UPDATE `{$Env::$clientUsersTable}` SET __SET__ WHERE __WHERE__",
     '__SET__' => [
         [
             'column' => 'is_deleted',
@@ -74,7 +74,7 @@ return [
         [
             'fn' => 'primaryKeyExist',
             'fnArgs' => [
-                'table' => ['custom', 'master_users'],
+                'table' => ['custom', 'users'],
                 'primary' => ['custom', 'id'],
                 'id' => ['routeParams', 'id']
             ],

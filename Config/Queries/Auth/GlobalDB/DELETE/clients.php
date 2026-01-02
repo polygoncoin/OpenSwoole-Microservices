@@ -19,7 +19,7 @@ use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
 return [
-    '__QUERY__' => 'UPDATE `{$Env::$clients}` SET __SET__ WHERE __WHERE__',
+    '__QUERY__' => "UPDATE `{$Env::$clientsTable}` SET __SET__ WHERE __WHERE__",
     '__SET__' => [
         [
             'column' => 'updated_by',
@@ -49,7 +49,7 @@ return [
         [
             'fn' => 'primaryKeyExist',
             'fnArgs' => [
-                'table' => ['custom', Env::$clients],
+                'table' => ['custom', Env::$clientsTable],
                 'primary' => ['custom', 'id'],
                 'id' => ['payload', 'id', DatabaseDataTypes::$INT]
             ],
@@ -58,7 +58,7 @@ return [
         [
             'fn' => '_checkColumnValueExist',
             'fnArgs' => [
-                'table' => ['custom', Env::$clients],
+                'table' => ['custom', Env::$clientsTable],
                 'column' => ['custom', 'is_deleted'],
                 'columnValue' => ['custom', 'No'],
                 'primary' => ['custom', 'id'],
