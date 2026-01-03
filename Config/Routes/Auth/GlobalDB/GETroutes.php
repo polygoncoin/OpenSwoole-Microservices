@@ -20,29 +20,29 @@ use Microservices\App\DatabaseDataTypes;
 
 return [
     'groups' => [
-        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-            DIRECTORY_SEPARATOR . 'GlobalDB' .
-            DIRECTORY_SEPARATOR . 'GET' .
-            DIRECTORY_SEPARATOR . 'groups.php',
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR
+            . DIRECTORY_SEPARATOR . 'GlobalDB'
+            . DIRECTORY_SEPARATOR . 'GET'
+            . DIRECTORY_SEPARATOR . 'groups.php',
         '{id:int}'  => [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-                DIRECTORY_SEPARATOR . 'GlobalDB' .
-                DIRECTORY_SEPARATOR . 'GET' .
-                DIRECTORY_SEPARATOR . 'groups.php',
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR
+                . DIRECTORY_SEPARATOR . 'GlobalDB'
+                . DIRECTORY_SEPARATOR . 'GET'
+                . DIRECTORY_SEPARATOR . 'groups.php',
         ],
     ],
     'clients' => [
-        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-            DIRECTORY_SEPARATOR . 'GlobalDB' .
-            DIRECTORY_SEPARATOR . 'GET' .
-            DIRECTORY_SEPARATOR . 'clients.php',
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR
+            . DIRECTORY_SEPARATOR . 'GlobalDB'
+            . DIRECTORY_SEPARATOR . 'GET'
+            . DIRECTORY_SEPARATOR . 'clients.php',
         '{id:int}'  => [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-                DIRECTORY_SEPARATOR . 'GlobalDB' .
-                DIRECTORY_SEPARATOR . 'GET' .
-                DIRECTORY_SEPARATOR . 'clients.php',
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR
+                . DIRECTORY_SEPARATOR . 'GlobalDB'
+                . DIRECTORY_SEPARATOR . 'GET'
+                . DIRECTORY_SEPARATOR . 'clients.php',
         ],
     ]
 ];

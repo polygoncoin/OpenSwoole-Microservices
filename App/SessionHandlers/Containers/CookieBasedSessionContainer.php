@@ -96,8 +96,8 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
         if (strlen(string: $cookieData) > 4096) {
             ob_end_clean();
             die(
-                'Session data length exceeds max 4 kilobytes (KB)' .
-                ' supported per Cookie'
+                'Session data length exceeds max 4 kilobytes (KB)'
+                . ' supported per Cookie'
             );
         }
 
@@ -155,8 +155,8 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
         if (strlen(string: $cookieData) > 4096) {
             ob_end_clean();
             die(
-                'Session data length exceeds max 4 kilobytes (KB)' .
-                ' supported per Cookie'
+                'Session data length exceeds max 4 kilobytes (KB)'
+                . ' supported per Cookie'
             );
         }
 

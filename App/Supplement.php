@@ -231,8 +231,8 @@ class Supplement
                 && ($objCount > $sSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
             ) {
                 throw new \Exception(
-                    message: 'Maximum supported payload count is ' .
-                        $sSqlConfig['__MAX-PAYLOAD-OBJECTS__'],
+                    message: 'Maximum supported payload count is '
+                        . $sSqlConfig['__MAX-PAYLOAD-OBJECTS__'],
                     code: HttpStatus::$BadRequest
                 );
             }

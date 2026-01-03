@@ -171,8 +171,8 @@ class StreamVideo
             // Mac Safari does not support HTTP/1.1 206 response for first
             // request while fetching video content.
             // Regex pattern from https://regex101.com/r/gRLirS/1
-            $safariBrowserPattern = '`(\s|^)AppleWebKit/[\d\.]+\s+\(.+\)\s+' .
-                'Version/(1[0-9]|[2-9][0-9]|\d{3,})(\.|$|\s)`i';
+            $safariBrowserPattern = '`(\s|^)AppleWebKit/[\d\.]+\s+\(.+\)\s+'
+                . 'Version/(1[0-9]|[2-9][0-9]|\d{3,})(\.|$|\s)`i';
             $safariBrowser = preg_match(
                 pattern: $safariBrowserPattern,
                 subject: $this->http['header']['user-agent']
@@ -197,8 +197,8 @@ class StreamVideo
         }
         $status = HttpStatus::$PartialContent;
         $headers['Content-Length'] = $streamSize;
-        $headers['Content-Range'] = 'bytes ' . $this->streamFrom . '-' .
-            $this->streamTill . '/' . $this->size;
+        $headers['Content-Range'] = 'bytes ' . $this->streamFrom . '-'
+            . $this->streamTill . '/' . $this->size;
 
         return [$headers, $status];
     }

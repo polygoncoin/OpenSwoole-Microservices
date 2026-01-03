@@ -21,79 +21,79 @@ use Microservices\App\Env;
 
 return [
     'category' => [
-        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-            DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'Groups' .
-            DIRECTORY_SEPARATOR . 'AdminGroup' .
-            DIRECTORY_SEPARATOR . 'GET' .
-            DIRECTORY_SEPARATOR . 'Category-all.php',
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR
+            . DIRECTORY_SEPARATOR . 'ClientDB'
+            . DIRECTORY_SEPARATOR . 'Groups'
+            . DIRECTORY_SEPARATOR . 'AdminGroup'
+            . DIRECTORY_SEPARATOR . 'GET'
+            . DIRECTORY_SEPARATOR . 'Category-all.php',
         'search' => [
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-                DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
-                DIRECTORY_SEPARATOR . 'AdminGroup' .
-                DIRECTORY_SEPARATOR . 'GET' .
-                DIRECTORY_SEPARATOR . 'Category-search.php',
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR
+                . DIRECTORY_SEPARATOR . 'ClientDB'
+                . DIRECTORY_SEPARATOR . 'Groups'
+                . DIRECTORY_SEPARATOR . 'AdminGroup'
+                . DIRECTORY_SEPARATOR . 'GET'
+                . DIRECTORY_SEPARATOR . 'Category-search.php',
         ],
         '{id:int}' => [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-                DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
-                DIRECTORY_SEPARATOR . 'AdminGroup' .
-                DIRECTORY_SEPARATOR . 'GET' .
-                DIRECTORY_SEPARATOR . 'Category-Single.php',
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR
+                . DIRECTORY_SEPARATOR . 'ClientDB'
+                . DIRECTORY_SEPARATOR . 'Groups'
+                . DIRECTORY_SEPARATOR . 'AdminGroup'
+                . DIRECTORY_SEPARATOR . 'GET'
+                . DIRECTORY_SEPARATOR . 'Category-Single.php',
         ]
     ],
     'registration' => [
-        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-            DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'Groups' .
-            DIRECTORY_SEPARATOR . 'AdminGroup' .
-            DIRECTORY_SEPARATOR . 'GET' .
-            DIRECTORY_SEPARATOR . 'Registration-all.php',
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR
+            . DIRECTORY_SEPARATOR . 'ClientDB'
+            . DIRECTORY_SEPARATOR . 'Groups'
+            . DIRECTORY_SEPARATOR . 'AdminGroup'
+            . DIRECTORY_SEPARATOR . 'GET'
+            . DIRECTORY_SEPARATOR . 'Registration-all.php',
         '{id:int}'  => [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-                DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
-                DIRECTORY_SEPARATOR . 'AdminGroup' .
-                DIRECTORY_SEPARATOR . 'GET' .
-                DIRECTORY_SEPARATOR . 'Registration-single.php',
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR
+                . DIRECTORY_SEPARATOR . 'ClientDB'
+                . DIRECTORY_SEPARATOR . 'Groups'
+                . DIRECTORY_SEPARATOR . 'AdminGroup'
+                . DIRECTORY_SEPARATOR . 'GET'
+                . DIRECTORY_SEPARATOR . 'Registration-single.php',
         ],
     ],
     'address' => [
-        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-            DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'Groups' .
-            DIRECTORY_SEPARATOR . 'AdminGroup' .
-            DIRECTORY_SEPARATOR . 'GET' .
-            DIRECTORY_SEPARATOR . 'Address-all.php',
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR
+            . DIRECTORY_SEPARATOR . 'ClientDB'
+            . DIRECTORY_SEPARATOR . 'Groups'
+            . DIRECTORY_SEPARATOR . 'AdminGroup'
+            . DIRECTORY_SEPARATOR . 'GET'
+            . DIRECTORY_SEPARATOR . 'Address-all.php',
         '{id:int}'  => [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-                DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
-                DIRECTORY_SEPARATOR . 'AdminGroup' .
-                DIRECTORY_SEPARATOR . 'GET' .
-                DIRECTORY_SEPARATOR . 'Address-single.php',
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR
+                . DIRECTORY_SEPARATOR . 'ClientDB'
+                . DIRECTORY_SEPARATOR . 'Groups'
+                . DIRECTORY_SEPARATOR . 'AdminGroup'
+                . DIRECTORY_SEPARATOR . 'GET'
+                . DIRECTORY_SEPARATOR . 'Address-single.php',
         ],
     ],
     'registration-with-address' => [
-        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-            DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'Groups' .
-            DIRECTORY_SEPARATOR . 'AdminGroup' .
-            DIRECTORY_SEPARATOR . 'GET' .
-            DIRECTORY_SEPARATOR . 'Registration-With-Address-all.php',
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR
+            . DIRECTORY_SEPARATOR . 'ClientDB'
+            . DIRECTORY_SEPARATOR . 'Groups'
+            . DIRECTORY_SEPARATOR . 'AdminGroup'
+            . DIRECTORY_SEPARATOR . 'GET'
+            . DIRECTORY_SEPARATOR . 'Registration-With-Address-all.php',
         '{id:int}'  => [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-                DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
-                DIRECTORY_SEPARATOR . 'AdminGroup' .
-                DIRECTORY_SEPARATOR . 'GET' .
-                DIRECTORY_SEPARATOR . 'Registration-With-Address-single.php',
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR
+                . DIRECTORY_SEPARATOR . 'ClientDB'
+                . DIRECTORY_SEPARATOR . 'Groups'
+                . DIRECTORY_SEPARATOR . 'AdminGroup'
+                . DIRECTORY_SEPARATOR . 'GET'
+                . DIRECTORY_SEPARATOR . 'Registration-With-Address-single.php',
         ],
     ],
     Env::$routesRequestRoute => [

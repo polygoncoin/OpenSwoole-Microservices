@@ -22,44 +22,44 @@ return [
     'registration' => [
         '{id:int}'  => [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-                DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
-                DIRECTORY_SEPARATOR . 'AdminGroup' .
-                DIRECTORY_SEPARATOR . 'DELETE' .
-                DIRECTORY_SEPARATOR . 'Registration.php',
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR
+                . DIRECTORY_SEPARATOR . 'ClientDB'
+                . DIRECTORY_SEPARATOR . 'Groups'
+                . DIRECTORY_SEPARATOR . 'AdminGroup'
+                . DIRECTORY_SEPARATOR . 'DELETE'
+                . DIRECTORY_SEPARATOR . 'Registration.php',
         ],
     ],
     'address' => [
         '{id:int}'  => [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-                DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
-                DIRECTORY_SEPARATOR . 'AdminGroup' .
-                DIRECTORY_SEPARATOR . 'DELETE' .
-                DIRECTORY_SEPARATOR . 'Address.php',
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR
+                . DIRECTORY_SEPARATOR . 'ClientDB'
+                . DIRECTORY_SEPARATOR . 'Groups'
+                . DIRECTORY_SEPARATOR . 'AdminGroup'
+                . DIRECTORY_SEPARATOR . 'DELETE'
+                . DIRECTORY_SEPARATOR . 'Address.php',
         ],
     ],
     'registration-with-address' => [
         '{id:int}'  => [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-                DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
-                DIRECTORY_SEPARATOR . 'AdminGroup' .
-                DIRECTORY_SEPARATOR . 'DELETE' .
-                DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR
+                . DIRECTORY_SEPARATOR . 'ClientDB'
+                . DIRECTORY_SEPARATOR . 'Groups'
+                . DIRECTORY_SEPARATOR . 'AdminGroup'
+                . DIRECTORY_SEPARATOR . 'DELETE'
+                . DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
         ],
     ],
     'category' => [
         'truncate' => [
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-                DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'Groups' .
-                DIRECTORY_SEPARATOR . 'AdminGroup' .
-                DIRECTORY_SEPARATOR . 'DELETE' .
-                DIRECTORY_SEPARATOR . 'Category.php',
+            '__FILE__' => Constants::$AUTH_QUERIES_DIR
+                . DIRECTORY_SEPARATOR . 'ClientDB'
+                . DIRECTORY_SEPARATOR . 'Groups'
+                . DIRECTORY_SEPARATOR . 'AdminGroup'
+                . DIRECTORY_SEPARATOR . 'DELETE'
+                . DIRECTORY_SEPARATOR . 'Category.php',
         ]
     ]
 ];

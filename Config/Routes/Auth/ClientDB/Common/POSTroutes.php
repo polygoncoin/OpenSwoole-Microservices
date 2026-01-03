@@ -19,35 +19,35 @@ use Microservices\App\Constants;
 
 return [
     'category' => [
-        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-            DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'Groups' .
-            DIRECTORY_SEPARATOR . 'UserGroup' .
-            DIRECTORY_SEPARATOR . 'POST' .
-            DIRECTORY_SEPARATOR . 'Category.php',
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR
+            . DIRECTORY_SEPARATOR . 'ClientDB'
+            . DIRECTORY_SEPARATOR . 'Groups'
+            . DIRECTORY_SEPARATOR . 'UserGroup'
+            . DIRECTORY_SEPARATOR . 'POST'
+            . DIRECTORY_SEPARATOR . 'Category.php',
     ],
     'registration' => [
-        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-            DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'Groups' .
-            DIRECTORY_SEPARATOR . 'UserGroup' .
-            DIRECTORY_SEPARATOR . 'POST' .
-            DIRECTORY_SEPARATOR . 'Registration.php',
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR
+            . DIRECTORY_SEPARATOR . 'ClientDB'
+            . DIRECTORY_SEPARATOR . 'Groups'
+            . DIRECTORY_SEPARATOR . 'UserGroup'
+            . DIRECTORY_SEPARATOR . 'POST'
+            . DIRECTORY_SEPARATOR . 'Registration.php',
     ],
     'address' => [
-        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-            DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'Groups' .
-            DIRECTORY_SEPARATOR . 'UserGroup' .
-            DIRECTORY_SEPARATOR . 'POST' .
-            DIRECTORY_SEPARATOR . 'Address.php',
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR
+            . DIRECTORY_SEPARATOR . 'ClientDB'
+            . DIRECTORY_SEPARATOR . 'Groups'
+            . DIRECTORY_SEPARATOR . 'UserGroup'
+            . DIRECTORY_SEPARATOR . 'POST'
+            . DIRECTORY_SEPARATOR . 'Address.php',
     ],
     'registration-with-address' => [
-        '__FILE__' => Constants::$AUTH_QUERIES_DIR .
-            DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'Groups' .
-            DIRECTORY_SEPARATOR . 'UserGroup' .
-            DIRECTORY_SEPARATOR . 'POST' .
-            DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
+        '__FILE__' => Constants::$AUTH_QUERIES_DIR
+            . DIRECTORY_SEPARATOR . 'ClientDB'
+            . DIRECTORY_SEPARATOR . 'Groups'
+            . DIRECTORY_SEPARATOR . 'UserGroup'
+            . DIRECTORY_SEPARATOR . 'POST'
+            . DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
     ],
 ];

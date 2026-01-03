@@ -40,8 +40,8 @@ class Logs
      */
     public function log(&$logDetails): void
     {
-        $logFile = Constants::$LOG_DIR .
-            DIRECTORY_SEPARATOR . 'logs-' . date(format: 'YmdH');
+        $logFile = Constants::$LOG_DIR
+            . DIRECTORY_SEPARATOR . 'logs-' . date(format: 'YmdH');
         if (!file_exists(filename: $logFile)) {
             touch(filename: $logFile);
         }

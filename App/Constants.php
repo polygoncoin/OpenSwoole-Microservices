@@ -80,21 +80,21 @@ class Constants
         self::$HTML_DIR = self::$FILES_DIR . DIRECTORY_SEPARATOR . 'HTML';
         self::$XSLT_DIR = self::$FILES_DIR . DIRECTORY_SEPARATOR . 'XSLT';
 
-        self::$AUTH_ROUTES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config' .
-            DIRECTORY_SEPARATOR . 'Routes' .
-            DIRECTORY_SEPARATOR . 'Auth';
+        self::$AUTH_ROUTES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config
+            . DIRECTORY_SEPARATOR . 'Routes
+            . DIRECTORY_SEPARATOR . 'Auth';
 
-        self::$OPEN_ROUTES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config' .
-            DIRECTORY_SEPARATOR . 'Routes' .
-            DIRECTORY_SEPARATOR . 'Open';
+        self::$OPEN_ROUTES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config
+            . DIRECTORY_SEPARATOR . 'Routes
+            . DIRECTORY_SEPARATOR . 'Open';
 
-        self::$AUTH_QUERIES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config' .
-            DIRECTORY_SEPARATOR . 'Queries' .
-            DIRECTORY_SEPARATOR . 'Auth';
+        self::$AUTH_QUERIES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config
+            . DIRECTORY_SEPARATOR . 'Queries
+            . DIRECTORY_SEPARATOR . 'Auth';
 
-        self::$OPEN_QUERIES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config' .
-            DIRECTORY_SEPARATOR . 'Queries' .
-            DIRECTORY_SEPARATOR . 'Open';
+        self::$OPEN_QUERIES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config
+            . DIRECTORY_SEPARATOR . 'Queries
+            . DIRECTORY_SEPARATOR . 'Open';
 
         self::$WEB_COOKIES_DIR = self::$DOC_ROOT . DIRECTORY_SEPARATOR . 'WebCookies';
         if (!is_dir(filename: self::$WEB_COOKIES_DIR)) {

@@ -61,9 +61,9 @@ class Hook
         if (is_array(value: $hookConfig)) {
             for ($i = 0, $iCount = count(value: $hookConfig); $i < $iCount; $i++) {
                 $hook = $hookConfig[$i];
-                $hookFile = Constants::$PUBLIC_HTML .
-                    DIRECTORY_SEPARATOR . 'Hooks' .
-                    DIRECTORY_SEPARATOR . $hook . '.php';
+                $hookFile = Constants::$PUBLIC_HTML
+                    . DIRECTORY_SEPARATOR . 'Hooks'
+                    . DIRECTORY_SEPARATOR . $hook . '.php';
                 if (file_exists(filename: $hookFile)) {
                     $hookClass = 'Microservices\\Hooks\\' . $hook;
                     $hookObj = new $hookClass($this->api);

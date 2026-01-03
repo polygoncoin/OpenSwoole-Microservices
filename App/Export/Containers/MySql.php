@@ -151,8 +151,8 @@ class MySql implements DbInterface
         foreach ($paramKeys as $value) {
             if (substr_count(haystack: $sql, needle: $value) > 1) {
                 throw new \Exception(
-                    message: 'Parameterized query has more than one ' .
-                        "occurrence of param '{$value}'"
+                    message: 'Parameterized query has more than one '
+                        . "occurrence of param '{$value}'"
                 );
             }
             $paramPos[$value] = strpos(haystack: $sql, needle: $value);

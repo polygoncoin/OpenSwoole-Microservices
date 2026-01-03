@@ -80,7 +80,7 @@ class Api
     public function process(): mixed
     {
         if ($this->api->req->METHOD === Constants::$GET) {
-            $cache = new Cache(http: $this->api->http);
+            $cache = new Cache(http: $this->api->http, api: $this->api);
             if ($cache->init(mode: 'Closed')) {
                 // File exists - Serve from Dropbox
                 return $cache->process();

@@ -262,8 +262,8 @@ class Session
     private static function initContainer(): void
     {
         // Initialize Container
-        $containerClassName = 'Microservices\\App\\SessionHandlers\\Containers\\' .
-            self::$sessionMode . 'BasedSessionContainer';
+        $containerClassName = 'Microservices\\App\\SessionHandlers\\Containers\\'
+            . self::$sessionMode . 'BasedSessionContainer';
         self::$sessionContainer = new $containerClassName();
 
         // Setting required common parameters

@@ -18,13 +18,13 @@ namespace Microservices\Config\Routes\Auth\ClientDB\Groups\Client001UserGroup1;
 use Microservices\App\Constants;
 
 return array_merge (
-    require Constants::$AUTH_ROUTES_DIR .
-        DIRECTORY_SEPARATOR . 'ClientDB' .
-        DIRECTORY_SEPARATOR . 'Common' .
-        DIRECTORY_SEPARATOR . 'PUTroutes.php',
-    require Constants::$AUTH_ROUTES_DIR .
-        DIRECTORY_SEPARATOR . 'ClientDB' .
-        DIRECTORY_SEPARATOR . 'Common' .
-        DIRECTORY_SEPARATOR . 'Custom' .
-        DIRECTORY_SEPARATOR . 'PUTroutes.php'
+    require Constants::$AUTH_ROUTES_DIR
+        . DIRECTORY_SEPARATOR . 'ClientDB'
+        . DIRECTORY_SEPARATOR . 'Common'
+        . DIRECTORY_SEPARATOR . 'PUTroutes.php',
+    require Constants::$AUTH_ROUTES_DIR
+        . DIRECTORY_SEPARATOR . 'ClientDB'
+        . DIRECTORY_SEPARATOR . 'Common'
+        . DIRECTORY_SEPARATOR . 'Custom'
+        . DIRECTORY_SEPARATOR . 'PUTroutes.php'
 );
