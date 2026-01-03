@@ -1251,4 +1251,4 @@ xmlhttp . send( payload );
 
 ## License
 
-[MIT](License)
+[MIT](LICENSE)
