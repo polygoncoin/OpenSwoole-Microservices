@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Queries\Auth\ClientDB\groups\AdminGroup\POST;
+namespace Microservices\Config\Queries\Auth\ClientDB\Groups\AdminGroup\POST;
 
 return [
     '__QUERY__' => "INSERT INTO `{$Env::$clientUsersTable}` SET __SET__",

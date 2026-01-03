@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Routes\Auth\ClientDB\groups\Client001UserGroup1;
+namespace Microservices\Config\Routes\Auth\ClientDB\Groups\Client001UserGroup1;
 
 use Microservices\App\Constants;
 

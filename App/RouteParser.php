@@ -130,7 +130,7 @@ class RouteParser
             } else {
                 $routeFileLocation = Constants::$AUTH_ROUTES_DIR .
                     DIRECTORY_SEPARATOR . 'ClientDB' .
-                    DIRECTORY_SEPARATOR . 'groups' .
+                    DIRECTORY_SEPARATOR . 'Groups' .
                     DIRECTORY_SEPARATOR . $this->req->s['gDetails']['name'] .
                     DIRECTORY_SEPARATOR . $this->req->METHOD . 'routes.php';
             }
@@ -190,7 +190,7 @@ class RouteParser
                 && Env::$enableImportRequest == 1
                 && Env::$importRequestRouteKeyword === $element
             ) {
-                $this->isImportSampleRequest = true;
+                $this->isImportRequest = true;
                 break;
             } elseif (
                 $key === $routeLastElementPos

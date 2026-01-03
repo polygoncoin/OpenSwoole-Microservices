@@ -301,16 +301,18 @@ class Supplement
                         DbFunctions::$masterDb[$this->api->req->cId]->commit();
                     }
 
-                    $arr = [
-                        'Status' => HttpStatus::$Created,
-                        'Payload' => $this->api->req->dataDecode->getCompleteArray(
+                    $arr = [];
+                    $arr['Status'] = HttpStatus::$Ok;
+                    if (Env::$enablePayloadInResponse) {
+                        $arr[Env::$payloadKeyInResponse] = $this->api->req->dataDecode->getCompleteArray(
                             keys: implode(
                                 separator: ':',
                                 array: $payloadIndexes
                             )
-                        ),
-                        'Response' => $response
-                    ];
+                        );
+                    }
+                    $arr['Response'] = $response;
+                    
                     if ($idempotentWindow) {
                         DbFunctions::$gCacheServer->setCache(
                             key: $hashKey,
@@ -319,16 +321,17 @@ class Supplement
                         );
                     }
                 } else { // Failure
-                    $arr = [
-                        'Status' => $this->api->res->httpStatus,
-                        'Payload' => $this->api->req->dataDecode->getCompleteArray(
+                    $arr = [];
+                    $arr['Status'] = $this->api->res->httpStatus;
+                    if (Env::$enablePayloadInResponse) {
+                        $arr[Env::$payloadKeyInResponse] = $this->api->req->dataDecode->getCompleteArray(
                             keys: implode(
                                 separator: ':',
                                 array: $payloadIndexes
                             )
-                        ),
-                        'Error' => $response
-                    ];
+                        );
+                    }
+                    $arr['Error'] = $response;
                 }
             } else {
                 $arr = json_decode(json: $hashJson, associative: true);

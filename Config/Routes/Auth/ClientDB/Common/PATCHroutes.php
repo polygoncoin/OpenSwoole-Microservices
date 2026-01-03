@@ -24,7 +24,7 @@ return [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'groups' .
+                DIRECTORY_SEPARATOR . 'Groups' .
                 DIRECTORY_SEPARATOR . 'UserGroup' .
                 DIRECTORY_SEPARATOR . 'PATCH' .
                 DIRECTORY_SEPARATOR . 'Registration.php',
@@ -35,7 +35,7 @@ return [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'groups' .
+                DIRECTORY_SEPARATOR . 'Groups' .
                 DIRECTORY_SEPARATOR . 'UserGroup' .
                 DIRECTORY_SEPARATOR . 'PATCH' .
                 DIRECTORY_SEPARATOR . 'Address.php',

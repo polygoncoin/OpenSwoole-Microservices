@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Routes\Auth\ClientDB\groups\AdminGroup;
+namespace Microservices\Config\Routes\Auth\ClientDB\Groups\AdminGroup;
 
 use Microservices\App\Constants;
 use Microservices\App\DatabaseDataTypes;
@@ -24,7 +24,7 @@ return [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'groups' .
+                DIRECTORY_SEPARATOR . 'Groups' .
                 DIRECTORY_SEPARATOR . 'AdminGroup' .
                 DIRECTORY_SEPARATOR . 'DELETE' .
                 DIRECTORY_SEPARATOR . 'Registration.php',
@@ -35,7 +35,7 @@ return [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'groups' .
+                DIRECTORY_SEPARATOR . 'Groups' .
                 DIRECTORY_SEPARATOR . 'AdminGroup' .
                 DIRECTORY_SEPARATOR . 'DELETE' .
                 DIRECTORY_SEPARATOR . 'Address.php',
@@ -46,7 +46,7 @@ return [
             'dataType' => DatabaseDataTypes::$PrimaryKey,
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'groups' .
+                DIRECTORY_SEPARATOR . 'Groups' .
                 DIRECTORY_SEPARATOR . 'AdminGroup' .
                 DIRECTORY_SEPARATOR . 'DELETE' .
                 DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
@@ -56,7 +56,7 @@ return [
         'truncate' => [
             '__FILE__' => Constants::$AUTH_QUERIES_DIR .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'groups' .
+                DIRECTORY_SEPARATOR . 'Groups' .
                 DIRECTORY_SEPARATOR . 'AdminGroup' .
                 DIRECTORY_SEPARATOR . 'DELETE' .
                 DIRECTORY_SEPARATOR . 'Category.php',

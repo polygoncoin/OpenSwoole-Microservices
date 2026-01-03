@@ -21,7 +21,7 @@ return [
     'category' => [
         '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'groups' .
+            DIRECTORY_SEPARATOR . 'Groups' .
             DIRECTORY_SEPARATOR . 'UserGroup' .
             DIRECTORY_SEPARATOR . 'POST' .
             DIRECTORY_SEPARATOR . 'Category.php',
@@ -29,7 +29,7 @@ return [
     'registration' => [
         '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'groups' .
+            DIRECTORY_SEPARATOR . 'Groups' .
             DIRECTORY_SEPARATOR . 'UserGroup' .
             DIRECTORY_SEPARATOR . 'POST' .
             DIRECTORY_SEPARATOR . 'Registration.php',
@@ -37,7 +37,7 @@ return [
     'address' => [
         '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'groups' .
+            DIRECTORY_SEPARATOR . 'Groups' .
             DIRECTORY_SEPARATOR . 'UserGroup' .
             DIRECTORY_SEPARATOR . 'POST' .
             DIRECTORY_SEPARATOR . 'Address.php',
@@ -45,7 +45,7 @@ return [
     'registration-with-address' => [
         '__FILE__' => Constants::$AUTH_QUERIES_DIR .
             DIRECTORY_SEPARATOR . 'ClientDB' .
-            DIRECTORY_SEPARATOR . 'groups' .
+            DIRECTORY_SEPARATOR . 'Groups' .
             DIRECTORY_SEPARATOR . 'UserGroup' .
             DIRECTORY_SEPARATOR . 'POST' .
             DIRECTORY_SEPARATOR . 'Registration-With-Address.php',

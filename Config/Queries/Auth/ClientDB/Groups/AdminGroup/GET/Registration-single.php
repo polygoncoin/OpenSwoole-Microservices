@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Queries\Auth\ClientDB\groups\AdminGroup\GET;
+namespace Microservices\Config\Queries\Auth\ClientDB\Groups\AdminGroup\GET;
 
 return [
     '__QUERY__' => "SELECT * FROM `{$Env::$clientUsersTable}` WHERE __WHERE__",

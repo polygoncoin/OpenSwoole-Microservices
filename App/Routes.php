@@ -111,7 +111,7 @@ class Routes
             $userRoutesFolder = Constants::$PUBLIC_HTML . $this->routesFolder .
                 DIRECTORY_SEPARATOR . 'Auth' .
                 DIRECTORY_SEPARATOR . 'ClientDB' .
-                DIRECTORY_SEPARATOR . 'groups' .
+                DIRECTORY_SEPARATOR . 'Groups' .
                 DIRECTORY_SEPARATOR . $this->api->req->s['gDetails']['name'];
         }
 
