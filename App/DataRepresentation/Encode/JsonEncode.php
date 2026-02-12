@@ -16,7 +16,7 @@
 namespace Microservices\App\DataRepresentation\Encode;
 
 use Microservices\App\DataRepresentation\Encode\DataEncodeInterface;
-use Microservices\App\DataRepresentation\Encode\JsonEncode\JsonEncodeObject;
+use Microservices\App\DataRepresentation\Encode\JsonEncoder\JsonEncoderObject;
 use Microservices\App\HttpStatus;
 
 /**
@@ -36,21 +36,21 @@ class JsonEncode implements DataEncodeInterface
     /**
      * Temporary Stream
      *
-     * @var null|resource
+     * @var null|resource|array
      */
     private $tempStream = null;
 
     /**
-     * Array of JsonEncodeObject objects
+     * Array of JsonEncoderObject objects
      *
-     * @var JsonEncodeObject[]
+     * @var JsonEncoderObject[]
      */
     private $objects = [];
 
     /**
-     * Current JsonEncodeObject object
+     * Current JsonEncoderObject object
      *
-     * @var null|JsonEncodeObject
+     * @var null|JsonEncoderObject
      */
     private $currentObject = null;
 
@@ -236,7 +236,7 @@ class JsonEncode implements DataEncodeInterface
             $this->write(data: $this->currentObject->comma);
             array_push($this->objects, $this->currentObject);
         }
-        $this->currentObject = new JsonEncodeObject(mode: 'Array');
+        $this->currentObject = new JsonEncoderObject(mode: 'Array');
         if ($key !== null) {
             $this->write(data: $this->escape(data: $key) . ':');
         }
@@ -278,7 +278,7 @@ class JsonEncode implements DataEncodeInterface
             $this->write(data: $this->currentObject->comma);
             array_push($this->objects, $this->currentObject);
         }
-        $this->currentObject = new JsonEncodeObject(mode: 'Object');
+        $this->currentObject = new JsonEncoderObject(mode: 'Object');
         if ($key !== null) {
             $this->write(data: $this->escape(data: $key) . ':');
         }

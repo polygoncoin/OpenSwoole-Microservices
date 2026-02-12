@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Start;
 use Microservices\App\Counter;
 use Microservices\App\Constants;
 use Microservices\App\DatabaseDataTypes;
@@ -23,7 +24,6 @@ use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\RateLimiter;
 use Microservices\App\Validator;
-use Microservices\App\Start;
 
 /**
  * Trait for API
@@ -778,7 +778,7 @@ trait AppTrait
         if (
             ((int)getenv(name: 'enableRateLimitAtRouteLevel')) === 0
             || !isset($sqlConfig['rateLimitMaxRequests'])
-            || !isset($sqlConfig['rateLimitSecondsWindow'])
+            || !isset($sqlConfig['rateLimitMaxRequestsWindow'])
         ) {
             return;
         }
@@ -807,7 +807,7 @@ trait AppTrait
         $rateLimitChecked = $this->checkRateLimit(
             rateLimitPrefix: getenv(name: 'rateLimitRoutePrefix'),
             rateLimitMaxRequests: $sqlConfig['rateLimitMaxRequests'],
-            rateLimitSecondsWindow: $sqlConfig['rateLimitSecondsWindow'],
+            rateLimitMaxRequestsWindow: $sqlConfig['rateLimitMaxRequestsWindow'],
             key: $hashKey
         );
     }
@@ -927,7 +927,7 @@ trait AppTrait
      *
      * @param string $rateLimitPrefix        Prefix
      * @param int    $rateLimitMaxRequests   Max request
-     * @param int    $rateLimitSecondsWindow Window in seconds
+     * @param int    $rateLimitMaxRequestsWindow Window in seconds
      * @param string $key                    Key
      *
      * @return void
@@ -936,7 +936,7 @@ trait AppTrait
     public function checkRateLimit(
         $rateLimitPrefix,
         $rateLimitMaxRequests,
-        $rateLimitSecondsWindow,
+        $rateLimitMaxRequestsWindow,
         $key
     ): bool {
         if ($this->rateLimiter === null) {
@@ -947,7 +947,7 @@ trait AppTrait
             $result = $this->rateLimiter->check(
                 prefix: $rateLimitPrefix,
                 maxRequests: $rateLimitMaxRequests,
-                secondsWindow: $rateLimitSecondsWindow,
+                secondsWindow: $rateLimitMaxRequestsWindow,
                 key: $key
             );
 

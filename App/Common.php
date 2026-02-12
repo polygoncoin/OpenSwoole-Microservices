@@ -63,8 +63,8 @@ class Common
     public function init(&$http): void
     {
         $this->http = &$http;
-        $this->req = new HttpRequest(http: $this->http);
-        $this->res = new HttpResponse(http: $this->http);
+        $this->req = new HttpRequest(api: $this);
+        $this->res = new HttpResponse(api: $this);
     }
 
     /**

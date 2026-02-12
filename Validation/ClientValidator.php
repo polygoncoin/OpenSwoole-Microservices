@@ -80,6 +80,7 @@ class ClientValidator implements ValidatorInterface
                 $isValidData = false;
             }
         }
+
         return [$isValidData, $errors];
     }
 

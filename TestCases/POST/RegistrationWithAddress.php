@@ -21,23 +21,23 @@ $header = $defaultHeaders;
 $header[] = $contentType;
 if (isset($token)) {
     $header[] = "Authorization: Bearer {$token}";
+
+    $params = [
+        'firstname' => 'Ramesh',
+        'lastname' => 'Jangid',
+        'email' => 'ramesh@test.com',
+        'username' => 'test',
+        'password' => 'shames11',
+        'address' => [
+            'address' => 'A-203'
+        ]
+    ];
+
+    return Web::trigger(
+        homeURL: $homeURL,
+        method: 'POST',
+        route: '/registration-with-address',
+        header: $header,
+        payload: json_encode(value: $params)
+    );
 }
-
-$params = [
-    'firstname' => 'Ramesh',
-    'lastname' => 'Jangid',
-    'email' => 'ramesh@test.com',
-    'username' => 'test',
-    'password' => 'shames11',
-    'address' => [
-        'address' => 'A-203'
-    ]
-];
-
-return Web::trigger(
-    homeURL: $homeURL,
-    method: 'POST',
-    route: '/registration-with-address',
-    header: $header,
-    payload: json_encode(value: $params)
-);

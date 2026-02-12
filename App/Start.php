@@ -16,7 +16,6 @@
 namespace Microservices\App;
 
 use Microservices\App\Cache;
-use Microservices\App\Common;
 use Microservices\App\Constants;
 use Microservices\App\Logs;
 use Microservices\App\DataRepresentation\DataEncode;
@@ -45,8 +44,6 @@ class Start
         }
 
         $headers = [];
-
-        // echo PHP_EOL . $http['server']['method'] . ':' . $http['get'][ROUTE_URL_PARAM];
 
         try {
             $Microservices = new Microservices(http: $http);
@@ -98,8 +95,8 @@ class Start
                 $logsObj->log(logDetails: $logDetails);
             }
 
+            $headers = [];
             if ($e->getCode() == 429) {
-                $headers = [];
                 $headers['Retry-After'] = $e->getMessage();
                 $arr = [
                     'Status' => $e->getCode(),
@@ -113,12 +110,13 @@ class Start
                 ];
             }
 
-            $dataEncode = new DataEncode(http: $http);
-            $dataEncode->init();
-            $dataEncode->startObject();
-            $dataEncode->addKeyData(key: 'Error', data: $arr);
+            // $dataEncode = new DataEncode(http: $http);
+            // $dataEncode->init();
+            // $dataEncode->startObject();
+            // $dataEncode->addKeyData(key: 'Error', data: $arr);
 
-            $data = $dataEncode->getData();
+            // $data = $dataEncode->getData();
+            $data = json_encode(['Error' => $arr]);
             $status = $e->getCode();
 
             return [$headers, $data, $status];

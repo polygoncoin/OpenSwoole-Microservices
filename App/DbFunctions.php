@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\HttpRequest;
 use Microservices\App\DatabaseCacheKey;
 use Microservices\App\DatabaseOpenCacheKey;
 use Microservices\App\HttpStatus;

@@ -15,9 +15,10 @@
 
 namespace Microservices\App\DataRepresentation;
 
+use Microservices\App\DataRepresentation\Encode\PhpEncode;
 use Microservices\App\DataRepresentation\Encode\JsonEncode;
 use Microservices\App\DataRepresentation\Encode\XmlEncode;
-use Microservices\App\Env;
+use Microservices\App\Common;
 
 /**
  * Creates Data Representation Output
@@ -36,16 +37,16 @@ class DataEncode
     /**
      * Temporary Stream
      *
-     * @var null|resource
+     * @var null|resource|array
      */
     private $tempStream = null;
 
     /**
-     * Microservices Request Details
+     * Api common Object
      *
-     * @var null|array
+     * @var null|Common
      */
-    public $http = null;
+    private $api = null;
 
     /**
      * Temporary Stream
@@ -55,20 +56,34 @@ class DataEncode
     private $dataEncoder = null;
 
     /**
-     * XSLT
+     * XSLT file
      *
      * @var null|string
      */
-    public $XSLT = null;
+    public $xsltFile = null;
 
     /**
-     * DataEncode constructor
+     * HTML file
      *
-     * @param array $http HTTP request details
+     * @var null|string
      */
-    public function __construct(&$http)
+    public $htmlFile = null;
+
+    /**
+     * PHP file
+     *
+     * @var null|string
+     */
+    public $phpFile = null;
+
+    /**
+     * Constructor
+     *
+     * @param Common $api
+     */
+    public function __construct(Common &$api)
     {
-        $this->http = &$http;
+        $this->api = &$api;
     }
 
     /**
@@ -80,24 +95,41 @@ class DataEncode
      */
     public function init($header = true): void
     {
-        if ($this->http['server']['method'] === 'GET') {
-            $this->tempStream = fopen(filename: "php://temp", mode: "rw+b");
+        if ($this->api->http['server']['method'] === 'GET') {
+            if ($this->api->res->oRepresentation === 'PHP') {
+                $this->tempStream = [];    
+            } else {
+                $this->tempStream = fopen(filename: "php://temp", mode: "rw+b");
+            }
         } else {
-            $this->tempStream = fopen(filename: "php://memory", mode: "rw+b");
+            if ($this->api->res->oRepresentation === 'PHP') {
+                $this->tempStream = [];    
+            } else {
+                $this->tempStream = fopen(filename: "php://memory", mode: "rw+b");
+            }
         }
-        switch (Env::$oRepresentation) {
+        switch ($this->api->res->oRepresentation) {
+            case 'JSON':
+                $this->dataEncoder = new JsonEncode(
+                    tempStream: $this->tempStream,
+                    header: $header
+                );
+                break;
+            case 'PHP':
+                $this->dataEncoder = new PhpEncode(
+                    tempStream: $this->tempStream,
+                    header: $header
+                );
+                break;
             case 'XML':
+            case 'XSLT':
             case 'HTML':
                 $this->dataEncoder = new XmlEncode(
                     tempStream: $this->tempStream,
                     header: $header
                 );
                 break;
-            case 'JSON':
-                $this->dataEncoder = new JsonEncode(
-                    tempStream: $this->tempStream,
-                    header: $header
-                );
+            default:
                 break;
         }
     }
@@ -229,27 +261,41 @@ class DataEncode
     public function streamData(): void
     {
         $this->end();
-        rewind(stream: $this->tempStream);
 
-        if (
-            in_array(Env::$oRepresentation, ['XML', 'HTML'])
-            && ($this->XSLT !== null)
-            && file_exists(filename: $this->XSLT)
-        ) {
-            $xml = new \DOMDocument();
-            $xml->loadXML(source: stream_get_contents(stream: $this->tempStream));
-
-            $xslt = new \XSLTProcessor();
-            $XSL = new \DOMDocument();
-            $XSL->load(filename: $this->XSLT);
-            $xslt->importStylesheet(stylesheet: $XSL);
-            echo $xslt->transformToXML(document: $xml);
-        } else {
-            $outputStream = fopen(filename: 'php://output', mode: 'wb');
-            stream_copy_to_stream(from: $this->tempStream, to: $outputStream);
-            fclose(stream: $outputStream);
+        switch (true) {
+            case (
+                    $this->api->res->oRepresentation === 'XSLT'
+                    && $this->xsltFile !== null
+                    && file_exists(filename: $this->xsltFile)
+                ):
+                echo $this->processXml($this->xsltFile);
+                fclose(stream: $this->tempStream);
+                break;
+            case (
+                    $this->api->res->oRepresentation === 'HTML'
+                    && $this->htmlFile !== null
+                    && file_exists(filename: $this->htmlFile)
+                ):
+                echo $this->processXml($this->htmlFile);
+                fclose(stream: $this->tempStream);
+                break;
+            case (
+                    $this->api->res->oRepresentation === 'PHP'
+                    && $this->phpFile !== null
+                    && file_exists(filename: $this->phpFile)
+                ):
+                $finalArray = &$this->tempStream->finalArray;
+                include_once $this->phpFile;
+                $this->tempStream = null;
+                break;
+            default:
+                rewind(stream: $this->tempStream);
+                $outputStream = fopen(filename: 'php://output', mode: 'wb');
+                stream_copy_to_stream(from: $this->tempStream, to: $outputStream);
+                fclose(stream: $outputStream);
+                fclose(stream: $this->tempStream);
+                break;
         }
-        fclose(stream: $this->tempStream);
     }
 
     /**
@@ -261,10 +307,61 @@ class DataEncode
     {
         $this->end();
 
-        rewind(stream: $this->tempStream);
-        $streamContent = stream_get_contents(stream: $this->tempStream);
-        fclose(stream: $this->tempStream);
+        switch (true) {
+            case (
+                    $this->api->res->oRepresentation === 'XSLT'
+                    && $this->xsltFile !== null
+                    && file_exists(filename: $this->xsltFile)
+                ):
+                $streamContent = $this->processXml($this->xsltFile);
+                fclose(stream: $this->tempStream);
+                break;
+            case (
+                    $this->api->res->oRepresentation === 'HTML'
+                    && $this->htmlFile !== null
+                    && file_exists(filename: $this->htmlFile)
+                ):
+                $streamContent = $this->processXml($this->htmlFile);
+                fclose(stream: $this->tempStream);
+                break;
+            case (
+                    $this->api->res->oRepresentation === 'PHP'
+                    && $this->phpFile !== null
+                    && file_exists(filename: $this->phpFile)
+                ):
+                $finalArray = &$this->dataEncoder->finalArray;
+                ob_clean();
+                include_once $this->phpFile;
+                $streamContent = ob_get_clean();
+                $this->tempStream = null;
+                break;
+            default:
+                rewind(stream: $this->tempStream);
+                $streamContent = stream_get_contents(stream: $this->tempStream);
+                fclose(stream: $this->tempStream);
+                break;
+        }
 
         return $streamContent;
+    }
+
+    /**
+     * Generate XML(XSLT)/HTML data
+     *
+     * @param string $xmlFile XML file location
+     *
+     * @return string
+     */
+    private function processXml($xmlFile)
+    {
+        rewind(stream: $this->tempStream);
+        $xml = new \DOMDocument();
+        $xml->loadXML(source: stream_get_contents(stream: $this->tempStream));
+
+        $xslt = new \XSLTProcessor();
+        $XSL = new \DOMDocument();
+        $XSL->load(filename: $this->xmlFile);
+        $xslt->importStylesheet(stylesheet: $XSL);
+        return $xslt->transformToXML(document: $xml);
     }
 }

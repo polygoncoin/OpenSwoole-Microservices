@@ -48,7 +48,7 @@ class DataDecode
     private $dataDecoder = null;
 
     /**
-     * JsonDecode constructor
+     * Constructor
      *
      * @param resource $dataFileHandle File handle
      */

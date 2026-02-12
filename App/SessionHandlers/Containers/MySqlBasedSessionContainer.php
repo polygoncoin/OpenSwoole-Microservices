@@ -20,7 +20,7 @@ use Microservices\App\SessionHandlers\Containers\SessionContainerInterface;
 use Microservices\App\SessionHandlers\Containers\SessionContainerHelper;
 
 /**
- * Custom Session Handler using MySQL
+ * Custom Session Handler using MySql
  * php version 7
  *
  * @category  CustomSessionHandler_MySQL

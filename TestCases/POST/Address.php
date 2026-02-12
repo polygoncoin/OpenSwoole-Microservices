@@ -21,17 +21,17 @@ $header = $defaultHeaders;
 $header[] = $contentType;
 if (isset($token)) {
     $header[] = "Authorization: Bearer {$token}";
+
+    $params = [
+        'user_id' => 1,
+        'address' => '203'
+    ];
+
+    return Web::trigger(
+        homeURL: $homeURL,
+        method: 'POST',
+        route: '/address',
+        header: $header,
+        payload: json_encode(value: $params)
+    );
 }
-
-$params = [
-    'user_id' => 1,
-    'address' => '203'
-];
-
-return Web::trigger(
-    homeURL: $homeURL,
-    method: 'POST',
-    route: '/address',
-    header: $header,
-    payload: json_encode(value: $params)
-);

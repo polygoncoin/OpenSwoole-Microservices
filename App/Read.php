@@ -20,6 +20,7 @@ use Microservices\App\Common;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\DbFunctions;
 use Microservices\App\Env;
+use Microservices\App\Export;
 use Microservices\App\Hook;
 use Microservices\App\HttpStatus;
 
@@ -59,6 +60,7 @@ class Read
      * @var null|string
      */
     public $fetchFrom = null;
+
     /**
      * Api common Object
      *
@@ -111,7 +113,8 @@ class Read
         // Check for cache
         $toBeCached = false;
         if (
-            isset($rSqlConfig['cacheKey'])
+            Env::$enableResponseCaching
+            && isset($rSqlConfig['cacheKey'])
             && !isset($this->api->req->s['queryParams']['orderBy'])
         ) {
             $json = DbFunctions::getQueryCache(
@@ -130,14 +133,29 @@ class Read
             }
         }
 
-        if ($toBeCached) {
-            $this->dataEncode = new DataEncode(http: $this->api->http);
+        if (Env::$enableResponseCaching && $toBeCached) {
+            $this->dataEncode = new DataEncode(api: $this->api);
             $this->dataEncode->init(header: false);
         } else {
             $this->dataEncode = &$this->api->res->dataEncode;
         }
-        $this->dataEncode->XSLT = isset($rSqlConfig['XSLT']) ?
-            $rSqlConfig['XSLT'] : null;
+
+        if (
+            $this->api->res->oRepresentation === 'XSLT'
+            && isset($rSqlConfig['xsltFile'])
+        ) {
+            $this->dataEncode->xsltFile = $rSqlConfig['xsltFile'];
+        } elseif (
+            $this->api->res->oRepresentation === 'HTML'
+            && isset($rSqlConfig['htmlFile'])
+        ) {
+            $this->dataEncode->htmlFile = $rSqlConfig['htmlFile'];
+        } elseif (
+            $this->api->res->oRepresentation === 'PHP'
+            && isset($rSqlConfig['phpFile'])
+        ) {
+            $this->dataEncode->phpFile = $rSqlConfig['phpFile'];
+        }
 
         // Set Server mode to execute query on - Read / Write Server
         $fetchFrom = $rSqlConfig['fetchFrom'] ?? 'Slave';
@@ -165,7 +183,7 @@ class Read
             );
         }
 
-        if ($toBeCached) {
+        if (Env::$enableResponseCaching && $toBeCached) {
             $json = $this->dataEncode->getData();
             DbFunctions::setQueryCache(
                 cacheKey: $rSqlConfig['cacheKey'],

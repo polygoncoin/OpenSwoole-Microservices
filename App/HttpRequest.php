@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Common;
 use Microservices\App\Constants;
 use Microservices\App\CacheKey;
 use Microservices\App\DataRepresentation\DataDecode;
@@ -60,11 +61,11 @@ class HttpRequest
     public $dataDecode = null;
 
     /**
-     * Microservices Request Details
+     * Api common Object
      *
-     * @var null|array
+     * @var null|Common
      */
-    public $http = null;
+    private $api = null;
 
     /**
      * Session details of a request
@@ -111,18 +112,18 @@ class HttpRequest
     /**
      * Constructor
      *
-     * @param array $http HTTP request details
+     * @param Common $api
      */
-    public function __construct(&$http)
+    public function __construct(Common &$api)
     {
-        $this->http = &$http;
+        $this->api = &$api;
 
-        $this->HOST = $this->http['server']['host'];
-        $this->METHOD = $this->http['server']['method'];
-        $this->IP = $this->http['server']['ip'];
-        if (isset($this->http['get'][ROUTE_URL_PARAM])) {
+        $this->HOST = $this->api->http['server']['host'];
+        $this->METHOD = $this->api->http['server']['method'];
+        $this->IP = $this->api->http['server']['ip'];
+        if (isset($this->api->http['get'][ROUTE_URL_PARAM])) {
             $this->ROUTE = '/' . trim(
-                string: $this->http['get'][ROUTE_URL_PARAM],
+                string: $this->api->http['get'][ROUTE_URL_PARAM],
                 characters: '/'
             );
         } else {
@@ -132,10 +133,10 @@ class HttpRequest
         switch (Env::$authMode) {
             case 'Token':
                 if (
-                    isset($this->http['header'])
-                    && isset($this->http['header']['authorization'])
+                    isset($this->api->http['header'])
+                    && isset($this->api->http['header']['authorization'])
                 ) {
-                    $this->HTTP_AUTHORIZATION = $this->http['header']['authorization'];
+                    $this->HTTP_AUTHORIZATION = $this->api->http['header']['authorization'];
                     $this->open = false;
                 } elseif ($this->ROUTE === '/login') {
                     $this->open = false;
@@ -158,10 +159,10 @@ class HttpRequest
         }
 
         if (!$this->open) {
-            $this->auth = new Auth($this);
+            $this->auth = new Auth($this->api);
         }
 
-        $this->rParser = new RouteParser($this);
+        $this->rParser = new RouteParser($this->api);
     }
 
     /**
@@ -230,9 +231,9 @@ class HttpRequest
             return;
         }
 
-        $this->s['queryParams'] = &$this->http['get'];
+        $this->s['queryParams'] = &$this->api->http['get'];
         if ($this->METHOD === Constants::$GET) {
-            $this->urlDecode(value: $this->http['get']);
+            $this->urlDecode(value: $this->api->http['get']);
             $this->s['payloadType'] = 'Object';
         } else {
             $this->setPayloadStream();
@@ -258,17 +259,17 @@ class HttpRequest
         switch (true) {
             case (
                 $this->rParser->isImportRequest
-                && isset($this->http['files']['file']['tmp_name'])
+                && isset($this->api->http['files']['file']['tmp_name'])
             ):
                 $content = $this->formatCsvPayload(
-                    csvFile: $this->http['files']['file']['tmp_name']
+                    csvFile: $this->api->http['files']['file']['tmp_name']
                 );
                 break;
             case Env::$iRepresentation === 'XML':
-                $content = $this->convertXmlToJson(xmlString: $this->http['post']);
+                $content = $this->convertXmlToJson(xmlString: $this->api->http['post']);
                 break;
             default:
-                $content = $this->http['post'];
+                $content = $this->api->http['post'];
         }
         $this->payloadStream = fopen(
             filename: "php://memory",
@@ -383,7 +384,7 @@ class HttpRequest
      */
     public function formatCsvPayload($csvFile): string
     {
-        $dataEncode = new DataEncode(http: $this->http);
+        $dataEncode = new DataEncode(api: $this->api);
         $dataEncode->init(header: false);
         $dataEncode->startObject();
 

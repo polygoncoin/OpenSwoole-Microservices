@@ -71,8 +71,10 @@ class Env
     public static $enableThirdPartyRequest = null;
     public static $thirdPartyRequestRoutePrefix = null;
 
-    public static $enableCacheRequest = null;
-    public static $cacheRequestRoutePrefix = null;
+    public static $enableDropboxRequest = null;
+    public static $dropboxRequestRoutePrefix = null;
+
+    public static $enableResponseCaching = null;
 
     public static $enableCidrChecks = null;
     public static $configRestrictedCidr = null;
@@ -112,7 +114,7 @@ class Env
     public static $sessionMode = null;
 
     private static $iAllowedRepresentation = ['JSON', 'XML'];
-    private static $oAllowedRepresentation = ['JSON', 'XML', 'HTML'];
+    private static $oAllowedRepresentation = ['JSON', 'XML', 'XSLT', 'HTML', 'PHP'];
 
     /**
      * Initialize
@@ -163,8 +165,10 @@ class Env
             name: 'thirdPartyRequestRoutePrefix'
         );
 
-        self::$enableCacheRequest = (int)getenv(name: 'enableCacheRequest');
-        self::$cacheRequestRoutePrefix = getenv(name: 'cacheRequestRoutePrefix');
+        self::$enableDropboxRequest = (int)getenv(name: 'enableDropboxRequest');
+        self::$dropboxRequestRoutePrefix = getenv(name: 'dropboxRequestRoutePrefix');
+
+        self::$enableResponseCaching = getenv(name: 'enableResponseCaching');
 
         self::$enableCidrChecks = (int)getenv(name: 'enableCidrChecks');
         self::$configRestrictedCidr = getenv(name: 'configRestrictedCidr');
@@ -181,7 +185,7 @@ class Env
 
         self::$reservedRoutesPrefix = [
             self::$routesRequestRoute,
-            self::$cacheRequestRoutePrefix,
+            self::$dropboxRequestRoutePrefix,
             self::$cronRequestRoutePrefix,
             self::$customRequestRoutePrefix,
             self::$reloadRequestRoutePrefix,
@@ -191,7 +195,7 @@ class Env
 
         self::$reservedRoutesCidrString = [
             self::$routesRequestRoute => self::$routesRestrictedCidr,
-            self::$cacheRequestRoutePrefix => self::$cacheRestrictedCidr,
+            self::$dropboxRequestRoutePrefix => self::$cacheRestrictedCidr,
             self::$cronRequestRoutePrefix => self::$cronRestrictedCidr,
             self::$customRequestRoutePrefix => self::$customRestrictedCidr,
             self::$reloadRequestRoutePrefix => self::$reloadRestrictedCidr,

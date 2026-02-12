@@ -15,6 +15,7 @@
 
 namespace Microservices\Config\Queries\Auth\ClientDB\Groups\UserGroup\GET;
 
+use Microservices\App\Constants;
 use Microservices\App\DatabaseCacheKey;
 
 return [
@@ -89,5 +90,7 @@ return [
     ],
     'useResultSet' => true,
     'fetchFrom' => 'Master',
-    'cacheKey' => DatabaseCacheKey::$Category
+    // 'cacheKey' => DatabaseCacheKey::$Category,
+    'oRepresentation' => 'PHP',
+    'phpFile' => Constants::$PHP_DIR . DIRECTORY_SEPARATOR . 'index.php'
 ];

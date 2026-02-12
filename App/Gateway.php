@@ -16,8 +16,8 @@
 namespace Microservices\App;
 
 use Microservices\App\Common;
-use Microservices\App\Env;
 use Microservices\App\Functions;
+use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\RateLimiter;
 
@@ -125,7 +125,7 @@ class Gateway
      *
      * @param string $rateLimitPrefix        Prefix
      * @param int    $rateLimitMaxRequests   Max request
-     * @param int    $rateLimitSecondsWindow Window in seconds
+     * @param int    $rateLimitMaxRequestsWindow Window in seconds
      * @param string $key                    Key
      *
      * @return void
@@ -134,14 +134,14 @@ class Gateway
     public function checkRateLimit(
         $rateLimitPrefix,
         $rateLimitMaxRequests,
-        $rateLimitSecondsWindow,
+        $rateLimitMaxRequestsWindow,
         $key
     ): bool {
         try {
             $result = $this->rateLimiter->check(
                 prefix: $rateLimitPrefix,
                 maxRequests: $rateLimitMaxRequests,
-                secondsWindow: $rateLimitSecondsWindow,
+                secondsWindow: $rateLimitMaxRequestsWindow,
                 key: $key
             );
 
@@ -206,7 +206,7 @@ class Gateway
         if (
             ((int)getenv(name: 'enableRateLimitAtClientLevel')) === 0
             || empty($this->api->req->s['cDetails']['rateLimitMaxRequests'])
-            || empty($this->api->req->s['cDetails']['rateLimitSecondsWindow'])
+            || empty($this->api->req->s['cDetails']['rateLimitMaxRequestsWindow'])
         ) {
             return;
         }
@@ -214,14 +214,14 @@ class Gateway
         $rateLimitClientPrefix = getenv(name: 'rateLimitClientPrefix');
         $rateLimitMaxRequests
             = $this->api->req->s['cDetails']['rateLimitMaxRequests'];
-        $rateLimitSecondsWindow
-            = $this->api->req->s['cDetails']['rateLimitSecondsWindow'];
+        $rateLimitMaxRequestsWindow
+            = $this->api->req->s['cDetails']['rateLimitMaxRequestsWindow'];
         $key = $this->api->req->s['cDetails']['id'];
 
         $this->rateLimitChecked = $this->checkRateLimit(
             rateLimitPrefix: $rateLimitClientPrefix,
             rateLimitMaxRequests: $rateLimitMaxRequests,
-            rateLimitSecondsWindow: $rateLimitSecondsWindow,
+            rateLimitMaxRequestsWindow: $rateLimitMaxRequestsWindow,
             key: $key
         );
     }
@@ -236,7 +236,7 @@ class Gateway
         if (
             ((int)getenv(name: 'enableRateLimitAtGroupLevel')) === 0
             || empty($this->api->req->s['gDetails']['rateLimitMaxRequests'])
-            || empty($this->api->req->s['gDetails']['rateLimitSecondsWindow'])
+            || empty($this->api->req->s['gDetails']['rateLimitMaxRequestsWindow'])
         ) {
             return;
         }
@@ -245,15 +245,15 @@ class Gateway
             = getenv(name: 'rateLimitGroupPrefix');
         $rateLimitMaxRequests
             = $this->api->req->s['gDetails']['rateLimitMaxRequests'];
-        $rateLimitSecondsWindow
-            = $this->api->req->s['gDetails']['rateLimitSecondsWindow'];
+        $rateLimitMaxRequestsWindow
+            = $this->api->req->s['gDetails']['rateLimitMaxRequestsWindow'];
         $key = $this->api->req->s['cDetails']['id'] . ':'
             . $this->api->req->s['uDetails']['id'];
 
         $this->rateLimitChecked = $this->checkRateLimit(
             rateLimitPrefix: $rateLimitGroupPrefix,
             rateLimitMaxRequests: $rateLimitMaxRequests,
-            rateLimitSecondsWindow: $rateLimitSecondsWindow,
+            rateLimitMaxRequestsWindow: $rateLimitMaxRequestsWindow,
             key: $key
         );
     }
@@ -268,7 +268,7 @@ class Gateway
         if (
             ((int)getenv(name: 'enableRateLimitAtUserLevel')) === 0
             || empty($this->api->req->s['uDetails']['rateLimitMaxRequests'])
-            || empty($this->api->req->s['uDetails']['rateLimitSecondsWindow'])
+            || empty($this->api->req->s['uDetails']['rateLimitMaxRequestsWindow'])
         ) {
             return;
         }
@@ -276,8 +276,8 @@ class Gateway
         $rateLimitUserPrefix = getenv(name: 'rateLimitUserPrefix');
         $rateLimitMaxRequests
             = $this->api->req->s['gDetails']['rateLimitMaxRequests'];
-        $rateLimitSecondsWindow
-            = $this->api->req->s['gDetails']['rateLimitSecondsWindow'];
+        $rateLimitMaxRequestsWindow
+            = $this->api->req->s['gDetails']['rateLimitMaxRequestsWindow'];
         $key = $this->api->req->s['cDetails']['id'] . ':'
             . $this->api->req->s['uDetails']['id'] . ':'
             . $this->api->req->s['uDetails']['user_id'];
@@ -285,7 +285,7 @@ class Gateway
         $this->rateLimitChecked = $this->checkRateLimit(
             rateLimitPrefix: $rateLimitUserPrefix,
             rateLimitMaxRequests: $rateLimitMaxRequests,
-            rateLimitSecondsWindow: $rateLimitSecondsWindow,
+            rateLimitMaxRequestsWindow: $rateLimitMaxRequestsWindow,
             key: $key
         );
     }
@@ -303,14 +303,14 @@ class Gateway
 
         $rateLimitUserPrefix = getenv(name: 'rateLimitUsersRequestPrefix');
         $rateLimitMaxRequests = getenv(name: 'rateLimitUsersMaxRequests');
-        $rateLimitSecondsWindow = getenv(name: 'rateLimitUsersMaxRequestsWindow');
+        $rateLimitMaxRequestsWindow = getenv(name: 'rateLimitUsersMaxRequestsWindow');
         $key = $this->api->req->s['cDetails']['id'] . ':'
             . $this->api->req->s['uDetails']['id'];
 
         $this->rateLimitChecked = $this->checkRateLimit(
             rateLimitPrefix: $rateLimitUserPrefix,
             rateLimitMaxRequests: $rateLimitMaxRequests,
-            rateLimitSecondsWindow: $rateLimitSecondsWindow,
+            rateLimitMaxRequestsWindow: $rateLimitMaxRequestsWindow,
             key: $key
         );
     }
@@ -328,13 +328,13 @@ class Gateway
 
         $rateLimitIPPrefix = getenv(name: 'rateLimitIPPrefix');
         $rateLimitIPMaxRequests = getenv(name: 'rateLimitIPMaxRequests');
-        $rateLimitIPSecondsWindow = getenv(name: 'rateLimitIPSecondsWindow');
+        $rateLimitIPMaxRequestsWindow = getenv(name: 'rateLimitIPMaxRequestsWindow');
         $key = $this->api->req->IP;
 
         $this->checkRateLimit(
             rateLimitPrefix: $rateLimitIPPrefix,
             rateLimitMaxRequests: $rateLimitIPMaxRequests,
-            rateLimitSecondsWindow: $rateLimitIPSecondsWindow,
+            rateLimitMaxRequestsWindow: $rateLimitIPMaxRequestsWindow,
             key: $key
         );
     }

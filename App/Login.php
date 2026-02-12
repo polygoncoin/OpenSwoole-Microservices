@@ -122,7 +122,7 @@ class Login
             $result = $rateLimiter->check(
                 prefix: getenv('rateLimitUsersPerIpPrefix'),
                 maxRequests: getenv('rateLimitUsersPerIpMaxUsers'),
-                secondsWindow: getenv('rateLimitUsersPerIpSecondsWindow'),
+                secondsWindow: getenv('rateLimitUsersPerIpMaxUsersWindow'),
                 key: $this->api->req->IP
             );
             if ($result['allowed']) {
@@ -256,6 +256,22 @@ class Login
      */
     private function validatePassword(): void
     {
+        $rateLimiter = new RateLimiter();
+        $result = $rateLimiter->check(
+            prefix: getenv('rateLimitUserLoginPrefix'),
+            maxRequests: getenv('rateLimitMaxUserLoginRequests'),
+            secondsWindow: getenv('rateLimitMaxUserLoginRequestsWindow'),
+            key: $this->username
+        );
+        if ($result['allowed']) {
+            // Process the request
+        } else {
+            // Return 429 Too Many Requests
+            throw new \Exception(
+                message: $result['resetAt'] - Env::$timestamp,
+                code: HttpStatus::$TooManyRequests
+            );
+        }
         // get hash from cache and compares with password
         if (
             !password_verify(

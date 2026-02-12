@@ -81,7 +81,7 @@ return [
         ]
     ],
     'rateLimitMaxRequests' => 100,
-    'rateLimitSecondsWindow' => 3600,
+    'rateLimitMaxRequestsWindow' => 3600,
     'useHierarchy' => true,
     '__PAYLOAD-TYPE__' => 'Object',
     'idempotentWindow' => 10,

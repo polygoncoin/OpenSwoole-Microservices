@@ -189,8 +189,8 @@ class Api
                         === $this->api->req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\ThirdParty';
                     break;
-                case Env::$enableCacheRequest
-                    && (Env::$cacheRequestRoutePrefix
+                case Env::$enableDropboxRequest
+                    && (Env::$dropboxRequestRoutePrefix
                         === $this->api->req->rParser->routeElements[0]):
                     $supplementApiClass = __NAMESPACE__ . '\\Cache';
                     break;

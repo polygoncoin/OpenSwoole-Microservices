@@ -188,7 +188,7 @@ class StreamVideo
                 $streamSize = $this->streamTill - $this->streamFrom + 1;
             }
         } else {
-            if ($this->size > ((int)$this->streamFrom + $this->chunkSize)) {
+            if ($this->size > ($this->streamFrom + $this->chunkSize)) {
                 $this->streamTill = $this->streamFrom + $this->chunkSize;
             } else {
                 $this->streamTill = $this->size - 1;

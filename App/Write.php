@@ -136,7 +136,22 @@ class Write
             }
         }
 
-        $this->dataEncode->XSLT = $wSqlConfig['XSLT'] ?? null;
+        if (
+            $this->api->res->oRepresentation === 'XSLT'
+            && isset($wSqlConfig['xsltFile'])
+        ) {
+            $this->dataEncode->xsltFile = $wSqlConfig['xsltFile'];
+        } elseif (
+            $this->api->res->oRepresentation === 'HTML'
+            && isset($wSqlConfig['htmlFile'])
+        ) {
+            $this->dataEncode->htmlFile = $wSqlConfig['htmlFile'];
+        } elseif (
+            $this->api->res->oRepresentation === 'PHP'
+            && isset($wSqlConfig['phpFile'])
+        ) {
+            $this->dataEncode->phpFile = $wSqlConfig['phpFile'];
+        }
 
         // Lag Response
         $this->lagResponse(sqlConfig: $wSqlConfig);
@@ -241,7 +256,7 @@ class Write
             $this->dataEncode->startObject(key: 'Results');
         } else {
             $this->dataEncode->startObject(key: 'Results');
-            if (in_array(Env::$oRepresentation, ['XML', 'HTML'])) {
+            if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
                 $this->dataEncode->startArray(key: 'Rows');
             }
         }
@@ -334,7 +349,7 @@ class Write
                     $this->dataEncode->addKeyData(key: $k, data: $v);
                 }
             } else {
-                if (in_array(Env::$oRepresentation, ['XML', 'HTML'])) {
+                if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
                     $this->dataEncode->startObject(key: 'Row');
                     foreach ($arr as $k => $v) {
                         $this->dataEncode->addKeyData(key: $k, data: $v);
@@ -349,7 +364,7 @@ class Write
         if ($this->api->req->s['payloadType'] === 'Object') {
             $this->dataEncode->endObject();
         } else {
-            if (in_array(Env::$oRepresentation, ['XML', 'HTML'])) {
+            if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
                 $this->dataEncode->endArray();
             }
             $this->dataEncode->endObject();

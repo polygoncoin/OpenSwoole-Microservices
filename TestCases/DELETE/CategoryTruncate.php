@@ -21,12 +21,12 @@ $header = $defaultHeaders;
 $header[] = $contentType;
 if (isset($token)) {
     $header[] = "Authorization: Bearer {$token}";
-}
 
-return Web::trigger(
-    homeURL: $homeURL,
-    method: 'DELETE',
-    route: '/category/truncate',
-    header: $header,
-    payload: ''
-);
+    return Web::trigger(
+        homeURL: $homeURL,
+        method: 'DELETE',
+        route: '/category/truncate',
+        header: $header,
+        payload: ''
+    );
+}

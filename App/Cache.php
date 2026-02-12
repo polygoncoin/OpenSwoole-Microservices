@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Cache Handler
+ * Client side Cache
  * php version 8.3
  *
- * @category  Cache Handler
+ * @category  ClientCache
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Common;
 use Microservices\App\Constants;
 use Microservices\App\HttpStatus;
 use Microservices\App\CacheHandlers\StreamVideo;
@@ -23,7 +24,7 @@ use Microservices\App\CacheHandlers\StreamVideo;
  * Client side Caching via E-tags
  * php version 8.3
  *
- * @category  Cache Handler
+ * @category  ClientCache_Etag
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid

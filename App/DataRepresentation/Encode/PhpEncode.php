@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Handling XML Encode
+ * Handling PHP Raw Array details for Views
  * php version 8.3
  *
- * @category  DataEncode_XML
+ * @category  DataEncode_PHP
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -16,14 +16,14 @@
 namespace Microservices\App\DataRepresentation\Encode;
 
 use Microservices\App\DataRepresentation\Encode\DataEncodeInterface;
-use Microservices\App\DataRepresentation\Encode\XmlEncoder\XmlEncoderObject;
+use Microservices\App\DataRepresentation\Encode\PhpEncoder\PhpEncoderObject;
 use Microservices\App\HttpStatus;
 
 /**
- * Generates XML
+ * Generates PHP Array
  * php version 8.3
  *
- * @category  Xml_Encoder
+ * @category  PHP_Encoder
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -31,26 +31,26 @@ use Microservices\App\HttpStatus;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class XmlEncode implements DataEncodeInterface
+class PhpEncode implements DataEncodeInterface
 {
     /**
-     * Temporary Stream
+     * Array
      *
-     * @var null|resource|array
+     * @var null|array
      */
-    private $tempStream = null;
+    public $finalArray = null;
 
     /**
-     * Array of XmlEncoderObject objects
+     * Array of PhpEncoderObject objects
      *
-     * @var XmlEncoderObject[]
+     * @var PhpEncoderObject[]
      */
     private $objects = [];
 
     /**
-     * Current XmlEncoderObject object
+     * Current PhpEncoderObject object
      *
-     * @var null|XmlEncoderObject
+     * @var null|PhpEncoderObject
      */
     private $currentObject = null;
 
@@ -62,11 +62,6 @@ class XmlEncode implements DataEncodeInterface
      */
     public function __construct(&$tempStream, $header = true)
     {
-        $this->tempStream = &$tempStream;
-        if ($header) {
-            $xml = '<?xml version="1.0" encoding="UTF-8"?>';
-            $this->write(data: $xml);
-        }
     }
 
     /**
@@ -89,11 +84,27 @@ class XmlEncode implements DataEncodeInterface
      */
     private function write($data): void
     {
-        fwrite(stream: $this->tempStream, data: $data);
+        if ($this->currentObject) {
+            if ($this->currentObject->mode === 'Object') {
+                if (is_array($data)) {
+                    foreach ($data as $k => $v) {
+                        $this->currentObject->returnArray[$k] = $this->escape(data: $v);
+                    }
+                }
+            } else {
+                if (is_array($data)) {
+                    foreach ($data as $v) {
+                        $this->currentObject->returnArray[] = $this->escape(data: $v);
+                    }
+                } else {
+                    $this->currentObject->returnArray[] = $this->escape(data: $data);
+                }
+            }
+        }
     }
 
     /**
-     * Encodes both simple and associative array to XML
+     * Encodes both simple and associative array to json
      *
      * @param string|array $data Representation Data
      *
@@ -101,46 +112,33 @@ class XmlEncode implements DataEncodeInterface
      */
     public function encode($data): void
     {
-        if (is_array(value: $data)) {
-            $isObject = (isset($data[0])) ? false : true;
-            if (!$isObject) {
-                $this->write(data: "<{$this->currentObject->key}>");
-            }
-            foreach ($data as $key => $value) {
-                if (!is_array(value: $value)) {
-                    $key = $this->escapeTag(key: $key);
-                    $this->write(
-                        data: "<{$key}>{$this->escape(data: $value)}</{$key}>"
-                    );
-                } else {
-                    $this->addKeyData(key: $key, data: $value);
-                }
-            }
-            if (!$isObject) {
-                $this->write(data: "</{$this->currentObject->key}>");
-            }
-        } else {
-            $this->write(data: $this->escape(data: $data));
-        }
+        $this->write(data: $data);
     }
 
     /**
-     * Escape the XML string value
+     * Escape the json string key or value
      *
-     * @param null|string $data Representation Data
+     * @param null|string|array $data Representation Data
      *
-     * @return string
+     * @return null|string|array
      */
-    private function escape($data): string
+    private function escape(&$data)
     {
-        if ($data === null) {
-            return 'null';
+        if ($data !== null) {
+            if (is_array($data)) {
+                foreach ($data as $k => $v) {
+                    $data[$k] = $this->escape($v);
+                }
+            } else {
+                $data = nl2br(htmlspecialchars($data));
+            }
         }
-        return htmlspecialchars(string: $data);
+        
+        return $data;
     }
 
     /**
-     * Append raw XML string
+     * Append raw json string
      *
      * @param string $data Reference of Representation Data
      *
@@ -148,15 +146,13 @@ class XmlEncode implements DataEncodeInterface
      */
     public function appendData(&$data): void
     {
-        if ($this->currentObject) {
-            $this->write(data: $data);
-        }
+        $this->write(data: $data);
     }
 
     /**
-     * Append raw XML string
+     * Append raw json string
      *
-     * @param string $key  Tag of associative array
+     * @param string $key  key of associative array
      * @param string $data Reference of Representation Data
      *
      * @return void
@@ -164,13 +160,12 @@ class XmlEncode implements DataEncodeInterface
     public function appendKeyData($key, &$data): void
     {
         if ($this->currentObject && $this->currentObject->mode === 'Object') {
-            $key = $this->escapeTag(key: $key);
-            $this->write(data: "<{$key}>{$this->escape(data: $data)}</{$key}>");
+            $this->write(data: [$key => $data]);
         }
     }
 
     /**
-     * Add simple array/value as in the XML format
+     * Add simple array/value as in the json format
      *
      * @param string|array $data Representation Data
      *
@@ -189,9 +184,9 @@ class XmlEncode implements DataEncodeInterface
     }
 
     /**
-     * Add simple array/value as in the XML format
+     * Add simple array/value as in the json format
      *
-     * @param string       $key  Tag of associative array
+     * @param string       $key  Key of associative array
      * @param string|array $data Representation Data
      *
      * @return void
@@ -199,9 +194,13 @@ class XmlEncode implements DataEncodeInterface
      */
     public function addKeyData($key, $data): void
     {
-        $this->startObject(key: $key);
-        $this->encode(data: $data);
-        $this->endObject();
+        if ($this->currentObject->mode !== 'Object') {
+            throw new \Exception(
+                message: 'Mode should be Object',
+                code: HttpStatus::$InternalServerError
+            );
+        }
+        $this->encode(data: [$key => $data]);
     }
 
     /**
@@ -213,14 +212,13 @@ class XmlEncode implements DataEncodeInterface
      */
     public function startArray($key = null): void
     {
-        if ($key === null) {
-            $key = 'Rows';
-        }
         if ($this->currentObject) {
             array_push($this->objects, $this->currentObject);
         }
-        $this->currentObject = new XmlEncoderObject(mode: 'Array', key: $key);
-        $this->write(data: "<{$this->currentObject->key}>");
+        $this->currentObject = new PhpEncoderObject(mode: 'Array');
+        if ($key !== null) {
+            $this->currentObject->key = $key;
+        }
     }
 
     /**
@@ -230,10 +228,18 @@ class XmlEncode implements DataEncodeInterface
      */
     public function endArray(): void
     {
-        $this->write(data: "</{$this->currentObject->key}>");
+        $key = $this->currentObject->key;
+        $returnArray = &$this->currentObject->returnArray;
         $this->currentObject = null;
         if (count(value: $this->objects) > 0) {
-            $this->currentObject = array_pop($this->objects);
+            $this->currentObject = array_pop(array: $this->objects);
+            if ($key !== '') {
+                $this->currentObject->returnArray[$key] = &$returnArray;
+            } else {
+                $this->currentObject->returnArray[] = &$returnArray;
+            }
+        } else {
+            $this->finalArray = &$returnArray;
         }
     }
 
@@ -247,9 +253,6 @@ class XmlEncode implements DataEncodeInterface
      */
     public function startObject($key = null): void
     {
-        if ($key === null) {
-            $key = ($this->currentObject === null) ? 'Resultset' : 'Row';
-        }
         if ($this->currentObject) {
             if ($this->currentObject->mode === 'Object' && ($key === null)) {
                 throw new \Exception(
@@ -259,8 +262,10 @@ class XmlEncode implements DataEncodeInterface
             }
             array_push($this->objects, $this->currentObject);
         }
-        $this->currentObject = new XmlEncoderObject(mode: 'Object', key: $key);
-        $this->write(data: "<{$this->currentObject->key}>");
+        $this->currentObject = new PhpEncoderObject(mode: 'Object');
+        if ($key !== null) {
+            $this->currentObject->key = $key;
+        }
     }
 
     /**
@@ -270,15 +275,23 @@ class XmlEncode implements DataEncodeInterface
      */
     public function endObject(): void
     {
-        $this->write(data: "</{$this->currentObject->key}>");
+        $key = $this->currentObject->key;
+        $returnArray = &$this->currentObject->returnArray;
         $this->currentObject = null;
         if (count(value: $this->objects) > 0) {
-            $this->currentObject = array_pop($this->objects);
+            $this->currentObject = array_pop(array: $this->objects);
+            if ($key !== '') {
+                $this->currentObject->returnArray[$key] = &$returnArray;    
+            } else {
+                $this->currentObject->returnArray[] = &$returnArray;
+            }
+        } else {
+            $this->finalArray = &$returnArray;
         }
     }
 
     /**
-     * Checks XML was properly closed
+     * Checks json was properly closed
      *
      * @return void
      */
@@ -294,17 +307,5 @@ class XmlEncode implements DataEncodeInterface
                     break;
             }
         }
-    }
-
-    /**
-     * Checks XML was properly closed
-     *
-     * @param null|string $key Used while creating associative array inside an object
-     *
-     * @return array|string
-     */
-    private function escapeTag($key): array|string
-    {
-        return str_replace(search: ':', replace: '-', subject: $key);
     }
 }

@@ -380,8 +380,22 @@ class CustomSessionHandler implements
             && $this->container->sessionOptions['read_and_close'] === true
             && $this->creatingSessionId === true
         ) {
-            // Remove all Set-Cookie headers
-            header_remove(name: 'Set-Cookie');
+            // Remove Session Set-Cookie headers
+            $headers = headers_list();
+            $headerFound = false;
+            foreach ($headers as $index => $header) {
+                if (strpos($header, $this->sessionName) !== false) {
+                    unset($headers[$index]);
+                    $headerFound = true;
+                    break;
+                }
+            }
+            if ($headerFound) {
+                header_remove();
+                foreach ($headers as &$header) {
+                    header(header: $header);
+                }
+            }
         }
     }
 }

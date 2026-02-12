@@ -130,7 +130,7 @@ class Redis implements NoSqlInterface
             }
             $this->cache = new \Redis($connParams);
 
-            if ($this->database !== null) {
+            if (!empty($this->database)) {
                 $this->cache->select($this->database);
             }
 

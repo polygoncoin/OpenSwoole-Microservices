@@ -15,6 +15,8 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Constants;
+
 /**
  * Web class
  * php version 8.3
@@ -103,7 +105,6 @@ class Web
         $file = null
     ): mixed {
         $queryString = '';
-
         $curl = curl_init();
         $curlConfig = self::getCurlConfig(
             homeURL: $homeURL,
@@ -176,6 +177,13 @@ class Web
             'requestPayload' => nl2br(htmlspecialchars(string: $payload)),
         ];
 
+        $return['response'] = [
+            'responseHttpCode' => $responseHttpCode,
+            'responseHeaders' => $responseHeaders,
+            'responseContentType' => $responseContentType,
+            'responseBody' => $responseBody
+        ];
+
         if ($curlResponse === false) {
             $errorCode = curl_errno(handle: $curl);
             $errorMessage = curl_error(handle: $curl);
@@ -191,31 +199,28 @@ class Web
                 }
             }
 
-            $return['response'] = [
-                'errorCode' => $errorCode,
-                'errorMessage' => $errorMessage,
-                'errorConstants' => $errorConstants
-            ];
+            $return['response']['errorCode'] = $errorCode;
+            $return['response']['errorMessage'] = $errorMessage;
+            $return['response']['errorConstants'] = $errorConstants;
         } else {
             if (
                 strpos(
                     haystack: $responseContentType,
                     needle: 'application/json;'
                 ) !== false
+                && (
+                    (strpos(haystack: $responseBody, needle: '[') === 0)
+                    || (strpos(haystack: $responseBody, needle: '{') === 0)
+                )
             ) {
-                $responseBody = json_decode(json: $responseBody, associative: true);
+                $response = json_decode(json: $responseBody, associative: true);
+            } else {
+                $response = $responseBody;
             }
-            $response = $responseBody;
 
-            $return['response'] = [
-                'responseHttpCode' => $responseHttpCode,
-                'responseHeaders' => $responseHeaders,
-                'responseContentType' => $responseContentType,
-                'responseBody' => $response
-            ];
+            $return['response']['responseBody'] = $response;
         }
         curl_close(handle: $curl);
-
 
         return $return;
     }

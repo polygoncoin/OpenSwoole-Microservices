@@ -96,6 +96,6 @@ return [
         0 => 0,
         // 2 => 10,
     ],
-    'XSLT' => Constants::$XSLT_DIR
+    'xsltFile' => Constants::$XSLT_DIR
         . DIRECTORY_SEPARATOR . 'Category.xls'
 ];

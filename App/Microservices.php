@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Microservices
+ * Service
  * php version 8.3
  *
- * @category  Service
+ * @category  Microservices
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright 2025 Ramesh N Jangid
@@ -22,7 +22,7 @@ use Microservices\App\Gateway;
 use Microservices\App\HttpStatus;
 
 /**
- * Microservices
+ * Service
  * php version 8.3
  *
  * @category  Microservices
@@ -300,14 +300,16 @@ class Microservices
             $methods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
             $headers['Access-Control-Allow-Methods'] = $methods;
         } else {
-            switch (Env::$oRepresentation) {
+            switch ($this->api->res->oRepresentation) {
                 case 'XML':
+                case 'XSLT':
                     $headers['Content-Type'] = 'text/xml; charset=utf-8';
                     break;
                 case 'JSON':
                     $headers['Content-Type'] = 'application/json; charset=utf-8';
                     break;
                 case 'HTML':
+                case 'PHP':
                     $headers['Content-Type'] = 'text/html; charset=utf-8';
                     break;
             }
