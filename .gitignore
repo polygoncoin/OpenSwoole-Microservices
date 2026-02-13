@@ -1,5 +1,9 @@
 .env
-.session.env
+.env.cidr
+.env.container
+.env.enable
+.env.rateLimiting
+.env.session
 /App/SessionHandlers/sessions/*
 /Logs/*
 /vendor/

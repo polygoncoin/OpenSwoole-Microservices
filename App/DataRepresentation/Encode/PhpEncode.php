@@ -133,7 +133,7 @@ class PhpEncode implements DataEncodeInterface
                 $data = nl2br(htmlspecialchars($data));
             }
         }
-        
+
         return $data;
     }
 
@@ -281,7 +281,7 @@ class PhpEncode implements DataEncodeInterface
         if (count(value: $this->objects) > 0) {
             $this->currentObject = array_pop(array: $this->objects);
             if ($key !== '') {
-                $this->currentObject->returnArray[$key] = &$returnArray;    
+                $this->currentObject->returnArray[$key] = &$returnArray;
             } else {
                 $this->currentObject->returnArray[] = &$returnArray;
             }

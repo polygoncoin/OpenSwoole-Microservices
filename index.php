@@ -50,10 +50,12 @@ $server->on(
     'request',
     function(Request $request, Response $response): void {
 
-        // Load .env
-        $env = parse_ini_file(filename: __DIR__ . DIRECTORY_SEPARATOR . '.env');
-        foreach ($env as $key => $value) {
-            putenv(assignment: "{$key}={$value}");
+        // Load .env(s)
+        foreach (['.env','.env.rateLimiting','.env.enable','.env.cidr','.env.container'] as $envFilename) {
+            $env = parse_ini_file(filename: __DIR__ . DIRECTORY_SEPARATOR . $envFilename);
+            foreach ($env as $key => $value) {
+                putenv(assignment: "{$key}={$value}");
+            }
         }
 
         $http = [];

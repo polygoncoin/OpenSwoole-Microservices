@@ -327,7 +327,7 @@ class Supplement
                         );
                     }
                     $arr['Response'] = $response;
-                    
+
                     if ($idempotentWindow) {
                         DbFunctions::$gCacheServer->setCache(
                             key: $hashKey,

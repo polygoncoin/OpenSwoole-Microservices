@@ -416,7 +416,7 @@ class Session
     public static function initSessionHandler($sessionMode, $options = []): void
     {
         $env = parse_ini_file(filename: Constants::$DOC_ROOT
-            . DIRECTORY_SEPARATOR . '.session.env'
+            . DIRECTORY_SEPARATOR . '.env.session'
         );
         foreach ($env as $var => $value) {
             self::$$var = $value;

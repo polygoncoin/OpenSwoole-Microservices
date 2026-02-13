@@ -319,7 +319,7 @@ class Write
                         );
                     }
                     $arr['Response'] = $response;
-                    
+
                     if ($idempotentWindow) {
                         DbFunctions::$gCacheServer->setCache(
                             key: $hashKey,

@@ -26,7 +26,6 @@ if (isset($token)) {
         'firstname' => 'Ramesh',
         'lastname' => 'Jangid',
         'email' => 'ramesh@test.com',
-        'username' => 'test',
         'password' => 'shames11'
     ];
 

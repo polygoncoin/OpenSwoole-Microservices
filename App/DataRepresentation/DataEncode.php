@@ -97,13 +97,13 @@ class DataEncode
     {
         if ($this->api->http['server']['method'] === 'GET') {
             if ($this->api->res->oRepresentation === 'PHP') {
-                $this->tempStream = [];    
+                $this->tempStream = [];
             } else {
                 $this->tempStream = fopen(filename: "php://temp", mode: "rw+b");
             }
         } else {
             if ($this->api->res->oRepresentation === 'PHP') {
-                $this->tempStream = [];    
+                $this->tempStream = [];
             } else {
                 $this->tempStream = fopen(filename: "php://memory", mode: "rw+b");
             }
