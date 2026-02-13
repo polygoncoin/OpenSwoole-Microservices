@@ -92,9 +92,9 @@ class Password implements CustomInterface
                 algo: PASSWORD_DEFAULT
             );
 
-            $table = getenv(name: 'clientUsersTable');
+            $usersTable = $this->api->req->usersTable;
             $sql = "
-                UPDATE `{$table}`
+                UPDATE `{$usersTable}`
                 SET password_hash = :password_hash
                 WHERE username = :username AND is_deleted = :is_deleted
             ";

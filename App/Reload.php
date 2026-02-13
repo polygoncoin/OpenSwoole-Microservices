@@ -120,7 +120,7 @@ class Reload
                     SELECT
                         *
                     FROM
-                        `{$this->execPhpFunc(param: getenv(name: 'clientUsersTable'))}` U
+                        `{$this->execPhpFunc(param: getenv(name: $cRow['usersTable']))}` U
                     ",
                 params: []
             );

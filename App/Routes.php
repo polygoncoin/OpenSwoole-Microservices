@@ -59,7 +59,7 @@ class Routes
      *
      * @var array
      */
-    private $reservedKeys = [];
+    private $reservedKeys = ['dataType'];
 
     /**
      * Api common Object

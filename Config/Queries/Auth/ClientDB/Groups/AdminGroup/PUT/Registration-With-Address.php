@@ -18,7 +18,7 @@ namespace Microservices\Config\Queries\Auth\ClientDB\Groups\AdminGroup\PUT;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    '__QUERY__' => "UPDATE `{$Env::$clientUsersTable}` SET __SET__ WHERE __WHERE__",
+    '__QUERY__' => "UPDATE `{$this->api->req->usersTable}` SET __SET__ WHERE __WHERE__",
     '__SET__' => [
         [
             'column' => 'firstname',

@@ -400,11 +400,11 @@ class Login
     {
         DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
 
-        $userTable = Env::$clientUsersTable;
+        $usersTable = $this->api->req->usersTable;
         DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(
             sql: "
                 UPDATE
-                    `{$userTable}`
+                    `{$usersTable}`
                 SET
                     `token` = :token,
                     `token_ts` = :token_ts

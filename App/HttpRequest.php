@@ -110,6 +110,13 @@ class HttpRequest
     public $cId = null;
 
     /**
+     * Client users table
+     *
+     * @var null|string
+     */
+    public $usersTable = null;
+
+    /**
      * Constructor
      *
      * @param Common $api
@@ -217,6 +224,7 @@ class HttpRequest
             ),
             associative: true
         );
+        $this->usersTable = getenv(name: $this->s['cDetails']['usersTable']);
         $this->cId = $this->s['cDetails']['id'];
     }
 

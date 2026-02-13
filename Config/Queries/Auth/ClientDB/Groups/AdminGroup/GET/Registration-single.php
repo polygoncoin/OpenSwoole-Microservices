@@ -16,7 +16,7 @@
 namespace Microservices\Config\Queries\Auth\ClientDB\Groups\AdminGroup\GET;
 
 return [
-    '__QUERY__' => "SELECT * FROM `{$Env::$clientUsersTable}` WHERE __WHERE__",
+    '__QUERY__' => "SELECT * FROM `{$this->api->req->usersTable}` WHERE __WHERE__",
     '__WHERE__' => [
         [
             'column' => 'is_deleted',

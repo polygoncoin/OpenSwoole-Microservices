@@ -99,7 +99,6 @@ class Env
 
     public static $clientsTable = null;
     public static $groupsTable = null;
-    public static $clientUsersTable = null;
 
     public static $maxResultsPerPage = null;
     public static $defaultPerPage = null;
@@ -210,7 +209,6 @@ class Env
 
         self::$clientsTable = getenv(name: 'clientsTable');
         self::$groupsTable = getenv(name: 'groupsTable');
-        self::$clientUsersTable = getenv(name: 'clientUsersTable');
 
         self::$maxResultsPerPage = (int)getenv(name: 'maxResultsPerPage');
         self::$defaultPerPage = (int)getenv(name: 'defaultPerPage');

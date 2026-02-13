@@ -16,7 +16,7 @@
 namespace Microservices\Config\Queries\Auth\ClientDB\Common;
 
 return [
-  '__QUERY__' => "UPDATE `{$Env::$clientUsersTable}` SET __SET__ WHERE __WHERE__",
+  '__QUERY__' => "UPDATE `{$this->api->req->usersTable}` SET __SET__ WHERE __WHERE__",
   '__VALIDATE__' => [
     [
       'fn' => 'primaryKeyExist',
