@@ -38,7 +38,7 @@ class Constants
     public static $PRODUCTION = 1;
     public static $DEVELOPMENT = 0;
 
-    public static $TOKEN_EXPIRY_TIME = 3600;
+    public static $TOKEN_EXPIRY_TIME = 25 * 24 * 3600;
     public static $REQUIRED = true;
 
     public static $DOC_ROOT = null;
@@ -73,7 +73,7 @@ class Constants
         }
 
         self::$DOC_ROOT = dirname(path: __DIR__ . '..' . DIRECTORY_SEPARATOR);
-        self::$PUBLIC_HTML = self::$DOC_ROOT;
+        self::$PUBLIC_HTML = self::$DOC_ROOT . DIRECTORY_SEPARATOR . 'public_html';
 
         self::$FILES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Files';
         self::$DROP_BOX_DIR = self::$FILES_DIR . DIRECTORY_SEPARATOR . 'Dropbox';

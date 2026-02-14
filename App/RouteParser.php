@@ -19,6 +19,7 @@ use Microservices\App\Common;
 use Microservices\App\Constants;
 use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
+use Microservices\App\Functions;
 use Microservices\App\HttpStatus;
 
 /**

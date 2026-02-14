@@ -261,7 +261,7 @@ class Login
             prefix: getenv('rateLimitUserLoginPrefix'),
             maxRequests: getenv('rateLimitMaxUserLoginRequests'),
             secondsWindow: getenv('rateLimitMaxUserLoginRequestsWindow'),
-            key: $this->username
+            key: $this->api->req->IP . $this->username
         );
         if ($result['allowed']) {
             // Process the request
@@ -324,7 +324,10 @@ class Login
      */
     private function outputTokenDetails(): void
     {
+        $tokenDetails = [];
         $tokenFound = false;
+        $foundTokenDetails = [];
+        $uniqueHttpRequestHash = $this->api->http['hash'];
 
         $userTokenKey = CacheKey::userToken(
             uID: $this->uDetails['id']
@@ -337,50 +340,71 @@ class Login
                 associative: true
             );
 
-            if (
-                DbFunctions::$gCacheServer->cacheExists(
-                    key: CacheKey::token(
-                        token: $tokenDetails['token']
-                    )
-                )
-            ) {
-                $time = Env::$timestamp - $tokenDetails['timestamp'];
-                if ((Constants::$TOKEN_EXPIRY_TIME - $time) > 0) {
-                    $tokenFound = true;
-                } else {
-                    DbFunctions::$gCacheServer->deleteCache(
-                        key: CacheKey::token(
-                            token: $tokenDetails['token']
+            if (count($tokenDetails) > 0) {
+                foreach ($tokenDetails as $token => $tDetails) {
+                    if (
+                        DbFunctions::$gCacheServer->cacheExists(
+                            key: CacheKey::token(
+                                token: $token
+                            )
                         )
-                    );
+                    ) {
+                        if ($tDetails['uniqueHttpRequestHash'] === $uniqueHttpRequestHash) {
+                            $time = Env::$timestamp - $tDetails['timestamp'];
+                            if ((Constants::$TOKEN_EXPIRY_TIME - $time) > 0) {
+                                $foundTokenDetails = $tDetails;
+                                $tokenFound = true;
+                            } else {
+                                DbFunctions::$gCacheServer->deleteCache(
+                                    key: CacheKey::token(
+                                        token: $token
+                                    )
+                                );
+                                unset($tokenDetails[$token]);
+                            }
+                        }
+                    } else {
+                        unset($tokenDetails[$token]);
+                    }
                 }
             }
         }
 
         if (!$tokenFound) {
-            $tokenDetails = $this->generateToken();
-            // We set this to have a check first if multiple request/attack occurs
-            DbFunctions::$gCacheServer->setCache(
-                key: $userTokenKey,
-                value: json_encode(
-                    value: $tokenDetails
-                ),
-                expire: Constants::$TOKEN_EXPIRY_TIME
-            );
+            if (count($tokenDetails) >= Env::$maxConcurrentLogins) {
+                throw new \Exception(
+                    message: 'There are ' . Env::$maxConcurrentLogins . ' (max allowed) concurrent logins with your account',
+                    code: HttpStatus::$NotFound
+                );
+            }
+            $newTokenDetails = $this->generateToken();
+            $newTokenDetails['uniqueHttpRequestHash'] = $uniqueHttpRequestHash;
+            $tokenDetails[$newTokenDetails['token']] = $newTokenDetails;
+
             unset($this->uDetails['password_hash']);
+            $this->uDetails['uniqueHttpRequestHash'] = $uniqueHttpRequestHash;
             DbFunctions::$gCacheServer->setCache(
-                key: CacheKey::token(token: $tokenDetails['token']),
+                key: CacheKey::token(token: $newTokenDetails['token']),
                 value: json_encode(
                     value: $this->uDetails
                 ),
                 expire: Constants::$TOKEN_EXPIRY_TIME
             );
+            $foundTokenDetails = $newTokenDetails;
             $this->updateDB(tokenDetails: $tokenDetails);
         }
+        // We set this to have a check first if multiple request/attack occurs
+        DbFunctions::$gCacheServer->setCache(
+            key: $userTokenKey,
+            value: json_encode(
+                value: $tokenDetails
+            ),
+            expire: Constants::$TOKEN_EXPIRY_TIME
+        );
 
-        $time = Env::$timestamp - $tokenDetails['timestamp'];
+        $time = Env::$timestamp - $foundTokenDetails['timestamp'];
         $output = [
-            'Token' => $tokenDetails['token'],
+            'Token' => $foundTokenDetails['token'],
             'Expires' => (Constants::$TOKEN_EXPIRY_TIME - $time)
         ];
 
@@ -406,13 +430,11 @@ class Login
                 UPDATE
                     `{$usersTable}`
                 SET
-                    `token` = :token,
-                    `token_ts` = :token_ts
+                    `token` = :token
                 WHERE
                     id = :id",
             params: [
-                ':token' => $tokenDetails['token'],
-                ':token_ts' => $tokenDetails['timestamp'],
+                ':token' => json_encode($tokenDetails),
                 ':id' => $this->uDetails['id']
             ]
         );

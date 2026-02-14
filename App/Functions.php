@@ -261,4 +261,16 @@ class Functions
 
         return $isValidIp;
     }
+
+    /**
+     * Unique HTTP Request hash
+     *
+     * @param array $hashArray Hash array
+     *
+     * @return string
+     */
+    public static function uniqueHttpRequestHash($hashArray): string
+    {
+        return md5(json_encode($hashArray));
+    }
 }

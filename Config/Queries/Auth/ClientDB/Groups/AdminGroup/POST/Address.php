@@ -21,6 +21,11 @@ return [
     '__QUERY__' => 'INSERT INTO `address` SET __SET__',
     '__SET__' => [
         [
+            'column' => 'client_id',
+            'fetchFrom' => 'cDetails',
+            'fetchFromValue' => 'id'
+        ],
+        [
             'column' => 'user_id',
             'fetchFrom' => 'payload',
             'fetchFromValue' => 'user_id',

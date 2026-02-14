@@ -19,6 +19,11 @@ return [
     '__QUERY__' => "INSERT INTO `{$this->api->req->usersTable}` SET __SET__",
     '__SET__' => [
         [
+            'column' => 'client_id',
+            'fetchFrom' => 'cDetails',
+            'fetchFromValue' => 'id'
+        ],
+        [
             'column' => 'firstname',
             'fetchFrom' => 'payload',
             'fetchFromValue' => 'firstname'
@@ -64,6 +69,11 @@ return [
         'address' => [
             '__QUERY__' => 'INSERT INTO `address` SET __SET__',
             '__SET__' => [
+                [
+                    'column' => 'client_id',
+                    'fetchFrom' => 'cDetails',
+                    'fetchFromValue' => 'id'
+                ],
                 [
                     'column' => 'user_id',
                     'fetchFrom' => '__INSERT-IDs__',

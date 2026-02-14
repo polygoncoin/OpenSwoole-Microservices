@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `client_id` int NOT NULL,
   `firstname` varchar(255) NOT NULL,
   `lastname` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
@@ -29,6 +30,7 @@ DROP TABLE IF EXISTS `address`;
 
 CREATE TABLE `address` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `client_id` int NOT NULL,
   `user_id` int NOT NULL DEFAULT 0,
   `address` varchar(255) NOT NULL,
   `created_by` int DEFAULT NULL,
@@ -70,7 +72,7 @@ CREATE TABLE `api_cache` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 INSERT INTO `users` VALUES
-(4,'test1','test1','test1@test.com','client_1_group_1_user_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','0.0.0.0/0',2,'',0,NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','No','No'),
-(5,'admin1','admin1','admin1@test.com','client_1_admin_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','0.0.0.0/0',3,'',0,NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','No','No');
+(4,1,'test1','test1','test1@test.com','client_1_group_1_user_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','0.0.0.0/0',2,'',0,NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','No','No'),
+(5,1,'admin1','admin1','admin1@test.com','client_1_admin_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','0.0.0.0/0',3,'',0,NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','No','No');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;

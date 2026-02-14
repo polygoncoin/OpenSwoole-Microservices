@@ -147,7 +147,7 @@ class HttpRequest
                     $this->open = false;
                 } elseif ($this->ROUTE === '/login') {
                     $this->open = false;
-                } else {
+                } elseif (((int)getenv(name: 'enableOpenRequests'))) {
                     $this->open = true;
                 }
                 break;
@@ -163,6 +163,31 @@ class HttpRequest
                     $this->open = true;
                 }
                 break;
+        }
+
+        if ($this->open === null) {
+            throw new \Exception(
+                message: "Open to web & Auth based requests are disabled",
+                code: HttpStatus::$InternalServerError
+            );
+        }
+        if (
+            $this->open === true
+            && (((int)getenv(name: 'enableOpenRequests')) !== 1)
+        ) {
+            throw new \Exception(
+                message: "Open to web requests are disabled",
+                code: HttpStatus::$InternalServerError
+            );
+        }
+        if (
+            $this->open === false
+            && (((int)getenv(name: 'enableAuthRequests')) !== 1)
+        ) {
+            throw new \Exception(
+                message: "Auth based requests are disabled",
+                code: HttpStatus::$InternalServerError
+            );
         }
 
         if (!$this->open) {

@@ -40,6 +40,7 @@ class Env
 
     public static $ENVIRONMENT = null;
     public static $OUTPUT_PERFORMANCE_STATS = null;
+    public static $maxConcurrentLogins = null;
 
     public static $enableConfigRequest = null;
     public static $configRequestRouteKeyword = null;
@@ -131,6 +132,7 @@ class Env
 
         self::$ENVIRONMENT = getenv(name: 'ENVIRONMENT');
         self::$OUTPUT_PERFORMANCE_STATS = getenv(name: 'OUTPUT_PERFORMANCE_STATS');
+        self::$maxConcurrentLogins = (int)getenv(name: 'maxConcurrentLogins');
 
         self::$enableConfigRequest = (int)getenv(name: 'enableConfigRequest');
         self::$configRequestRouteKeyword = getenv(name: 'configRequestRouteKeyword');

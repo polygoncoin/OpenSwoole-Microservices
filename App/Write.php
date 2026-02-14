@@ -161,7 +161,7 @@ class Write
             $wSqlConfig['isTransaction'] : false;
 
         // Set Server mode to execute query on - Read / Write Server
-        DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
+        DbFunctions::setDbConnection(req: $this->api->req, fetchFrom: 'Master');
 
         $this->processWrite(
             wSqlConfig: $wSqlConfig,
@@ -494,7 +494,7 @@ class Write
             }
 
             if (isset($wSqlConfig['__INSERT-IDs__'])) {
-                if (!Env::$enableGlobalCounter) {
+                if (!(int)Env::$enableGlobalCounter) {
                     $id = DbFunctions::$masterDb[$this->api->req->cId]->lastInsertId();
                 }
                 $_response[$wSqlConfig['__INSERT-IDs__']] = $id;

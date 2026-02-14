@@ -141,7 +141,7 @@ class DbFunctions
     ): object {
         if (!in_array($cacheServerType, ['Redis', 'Memcached', 'MongoDb'])) {
             throw new \Exception(
-                message: 'Invalid Cache type',
+                message: 'Invalid Cache type: ' . $cacheServerType,
                 code: HttpStatus::$InternalServerError
             );
         }
@@ -186,7 +186,7 @@ class DbFunctions
      * @return void
      * @throws \Exception
      */
-    public static function setCacheConnection($req, $fetchFrom): void
+    public static function setCacheConnection(&$req, $fetchFrom): void
     {
         if ($req->s['cDetails'] === null) {
             throw new \Exception(
@@ -205,7 +205,7 @@ class DbFunctions
                     return;
                 }
 
-                $masterCacheDetails = self::getCacheMasterDetails($req->s['cDetails']);
+                $masterCacheDetails = self::getCacheMasterDetails(cDetails: $req->s['cDetails']);
                 self::$masterCache[$req->s['cDetails']['id']] = self::connectCache(
                     cacheServerType: $masterCacheDetails['cacheServerType'],
                     cacheHostname: $masterCacheDetails['cacheHostname'],
@@ -221,7 +221,7 @@ class DbFunctions
                     return;
                 }
 
-                $slaveCacheDetails = self::getCacheSlaveDetails($req->s['cDetails']);
+                $slaveCacheDetails = self::getCacheSlaveDetails(cDetails: $req->s['cDetails']);
                 self::$slaveCache[$req->s['cDetails']['id']] = self::connectCache(
                     cacheServerType: $slaveCacheDetails['cacheServerType'],
                     cacheHostname: $slaveCacheDetails['cacheHostname'],
@@ -307,7 +307,7 @@ class DbFunctions
      * @return void
      * @throws \Exception
      */
-    public static function setDbConnection($req, $fetchFrom): void
+    public static function setDbConnection(&$req, $fetchFrom): void
     {
         if ($req->s['cDetails'] === null) {
             throw new \Exception(
@@ -326,7 +326,7 @@ class DbFunctions
                     return;
                 }
 
-                $masterDbDetails = self::getDbMasterDetails($req->s['cDetails']);
+                $masterDbDetails = self::getDbMasterDetails(cDetails: $req->s['cDetails']);
                 self::$masterDb[$req->s['cDetails']['id']] = self::connectDb(
                     dbServerType: $masterDbDetails['dbServerType'],
                     dbHostname: $masterDbDetails['dbHostname'],
@@ -344,7 +344,7 @@ class DbFunctions
                     return;
                 }
 
-                $slaveDbDetails = self::getDbSlaveDetails($req->s['cDetails']);
+                $slaveDbDetails = self::getDbSlaveDetails(cDetails: $req->s['cDetails']);
                 self::$slaveDb[$req->s['cDetails']['id']] = self::connectDb(
                     dbServerType: $slaveDbDetails['dbServerType'],
                     dbHostname: $slaveDbDetails['dbHostname'],
@@ -371,7 +371,7 @@ class DbFunctions
      *
      * @return void
      */
-    public static function setDatabaseCacheKey($req): void
+    public static function setDatabaseCacheKey(&$req): void
     {
         if ($req->open) {
             DatabaseOpenCacheKey::init(cID: $req->s['cDetails']['id']);
@@ -439,7 +439,7 @@ class DbFunctions
      *
      * @return array
      */
-    public static function getCacheMasterDetails($cDetails): array
+    public static function getCacheMasterDetails(&$cDetails): array
     {
         return [
             'cacheServerType' => getenv(name: $cDetails['master_cache_server_type']),
@@ -459,7 +459,7 @@ class DbFunctions
      *
      * @return array
      */
-    public static function getCacheSlaveDetails($cDetails): array
+    public static function getCacheSlaveDetails(&$cDetails): array
     {
         return [
             'cacheServerType' => getenv(name: $cDetails['slave_cache_server_type']),
@@ -479,7 +479,7 @@ class DbFunctions
      *
      * @return array
      */
-    public static function getDbMasterDetails($cDetails): array
+    public static function getDbMasterDetails(&$cDetails): array
     {
         return [
             'dbServerType' => getenv(name: $cDetails['master_db_server_type']),
@@ -498,7 +498,7 @@ class DbFunctions
      *
      * @return array
      */
-    public static function getDbSlaveDetails($cDetails): array
+    public static function getDbSlaveDetails(&$cDetails): array
     {
         return [
             'dbServerType' => getenv(name: $cDetails['slave_db_server_type']),

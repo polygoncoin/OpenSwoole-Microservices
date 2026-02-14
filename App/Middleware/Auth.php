@@ -97,6 +97,13 @@ class Auth
                 ),
                 associative: true
             );
+            $uniqueHttpRequestHash = $this->api->http['hash'];
+            if ($this->api->req->s['uDetails']['uniqueHttpRequestHash'] !== $uniqueHttpRequestHash) {
+                throw new \Exception(
+                    message: 'Token not supported from this Browser/Device',
+                    code: HttpStatus::$PreconditionFailed
+                );
+            }
         }
         if (empty($this->api->req->s['token'])) {
             throw new \Exception(
