@@ -156,6 +156,12 @@ class HttpRequest
                     isset($_SESSION)
                     && isset($_SESSION['id'])
                 ) {
+                    if ($_SESSION['sessionExpiryTimestamp'] <= Env::$timestamp) {
+                        throw new \Exception(
+                            message: 'Current session has expired. Please login',
+                            code: HttpStatus::$InternalServerError
+                        );
+                    }
                     $this->open = false;
                 } elseif ($this->ROUTE === '/login') {
                     $this->open = false;

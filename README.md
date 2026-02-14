@@ -35,7 +35,7 @@ OUTPUT_PERFORMANCE_STATS=1          ;Add Performance Stats in JSON output: 1 = t
 DISABLE_REQUESTS_VIA_PROXIES=1      ; 1 = true / 0 = false
 
 ; API authentication modes - Token / Session (Cookie based Sessions)
-authMode='Token'
+authMode='Token'                        ; Token / Session (Cookie based Sessions)
 sessionMode='File'                  ; For Cookie based Session - 'File', 'MySql', 'PostgreSql', 'MongoDb', 'Redis', 'Memcached', 'Cookie'
 
 ; Allow particular route config request (global flag) - 1 = true / 0 = false

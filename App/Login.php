@@ -448,16 +448,18 @@ class Login
     private function startSession(): void
     {
         $isLoggedIn = false;
-        if (isset($_SESSION['id'])) {
+        if (
+            isset($_SESSION['id'])
+            && $_SESSION['sessionExpiryTimestamp'] > Env::$timestamp
+        ) {
             $isLoggedIn = true;
         }
 
         if (!$isLoggedIn) {
+            $sessionDetails = [];
             $userSessionIdKey = CacheKey::userSessionId(
                 uID: $this->uDetails['id']
             );
-            $expire = Constants::$TOKEN_EXPIRY_TIME;
-            $timestamp = Env::$timestamp;
             if (DbFunctions::$gCacheServer->cacheExists(key: $userSessionIdKey)) {
                 $userSessionIdKeyData = json_decode(
                     json: DbFunctions::$gCacheServer->getCache(
@@ -465,41 +467,51 @@ class Login
                     ),
                     associative: true
                 );
-                DbFunctions::$gCacheServer->deleteCache(
-                    key: $userSessionIdKey
-                );
-                Session::deleteSession(sessionId: $userSessionIdKeyData['sessionId']);
-                $expire = Env::$timestamp - $userSessionIdKeyData['timestamp'];
-                $expire = ($expire > Constants::$TOKEN_EXPIRY_TIME)
-                    ? Constants::$TOKEN_EXPIRY_TIME : $expire;
-                $timestamp = $userSessionIdKeyData['timestamp'];
+                foreach ($userSessionIdKeyData as $sessId => $sessData) {
+                    if ($sessData['sessionExpiryTimestamp'] <= Env::$timestamp) {
+                        Session::deleteSession(sessionId: $sessId);
+                    } else {
+                        $sessionDetails[$sessId] = $sessData;
+                    }
+                }
             }
-            unset($this->uDetails['password_hash']);
-            $this->uDetails['timestamp'] = $timestamp;
-
-            // Start session in normal (read/write) mode.
-            // Use once client is authorized and want to make changes in $_SESSION
+            if (count($sessionDetails) >= Env::$maxConcurrentLogins) {
+                throw new \Exception(
+                    message: 'There are ' . Env::$maxConcurrentLogins . ' (max allowed) concurrent logins with your account',
+                    code: HttpStatus::$NotFound
+                );
+            }
+            $uniqueHttpRequestHash = $this->api->http['hash'];
+            $timestamp = Env::$timestamp;
             Session::sessionStartReadWrite();
+            $sessionId = session_id();
+            $newSessionDetails = [
+                'sessionId' => $sessionId,
+                'timestamp' => $timestamp,
+                'uniqueHttpRequestHash' => $uniqueHttpRequestHash,
+                'sessionExpiryTimestamp' => (Env::$timestamp + Constants::$TOKEN_EXPIRY_TIME),
+            ];
+            $sessionDetails[$sessionId] = $newSessionDetails;
+
+            unset($this->uDetails['password_hash']);
+            $this->uDetails['sessionId'] = $sessionId;
+            $this->uDetails['timestamp'] = $timestamp;
+            $this->uDetails['uniqueHttpRequestHash'] = $uniqueHttpRequestHash;
+            $this->uDetails['sessionExpiryTimestamp'] = (Env::$timestamp + Constants::$TOKEN_EXPIRY_TIME);
             $_SESSION = $this->uDetails;
 
             DbFunctions::$gCacheServer->setCache(
                 key: $userSessionIdKey,
-                value: json_encode(
-                    value: [
-                        'timestamp' => $timestamp,
-                        'sessionId' => session_id()
-                    ]
-                ),
+                value: json_encode($sessionDetails),
                 expire: $expire
             );
 
             $isLoggedIn = true;
         }
 
-        $time = Env::$timestamp - $_SESSION['timestamp'];
         $output = [
             'Session' => 'Active',
-            'Expires' => (Constants::$TOKEN_EXPIRY_TIME - $time)
+            'Expires' => ($_SESSION['sessionExpiryTimestamp'] - Env::$timestamp)
         ];
 
         $this->api->initResponse();
