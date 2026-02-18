@@ -15,12 +15,13 @@
 
 namespace Microservices\App;
 
+use Microservices\App\CacheKey;
 use Microservices\App\Common;
 use Microservices\App\Constants;
-use Microservices\App\CacheKey;
 use Microservices\App\DataRepresentation\DataDecode;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\DbFunctions;
+use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\Middleware\Auth;
 use Microservices\App\RouteParser;
@@ -142,12 +143,13 @@ class HttpRequest
                 if (
                     isset($this->api->http['header'])
                     && isset($this->api->http['header']['authorization'])
+                    && $this->api->http['header']['authorization'] !== null
                 ) {
                     $this->HTTP_AUTHORIZATION = $this->api->http['header']['authorization'];
                     $this->open = false;
                 } elseif ($this->ROUTE === '/login') {
                     $this->open = false;
-                } elseif (((int)getenv(name: 'enableOpenRequests'))) {
+                } elseif (Env::$enableOpenRequests) {
                     $this->open = true;
                 }
                 break;
@@ -161,6 +163,37 @@ class HttpRequest
                             message: 'Current session has expired. Please login',
                             code: HttpStatus::$InternalServerError
                         );
+                    }
+                    if (Env::$enableConcurrentLogins) {
+                        $userConcurrencyKey = CacheKey::userConcurrency(
+                            uID: $_SESSION['id']
+                        );
+                        $sessionId = session_id();
+                        if (DbFunctions::$gCacheServer->cacheExists(key: $userConcurrencyKey)) {
+                            $userConcurrencyKeyData = DbFunctions::$gCacheServer->getCache(
+                                key: $userConcurrencyKey
+                            );
+                            if ($userConcurrencyKeyData !== $sessionId) {
+                                throw new \Exception(
+                                    message: 'Account already in use. '
+                                        . 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
+                                    code: HttpStatus::$Conflict
+                                );
+                            }
+                        } else {
+                            $this->setCache(
+                                key: $userConcurrencyKey,
+                                value: $sessionId,
+                                expire: Env::$concurrentAccessInterval
+                            );
+                        }
+                    } else {
+                        if ($this->api->req->s['uDetails']['uniqueHttpRequestHash'] !== $uniqueHttpRequestHash) {
+                            throw new \Exception(
+                                message: 'Session not supported from this Browser/Device',
+                                code: HttpStatus::$PreconditionFailed
+                            );
+                        }
                     }
                     $this->open = false;
                 } elseif ($this->ROUTE === '/login') {
@@ -179,7 +212,7 @@ class HttpRequest
         }
         if (
             $this->open === true
-            && (((int)getenv(name: 'enableOpenRequests')) !== 1)
+            && !Env::$enableOpenRequests
         ) {
             throw new \Exception(
                 message: "Open to web requests are disabled",
@@ -188,7 +221,7 @@ class HttpRequest
         }
         if (
             $this->open === false
-            && (((int)getenv(name: 'enableAuthRequests')) !== 1)
+            && !Env::$enableAuthRequests
         ) {
             throw new \Exception(
                 message: "Auth based requests are disabled",

@@ -453,6 +453,13 @@ class Write
                 $this->api->req->s['necessary'] = [];
             }
 
+            if (
+                Env::$enableGlobalCounter
+                && isset($wSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'])
+            ) {
+                $wSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'] = Counter::getGlobalCounter();
+            }
+
             // Validation
             if (
                 isset($wSqlConfig['__VALIDATE__'])
@@ -494,7 +501,12 @@ class Write
             }
 
             if (isset($wSqlConfig['__INSERT-IDs__'])) {
-                if (!(int)Env::$enableGlobalCounter) {
+                if (
+                    Env::$enableGlobalCounter
+                    && isset($wSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'])
+                ) {
+                    $id = $wSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'];
+                } else {
                     $id = DbFunctions::$masterDb[$this->api->req->cId]->lastInsertId();
                 }
                 $_response[$wSqlConfig['__INSERT-IDs__']] = $id;

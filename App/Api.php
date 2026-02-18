@@ -174,24 +174,33 @@ class Api
         } else {
             $supplementApiClass = null;
             switch (true) {
-                case Env::$enableCustomRequest
-                    && (Env::$customRequestRoutePrefix
-                        === $this->api->req->rParser->routeElements[0]):
+                case (
+                        Env::$enableCustomRequest
+                        && (Env::$customRequestRoutePrefix
+                            === $this->api->req->rParser->routeElements[0])
+
+                    ):
                     $supplementApiClass = __NAMESPACE__ . '\\Custom';
                     break;
-                case Env::$enableUploadRequest
-                    && (Env::$uploadRequestRoutePrefix
-                        === $this->api->req->rParser->routeElements[0]):
+                case (
+                        Env::$enableUploadRequest
+                        && (Env::$uploadRequestRoutePrefix
+                            === $this->api->req->rParser->routeElements[0])
+                    ):
                     $supplementApiClass = __NAMESPACE__ . '\\Upload';
                     break;
-                case Env::$enableThirdPartyRequest
-                    && (Env::$thirdPartyRequestRoutePrefix
-                        === $this->api->req->rParser->routeElements[0]):
+                case (
+                        Env::$enableThirdPartyRequest
+                        && (Env::$thirdPartyRequestRoutePrefix
+                            === $this->api->req->rParser->routeElements[0])
+                    ):
                     $supplementApiClass = __NAMESPACE__ . '\\ThirdParty';
                     break;
-                case Env::$enableDropboxRequest
-                    && (Env::$dropboxRequestRoutePrefix
-                        === $this->api->req->rParser->routeElements[0]):
+                case (
+                        Env::$enableDropboxRequest
+                        && (Env::$dropboxRequestRoutePrefix
+                            === $this->api->req->rParser->routeElements[0])
+                    ):
                     $supplementApiClass = __NAMESPACE__ . '\\Cache';
                     break;
             }

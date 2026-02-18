@@ -49,6 +49,10 @@ $server->on(
             }
         }
 
+        Constants::init();
+        Env::$timestamp = time();
+        Env::init();
+
         $http = [];
         $http['server']['host'] = 'localhost';
         // $http['server']['host'] = 'public.localhost';
@@ -76,10 +80,6 @@ $server->on(
         $http['get'] = &$request->get;
         $http['post'] = $request->rawContent();
         $http['files'] = &$request->files;
-
-        Constants::init();
-        Env::$timestamp = time();
-        Env::init(http: $http);
 
         if (
             isset($http['get'][ROUTE_URL_PARAM])

@@ -15,9 +15,10 @@
 
 namespace Microservices\App;
 
-use Microservices\App\HttpRequest;
 use Microservices\App\DatabaseCacheKey;
 use Microservices\App\DatabaseOpenCacheKey;
+use Microservices\App\Env;
+use Microservices\App\HttpRequest;
 use Microservices\App\HttpStatus;
 
 /**
@@ -98,7 +99,7 @@ class DbFunctions
             return;
         }
 
-        $cacheServerType = getenv(name: 'sqlResultsCacheServerType');
+        $cacheServerType = Env::$sqlResultsCacheServerType;
         if (!in_array($cacheServerType, ['Redis', 'Memcached', 'MongoDb', 'MySql', 'PostgreSql'])) {
             throw new \Exception(
                 message: 'Invalid query cache type',
@@ -108,12 +109,12 @@ class DbFunctions
 
         $sqlResultsCacheServerNS = 'Microservices\\App\\Servers\\QueryCache\\' . $cacheServerType . 'QueryCache';
         self::$sqlResultsCacheServer = new $sqlResultsCacheServerNS(
-            getenv(name: 'sqlResultsCacheServerHostname'),
-            getenv(name: 'sqlResultsCacheServerPort'),
-            getenv(name: 'sqlResultsCacheServerUsername'),
-            getenv(name: 'sqlResultsCacheServerPassword'),
-            getenv(name: 'sqlResultsCacheServerDatabase'),
-            getenv(name: 'sqlResultsCacheServerTable')
+            Env::$sqlResultsCacheServerHostname,
+            Env::$sqlResultsCacheServerPort,
+            Env::$sqlResultsCacheServerUsername,
+            Env::$sqlResultsCacheServerPassword,
+            Env::$sqlResultsCacheServerDatabase,
+            Env::$sqlResultsCacheServerTable
         );
     }
 
@@ -167,13 +168,13 @@ class DbFunctions
             return;
         }
         self::$gCacheServer = self::connectCache(
-            cacheServerType: getenv(name: 'gCacheServerType'),
-            cacheHostname: getenv(name: 'gCacheServerHostname'),
-            cachePort: getenv(name: 'gCacheServerPort'),
-            cacheUsername: getenv(name: 'gCacheServerUsername'),
-            cachePassword: getenv(name: 'gCacheServerPassword'),
-            cacheDatabase: getenv(name: 'gCacheServerDatabase'),
-            cacheTable: getenv(name: 'gCacheServerTable')
+            cacheServerType: Env::$gCacheServerType,
+            cacheHostname: Env::$gCacheServerHostname,
+            cachePort: Env::$gCacheServerPort,
+            cacheUsername: Env::$gCacheServerUsername,
+            cachePassword: Env::$gCacheServerPassword,
+            cacheDatabase: Env::$gCacheServerDatabase,
+            cacheTable: Env::$gCacheServerTable
         );
     }
 
@@ -289,12 +290,12 @@ class DbFunctions
             return;
         }
         self::$gDbServer = self::connectDb(
-            dbServerType: getenv(name: 'gDbServerType'),
-            dbHostname: getenv(name: 'gDbServerHostname'),
-            dbPort: getenv(name: 'gDbServerPort'),
-            dbUsername: getenv(name: 'gDbServerUsername'),
-            dbPassword: getenv(name: 'gDbServerPassword'),
-            dbDatabase: getenv(name: 'gDbServerDatabase')
+            dbServerType: Env::$gDbServerType,
+            dbHostname: Env::$gDbServerHostname,
+            dbPort: Env::$gDbServerPort,
+            dbUsername: Env::$gDbServerUsername,
+            dbPassword: Env::$gDbServerPassword,
+            dbDatabase: Env::$gDbServerDatabase
         );
     }
 

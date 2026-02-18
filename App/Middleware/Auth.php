@@ -15,9 +15,10 @@
 
 namespace Microservices\App\Middleware;
 
-use Microservices\App\Common;
 use Microservices\App\CacheKey;
+use Microservices\App\Common;
 use Microservices\App\DbFunctions;
+use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 
 /**
@@ -98,11 +99,35 @@ class Auth
                 associative: true
             );
             $uniqueHttpRequestHash = $this->api->http['hash'];
-            if ($this->api->req->s['uDetails']['uniqueHttpRequestHash'] !== $uniqueHttpRequestHash) {
-                throw new \Exception(
-                    message: 'Token not supported from this Browser/Device',
-                    code: HttpStatus::$PreconditionFailed
+            if (Env::$enableConcurrentLogins) {
+                $userConcurrencyKey = CacheKey::userConcurrency(
+                    uID: $this->api->req->s['uDetails']['id']
                 );
+                if (DbFunctions::$gCacheServer->cacheExists(key: $userConcurrencyKey)) {
+                    $userConcurrencyKeyData = DbFunctions::$gCacheServer->getCache(
+                        key: $userConcurrencyKey
+                    );
+                    if ($userConcurrencyKeyData !== $this->api->req->s['token']) {
+                        throw new \Exception(
+                            message: 'Account already in use. '
+                                . 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
+                            code: HttpStatus::$Conflict
+                        );
+                    }
+                } else {
+                    $this->setCache(
+                        key: $userConcurrencyKey,
+                        value: $this->api->req->s['token'],
+                        expire: Env::$concurrentAccessInterval
+                    );
+                }
+            } else {
+                if ($this->api->req->s['uDetails']['uniqueHttpRequestHash'] !== $uniqueHttpRequestHash) {
+                    throw new \Exception(
+                        message: 'Token not supported from this Browser/Device',
+                        code: HttpStatus::$PreconditionFailed
+                    );
+                }
             }
         }
         if (empty($this->api->req->s['token'])) {

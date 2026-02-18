@@ -150,4 +150,16 @@ class CacheKey
     {
         return "u:sId:{$uID}";
     }
+
+    /**
+     * Get Key maintaining Concurrency Interval(active session) For Current User
+     *
+     * @param int $uID User Id
+     *
+     * @return string
+     */
+    public static function userConcurrency($uID): string
+    {
+        return "u:co:{$uID}";
+    }
 }

@@ -250,7 +250,11 @@ trait AppTrait
             isset($sqlDetails['__SET__'])
             && count(value: $sqlDetails['__SET__']) !== 0
         ) {
-            [$params, $errors, $missExecution] = $this->getSqlParams($sqlDetails['__SET__']);
+            $payloadVariables = $sqlDetails['__VARIABLES__'] ?? [];
+            [$params, $errors, $missExecution] = $this->getSqlParams(
+                $sqlDetails['__SET__'],
+                $payloadVariables
+            );
             if (empty($errors) && !$missExecution) {
                 if (!empty($params)) {
                     // __SET__ not compulsory in query
@@ -280,8 +284,10 @@ trait AppTrait
             && count(value: $sqlDetails['__WHERE__']) !== 0
         ) {
             $wErrors = [];
+            $payloadVariables = $sqlDetails['__VARIABLES__'] ?? [];
             [$sqlWhereParams, $wErrors, $wMissExecution] = $this->getSqlParams(
-                $sqlDetails['__WHERE__']
+                $sqlDetails['__WHERE__'],
+                $payloadVariables
             );
             if (empty($wErrors) && !$wMissExecution) {
                 if (!empty($sqlWhereParams)) {
@@ -314,19 +320,6 @@ trait AppTrait
                 }
             } else {
                 $errors = array_merge($errors, $wErrors);
-            }
-        } else {
-            if (
-                Env::$enableGlobalCounter
-                && strpos(trim(strtolower($sql)), 'insert') === 0
-                && !isset($sqlParams[':id'])
-                && !isset($row['id'])
-            ) {
-                $id = Counter::getGlobalCounter();
-                $sqlParams[':id'] = $id;
-                $row['id'] = $id;
-
-                $__SET__[] = "`id` = :id";
             }
         }
         if (!empty($__SET__)) {
@@ -384,7 +377,11 @@ trait AppTrait
             isset($sqlDetails['__SET__'])
             && count(value: $sqlDetails['__SET__']) !== 0
         ) {
-            [$params, $errors, $missExecution] = $this->getSqlParams($sqlDetails['__SET__']);
+            $payloadVariables = $sqlDetails['__VARIABLES__'] ?? [];
+            [$params, $errors, $missExecution] = $this->getSqlParams(
+                $sqlDetails['__SET__'],
+                $payloadVariables
+            );
             if (empty($errors) && !$missExecution) {
                 if (!empty($params)) {
                     // __SET__ not compulsory in query
@@ -409,8 +406,10 @@ trait AppTrait
             && count(value: $sqlDetails['__WHERE__']) !== 0
         ) {
             $wErrors = [];
+            $payloadVariables = $sqlDetails['__VARIABLES__'] ?? [];
             [$sqlWhereParams, $wErrors, $wMissExecution] = $this->getSqlParams(
-                $sqlDetails['__WHERE__']
+                $sqlDetails['__WHERE__'],
+                $payloadVariables
             );
             if (empty($wErrors) && !$wMissExecution) {
                 if (!empty($sqlWhereParams)) {
@@ -440,19 +439,6 @@ trait AppTrait
             } else {
                 $errors = array_merge($errors, $wErrors);
             }
-        } else {
-            if (
-                Env::$enableGlobalCounter
-                && strpos(trim(strtolower($sql)), 'insert') === 0
-                && !isset($sqlParams[':id'])
-                && !isset($row['id'])
-            ) {
-                $id = Counter::getGlobalCounter();
-                $sqlParams[] = $id;
-                $row['id'] = $id;
-
-                $__SET__[] = "id = ?";
-            }
         }
         if (!empty($__SET__)) {
             $sql = str_replace(
@@ -472,12 +458,13 @@ trait AppTrait
     /**
      * Generates Params for statement to execute
      *
-     * @param array $sqlConfig Config from file
+     * @param array $sqlConfig        Config from file
+     * @param array $payloadVariables Payload Variables
      *
      * @return array
      * @throws \Exception
      */
-    private function getSqlParams(&$sqlConfig): array
+    private function getSqlParams(&$sqlConfig, &$payloadVariables): array
     {
         $missExecution = false;
         $sqlParams = [];
@@ -533,6 +520,13 @@ trait AppTrait
             } elseif ($fetchFrom === 'custom') {
                 $value = $fKey;
                 $sqlParams[$var] = $value;
+                continue;
+            } elseif ($fetchFrom === 'variables') {
+                if (isset($payloadVariables[$fKey])) {
+                    $sqlParams[$var] = $payloadVariables[$fKey];
+                } else {
+                    $errors[] = "Missing '{$fetchFrom}' for '{$fKey}'";
+                }
                 continue;
             } elseif (isset($this->api->req->s[$fetchFrom][$fKey])) {
                 if (isset($this->api->req->s['necessary'][$fetchFrom][$fKey])) {
@@ -776,7 +770,7 @@ trait AppTrait
     private function rateLimitRoute(&$sqlConfig): void
     {
         if (
-            ((int)getenv(name: 'enableRateLimitAtRouteLevel')) === 0
+            Env::$enableRateLimitAtRouteLevel
             || !isset($sqlConfig['rateLimitMaxRequests'])
             || !isset($sqlConfig['rateLimitMaxRequestsWindow'])
         ) {
@@ -795,17 +789,12 @@ trait AppTrait
             $payloadSignature['uID'] = ($this->api->req->s['uDetails']['id'] !== null ?
                     $this->api->req->s['uDetails']['id'] : 0);
         }
-        // $hash = hash_hmac(
-        // 'sha256',
-        // json_encode($payloadSignature),
-        // getenv(name: 'IdempotentSecret')
-        // );
         $hash = json_encode(value: $payloadSignature);
         $hashKey = md5(string: $hash);
 
         // @throws \Exception
         $rateLimitChecked = $this->checkRateLimit(
-            rateLimitPrefix: getenv(name: 'rateLimitRoutePrefix'),
+            rateLimitPrefix: Env::$rateLimitRoutePrefix,
             rateLimitMaxRequests: $sqlConfig['rateLimitMaxRequests'],
             rateLimitMaxRequestsWindow: $sqlConfig['rateLimitMaxRequestsWindow'],
             key: $hashKey
@@ -833,7 +822,7 @@ trait AppTrait
             $idempotentWindow = (int)$sqlConfig['idempotentWindow'];
             if ($idempotentWindow) {
                 $payloadSignature = [
-                    'IdempotentSecret' => getenv(name: 'IdempotentSecret'),
+                    'idempotentSecret' => Env::$idempotentSecret,
                     'idempotentWindow' => $idempotentWindow,
                     'IP' => $this->api->req->IP,
                     'cID' => $this->api->req->s['cDetails']['id'],
@@ -1074,7 +1063,8 @@ trait AppTrait
     /**
      * Generates Params for statement to execute
      *
-     * @param array $payloadConfig API Payload configuration
+     * @param array $payloadConfig    API Payload configuration
+     * @param array $payloadVariables Payload Variables
      *
      * @return array
      * @throws \Exception

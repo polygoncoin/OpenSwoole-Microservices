@@ -15,8 +15,8 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Env;
 use Microservices\App\DbFunctions;
+use Microservices\App\Env;
 
 /**
  * Rate Limiter
@@ -46,18 +46,14 @@ class RateLimiter
      */
     public function __construct()
     {
-        if (((int)getenv(name: 'enableRateLimiting')) === 0) {
+        if (!Env::$enableRateLimiting) {
             return;
         }
 
-        $rateLimitServerType = getenv(name: 'rateLimitServerType');
-        $rateLimitServerHostname = getenv(name: 'rateLimitServerHostname');
-        $rateLimitServerPort = getenv(name: 'rateLimitServerPort');
-
         $this->cache = DbFunctions::connectCache(
-            cacheServerType: $rateLimitServerType,
-            cacheHostname: $rateLimitServerHostname,
-            cachePort: $rateLimitServerPort,
+            cacheServerType: Env::$rateLimitServerType,
+            cacheHostname: Env::$rateLimitServerHostname,
+            cachePort: Env::$rateLimitServerPort,
             cacheUsername: '',
             cachePassword: '',
             cacheDatabase: '',
@@ -83,7 +79,7 @@ class RateLimiter
     ): array {
         if (
             $this->cache === null
-            && (((int)getenv(name: 'enableRateLimiting')) === 0)
+            && (!Env::$enableRateLimiting)
         ) {
             return [
                 'allowed' => true,

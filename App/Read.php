@@ -133,7 +133,10 @@ class Read
             }
         }
 
-        if (Env::$enableResponseCaching && $toBeCached) {
+        if (
+            Env::$enableResponseCaching
+            && $toBeCached
+        ) {
             $this->dataEncode = new DataEncode(api: $this->api);
             $this->dataEncode->init(header: false);
         } else {
@@ -183,7 +186,10 @@ class Read
             );
         }
 
-        if (Env::$enableResponseCaching && $toBeCached) {
+        if (
+            Env::$enableResponseCaching
+            && $toBeCached
+        ) {
             $json = $this->dataEncode->getData();
             DbFunctions::setQueryCache(
                 cacheKey: $rSqlConfig['cacheKey'],

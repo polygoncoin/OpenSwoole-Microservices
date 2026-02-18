@@ -129,10 +129,13 @@ class Microservices
         $class = null;
 
         switch (true) {
-            case Env::$enableCronRequest && strpos(
-                haystack: $this->api->req->ROUTE,
-                needle: '/' . Env::$cronRequestRoutePrefix
-            ) === 0:
+            case (
+                    Env::$enableCronRequest
+                    && strpos(
+                        haystack: $this->api->req->ROUTE,
+                        needle: '/' . Env::$cronRequestRoutePrefix
+                    ) === 0
+                ):
                 if ($this->api->req->IP !== Env::$cronRestrictedCidr) {
                     throw new \Exception(
                         message: 'Source IP is not supported',
@@ -147,7 +150,10 @@ class Microservices
                 break;
 
             // Requires HTTP auth username and password
-            case Env::$enableReloadRequest && $this->api->req->ROUTE === '/' . Env::$reloadRequestRoutePrefix:
+            case (
+                    Env::$enableReloadRequest
+                    && $this->api->req->ROUTE === '/' . Env::$reloadRequestRoutePrefix
+                ):
                 $isValidIp = Functions::checkCidr(
                     IP: $this->api->req->IP,
                     cidrString: Env::$reloadRestrictedCidr

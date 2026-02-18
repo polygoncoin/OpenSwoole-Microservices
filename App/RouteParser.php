@@ -172,7 +172,7 @@ class RouteParser
                 continue;
             } elseif (
                 $key === 0
-                && Env::$enableCidrChecks === 1
+                && Env::$enableCidrChecks
                 && in_array($element, Env::$reservedRoutesPrefix)
             ) {
                 $isValidIp = Functions::checkCidr(
@@ -187,21 +187,21 @@ class RouteParser
                 }
             } elseif (
                 $key === $routeLastElementPos
-                && Env::$enableConfigRequest == 1
+                && Env::$enableConfigRequest
                 && Env::$configRequestRouteKeyword === $element
             ) {
                 $this->isConfigRequest = true;
                 break;
             } elseif (
                 $key === $routeLastElementPos
-                && Env::$enableImportRequest == 1
+                && Env::$enableImportRequest
                 && Env::$importRequestRouteKeyword === $element
             ) {
                 $this->isImportRequest = true;
                 break;
             } elseif (
                 $key === $routeLastElementPos
-                && Env::$enableImportSampleRequest == 1
+                && Env::$enableImportSampleRequest
                 && Env::$importSampleRequestRouteKeyword === $element
             ) {
                 $this->isImportSampleRequest = true;
@@ -258,7 +258,7 @@ class RouteParser
         // Input data representation over rides global and routes settings
         // Switch Input data representation if set in URL param
         if (
-            Env::$enableRepresentationAsQueryParam == 1
+            Env::$enableInputRepresentationAsQueryParam
             && isset($this->api->http['get']['iRepresentation'])
             && Env::isValidDataRep(
                 dataRepresentation: $this->api->http['get']['iRepresentation'],
@@ -388,7 +388,7 @@ class RouteParser
 
         // Switch Output data representation if set in URL param
         if (
-            Env::$enableRepresentationAsQueryParam == 1
+            Env::$enableOutputRepresentationAsQueryParam
             && isset($this->api->http['get']['oRepresentation'])
             && Env::isValidDataRep(
                 dataRepresentation: $this->api->http['get']['oRepresentation'],
