@@ -190,7 +190,7 @@ class Env
         self::$enableAuthRequests = (bool)((int)getenv(name: 'enableAuthRequests'));
         self::$authMode = getenv(name: 'authMode');
         self::$sessionMode = getenv(name: 'sessionMode');
-        self::$enableConcurrentLogins = getenv(name: 'DISABLenableConcurrentLoginsE_REQUESTS_VIA_PROXIES');
+        self::$enableConcurrentLogins = getenv(name: 'enableConcurrentLogins');
         self::$maxConcurrentLogins = getenv(name: 'maxConcurrentLogins');
         self::$concurrentAccessInterval = getenv(name: 'concurrentAccessInterval');
 
@@ -233,7 +233,7 @@ class Env
 
         self::$enableConfigRequest = (bool)((int)getenv(name: 'enableConfigRequest'));
         self::$enableExportRequest = (bool)((int)getenv(name: 'enableExportRequest'));
-        self::$enableImportRequest = (bool)((int)getenv(name: 'enableenableImportRequestGlobal'));
+        self::$enableImportRequest = (bool)((int)getenv(name: 'enableImportRequest'));
         self::$enableImportSampleRequest = (bool)((int)getenv(name: 'enableImportSampleRequest'));
         self::$enableRoutesRequest = (bool)((int)getenv(name: 'enableRoutesRequest'));
         self::$enableResponseCaching = (bool)((int)getenv(name: 'enableResponseCaching'));
@@ -259,13 +259,13 @@ class Env
 
         self::$enableCidrChecks = (bool)((int)getenv(name: 'enableCidrChecks'));
 
-        self::$configRestrictedCidr = getenv(name: 'authconfigRestrictedCidrMode');
+        self::$configRestrictedCidr = getenv(name: 'configRestrictedCidr');
         self::$exportRestrictedCidr = getenv(name: 'exportRestrictedCidr');
         self::$importRestrictedCidr = getenv(name: 'importRestrictedCidr');
         self::$importSampleRestrictedCidr = getenv(name: 'importSampleRestrictedCidr');
         self::$routesRestrictedCidr = getenv(name: 'routesRestrictedCidr');
         self::$cacheRestrictedCidr = getenv(name: 'cacheRestrictedCidr');
-        self::$cronRestrictedCidr = getenv(name: 'autcronRestrictedCidrhMode');
+        self::$cronRestrictedCidr = getenv(name: 'cronRestrictedCidr');
         self::$customRestrictedCidr = getenv(name: 'customRestrictedCidr');
         self::$reloadRestrictedCidr = getenv(name: 'reloadRestrictedCidr');
         self::$thirdPatyRestrictedCidr = getenv(name: 'thirdPatyRestrictedCidr');
@@ -274,7 +274,7 @@ class Env
 
         self::$enableRateLimiting = (bool)((int)getenv(name: 'enableRateLimiting'));
         self::$enableRateLimitAtIpLevel = (bool)((int)getenv(name: 'enableRateLimitAtIpLevel'));
-        self::$enableRateLimitAtClientLevel = (bool)((int)getenv(name: 'eenableRateLimitAtClientLevelnableUploadRequest'));
+        self::$enableRateLimitAtClientLevel = (bool)((int)getenv(name: 'enableRateLimitAtClientLevel'));
         self::$enableRateLimitAtGroupLevel = (bool)((int)getenv(name: 'enableRateLimitAtGroupLevel'));
         self::$enableRateLimitAtUserLevel = (bool)((int)getenv(name: 'enableRateLimitAtUserLevel'));
         self::$enableRateLimitAtRouteLevel = (bool)((int)getenv(name: 'enableRateLimitAtRouteLevel'));
