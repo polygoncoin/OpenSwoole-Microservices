@@ -472,7 +472,7 @@ class Login
         $time = Env::$timestamp - $tokenFoundData['timestamp'];
         $output = [
             'Token' => $tokenFoundData['token'],
-            'Expires' => (Constants::$TOKEN_EXPIRY_TIME - $time)
+            'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constants::$TOKEN_EXPIRY_TIME - $time))
         ];
 
         $this->api->initResponse();
@@ -656,7 +656,7 @@ class Login
         $time = Env::$timestamp - $sessionFoundData['sessionExpiryTimestamp'];
         $output = [
             'SessionId' => $sessionFoundData['sessionId'],
-            'Expires' => (Constants::$TOKEN_EXPIRY_TIME - $time)
+            'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constants::$TOKEN_EXPIRY_TIME - $time))
         ];
 
         $this->api->initResponse();
