@@ -665,7 +665,7 @@ class Read
     {
         $return = [[], '', HttpStatus::$Ok];
 
-        if (!Env::$enableExportRequest) {
+        if (!Env::$enableDownloadRequest) {
             return [[], '', HttpStatus::$NotFound];
         }
 

@@ -85,7 +85,7 @@ class Env
 ///////////////
 
     public static $enableConfigRequest = null;
-    public static $enableExportRequest = null;
+    public static $enableDownloadRequest = null;
     public static $enableImportRequest = null;
     public static $enableImportSampleRequest = null;
     public static $enableRoutesRequest = null;
@@ -117,7 +117,7 @@ class Env
     public static $importRestrictedCidr = null;
     public static $importSampleRestrictedCidr = null;
     public static $routesRestrictedCidr = null;
-    public static $cacheRestrictedCidr = null;
+    public static $dropboxRestrictedCidr = null;
     public static $cronRestrictedCidr = null;
     public static $customRestrictedCidr = null;
     public static $reloadRestrictedCidr = null;
@@ -232,7 +232,7 @@ class Env
         //////////////////
 
         self::$enableConfigRequest = (bool)((int)getenv(name: 'enableConfigRequest'));
-        self::$enableExportRequest = (bool)((int)getenv(name: 'enableExportRequest'));
+        self::$enableDownloadRequest = (bool)((int)getenv(name: 'enableDownloadRequest'));
         self::$enableImportRequest = (bool)((int)getenv(name: 'enableImportRequest'));
         self::$enableImportSampleRequest = (bool)((int)getenv(name: 'enableImportSampleRequest'));
         self::$enableRoutesRequest = (bool)((int)getenv(name: 'enableRoutesRequest'));
@@ -264,7 +264,7 @@ class Env
         self::$importRestrictedCidr = getenv(name: 'importRestrictedCidr');
         self::$importSampleRestrictedCidr = getenv(name: 'importSampleRestrictedCidr');
         self::$routesRestrictedCidr = getenv(name: 'routesRestrictedCidr');
-        self::$cacheRestrictedCidr = getenv(name: 'cacheRestrictedCidr');
+        self::$dropboxRestrictedCidr = getenv(name: 'dropboxRestrictedCidr');
         self::$cronRestrictedCidr = getenv(name: 'cronRestrictedCidr');
         self::$customRestrictedCidr = getenv(name: 'customRestrictedCidr');
         self::$reloadRestrictedCidr = getenv(name: 'reloadRestrictedCidr');
@@ -328,7 +328,7 @@ class Env
 
         self::$reservedRoutesCidrString = [
             self::$routesRequestRoute => self::$routesRestrictedCidr,
-            self::$dropboxRequestRoutePrefix => self::$cacheRestrictedCidr,
+            self::$dropboxRequestRoutePrefix => self::$dropboxRestrictedCidr,
             self::$cronRequestRoutePrefix => self::$cronRestrictedCidr,
             self::$customRequestRoutePrefix => self::$customRestrictedCidr,
             self::$reloadRequestRoutePrefix => self::$reloadRestrictedCidr,
