@@ -3,7 +3,7 @@
 ## Login
 
 ```javascript
-var handlerUrl = "http://127.0.0.1:9501??route=/login";
+var handlerUrl = "http://127.0.0.1:9501?route=/login";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "POST", handlerUrl );
@@ -32,7 +32,7 @@ xmlhttp . send( JSON.stringify(payload) );
 * GET Request
 
 ```javascript
-var handlerUrl = "http://127.0.0.1:9501??route=/routes";
+var handlerUrl = "http://127.0.0.1:9501?route=/routes";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "GET", handlerUrl );
@@ -53,7 +53,7 @@ xmlhttp . send();
 * POST Request
 
 ```javascript
-var handlerUrl = "http://127.0.0.1:9501??route=/ajax-handler-route";
+var handlerUrl = "http://127.0.0.1:9501?route=/ajax-handler-route";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "POST", handlerUrl );
@@ -79,7 +79,7 @@ xmlhttp . send( JSON.stringify(payload) );
 * PUT Request
 
 ```javascript
-var handlerUrl = "http://127.0.0.1:9501??route=/custom/password";
+var handlerUrl = "http://127.0.0.1:9501?route=/custom/password";
 var xmlhttp = new XMLHttpRequest();
 
 xmlhttp . open( "PUT", handlerUrl );
@@ -105,7 +105,7 @@ xmlhttp . send( JSON.stringify(payload) );
 * XML Request example
 
 ```javascript
-var handlerUrl = "http://127.0.0.1:9501??route=/registration-with-address&iRepresentation=XML&oRepresentation=XML";
+var handlerUrl = "http://127.0.0.1:9501?route=/registration-with-address&iRepresentation=XML&oRepresentation=XML";
 
 var payload = '<?xml version="1.0" encoding="UTF-8" ?>' +
 '<Payload>' +

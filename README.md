@@ -23,16 +23,13 @@ This is a light & easy low code API generator using configuration arrays. It can
 ### Files Folder
 
 - **Logs** Folder for application Logs.
-
-### public\_html Folder
-
 - **Config** Basic configuration folder
 - **Files** Folder for uploaded files.
 - **Hooks** Hooks.
 - **Supplement** Customised coding for APIs
 - **Validation** Contains validation classes.
 
-#### public\_html/Files Folder
+#### /Files Folder
 
 - **Dropbox/Open** Uploaded files for open to web
 - **Dropbox/Closed** Uploaded files by authorised users
@@ -40,7 +37,7 @@ This is a light & easy low code API generator using configuration arrays. It can
 - **ServingFiles/PHP** PHP view files to be served with dynamic response
 - **ServingFiles/XSLT** XSLT files to be served with dynamic response
 
-#### public\_html/Supplement Folder
+#### /Supplement Folder
 
 - **Crons** Contains classes for cron API's
 - **Custom** Contains classes for custom API's
@@ -49,7 +46,7 @@ This is a light & easy low code API generator using configuration arrays. It can
 
 ### Routes Folder
 
-#### public\_html/Config/Routes
+#### /Config/Routes
 
 - **/Config/Routes/Auth/&lt;GroupName&gt;**
 - **/Config/Routes/Open**
@@ -68,7 +65,7 @@ This is a light & easy low code API generator using configuration arrays. It can
 
 These files locations are used in routes config to be used for generating response.
 
-#### public\_html/Config/Queries
+#### /Config/Queries
 
 - **/Config/Queries/Auth/GlobalDB** for global database.
 - **/Config/Queries/Auth/ClientDB** for clients (including all hosts and their databases).
