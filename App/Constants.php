@@ -73,7 +73,7 @@ class Constants
         }
 
         self::$DOC_ROOT = dirname(path: __DIR__ . '..' . DIRECTORY_SEPARATOR);
-        self::$PUBLIC_HTML = self::$DOC_ROOT . DIRECTORY_SEPARATOR . 'public_html';
+        self::$PUBLIC_HTML = self::$DOC_ROOT;
 
         self::$FILES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Files';
         self::$DROP_BOX_DIR = self::$FILES_DIR . DIRECTORY_SEPARATOR . 'Dropbox';
