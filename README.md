@@ -2,20 +2,6 @@
 
 This is a light & easy low code API generator using configuration arrays. It can be used to create API's in very short time once you are done with your database.
 
-## Contents
-
-- [Important Files](#important-files)
-- [Environment File](#environment-file)
-- [Folders](#folders)
-- [Configuration Rules](#configuration-rules)
-- [HTTP Request](#http-request)
-- [Hierarchy Configs](#hierarchy-configs)
-- [Special Routes](#special-routes)
-- [Javascript HTTP request example](JS-Examples.md)
-- [License](#license)
-
-***
-
 ## .env Files
 
 - **[.env.example](https://github.com/polygoncoin/Openswoole-Microservices/Env.example.md)**
