@@ -34,7 +34,7 @@ clientsTable='clients'
 
 ### Setting Cache / Database Server configuration in client table for working
 
-These **Global Cache Server configuration (Redis)** and **Global Database Server configuration** should be set in clients table in below columns respectively for each client.
+These **Global Cache Server configuration (Redis)** and **Global Database Server configuration** config keys should be set in clients table in below columns respectively for each client.
 
 ```SQL
 `clients`.`master_db_server_type` varchar(255) NOT NULL,
@@ -84,7 +84,7 @@ cDbServerDatabase='<database-x>'
 
 ### Dedicated DB server
 
-If the same client X in future prefer to have a dedicated database server one can do this as well.<br /><br />
+If the same client X in future prefer to have a dedicated database server one can do this as well.<br />
 
 Make a new config variables as below and set this key in the above table for client X record in clients table.
 
@@ -137,21 +137,21 @@ These column contains keys containing details about the way the queries are buil
 `clients`.`slave_query_placeholder` varchar(255) NOT NULL,
 ```
 
-#### Named(:param)
+#### Named(:param) Example
 
 ```SQL
 -- Named(:param)
 INSERT INTO `user` SET `firstname` = :firstname;
 ```
 
-#### NamUnnamed(?)ed
+#### Unnamed(?) Example
 
 ```SQL
 -- Unnamed(?)
 INSERT INTO `user` SET `firstname` = ?; 
 ```
 
-## Global SQL Cache hit configurations can be set as below.
+## Global Cache hit configurations can be set as below.
 
 Below settings are not to be configured in any table. They are used as it is. Only need to make required config value changes in below.
 

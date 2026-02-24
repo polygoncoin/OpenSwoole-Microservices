@@ -1,6 +1,6 @@
 # Requests control
 
-Control major request access and set resepctive keywords to make routes unique for your services.
+Control major request access and set respective keywords to make routes unique for your services.
 
 ## 🤝 Controlling requests at top level
 

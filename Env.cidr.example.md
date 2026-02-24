@@ -1,6 +1,6 @@
-# Allowed IPs (CIDR)
+# Allowed IPs in CIDR format
 
-Classless Inter-Domain Routing (CIDR) is a method for assigning IP addresses to devices on the internet. Multiple CIDR separated by comma can be set for this.
+Classless Inter-Domain Routing (CIDR) is a method for assigning IP addresses to devices on the internet. Multiple CIDR separated by comma can be set here.
 
 ## More about CIDR
 To learn more about CIDR one can [Check Google](https://www.google.com/search?q=CIDR)
@@ -16,7 +16,7 @@ enableCidrChecks=0                      ; 1 = true / 0 = false in
 
 Below are top level CIDR settings for a set of system routes (starting / ending with)
 
-### Routes starting with configured params keyword in respective comment
+### Routes starting with configured params keyword for respective comment
 
 ```ini
 dropboxRestrictedCidr='0.0.0.0/0'       ; dropboxRequestRoutePrefix in .env.enable
@@ -26,7 +26,7 @@ thirdPatyRestrictedCidr='0.0.0.0/0'     ; thirdPartyRequestRoutePrefix in .env.e
 uploadRestrictedCidr='0.0.0.0/0'        ; uploadRequestRoutePrefix in .env.enable
 ```
 
-### Routes ending with configured params keyword in respective comment
+### Routes ending with configured params keyword for respective comment
 
 ```ini
 configRestrictedCidr='0.0.0.0/0'        ; configRequestRouteKeyword in .env.enable
@@ -35,7 +35,7 @@ importRestrictedCidr='0.0.0.0/0'        ; importRequestRouteKeyword in .env.enab
 importSampleRestrictedCidr='0.0.0.0/0'  ; importSampleRequestRouteKeyword in .env.enable
 ```
 
-### Routes exact configured params keyword in respective comment
+### Routes exact configured params keyword for respective comment
 
 ```ini
 routesRestrictedCidr='0.0.0.0/0'        ; routesRequestRoute in .env.enable
@@ -44,7 +44,7 @@ reloadRestrictedCidr='0.0.0.0/0'        ; reloadRequestRoutePrefix in .env.enabl
 
 ## 🤝 Configuring in DB Tables
 
-To enable CIDR settings at Client / Group / User level one can set them in respective table
+To enable CIDR settings at Client / Group / User level one can set them in respective table and record
 
 ```SQL
 # Client level

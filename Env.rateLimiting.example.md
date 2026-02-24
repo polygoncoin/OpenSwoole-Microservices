@@ -1,6 +1,6 @@
 # Rate Limiting
 
-Rate Limiting is a method of restricting traffic for a set window of time. The time windows unit used here is No. of Seconds to allow a set nunber of requests in respective param.
+Rate Limiting is a method of restricting traffic for a set window of time. The time windows unit used here is No. of Seconds to allow a particular number of requests in respective param.
 
 ## More about Rate Limiting
 To learn more about Rate Limiting one can [Check Google](https://www.google.com/search?q=Rate%20Limiting)
@@ -21,7 +21,7 @@ rateLimitServerHostname='127.0.0.1'     ; Redis host dealing with Rate limit
 rateLimitServerPort=11211               ; Redis-6379 / Memcached-11211
 ```
 
-## 🤝 Enable Rate Limiting at functional level
+## 🤝 Enable Rate Limiting at respective function level
 
 ```ini
 ; 1 = true / 0 = false
@@ -34,7 +34,7 @@ enableRateLimitAtUsersPerIpLevel=0      ; Function = IP & User ID
 enableRateLimitAtUsersRequestLevel=0    ; Function = Requests & User ID
 ```
 
-## 🤝 Setting respective Rate Limiting keys to be used as identifier with Function(s) combined
+## 🤝 Setting Rate Limiting keys to be used as identifier with Function(s) combined
 
 ```ini
 ; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to users)
@@ -53,7 +53,7 @@ rateLimitUsersPerIpPrefix='UIRL:'
 rateLimitUsersRequestPrefix='URRL:' 
 ```
 
-## 🤝 Setting respective Rate Limiting keys Limits with Window in seconds
+## 🤝 Setting Rate Limiting keys Limits with window in seconds
 
 ```ini
 ; Rate Limiting No. of Requests per IP ('IPRL:')
@@ -70,7 +70,7 @@ rateLimitUsersMaxRequests=1             ; Max one request allowed for 10 seconds
 rateLimitUsersMaxRequestsWindow=10      ; Max one request allowed for 10 seconds
 ```
 
-## Client/Group/User based Rate Limiting details are set in respective DB Tables
+## Client/Group/User based Rate Limiting details are set in respective DB Tables for records
 
 ```SQL
 # Client level
@@ -88,14 +88,16 @@ rateLimitUsersMaxRequestsWindow=10      ; Max one request allowed for 10 seconds
 
 ## Rate Limiting at route level
 
-If **enableRateLimitAtRouteLevel** is **enabled** the Rate Limiting settings resides in each routes respective SQL config file. Each route can have different limits and windows or may also ignore(Not compulsary for every route).
+If **enableRateLimitAtRouteLevel** is **enabled** the Rate Limiting settings indicates settings are present in SQL config file of the route. Each route can have different limits and windows or may also ignore (not compulsary for every route).
 
 - Rate Limiting Key
+
 ```ini
 rateLimitRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) key prefix used in Redis
 ```
 
 - SQL file configuration
+
 ```PHP
 return [
     [...]

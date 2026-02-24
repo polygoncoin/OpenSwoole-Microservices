@@ -82,7 +82,7 @@ maxResultsPerPage=1000
 
 ## Global counter
 
-As the heading describes below are the settings for global counter for the primary key coulum of respective table. The setting when enable will generate a global auto-increment counter<br />
+As the heading describes below are the settings for global counter for the primary key column of respective table. The setting when enable will generate a global auto-increment counter<br />
 
 This enables identify client details easily while moving him from a common database for all to a dedicated client X database.
 

@@ -15,7 +15,7 @@ sessionMaxLifetime=3600
 sessionSavePath='sessions'
 ```
 
-### Encryptiong PHP Session data settings
+### Encrypting PHP Session data settings
 
 ```ini
 ; Value=base64_encode(openssl_random_pseudo_bytes(32))
