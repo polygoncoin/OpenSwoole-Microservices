@@ -4,12 +4,12 @@ This is a light & easy low code API generator using configuration arrays. It can
 
 ## .env Files
 
-- **[.env.example](https://github.com/polygoncoin/Openswoole-Microservices/Env.example.md)**
-- **[.env.enable.example](https://github.com/polygoncoin/Openswoole-Microservices/Env.enable.example.md)**
-- **[.env.container.example](https://github.com/polygoncoin/Openswoole-Microservices/Env.container.example.md)**
-- **[.env.cidr.example](https://github.com/polygoncoin/Openswoole-Microservices/Env.cidr.example.md)**
-- **[.env.rateLimiting.example](https://github.com/polygoncoin/Openswoole-Microservices/Env.rateLimiting.example.md)**
-- **[.env.session.example](https://github.com/polygoncoin/Openswoole-Microservices/Env.session.example.md)**
+- **[.env.example](Env.example.md)**
+- **[.env.enable.example](Env.enable.example.md)**
+- **[.env.container.example](Env.container.example.md)**
+- **[.env.cidr.example](Env.cidr.example.md)**
+- **[.env.rateLimiting.example](Env.rateLimiting.example.md)**
+- **[.env.session.example](Env.session.example.md)**
 
 ## SQL Files
 
