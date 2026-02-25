@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Client side Cache
+ * Client side Dropbox Caching
  * php version 8.3
  *
- * @category  ClientCache
+ * @category  ClientDropboxCache
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -18,13 +18,13 @@ namespace Microservices\App;
 use Microservices\App\Common;
 use Microservices\App\Constants;
 use Microservices\App\HttpStatus;
-use Microservices\App\CacheHandlers\StreamVideo;
+use Microservices\App\DropboxCacheHandlers\StreamVideo;
 
 /**
  * Client side Caching via E-tags
  * php version 8.3
  *
- * @category  ClientCache_Etag
+ * @category  ClientDropboxCache_Etag
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -32,7 +32,7 @@ use Microservices\App\CacheHandlers\StreamVideo;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class Cache
+class DropboxCache
 {
     /**
      * File request details
@@ -72,7 +72,7 @@ class Cache
     ];
 
     /**
-     * Cache Folder
+     * Dropbox Folder
      *
      * The folder location outside docroot
      * without a slash at the end

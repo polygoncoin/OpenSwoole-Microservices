@@ -1,10 +1,10 @@
 <?php
 
 /**
- * CacheAPI
+ * DropboxCacheAPI
  * php version 8.3
  *
- * @category  CacheAPI_Trait
+ * @category  DropboxCacheAPI_Trait
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -13,13 +13,13 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Supplement\Cache;
+namespace Microservices\Supplement\DropboxCache;
 
 /**
- * CacheAPI Trait
+ * DropboxCacheAPI Trait
  * php version 8.3
  *
- * @category  CacheAPI_Trait
+ * @category  DropboxCacheAPI_Trait
  * @package   Openswoole_Microservices
  * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)

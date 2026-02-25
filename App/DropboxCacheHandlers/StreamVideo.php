@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App\CacheHandlers;
+namespace Microservices\App\DropboxCacheHandlers;
 
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;

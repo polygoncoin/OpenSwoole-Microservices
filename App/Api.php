@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Cache;
+use Microservices\App\DropboxCache;
 use Microservices\App\Constants;
 use Microservices\App\Common;
 use Microservices\App\Env;
@@ -80,12 +80,12 @@ class Api
     public function process(): mixed
     {
         if ($this->api->req->METHOD === Constants::$GET) {
-            $cache = new Cache(http: $this->api->http, api: $this->api);
-            if ($cache->init(mode: 'Closed')) {
+            $dropboxCache = new DropboxCache(http: $this->api->http, api: $this->api);
+            if ($dropboxCache->init(mode: 'Closed')) {
                 // File exists - Serve from Dropbox
-                return $cache->process();
+                return $dropboxCache->process();
             }
-            $cache = null;
+            $dropboxCache = null;
         }
 
         // Execute Pre Route Hooks
@@ -201,7 +201,7 @@ class Api
                         && (Env::$dropboxRequestRoutePrefix
                             === $this->api->req->rParser->routeElements[0])
                     ):
-                    $supplementApiClass = __NAMESPACE__ . '\\Cache';
+                    $supplementApiClass = __NAMESPACE__ . '\\DropboxCache';
                     break;
             }
 
