@@ -6,7 +6,7 @@
  *
  * @category  CustomAPI
  * @package   Openswoole_Microservices
- * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
@@ -26,7 +26,7 @@ use Microservices\Supplement\Custom\CustomTrait;
  *
  * @category  CustomAPI_Category
  * @package   Openswoole_Microservices
- * @author    Ramesh N Jangid <polygon.co.in@gmail.com>
+ * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
