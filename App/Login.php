@@ -454,7 +454,7 @@ class Login
         }
 
         $token = $tokenFoundData['token'];
-        
+
         $this->setCache(
             key: $userTokenKey,
             value: json_encode(
@@ -638,7 +638,7 @@ class Login
         }
 
         $sessionId = $sessionFoundData['sessionId'];
-        
+
         $this->setCache(
             key: $userSessionKey,
             value: json_encode(

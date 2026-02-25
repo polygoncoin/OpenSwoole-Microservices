@@ -9,7 +9,7 @@ To learn more about CIDR one can [Check Google](https://www.google.com/search?q=
 
 To enable CIDR checks one can do this as below in .env.cidr
 ```ini
-enableCidrChecks=0                      ; 1 = true / 0 = false in 
+enableCidrChecks=0                      ; 1 = true / 0 = false in
 ```
 
 ## 🤝 Setting top level CIDR
@@ -30,7 +30,7 @@ uploadRestrictedCidr='0.0.0.0/0'        ; uploadRequestRoutePrefix in .env.enabl
 
 ```ini
 configRestrictedCidr='0.0.0.0/0'        ; configRequestRouteKeyword in .env.enable
-exportRestrictedCidr='0.0.0.0/0'        ; 
+exportRestrictedCidr='0.0.0.0/0'        ;
 importRestrictedCidr='0.0.0.0/0'        ; importRequestRouteKeyword in .env.enable
 importSampleRestrictedCidr='0.0.0.0/0'  ; importSampleRequestRouteKeyword in .env.enable
 ```

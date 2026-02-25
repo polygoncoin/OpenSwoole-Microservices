@@ -9,7 +9,7 @@ To learn more about Rate Limiting one can [Check Google](https://www.google.com/
 
 To enable Rate Limiting checks one can do this as below in .env.rateLimiting
 ```ini
-enableRateLimiting=0                    ; 1 = true / 0 = false in 
+enableRateLimiting=0                    ; 1 = true / 0 = false in
 ```
 
 ## 🤝 Configure Rate Limiting Server Details (Memcached / Redis)
@@ -41,16 +41,16 @@ enableRateLimitAtUsersRequestLevel=0    ; Function = Requests & User ID
 rateLimitIPPrefix='IPRL:'
 ; Client based Rate Limitng (GRL) key prefix used in Redis
 rateLimitClientPrefix='CRL:'
-; Group based Rate Limitng (GRL) key prefix used in Redis        
+; Group based Rate Limitng (GRL) key prefix used in Redis
 rateLimitGroupPrefix='GRL:'
-; User based Rate Limitng (URL) key prefix used in Redis         
+; User based Rate Limitng (URL) key prefix used in Redis
 rateLimitUserPrefix='URL:'
-; Route based Rate Limiting (RRL) key prefix used in Redis          
+; Route based Rate Limiting (RRL) key prefix used in Redis
 rateLimitRoutePrefix='RRL:'
-; User Per IP based Rate Limiting (UIRL) key prefix used in Redis         
+; User Per IP based Rate Limiting (UIRL) key prefix used in Redis
 rateLimitUsersPerIpPrefix='UIRL:'
-; User Per IP based Rate Limiting (UIRL) key prefix used in Redis   
-rateLimitUsersRequestPrefix='URRL:' 
+; User Per IP based Rate Limiting (UIRL) key prefix used in Redis
+rateLimitUsersRequestPrefix='URRL:'
 ```
 
 ## 🤝 Setting Rate Limiting keys Limits with window in seconds

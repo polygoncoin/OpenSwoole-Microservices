@@ -90,13 +90,13 @@ return [
 ```PHP
 public static $PrimaryKey = [
 
-    // Required param
-
+// Required param
     // PHP data type (bool, int, float, string)
     'dataType' => 'int',
 
-    // Optional params
-
+// Optional params
+    // Value can be null
+    'canBeNull' => false,
     // Minimum value (int)
     'minValue' => 1,
     // Maximum value (int)

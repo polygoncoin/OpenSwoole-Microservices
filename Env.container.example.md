@@ -148,7 +148,7 @@ INSERT INTO `user` SET `firstname` = :firstname;
 
 ```SQL
 -- Unnamed(?)
-INSERT INTO `user` SET `firstname` = ?; 
+INSERT INTO `user` SET `firstname` = ?;
 ```
 
 ## Global Cache hit configurations can be set as below.
