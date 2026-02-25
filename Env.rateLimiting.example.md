@@ -39,17 +39,17 @@ enableRateLimitAtUsersRequestLevel=0    ; Function = Requests & User ID
 ```ini
 ; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to users)
 rateLimitIPPrefix='IPRL:'
-; Client based Rate Limitng (GRL) key prefix used in Redis
+; Client based Rate Limitng (GRL) Key prefix used in Redis
 rateLimitClientPrefix='CRL:'
-; Group based Rate Limitng (GRL) key prefix used in Redis
+; Group based Rate Limitng (GRL) Key prefix used in Redis
 rateLimitGroupPrefix='GRL:'
-; User based Rate Limitng (URL) key prefix used in Redis
+; User based Rate Limitng (URL) Key prefix used in Redis
 rateLimitUserPrefix='URL:'
-; Route based Rate Limiting (RRL) key prefix used in Redis
+; Route based Rate Limiting (RRL) Key prefix used in Redis
 rateLimitRoutePrefix='RRL:'
-; User Per IP based Rate Limiting (UIRL) key prefix used in Redis
+; User Per IP based Rate Limiting (UIRL) Key prefix used in Redis
 rateLimitUsersPerIpPrefix='UIRL:'
-; User Per IP based Rate Limiting (UIRL) key prefix used in Redis
+; User Per IP based Rate Limiting (UIRL) Key prefix used in Redis
 rateLimitUsersRequestPrefix='URRL:'
 ```
 
@@ -93,7 +93,7 @@ If **enableRateLimitAtRouteLevel** is **enabled** the Rate Limiting settings ind
 - Rate Limiting Key
 
 ```ini
-rateLimitRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) key prefix used in Redis
+rateLimitRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) Key prefix used in Redis
 ```
 
 - SQL file configuration

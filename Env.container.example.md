@@ -67,8 +67,9 @@ These **Global Cache Server configuration (Redis)** and **Global Database Server
 `clients`.`slave_cache_table` varchar(255) NOT NULL,
 ```
 
-The slave details can take same values as master if presently your system doesn't have such implementation.
+> **Note**: Only the Key details in the environment file are to be set in columns of respective record. Eg. for column master_db_hostname the value to be set is 'gDbServerType' and not '127.0.0.1'. The configured values for the Key are picked from the env files.
 
+The slave details can take same values as master if presently your system doesn't have such implementation.
 
 ## Setting Cache / Database Server configuration  in client table for working
 
@@ -76,7 +77,7 @@ The slave details can take same values as master if presently your system doesn'
 
 If there is a requirement from client X to have a dedicated database like <database-x> on the DB server one can do this.<br /><br />
 
-Make a new config variable as below and set this key in the above table for client X record in clients table.
+Make a new config variable as below and set this Key in the above table for client X record in clients table.
 
 ```ini
 cDbServerDatabase='<database-x>'
@@ -86,7 +87,7 @@ cDbServerDatabase='<database-x>'
 
 If the same client X in future prefer to have a dedicated database server one can do this as well.<br />
 
-Make a new config variables as below and set this key in the above table for client X record in clients table.
+Make a new config variables as below and set this Key in the above table for client X record in clients table.
 
 - Client Cache
 
@@ -126,11 +127,9 @@ One can on similar lines can configure slaves server details or a dedicated mast
 clientUsersTable='users'         ;Table in client database containing user details.
 ```
 
-
 ### The query_placeholder column
 
 These column contains keys containing details about the way the queries are build to use data provided for SQL's'
-
 
 ```SQL
 `clients`.`master_query_placeholder` varchar(255) NOT NULL,
