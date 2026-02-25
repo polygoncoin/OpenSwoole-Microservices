@@ -11,6 +11,18 @@ This is a light & easy low code API generator using configuration arrays. It can
 - **[.env.rateLimiting.example](Env.rateLimiting.example.md)**
 - **[.env.session.example](Env.session.example.md)**
 
+## Configuration Rules
+
+- **[Rules For Custom DataTypes Configuration](Rules-For-Custom-DataTypes-Configuration.md)**
+- **[Rules For Routes Configuration](Rules-For-Routes-Configuration.md)**
+- **[Rules For SQL Configuration](Rules-For-SQL-Configuration.md)**
+- **[Rules For Payload Formats](Rules-For-Payload-Formats.md)**
+- **[Rules For TestCases Configuration](Rules-For-TestCases-Configuration.md)**
+
+## JavaScript Examples
+
+- **[JavaScript Examples](Microservices-JavaScript-Examples.md)**
+
 ## SQL Files
 
 - **Sql/global.sql** Import this SQL file on your **MySql global** instance
