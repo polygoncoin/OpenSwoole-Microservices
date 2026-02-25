@@ -2,11 +2,19 @@
 
 ## Defining Custom DataTypes
 
-The custom data types has following keys
+The custom data types keys are classified in two sections depending on keys - Required / Optional keys
+
+## Required
 
 ### dataType
 
 This can take one fo the PHP data type (bool, int, float, string). This is a required key.
+
+## Optional
+
+### canBeNull
+
+This represents the Custom DataType can be NULL. This is an optional key.
 
 ### minValue
 
@@ -49,7 +57,7 @@ public static $CustomINT = [
     // Value can be null
     'canBeNull' => false,
     // Minimum value (int)
-    'minValue' => 1,
+    'minValue' => false,
     // Maximum value (int)
     'maxValue' => false,
     // Minimum length (string)
