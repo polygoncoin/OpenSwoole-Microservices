@@ -337,7 +337,7 @@ class DatabaseDataTypes
      * DatabaseDataTypes::$CustomINT
      *
      * public static $CustomINT = [
-     * 
+     *
      *     // Required param
      *        // PHP data type (bool, int, float, string)
      *        'dataType' => 'int',
