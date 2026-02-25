@@ -34,11 +34,12 @@ This is a light & easy low code API generator using configuration arrays. It can
 
 ### Files Folder
 
-- **Logs** Folder for application Logs.
 - **Config** Basic configuration folder
 - **Files** Folder for uploaded files.
 - **Hooks** Hooks.
+- **Logs** Folder for application Logs.
 - **Supplement** Customised coding for APIs
+- **TestCases** Folder for Test Cases
 - **Validation** Contains validation classes.
 
 #### /Files Folder
