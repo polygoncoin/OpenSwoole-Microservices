@@ -1,4 +1,4 @@
-# Requests control
+# Request control
 
 Control major request access and set respective keywords to make routes unique for your services.
 

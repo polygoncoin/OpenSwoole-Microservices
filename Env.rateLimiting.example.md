@@ -31,7 +31,7 @@ enableRateLimitAtGroupLevel=0           ; Function = Group ID
 enableRateLimitAtUserLevel=0            ; Function = User ID
 enableRateLimitAtRouteLevel=0           ; Function = Configured Route
 enableRateLimitAtUsersPerIpLevel=0      ; Function = IP & User ID
-enableRateLimitAtUsersRequestLevel=0    ; Function = Requests & User ID
+enableRateLimitAtUsersRequestLevel=0    ; Function = Request & User ID
 ```
 
 ## 🤝 Setting Rate Limiting keys to be used as identifier with Function(s) combined
@@ -56,34 +56,34 @@ rateLimitUsersRequestPrefix='URRL:'
 ## 🤝 Setting Rate Limiting keys Limits with window in seconds
 
 ```ini
-; Rate Limiting No. of Requests per IP ('IPRL:')
-rateLimitIPMaxRequests=600              ; Max request allowed per IP
-rateLimitIPMaxRequestsWindow=300        ; Window in seconds of Max request allowed per IP
+; Rate Limiting No. of Request per IP ('IPRL:')
+rateLimitIPMaxRequest=600              ; Max request allowed per IP
+rateLimitIPMaxRequestWindow=300        ; Window in seconds of Max request allowed per IP
 
 ; Rate Limiting No. of User Per IP ('UIRL:')
 rateLimitUsersPerIpMaxUsers=10          ; Max Users allowed per IP
 rateLimitUsersPerIpMaxUsersWindow=300   ; Window in seconds of Max Users allowed per IP
 
-; Rate Limiting No. of Requests per User ('URRL:')
-; Delay Between Consecutive Requests (allow n requests only for seconds configured for each user)
-rateLimitUsersMaxRequests=1             ; Max one request allowed for 10 seconds
-rateLimitUsersMaxRequestsWindow=10      ; Max one request allowed for 10 seconds
+; Rate Limiting No. of Request per User ('URRL:')
+; Delay Between Consecutive Request (allow n requests only for seconds configured for each user)
+rateLimitUsersMaxRequest=1             ; Max one request allowed for 10 seconds
+rateLimitUsersMaxRequestWindow=10      ; Max one request allowed for 10 seconds
 ```
 
 ## Client/Group/User based Rate Limiting details are set in respective DB Tables for records
 
 ```SQL
 # Client level
-`clients`.`rateLimitMaxRequests` int DEFAULT NULL,
-`clients`.`rateLimitMaxRequestsWindow` int DEFAULT NULL,
+`clients`.`rateLimitMaxRequest` int DEFAULT NULL,
+`clients`.`rateLimitMaxRequestWindow` int DEFAULT NULL,
 
 # Group level
-`groups`.`rateLimitMaxRequests` int DEFAULT NULL,
-`groups`.`rateLimitMaxRequestsWindow` int DEFAULT NULL,
+`groups`.`rateLimitMaxRequest` int DEFAULT NULL,
+`groups`.`rateLimitMaxRequestWindow` int DEFAULT NULL,
 
 # User level
-`users`.`rateLimitMaxRequests` int DEFAULT NULL,
-`users`.`rateLimitMaxRequestsWindow` int DEFAULT NULL,
+`users`.`rateLimitMaxRequest` int DEFAULT NULL,
+`users`.`rateLimitMaxRequestWindow` int DEFAULT NULL,
 ```
 
 ## Rate Limiting at route level
@@ -101,8 +101,8 @@ rateLimitRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) Key prefix used 
 ```PHP
 return [
     [...]
-    'rateLimitMaxRequests' => 1,            // Allowed number of requests
-    'rateLimitMaxRequestsWindow' => 3600,   // Window in Seconds for allowed number of requests
+    'rateLimitMaxRequest' => 1,            // Allowed number of requests
+    'rateLimitMaxRequestWindow' => 3600,   // Window in Seconds for allowed number of requests
     [...]
 ];
 ```

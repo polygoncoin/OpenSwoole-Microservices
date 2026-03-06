@@ -82,8 +82,8 @@ class Reload
         $cRows = DbFunctions::$gDbServer->fetchAll();
         DbFunctions::$gDbServer->closeCursor();
         foreach ($cRows as $cRow) {
-            if ($cRow['allowed_cidrs'] !== null) {
-                $cCidrs = Functions::cidrsIpNumber(cidrString: $cRow['allowed_cidrs']);
+            if ($cRow['allowed_cidr'] !== null) {
+                $cCidrs = Functions::cidrsIpNumber(cidrString: $cRow['allowed_cidr']);
                 if (count(value: $cCidrs) > 0) {
                     $cCidrKey = CacheKey::cCidr(cID: $cRow['id']);
                     DbFunctions::$gCacheServer->setCache(
@@ -127,8 +127,8 @@ class Reload
             $uRows = $db->fetchAll();
             $db->closeCursor();
             foreach ($uRows as $uRow) {
-                if ($uRow['allowed_cidrs'] !== null) {
-                    $uCidrs = Functions::cidrsIpNumber(cidrString: $uRow['allowed_cidrs']);
+                if ($uRow['allowed_cidr'] !== null) {
+                    $uCidrs = Functions::cidrsIpNumber(cidrString: $uRow['allowed_cidr']);
                     if (count(value: $uCidrs) > 0) {
                         $uCidrKey = CacheKey::uCidr(
                             cID: $cRow['id'],
@@ -174,8 +174,8 @@ class Reload
         while ($gRow = DbFunctions::$gDbServer->fetch(\PDO::FETCH_ASSOC)) {
             $g_key = CacheKey::group(gID: $gRow['id']);
             DbFunctions::$gCacheServer->setCache(key: $g_key, value: json_encode(value: $gRow));
-            if ($gRow['allowed_cidrs'] !== null) {
-                $cidrs = Functions::cidrsIpNumber(cidrString: $gRow['allowed_cidrs']);
+            if ($gRow['allowed_cidr'] !== null) {
+                $cidrs = Functions::cidrsIpNumber(cidrString: $gRow['allowed_cidr']);
                 if (count(value: $cidrs) > 0) {
                     $cidrKey = CacheKey::gCidr(gID: $gRow['id']);
                     DbFunctions::$gCacheServer->setCache(

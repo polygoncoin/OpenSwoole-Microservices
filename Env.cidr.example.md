@@ -9,7 +9,7 @@ To learn more about CIDR one can [Check Google](https://www.google.com/search?q=
 
 To enable CIDR checks one can do this as below in .env.cidr
 ```ini
-enableCidrChecks=0                      ; 1 = true / 0 = false in
+enableCidrCheck=0                      ; 1 = true / 0 = false in
 ```
 
 ## 🤝 Setting top level CIDR
@@ -48,13 +48,13 @@ To enable CIDR settings at Client / Group / User level one can set them in respe
 
 ```SQL
 # Client level
-`clients`.`allowed_cidrs` VARCHAR(250) DEFAULT '0.0.0.0/0',
+`clients`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
 
 # Group level
-`groups`.`allowed_cidrs` VARCHAR(250) DEFAULT '0.0.0.0/0',
+`groups`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
 
 # User level
-`users`.`allowed_cidrs` VARCHAR(250) DEFAULT '0.0.0.0/0',
+`users`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
 ```
 
 ## 🤝 Contributing

@@ -173,7 +173,8 @@ class Read
 
         if (
             Env::$enableConfigRequest
-            && $this->api->req->rParser->isConfigRequest
+            && $this->api->req->rParser->routeEndingWithReservedKeywordFlag
+            && ($this->api->req->rParser->routeEndingReservedKeyword === Env::$configRequestRouteKeyword)
         ) {
             $this->processReadConfig(
                 rSqlConfig: $rSqlConfig,

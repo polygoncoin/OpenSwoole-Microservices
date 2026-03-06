@@ -92,7 +92,7 @@ return [
     'fetchFrom' => 'Master',
     'cacheKey' => DatabaseOpenCacheKey::$Category,
     'responseLag' => [
-        // No of Requests => Seconds Lag
+        // No of Request => Seconds Lag
         0 => 0,
         // 2 => 10,
     ],

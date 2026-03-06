@@ -39,8 +39,8 @@ class Env
     public static $OUTPUT_PERFORMANCE_STATS = null;
     public static $DISABLE_REQUESTS_VIA_PROXIES = null;
 
-    public static $enableOpenRequests = null;
-    public static $enableAuthRequests = null;
+    public static $enableOpenRequest = null;
+    public static $enableAuthRequest = null;
     public static $authMode = null;
     public static $sessionMode = null;
     public static $enableConcurrentLogins = null;
@@ -110,7 +110,7 @@ class Env
     public static $uploadRequestRoutePrefix = null;
 ///////////////
 
-    public static $enableCidrChecks = null;
+    public static $enableCidrCheck = null;
 
     public static $configRestrictedCidr = null;
     public static $exportRestrictedCidr = null;
@@ -147,17 +147,17 @@ class Env
     public static $rateLimitUserLoginPrefix = null;
     public static $rateLimitUsersRequestPrefix = null;
 
-    public static $rateLimitIPMaxRequests = null;
-    public static $rateLimitIPMaxRequestsWindow = null;
+    public static $rateLimitIPMaxRequest = null;
+    public static $rateLimitIPMaxRequestWindow = null;
 
     public static $rateLimitUsersPerIpMaxUsers = null;
     public static $rateLimitUsersPerIpMaxUsersWindow = null;
 
-    public static $rateLimitUsersMaxRequests = null;
-    public static $rateLimitUsersMaxRequestsWindow = null;
+    public static $rateLimitUsersMaxRequest = null;
+    public static $rateLimitUsersMaxRequestWindow = null;
 
-    public static $rateLimitMaxUserLoginRequests = null;
-    public static $rateLimitMaxUserLoginRequestsWindow = null;
+    public static $rateLimitMaxUserLoginRequest = null;
+    public static $rateLimitMaxUserLoginRequestWindow = null;
 ///////////////
 
     public static $sqlResultsCacheServerType = null;
@@ -186,8 +186,8 @@ class Env
         self::$OUTPUT_PERFORMANCE_STATS = getenv(name: 'OUTPUT_PERFORMANCE_STATS');
         self::$DISABLE_REQUESTS_VIA_PROXIES = getenv(name: 'DISABLE_REQUESTS_VIA_PROXIES');
 
-        self::$enableOpenRequests = (bool)((int)getenv(name: 'enableOpenRequests'));
-        self::$enableAuthRequests = (bool)((int)getenv(name: 'enableAuthRequests'));
+        self::$enableOpenRequest = (bool)((int)getenv(name: 'enableOpenRequest'));
+        self::$enableAuthRequest = (bool)((int)getenv(name: 'enableAuthRequest'));
         self::$authMode = getenv(name: 'authMode');
         self::$sessionMode = getenv(name: 'sessionMode');
         self::$enableConcurrentLogins = getenv(name: 'enableConcurrentLogins');
@@ -257,7 +257,7 @@ class Env
         self::$uploadRequestRoutePrefix = getenv(name: 'uploadRequestRoutePrefix');
         //////////////////
 
-        self::$enableCidrChecks = (bool)((int)getenv(name: 'enableCidrChecks'));
+        self::$enableCidrCheck = (bool)((int)getenv(name: 'enableCidrCheck'));
 
         self::$configRestrictedCidr = getenv(name: 'configRestrictedCidr');
         self::$exportRestrictedCidr = getenv(name: 'exportRestrictedCidr');
@@ -294,17 +294,17 @@ class Env
         self::$rateLimitUserLoginPrefix = getenv(name: 'rateLimitUserLoginPrefix');
         self::$rateLimitUsersRequestPrefix = getenv(name: 'rateLimitUsersRequestPrefix');
 
-        self::$rateLimitIPMaxRequests = (int)getenv(name: 'rateLimitIPMaxRequests');
-        self::$rateLimitIPMaxRequestsWindow = (int)getenv(name: 'rateLimitIPMaxRequestsWindow');
+        self::$rateLimitIPMaxRequest = (int)getenv(name: 'rateLimitIPMaxRequest');
+        self::$rateLimitIPMaxRequestWindow = (int)getenv(name: 'rateLimitIPMaxRequestWindow');
 
         self::$rateLimitUsersPerIpMaxUsers = (int)getenv(name: 'rateLimitUsersPerIpMaxUsers');
         self::$rateLimitUsersPerIpMaxUsersWindow = (int)getenv(name: 'rateLimitUsersPerIpMaxUsersWindow');
 
-        self::$rateLimitUsersMaxRequests = (int)getenv(name: 'rateLimitUsersMaxRequests');
-        self::$rateLimitUsersMaxRequestsWindow = (int)getenv(name: 'rateLimitUsersMaxRequestsWindow');
+        self::$rateLimitUsersMaxRequest = (int)getenv(name: 'rateLimitUsersMaxRequest');
+        self::$rateLimitUsersMaxRequestWindow = (int)getenv(name: 'rateLimitUsersMaxRequestWindow');
 
-        self::$rateLimitMaxUserLoginRequests = (int)getenv(name: 'rateLimitMaxUserLoginRequests');
-        self::$rateLimitMaxUserLoginRequestsWindow = (int)getenv(name: 'rateLimitMaxUserLoginRequestsWindow');
+        self::$rateLimitMaxUserLoginRequest = (int)getenv(name: 'rateLimitMaxUserLoginRequest');
+        self::$rateLimitMaxUserLoginRequestWindow = (int)getenv(name: 'rateLimitMaxUserLoginRequestWindow');
         //////////////////
 
         self::$sqlResultsCacheServerType = getenv(name: 'sqlResultsCacheServerType');

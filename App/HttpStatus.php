@@ -53,7 +53,7 @@ class HttpStatus
     public static $RangeNotSatisfiable  = 416;
     public static $UnprocessableEntity  = 422;
     public static $TooEarly             = 425;
-    public static $TooManyRequests      = 429;
+    public static $TooManyRequest      = 429;
 
     public static $InternalServerError  = 500;
     public static $BadGateway           = 502;

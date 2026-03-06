@@ -771,8 +771,8 @@ trait AppTrait
     {
         if (
             Env::$enableRateLimitAtRouteLevel
-            || !isset($sqlConfig['rateLimitMaxRequests'])
-            || !isset($sqlConfig['rateLimitMaxRequestsWindow'])
+            || !isset($sqlConfig['rateLimitMaxRequest'])
+            || !isset($sqlConfig['rateLimitMaxRequestWindow'])
         ) {
             return;
         }
@@ -795,8 +795,8 @@ trait AppTrait
         // @throws \Exception
         $rateLimitChecked = $this->checkRateLimit(
             rateLimitPrefix: Env::$rateLimitRoutePrefix,
-            rateLimitMaxRequests: $sqlConfig['rateLimitMaxRequests'],
-            rateLimitMaxRequestsWindow: $sqlConfig['rateLimitMaxRequestsWindow'],
+            rateLimitMaxRequest: $sqlConfig['rateLimitMaxRequest'],
+            rateLimitMaxRequestWindow: $sqlConfig['rateLimitMaxRequestWindow'],
             key: $hashKey
         );
     }
@@ -884,14 +884,14 @@ trait AppTrait
             $hashKey = 'LAG:' . md5(string: $hash);
 
             if (DbFunctions::$gCacheServer->cacheExists(key: $hashKey)) {
-                $noOfRequests = DbFunctions::$gCacheServer->getCache(key: $hashKey);
+                $noOfRequest = DbFunctions::$gCacheServer->getCache(key: $hashKey);
             } else {
-                $noOfRequests = 0;
+                $noOfRequest = 0;
             }
 
             DbFunctions::$gCacheServer->setCache(
                 key: $hashKey,
-                value: ++$noOfRequests,
+                value: ++$noOfRequest,
                 expire: 3600
             );
 
@@ -899,7 +899,7 @@ trait AppTrait
             $responseLag = &$sqlConfig['responseLag'];
             if (is_array(value: $responseLag)) {
                 foreach ($responseLag as $start => $newLag) {
-                    if ($noOfRequests > $start) {
+                    if ($noOfRequest > $start) {
                         $lag = $newLag;
                     }
                 }
@@ -915,8 +915,8 @@ trait AppTrait
      * Check Rate Limit
      *
      * @param string $rateLimitPrefix        Prefix
-     * @param int    $rateLimitMaxRequests   Max request
-     * @param int    $rateLimitMaxRequestsWindow Window in seconds
+     * @param int    $rateLimitMaxRequest   Max request
+     * @param int    $rateLimitMaxRequestWindow Window in seconds
      * @param string $key                    Key
      *
      * @return void
@@ -924,8 +924,8 @@ trait AppTrait
      */
     public function checkRateLimit(
         $rateLimitPrefix,
-        $rateLimitMaxRequests,
-        $rateLimitMaxRequestsWindow,
+        $rateLimitMaxRequest,
+        $rateLimitMaxRequestWindow,
         $key
     ): bool {
         if ($this->rateLimiter === null) {
@@ -935,8 +935,8 @@ trait AppTrait
         try {
             $result = $this->rateLimiter->check(
                 prefix: $rateLimitPrefix,
-                maxRequests: $rateLimitMaxRequests,
-                secondsWindow: $rateLimitMaxRequestsWindow,
+                maxRequest: $rateLimitMaxRequest,
+                secondsWindow: $rateLimitMaxRequestWindow,
                 key: $key
             );
 
@@ -944,10 +944,10 @@ trait AppTrait
                 // Process the request
                 return true;
             } else {
-                // Return 429 Too Many Requests
+                // Return 429 Too Many Request
                 throw new \Exception(
                     message: $result['resetAt'] - Env::$timestamp,
-                    code: HttpStatus::$TooManyRequests
+                    code: HttpStatus::$TooManyRequest
                 );
             }
         } catch (\Exception $e) {

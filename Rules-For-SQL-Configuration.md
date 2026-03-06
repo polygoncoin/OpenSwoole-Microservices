@@ -246,12 +246,12 @@ return [
     'useResultSet' => true, // For DQL
 
     // Rate Limiting Route access
-    'rateLimitMaxRequests' => 1, // Allowed number of request in defined seconds window
-    'rateLimitMaxRequestsWindow' => 3600, // Seconds Window for restricting number of request
+    'rateLimitMaxRequest' => 1, // Allowed number of request in defined seconds window
+    'rateLimitMaxRequestWindow' => 3600, // Seconds Window for restricting number of request
 
     // Control response time as per number of hits by configuring lags in seconds as below
     'responseLag' => [
-        // No of Requests => Seconds Lag
+        // No of Request => Seconds Lag
         0 => 0,
         2 => 10,
     ],
@@ -485,12 +485,12 @@ return [
     'useHierarchy' => true, // For DML
 
     // Rate Limiting Route access
-    'rateLimitMaxRequests' => 1, // Allowed number of request in defined seconds window
-    'rateLimitMaxRequestsWindow' => 3600, // Seconds Window for restricting number of request
+    'rateLimitMaxRequest' => 1, // Allowed number of request in defined seconds window
+    'rateLimitMaxRequestWindow' => 3600, // Seconds Window for restricting number of request
 
     // Control response time as per number of hits by configuring lags in seconds as below
     'responseLag' => [
-        // No of Requests => Seconds Lag
+        // No of Request => Seconds Lag
         0 => 0,
         2 => 10,
     ],

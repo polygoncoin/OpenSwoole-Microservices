@@ -38,9 +38,9 @@ return [
             'dataType' => DatabaseDataTypes::$INT
         ],
         [
-            'column' => 'allowed_cidrs',
+            'column' => 'allowed_cidr',
             'fetchFrom' => 'payload',
-            'fetchFromValue' => 'allowed_cidrs'
+            'fetchFromValue' => 'allowed_cidr'
         ],
         [
             'column' => 'comments',

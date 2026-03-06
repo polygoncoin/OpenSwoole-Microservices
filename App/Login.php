@@ -121,17 +121,17 @@ class Login
             $rateLimiter = new RateLimiter();
             $result = $rateLimiter->check(
                 prefix: Env::$rateLimitUsersPerIpPrefix,
-                maxRequests: Env::$rateLimitUsersPerIpMaxUsers,
+                maxRequest: Env::$rateLimitUsersPerIpMaxUsers,
                 secondsWindow: Env::$rateLimitUsersPerIpMaxUsersWindow,
                 key: $this->api->req->IP
             );
             if ($result['allowed']) {
                 // Process the request
             } else {
-                // Return 429 Too Many Requests
+                // Return 429 Too Many Request
                 throw new \Exception(
                     message: $result['resetAt'] - Env::$timestamp,
-                    code: HttpStatus::$TooManyRequests
+                    code: HttpStatus::$TooManyRequest
                 );
             }
         }
@@ -259,17 +259,17 @@ class Login
         $rateLimiter = new RateLimiter();
         $result = $rateLimiter->check(
             prefix: Env::$rateLimitUserLoginPrefix,
-            maxRequests: Env::$rateLimitMaxUserLoginRequests,
-            secondsWindow: Env::$rateLimitMaxUserLoginRequestsWindow,
+            maxRequest: Env::$rateLimitMaxUserLoginRequest,
+            secondsWindow: Env::$rateLimitMaxUserLoginRequestWindow,
             key: $this->api->req->IP . $this->username
         );
         if ($result['allowed']) {
             // Process the request
         } else {
-            // Return 429 Too Many Requests
+            // Return 429 Too Many Request
             throw new \Exception(
                 message: $result['resetAt'] - Env::$timestamp,
-                code: HttpStatus::$TooManyRequests
+                code: HttpStatus::$TooManyRequest
             );
         }
         // get hash from cache and compares with password

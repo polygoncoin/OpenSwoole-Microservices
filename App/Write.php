@@ -111,14 +111,20 @@ class Write
         );
 
         if (Env::$enableConfigRequest) {
-            if ($this->api->req->rParser->isConfigRequest) {
+            if (
+                $this->api->req->rParser->routeEndingWithReservedKeywordFlag
+                && ($this->api->req->rParser->routeEndingReservedKeyword === Env::$configRequestRouteKeyword)
+            ) {
                 $this->processWriteConfig(
                     wSqlConfig: $wSqlConfig,
                     useHierarchy: $useHierarchy
                 );
                 return true;
             }
-            if ($this->api->req->rParser->isImportSampleRequest) {
+            if (
+                $this->api->req->rParser->routeEndingWithReservedKeywordFlag
+                && ($this->api->req->rParser->routeEndingReservedKeyword === Env::$importSampleRequestRouteKeyword)
+            ) {
                 $filename = date('Ymd-His') . '-import-sample.csv';
                 $headers = [];
                 // Export headers

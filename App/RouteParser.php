@@ -51,25 +51,32 @@ class RouteParser
     public $routeHook = null;
 
     /**
-     * Is a config request flag
+     * Is Starting With Reserved Route Keyword Flag
      *
      * @var bool
      */
-    public $isConfigRequest = false;
+    public $routeStartingWithReservedKeywordFlag = false;
 
     /**
-     * Is a import sample request flag
+     * Route Starting Reserved Keyword
      *
-     * @var bool
+     * @var string
      */
-    public $isImportSampleRequest = false;
+    public $routeStartingReservedKeyword = '';
 
     /**
-     * Is a import request flag
+     * Is Ending With Reserved Route Keyword Flag
      *
      * @var bool
      */
-    public $isImportRequest = false;
+    public $routeEndingWithReservedKeywordFlag = false;
+
+    /**
+     * Route Ending Reserved Keyword
+     *
+     * @var string
+     */
+    public $routeEndingReservedKeyword = '';
 
     /**
      * Raw route / Configured Path
@@ -140,7 +147,7 @@ class RouteParser
         }
 
         if (file_exists(filename: $routeFileLocation)) {
-            $routes = include $routeFileLocation;
+            $routesConfig = include $routeFileLocation;
         } else {
             throw new \Exception(
                 message: 'Route file missing: ' . $this->api->req->METHOD . ' method',
@@ -165,51 +172,25 @@ class RouteParser
                 continue;
             }
 
-            if (isset($routes[$element])) {
+            if (isset($routesConfig[$element])) { // Route element is configured
                 $configuredRoute[] = $element;
-                $routes = &$routes[$element];
+                $routesConfig = &$routesConfig[$element];
                 $this->checkPresenceOfDynamicString(element: $element);
                 continue;
-            } elseif (
+            } elseif ( // Route starting with reserved keyword
                 $key === 0
-                && Env::$enableCidrChecks
-                && in_array($element, Env::$reservedRoutesPrefix)
+                && isStartingWithReservedRouteKeyword(routeStartingKeyword: $element)
             ) {
-                $isValidIp = Functions::checkCidr(
-                    IP: $this->api->req->IP,
-                    cidrString: Env::$reservedRoutesCidrString[$element]
-                );
-                if (!$isValidIp) {
-                    throw new \Exception(
-                        message: 'Source IP is not supported',
-                        code: HttpStatus::$NotFound
-                    );
-                }
-            } elseif (
+                continue;
+            } elseif ( // Route ending with reserved keyword
                 $key === $routeLastElementPos
-                && Env::$enableConfigRequest
-                && Env::$configRequestRouteKeyword === $element
+                && isEndingWithReservedRouteKeyword(routeEndingKeyword: $element)
             ) {
-                $this->isConfigRequest = true;
                 break;
-            } elseif (
-                $key === $routeLastElementPos
-                && Env::$enableImportRequest
-                && Env::$importRequestRouteKeyword === $element
-            ) {
-                $this->isImportRequest = true;
-                break;
-            } elseif (
-                $key === $routeLastElementPos
-                && Env::$enableImportSampleRequest
-                && Env::$importSampleRequestRouteKeyword === $element
-            ) {
-                $this->isImportSampleRequest = true;
-                break;
-            } else {
+            } else { // Route element is a variable/dynamic input
                 if (
-                    (isset($routes['__FILE__']) && count(value: $routes) > 2)
-                    || (!isset($routes['__FILE__']) && count(value: $routes) > 0)
+                    (isset($routesConfig['__FILE__']) && count(value: $routesConfig) > 2)
+                    || (!isset($routesConfig['__FILE__']) && count(value: $routesConfig) > 0)
                 ) {
                     [
                         $foundIntRoute,
@@ -217,7 +198,7 @@ class RouteParser
                         $foundStringRoute,
                         $foundStringParamName
                     ] = $this->findRouteAndParamName(
-                        routes: $routes,
+                        routesConfig: $routesConfig,
                         element: $element
                     );
                     if ($foundIntRoute) {
@@ -234,7 +215,7 @@ class RouteParser
                             code: HttpStatus::$BadRequest
                         );
                     }
-                    $routes = &$routes[
+                    $routesConfig = &$routesConfig[
                         ($foundIntRoute ? $foundIntRoute : $foundStringRoute)
                     ];
                 } else {
@@ -244,13 +225,13 @@ class RouteParser
                     );
                 }
                 if (
-                    isset($routes['iRepresentation'])
+                    isset($routesConfig['iRepresentation'])
                     && Env::isValidDataRep(
-                        dataRepresentation: $routes['iRepresentation'],
+                        dataRepresentation: $routesConfig['iRepresentation'],
                         mode: 'input'
                     )
                 ) {
-                    Env::$iRepresentation = $routes['iRepresentation'];
+                    Env::$iRepresentation = $routesConfig['iRepresentation'];
                 }
             }
         }
@@ -269,7 +250,75 @@ class RouteParser
         }
 
         $this->configuredRoute = '/' . implode(separator: '/', array: $configuredRoute);
-        $this->validateConfigFile(routes: $routes);
+        $this->validateConfigFile(routesConfig: $routesConfig);
+    }
+
+    /**
+     * Process Route Starting Keyword
+     *
+     * @param string $routeStartingKeyword Route Starting Keyword
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    private function isStartingWithReservedRouteKeyword($routeStartingKeyword)
+    {
+        if (
+            Env::$enableCidrCheck
+            && in_array($routeStartingKeyword, Env::$reservedRoutesPrefix)
+        ) {
+            $this->routeStartingWithReservedKeywordFlag = true;
+            $this->routeStartingReservedKeyword = $routeStartingKeyword;
+            $isValidIp = Functions::checkCidr(
+                IP: $this->api->req->IP,
+                cidrString: Env::$reservedRoutesCidrString[$routeStartingKeyword]
+            );
+            if (!$isValidIp) {
+                throw new \Exception(
+                    message: 'Source IP is not supported',
+                    code: HttpStatus::$NotFound
+                );
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Process Route Ending Keyword
+     *
+     * @param string $routeEndingKeyword Route Ending Keyword
+     *
+     * @return bool
+     */
+    private function isEndingWithReservedRouteKeyword($routeEndingKeyword)
+    {
+        $return = false;
+
+        if (
+            Env::$enableConfigRequest
+            && Env::$configRequestRouteKeyword === $routeEndingKeyword
+        ) {
+            $this->routeEndingWithReservedKeywordFlag = true;
+            $this->routeEndingReservedKeyword = Env::$configRequestRouteKeyword;
+            $return = true;
+        } elseif (
+            Env::$enableImportRequest
+            && Env::$importRequestRouteKeyword === $routeEndingKeyword
+        ) {
+            $this->routeEndingWithReservedKeywordFlag = true;
+            $this->routeEndingReservedKeyword = Env::$importRequestRouteKeyword;
+            $return = true;
+        } elseif (
+            Env::$enableImportSampleRequest
+            && Env::$importSampleRequestRouteKeyword === $routeEndingKeyword
+        ) {
+            $this->routeEndingWithReservedKeywordFlag = true;
+            $this->routeEndingReservedKeyword = Env::$importSampleRequestRouteKeyword;
+            $return = true;
+        }
+
+        return $return;
     }
 
     /**
@@ -335,16 +384,16 @@ class RouteParser
     /**
      * Validate config file
      *
-     * @param array $routes Routes config
+     * @param array $routesConfig Routes config
      *
      * @return void
      * @throws \Exception
      */
-    private function validateConfigFile(&$routes): void
+    private function validateConfigFile(&$routesConfig): void
     {
         // Set route code file
-        if (!isset($routes['__FILE__'])) {
-            if (count($routes) > 0) {
+        if (!isset($routesConfig['__FILE__'])) {
+            if (count($routesConfig) > 0) {
                 throw new \Exception(
                     message: 'Route not supported',
                     code: HttpStatus::$BadRequest
@@ -352,8 +401,8 @@ class RouteParser
             }
             if (
                 !(
-                    $routes['__FILE__'] === false
-                    || file_exists(filename: $routes['__FILE__'])
+                    $routesConfig['__FILE__'] === false
+                    || file_exists(filename: $routesConfig['__FILE__'])
                 )
             ) {
                 throw new \Exception(
@@ -364,13 +413,13 @@ class RouteParser
         }
 
         if (
-            !empty($routes['__FILE__'])
-            && file_exists(filename: $routes['__FILE__'])
+            !empty($routesConfig['__FILE__'])
+            && file_exists(filename: $routesConfig['__FILE__'])
         ) {
             $Constants = __NAMESPACE__ . '\Constants';
             $Env = __NAMESPACE__ . '\Env';
 
-            $this->sqlConfigFile = $routes['__FILE__'];
+            $this->sqlConfigFile = $routesConfig['__FILE__'];
 
             // Output data representation over rides global
             // Output data representation set in Query config file
@@ -421,26 +470,26 @@ class RouteParser
     /**
      * Find ROute and Param Name from Dynamic String configured in Route file.
      *
-     * @param array  $routes  Routes config
+     * @param array  $routesConfig  Routes config
      * @param string $element Routes element
      *
      * @return array
      */
-    private function findRouteAndParamName(&$routes, &$element): array
+    private function findRouteAndParamName(&$routesConfig, &$element): array
     {
         $foundIntRoute = false;
         $foundIntParamName = false;
         $foundStringRoute = false;
         $foundStringParamName = false;
-        foreach (array_keys(array: $routes) as $routeElement) {
+        foreach (array_keys(array: $routesConfig) as $routeElement) {
             if (in_array($routeElement, ['dataType'])) {
                 continue;
             }
             if (
                 strpos(haystack: $routeElement, needle: '{') === 0
-                && isset($routes[$routeElement]['dataType'])
+                && isset($routesConfig[$routeElement]['dataType'])
             ) {
-                $dataType = $routes[$routeElement]['dataType'];
+                $dataType = $routesConfig[$routeElement]['dataType'];
                 // Is a dynamic URI element
                 $this->processRouteElement(
                     routeElement: $routeElement,

@@ -54,7 +54,7 @@ return [
             }
         ],
         [
-            'column' => 'allowed_cidrs',
+            'column' => 'allowed_cidr',
             'fetchFrom' => 'custom',
             'fetchFromValue' => '0.0.0.0/0'
         ],
@@ -90,13 +90,13 @@ return [
             '__MAX-PAYLOAD-OBJECTS__' => 2
         ]
     ],
-    'rateLimitMaxRequests' => 100,
-    'rateLimitMaxRequestsWindow' => 3600,
+    'rateLimitMaxRequest' => 100,
+    'rateLimitMaxRequestWindow' => 3600,
     'useHierarchy' => true,
     '__PAYLOAD-TYPE__' => 'Object',
     'idempotentWindow' => 10,
     'responseLag' => [
-        // No of Requests => Seconds Lag
+        // No of Request => Seconds Lag
         0 => 0,
         // 2 => 10,
     ]

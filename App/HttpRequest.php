@@ -149,7 +149,7 @@ class HttpRequest
                     $this->open = false;
                 } elseif ($this->ROUTE === '/login') {
                     $this->open = false;
-                } elseif (Env::$enableOpenRequests) {
+                } elseif (Env::$enableOpenRequest) {
                     $this->open = true;
                 }
                 break;
@@ -212,7 +212,7 @@ class HttpRequest
         }
         if (
             $this->open === true
-            && !Env::$enableOpenRequests
+            && !Env::$enableOpenRequest
         ) {
             throw new \Exception(
                 message: "Open to web requests are disabled",
@@ -221,7 +221,7 @@ class HttpRequest
         }
         if (
             $this->open === false
-            && !Env::$enableAuthRequests
+            && !Env::$enableAuthRequest
         ) {
             throw new \Exception(
                 message: "Auth based requests are disabled",
@@ -330,7 +330,8 @@ class HttpRequest
     {
         switch (true) {
             case (
-                $this->rParser->isImportRequest
+                $this->rParser->routeEndingWithReservedKeywordFlag
+                && ($this->rParser->routeEndingReservedKeyword === Env::$importRequestRouteKeyword)
                 && isset($this->api->http['files']['file']['tmp_name'])
             ):
                 $content = $this->formatCsvPayload(

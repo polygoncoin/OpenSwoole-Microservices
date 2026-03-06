@@ -99,10 +99,7 @@ class Api
         }
 
         // Load Payloads
-        if (
-            !$this->api->req->rParser->isConfigRequest
-            && !$this->api->req->rParser->isImportSampleRequest
-        ) {
+        if (!$this->api->req->rParser->routeEndingWithReservedKeywordFlag) {
             $this->api->req->loadPayload();
         }
 

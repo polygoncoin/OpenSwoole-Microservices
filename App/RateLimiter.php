@@ -65,7 +65,7 @@ class RateLimiter
      * Check the request is valid
      *
      * @param string $prefix        Prefix
-     * @param int    $maxRequests   Max request
+     * @param int    $maxRequest   Max request
      * @param int    $secondsWindow Window in seconds
      * @param string $key           Key
      *
@@ -73,7 +73,7 @@ class RateLimiter
      */
     public function check(
         $prefix,
-        $maxRequests,
+        $maxRequest,
         $secondsWindow,
         $key
     ): array {
@@ -88,7 +88,7 @@ class RateLimiter
             ];
         }
 
-        $maxRequests = (int)$maxRequests;
+        $maxRequest = (int)$maxRequest;
         $secondsWindow = (int)$secondsWindow;
 
         $remainder = Env::$timestamp % $secondsWindow;
@@ -104,8 +104,8 @@ class RateLimiter
         }
         $requestCount++;
 
-        $allowed = $requestCount <= $maxRequests;
-        $remaining = max(0, $maxRequests - $requestCount);
+        $allowed = $requestCount <= $maxRequest;
+        $remaining = max(0, $maxRequest - $requestCount);
         $resetAt = Env::$timestamp + $remainder;
 
         if ($allowed) {

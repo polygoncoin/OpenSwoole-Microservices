@@ -100,7 +100,7 @@ class Start
                 $headers['Retry-After'] = $e->getMessage();
                 $arr = [
                     'Status' => $e->getCode(),
-                    'Message' => 'Too Many Requests',
+                    'Message' => 'Too Many Request',
                     'RetryAfter' => $e->getMessage()
                 ];
             } else {
