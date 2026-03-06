@@ -69,8 +69,8 @@ gDbServerQueryPlaceholder='Named' ; Named(:param) / Unnamed(?)
 masterDatabase='client_master'             ; contains all entities necessary for a new client
 
 ; Tables
-clientsTable='clients'
-groupsTable='groups'
+clientsTable='client'
+groupsTable='group'
 
 ; Sql query placeholder
 queryPlaceholder='Named'            ; Named(:param) / Unnamed(?)
@@ -97,16 +97,16 @@ gCounterMode='Cache'                ; Globally configured Cache / Database
 
 ## Idempotent
 
-This helps managing cache for idempotent requests.
+This helps managing cache for idempotent request.
 
 ```ini
-; Settings to avoid Idempotent requests
+; Settings to avoid Idempotent request
 idempotentSecret='changeme'         ; hash_hmac secret
 ```
 
 ## 🤝 Contributing
 
-Issues and feature requests are welcome.<br />
+Issues and feature request are welcome.<br />
 Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
 
 ## Author

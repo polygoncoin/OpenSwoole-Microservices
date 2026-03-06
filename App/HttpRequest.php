@@ -111,7 +111,7 @@ class HttpRequest
     public $cId = null;
 
     /**
-     * Client users table
+     * Client user table
      *
      * @var null|string
      */
@@ -206,7 +206,7 @@ class HttpRequest
 
         if ($this->open === null) {
             throw new \Exception(
-                message: "Open to web & Auth based requests are disabled",
+                message: "Open to web & Auth based request are disabled",
                 code: HttpStatus::$InternalServerError
             );
         }
@@ -215,7 +215,7 @@ class HttpRequest
             && !Env::$enableOpenRequest
         ) {
             throw new \Exception(
-                message: "Open to web requests are disabled",
+                message: "Open to web request are disabled",
                 code: HttpStatus::$InternalServerError
             );
         }
@@ -224,7 +224,7 @@ class HttpRequest
             && !Env::$enableAuthRequest
         ) {
             throw new \Exception(
-                message: "Auth based requests are disabled",
+                message: "Auth based request are disabled",
                 code: HttpStatus::$InternalServerError
             );
         }

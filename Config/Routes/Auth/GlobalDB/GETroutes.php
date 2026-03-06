@@ -19,7 +19,7 @@ use Microservices\App\Constants;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    'groups' => [
+    'group' => [
         '__FILE__' => Constants::$AUTH_QUERIES_DIR
             . DIRECTORY_SEPARATOR . 'GlobalDB'
             . DIRECTORY_SEPARATOR . 'GET'
@@ -32,7 +32,7 @@ return [
                 . DIRECTORY_SEPARATOR . 'groups.php',
         ],
     ],
-    'clients' => [
+    'client' => [
         '__FILE__' => Constants::$AUTH_QUERIES_DIR
             . DIRECTORY_SEPARATOR . 'GlobalDB'
             . DIRECTORY_SEPARATOR . 'GET'

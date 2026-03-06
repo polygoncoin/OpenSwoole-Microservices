@@ -48,18 +48,18 @@ To enable CIDR settings at Client / Group / User level one can set them in respe
 
 ```SQL
 # Client level
-`clients`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
+`client`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
 
 # Group level
-`groups`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
+`group`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
 
 # User level
-`users`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
+`user`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
 ```
 
 ## 🤝 Contributing
 
-Issues and feature requests are welcome.<br />
+Issues and feature request are welcome.<br />
 Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
 
 ## Author

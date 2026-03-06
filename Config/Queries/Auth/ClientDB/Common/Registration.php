@@ -21,7 +21,7 @@ return [
     [
       'fn' => 'primaryKeyExist',
       'fnArgs' => [
-                'table' => ['custom', 'users'],
+                'table' => ['custom', $this->api->req->usersTable],
                 'primary' => ['custom', 'id'],
                 'id' => ['routeParams', 'id']
             ],

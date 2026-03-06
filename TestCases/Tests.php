@@ -30,7 +30,7 @@ namespace Microservices\TestCases;
 class Tests
 {
     /**
-     * Process Auth based requests
+     * Process Auth based request
      *
      * @return array
      */
@@ -46,7 +46,7 @@ class Tests
     }
 
     /**
-     * Process Auth based requests
+     * Process Auth based request
      *
      * @return array
      */
@@ -56,7 +56,7 @@ class Tests
     }
 
     /**
-     * Process Open to web api requests
+     * Process Open to web api request
      *
      * @return array
      */
@@ -66,7 +66,7 @@ class Tests
     }
 
     /**
-     * Process Open to web api requests - Request/Response are in XML format
+     * Process Open to web api request - Request/Response are in XML format
      *
      * @return array
      */
@@ -76,7 +76,7 @@ class Tests
     }
 
     /**
-     * Process Auth based requests
+     * Process Auth based request
      *
      * @return array
      */

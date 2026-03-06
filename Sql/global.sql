@@ -4,9 +4,9 @@ CREATE TABLE `global_counter` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY AUTO_INCREMENT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `clients`;
+DROP TABLE IF EXISTS `client`;
 
-CREATE TABLE `clients` (
+CREATE TABLE `client` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `name` varchar(255) DEFAULT NULL,
   `allowed_cidr` text,
@@ -55,9 +55,9 @@ CREATE TABLE `clients` (
   `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `groups`;
+DROP TABLE IF EXISTS `group`;
 
-CREATE TABLE `groups` (
+CREATE TABLE `group` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `name` varchar(100) NOT NULL,
   `client_id` int DEFAULT NULL,
@@ -76,17 +76,17 @@ CREATE TABLE `groups` (
   `is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-LOCK TABLES `clients` WRITE;
-/*!40000 ALTER TABLE `clients` DISABLE KEYS */;
-INSERT INTO `clients` VALUES
+LOCK TABLES `client` WRITE;
+/*!40000 ALTER TABLE `client` DISABLE KEYS */;
+INSERT INTO `client` VALUES
 (1,'Client 001','0.0.0.0/0','localhost', 'public.localhost','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','clientUsersTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','No','No');
-/*!40000 ALTER TABLE `clients` ENABLE KEYS */;
+/*!40000 ALTER TABLE `client` ENABLE KEYS */;
 UNLOCK TABLES;
 
-LOCK TABLES `groups` WRITE;
-/*!40000 ALTER TABLE `groups` DISABLE KEYS */;
-INSERT INTO `groups` VALUES
+LOCK TABLES `group` WRITE;
+/*!40000 ALTER TABLE `group` DISABLE KEYS */;
+INSERT INTO `group` VALUES
 (2,'Client001UserGroup1',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes','No','No'),
 (3,'AdminGroup',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes','No','No');
-/*!40000 ALTER TABLE `groups` ENABLE KEYS */;
+/*!40000 ALTER TABLE `group` ENABLE KEYS */;
 UNLOCK TABLES;

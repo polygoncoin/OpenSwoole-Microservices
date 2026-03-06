@@ -113,7 +113,7 @@ class Gateway
         }
 
         // Rate limit open traffic (not limited by allowed IPs/CIDR and allowed
-        // Rate Limits to users)
+        // Rate Limits to user)
         if ($this->cidrChecked === false && $this->rateLimitChecked === false) {
             // IP Rate Limiting
             $this->rateLimitIp();

@@ -1,6 +1,6 @@
 # Rate Limiting
 
-Rate Limiting is a method of restricting traffic for a set window of time. The time windows unit used here is No. of Seconds to allow a particular number of requests in respective param.
+Rate Limiting is a method of restricting traffic for a set window of time. The time windows unit used here is No. of Seconds to allow a particular number of request in respective param.
 
 ## More about Rate Limiting
 To learn more about Rate Limiting one can [Check Google](https://www.google.com/search?q=Rate%20Limiting)
@@ -37,7 +37,7 @@ enableRateLimitAtUsersRequestLevel=0    ; Function = Request & User ID
 ## 🤝 Setting Rate Limiting keys to be used as identifier with Function(s) combined
 
 ```ini
-; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to users)
+; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to user)
 rateLimitIPPrefix='IPRL:'
 ; Client based Rate Limitng (GRL) Key prefix used in Redis
 rateLimitClientPrefix='CRL:'
@@ -65,7 +65,7 @@ rateLimitUsersPerIpMaxUsers=10          ; Max Users allowed per IP
 rateLimitUsersPerIpMaxUsersWindow=300   ; Window in seconds of Max Users allowed per IP
 
 ; Rate Limiting No. of Request per User ('URRL:')
-; Delay Between Consecutive Request (allow n requests only for seconds configured for each user)
+; Delay Between Consecutive Request (allow n request only for seconds configured for each user)
 rateLimitUsersMaxRequest=1             ; Max one request allowed for 10 seconds
 rateLimitUsersMaxRequestWindow=10      ; Max one request allowed for 10 seconds
 ```
@@ -74,16 +74,16 @@ rateLimitUsersMaxRequestWindow=10      ; Max one request allowed for 10 seconds
 
 ```SQL
 # Client level
-`clients`.`rateLimitMaxRequest` int DEFAULT NULL,
-`clients`.`rateLimitMaxRequestWindow` int DEFAULT NULL,
+`client`.`rateLimitMaxRequest` int DEFAULT NULL,
+`client`.`rateLimitMaxRequestWindow` int DEFAULT NULL,
 
 # Group level
-`groups`.`rateLimitMaxRequest` int DEFAULT NULL,
-`groups`.`rateLimitMaxRequestWindow` int DEFAULT NULL,
+`group`.`rateLimitMaxRequest` int DEFAULT NULL,
+`group`.`rateLimitMaxRequestWindow` int DEFAULT NULL,
 
 # User level
-`users`.`rateLimitMaxRequest` int DEFAULT NULL,
-`users`.`rateLimitMaxRequestWindow` int DEFAULT NULL,
+`user`.`rateLimitMaxRequest` int DEFAULT NULL,
+`user`.`rateLimitMaxRequestWindow` int DEFAULT NULL,
 ```
 
 ## Rate Limiting at route level
@@ -101,15 +101,15 @@ rateLimitRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) Key prefix used 
 ```PHP
 return [
     [...]
-    'rateLimitMaxRequest' => 1,            // Allowed number of requests
-    'rateLimitMaxRequestWindow' => 3600,   // Window in Seconds for allowed number of requests
+    'rateLimitMaxRequest' => 1,            // Allowed number of request
+    'rateLimitMaxRequestWindow' => 3600,   // Window in Seconds for allowed number of request
     [...]
 ];
 ```
 
 ## 🤝 Contributing
 
-Issues and feature requests are welcome.<br />
+Issues and feature request are welcome.<br />
 Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
 
 ## Author

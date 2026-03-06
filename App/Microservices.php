@@ -300,7 +300,7 @@ class Microservices
         $headers['Cross-Origin-Embedder-Policy'] = 'unsafe-none';
         $headers['Cross-Origin-Opener-Policy'] = 'unsafe-none';
 
-        // Access-Control headers are received during OPTIONS requests
+        // Access-Control headers are received during OPTIONS request
         if ($this->http['server']['method'] == 'OPTIONS') {
             // may also be using PUT, PATCH, HEAD etc
             $methods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
