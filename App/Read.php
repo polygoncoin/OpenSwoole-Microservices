@@ -55,11 +55,18 @@ class Read
     public $dataEncode = null;
 
     /**
-     * Fetch from master / slave
+     * Fetch mode
      *
      * @var null|string
      */
-    public $fetchFrom = null;
+    public $modeColumn = null;
+
+    /**
+     * DB Object
+     *
+     * @var null|object
+     */
+    public $db = null;
 
     /**
      * Api common Object
@@ -163,7 +170,10 @@ class Read
         // Set Server mode to execute query on - Read / Write Server
         $fetchFrom = $rSqlConfig['fetchFrom'] ?? 'Slave';
         DbFunctions::setDbConnection($this->api->req, fetchFrom: $fetchFrom);
-        $this->fetchFrom = strtolower($fetchFrom);
+        $fetchFrom = strtolower($fetchFrom);
+        $this->modeColumn = $fetchFrom . '_query_placeholder';
+        $dbObj = $fetchFrom . 'Db';
+        $this->db = &(DbFunctions::$$dbObj)[$this->api->req->cId];
 
         // Use result set recursively flag
         $useResultSet = $this->getUseHierarchy(
@@ -372,8 +382,7 @@ class Read
         &$configKeys,
         $useResultSet
     ): void {
-        $modeColumn = $this->fetchFrom . '_query_placeholder';
-        $mode = getenv(name: $this->api->req->s['cDetails'][$modeColumn]);
+        $mode = getenv(name: $this->api->req->s['cDetails'][$this->modeColumn]);
         $fn = "getSqlAndParams{$mode}Mode";
         [$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
             sqlDetails: $rSqlConfig,
@@ -391,9 +400,8 @@ class Read
             return;
         }
 
-        $dbObj = $this->fetchFrom . 'Db';
-        (DbFunctions::$$dbObj)[$this->api->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
-        if ($row =  (DbFunctions::$$dbObj)[$this->api->req->cId]->fetch()) {
+        $this->db->execDbQuery(sql: $sql, params: $sqlParams);
+        if ($row = $this->db->fetch()) {
             foreach ($row as $key => $value) {
                 $this->dataEncode->addKeyData(key: $key, data: $value);
             }
@@ -416,7 +424,7 @@ class Read
                 return;
             }
         }
-        (DbFunctions::$$dbObj)[$this->api->req->cId]->closeCursor();
+        $this->db->closeCursor();
 
         if (isset($rSqlConfig['__SUB-QUERY__'])) {
             $this->callReadDB(
@@ -464,8 +472,7 @@ class Read
             $this->api->req->s['queryParams']['perPage']
         );
 
-        $modeColumn = $this->fetchFrom . '_query_placeholder';
-        $mode = getenv(name: $this->api->req->s['cDetails'][$modeColumn]);
+        $mode = getenv(name: $this->api->req->s['cDetails'][$this->modeColumn]);
         $fn = "getSqlAndParams{$mode}Mode";
         [$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
             sqlDetails: $rSqlConfig
@@ -482,10 +489,9 @@ class Read
             return;
         }
 
-        $dbObj = $this->fetchFrom . 'Db';
-        (DbFunctions::$$dbObj)[$this->api->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
-        $row = (DbFunctions::$$dbObj)[$this->api->req->cId]->fetch();
-        (DbFunctions::$$dbObj)[$this->api->req->cId]->closeCursor();
+        $this->db->execDbQuery(sql: $sql, params: $sqlParams);
+        $row = $this->db->fetch();
+        $this->db->closeCursor();
 
         $totalRowsCount = $row['count'];
         $totalPages = ceil(
@@ -527,8 +533,7 @@ class Read
         &$configKeys,
         $useResultSet
     ): void {
-        $modeColumn = $this->fetchFrom . '_query_placeholder';
-        $mode = getenv(name: $this->api->req->s['cDetails'][$modeColumn]);
+        $mode = getenv(name: $this->api->req->s['cDetails'][$this->modeColumn]);
         $fn = "getSqlAndParams{$mode}Mode";
         [$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
             sqlDetails: $rSqlConfig,
@@ -577,9 +582,8 @@ class Read
 
         $singleColumn = false;
         $pushPop = true;
-        $dbObj = $this->fetchFrom . 'Db';
-        (DbFunctions::$$dbObj)[$this->api->req->cId]->execDbQuery(sql: $sql, params: $sqlParams, pushPop: $pushPop);
-        for ($i = 0; $row = (DbFunctions::$$dbObj)[$this->api->req->cId]->fetch();) {
+        $this->db->execDbQuery(sql: $sql, params: $sqlParams, pushPop: $pushPop);
+        for ($i = 0; $row = $this->db->fetch();) {
             if ($i === 0) {
                 if (count(value: $row) === 1) {
                     $singleColumn = true;
@@ -606,7 +610,7 @@ class Read
                 $this->dataEncode->encode(data: $row);
             }
         }
-        (DbFunctions::$$dbObj)[$this->api->req->cId]->closeCursor(pushPop: $pushPop);
+        $this->db->closeCursor(pushPop: $pushPop);
     }
 
     /**
@@ -670,8 +674,7 @@ class Read
             return [[], '', HttpStatus::$NotFound];
         }
 
-        $modeColumn = $this->fetchFrom . '_query_placeholder';
-        $mode = getenv(name: $this->api->req->s['cDetails'][$modeColumn]);
+        $mode = getenv(name: $this->api->req->s['cDetails'][$this->modeColumn]);
         $fn = "getSqlAndParams{$mode}Mode";
         [$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
             sqlDetails: $rSqlConfig

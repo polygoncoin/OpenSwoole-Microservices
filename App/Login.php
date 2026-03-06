@@ -40,6 +40,13 @@ use Microservices\App\SessionHandlers\Session;
 class Login
 {
     /**
+     * DB Object
+     *
+     * @var null|object
+     */
+    public $db = null;
+
+    /**
      * Username for login
      *
      * @var null|string
@@ -490,9 +497,10 @@ class Login
     private function updateDB(&$userData): void
     {
         DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
+        $this->db = &DbFunctions::$masterDb[$this->api->req->cId];
 
         $usersTable = $this->api->req->usersTable;
-        DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(
+        $this->db->execDbQuery(
             sql: "
                 UPDATE
                     `{$usersTable}`

@@ -1,4 +1,3 @@
 <?php
-echo 'php-file';
+echo 'php-view-file';
 print_r($finalArray);
-?>

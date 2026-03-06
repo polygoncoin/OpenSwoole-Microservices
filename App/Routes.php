@@ -157,10 +157,10 @@ class Routes
                 $httpRoutes[] = $route;
             }
             if (is_array(value: $r)) {
-                $route = $route . '/' . $key;
+                $_route = $route . '/' . $key;
                 $this->getRoutes(
                     routes: $r,
-                    route: $route,
+                    route: $_route,
                     httpRoutes: $httpRoutes
                 );
             }

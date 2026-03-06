@@ -48,6 +48,13 @@ class Supplement
     private $hook = null;
 
     /**
+     * DB Object
+     *
+     * @var null|object
+     */
+    public $db = null;
+
+    /**
      * Operate DML As Transactions
      *
      * @var null|Web
@@ -178,6 +185,7 @@ class Supplement
 
         // Set Server mode to execute query on - Read / Write Server
         DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
+        $this->db = &DbFunctions::$masterDb[$this->api->req->cId];
 
         $this->processSupplement(
             sSqlConfig: $sSqlConfig,
@@ -301,7 +309,7 @@ class Supplement
             // Begin DML operation
             if ($hashJson === null) {
                 if ($this->operateAsTransaction) {
-                    DbFunctions::$masterDb[$this->api->req->cId]->begin();
+                    $this->db->begin();
                 }
                 $response = [];
                 $this->execSupplement(
@@ -317,9 +325,9 @@ class Supplement
                 {
                     if (
                         $this->operateAsTransaction
-                        && (DbFunctions::$masterDb[$this->api->req->cId]->beganTransaction === true)
+                        && ($this->db->beganTransaction === true)
                     ) {
-                        DbFunctions::$masterDb[$this->api->req->cId]->commit();
+                        $this->db->commit();
                     }
 
                     $arr = [];
@@ -436,7 +444,7 @@ class Supplement
             }
 
             $payloadIndexes = $payloadIndexes;
-            if ($this->operateAsTransaction && !DbFunctions::$masterDb[$this->api->req->cId]->beganTransaction) {
+            if ($this->operateAsTransaction && !$this->db->beganTransaction) {
                 $_response['Error'] = 'Transaction rolled back';
                 return;
             }
@@ -494,12 +502,12 @@ class Supplement
                 $this->api->req->s['payload']
             );
 
-            if ($this->operateAsTransaction && !DbFunctions::$masterDb[$this->api->req->cId]->beganTransaction) {
+            if ($this->operateAsTransaction && !$this->db->beganTransaction) {
                 $_response['Error'] = 'Something went wrong';
                 return;
             }
 
-            DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
+            $this->db->closeCursor();
 
             // triggers
             if (isset($sSqlConfig['__TRIGGERS__'])) {

@@ -99,7 +99,15 @@ class Api
         }
 
         // Load Payloads
-        if (!$this->api->req->rParser->routeEndingWithReservedKeywordFlag) {
+        if (
+            !in_array(
+                $this->api->req->rParser->routeEndingReservedKeyword,
+                [
+                    Env::$configRequestRouteKeyword,
+                    Env::$importSampleRequestRouteKeyword
+                ]
+            )
+        ) {
             $this->api->req->loadPayload();
         }
 

@@ -179,12 +179,12 @@ class RouteParser
                 continue;
             } elseif ( // Route starting with reserved keyword
                 $key === 0
-                && isStartingWithReservedRouteKeyword(routeStartingKeyword: $element)
+                && $this->isStartingWithReservedRouteKeyword(routeStartingKeyword: $element)
             ) {
                 continue;
             } elseif ( // Route ending with reserved keyword
                 $key === $routeLastElementPos
-                && isEndingWithReservedRouteKeyword(routeEndingKeyword: $element)
+                && $this->isEndingWithReservedRouteKeyword(routeEndingKeyword: $element)
             ) {
                 break;
             } else { // Route element is a variable/dynamic input
