@@ -102,10 +102,10 @@ public static $Varchar50 = [
 
 When these data types are configured for a param in route or SQL config payload; there is a validation performed on the received data to fit the configured criteria of respective data type.
 
-## 🤝 Contributing
+## Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/OpenSwoole-Microservices/issues)
 
 ## Author
 
@@ -113,7 +113,7 @@ Feel free to share them on [issues page](https://github.com/polygoncoin/Microser
 
 Github: [@polygoncoin](https://github.com/polygoncoin)
 
-## 📝 License
+## License
 
 Copyright © 2026 [Ramesh N. Jangid (Sharma)](https://github.com/polygoncoin).<br />
 This project is [MIT](License) licensed.

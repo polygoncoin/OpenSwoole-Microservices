@@ -5,14 +5,14 @@ Classless Inter-Domain Routing (CIDR) is a method for assigning IP addresses to 
 ## More about CIDR
 To learn more about CIDR one can [Check Google](https://www.google.com/search?q=CIDR)
 
-## 🤝 Enable CIDR
+## Enable CIDR
 
 To enable CIDR checks one can do this as below in .env.cidr
 ```ini
 enableCidrCheck=0                      ; 1 = true / 0 = false in
 ```
 
-## 🤝 Setting top level CIDR
+## Setting top level CIDR
 
 Below are top level CIDR settings for a set of system routes (starting / ending with)
 
@@ -42,7 +42,7 @@ routesRestrictedCidr='0.0.0.0/0'        ; routesRequestRoute in .env.enable
 reloadRestrictedCidr='0.0.0.0/0'        ; reloadRequestRoutePrefix in .env.enable
 ```
 
-## 🤝 Configuring in DB Tables
+## Configuring in DB Tables
 
 To enable CIDR settings at Client / Group / User level one can set them in respective table and record
 
@@ -57,10 +57,10 @@ To enable CIDR settings at Client / Group / User level one can set them in respe
 `user`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
 ```
 
-## 🤝 Contributing
+## Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/OpenSwoole-Microservices/issues)
 
 ## Author
 
@@ -68,7 +68,7 @@ Feel free to share them on [issues page](https://github.com/polygoncoin/Microser
 
 Github: [@polygoncoin](https://github.com/polygoncoin)
 
-## 📝 License
+## License
 
 Copyright © 2026 [Ramesh N. Jangid (Sharma)](https://github.com/polygoncoin).<br />
 This project is [MIT](License) licensed.

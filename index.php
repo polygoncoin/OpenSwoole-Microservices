@@ -70,17 +70,17 @@ $server->on(
 		if (
 			((int)getenv('DISABLE_REQUESTS_VIA_PROXIES')) === 1
 			&& !isset($request->server['remote_addr'])
-			{
+		) {
 			$response->end("Invalid request");
 			return;
 		}
 
 		if (isset($request->server['remote_addr'])) {
 			$http['server']['ip'] = $request->server['remote_addr'];
-			else {// check proxy headers
+		} else {// check proxy headers
 			if (isset($request->header['x-forwarded-for'])) {
 				$http['server']['ip'] = $request->header['x-forwarded-for'];
-				elseif (isset($request->header['x-real-ip'])) {
+		} elseif (isset($request->header['x-real-ip'])) {
 				$http['server']['ip'] = $request->header['x-real-ip'];
 			}
 		}
@@ -102,7 +102,7 @@ $server->on(
 					'/supp-test'
 				]
 			)
-			{
+		) {
 			$tests = new Tests();
 			switch ($http['get'][ROUTE_URL_PARAM]) {
 				case '/tests':
@@ -121,7 +121,7 @@ $server->on(
 					$response->end('<pre>'.print_r(value: $tests->processSupplement(), return: true));
 					break;
 			}
-			else {
+		} else {
 			ob_start();
 			[$responseheaders, $responseContent, $responseCode] = Start::http(http: $http, streamData: true);
 			ob_clean();

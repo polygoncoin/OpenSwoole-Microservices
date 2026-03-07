@@ -94,7 +94,7 @@ These files locations are used in routes config to be used for generating respon
 
 One can replace **&lt;filenames&gt;** tag with desired name as per functionality.
 
-## 🤝 Contributing
+## Contributing
 
 Issues and feature request are welcome.<br />
 Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
@@ -105,7 +105,7 @@ Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoo
 
 Github: [@polygoncoin](https://github.com/polygoncoin)
 
-## 📝 License
+## License
 
 Copyright © 2026 [Ramesh N. Jangid (Sharma)](https://github.com/polygoncoin).<br />
 This project is [MIT](License) licensed.

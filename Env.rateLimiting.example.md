@@ -5,14 +5,14 @@ Rate Limiting is a method of restricting traffic for a set window of time. The t
 ## More about Rate Limiting
 To learn more about Rate Limiting one can [Check Google](https://www.google.com/search?q=Rate%20Limiting)
 
-## 🤝 Globally Enable Rate Limiting
+## Globally Enable Rate Limiting
 
 To enable Rate Limiting checks one can do this as below in .env.rateLimiting
 ```ini
 enableRateLimiting=0                    ; 1 = true / 0 = false in
 ```
 
-## 🤝 Configure Rate Limiting Server Details (Memcached / Redis)
+## Configure Rate Limiting Server Details (Memcached / Redis)
 
 ```ini
 ; Supported Containers - Memcached / Redis without AUTH
@@ -21,7 +21,7 @@ rateLimitServerHostname='127.0.0.1'     ; Redis host dealing with Rate limit
 rateLimitServerPort=11211               ; Redis-6379 / Memcached-11211
 ```
 
-## 🤝 Enable Rate Limiting at respective function level
+## Enable Rate Limiting at respective function level
 
 ```ini
 ; 1 = true / 0 = false
@@ -34,7 +34,7 @@ enableRateLimitAtUsersPerIpLevel=0      ; Function = IP & User ID
 enableRateLimitAtUsersRequestLevel=0    ; Function = Request & User ID
 ```
 
-## 🤝 Setting Rate Limiting keys to be used as identifier with Function(s) combined
+## Setting Rate Limiting keys to be used as identifier with Function(s) combined
 
 ```ini
 ; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to user)
@@ -53,7 +53,7 @@ rateLimitUsersPerIpPrefix='UIRL:'
 rateLimitUsersRequestPrefix='URRL:'
 ```
 
-## 🤝 Setting Rate Limiting keys Limits with window in seconds
+## Setting Rate Limiting keys Limits with window in seconds
 
 ```ini
 ; Rate Limiting No. of Request per IP ('IPRL:')
@@ -107,10 +107,10 @@ return [
 ];
 ```
 
-## 🤝 Contributing
+## Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/OpenSwoole-Microservices/issues)
 
 ## Author
 
@@ -118,7 +118,7 @@ Feel free to share them on [issues page](https://github.com/polygoncoin/Microser
 
 Github: [@polygoncoin](https://github.com/polygoncoin)
 
-## 📝 License
+## License
 
 Copyright © 2026 [Ramesh N. Jangid (Sharma)](https://github.com/polygoncoin).<br />
 This project is [MIT](License) licensed.
