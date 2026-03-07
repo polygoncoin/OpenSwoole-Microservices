@@ -114,7 +114,7 @@ Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoo
 
 ## Author
 
-	 **Ramesh N. Jangid (Sharma)**
+**Ramesh N. Jangid (Sharma)**
 
 	Github: [@polygoncoin](https://github.com/polygoncoin)
 

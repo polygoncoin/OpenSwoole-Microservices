@@ -67,7 +67,7 @@ These **Global Cache Server configuration (Redis)** and **Global Database Server
 `client`.`slave_cache_table` varchar(255) NOT NULL,
 ```
 
-	 **Note**: Only the Key details in the environment file are to be set in columns of respective record. Eg. for column master_db_hostname the value to be set is 'gDbServerType' and not '127.0.0.1'. The configured values for the Key are picked from the env files.
+**Note**: Only the Key details in the environment file are to be set in columns of respective record. Eg. for column master_db_hostname the value to be set is 'gDbServerType' and not '127.0.0.1'. The configured values for the Key are picked from the env files.
 
 The slave details can take same values as master if presently your system doesn't have such implementation.
 
@@ -172,7 +172,7 @@ Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoo
 
 ## Author
 
-	 **Ramesh N. Jangid (Sharma)**
+**Ramesh N. Jangid (Sharma)**
 
 	Github: [@polygoncoin](https://github.com/polygoncoin)
 

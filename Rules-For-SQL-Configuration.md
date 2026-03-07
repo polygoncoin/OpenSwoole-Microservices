@@ -278,7 +278,7 @@ return [
 ];
 ```
 
-	 **Note**: 'useHierarchy' => true also includes 'useResultSet' => true feature.
+**Note**: 'useHierarchy' => true also includes 'useResultSet' => true feature.
 
 	If there are repeated modules or configurations; one can reuse them by palcing them in a separate file and including as below.
 
@@ -524,7 +524,7 @@ return [
 
 ## fetchFrom
 
-	 **fetchFrom** is a SQL config feature where one can force the fetch from Master (Since usually it is Slave)
+**fetchFrom** is a SQL config feature where one can force the fetch from Master (Since usually it is Slave)
 
 ## Defining Custom DataTypes
 
@@ -563,7 +563,7 @@ Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoo
 
 ## Author
 
-	 **Ramesh N. Jangid (Sharma)**
+**Ramesh N. Jangid (Sharma)**
 
 	Github: [@polygoncoin](https://github.com/polygoncoin)
 

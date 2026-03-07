@@ -54,19 +54,19 @@ var payload = [
 
 ## HttpRequest Variables
 
-	 **$session\['uDetails'\]** Session Data.
+**$session\['uDetails'\]** Session Data.
 	This remains same for every request and contains keys like id, group\_id, client\_id
 
-	 **$session\['routeParams'\]** Data passed in URI.
+**$session\['routeParams'\]** Data passed in URI.
 	Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $session\['routeParams'\] will hold these dynamic values as below.
 
-	 **$session\['payload'\]** Request data.
+**$session\['payload'\]** Request data.
 	For **GET** method, the **$\_GET** is the payload.
 
-	 **$session\['__INSERT-IDs__'\]** Insert ids Data as per configuration.
+**$session\['__INSERT-IDs__'\]** Insert ids Data as per configuration.
 >For **POST/PUT/PATCH/DELETE** we perform both INSERT as well as UPDATE operation. The insertId contains the insert ids of the executed INSERT queries.
 
-	 **$session\['sqlResults'\]** Hierarchy data.
+**$session\['sqlResults'\]** Hierarchy data.
 >For **GET** method, one can use previous query results if configured to use hierarchy.
 
 	Hierarchy Configs
@@ -174,7 +174,7 @@ Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoo
 
 ## Author
 
-	 **Ramesh N. Jangid (Sharma)**
+**Ramesh N. Jangid (Sharma)**
 
 	Github: [@polygoncoin](https://github.com/polygoncoin)
 
