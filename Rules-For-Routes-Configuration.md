@@ -1,8 +1,8 @@
-	Routes Configuration Rules
+# Routes Configuration Rules
 
 ## Available configuration syntax explained
 
-	For configuring route **/tableName/parts** GET method
+- For configuring route **/tableName/parts** GET method
 ```PHP
 return [
 	'tableName' => [
@@ -13,7 +13,7 @@ return [
 ];
 ```
 
-	For configuring route **/tableName/{id}** where id is dynamic **integer** value to be collected.
+- For configuring route **/tableName/{id}** where id is dynamic **integer** value to be collected.
 ```PHP
 return [
 	'tableName' => [
@@ -25,7 +25,7 @@ return [
 ];
 ```
 
-	Same dynamic variable but with a different data type, for e.g. **{id}** will be treated differently for **string** and **integer** values to be collected.
+- Same dynamic variable but with a different data type, for e.g. **{id}** will be treated differently for **string** and **integer** values to be collected.
 
 ```PHP
 return [
@@ -42,7 +42,7 @@ return [
 ];
 ```
 
-	To restrict dynamic values to a certain set of values. One can do the same by defining its data type.
+- To restrict dynamic values to a certain set of values. One can do the same by defining its data type.
 
 ```PHP
 return [
@@ -55,7 +55,7 @@ return [
 ];
 ```
 
-	Hooks
+## Hooks
 
 ```PHP
 return [
@@ -83,7 +83,7 @@ return [
 ];
 ```
 
-	This '{id:int|!0}' means id is integer but can't be zero.
+- This '{id:int|!0}' means id is integer but can't be zero.
 
 ## Defining Custom DataTypes
 
@@ -117,23 +117,23 @@ public static $PrimaryKey = [
 
 ## Special Routes
 
-	Appending route with **/config** returns the payload information that should be supplied; both necessary and optional with desired format.
+- Appending route with **/config** returns the payload information that should be supplied; both necessary and optional with desired format.
 
 Examples:
 
-	route=/registration/config (returns the payload information)
-	route=/registration/import (import CSV)
-	route=/registration/import-sample (sample CSV download for respective HTTP Method)
+- route=/registration/config (returns the payload information)
+- route=/registration/import (import CSV)
+- route=/registration/import-sample (sample CSV download for respective HTTP Method)
 
 One need to enable same in .env file as below
 
 ```ini
-	Allow particular route config request (global flag)
-	Useful to get details of the  payload necessary by the API
+; Allow particular route config request (global flag)
+; Useful to get details of the  payload necessary by the API
 enableConfigRequest=1               ; 1 = true / 0 = false
 enableImportRequest=1               ; 1 = true / 0 = false
 
-	Keyword to append with in route with slash.
+; Keyword to append with in route with slash.
 configRequestRouteKeyword='config'  ; to append "/config" at the end of route
 importRequestRouteKeyword='import'  ; to append "/import" at the end of route
 importSampleRequestRouteKeyword='import-sample'
@@ -142,13 +142,13 @@ importSampleRequestRouteKeyword='import-sample'
 ## 🤝 Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/Microservices/issues)
 
 ## Author
 
-**Ramesh N. Jangid (Sharma)**
+- **Ramesh N. Jangid (Sharma)**
 
-	Github: [@polygoncoin](https://github.com/polygoncoin)
+Github: [@polygoncoin](https://github.com/polygoncoin)
 
 ## 📝 License
 

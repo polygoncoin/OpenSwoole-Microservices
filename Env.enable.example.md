@@ -1,21 +1,21 @@
-	Request control
+# Request control
 
 Control major request access and set respective keywords to make routes unique for your services.
 
 ## 🤝 Controlling request at top level
 
 ```ini
-	Request Payload Config
+; Request Payload Config
 enableConfigRequest=1                   ; 1 = true / 0 = false
-	Download CSV
+; Download CSV
 enableDownloadRequest=1                 ; 1 = true / 0 = false
-	Import CSV
+; Import CSV
 enableImportRequest=1                   ; 1 = true / 0 = false
-	Import CSV Sample
+; Import CSV Sample
 enableImportSampleRequest=1             ; 1 = true / 0 = false
-	Listing available routes
+; Listing available routes
 enableRoutesRequest=1                   ; 1 = true / 0 = false
-	Supplement feature controls
+; Supplement feature controls
 enableResponseCaching=1                 ; 1 = true / 0 = false
 enableDropboxRequest=1                  ; 1 = true / 0 = false
 enableCronRequest=1                     ; 1 = true / 0 = false
@@ -55,13 +55,13 @@ reloadRequestRoutePrefix='reload'
 ## 🤝 Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/Microservices/issues)
 
 ## Author
 
-**Ramesh N. Jangid (Sharma)**
+- **Ramesh N. Jangid (Sharma)**
 
-	Github: [@polygoncoin](https://github.com/polygoncoin)
+Github: [@polygoncoin](https://github.com/polygoncoin)
 
 ## 📝 License
 

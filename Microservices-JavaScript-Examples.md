@@ -1,4 +1,4 @@
-	Javascript HTTP request example
+# Javascript HTTP request example
 
 ## Login
 
@@ -29,7 +29,7 @@ xmlhttp . send( JSON.stringify(payload) );
 
 ## For other API's
 
-	GET Request
+- GET Request
 
 ```javascript
 var handlerUrl = "http://127.0.0.1:9501?route=/routes";
@@ -50,7 +50,7 @@ xmlhttp . onreadystatechange = function() {
 xmlhttp . send();
 ```
 
-	POST Request
+- POST Request
 
 ```javascript
 var handlerUrl = "http://127.0.0.1:9501?route=/ajax-handler-route";
@@ -76,7 +76,7 @@ var payload = {
 xmlhttp . send( JSON.stringify(payload) );
 ```
 
-	PUT Request
+- PUT Request
 
 ```javascript
 var handlerUrl = "http://127.0.0.1:9501?route=/custom/password";
@@ -102,7 +102,7 @@ var payload = {
 xmlhttp . send( JSON.stringify(payload) );
 ```
 
-	XML Request example
+- XML Request example
 
 ```javascript
 var handlerUrl = "http://127.0.0.1:9501?route=/registration-with-address&iRepresentation=XML&oRepresentation=XML";
@@ -154,9 +154,9 @@ Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoo
 
 ## Author
 
-**Ramesh N. Jangid (Sharma)**
+- **Ramesh N. Jangid (Sharma)**
 
-	Github: [@polygoncoin](https://github.com/polygoncoin)
+Github: [@polygoncoin](https://github.com/polygoncoin)
 
 ## 📝 License
 

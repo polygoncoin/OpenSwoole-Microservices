@@ -1,12 +1,12 @@
-	HTTP Request Payload
+# HTTP Request Payload
 
 ## GET Request
 
-	[http://127.0.0.1:9501?route=/reload](http://127.0.0.1:9501?route=/reload)
+- [http://localhost/Microservices/public\_html/index.php?route=/reload](http://localhost/Microservices/public_html/index.php?route=/reload)
 
-	[http://127.0.0.1:9501?route=/tableName/1](http://127.0.0.1:9501?route=/tableName/1)
+- [http://localhost/Microservices/public\_html/index.php?route=/tableName/1](http://localhost/Microservices/public_html/index.php?route=/tableName/1)
 
-	One can clean the URL by making the required changes in the web server .conf file.
+One can clean the URL by making the required changes in the web server .conf file.
 
 ## Pagination in GET Request
 
@@ -16,15 +16,15 @@ defaultPerpage=10
 maxResultsPerPage=1000
 ```
 
-	[http://127.0.0.1:9501?route=/tableName?page=1](http://127.0.0.1:9501?route=/tableName/1?page=1)
-	[http://127.0.0.1:9501?route=/tableName?page=1&perpage=25](http://127.0.0.1:9501?route=/tableName/1?page=1&perpage=25)
-	[http://127.0.0.1:9501?route=/tableName?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"}](http://127.0.0.1:9501?route=/tableName/1?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"})
+- [http://localhost/Microservices/public\_html/index.php?route=/tableName?page=1](http://localhost/Microservices/public_html/index.php?route=/tableName/1?page=1)
+- [http://localhost/Microservices/public\_html/index.php?route=/tableName?page=1&perpage=25](http://localhost/Microservices/public_html/index.php?route=/tableName/1?page=1&perpage=25)
+- [http://localhost/Microservices/public\_html/index.php?route=/tableName?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"}](http://localhost/Microservices/public_html/index.php?route=/tableName/1?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"})
 
 >One need to urlencode orderBy value
 
 ## POST, PUT, PATCH, and DELETE Request
 
-	Single
+- Single
 
 ```javascript
 var payload = {
@@ -34,7 +34,7 @@ var payload = {
 };
 ```
 
-	Multiple
+- Multiple
 
 ```javascript
 var payload = [
@@ -54,31 +54,35 @@ var payload = [
 
 ## HttpRequest Variables
 
-**$session\['uDetails'\]** Session Data.
-	This remains same for every request and contains keys like id, group\_id, client\_id
+- **$session\['uDetails'\]** Session Data.
+This remains same for every request and contains keys like id, group\_id, client\_id
 
-**$session\['routeParams'\]** Data passed in URI.
-	Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $session\['routeParams'\] will hold these dynamic values as below.
+- **$session\['routeParams'\]** Data passed in URI.
+Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $session\['routeParams'\] will hold these dynamic values as below.
 
-**$session\['payload'\]** Request data.
-	For **GET** method, the **$\_GET** is the payload.
+- **$session\['payload'\]** Request data.
+For **GET** method, the **$\_GET** is the payload.
 
-**$session\['__INSERT-IDs__'\]** Insert ids Data as per configuration.
+- **$session\['__INSERT-IDs__'\]** Insert ids Data as per configuration.
 >For **POST/PUT/PATCH/DELETE** we perform both INSERT as well as UPDATE operation. The insertId contains the insert ids of the executed INSERT queries.
 
-**$session\['sqlResults'\]** Hierarchy data.
+- **$session\['sqlResults'\]** Hierarchy data.
 >For **GET** method, one can use previous query results if configured to use hierarchy.
 
-	Hierarchy Configs
+## Hierarchy Configs
 
-	Config/Queries/ClientDB/GET/Category.php
+- Config/Queries/ClientDB/GET/Category.php
 >In this file one can confirm how previous select data is used recursively in subQuery select as indicated by useHierarchy flag.
 
 ```PHP
-['column' => 'parent_id', 'fetchFrom' => 'sqlResults', 'fetchFromValue' => 'return:id'],
+[
+	'column' => 'parent_id',
+	'fetchFrom' => 'sqlResults',
+	'fetchFromValue' => 'return:id'
+],
 ```
 
-	Config/Queries/ClientDB/POST/Category.php .Here a request can handle the hierarchy for write operations.
+- Config/Queries/ClientDB/POST/Category.php .Here a request can handle the hierarchy for write operations.
 
 ```PHP
 return [
@@ -104,7 +108,7 @@ return [
 
 ### Hierarchy Request
 
-	Request - 1: Single object.
+- Request - 1: Single object.
 
 ```javascript
 var payload = {
@@ -115,7 +119,7 @@ var payload = {
 }
 ```
 
-	Request - 2: Array of module1
+- Request - 2: Array of module1
 
 ```javascript
 var payload = {
@@ -133,7 +137,7 @@ var payload = {
 }
 ```
 
-	Request - 3: Array of payload and arrays of module1
+- Request - 3: Array of payload and arrays of module1
 
 ```javascript
 var payload = [
@@ -170,13 +174,13 @@ var payload = [
 ## 🤝 Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/Microservices/issues)
 
 ## Author
 
-**Ramesh N. Jangid (Sharma)**
+- **Ramesh N. Jangid (Sharma)**
 
-	Github: [@polygoncoin](https://github.com/polygoncoin)
+Github: [@polygoncoin](https://github.com/polygoncoin)
 
 ## 📝 License
 

@@ -1,4 +1,4 @@
-	Containers
+# Containers
 
 In this package the Containers are Database / Caching tools used for maintaining dynamic data.<br />
 
@@ -7,7 +7,7 @@ In this package the Containers are Database / Caching tools used for maintaining
 ### Global Cache Server configuration (Redis)
 
 ```ini
-	Cache Server configuration
+; Cache Server configuration
 gCacheServerType='Redis'
 gCacheServerHostname='127.0.0.1'
 gCacheServerPort=6379
@@ -19,7 +19,7 @@ gCacheServerDatabase=0
 ### Global Database Server configuration - global.sql
 
 ```ini
-	Database Server configuration
+; Database Server configuration
 gDbServerType='MySql'
 gDbServerHostname='127.0.0.1'
 gDbServerPort=3306
@@ -27,7 +27,7 @@ gDbServerUsername='username'
 gDbServerPassword='password'
 gDbServerDatabase='<global>'
 
-	Tables in <global> database on the server
+; Tables in <global> database on the server
 groupsTable='group'
 clientsTable='client'
 ```
@@ -67,11 +67,11 @@ These **Global Cache Server configuration (Redis)** and **Global Database Server
 `client`.`slave_cache_table` varchar(255) NOT NULL,
 ```
 
-**Note**: Only the Key details in the environment file are to be set in columns of respective record. Eg. for column master_db_hostname the value to be set is 'gDbServerType' and not '127.0.0.1'. The configured values for the Key are picked from the env files.
+- **Note**: Only the Key details in the environment file are to be set in columns of respective record. Eg. for column master_db_hostname the value to be set is 'gDbServerType' and not '127.0.0.1'. The configured values for the Key are picked from the env files.
 
 The slave details can take same values as master if presently your system doesn't have such implementation.
 
-## Setting Cache / Database Server configuration  in client table for working
+## Setting Cache / Database Server configuration in client table for working
 
 ### Different database on DB server
 
@@ -89,10 +89,10 @@ If the same client X in future prefer to have a dedicated database server one ca
 
 Make a new config variables as below and set this Key in the above table for client X record in client table.
 
-	Client Cache
+- Client Cache
 
 ```ini
-	Supported Containers - Redis / Memcached / MongoDb
+; Supported Containers - Redis / Memcached / MongoDb
 cCacheServerType='Redis'
 cCacheServerHostname='127.0.0.1'
 cCacheServerPort=6379
@@ -102,10 +102,10 @@ cCacheServerDatabase=0
 cCacheServerTable='client_001'      ; For MongoDb
 ```
 
-	Dedicated database
+- Dedicated database
 
 ```ini
-	Supported Containers - MySql / PostgreSql
+; Supported Containers - MySql / PostgreSql
 cDbServerType001='MySql'
 cDbServerHostname001='127.0.0.1'
 cDbServerPort001=3306
@@ -114,7 +114,7 @@ cDbServerPassword001='password'
 cDbServerDatabase001='client_001'
 cDbServerQueryPlaceholder001='Named'; Named(:param) / Unnamed(?)
 
-	Client Database table containing user login details
+; Client Database table containing user login details
 cDbServerDatabaseUsersTable='user'
 ```
 
@@ -136,14 +136,14 @@ These column contains keys containing details about the way the queries are buil
 `client`.`slave_query_placeholder` varchar(255) NOT NULL,
 ```
 
-#### Named(:param) Example
+#### Named(:param)
 
 ```SQL
 -- Named(:param)
 INSERT INTO `user` SET `firstname` = :firstname;
 ```
 
-#### Unnamed(?) Example
+#### Unnamed(?)
 
 ```SQL
 -- Unnamed(?)
@@ -155,7 +155,7 @@ INSERT INTO `user` SET `firstname` = ?;
 Below settings are not to be configured in any table. They are used as it is. Only need to make required config value changes in below.
 
 ```ini
-	Supported Containers - Redis / Memcached / MySql / PostgreSql / MongoDb
+; Supported Containers - Redis / Memcached / MySql / PostgreSql / MongoDb
 sqlResultsCacheServerType='Redis'
 sqlResultsCacheServerHostname='127.0.0.1'
 sqlResultsCacheServerPort=6379
@@ -168,13 +168,13 @@ sqlResultsCacheServerTable='api_cache' ; For MySql / PostgreSql / MongoDb
 ## 🤝 Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/Microservices/issues)
 
 ## Author
 
-**Ramesh N. Jangid (Sharma)**
+- **Ramesh N. Jangid (Sharma)**
 
-	Github: [@polygoncoin](https://github.com/polygoncoin)
+Github: [@polygoncoin](https://github.com/polygoncoin)
 
 ## 📝 License
 

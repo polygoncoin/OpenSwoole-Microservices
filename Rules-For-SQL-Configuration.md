@@ -1,4 +1,4 @@
-	SQL Configuration Rules
+# SQL Configuration Rules
 
 ## Available configuration options explained
 
@@ -278,9 +278,9 @@ return [
 ];
 ```
 
-**Note**: 'useHierarchy' => true also includes 'useResultSet' => true feature.
+- **Note**: 'useHierarchy' => true also includes 'useResultSet' => true feature.
 
-	If there are repeated modules or configurations; one can reuse them by palcing them in a separate file and including as below.
+- If there are repeated modules or configurations; one can reuse them by palcing them in a separate file and including as below.
 
 ```PHP
 '__SUB-QUERY__' => [
@@ -289,7 +289,7 @@ return [
 ]
 ```
 
-	For POST, PUT, PATCH, and DELETE methods one can configure both INSERT as well as UPDATE queries if required for sub modules.
+- For POST, PUT, PATCH, and DELETE methods one can configure both INSERT as well as UPDATE queries if required for sub modules.
 
 ## Available configuration options for Download CSV
 
@@ -320,7 +320,7 @@ return [
 
 ## Available configuration options for Supplement
 
-	Here one can configure and collect payload to perform customized operations (for Supplement folder)
+- Here one can configure and collect payload to perform customized operations (for Supplement folder in public_html)
 
 ```PHP
 //return represents root for sqlResults
@@ -519,12 +519,12 @@ return [
 
 ## Database
 
-	Dedicated database for respective client can be configured
-	This can also handle Master / Slave implementaion respectively
+- Dedicated database for respective client can be configured
+- This can also handle Master / Slave implementaion respectively
 
 ## fetchFrom
 
-**fetchFrom** is a SQL config feature where one can force the fetch from Master (Since usually it is Slave)
+- **fetchFrom** is a SQL config feature where one can force the fetch from Master (Since usually it is Slave)
 
 ## Defining Custom DataTypes
 
@@ -559,13 +559,13 @@ public static $PrimaryKey = [
 ## 🤝 Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/Microservices/issues)
 
 ## Author
 
-**Ramesh N. Jangid (Sharma)**
+- **Ramesh N. Jangid (Sharma)**
 
-	Github: [@polygoncoin](https://github.com/polygoncoin)
+Github: [@polygoncoin](https://github.com/polygoncoin)
 
 ## 📝 License
 
