@@ -20,17 +20,17 @@ use Microservices\App\Web;
 $header = $defaultHeaders;
 $header[] = $contentType;
 if (isset($token)) {
-    $header[] = "Authorization: Bearer {$token}";
+	$header[] = "Authorization: Bearer {$token}";
 
-    $params = [
-        'address' => '203'
-    ];
+	$params = [
+		'address' => '203'
+	];
 
-    return Web::trigger(
-        homeURL: $homeURL,
-        method: 'PATCH',
-        route: '/address/1',
-        header: $header,
-        payload: json_encode(value: $params)
-    );
+	return Web::trigger(
+		homeURL: $homeURL,
+		method: 'PATCH',
+		route: '/address/1',
+		header: $header,
+		payload: json_encode(value: $params)
+	);
 }

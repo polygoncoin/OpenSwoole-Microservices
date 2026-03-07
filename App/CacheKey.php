@@ -29,137 +29,137 @@ namespace Microservices\App;
  */
 class CacheKey
 {
-    /**
-     * Get Client Key
-     *
-     * @param string $hostname Hostname
-     *
-     * @return string
-     */
-    public static function clientOpenToWeb(&$hostname): string
-    {
-        return "c:otw:{$hostname}";
-    }
+	/**
+	 * Get Client Key
+	 *
+	 * @param string $hostname Hostname
+	 *
+	 * @return string
+	 */
+	public static function clientOpenToWeb(&$hostname): string
+	{
+		return "c:otw:{$hostname}";
+	}
 
-    /**
-     * Get Client Key
-     *
-     * @param string $hostname Hostname
-     *
-     * @return string
-     */
-    public static function client($hostname): string
-    {
-        return "c:{$hostname}";
-    }
+	/**
+	 * Get Client Key
+	 *
+	 * @param string $hostname Hostname
+	 *
+	 * @return string
+	 */
+	public static function client($hostname): string
+	{
+		return "c:{$hostname}";
+	}
 
-    /**
-     * Get Client User Key
-     *
-     * @param int    $cID Client Id
-     * @param string $username Hostname
-     *
-     * @return string
-     */
-    public static function clientUser($cID, $username): string
-    {
-        return "cu:{$cID}:u:{$username}";
-    }
+	/**
+	 * Get Client User Key
+	 *
+	 * @param int    $cID Client Id
+	 * @param string $username Hostname
+	 *
+	 * @return string
+	 */
+	public static function clientUser($cID, $username): string
+	{
+		return "cu:{$cID}:u:{$username}";
+	}
 
-    /**
-     * Get Group Key
-     *
-     * @param int $gID Group Id
-     *
-     * @return string
-     */
-    public static function group($gID): string
-    {
-        return "g:{$gID}";
-    }
+	/**
+	 * Get Group Key
+	 *
+	 * @param int $gID Group Id
+	 *
+	 * @return string
+	 */
+	public static function group($gID): string
+	{
+		return "g:{$gID}";
+	}
 
-    /**
-     * Get Client CIDR Key
-     *
-     * @param int $cID Client Id
-     *
-     * @return string
-     */
-    public static function cCidr($cID): string
-    {
-        return "c:cidr:{$cID}";
-    }
+	/**
+	 * Get Client CIDR Key
+	 *
+	 * @param int $cID Client Id
+	 *
+	 * @return string
+	 */
+	public static function cCidr($cID): string
+	{
+		return "c:cidr:{$cID}";
+	}
 
-    /**
-     * Get Group CIDR Key
-     *
-     * @param int $gID Group Id
-     *
-     * @return string
-     */
-    public static function gCidr($gID): string
-    {
-        return "g:cidr:{$gID}";
-    }
+	/**
+	 * Get Group CIDR Key
+	 *
+	 * @param int $gID Group Id
+	 *
+	 * @return string
+	 */
+	public static function gCidr($gID): string
+	{
+		return "g:cidr:{$gID}";
+	}
 
-    /**
-     * Get User CIDR Key
-     *
-     * @param int $cID Client Id
-     * @param int $uID User Id
-     *
-     * @return string
-     */
-    public static function uCidr($cID, $uID): string
-    {
-        return "u:cidr:{$cID}:{$uID}";
-    }
+	/**
+	 * Get User CIDR Key
+	 *
+	 * @param int $cID Client Id
+	 * @param int $uID User Id
+	 *
+	 * @return string
+	 */
+	public static function uCidr($cID, $uID): string
+	{
+		return "u:cidr:{$cID}:{$uID}";
+	}
 
-    /**
-     * Get Token Key
-     *
-     * @param string $token Token
-     *
-     * @return string
-     */
-    public static function token($token): string
-    {
-        return "t:{$token}";
-    }
+	/**
+	 * Get Token Key
+	 *
+	 * @param string $token Token
+	 *
+	 * @return string
+	 */
+	public static function token($token): string
+	{
+		return "t:{$token}";
+	}
 
-    /**
-     * Get User Token Key
-     *
-     * @param int $uID User Id
-     *
-     * @return string
-     */
-    public static function userToken($uID): string
-    {
-        return "ut:{$uID}";
-    }
+	/**
+	 * Get User Token Key
+	 *
+	 * @param int $uID User Id
+	 *
+	 * @return string
+	 */
+	public static function userToken($uID): string
+	{
+		return "ut:{$uID}";
+	}
 
-    /**
-     * Get User Token Key
-     *
-     * @param int $uID User Id
-     *
-     * @return string
-     */
-    public static function userSessionId($uID): string
-    {
-        return "u:sId:{$uID}";
-    }
+	/**
+	 * Get User Token Key
+	 *
+	 * @param int $uID User Id
+	 *
+	 * @return string
+	 */
+	public static function userSessionId($uID): string
+	{
+		return "u:sId:{$uID}";
+	}
 
-    /**
-     * Get Key maintaining Concurrency Interval(active session) For Current User
-     *
-     * @param int $uID User Id
-     *
-     * @return string
-     */
-    public static function userConcurrency($uID): string
-    {
-        return "u:co:{$uID}";
-    }
+	/**
+	 * Get Key maintaining Concurrency Interval(active session) For Current User
+	 *
+	 * @param int $uID User Id
+	 *
+	 * @return string
+	 */
+	public static function userConcurrency($uID): string
+	{
+		return "u:co:{$uID}";
+	}
 }

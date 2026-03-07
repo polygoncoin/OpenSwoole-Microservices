@@ -34,91 +34,91 @@ use Microservices\Validation\ValidatorTrait;
  */
 class GlobalValidator implements ValidatorInterface
 {
-    use ValidatorTrait;
+	use ValidatorTrait;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+	}
 
-    /**
-     * Validate payload
-     *
-     * @param array $validationConfig Validation configuration
-     *
-     * @return array
-     */
-    public function validate(&$validationConfig): array
-    {
-        $isValidData = true;
-        $errors = [];
-        foreach ($validationConfig as &$v) {
-            $args = [];
-            foreach ($v['fnArgs'] as $attr => [$mode, $key]) {
-                if ($mode === 'custom') {
-                    $args[$attr] = $key;
-                } else {
-                    $args[$attr] = $this->api->req->s[$mode][$key];
-                }
-            }
-            $fn = $v['fn'];
-            if (!$this->$fn($args)) {
-                $errors[] = $v['errorMessage'];
-                $isValidData = false;
-            }
-        }
-        return [$isValidData, $errors];
-    }
+	/**
+	 * Validate payload
+	 *
+	 * @param array $validationConfig Validation configuration
+	 *
+	 * @return array
+	 */
+	public function validate(&$validationConfig): array
+	{
+		$isValidData = true;
+		$errors = [];
+		foreach ($validationConfig as &$v) {
+			$args = [];
+			foreach ($v['fnArgs'] as $attr => [$mode, $key]) {
+				if ($mode === 'custom') {
+					$args[$attr] = $key;
+					else {
+					$args[$attr] = $this->api->req->s[$mode][$key];
+				}
+			}
+			$fn = $v['fn'];
+			if (!$this->$fn($args)) {
+				$errors[] = $v['errorMessage'];
+				$isValidData = false;
+			}
+		}
+		return [$isValidData, $errors];
+	}
 
-    /**
-     * Checks primary key exist
-     *
-     * @param array $args Arguments
-     *
-     * @return int 0/1
-     */
-    private function primaryKeyExist(&$args): int
-    {
-        extract(array: $args);
-        $sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
-        $params = [$id];
-        DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $params);
-        $row = DbFunctions::$masterDb[$this->api->req->cId]->fetch();
-        DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
-        return (int)(($row['count'] === 0) ? false : true);
-    }
+	/**
+	 * Checks primary key exist
+	 *
+	 * @param array $args Arguments
+	 *
+	 * @return int 0/1
+	 */
+	private function primaryKeyExist(&$args): int
+	{
+		extract(array: $args);
+		$sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
+		$params = [$id];
+		DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $params);
+		$row = DbFunctions::$masterDb[$this->api->req->cId]->fetch();
+		DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
+		return (int)(($row['count'] === 0) ? false : true);
+	}
 
-    /**
-     * Checks column value exist
-     *
-     * @param array $args Arguments
-     *
-     * @return bool
-     */
-    private function checkColumnValueExist(&$args): bool
-    {
-        extract(array: $args);
-        $sql = "
-            SELECT count(1) as `count`
-            FROM `{$table}`
-            WHERE `{$column}` = ? AND`{$primary}` = ?
-        ";
-        $params = [$columnValue, $id];
-        DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $params);
-        $row = DbFunctions::$masterDb[$this->api->req->cId]->fetch();
-        DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
-        return ($row['count'] === 0) ? false : true;
-    }
+	/**
+	 * Checks column value exist
+	 *
+	 * @param array $args Arguments
+	 *
+	 * @return bool
+	 */
+	private function checkColumnValueExist(&$args): bool
+	{
+		extract(array: $args);
+		$sql = "
+			SELECT count(1) as `count`
+			FROM `{$table}`
+			WHERE `{$column}` = ? AND`{$primary}` = ?
+		";
+		$params = [$columnValue, $id];
+		DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $params);
+		$row = DbFunctions::$masterDb[$this->api->req->cId]->fetch();
+		DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
+		return ($row['count'] === 0) ? false : true;
+	}
 }

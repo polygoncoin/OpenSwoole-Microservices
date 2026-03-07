@@ -31,22 +31,22 @@ namespace Microservices\App\DataRepresentation\Encode\XmlEncoder;
  */
 class XmlEncoderObject
 {
-    public $mode = '';
-    public $key = '';
+	public $mode = '';
+	public $key = '';
 
-    /**
-     * Constructor
-     *
-     * @param string      $mode Values can be one among Array/object
-     * @param null|string $key  Tag
-     */
-    public function __construct($mode, $key)
-    {
-        $this->mode = $mode;
-        if ($key !== null) {
-            $this->key = str_replace(search: ':', replace: '-', subject: $key);
-        } else {
-            $this->key = $key;
-        }
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param string      $mode Values can be one among Array/object
+	 * @param null|string $key  Tag
+	 */
+	public function __construct($mode, $key)
+	{
+		$this->mode = $mode;
+		if ($key !== null) {
+			$this->key = str_replace(search: ':', replace: '-', subject: $key);
+			else {
+			$this->key = $key;
+		}
+	}
 }

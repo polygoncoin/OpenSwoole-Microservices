@@ -19,61 +19,61 @@ use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
 return [
-    '__QUERY__' => "UPDATE `{$Env::$clientsTable}` SET __SET__ WHERE __WHERE__",
-    '__SET__' => [
-        [
-            'column' => 'name',
-            'fetchFrom' => 'payload',
-            'fetchFromValue' => 'name'
-        ],
-        [
-            'column' => 'comments',
-            'fetchFrom' => 'payload',
-            'fetchFromValue' => 'comments'
-        ],
-        [
-            'column' => 'updated_by',
-            'fetchFrom' => 'uDetails',
-            'fetchFromValue' => 'id'
-        ],
-        [
-            'column' => 'updated_on',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => date(format: 'Y-m-d H:i:s')
-        ]
-    ],
-    '__WHERE__' => [
-        [
-            'column' => 'is_approved',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => 'Yes'
-        ],
-        [
-            'column' => 'is_disabled',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => 'No'
-        ],
-        [
-            'column' => 'is_deleted',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => 'No'
-        ],
-        [
-            'column' => 'id',
-            'fetchFrom' => 'routeParams',
-            'fetchFromValue' => 'id',
-            'dataType' => DatabaseDataTypes::$INT
-        ]
-    ],
-    '__VALIDATE__' => [
-        [
-            'fn' => 'primaryKeyExist',
-            'fnArgs' => [
-                'table' => ['custom', Env::$clientsTable],
-                'primary' => ['custom', 'id'],
-                'id' => ['payload', 'id', DatabaseDataTypes::$INT]
-            ],
-            'errorMessage' => 'Invalid Client Id'
-        ],
-    ]
+	'__QUERY__' => "UPDATE `{$Env::$clientsTable}` SET __SET__ WHERE __WHERE__",
+	'__SET__' => [
+		[
+			'column' => 'name',
+			'fetchFrom' => 'payload',
+			'fetchFromValue' => 'name'
+		],
+		[
+			'column' => 'comments',
+			'fetchFrom' => 'payload',
+			'fetchFromValue' => 'comments'
+		],
+		[
+			'column' => 'updated_by',
+			'fetchFrom' => 'uDetails',
+			'fetchFromValue' => 'id'
+		],
+		[
+			'column' => 'updated_on',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => date(format: 'Y-m-d H:i:s')
+		]
+	],
+	'__WHERE__' => [
+		[
+			'column' => 'is_approved',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => 'Yes'
+		],
+		[
+			'column' => 'is_disabled',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => 'No'
+		],
+		[
+			'column' => 'is_deleted',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => 'No'
+		],
+		[
+			'column' => 'id',
+			'fetchFrom' => 'routeParams',
+			'fetchFromValue' => 'id',
+			'dataType' => DatabaseDataTypes::$INT
+		]
+	],
+	'__VALIDATE__' => [
+		[
+			'fn' => 'primaryKeyExist',
+			'fnArgs' => [
+				'table' => ['custom', Env::$clientsTable],
+				'primary' => ['custom', 'id'],
+				'id' => ['payload', 'id', DatabaseDataTypes::$INT]
+			],
+			'errorMessage' => 'Invalid Client Id'
+		],
+	]
 ];

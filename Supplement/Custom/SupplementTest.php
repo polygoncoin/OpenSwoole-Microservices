@@ -34,57 +34,57 @@ use Microservices\Supplement\Custom\CustomTrait;
  */
 class SupplementTest implements CustomInterface
 {
-    use CustomTrait;
+	use CustomTrait;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-        DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Slave');
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+		DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Slave');
+	}
 
-    /**
-     * Initialize
-     *
-     * @return bool
-     */
-    public function init(): bool
-    {
-        return true;
-    }
+	/**
+	 * Initialize
+	 *
+	 * @return bool
+	 */
+	public function init(): bool
+	{
+		return true;
+	}
 
-    /**
-     * Process
-     *
-     * @param array $payload Payload
-     *
-     * @return array
-     */
-    public function process(array $payload = []): array
-    {
-        return $payload;
-    }
+	/**
+	 * Process
+	 *
+	 * @param array $payload Payload
+	 *
+	 * @return array
+	 */
+	public function process(array $payload = []): array
+	{
+		return $payload;
+	}
 
-    /**
-     * Process Sub
-     *
-     * @param array $payload Payload
-     *
-     * @return array
-     */
-    public function processSub(array $payload = []): array
-    {
-        return $payload;
-    }
+	/**
+	 * Process Sub
+	 *
+	 * @param array $payload Payload
+	 *
+	 * @return array
+	 */
+	public function processSub(array $payload = []): array
+	{
+		return $payload;
+	}
 }

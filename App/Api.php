@@ -36,201 +36,201 @@ use Microservices\App\Supplement;
  */
 class Api
 {
-    /**
-     * Hook object
-     *
-     * @var null|Hook
-     */
-    private $hook = null;
+	/**
+	 * Hook object
+	 *
+	 * @var null|Hook
+	 */
+	private $hook = null;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+	}
 
-    /**
-     * Initialize
-     *
-     * @return bool
-     */
-    public function init(): bool
-    {
-        $this->api->initRequest();
+	/**
+	 * Initialize
+	 *
+	 * @return bool
+	 */
+	public function init(): bool
+	{
+		$this->api->initRequest();
 
-        return true;
-    }
+		return true;
+	}
 
-    /**
-     * Process
-     *
-     * @return mixed
-     */
-    public function process(): mixed
-    {
-        if ($this->api->req->METHOD === Constants::$GET) {
-            $dropboxCache = new DropboxCache(http: $this->api->http, api: $this->api);
-            if ($dropboxCache->init(mode: 'Closed')) {
-                // File exists - Serve from Dropbox
-                return $dropboxCache->process();
-            }
-            $dropboxCache = null;
-        }
+	/**
+	 * Process
+	 *
+	 * @return mixed
+	 */
+	public function process(): mixed
+	{
+		if ($this->api->req->METHOD === Constants::$GET) {
+			$dropboxCache = new DropboxCache(http: $this->api->http, api: $this->api);
+			if ($dropboxCache->init(mode: 'Closed')) {
+				// File exists - Serve from Dropbox
+				return $dropboxCache->process();
+			}
+			$dropboxCache = null;
+		}
 
-        // Execute Pre Route Hooks
-        if (isset($this->api->req->rParser->routeHook['__PRE-ROUTE-HOOKS__'])) {
-            if ($this->hook === null) {
-                $this->hook = new Hook($this->api);
-            }
-            $this->hook->triggerHook(
-                hookConfig: $this->api->req->rParser->routeHook['__PRE-ROUTE-HOOKS__']
-            );
-        }
+		// Execute Pre Route Hooks
+		if (isset($this->api->req->rParser->routeHook['__PRE-ROUTE-HOOKS__'])) {
+			if ($this->hook === null) {
+				$this->hook = new Hook($this->api);
+			}
+			$this->hook->triggerHook(
+				hookConfig: $this->api->req->rParser->routeHook['__PRE-ROUTE-HOOKS__']
+			);
+		}
 
-        // Load Payloads
-        if (
-            !in_array(
-                $this->api->req->rParser->routeEndingReservedKeyword,
-                [
-                    Env::$configRequestRouteKeyword,
-                    Env::$importSampleRequestRouteKeyword
-                ]
-            )
-        ) {
-            $this->api->req->loadPayload();
-        }
+		// Load Payloads
+		if (
+			!in_array(
+				$this->api->req->rParser->routeEndingReservedKeyword,
+				[
+					Env::$configRequestRouteKeyword,
+					Env::$importSampleRequestRouteKeyword
+				]
+			)
+			{
+			$this->api->req->loadPayload();
+		}
 
-        if ($this->processBeforePayload()) {
-            return true;
-        }
+		if ($this->processBeforePayload()) {
+			return true;
+		}
 
-        $class = null;
-        switch ($this->api->req->METHOD) {
-            case Constants::$GET:
-                $class = __NAMESPACE__ . '\\Read';
-                break;
-            case Constants::$POST:
-            case Constants::$PUT:
-            case Constants::$PATCH:
-            case Constants::$DELETE:
-                $class = __NAMESPACE__ . '\\Write';
-                break;
-        }
+		$class = null;
+		switch ($this->api->req->METHOD) {
+			case Constants::$GET:
+				$class = __NAMESPACE__ . '\\Read';
+				break;
+			case Constants::$POST:
+			case Constants::$PUT:
+			case Constants::$PATCH:
+			case Constants::$DELETE:
+				$class = __NAMESPACE__ . '\\Write';
+				break;
+		}
 
-        if ($class !== null) {
-            $api = new $class($this->api);
-            if ($api->init()) {
-                $return = $api->process();
-                if (
-                    is_array($return)
-                    && count($return) === 3
-                ) {
-                    return $return;
-                }
-            }
-        }
+		if ($class !== null) {
+			$api = new $class($this->api);
+			if ($api->init()) {
+				$return = $api->process();
+				if (
+					is_array($return)
+					&& count($return) === 3
+					{
+					return $return;
+				}
+			}
+		}
 
-        // Check & Process Cron / ThirdParty calls
-        $this->processAfterPayload();
+		// Check & Process Cron / ThirdParty calls
+		$this->processAfterPayload();
 
-        // Execute Post Route Hooks
-        if (isset($this->api->req->rParser->routeHook['__POST-ROUTE-HOOKS__'])) {
-            if ($this->hook === null) {
-                $this->hook = new Hook($this->api);
-            }
-            $this->hook->triggerHook(
-                hookConfig: $this->api->req->rParser->routeHook['__POST-ROUTE-HOOKS__']
-            );
-        }
+		// Execute Post Route Hooks
+		if (isset($this->api->req->rParser->routeHook['__POST-ROUTE-HOOKS__'])) {
+			if ($this->hook === null) {
+				$this->hook = new Hook($this->api);
+			}
+			$this->hook->triggerHook(
+				hookConfig: $this->api->req->rParser->routeHook['__POST-ROUTE-HOOKS__']
+			);
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    /**
-     * Miscellaneous Functionality Before Collecting Payload
-     *
-     * @return bool
-     */
-    private function processBeforePayload(): bool
-    {
-        $supplementProcessed = false;
+	/**
+	 * Miscellaneous Functionality Before Collecting Payload
+	 *
+	 * @return bool
+	 */
+	private function processBeforePayload(): bool
+	{
+		$supplementProcessed = false;
 
-        if (
-            Env::$enableRoutesRequest
-            && Env::$routesRequestRoute === $this->api->req->rParser->routeElements[0]
-        ) {
-            $supplementApiClass = __NAMESPACE__ . '\\Routes';
-            $supplementObj = new $supplementApiClass($this->api);
-            if ($supplementObj->init()) {
-                $supplementObj->process();
-                $supplementProcessed = true;
-            }
-        } else {
-            $supplementApiClass = null;
-            switch (true) {
-                case (
-                        Env::$enableCustomRequest
-                        && (Env::$customRequestRoutePrefix
-                            === $this->api->req->rParser->routeElements[0])
+		if (
+			Env::$enableRoutesRequest
+			&& Env::$routesRequestRoute === $this->api->req->rParser->routeElements[0]
+			{
+			$supplementApiClass = __NAMESPACE__ . '\\Routes';
+			$supplementObj = new $supplementApiClass($this->api);
+			if ($supplementObj->init()) {
+				$supplementObj->process();
+				$supplementProcessed = true;
+			}
+			else {
+			$supplementApiClass = null;
+			switch (true) {
+				case (
+						Env::$enableCustomRequest
+						&& (Env::$customRequestRoutePrefix
+							=== $this->api->req->rParser->routeElements[0])
 
-                    ):
-                    $supplementApiClass = __NAMESPACE__ . '\\Custom';
-                    break;
-                case (
-                        Env::$enableUploadRequest
-                        && (Env::$uploadRequestRoutePrefix
-                            === $this->api->req->rParser->routeElements[0])
-                    ):
-                    $supplementApiClass = __NAMESPACE__ . '\\Upload';
-                    break;
-                case (
-                        Env::$enableThirdPartyRequest
-                        && (Env::$thirdPartyRequestRoutePrefix
-                            === $this->api->req->rParser->routeElements[0])
-                    ):
-                    $supplementApiClass = __NAMESPACE__ . '\\ThirdParty';
-                    break;
-                case (
-                        Env::$enableDropboxRequest
-                        && (Env::$dropboxRequestRoutePrefix
-                            === $this->api->req->rParser->routeElements[0])
-                    ):
-                    $supplementApiClass = __NAMESPACE__ . '\\DropboxCache';
-                    break;
-            }
+					):
+					$supplementApiClass = __NAMESPACE__ . '\\Custom';
+					break;
+				case (
+						Env::$enableUploadRequest
+						&& (Env::$uploadRequestRoutePrefix
+							=== $this->api->req->rParser->routeElements[0])
+					):
+					$supplementApiClass = __NAMESPACE__ . '\\Upload';
+					break;
+				case (
+						Env::$enableThirdPartyRequest
+						&& (Env::$thirdPartyRequestRoutePrefix
+							=== $this->api->req->rParser->routeElements[0])
+					):
+					$supplementApiClass = __NAMESPACE__ . '\\ThirdParty';
+					break;
+				case (
+						Env::$enableDropboxRequest
+						&& (Env::$dropboxRequestRoutePrefix
+							=== $this->api->req->rParser->routeElements[0])
+					):
+					$supplementApiClass = __NAMESPACE__ . '\\DropboxCache';
+					break;
+			}
 
-            if (!empty($supplementApiClass)) {
-                $supplementObj = new $supplementApiClass($this->api);
-                $supplementObj->init();
-                $supplement = new Supplement($this->api);
-                if ($supplement->init(supplementObj: $supplementObj)) {
-                    $supplement->process();
-                    $supplementProcessed = true;
-                }
-            }
-        }
+			if (!empty($supplementApiClass)) {
+				$supplementObj = new $supplementApiClass($this->api);
+				$supplementObj->init();
+				$supplement = new Supplement($this->api);
+				if ($supplement->init(supplementObj: $supplementObj)) {
+					$supplement->process();
+					$supplementProcessed = true;
+				}
+			}
+		}
 
-        return $supplementProcessed;
-    }
+		return $supplementProcessed;
+	}
 
-    /**
-     * Miscellaneous Functionality After Collecting Payload
-     *
-     * @return bool
-     */
-    private function processAfterPayload(): bool
-    {
-        return true;
-    }
+	/**
+	 * Miscellaneous Functionality After Collecting Payload
+	 *
+	 * @return bool
+	 */
+	private function processAfterPayload(): bool
+	{
+		return true;
+	}
 }

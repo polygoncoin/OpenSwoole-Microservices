@@ -34,195 +34,195 @@ use Microservices\App\DropboxCacheHandlers\StreamVideo;
  */
 class DropboxCache
 {
-    /**
-     * File request details
-     *
-     * @var null|array
-     */
-    private $http = null;
+	/**
+	 * File request details
+	 *
+	 * @var null|array
+	 */
+	private $http = null;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * File Location
-     *
-     * @var string
-     */
-    private $fileLocation;
+	/**
+	 * File Location
+	 *
+	 * @var string
+	 */
+	private $fileLocation;
 
-    /**
-     * File mime type
-     *
-     * @var null|string
-     */
-    private $mimeType = null;
+	/**
+	 * File mime type
+	 *
+	 * @var null|string
+	 */
+	private $mimeType = null;
 
-    /**
-     * Supported Video mime types
-     *
-     * @var array
-     */
-    private $supportedVideoMimes = [
-        'video/quicktime'
-    ];
+	/**
+	 * Supported Video mime types
+	 *
+	 * @var array
+	 */
+	private $supportedVideoMimes = [
+		'video/quicktime'
+	];
 
-    /**
-     * Dropbox Folder
-     *
-     * The folder location outside docroot
-     * without a slash at the end
-     *
-     * @var string
-     */
-    private $modeDropBox = null;
+	/**
+	 * Dropbox Folder
+	 *
+	 * The folder location outside docroot
+	 * without a slash at the end
+	 *
+	 * @var string
+	 */
+	private $modeDropBox = null;
 
-    /**
-     * Constructor
-     *
-     * @param array $http HTTP request details
-     * @param Common $api
-     */
-    public function __construct(&$http, &$api = null)
-    {
-        $this->http = &$http;
-        $this->api = &$api;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param array $http HTTP request details
+	 * @param Common $api
+	 */
+	public function __construct(&$http, &$api = null)
+	{
+		$this->http = &$http;
+		$this->api = &$api;
+	}
 
-    /**
-     * Initialize check and serve file
-     *
-     * @param string $mode Open (Public access) / Closed (Requires Auth)
-     *
-     * @return bool
-     */
-    public function init($mode): bool
-    {
-        if (!isset($this->http['get'][ROUTE_URL_PARAM])) {
-            return false;
-        }
+	/**
+	 * Initialize check and serve file
+	 *
+	 * @param string $mode Open (Public access) / Closed (Requires Auth)
+	 *
+	 * @return bool
+	 */
+	public function init($mode): bool
+	{
+		if (!isset($this->http['get'][ROUTE_URL_PARAM])) {
+			return false;
+		}
 
-        $this->modeDropBox = Constants::$DROP_BOX_DIR
-            . DIRECTORY_SEPARATOR . $mode;
+		$this->modeDropBox = Constants::$DROP_BOX_DIR
+				DIRECTORY_SEPARATOR . $mode;
 
-        $filePath = DIRECTORY_SEPARATOR . trim(
-            string: str_replace(
-                search: ['../', '..\\', '/', '\\'],
-                replace: ['', '', DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR],
-                subject: urldecode(string: $this->http['get'][ROUTE_URL_PARAM])
-            ),
-            characters: './\\'
-        );
+		$filePath = DIRECTORY_SEPARATOR . trim(
+			string: str_replace(
+				search: ['../', '..\\', '/', '\\'],
+				replace: ['', '', DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR],
+				subject: urldecode(string: $this->http['get'][ROUTE_URL_PARAM])
+			),
+			characters: './\\'
+		);
 
-        if ($mode === 'Closed') {
-            $this->modeDropBox .= DIRECTORY_SEPARATOR . $this->api->req->cId;
-            $this->validateFileRequest();
-        }
-        $this->fileLocation = $this->modeDropBox . $filePath;
+		if ($mode === 'Closed') {
+			$this->modeDropBox .= DIRECTORY_SEPARATOR . $this->api->req->cId;
+			$this->validateFileRequest();
+		}
+		$this->fileLocation = $this->modeDropBox . $filePath;
 
-        return (
-            is_file(filename: $this->fileLocation)
-            && file_exists(filename: $this->fileLocation)
-        );
-    }
+		return (
+			is_file(filename: $this->fileLocation)
+			&& file_exists(filename: $this->fileLocation)
+		);
+	}
 
-    /**
-     * Checks whether access to file is allowed
-     *
-     * @return void
-     */
-    public function validateFileRequest(): void
-    {
-        // check logic for user is allowed to access the file as per $this->api->req->s
-        // $this->fileLocation;
-    }
+	/**
+	 * Checks whether access to file is allowed
+	 *
+	 * @return void
+	 */
+	public function validateFileRequest(): void
+	{
+		// check logic for user is allowed to access the file as per $this->api->req->s
+		// $this->fileLocation;
+	}
 
-    /**
-     * Serve File content
-     *
-     * @return array
-     */
-    public function process(): array
-    {
-        $headers = [];
-        $status = HttpStatus::$Ok;
-        $data = '';
+	/**
+	 * Serve File content
+	 *
+	 * @return array
+	 */
+	public function process(): array
+	{
+		$headers = [];
+		$status = HttpStatus::$Ok;
+		$data = '';
 
-        // Get the $fileLocation file mime
-        $this->mimeType = mime_content_type($this->fileLocation);
+		// Get the $fileLocation file mime
+		$this->mimeType = mime_content_type($this->fileLocation);
 
-        switch (true) {
-            case in_array($this->mimeType, $this->supportedVideoMimes):
-                // Serve Video
-                $videoStream = new StreamVideo($this->http);
-                if (
-                    (
-                        $httpStatus = $videoStream->init($this->fileLocation)
-                    ) !== HttpStatus::$Ok
-                ) {
-                    $return = [$headers, $data, $httpStatus];
-                } else {
-                    $return = $videoStream->serveContent();
-                }
-                break;
-            default:
-                $return = $this->serveDefault();
-        }
+		switch (true) {
+			case in_array($this->mimeType, $this->supportedVideoMimes):
+				// Serve Video
+				$videoStream = new StreamVideo($this->http);
+				if (
+					(
+						$httpStatus = $videoStream->init($this->fileLocation)
+						!== HttpStatus::$Ok
+					{
+					$return = [$headers, $data, $httpStatus];
+					else {
+					$return = $videoStream->serveContent();
+				}
+				break;
+			default:
+				$return = $this->serveDefault();
+		}
 
-        return $return;
-    }
+		return $return;
+	}
 
-    /**
-     * Serve default
-     *
-     * @return array
-     */
-    public function serveDefault(): array
-    {
-        $headers = [];
-        $status = HttpStatus::$Ok;
-        $data = '';
+	/**
+	 * Serve default
+	 *
+	 * @return array
+	 */
+	public function serveDefault(): array
+	{
+		$headers = [];
+		$status = HttpStatus::$Ok;
+		$data = '';
 
-        // Let Etag be last modified timestamp of file
-        $modifiedTime = filemtime(filename: $this->fileLocation);
-        $eTag = "{$modifiedTime}";
+		// Let Etag be last modified timestamp of file
+		$modifiedTime = filemtime(filename: $this->fileLocation);
+		$eTag = "{$modifiedTime}";
 
-        if (
-            (isset($this->http['header']['HTTP_IF_NONE_MATCH'])
-                && strpos(
-                    haystack: $this->http['header']['HTTP_IF_NONE_MATCH'],
-                    needle: $eTag
-                ) !== false
-            )
-            || (isset($this->http['header']['HTTP_IF_MODIFIED_SINCE'])
-            && @strtotime(
-                datetime: $this->http['header']['HTTP_IF_MODIFIED_SINCE']
-            ) == $modifiedTime)
-        ) {
-            $status = HttpStatus::$NotModified;
-            return [$headers, $data, $status];
-        }
+		if (
+			(isset($this->http['header']['HTTP_IF_NONE_MATCH'])
+				&& strpos(
+					haystack: $this->http['header']['HTTP_IF_NONE_MATCH'],
+					needle: $eTag
+					!== false
+			)
+			|| (isset($this->http['header']['HTTP_IF_MODIFIED_SINCE'])
+			&& @strtotime(
+				datetime: $this->http['header']['HTTP_IF_MODIFIED_SINCE']
+				== $modifiedTime)
+			{
+			$status = HttpStatus::$NotModified;
+			return [$headers, $data, $status];
+		}
 
-        // Set headers
+		// Set headers
 
-        // File name requested for download
-        // $fileName = basename(path: $this->fileLocation);
-        // $headers['Content-Disposition'] = "attachment;filename='$fileName';";
+		// File name requested for download
+		// $fileName = basename(path: $this->fileLocation);
+		// $headers['Content-Disposition'] = "attachment;filename='$fileName';";
 
-        $headers['Cache-Control'] = 'max-age=0, must-revalidate';
-        $headers['Last-Modified'] = gmdate(
-            format: 'D, d M Y H:i:s',
-            timestamp: $modifiedTime
-        ) . ' GMT';
-        $headers['Etag'] = "\"{$eTag}\"";
-        $headers['Expires'] = -1;
-        $headers['Content-Type'] = "{$this->mimeType}";
-        $headers['Content-Length'] = filesize(filename: $this->fileLocation);
+		$headers['Cache-Control'] = 'max-age=0, must-revalidate';
+		$headers['Last-Modified'] = gmdate(
+			format: 'D, d M Y H:i:s',
+			timestamp: $modifiedTime
+					GMT';
+		$headers['Etag'] = "\"{$eTag}\"";
+		$headers['Expires'] = -1;
+		$headers['Content-Type'] = "{$this->mimeType}";
+		$headers['Content-Length'] = filesize(filename: $this->fileLocation);
 
-        return [$headers, file_get_contents($this->fileLocation), $status];
-    }
+		return [$headers, file_get_contents($this->fileLocation), $status];
+	}
 }

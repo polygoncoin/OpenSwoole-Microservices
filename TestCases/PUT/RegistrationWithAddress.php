@@ -20,24 +20,24 @@ use Microservices\App\Web;
 $header = $defaultHeaders;
 $header[] = $contentType;
 if (isset($token)) {
-    $header[] = "Authorization: Bearer {$token}";
+	$header[] = "Authorization: Bearer {$token}";
 
-    $params = [
-        'firstname' => 'Ramesh',
-        'lastname' => 'Jangid',
-        'email' => 'ramesh@test.com',
-        'password' => 'shames11',
-        'address' => [
-            'id' => 1,
-            'address' => 'a-203'
-        ]
-    ];
+	$params = [
+		'firstname' => 'Ramesh',
+		'lastname' => 'Jangid',
+		'email' => 'ramesh@test.com',
+		'password' => 'shames11',
+		'address' => [
+			'id' => 1,
+			'address' => 'a-203'
+		]
+	];
 
-    return Web::trigger(
-        homeURL: $homeURL,
-        method: 'PUT',
-        route: '/registration-with-address/1',
-        header: $header,
-        payload: json_encode(value: $params)
-    );
+	return Web::trigger(
+		homeURL: $homeURL,
+		method: 'PUT',
+		route: '/registration-with-address/1',
+		header: $header,
+		payload: json_encode(value: $params)
+	);
 }

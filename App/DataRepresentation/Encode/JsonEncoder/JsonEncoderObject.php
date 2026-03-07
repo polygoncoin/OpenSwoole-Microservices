@@ -31,16 +31,16 @@ namespace Microservices\App\DataRepresentation\Encode\JsonEncoder;
  */
 class JsonEncoderObject
 {
-    public $mode = '';
-    public $comma = '';
+	public $mode = '';
+	public $comma = '';
 
-    /**
-     * Constructor
-     *
-     * @param string $mode Values can be one among Array/object
-     */
-    public function __construct($mode)
-    {
-        $this->mode = $mode;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param string $mode Values can be one among Array/object
+	 */
+	public function __construct($mode)
+	{
+		$this->mode = $mode;
+	}
 }

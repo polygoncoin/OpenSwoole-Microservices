@@ -29,47 +29,47 @@ namespace Microservices\App\Servers\QueryCache;
  */
 interface QueryCacheInterface
 {
-    /**
-     * Cache connection
-     *
-     * @return void
-     */
-    public function connect(): void;
+	/**
+	 * Cache connection
+	 *
+	 * @return void
+	 */
+	public function connect(): void;
 
-    /**
-     * Checks if cache key exist
-     *
-     * @param string $key Cache key
-     *
-     * @return mixed
-     */
-    public function cacheExists($key): mixed;
+	/**
+	 * Checks if cache key exist
+	 *
+	 * @param string $key Cache key
+	 *
+	 * @return mixed
+	 */
+	public function cacheExists($key): mixed;
 
-    /**
-     * Get cache on basis of key
-     *
-     * @param string $key Cache key
-     *
-     * @return mixed
-     */
-    public function getCache($key): mixed;
+	/**
+	 * Get cache on basis of key
+	 *
+	 * @param string $key Cache key
+	 *
+	 * @return mixed
+	 */
+	public function getCache($key): mixed;
 
-    /**
-     * Set cache on basis of key
-     *
-     * @param string $key    Cache key
-     * @param string $value  Cache value
-     *
-     * @return mixed
-     */
-    public function setCache($key, $value): mixed;
+	/**
+	 * Set cache on basis of key
+	 *
+	 * @param string $key    Cache key
+	 * @param string $value  Cache value
+	 *
+	 * @return mixed
+	 */
+	public function setCache($key, $value): mixed;
 
-    /**
-     * Delete cache on basis of key
-     *
-     * @param string $key Cache key
-     *
-     * @return mixed
-     */
-    public function deleteCache($key): mixed;
+	/**
+	 * Delete cache on basis of key
+	 *
+	 * @param string $key Cache key
+	 *
+	 * @return mixed
+	 */
+	public function deleteCache($key): mixed;
 }

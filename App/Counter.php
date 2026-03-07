@@ -32,38 +32,38 @@ use Microservices\App\Env;
  */
 class Counter
 {
-    /**
-     * Get Global Auto Increment Counter
-     *
-     * @return int
-     */
-    public static function getGlobalCounter(): int
-    {
-        if (!Env::$enableGlobalCounter) {
-            throw new \Exception(
-                message: 'Enable use of Global Counter',
-                code: HttpStatus::$InternalServerError
-            );
-        }
+	/**
+	 * Get Global Auto Increment Counter
+	 *
+	 * @return int
+	 */
+	public static function getGlobalCounter(): int
+	{
+		if (!Env::$enableGlobalCounter) {
+			throw new \Exception(
+				message: 'Enable use of Global Counter',
+				code: HttpStatus::$InternalServerError
+			);
+		}
 
-        switch (Env::$gCounterMode) {
-            case 'Cache':
-                $key = Env::$gCounter;
-                DbFunctions::connectGlobalCache();
-                $id = DbFunctions::$gCacheServer->incrementCache($key);
-                break;
-            case 'Database':
-                DbFunctions::connectGlobalDb();
+		switch (Env::$gCounterMode) {
+			case 'Cache':
+				$key = Env::$gCounter;
+				DbFunctions::connectGlobalCache();
+				$id = DbFunctions::$gCacheServer->incrementCache($key);
+				break;
+			case 'Database':
+				DbFunctions::connectGlobalDb();
 
-                $table = Env::$gDbServerDatabase . '.' . Env::$gCounter;
-                $sql = "INSERT INTO {$table}() VALUES()";
-                $sqlParams = [];
+				$table = Env::$gDbServerDatabase . '.' . Env::$gCounter;
+				$sql = "INSERT INTO {$table}() VALUES()";
+				$sqlParams = [];
 
-                DbFunctions::$gDbServer->execDbQuery(sql: $sql, params: $sqlParams);
-                $id = DbFunctions::$gDbServer->lastInsertId();
-                break;
-        }
+				DbFunctions::$gDbServer->execDbQuery(sql: $sql, params: $sqlParams);
+				$id = DbFunctions::$gDbServer->lastInsertId();
+				break;
+		}
 
-        return $id;
-    }
+		return $id;
+	}
 }

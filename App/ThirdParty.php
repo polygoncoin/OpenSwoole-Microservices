@@ -32,55 +32,55 @@ use Microservices\Supplement\ThirdParty\ThirdPartyInterface;
  */
 class ThirdParty
 {
-    /**
-     * ThirdParty API object
-     *
-     * @var null|ThirdPartyInterface
-     */
-    private $thirdPartyApi = null;
+	/**
+	 * ThirdParty API object
+	 *
+	 * @var null|ThirdPartyInterface
+	 */
+	private $thirdPartyApi = null;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+	}
 
-    /**
-     * Initialize
-     *
-     * @return bool
-     */
-    public function init(): bool
-    {
-        $class = 'Microservices\\Supplement\\ThirdParty\\'
-            . ucfirst(string: $this->api->req->rParser->routeElements[1]);
+	/**
+	 * Initialize
+	 *
+	 * @return bool
+	 */
+	public function init(): bool
+	{
+		$class = 'Microservices\\Supplement\\ThirdParty\\'
+				ucfirst(string: $this->api->req->rParser->routeElements[1]);
 
-        $this->thirdPartyApi = new $class($this->api);
+		$this->thirdPartyApi = new $class($this->api);
 
-        return $this->thirdPartyApi->init();
-    }
+		return $this->thirdPartyApi->init();
+	}
 
-    /**
-     * Process
-     *
-     * @param string $function Function
-     * @param array  $payload  Payload
-     *
-     * @return array
-     */
-    public function process($function, $payload): array
-    {
-        return $this->thirdPartyApi->$function($payload);
-    }
+	/**
+	 * Process
+	 *
+	 * @param string $function Function
+	 * @param array  $payload  Payload
+	 *
+	 * @return array
+	 */
+	public function process($function, $payload): array
+	{
+		return $this->thirdPartyApi->$function($payload);
+	}
 }

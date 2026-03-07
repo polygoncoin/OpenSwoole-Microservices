@@ -29,72 +29,72 @@ namespace Microservices\App\SessionHandlers\Containers;
  */
 class SessionContainerHelper
 {
-    // The cipher method
-    private $cipher_algo = 'AES-256-CBC';
+	// The cipher method
+	private $cipher_algo = 'AES-256-CBC';
 
-    // Bitwise disjunction of the flags OPENSSL_RAW_DATA,
-    // and OPENSSL_ZERO_PADDING or OPENSSL_DON'T_ZERO_PAD_KEY */
-    private $options = OPENSSL_RAW_DATA;
+	// Bitwise disjunction of the flags OPENSSL_RAW_DATA,
+	// and OPENSSL_ZERO_PADDING or OPENSSL_DON'T_ZERO_PAD_KEY */
+	private $options = OPENSSL_RAW_DATA;
 
-    // Usually 256-bit passphrase
-    public $passphrase = null;
+	// Usually 256-bit passphrase
+	public $passphrase = null;
 
-    // Usually 128-bit iv
-    public $iv = null;
+	// Usually 128-bit iv
+	public $iv = null;
 
-    // Session Start $options param
-    public $sessionOptions = null;
+	// Session Start $options param
+	public $sessionOptions = null;
 
-    // Session cookie name
-    public $sessionName = null;
+	// Session cookie name
+	public $sessionName = null;
 
-    // Session data cookie name
-    public $sessionDataName = null;
+	// Session data cookie name
+	public $sessionDataName = null;
 
-    // Session timeout
-    public $sessionMaxLifetime = null;
+	// Session timeout
+	public $sessionMaxLifetime = null;
 
-    /**
-     * Encryption
-     *
-     * @param string $plainText Plain Text
-     *
-     * @return string
-     */
-    protected function encryptData($plainText): string
-    {
-        if (!empty($this->passphrase) && !empty($this->iv)) {
-            return base64_encode(
-                string: openssl_encrypt(
-                    data: $plainText,
-                    cipher_algo: $this->cipher_algo,
-                    passphrase: $this->passphrase,
-                    options: $this->options,
-                    iv: $this->iv
-                )
-            );
-        }
-        return $plainText;
-    }
+	/**
+	 * Encryption
+	 *
+	 * @param string $plainText Plain Text
+	 *
+	 * @return string
+	 */
+	protected function encryptData($plainText): string
+	{
+		if (!empty($this->passphrase) && !empty($this->iv)) {
+			return base64_encode(
+				string: openssl_encrypt(
+					data: $plainText,
+					cipher_algo: $this->cipher_algo,
+					passphrase: $this->passphrase,
+					options: $this->options,
+					iv: $this->iv
+				)
+			);
+		}
+		return $plainText;
+	}
 
-    /**
-     * Decryption
-     *
-     * @param string $cipherText Cipher Text
-     *
-     * @return bool|string
-     */
-    protected function decryptData($cipherText): bool|string
-    {
-        if (!empty($this->passphrase) && !empty($this->iv)) {
-            return openssl_decrypt(
-                data: base64_decode(string: $cipherText),
-                cipher_algo: $this->cipher_algo,
-                passphrase: $this->passphrase,
-                options: $this->options,
-                iv: $this->iv
-            );
-        }
-        return $cipherText;
-    }
+	/**
+	 * Decryption
+	 *
+	 * @param string $cipherText Cipher Text
+	 *
+	 * @return bool|string
+	 */
+	protected function decryptData($cipherText): bool|string
+	{
+		if (!empty($this->passphrase) && !empty($this->iv)) {
+			return openssl_decrypt(
+				data: base64_decode(string: $cipherText),
+				cipher_algo: $this->cipher_algo,
+				passphrase: $this->passphrase,
+				options: $this->options,
+				iv: $this->iv
+			);
+		}
+		return $cipherText;
+	}
 }

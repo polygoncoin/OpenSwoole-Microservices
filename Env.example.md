@@ -1,4 +1,4 @@
-# Globally Required configs
+	Globally Required configs
 
 ```ini
 ENVIRONMENT=0                           ; Environment PRODUCTION = 1 / DEVELOPMENT = 0
@@ -9,7 +9,7 @@ DISABLE_REQUESTS_VIA_PROXIES=1          ; 1 = true / 0 = false
 ## API authentication modes
 
 ```ini
-; API authentication modes - Token / Session (Cookie based Sessions)
+	API authentication modes - Token / Session (Cookie based Sessions)
 enableOpenRequest=1        ; 1 = true / 0 = false
 enableAuthRequest=1        ; 1 = true / 0 = false
 authMode='Token'            ; Token / Session (Cookie based Sessions)
@@ -22,7 +22,7 @@ concurrentAccessInterval=60 ; Concurrent Access Interval in Seconds
 ## API Data Input/Output Representation
 
 ```ini
-; Data Representation: JSON/XML/XSLT/HTML/PHP
+	Data Representation: JSON/XML/XSLT/HTML/PHP
 iRepresentation='JSON'                  ; JSON/XML - Input Data Representation
 oRepresentation='JSON'                  ; JSON/XML/XSLT/HTML/PHP - Output Data Representation
 enableInputRepresentationAsQueryParam=1 ; 1 = true / 0 = false
@@ -36,9 +36,9 @@ payloadKeyInResponse='Payload'
 ### Global cache
 
 ```ini
-; (Redis) user <username> allcommands allkeys on ><password>
-; used to save user and token related details
-; Supported Containers - Redis / Memcached / MongoDb
+	(Redis) user <username> allcommands allkeys on ><password>
+	used to save user and token related details
+	Supported Containers - Redis / Memcached / MongoDb
 gCacheServerType='Redis'
 gCacheServerHostname='127.0.0.1'
 gCacheServerPort=6379
@@ -51,8 +51,8 @@ gCacheServerTable='global_cache' ; For MongoDb
 ### Global Database
 
 ```ini
-; Global Database details - global.sql
-; Supported Containers - MySql / PostgreSql
+	Global Database details - global.sql
+	Supported Containers - MySql / PostgreSql
 gDbServerType='MySql'
 gDbServerHostname='127.0.0.1'
 gDbServerPort=3306
@@ -65,17 +65,17 @@ gDbServerQueryPlaceholder='Named' ; Named(:param) / Unnamed(?)
 ## Other database configs
 
 ```ini
-; Master database on global MySql server
+	Master database on global MySql server
 masterDatabase='client_master'             ; contains all entities necessary for a new client
 
-; Tables
+	Tables
 clientsTable='client'
 groupsTable='group'
 
-; Sql query placeholder
+	Sql query placeholder
 queryPlaceholder='Named'            ; Named(:param) / Unnamed(?)
 
-; Default perPage (records per page)
+	Default perPage (records per page)
 defaultPerPage=10
 maxResultsPerPage=1000
 ```
@@ -89,7 +89,7 @@ This enables identify client details easily while moving him from a common datab
 Enable below config for same.
 
 ```ini
-; Global Auto-Increment counter details
+	Global Auto-Increment counter details
 enableGlobalCounter=0               ; 1 = true / 0 = false
 gCounter='global_counter'           ; Key or Table
 gCounterMode='Cache'                ; Globally configured Cache / Database
@@ -100,7 +100,7 @@ gCounterMode='Cache'                ; Globally configured Cache / Database
 This helps managing cache for idempotent request.
 
 ```ini
-; Settings to avoid Idempotent request
+	Settings to avoid Idempotent request
 idempotentSecret='changeme'         ; hash_hmac secret
 ```
 
@@ -111,9 +111,9 @@ Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoo
 
 ## Author
 
-👤 **Ramesh N. Jangid (Sharma)**
+	 **Ramesh N. Jangid (Sharma)**
 
-- Github: [@polygoncoin](https://github.com/polygoncoin)
+	Github: [@polygoncoin](https://github.com/polygoncoin)
 
 ## 📝 License
 

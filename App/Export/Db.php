@@ -31,85 +31,85 @@ use Microservices\App\Export\DbInterface;
  */
 class Db
 {
-    /**
-     * Allow creation of temporary file required for streaming large data
-     *
-     * @var bool
-     */
-    public $useTmpFile = false;
+	/**
+	 * Allow creation of temporary file required for streaming large data
+	 *
+	 * @var bool
+	 */
+	public $useTmpFile = false;
 
-    /**
-     * DB Engine
-     *
-     * @var null|string
-     */
-    public $dbServerType = null;
+	/**
+	 * DB Engine
+	 *
+	 * @var null|string
+	 */
+	public $dbServerType = null;
 
-    /**
-     * DB Class Object as per dbServerType
-     *
-     * @var null|DbInterface
-     */
-    public $containerObj = null;
+	/**
+	 * DB Class Object as per dbServerType
+	 *
+	 * @var null|DbInterface
+	 */
+	public $containerObj = null;
 
-    /**
-     * Constructor
-     *
-     * @param string $dbServerType Database Type (eg. MySql)
-     */
-    public function __construct($dbServerType)
-    {
-        $this->dbServerType = $dbServerType;
-        $class = "Microservices\\App\\Export\\Containers\\" . $this->dbServerType;
-        $this->containerObj = new $class();
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param string $dbServerType Database Type (eg. MySql)
+	 */
+	public function __construct($dbServerType)
+	{
+		$this->dbServerType = $dbServerType;
+		$class = "Microservices\\App\\Export\\Containers\\" . $this->dbServerType;
+		$this->containerObj = new $class();
+	}
 
-    /**
-     * Initialize
-     *
-     * @param string $hostname hostname
-     * @param string $port     port
-     * @param string $username username
-     * @param string $password password
-     * @param string $database database
-     *
-     * @return void
-     * @throws \Exception
-     */
-    public function init(
-        $hostname,
-        $port,
-        $username,
-        $password,
-        $database
-    ): void {
-        $this->containerObj->init(
-            hostname: $hostname,
-            port: $port,
-            username: $username,
-            password: $password,
-            database: $database
-        );
-    }
+	/**
+	 * Initialize
+	 *
+	 * @param string $hostname hostname
+	 * @param string $port     port
+	 * @param string $username username
+	 * @param string $password password
+	 * @param string $database database
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
+	public function init(
+		$hostname,
+		$port,
+		$username,
+		$password,
+		$database
+	): void {
+		$this->containerObj->init(
+			hostname: $hostname,
+			port: $port,
+			username: $username,
+			password: $password,
+			database: $database
+		);
+	}
 
-    /**
-     * Returns Shell Command
-     *
-     * @param string $sql    query
-     * @param array  $params query params
-     *
-     * @return string
-     */
-    public function getShellCommand($sql, $params = []): string
-    {
-        // Validation
-        if (empty($sql)) {
-            throw new \Exception(message: 'Empty Sql query');
-        }
+	/**
+	 * Returns Shell Command
+	 *
+	 * @param string $sql    query
+	 * @param array  $params query params
+	 *
+	 * @return string
+	 */
+	public function getShellCommand($sql, $params = []): string
+	{
+		// Validation
+		if (empty($sql)) {
+			throw new \Exception(message: 'Empty Sql query');
+		}
 
-        return $this->containerObj->getShellCommand(
-            sql: $sql,
-            params: $params
-        );
-    }
+		return $this->containerObj->getShellCommand(
+			sql: $sql,
+			params: $params
+		);
+	}
 }

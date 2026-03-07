@@ -34,45 +34,45 @@ use Microservices\Supplement\DropboxCache\CacheTrait;
  */
 class Category implements CacheInterface
 {
-    use CacheTrait;
+	use CacheTrait;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-        DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Slave');
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+		DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Slave');
+	}
 
-    /**
-     * Initialize
-     *
-     * @return bool
-     */
-    public function init(): bool
-    {
-        return true;
-    }
+	/**
+	 * Initialize
+	 *
+	 * @return bool
+	 */
+	public function init(): bool
+	{
+		return true;
+	}
 
-    /**
-     * Process
-     *
-     * @param array $payload Payload
-     *
-     * @return array
-     */
-    public function process(array $payload = []): array
-    {
-        return [true];
-    }
+	/**
+	 * Process
+	 *
+	 * @param array $payload Payload
+	 *
+	 * @return array
+	 */
+	public function process(array $payload = []): array
+	{
+		return [true];
+	}
 }

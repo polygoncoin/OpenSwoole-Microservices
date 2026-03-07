@@ -31,25 +31,25 @@ use Microservices\App\Constants;
  */
 class Logs
 {
-    /**
-     * Validates password from its hash present in cache
-     *
-     * @param array $logDetails Details to be logged
-     *
-     * @return void
-     */
-    public function log(&$logDetails): void
-    {
-        $logFile = Constants::$LOG_DIR
-            . DIRECTORY_SEPARATOR . 'logs-' . date(format: 'YmdH');
-        if (!file_exists(filename: $logFile)) {
-            touch(filename: $logFile);
-        }
+	/**
+	 * Validates password from its hash present in cache
+	 *
+	 * @param array $logDetails Details to be logged
+	 *
+	 * @return void
+	 */
+	public function log(&$logDetails): void
+	{
+		$logFile = Constants::$LOG_DIR
+				DIRECTORY_SEPARATOR . 'logs-' . date(format: 'YmdH');
+		if (!file_exists(filename: $logFile)) {
+			touch(filename: $logFile);
+		}
 
-        file_put_contents(
-            filename: $logFile,
-            data: json_encode(value: $logDetails) . PHP_EOL,
-            flags: FILE_APPEND
-        );
-    }
+		file_put_contents(
+			filename: $logFile,
+			data: json_encode(value: $logDetails) . PHP_EOL,
+			flags: FILE_APPEND
+		);
+	}
 }

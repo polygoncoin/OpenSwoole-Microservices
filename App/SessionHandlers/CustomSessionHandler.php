@@ -30,372 +30,372 @@ use Microservices\App\SessionHandlers\Containers\SessionContainerInterface;
  * @since     Class available since Release 1.0.0
  */
 class CustomSessionHandler implements
-    \SessionHandlerInterface,
-    \SessionIdInterface,
-    \SessionUpdateTimestampHandlerInterface
+	\SessionHandlerInterface,
+	\SessionIdInterface,
+	\SessionUpdateTimestampHandlerInterface
 {
-    /**
-     * Session cookie name
-     *
-     * @var null|string
-     */
-    public $sessionName = null;
+	/**
+	 * Session cookie name
+	 *
+	 * @var null|string
+	 */
+	public $sessionName = null;
 
-    /**
-     * Session data cookie name
-     *
-     * @var null|string
-     */
-    public $sessionDataName = null;
+	/**
+	 * Session data cookie name
+	 *
+	 * @var null|string
+	 */
+	public $sessionDataName = null;
 
-    /**
-     * Session Container
-     *
-     * @var null|SessionContainerInterface
-     */
-    private $container = null;
+	/**
+	 * Session Container
+	 *
+	 * @var null|SessionContainerInterface
+	 */
+	private $container = null;
 
-    /**
-     * Session found
-     *
-     * @var null|bool
-     */
-    private $foundSession = null;
+	/**
+	 * Session found
+	 *
+	 * @var null|bool
+	 */
+	private $foundSession = null;
 
-    /**
-     * Session Id
-     *
-     * @var string
-     */
-    private $sessionId = '';
+	/**
+	 * Session Id
+	 *
+	 * @var string
+	 */
+	private $sessionId = '';
 
-    /**
-     * Session ID created flag to handle session_regenerate_id
-     * In this case validateId is called after create_sid function
-     * Also, we have used this to validate created sessionId
-     *
-     * @var null|bool
-     */
-    private $creatingSessionId = null;
+	/**
+	 * Session ID created flag to handle session_regenerate_id
+	 * In this case validateId is called after create_sid function
+	 * Also, we have used this to validate created sessionId
+	 *
+	 * @var null|bool
+	 */
+	private $creatingSessionId = null;
 
-    /**
-     * Session Data
-     *
-     * @var null|string
-     */
-    private $sessionData = '';
+	/**
+	 * Session Data
+	 *
+	 * @var null|string
+	 */
+	private $sessionData = '';
 
-    /**
-     * _isTimestampUpdated flag for read_and_close or readonly session behaviour
-     * To be careful with the 'read_and_close' option
-     * It doesn't update the session last modification timestamp
-     * unlike the default PHP behaviour
-     *
-     * @var bool
-     */
-    private $isTimestampUpdated = false;
+	/**
+	 * _isTimestampUpdated flag for read_and_close or readonly session behaviour
+	 * To be careful with the 'read_and_close' option
+	 * It doesn't update the session last modification timestamp
+	 * unlike the default PHP behaviour
+	 *
+	 * @var bool
+	 */
+	private $isTimestampUpdated = false;
 
-    /**
-     * Constructor
-     *
-     * @param SessionContainerInterface $container Container
-     */
-    public function __construct(&$container)
-    {
-        $this->container = &$container;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param SessionContainerInterface $container Container
+	 */
+	public function __construct(&$container)
+	{
+		$this->container = &$container;
+	}
 
-    /**
-     * Open session
-     * A callable with the following signature
-     *
-     * @param string $sessionSavePath Save Path
-     * @param string $sessionName     Session Name
-     *
-     * @return bool true for success or false for failure
-     */
-    public function open($sessionSavePath, $sessionName): bool
-    {
-        $this->container->init(
-            sessionSavePath: $sessionSavePath,
-            sessionName: $sessionName
-        );
+	/**
+	 * Open session
+	 * A callable with the following signature
+	 *
+	 * @param string $sessionSavePath Save Path
+	 * @param string $sessionName     Session Name
+	 *
+	 * @return bool true for success or false for failure
+	 */
+	public function open($sessionSavePath, $sessionName): bool
+	{
+		$this->container->init(
+			sessionSavePath: $sessionSavePath,
+			sessionName: $sessionName
+		);
 
-        return true;
-    }
+		return true;
+	}
 
-    /**
-     * Validate session ID
-     *
-     * Calls if session cookie is present in request
-     *
-     * A callable with the following signature
-     *
-     * @param string $sessionId Session ID
-     *
-     * @return bool true if the session id is valid otherwise false
-     */
-    public function validateId($sessionId): bool
-    {
-        if ($sessionData = $this->container->getSession(sessionId: $sessionId)) {
-            if (is_null(value: $this->creatingSessionId)) {
-                $this->sessionData = &$sessionData;
-            }
-            $this->foundSession = true;
-        } else {
-            if (is_null(value: $this->creatingSessionId)) {
-                $this->unsetSessionCookie();
-            }
-            $this->foundSession = false;
-        }
+	/**
+	 * Validate session ID
+	 *
+	 * Calls if session cookie is present in request
+	 *
+	 * A callable with the following signature
+	 *
+	 * @param string $sessionId Session ID
+	 *
+	 * @return bool true if the session id is valid otherwise false
+	 */
+	public function validateId($sessionId): bool
+	{
+		if ($sessionData = $this->container->getSession(sessionId: $sessionId)) {
+			if (is_null(value: $this->creatingSessionId)) {
+				$this->sessionData = &$sessionData;
+			}
+			$this->foundSession = true;
+			else {
+			if (is_null(value: $this->creatingSessionId)) {
+				$this->unsetSessionCookie();
+			}
+			$this->foundSession = false;
+		}
 
-        // Don't change this return value
-        return $this->foundSession;
-    }
+		// Don't change this return value
+		return $this->foundSession;
+	}
 
-    /**
-     * Create session ID
-     *
-     * Calls if no session cookie is present
-     * Invoked internally when a new session id is needed
-     *
-     * A callable with the following signature
-     *
-     * @return string should be new session id
-     */
-    public function create_sid(): string // phpcs:ignore
-    {
-        // Delete session if previous sessionId exist eg; used for
-        // session_regenerate_id()
-        if (!empty($this->sessionId)) {
-            $this->container->deleteSession(sessionId: $this->sessionId);
-        }
+	/**
+	 * Create session ID
+	 *
+	 * Calls if no session cookie is present
+	 * Invoked internally when a new session id is needed
+	 *
+	 * A callable with the following signature
+	 *
+	 * @return string should be new session id
+	 */
+	public function create_sid(): string // phpcs:ignore
+	{
+		// Delete session if previous sessionId exist eg; used for
+		// session_regenerate_id()
+		if (!empty($this->sessionId)) {
+			$this->container->deleteSession(sessionId: $this->sessionId);
+		}
 
-        $this->creatingSessionId = true;
+		$this->creatingSessionId = true;
 
-        do {
-            $sessionId = $this->getRandomString();
-        } while ($this->validateId(sessionId: $sessionId) === true);
+		do {
+			$sessionId = $this->getRandomString();
+			while ($this->validateId(sessionId: $sessionId) === true);
 
-        $this->creatingSessionId = null;
+		$this->creatingSessionId = null;
 
-        return $sessionId;
-    }
+		return $sessionId;
+	}
 
-    /**
-     * Read session data
-     *
-     * A callable with the following signature
-     *
-     * @param string $sessionId Session ID
-     *
-     * @return string|false the session data or an empty string
-     */
-    public function read($sessionId): string|false
-    {
-        $this->sessionId = $sessionId;
-        return $this->sessionData;
-    }
+	/**
+	 * Read session data
+	 *
+	 * A callable with the following signature
+	 *
+	 * @param string $sessionId Session ID
+	 *
+	 * @return string|false the session data or an empty string
+	 */
+	public function read($sessionId): string|false
+	{
+		$this->sessionId = $sessionId;
+		return $this->sessionData;
+	}
 
-    /**
-     * Write session data
-     *
-     * When session.lazy_write is enabled, and session data is unchanged
-     * it will skip this method call. Instead it will call updateTimestamp
-     *
-     * A callable with the following signature
-     *
-     * @param string $sessionId   Session Id
-     * @param string $sessionData Session Data
-     *
-     * @return bool true for success or false for failure
-     */
-    public function write($sessionId, $sessionData): bool
-    {
-        $this->sessionData = $sessionData;
-        // Won't allow creating empty entries
-        // unless previous data is not empty
-        if (empty($sessionData) && empty(unserialize(data: $sessionData))) {
-            $this->unsetSessionCookie();
-            return true;
-        }
+	/**
+	 * Write session data
+	 *
+	 * When session.lazy_write is enabled, and session data is unchanged
+	 * it will skip this method call. Instead it will call updateTimestamp
+	 *
+	 * A callable with the following signature
+	 *
+	 * @param string $sessionId   Session Id
+	 * @param string $sessionData Session Data
+	 *
+	 * @return bool true for success or false for failure
+	 */
+	public function write($sessionId, $sessionData): bool
+	{
+		$this->sessionData = $sessionData;
+		// Won't allow creating empty entries
+		// unless previous data is not empty
+		if (empty($sessionData) && empty(unserialize(data: $sessionData))) {
+			$this->unsetSessionCookie();
+			return true;
+		}
 
-        $fn = ($this->foundSession) ? 'updateSession' : 'setSession';
-        if (
-            $this->container->$fn(
-                sessionId: $sessionId,
-                sessionData: $sessionData
-            )
-        ) {
-            $this->isTimestampUpdated = true;
-        }
+		$fn = ($this->foundSession) ? 'updateSession' : 'setSession';
+		if (
+			$this->container->$fn(
+				sessionId: $sessionId,
+				sessionData: $sessionData
+			)
+			{
+			$this->isTimestampUpdated = true;
+		}
 
-        return $this->isTimestampUpdated;
-    }
+		return $this->isTimestampUpdated;
+	}
 
-    /**
-     * Update session timestamp
-     *
-     * When session.lazy_write is enabled, and session data is unchanged
-     * UpdateTimestamp is called instead (of write) to only update the timestamp
-     * of session
-     *
-     * A callable with the following signature
-     *
-     * @param string $sessionId   Session ID
-     * @param string $sessionData Session Data
-     *
-     * @return bool true for success or false for failure
-     */
-    public function updateTimestamp($sessionId, $sessionData): bool
-    {
-        $this->sessionData = $sessionData;
-        // Won't allow updating empty entries when session.lazy_write is enabled
-        // unless previous data is not empty
-        if (empty($sessionData) && empty(unserialize(data: $sessionData))) {
-            $this->unsetSessionCookie();
-            return true;
-        }
+	/**
+	 * Update session timestamp
+	 *
+	 * When session.lazy_write is enabled, and session data is unchanged
+	 * UpdateTimestamp is called instead (of write) to only update the timestamp
+	 * of session
+	 *
+	 * A callable with the following signature
+	 *
+	 * @param string $sessionId   Session ID
+	 * @param string $sessionData Session Data
+	 *
+	 * @return bool true for success or false for failure
+	 */
+	public function updateTimestamp($sessionId, $sessionData): bool
+	{
+		$this->sessionData = $sessionData;
+		// Won't allow updating empty entries when session.lazy_write is enabled
+		// unless previous data is not empty
+		if (empty($sessionData) && empty(unserialize(data: $sessionData))) {
+			$this->unsetSessionCookie();
+			return true;
+		}
 
-        if (
-            $this->container->touchSession(
-                sessionId: $sessionId,
-                sessionData: $sessionData
-            )
-        ) {
-            $this->isTimestampUpdated = true;
-        }
+		if (
+			$this->container->touchSession(
+				sessionId: $sessionId,
+				sessionData: $sessionData
+			)
+			{
+			$this->isTimestampUpdated = true;
+		}
 
-        return $this->isTimestampUpdated;
-    }
+		return $this->isTimestampUpdated;
+	}
 
-    /**
-     * Cleanup old sessions
-     *
-     * A callable with the following signature
-     *
-     * @param integer $sessionMaxLifetime Session life time
-     *
-     * @return bool true for success or false for failure
-     */
-    public function gc($sessionMaxLifetime): int|false
-    {
-        return $this->container->gcSession(sessionMaxLifetime: $sessionMaxLifetime);
-    }
+	/**
+	 * Cleanup old sessions
+	 *
+	 * A callable with the following signature
+	 *
+	 * @param integer $sessionMaxLifetime Session life time
+	 *
+	 * @return bool true for success or false for failure
+	 */
+	public function gc($sessionMaxLifetime): int|false
+	{
+		return $this->container->gcSession(sessionMaxLifetime: $sessionMaxLifetime);
+	}
 
-    /**
-     * Destroy a session
-     *
-     * A callable with the following signature
-     *
-     * @param string $sessionId Session ID
-     *
-     * @return bool true for success or false for failure
-     */
-    public function destroy($sessionId): bool
-    {
-        // Deleting session cookies set on client end
-        $this->unsetSessionCookie();
+	/**
+	 * Destroy a session
+	 *
+	 * A callable with the following signature
+	 *
+	 * @param string $sessionId Session ID
+	 *
+	 * @return bool true for success or false for failure
+	 */
+	public function destroy($sessionId): bool
+	{
+		// Deleting session cookies set on client end
+		$this->unsetSessionCookie();
 
-        return $this->container->deleteSession(sessionId: $sessionId);
-    }
+		return $this->container->deleteSession(sessionId: $sessionId);
+	}
 
-    /**
-     * Close the session
-     *
-     * A callable with the following signature
-     *
-     * @return bool true for success or false for failure
-     */
-    public function close(): bool
-    {
-        // Updating timestamp for readonly mode (read_and_close option)
-        if (!$this->isTimestampUpdated && $this->foundSession === true) {
-            $this->container->touchSession(
-                sessionId: $this->sessionId,
-                sessionData: $this->sessionData
-            );
-        }
+	/**
+	 * Close the session
+	 *
+	 * A callable with the following signature
+	 *
+	 * @return bool true for success or false for failure
+	 */
+	public function close(): bool
+	{
+		// Updating timestamp for readonly mode (read_and_close option)
+		if (!$this->isTimestampUpdated && $this->foundSession === true) {
+			$this->container->touchSession(
+				sessionId: $this->sessionId,
+				sessionData: $this->sessionData
+			);
+		}
 
-        $this->checkCookiesHeader();
+		$this->checkCookiesHeader();
 
-        $this->container->closeSession();
-        $this->sessionData = '';
-        $this->foundSession = null;
-        $this->isTimestampUpdated = false;
+		$this->container->closeSession();
+		$this->sessionData = '';
+		$this->foundSession = null;
+		$this->isTimestampUpdated = false;
 
-        return true;
-    }
+		return true;
+	}
 
-    /**
-     * Returns 64 char random string
-     *
-     * @return string
-     */
-    private function getRandomString(): string
-    {
-        return bin2hex(string: random_bytes(length: 32));
-    }
+	/**
+	 * Returns 64 char random string
+	 *
+	 * @return string
+	 */
+	private function getRandomString(): string
+	{
+		return bin2hex(string: random_bytes(length: 32));
+	}
 
-    /**
-     * Unset session cookies
-     *
-     * @return void
-     */
-    private function unsetSessionCookie(): void
-    {
-        if (!empty($this->sessionName)) {
-            setcookie(
-                name: $this->sessionName,
-                value: '',
-                expires_or_options: 1,
-                path: $this->container->sessionOptions['cookie_path']
-            );
-        }
-        if (!empty($this->sessionDataName)) {
-            setcookie(
-                name: $this->sessionDataName,
-                value: '',
-                expires_or_options: 1,
-                path: $this->container->sessionOptions['cookie_path']
-            );
-        }
-    }
+	/**
+	 * Unset session cookies
+	 *
+	 * @return void
+	 */
+	private function unsetSessionCookie(): void
+	{
+		if (!empty($this->sessionName)) {
+			setcookie(
+				name: $this->sessionName,
+				value: '',
+				expires_or_options: 1,
+				path: $this->container->sessionOptions['cookie_path']
+			);
+		}
+		if (!empty($this->sessionDataName)) {
+			setcookie(
+				name: $this->sessionDataName,
+				value: '',
+				expires_or_options: 1,
+				path: $this->container->sessionOptions['cookie_path']
+			);
+		}
+	}
 
-    /**
-     * Check Cookies Header
-     *
-     * @return void
-     */
-    private function checkCookiesHeader(): void
-    {
-        // Check header is sent.
-        if (headers_sent()) {
-            return;
-        }
+	/**
+	 * Check Cookies Header
+	 *
+	 * @return void
+	 */
+	private function checkCookiesHeader(): void
+	{
+		// Check header is sent.
+		if (headers_sent()) {
+			return;
+		}
 
-        // Removed Session Cookie if read_and_close is enabled
-        if (
-            isset($this->container->sessionOptions['read_and_close'])
-            && $this->container->sessionOptions['read_and_close'] === true
-            && $this->creatingSessionId === true
-        ) {
-            // Remove Session Set-Cookie headers
-            $headers = headers_list();
-            $headerFound = false;
-            foreach ($headers as $index => $header) {
-                if (strpos($header, $this->sessionName) !== false) {
-                    unset($headers[$index]);
-                    $headerFound = true;
-                    break;
-                }
-            }
-            if ($headerFound) {
-                header_remove();
-                foreach ($headers as &$header) {
-                    header(header: $header);
-                }
-            }
-        }
-    }
+		// Removed Session Cookie if read_and_close is enabled
+		if (
+			isset($this->container->sessionOptions['read_and_close'])
+			&& $this->container->sessionOptions['read_and_close'] === true
+			&& $this->creatingSessionId === true
+			{
+			// Remove Session Set-Cookie headers
+			$headers = headers_list();
+			$headerFound = false;
+			foreach ($headers as $index => $header) {
+				if (strpos($header, $this->sessionName) !== false) {
+					unset($headers[$index]);
+					$headerFound = true;
+					break;
+				}
+			}
+			if ($headerFound) {
+				header_remove();
+				foreach ($headers as &$header) {
+					header(header: $header);
+				}
+			}
+		}
+	}
 }

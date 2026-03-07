@@ -35,63 +35,63 @@ use Microservices\Supplement\Cron\CronTrait;
  */
 class Category implements CronInterface
 {
-    use CronTrait;
+	use CronTrait;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-        DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Slave');
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+		DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Slave');
+	}
 
-    /**
-     * Initialize
-     *
-     * @return bool
-     */
-    public function init(): bool
-    {
-        return true;
-    }
+	/**
+	 * Initialize
+	 *
+	 * @return bool
+	 */
+	public function init(): bool
+	{
+		return true;
+	}
 
-    /**
-     * Process
-     *
-     * @param array $payload Payload
-     *
-     * @return array
-     */
-    public function process(array $payload = []): array
-    {
-        // Create and call functions to manage cron functionality here
+	/**
+	 * Process
+	 *
+	 * @param array $payload Payload
+	 *
+	 * @return array
+	 */
+	public function process(array $payload = []): array
+	{
+		// Create and call functions to manage cron functionality here
 
-        // End the calls with json response with dataEncode object
-        $this->endProcess();
-        return [true];
-    }
+		// End the calls with json response with dataEncode object
+		$this->endProcess();
+		return [true];
+	}
 
-    /**
-     * Function to end process which outputs the results
-     *
-     * @return never
-     * @throws \Exception
-     */
-    private function endProcess(): never
-    {
-        throw new \Exception(
-            message: 'message as desired',
-            code: HttpStatus::$Ok
-        );
-    }
+	/**
+	 * Function to end process which outputs the results
+	 *
+	 * @return never
+	 * @throws \Exception
+	 */
+	private function endProcess(): never
+	{
+		throw new \Exception(
+			message: 'message as desired',
+			code: HttpStatus::$Ok
+		);
+	}
 }

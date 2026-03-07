@@ -33,141 +33,141 @@ use Microservices\App\Env;
  */
 class DataDecode
 {
-    /**
-     * JSON File Handle
-     *
-     * @var null|resource
-     */
-    private $dataFileHandle = null;
+	/**
+	 * JSON File Handle
+	 *
+	 * @var null|resource
+	 */
+	private $dataFileHandle = null;
 
-    /**
-     * Temporary Stream
-     *
-     * @var null|Object
-     */
-    private $dataDecoder = null;
+	/**
+	 * Temporary Stream
+	 *
+	 * @var null|Object
+	 */
+	private $dataDecoder = null;
 
-    /**
-     * Constructor
-     *
-     * @param resource $dataFileHandle File handle
-     */
-    public function __construct(&$dataFileHandle)
-    {
-        $this->dataFileHandle = &$dataFileHandle;
+	/**
+	 * Constructor
+	 *
+	 * @param resource $dataFileHandle File handle
+	 */
+	public function __construct(&$dataFileHandle)
+	{
+		$this->dataFileHandle = &$dataFileHandle;
 
-        if (Env::$iRepresentation === 'JSON') {
-            $this->dataDecoder = new JsonDecode(
-                jsonFileHandle: $this->dataFileHandle
-            );
-        } else {
-            $this->dataDecoder = new XmlDecode(
-                jsonFileHandle: $this->dataFileHandle
-            );
-        }
-    }
+		if (Env::$iRepresentation === 'JSON') {
+			$this->dataDecoder = new JsonDecode(
+				jsonFileHandle: $this->dataFileHandle
+			);
+			else {
+			$this->dataDecoder = new XmlDecode(
+				jsonFileHandle: $this->dataFileHandle
+			);
+		}
+	}
 
-    /**
-     * Initialize
-     *
-     * @return void
-     */
-    public function init(): void
-    {
-        $this->dataDecoder->init();
-    }
+	/**
+	 * Initialize
+	 *
+	 * @return void
+	 */
+	public function init(): void
+	{
+		$this->dataDecoder->init();
+	}
 
-    /**
-     * Validates data
-     *
-     * @return void
-     */
-    public function validate(): void
-    {
-        $this->dataDecoder->validate();
-    }
+	/**
+	 * Validates data
+	 *
+	 * @return void
+	 */
+	public function validate(): void
+	{
+		$this->dataDecoder->validate();
+	}
 
-    /**
-     * Index data
-     *
-     * @return void
-     */
-    public function indexData(): void
-    {
-        $this->dataDecoder->indexData();
-    }
+	/**
+	 * Index data
+	 *
+	 * @return void
+	 */
+	public function indexData(): void
+	{
+		$this->dataDecoder->indexData();
+	}
 
-    /**
-     * Keys exist
-     *
-     * @param null|string $keys Keys exist (values separated by colon)
-     *
-     * @return bool
-     */
-    public function isset($keys = null): bool
-    {
-        return $this->dataDecoder->isset(keys: $keys);
-    }
+	/**
+	 * Keys exist
+	 *
+	 * @param null|string $keys Keys exist (values separated by colon)
+	 *
+	 * @return bool
+	 */
+	public function isset($keys = null): bool
+	{
+		return $this->dataDecoder->isset(keys: $keys);
+	}
 
-    /**
-     * Key exist
-     *
-     * @param null|string $keys Keys exist (values separated by colon)
-     *
-     * @return string Object/Array
-     */
-    public function dataType($keys = null): string
-    {
-        return $this->dataDecoder->dataType(keys: $keys);
-    }
+	/**
+	 * Key exist
+	 *
+	 * @param null|string $keys Keys exist (values separated by colon)
+	 *
+	 * @return string Object/Array
+	 */
+	public function dataType($keys = null): string
+	{
+		return $this->dataDecoder->dataType(keys: $keys);
+	}
 
-    /**
-     * Count of array element
-     *
-     * @param null|string $keys Key values separated by colon
-     *
-     * @return int
-     */
-    public function count($keys = null): int
-    {
-        return $this->dataDecoder->count(keys: $keys);
-    }
+	/**
+	 * Count of array element
+	 *
+	 * @param null|string $keys Key values separated by colon
+	 *
+	 * @return int
+	 */
+	public function count($keys = null): int
+	{
+		return $this->dataDecoder->count(keys: $keys);
+	}
 
-    /**
-     * Pass the keys and get whole raw data content belonging to keys
-     *
-     * @param string $keys Key values separated by colon
-     *
-     * @return mixed
-     */
-    public function get($keys = ''): mixed
-    {
-        return $this->dataDecoder->get(keys: $keys);
-    }
+	/**
+	 * Pass the keys and get whole raw data content belonging to keys
+	 *
+	 * @param string $keys Key values separated by colon
+	 *
+	 * @return mixed
+	 */
+	public function get($keys = ''): mixed
+	{
+		return $this->dataDecoder->get(keys: $keys);
+	}
 
-    /**
-     * Get complete array for keys
-     *
-     * @param string $keys Key values separated by colon
-     *
-     * @return mixed
-     */
-    public function getCompleteArray($keys = ''): mixed
-    {
-        return $this->dataDecoder->getCompleteArray(keys: $keys);
-    }
+	/**
+	 * Get complete array for keys
+	 *
+	 * @param string $keys Key values separated by colon
+	 *
+	 * @return mixed
+	 */
+	public function getCompleteArray($keys = ''): mixed
+	{
+		return $this->dataDecoder->getCompleteArray(keys: $keys);
+	}
 
-    /**
-     * Start processing the JSON string for a keys
-     * Perform search inside keys of JSON like $json['data'][0]['data1']
-     *
-     * @param string $keys Key values separated by colon
-     *
-     * @return void
-     * @throws \Exception
-     */
-    public function load($keys): void
-    {
-        $this->dataDecoder->load(keys: $keys);
-    }
+	/**
+	 * Start processing the JSON string for a keys
+	 * Perform search inside keys of JSON like $json['data'][0]['data1']
+	 *
+	 * @param string $keys Key values separated by colon
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
+	public function load($keys): void
+	{
+		$this->dataDecoder->load(keys: $keys);
+	}
 }

@@ -29,12 +29,12 @@ namespace Microservices\Validation;
  */
 interface ValidatorInterface
 {
-    /**
-     * Validate payload
-     *
-     * @param array $validationConfig Validation configuration
-     *
-     * @return array
-     */
-    public function validate(&$validationConfig): array;
+	/**
+	 * Validate payload
+	 *
+	 * @param array $validationConfig Validation configuration
+	 *
+	 * @return array
+	 */
+	public function validate(&$validationConfig): array;
 }

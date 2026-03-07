@@ -20,13 +20,13 @@ use Microservices\App\Web;
 $header = $defaultHeaders;
 $header[] = $contentType;
 if (isset($token)) {
-    $header[] = "Authorization: Bearer {$token}";
+	$header[] = "Authorization: Bearer {$token}";
 
-    return Web::trigger(
-        homeURL: $homeURL,
-        method: 'DELETE',
-        route: '/registration-with-address/1',
-        header: $header,
-        payload: ''
-    );
+	return Web::trigger(
+		homeURL: $homeURL,
+		method: 'DELETE',
+		route: '/registration-with-address/1',
+		header: $header,
+		payload: ''
+	);
 }

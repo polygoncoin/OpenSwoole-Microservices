@@ -16,16 +16,16 @@
 namespace Microservices\Config\Queries\Auth\ClientDB\Common;
 
 return [
-  '__QUERY__' => "UPDATE `{$this->api->req->usersTable}` SET __SET__ WHERE __WHERE__",
-  '__VALIDATE__' => [
-    [
-      'fn' => 'primaryKeyExist',
-      'fnArgs' => [
-                'table' => ['custom', $this->api->req->usersTable],
-                'primary' => ['custom', 'id'],
-                'id' => ['routeParams', 'id']
-            ],
-          'errorMessage' => 'Invalid registration id'
-    ],
-  ]
+	'__QUERY__' => "UPDATE `{$this->api->req->usersTable}` SET __SET__ WHERE __WHERE__",
+	'__VALIDATE__' => [
+		[
+			'fn' => 'primaryKeyExist',
+			'fnArgs' => [
+				'table' => ['custom', $this->api->req->usersTable],
+				'primary' => ['custom', 'id'],
+				'id' => ['routeParams', 'id']
+			],
+			'errorMessage' => 'Invalid registration id'
+		],
+	]
 ];

@@ -32,90 +32,90 @@ use Microservices\App\Env;
  */
 class RateLimiter
 {
-    /**
-     * Caching object
-     *
-     * @var null|Object
-     */
-    public $cache = null;
+	/**
+	 * Caching object
+	 *
+	 * @var null|Object
+	 */
+	public $cache = null;
 
-    /**
-     * Constructor
-     *
-     * @param HttpRequest $req HTTP Request object
-     */
-    public function __construct()
-    {
-        if (!Env::$enableRateLimiting) {
-            return;
-        }
+	/**
+	 * Constructor
+	 *
+	 * @param HttpRequest $req HTTP Request object
+	 */
+	public function __construct()
+	{
+		if (!Env::$enableRateLimiting) {
+			return;
+		}
 
-        $this->cache = DbFunctions::connectCache(
-            cacheServerType: Env::$rateLimitServerType,
-            cacheHostname: Env::$rateLimitServerHostname,
-            cachePort: Env::$rateLimitServerPort,
-            cacheUsername: '',
-            cachePassword: '',
-            cacheDatabase: '',
-            cacheTable: ''
-        );
-    }
+		$this->cache = DbFunctions::connectCache(
+			cacheServerType: Env::$rateLimitServerType,
+			cacheHostname: Env::$rateLimitServerHostname,
+			cachePort: Env::$rateLimitServerPort,
+			cacheUsername: '',
+			cachePassword: '',
+			cacheDatabase: '',
+			cacheTable: ''
+		);
+	}
 
-    /**
-     * Check the request is valid
-     *
-     * @param string $prefix        Prefix
-     * @param int    $maxRequest   Max request
-     * @param int    $secondsWindow Window in seconds
-     * @param string $key           Key
-     *
-     * @return array
-     */
-    public function check(
-        $prefix,
-        $maxRequest,
-        $secondsWindow,
-        $key
-    ): array {
-        if (
-            $this->cache === null
-            && (!Env::$enableRateLimiting)
-        ) {
-            return [
-                'allowed' => true,
-                'remaining' => 1,
-                'resetAt' => 1
-            ];
-        }
+	/**
+	 * Check the request is valid
+	 *
+	 * @param string $prefix        Prefix
+	 * @param int    $maxRequest   Max request
+	 * @param int    $secondsWindow Window in seconds
+	 * @param string $key           Key
+	 *
+	 * @return array
+	 */
+	public function check(
+		$prefix,
+		$maxRequest,
+		$secondsWindow,
+		$key
+	): array {
+		if (
+			$this->cache === null
+			&& (!Env::$enableRateLimiting)
+			{
+			return [
+				'allowed' => true,
+				'remaining' => 1,
+				'resetAt' => 1
+			];
+		}
 
-        $maxRequest = (int)$maxRequest;
-        $secondsWindow = (int)$secondsWindow;
+		$maxRequest = (int)$maxRequest;
+		$secondsWindow = (int)$secondsWindow;
 
-        $remainder = Env::$timestamp % $secondsWindow;
-        $remainder = $remainder !== 0 ? $remainder : $secondsWindow;
+		$remainder = Env::$timestamp % $secondsWindow;
+		$remainder = $remainder !== 0 ? $remainder : $secondsWindow;
 
-        $key = $prefix . $key;
+		$key = $prefix . $key;
 
-        if ($this->cache->cacheExists($key)) {
-            $requestCount = (int)$this->cache->getCache($key);
-        } else {
-            $requestCount = 0;
-            $this->cache->setCache($key, $requestCount, $remainder);
-        }
-        $requestCount++;
+		if ($this->cache->cacheExists($key)) {
+			$requestCount = (int)$this->cache->getCache($key);
+			else {
+			$requestCount = 0;
+			$this->cache->setCache($key, $requestCount, $remainder);
+		}
+		$requestCount++;
 
-        $allowed = $requestCount <= $maxRequest;
-        $remaining = max(0, $maxRequest - $requestCount);
-        $resetAt = Env::$timestamp + $remainder;
+		$allowed = $requestCount <= $maxRequest;
+		$remaining = max(0, $maxRequest - $requestCount);
+		$resetAt = Env::$timestamp + $remainder;
 
-        if ($allowed) {
-            $this->cache->incrementCache($key);
-        }
+		if ($allowed) {
+			$this->cache->incrementCache($key);
+		}
 
-        return [
-            'allowed' => $allowed,
-            'remaining' => $remaining,
-            'resetAt' => $resetAt
-        ];
-    }
+		return [
+			'allowed' => $allowed,
+			'remaining' => $remaining,
+			'resetAt' => $resetAt
+		];
+	}
 }

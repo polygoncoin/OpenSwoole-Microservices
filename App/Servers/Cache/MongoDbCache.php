@@ -32,180 +32,180 @@ use Microservices\App\Servers\Containers\NoSql\MongoDb as Cache_MongoDb;
  */
 class MongoDbCache implements CacheInterface
 {
-    /**
-     * Cache hostname
-     *
-     * @var null|string
-     */
-    private $hostname = null;
+	/**
+	 * Cache hostname
+	 *
+	 * @var null|string
+	 */
+	private $hostname = null;
 
-    /**
-     * Cache port
-     *
-     * @var null|int
-     */
-    private $port = null;
+	/**
+	 * Cache port
+	 *
+	 * @var null|int
+	 */
+	private $port = null;
 
-    /**
-     * Cache password
-     *
-     * @var null|string
-     */
-    private $username = null;
+	/**
+	 * Cache password
+	 *
+	 * @var null|string
+	 */
+	private $username = null;
 
-    /**
-     * Cache password
-     *
-     * @var null|string
-     */
-    private $password = null;
+	/**
+	 * Cache password
+	 *
+	 * @var null|string
+	 */
+	private $password = null;
 
-    /**
-     * Cache database
-     *
-     * @var null|string
-     */
-    private $database = null;
+	/**
+	 * Cache database
+	 *
+	 * @var null|string
+	 */
+	private $database = null;
 
-    /**
-     * Cache collection
-     *
-     * @var null|string
-     */
-    public $table = null;
+	/**
+	 * Cache collection
+	 *
+	 * @var null|string
+	 */
+	public $table = null;
 
-    /**
-     * Cache connection
-     *
-     * @var null|Cache_MongoDb
-     */
-    private $cache = null;
+	/**
+	 * Cache connection
+	 *
+	 * @var null|Cache_MongoDb
+	 */
+	private $cache = null;
 
-    /**
-     * Constructor
-     *
-     * @param string $hostname Hostname .env string
-     * @param string $port     Port .env string
-     * @param string $username Username .env string
-     * @param string $password Password .env string
-     * @param string $database Database .env string
-     * @param string $table    Table .env string
-     */
-    public function __construct(
-        $hostname,
-        $port,
-        $username,
-        $password,
-        $database,
-        $table
-    ) {
-        $this->hostname = $hostname;
-        $this->port = $port;
-        $this->username = $username;
-        $this->password = $password;
-        $this->database = $database;
-        $this->table = $table;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param string $hostname Hostname .env string
+	 * @param string $port     Port .env string
+	 * @param string $username Username .env string
+	 * @param string $password Password .env string
+	 * @param string $database Database .env string
+	 * @param string $table    Table .env string
+	 */
+	public function __construct(
+		$hostname,
+		$port,
+		$username,
+		$password,
+		$database,
+		$table
+		{
+		$this->hostname = $hostname;
+		$this->port = $port;
+		$this->username = $username;
+		$this->password = $password;
+		$this->database = $database;
+		$this->table = $table;
+	}
 
-    /**
-     * Cache connection
-     *
-     * @return void
-     * @throws \Exception
-     */
-    public function connect(): void
-    {
-        if ($this->cache !== null) {
-            return;
-        }
+	/**
+	 * Cache connection
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
+	public function connect(): void
+	{
+		if ($this->cache !== null) {
+			return;
+		}
 
-        try {
-            $this->cache = new Cache_MongoDb(
-                hostname: $this->hostname,
-                port: $this->port,
-                username: $this->username,
-                password: $this->password,
-                database: $this->database,
-                table: $this->table
-            );
-        } catch (\Exception $e) {
-            throw new \Exception(
-                message: $e->getMessage(),
-                code: HttpStatus::$InternalServerError
-            );
-        }
-    }
+		try {
+			$this->cache = new Cache_MongoDb(
+				hostname: $this->hostname,
+				port: $this->port,
+				username: $this->username,
+				password: $this->password,
+				database: $this->database,
+				table: $this->table
+			);
+			catch (\Exception $e) {
+			throw new \Exception(
+				message: $e->getMessage(),
+				code: HttpStatus::$InternalServerError
+			);
+		}
+	}
 
-    /**
-     * Checks if cache key exist
-     *
-     * @param string $key Cache key
-     *
-     * @return mixed
-     */
-    public function cacheExists($key): mixed
-    {
-        $this->connect();
+	/**
+	 * Checks if cache key exist
+	 *
+	 * @param string $key Cache key
+	 *
+	 * @return mixed
+	 */
+	public function cacheExists($key): mixed
+	{
+		$this->connect();
 
-        return $this->cache->cacheExists(key: $key);
-    }
+		return $this->cache->cacheExists(key: $key);
+	}
 
-    /**
-     * Get cache on basis of key
-     *
-     * @param string $key Cache key
-     *
-     * @return mixed
-     */
-    public function getCache($key): mixed
-    {
-        $this->connect();
+	/**
+	 * Get cache on basis of key
+	 *
+	 * @param string $key Cache key
+	 *
+	 * @return mixed
+	 */
+	public function getCache($key): mixed
+	{
+		$this->connect();
 
-        return $this->cache->getCache($key);
-    }
+		return $this->cache->getCache($key);
+	}
 
-    /**
-     * Set cache on basis of key
-     *
-     * @param string $key    Cache key
-     * @param string $value  Cache value
-     * @param int    $expire Seconds to expire. Default 0 - doesn't expire
-     *
-     * @return mixed
-     */
-    public function setCache($key, $value, $expire = null): mixed
-    {
-        $this->connect();
+	/**
+	 * Set cache on basis of key
+	 *
+	 * @param string $key    Cache key
+	 * @param string $value  Cache value
+	 * @param int    $expire Seconds to expire. Default 0 - doesn't expire
+	 *
+	 * @return mixed
+	 */
+	public function setCache($key, $value, $expire = null): mixed
+	{
+		$this->connect();
 
-        return $this->cache->setCache($key, $value, $expire);
-    }
+		return $this->cache->setCache($key, $value, $expire);
+	}
 
-    /**
-     * Increment Key value with offset
-     *
-     * @param string $key    Cache key
-     * @param int    $offset Offset
-     *
-     * @return int
-     */
-    public function incrementCache($key, $offset = 1): int
-    {
-        $this->connect();
+	/**
+	 * Increment Key value with offset
+	 *
+	 * @param string $key    Cache key
+	 * @param int    $offset Offset
+	 *
+	 * @return int
+	 */
+	public function incrementCache($key, $offset = 1): int
+	{
+		$this->connect();
 
-        return $this->cache->incrementCache($key, $offset);
-    }
+		return $this->cache->incrementCache($key, $offset);
+	}
 
-    /**
-     * Delete basis of key
-     *
-     * @param string $key Cache key
-     *
-     * @return mixed
-     */
-    public function deleteCache($key): mixed
-    {
-        $this->connect();
+	/**
+	 * Delete basis of key
+	 *
+	 * @param string $key Cache key
+	 *
+	 * @return mixed
+	 */
+	public function deleteCache($key): mixed
+	{
+		$this->connect();
 
-        return $this->cache->deleteCache($key);
-    }
+		return $this->cache->deleteCache($key);
+	}
 }

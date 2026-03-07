@@ -29,59 +29,59 @@ namespace Microservices\TestCases;
  */
 class Tests
 {
-    /**
-     * Process Auth based request
-     *
-     * @return array
-     */
-    public function processTests(): array
-    {
-        $response = [];
-        $response[] = $this->processAuth();
-        $response[] = $this->processOpen();
-        $response[] = $this->processXml();
-        $response[] = $this->processSupplement();
+	/**
+	 * Process Auth based request
+	 *
+	 * @return array
+	 */
+	public function processTests(): array
+	{
+		$response = [];
+		$response[] = $this->processAuth();
+		$response[] = $this->processOpen();
+		$response[] = $this->processXml();
+		$response[] = $this->processSupplement();
 
-        return $response;
-    }
+		return $response;
+	}
 
-    /**
-     * Process Auth based request
-     *
-     * @return array
-     */
-    public function processAuth(): array
-    {
-        return include __DIR__ . DIRECTORY_SEPARATOR . 'AuthTests.php';
-    }
+	/**
+	 * Process Auth based request
+	 *
+	 * @return array
+	 */
+	public function processAuth(): array
+	{
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'AuthTests.php';
+	}
 
-    /**
-     * Process Open to web api request
-     *
-     * @return array
-     */
-    public function processOpen(): array
-    {
-        return include __DIR__ . DIRECTORY_SEPARATOR . 'OpenTests.php';
-    }
+	/**
+	 * Process Open to web api request
+	 *
+	 * @return array
+	 */
+	public function processOpen(): array
+	{
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'OpenTests.php';
+	}
 
-    /**
-     * Process Open to web api request - Request/Response are in XML format
-     *
-     * @return array
-     */
-    public function processXml(): array
-    {
-        return include __DIR__ . DIRECTORY_SEPARATOR . 'OpenTestsXml.php';
-    }
+	/**
+	 * Process Open to web api request - Request/Response are in XML format
+	 *
+	 * @return array
+	 */
+	public function processXml(): array
+	{
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'OpenTestsXml.php';
+	}
 
-    /**
-     * Process Auth based request
-     *
-     * @return array
-     */
-    public function processSupplement(): array
-    {
-        return include __DIR__ . DIRECTORY_SEPARATOR . 'SupplementTest.php';
-    }
+	/**
+	 * Process Auth based request
+	 *
+	 * @return array
+	 */
+	public function processSupplement(): array
+	{
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'SupplementTest.php';
+	}
 }

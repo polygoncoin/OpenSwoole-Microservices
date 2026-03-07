@@ -1,4 +1,4 @@
-# Test Cases
+	Test Cases
 
 ## Defining Test Cases in file
 
@@ -26,7 +26,7 @@ Add, Comment or Uncomment depending on the requirement.
 
 ## Adding Test Cases
 
-- GET Request
+	GET Request
 
 ```PHP
 $response[] = include GET . DIRECTORY_SEPARATOR . '<get-route-file-1>.php';
@@ -45,14 +45,14 @@ $response[] = include DELETE . DIRECTORY_SEPARATOR . '<delete-route-file-1>.php'
 $response[] = include DELETE . DIRECTORY_SEPARATOR . '<delete-route-file-2>.php';
 ```
 
-- POST / PUT / PATCH / DELETE Request
+	POST / PUT / PATCH / DELETE Request
 
 These contain payload
 
 ```PHP
 $payload = [
-    'payload-var-1' => 'payload-val-1',
-    'payload-var-2' => 'payload-val-2'
+	'payload-var-1' => 'payload-val-1',
+	'payload-var-2' => 'payload-val-2'
 ];
 $response[] = include POST . DIRECTORY_SEPARATOR . '<dml-route-file>.php';
 ```
@@ -61,16 +61,16 @@ $response[] = include POST . DIRECTORY_SEPARATOR . '<dml-route-file>.php';
 
 Depending on HTTP method create a file &lt;get-route-file&gt;.php / &lt;dml-route-file&gt;.php in respective HTTP method folder. Or one can change the path (the same path needs to be configured in the above code)<br/>
 
-A sample of code a file may contain is as below
+	sample of code a file may contain is as below
 
 ```PHP
 $header = $defaultHeaders;
 return Web::trigger(
-    homeURL: $homeURL,
-    method: 'GET',
-    route: '/routes',
-    header: $header,
-    payload: ''
+	homeURL: $homeURL,
+	method: 'GET',
+	route: '/routes',
+	header: $header,
+	payload: ''
 );
 ```
 
@@ -79,15 +79,15 @@ If the code requires token; this can be done as below
 ```PHP
 $header = $defaultHeaders;
 if (isset($token)) {
-    $header[] = "Authorization: Bearer {$token}";
+	$header[] = "Authorization: Bearer {$token}";
 
-    return Web::trigger(
-        homeURL: $homeURL,
-        method: 'GET',
-        route: '/routes',
-        header: $header,
-        payload: ''
-    );
+	return Web::trigger(
+		homeURL: $homeURL,
+		method: 'GET',
+		route: '/routes',
+		header: $header,
+		payload: ''
+	);
 }
 ```
 
@@ -110,9 +110,9 @@ Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoo
 
 ## Author
 
-👤 **Ramesh N. Jangid (Sharma)**
+	 **Ramesh N. Jangid (Sharma)**
 
-- Github: [@polygoncoin](https://github.com/polygoncoin)
+	Github: [@polygoncoin](https://github.com/polygoncoin)
 
 ## 📝 License
 

@@ -32,189 +32,189 @@ use Microservices\App\SessionHandlers\Containers\SessionContainerHelper;
  * @since     Class available since Release 1.0.0
  */
 class CookieBasedSessionContainer extends SessionContainerHelper implements
-    SessionContainerInterface
+	SessionContainerInterface
 {
-    /**
-     * Initialize
-     *
-     * @param string $sessionSavePath Session Save Path
-     * @param string $sessionName     Session Name
-     *
-     * @return void
-     */
-    public function init($sessionSavePath, $sessionName): void
-    {
-        if (empty($this->passphrase) || empty($this->iv)) {
-            die('Please set encryption details in Session.php');
-        }
-    }
+	/**
+	 * Initialize
+	 *
+	 * @param string $sessionSavePath Session Save Path
+	 * @param string $sessionName     Session Name
+	 *
+	 * @return void
+	 */
+	public function init($sessionSavePath, $sessionName): void
+	{
+		if (empty($this->passphrase) || empty($this->iv)) {
+			die('Please set encryption details in Session.php');
+		}
+	}
 
-    /**
-     * For Custom Session Handler - Validate session ID
-     *
-     * @param string $sessionId Session ID
-     *
-     * @return bool|string
-     */
-    public function getSession($sessionId): bool|string
-    {
-        if (
-            isset($_COOKIE[$this->sessionDataName])
-            && !empty($_COOKIE[$this->sessionDataName])
-        ) {
-            $sessionData = $this->decryptData(
-                cipherText: $_COOKIE[$this->sessionDataName]
-            );
-            $sessionDataArr = unserialize(data: $sessionData);
-            if (
-                isset($sessionDataArr['_TS_'])
-                && ($time = $sessionDataArr['_TS_'] + $this->sessionMaxLifetime)
-                && $time > Env::$timestamp
-            ) {
-                return $sessionData;
-            }
-        }
-        return false;
-    }
+	/**
+	 * For Custom Session Handler - Validate session ID
+	 *
+	 * @param string $sessionId Session ID
+	 *
+	 * @return bool|string
+	 */
+	public function getSession($sessionId): bool|string
+	{
+		if (
+			isset($_COOKIE[$this->sessionDataName])
+			&& !empty($_COOKIE[$this->sessionDataName])
+			{
+			$sessionData = $this->decryptData(
+				cipherText: $_COOKIE[$this->sessionDataName]
+			);
+			$sessionDataArr = unserialize(data: $sessionData);
+			if (
+				isset($sessionDataArr['_TS_'])
+				&& ($time = $sessionDataArr['_TS_'] + $this->sessionMaxLifetime)
+				&& $time > Env::$timestamp
+				{
+				return $sessionData;
+			}
+		}
+		return false;
+	}
 
-    /**
-     * For Custom Session Handler - Write session data
-     *
-     * @param string $sessionId   Session ID
-     * @param string $sessionData Session Data
-     *
-     * @return bool|int
-     */
-    public function setSession($sessionId, $sessionData): bool|int
-    {
-        $sessionDataArr = unserialize(data: $sessionData);
-        $sessionDataArr['_TS_'] = Env::$timestamp;
-        $sessionData = serialize(value: $sessionDataArr);
+	/**
+	 * For Custom Session Handler - Write session data
+	 *
+	 * @param string $sessionId   Session ID
+	 * @param string $sessionData Session Data
+	 *
+	 * @return bool|int
+	 */
+	public function setSession($sessionId, $sessionData): bool|int
+	{
+		$sessionDataArr = unserialize(data: $sessionData);
+		$sessionDataArr['_TS_'] = Env::$timestamp;
+		$sessionData = serialize(value: $sessionDataArr);
 
-        $cookieData = $this->encryptData(plainText: $sessionData);
-        if (strlen(string: $cookieData) > 4096) {
-            ob_end_clean();
-            die(
-                'Session data length exceeds max 4 kilobytes (KB)'
-                . ' supported per Cookie'
-            );
-        }
+		$cookieData = $this->encryptData(plainText: $sessionData);
+		if (strlen(string: $cookieData) > 4096) {
+			ob_end_clean();
+			die(
+				'Session data length exceeds max 4 kilobytes (KB)'
+						supported per Cookie'
+			);
+		}
 
-        $_COOKIE[$this->sessionDataName] = $cookieData;
+		$_COOKIE[$this->sessionDataName] = $cookieData;
 
-        return setcookie(
-            name: $this->sessionDataName,
-            value: $cookieData,
-            expires_or_options: [
-                'expires' => 0,
-                'path' => $this->sessionOptions['cookie_path'],
-                'domain' => '',
-                'secure' => (
-                    (
-                        strpos(
-                            haystack: $_SERVER['HTTP_HOST'],
-                            needle: 'localhost'
-                        ) === false
-                    ) ? true : false
-                ),
-                'httponly' => true,
-                'samesite' => 'Strict'
-            ]
-        );
-    }
+		return setcookie(
+			name: $this->sessionDataName,
+			value: $cookieData,
+			expires_or_options: [
+				'expires' => 0,
+				'path' => $this->sessionOptions['cookie_path'],
+				'domain' => '',
+				'secure' => (
+					(
+						strpos(
+							haystack: $_SERVER['HTTP_HOST'],
+							needle: 'localhost'
+							=== false
+							true : false
+				),
+				'httponly' => true,
+				'samesite' => 'Strict'
+			]
+		);
+	}
 
-    /**
-     * For Custom Session Handler - Update session data
-     *
-     * @param string $sessionId   Session ID
-     * @param string $sessionData Session Data
-     *
-     * @return bool|int
-     */
-    public function updateSession($sessionId, $sessionData): bool|int
-    {
-        return $this->setSession(sessionId: $sessionId, sessionData: $sessionData);
-    }
+	/**
+	 * For Custom Session Handler - Update session data
+	 *
+	 * @param string $sessionId   Session ID
+	 * @param string $sessionData Session Data
+	 *
+	 * @return bool|int
+	 */
+	public function updateSession($sessionId, $sessionData): bool|int
+	{
+		return $this->setSession(sessionId: $sessionId, sessionData: $sessionData);
+	}
 
-    /**
-     * For Custom Session Handler - Update session timestamp
-     *
-     * @param string $sessionId   Session ID
-     * @param string $sessionData Session Data
-     *
-     * @return bool
-     */
-    public function touchSession($sessionId, $sessionData): bool
-    {
-        $sessionDataArr = unserialize(data: $sessionData);
-        $sessionDataArr['_TS_'] = Env::$timestamp;
-        $sessionData = serialize(value: $sessionDataArr);
+	/**
+	 * For Custom Session Handler - Update session timestamp
+	 *
+	 * @param string $sessionId   Session ID
+	 * @param string $sessionData Session Data
+	 *
+	 * @return bool
+	 */
+	public function touchSession($sessionId, $sessionData): bool
+	{
+		$sessionDataArr = unserialize(data: $sessionData);
+		$sessionDataArr['_TS_'] = Env::$timestamp;
+		$sessionData = serialize(value: $sessionDataArr);
 
-        $cookieData = $this->encryptData(plainText: $sessionData);
-        if (strlen(string: $cookieData) > 4096) {
-            ob_end_clean();
-            die(
-                'Session data length exceeds max 4 kilobytes (KB)'
-                . ' supported per Cookie'
-            );
-        }
+		$cookieData = $this->encryptData(plainText: $sessionData);
+		if (strlen(string: $cookieData) > 4096) {
+			ob_end_clean();
+			die(
+				'Session data length exceeds max 4 kilobytes (KB)'
+						supported per Cookie'
+			);
+		}
 
-        $_COOKIE[$this->sessionDataName] = $cookieData;
+		$_COOKIE[$this->sessionDataName] = $cookieData;
 
-        return setcookie(
-            name: $this->sessionDataName,
-            value: $cookieData,
-            expires_or_options: [
-                'expires' => 0,
-                'path' => $this->sessionOptions['cookie_path'],
-                'domain' => '',
-                'secure' => (
-                    (
-                        strpos(
-                            haystack: $_SERVER['HTTP_HOST'],
-                            needle: 'localhost'
-                        ) === false
-                    ) ? true : false
-                ),
-                'httponly' => true,
-                'samesite' => 'Strict'
-            ]
-        );
-    }
+		return setcookie(
+			name: $this->sessionDataName,
+			value: $cookieData,
+			expires_or_options: [
+				'expires' => 0,
+				'path' => $this->sessionOptions['cookie_path'],
+				'domain' => '',
+				'secure' => (
+					(
+						strpos(
+							haystack: $_SERVER['HTTP_HOST'],
+							needle: 'localhost'
+							=== false
+							true : false
+				),
+				'httponly' => true,
+				'samesite' => 'Strict'
+			]
+		);
+	}
 
-    /**
-     * For Custom Session Handler - Cleanup old sessions
-     *
-     * @param integer $sessionMaxLifetime Session Max Lifetime
-     *
-     * @return bool
-     */
-    public function gcSession($sessionMaxLifetime): bool
-    {
-        return true;
-    }
+	/**
+	 * For Custom Session Handler - Cleanup old sessions
+	 *
+	 * @param integer $sessionMaxLifetime Session Max Lifetime
+	 *
+	 * @return bool
+	 */
+	public function gcSession($sessionMaxLifetime): bool
+	{
+		return true;
+	}
 
-    /**
-     * For Custom Session Handler - Destroy a session
-     *
-     * @param string $sessionId Session ID
-     *
-     * @return bool
-     */
-    public function deleteSession($sessionId): bool
-    {
-        if (isset($_COOKIE[$this->sessionDataName])) {
-            unset($_COOKIE[$this->sessionDataName]);
-        }
-        return true;
-    }
+	/**
+	 * For Custom Session Handler - Destroy a session
+	 *
+	 * @param string $sessionId Session ID
+	 *
+	 * @return bool
+	 */
+	public function deleteSession($sessionId): bool
+	{
+		if (isset($_COOKIE[$this->sessionDataName])) {
+			unset($_COOKIE[$this->sessionDataName]);
+		}
+		return true;
+	}
 
-    /**
-     * Close File Container
-     *
-     * @return void
-     */
-    public function closeSession(): void
-    {
-    }
+	/**
+	 * Close File Container
+	 *
+	 * @return void
+	 */
+	public function closeSession(): void
+	{
+	}
 }

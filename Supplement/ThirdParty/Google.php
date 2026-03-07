@@ -36,78 +36,78 @@ use Microservices\Supplement\ThirdParty\ThirdPartyTrait;
 
 class Google implements ThirdPartyInterface
 {
-    use ThirdPartyTrait;
+	use ThirdPartyTrait;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-        DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Slave');
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+		DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Slave');
+	}
 
-    /**
-     * Initialize
-     *
-     * @return bool
-     */
-    public function init(): bool
-    {
-        return true;
-    }
+	/**
+	 * Initialize
+	 *
+	 * @return bool
+	 */
+	public function init(): bool
+	{
+		return true;
+	}
 
-    /**
-     * Process
-     *
-     * @param array $payload Payload
-     *
-     * @return array
-     */
-    public function process(array $payload = []): array
-    {
-        // Create and call functions to manage third party cURL calls here
+	/**
+	 * Process
+	 *
+	 * @param array $payload Payload
+	 *
+	 * @return array
+	 */
+	public function process(array $payload = []): array
+	{
+		// Create and call functions to manage third party cURL calls here
 
-        $curl_handle = curl_init();
-        curl_setopt(
-            handle: $curl_handle,
-            option: \CURLOPT_URL,
-            value: 'https://api.ipify.org?format=json'
-        );
-        curl_setopt(handle: $curl_handle, option: \CURLOPT_CONNECTTIMEOUT, value: 2);
-        curl_setopt(handle: $curl_handle, option: \CURLOPT_RETURNTRANSFER, value: 1);
-        $output = curl_exec(handle: $curl_handle);
-        curl_close(handle: $curl_handle);
-        if (empty($output)) {
-            $output = ['Error' => 'Nothing returned by ipify'];
-            $this->api->res->httpStatus = HttpStatus::$InternalServerError;
-        } else {
-            $output = json_decode(json: $output, associative: true);
-        }
-        // End the calls with json response with dataEncode object
-        $this->endProcess(output: $output);
+		$curl_handle = curl_init();
+		curl_setopt(
+			handle: $curl_handle,
+			option: \CURLOPT_URL,
+			value: 'https://api.ipify.org?format=json'
+		);
+		curl_setopt(handle: $curl_handle, option: \CURLOPT_CONNECTTIMEOUT, value: 2);
+		curl_setopt(handle: $curl_handle, option: \CURLOPT_RETURNTRANSFER, value: 1);
+		$output = curl_exec(handle: $curl_handle);
+		curl_close(handle: $curl_handle);
+		if (empty($output)) {
+			$output = ['Error' => 'Nothing returned by ipify'];
+			$this->api->res->httpStatus = HttpStatus::$InternalServerError;
+			else {
+			$output = json_decode(json: $output, associative: true);
+		}
+		// End the calls with json response with dataEncode object
+		$this->endProcess(output: $output);
 
-        return [true];
-    }
+		return [true];
+	}
 
-    /**
-     * Function to end process which outputs the results
-     *
-     * @param string $output Output
-     *
-     * @return void
-     */
-    private function endProcess($output): void
-    {
-        $this->api->res->dataEncode->addKeyData(key: 'Results', data: $output);
-    }
+	/**
+	 * Function to end process which outputs the results
+	 *
+	 * @param string $output Output
+	 *
+	 * @return void
+	 */
+	private function endProcess($output): void
+	{
+		$this->api->res->dataEncode->addKeyData(key: 'Results', data: $output);
+	}
 }

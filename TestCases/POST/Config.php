@@ -20,14 +20,14 @@ use Microservices\App\Web;
 $header = $defaultHeaders;
 $header[] = $contentType;
 if (isset($token)) {
-    $header[] = "Authorization: Bearer {$token}";
+	$header[] = "Authorization: Bearer {$token}";
 
-    return Web::trigger(
-        homeURL: $homeURL,
-        method: 'POST',
-        // route: '/category/config',
-        route: '/custom/SupplementTest/config',
-        header: $header,
-        payload: ''
-    );
+	return Web::trigger(
+		homeURL: $homeURL,
+		method: 'POST',
+		// route: '/category/config',
+		route: '/custom/SupplementTest/config',
+		header: $header,
+		payload: ''
+	);
 }

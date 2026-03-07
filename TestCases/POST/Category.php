@@ -20,40 +20,40 @@ use Microservices\App\Web;
 $header = $defaultHeaders;
 // $header[] = 'Content-Type: multipart/form-data; charset=utf-8';
 if (isset($token)) {
-    $header[] = "Authorization: Bearer {$token}";
+	$header[] = "Authorization: Bearer {$token}";
 
-    $params = [
-        [
-            'name' => 'ramesh0',
-            'sub' => [
-                'subname' => 'ramesh1',
-                'subsub' => [
-                    [
-                        'subsubname' => 'ramesh'
-                    ],
-                    [
-                        'subsubname' => 'ramesh'
-                    ]
-                ]
-            ]
-        ],
-        [
-            'name' => 'ramesh1',
-            'sub' => [
-                'subname' => 'ramesh1',
-                'subsub' => [
-                    'subsubname' => 'ramesh'
-                ]
-            ]
-        ]
-    ];
+	$params = [
+		[
+			'name' => 'ramesh0',
+			'sub' => [
+				'subname' => 'ramesh1',
+				'subsub' => [
+					[
+						'subsubname' => 'ramesh'
+					],
+					[
+						'subsubname' => 'ramesh'
+					]
+				]
+			]
+		],
+		[
+			'name' => 'ramesh1',
+			'sub' => [
+				'subname' => 'ramesh1',
+				'subsub' => [
+					'subsubname' => 'ramesh'
+				]
+			]
+		]
+	];
 
-    return Web::trigger(
-        homeURL: $homeURL,
-        method: 'POST',
-        route: '/category/import',
-        header: $header,
-        payload: '',//json_encode(value: $params),
-        file: $curlFile
-    );
+	return Web::trigger(
+		homeURL: $homeURL,
+		method: 'POST',
+		route: '/category/import',
+		header: $header,
+		payload: '',//json_encode(value: $params),
+		file: $curlFile
+	);
 }

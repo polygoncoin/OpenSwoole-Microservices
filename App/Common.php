@@ -32,58 +32,58 @@ use Microservices\App\HttpResponse;
  */
 class Common
 {
-    /**
-     * Microservices HTTP Request
-     *
-     * @var null|HttpRequest
-     */
-    public $req = null;
+	/**
+	 * Microservices HTTP Request
+	 *
+	 * @var null|HttpRequest
+	 */
+	public $req = null;
 
-    /**
-     * Microservices HTTP Response
-     *
-     * @var null|HttpResponse
-     */
-    public $res = null;
+	/**
+	 * Microservices HTTP Response
+	 *
+	 * @var null|HttpResponse
+	 */
+	public $res = null;
 
-    /**
-     * Microservices Request Details
-     *
-     * @var null|array
-     */
-    public $http = null;
+	/**
+	 * Microservices Request Details
+	 *
+	 * @var null|array
+	 */
+	public $http = null;
 
-    /**
-     * Initialize
-     *
-     * @param array $http HTTP request details
-     *
-     * @return void
-     */
-    public function init(&$http): void
-    {
-        $this->http = &$http;
-        $this->req = new HttpRequest(api: $this);
-        $this->res = new HttpResponse(api: $this);
-    }
+	/**
+	 * Initialize
+	 *
+	 * @param array $http HTTP request details
+	 *
+	 * @return void
+	 */
+	public function init(&$http): void
+	{
+		$this->http = &$http;
+		$this->req = new HttpRequest(api: $this);
+		$this->res = new HttpResponse(api: $this);
+	}
 
-    /**
-     * Initialize Request
-     *
-     * @return bool
-     */
-    public function initRequest(): void
-    {
-        $this->req->init();
-    }
+	/**
+	 * Initialize Request
+	 *
+	 * @return bool
+	 */
+	public function initRequest(): void
+	{
+		$this->req->init();
+	}
 
-    /**
-     * Initialize Response
-     *
-     * @return bool
-     */
-    public function initResponse(): void
-    {
-        $this->res->init();
-    }
+	/**
+	 * Initialize Response
+	 *
+	 * @return bool
+	 */
+	public function initResponse(): void
+	{
+		$this->res->init();
+	}
 }

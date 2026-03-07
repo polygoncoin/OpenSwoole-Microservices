@@ -18,16 +18,16 @@ namespace Microservices\Config\Routes\Auth\CommonRoutes\GlobalDB;
 use Microservices\App\Constants;
 
 return [
-    'group' => [
-        '__FILE__' => Constants::$AUTH_QUERIES_DIR
-            . DIRECTORY_SEPARATOR . 'GlobalDB'
-            . DIRECTORY_SEPARATOR . 'POST'
-            . DIRECTORY_SEPARATOR . 'groups.php',
-    ],
-    'client' => [
-        '__FILE__' => Constants::$AUTH_QUERIES_DIR
-            . DIRECTORY_SEPARATOR . 'GlobalDB'
-            . DIRECTORY_SEPARATOR . 'POST'
-            . DIRECTORY_SEPARATOR . 'clients.php',
-    ],
+	'group' => [
+		'__FILE__' => Constants::$AUTH_QUERIES_DIR
+				DIRECTORY_SEPARATOR . 'GlobalDB'
+				DIRECTORY_SEPARATOR . 'POST'
+				DIRECTORY_SEPARATOR . 'groups.php',
+	],
+	'client' => [
+		'__FILE__' => Constants::$AUTH_QUERIES_DIR
+				DIRECTORY_SEPARATOR . 'GlobalDB'
+				DIRECTORY_SEPARATOR . 'POST'
+				DIRECTORY_SEPARATOR . 'clients.php',
+	],
 ];

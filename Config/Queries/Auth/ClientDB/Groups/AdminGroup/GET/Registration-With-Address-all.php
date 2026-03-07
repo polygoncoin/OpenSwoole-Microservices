@@ -16,33 +16,33 @@
 namespace Microservices\Config\Queries\Auth\ClientDB\Groups\AdminGroup\GET;
 
 return [
-    'countQuery' => "SELECT count(1) as `count` FROM `{$this->api->req->usersTable}` WHERE __WHERE__",
-    '__QUERY__' => "SELECT * FROM `{$this->api->req->usersTable}` WHERE __WHERE__",
-    '__WHERE__' => [
-        [
-            'column' => 'is_deleted',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => 'No'
-        ]
-    ],
-    '__MODE__' => 'multipleRowFormat',
-    '__SUB-QUERY__' => [
-        'address' => [
-            '__QUERY__' => 'SELECT * FROM `address` WHERE __WHERE__',
-            '__WHERE__' => [
-                [
-                    'column' => 'is_deleted',
-                    'fetchFrom' => 'custom',
-                    'fetchFromValue' => 'No'
-                ],
-                [
-                    'column' => 'user_id',
-                    'fetchFrom' => 'sqlResults',
-                    'fetchFromValue' => 'return:id'
-                ],
-            ],
-            '__MODE__' => 'multipleRowFormat',
-        ]
-    ],
-    'useResultSet' => true
+	'countQuery' => "SELECT count(1) as `count` FROM `{$this->api->req->usersTable}` WHERE __WHERE__",
+	'__QUERY__' => "SELECT * FROM `{$this->api->req->usersTable}` WHERE __WHERE__",
+	'__WHERE__' => [
+		[
+			'column' => 'is_deleted',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => 'No'
+		]
+	],
+	'__MODE__' => 'multipleRowFormat',
+	'__SUB-QUERY__' => [
+		'address' => [
+			'__QUERY__' => 'SELECT * FROM `address` WHERE __WHERE__',
+			'__WHERE__' => [
+				[
+					'column' => 'is_deleted',
+					'fetchFrom' => 'custom',
+					'fetchFromValue' => 'No'
+				],
+				[
+					'column' => 'user_id',
+					'fetchFrom' => 'sqlResults',
+					'fetchFromValue' => 'return:id'
+				],
+			],
+			'__MODE__' => 'multipleRowFormat',
+		]
+	],
+	'useResultSet' => true
 ];

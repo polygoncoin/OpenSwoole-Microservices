@@ -29,17 +29,17 @@ namespace Microservices\Hooks;
  */
 interface HookInterface
 {
-    /**
-     * Initialize
-     *
-     * @return bool
-     */
-    public function init(): bool;
+	/**
+	 * Initialize
+	 *
+	 * @return bool
+	 */
+	public function init(): bool;
 
-    /**
-     * Process
-     *
-     * @return bool
-     */
-    public function process(): bool;
+	/**
+	 * Process
+	 *
+	 * @return bool
+	 */
+	public function process(): bool;
 }

@@ -20,9 +20,9 @@ use Microservices\App\Web;
 $header = $defaultHeaders;
 
 return Web::trigger(
-    homeURL: $homeURL,
-    method: 'GET',
-    route: '/reload',
-    header: $header,
-    payload: ''
+	homeURL: $homeURL,
+	method: 'GET',
+	route: '/reload',
+	header: $header,
+	payload: ''
 );

@@ -29,19 +29,19 @@ namespace Microservices\Supplement\DropboxCache;
  */
 interface CacheInterface
 {
-    /**
-     * Initialize
-     *
-     * @return bool
-     */
-    public function init(): bool;
+	/**
+	 * Initialize
+	 *
+	 * @return bool
+	 */
+	public function init(): bool;
 
-    /**
-     * Process
-     *
-     * @param array $payload Payload
-     *
-     * @return array
-     */
-    public function process(array $payload = []): array;
+	/**
+	 * Process
+	 *
+	 * @param array $payload Payload
+	 *
+	 * @return array
+	 */
+	public function process(array $payload = []): array;
 }

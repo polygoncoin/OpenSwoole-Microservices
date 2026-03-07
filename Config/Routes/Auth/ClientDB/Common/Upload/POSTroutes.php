@@ -19,10 +19,10 @@ use Microservices\App\Env;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    Env::$uploadRequestRoutePrefix => [
-        '{module:string}' => [
-            'dataType' => DatabaseDataTypes::$Default,
-            '__FILE__' => false
-        ]
-    ]
+	Env::$uploadRequestRoutePrefix => [
+		'{module:string}' => [
+			'dataType' => DatabaseDataTypes::$Default,
+			'__FILE__' => false
+		]
+	]
 ];

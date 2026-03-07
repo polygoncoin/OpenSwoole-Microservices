@@ -19,55 +19,55 @@ use Microservices\App\Constants;
 use Microservices\App\DatabaseDataTypes;
 
 return array_merge(
-    require Constants::$AUTH_QUERIES_DIR
-                . DIRECTORY_SEPARATOR . 'ClientDB'
-                . DIRECTORY_SEPARATOR . 'Common'
-                . DIRECTORY_SEPARATOR . 'Registration.php',
-    [
-        '__SET__' => [
-            [
-                'column' => 'firstname',
-                'fetchFrom' => 'payload',
-                'fetchFromValue' => 'firstname'
-            ],
-            [
-                'column' => 'lastname',
-                'fetchFrom' => 'payload',
-                'fetchFromValue' => 'lastname'
-            ],
-            [
-                'column' => 'email',
-                'fetchFrom' => 'payload',
-                'fetchFromValue' => 'email'
-            ],
-            [
-                'column' => 'username',
-                'fetchFrom' => 'payload',
-                'fetchFromValue' => 'username'
-            ],
-            [
-                'column' => 'password_hash',
-                'fetchFrom' => 'function',
-                'fetchFromValue' => function($session): string {
-                    return password_hash(
-                        password: $session['payload']['password'],
-                        algo: PASSWORD_DEFAULT
-                    );
-                }
-            ]
-        ],
-        '__WHERE__' => [
-            [
-                'column' => 'is_deleted',
-                'fetchFrom' => 'custom',
-                'fetchFromValue' => 'No'
-            ],
-            [
-                'column' => 'id',
-                'fetchFrom' => 'routeParams',
-                'fetchFromValue' => 'id',
-                'dataType' => DatabaseDataTypes::$PrimaryKey
-            ]
-        ],
-    ]
+	require Constants::$AUTH_QUERIES_DIR
+					DIRECTORY_SEPARATOR . 'ClientDB'
+					DIRECTORY_SEPARATOR . 'Common'
+					DIRECTORY_SEPARATOR . 'Registration.php',
+	[
+		'__SET__' => [
+			[
+				'column' => 'firstname',
+				'fetchFrom' => 'payload',
+				'fetchFromValue' => 'firstname'
+			],
+			[
+				'column' => 'lastname',
+				'fetchFrom' => 'payload',
+				'fetchFromValue' => 'lastname'
+			],
+			[
+				'column' => 'email',
+				'fetchFrom' => 'payload',
+				'fetchFromValue' => 'email'
+			],
+			[
+				'column' => 'username',
+				'fetchFrom' => 'payload',
+				'fetchFromValue' => 'username'
+			],
+			[
+				'column' => 'password_hash',
+				'fetchFrom' => 'function',
+				'fetchFromValue' => function($session): string {
+					return password_hash(
+						password: $session['payload']['password'],
+						algo: PASSWORD_DEFAULT
+					);
+				}
+			]
+		],
+		'__WHERE__' => [
+			[
+				'column' => 'is_deleted',
+				'fetchFrom' => 'custom',
+				'fetchFromValue' => 'No'
+			],
+			[
+				'column' => 'id',
+				'fetchFrom' => 'routeParams',
+				'fetchFromValue' => 'id',
+				'dataType' => DatabaseDataTypes::$PrimaryKey
+			]
+		],
+	]
 );

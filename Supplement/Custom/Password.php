@@ -35,106 +35,106 @@ use Microservices\Supplement\Custom\CustomTrait;
  */
 class Password implements CustomInterface
 {
-    use CustomTrait;
+	use CustomTrait;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+	}
 
-    /**
-     * Initialize
-     *
-     * @return bool
-     */
-    public function init(): bool
-    {
-        $this->api->req->loadPayload();
-        return true;
-    }
+	/**
+	 * Initialize
+	 *
+	 * @return bool
+	 */
+	public function init(): bool
+	{
+		$this->api->req->loadPayload();
+		return true;
+	}
 
-    /**
-     * Process
-     *
-     * @param array $payload Payload
-     *
-     * @return array
-     */
-    public function process(array $payload = []): array
-    {
-        if ($this->api->req->s['payloadType'] === 'Object') {
-            $payload = $this->api->req->dataDecode->get();
-        } else {
-            $payload = $this->api->req->dataDecode->get('0');
-        }
-        $this->api->req->s['payload'] = $payload;
+	/**
+	 * Process
+	 *
+	 * @param array $payload Payload
+	 *
+	 * @return array
+	 */
+	public function process(array $payload = []): array
+	{
+		if ($this->api->req->s['payloadType'] === 'Object') {
+			$payload = $this->api->req->dataDecode->get();
+			else {
+			$payload = $this->api->req->dataDecode->get('0');
+		}
+		$this->api->req->s['payload'] = $payload;
 
-        $oldPassword = $this->api->req->s['payload']['old_password'];
-        $oldPasswordHash = $this->api->req->s['uDetails']['password_hash'];
+		$oldPassword = $this->api->req->s['payload']['old_password'];
+		$oldPasswordHash = $this->api->req->s['uDetails']['password_hash'];
 
-        if (password_verify(password: $oldPassword, hash: $oldPasswordHash)) {
-            $userName = $this->api->req->s['uDetails']['username'];
-            $newPassword = $this->api->req->s['payload']['new_password'];
-            $newPasswordHash = password_hash(
-                password: $newPassword,
-                algo: PASSWORD_DEFAULT
-            );
+		if (password_verify(password: $oldPassword, hash: $oldPasswordHash)) {
+			$userName = $this->api->req->s['uDetails']['username'];
+			$newPassword = $this->api->req->s['payload']['new_password'];
+			$newPasswordHash = password_hash(
+				password: $newPassword,
+				algo: PASSWORD_DEFAULT
+			);
 
-            $usersTable = $this->api->req->usersTable;
-            $sql = "
-                UPDATE `{$usersTable}`
-                SET password_hash = :password_hash
-                WHERE username = :username AND is_deleted = :is_deleted
-            ";
-            $sqlParams = [
-                ':password_hash' => $newPasswordHash,
-                ':username' => $userName,
-                ':is_deleted' => 'No',
-            ];
+			$usersTable = $this->api->req->usersTable;
+			$sql = "
+				UPDATE `{$usersTable}`
+				SET password_hash = :password_hash
+				WHERE username = :username AND is_deleted = :is_deleted
+			";
+			$sqlParams = [
+				':password_hash' => $newPasswordHash,
+				':username' => $userName,
+				':is_deleted' => 'No',
+			];
 
-            DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
-            DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
+			DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
+			DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
 
-            $cID = $this->api->req->s['cDetails']['id'];
-            $cu_key = CacheKey::clientUser(
-                cID: $cID,
-                username: $userName
-            );
-            if (DbFunctions::$gCacheServer->cacheExists(key: $cu_key)) {
-                $uDetails = json_decode(
-                    json: DbFunctions::$gCacheServer->getCache(
-                        key: $cu_key
-                    ),
-                    associative: true
-                );
-                $uDetails['password_hash'] = $newPasswordHash;
-                DbFunctions::$gCacheServer->setCache(
-                    key: $cu_key,
-                    value: json_encode(value: $uDetails)
-                );
-                DbFunctions::$gCacheServer->deleteCache(
-                    key: CacheKey::token(token: $this->api->req->s['token'])
-                );
-            }
+			$cID = $this->api->req->s['cDetails']['id'];
+			$cu_key = CacheKey::clientUser(
+				cID: $cID,
+				username: $userName
+			);
+			if (DbFunctions::$gCacheServer->cacheExists(key: $cu_key)) {
+				$uDetails = json_decode(
+					json: DbFunctions::$gCacheServer->getCache(
+						key: $cu_key
+					),
+					associative: true
+				);
+				$uDetails['password_hash'] = $newPasswordHash;
+				DbFunctions::$gCacheServer->setCache(
+					key: $cu_key,
+					value: json_encode(value: $uDetails)
+				);
+				DbFunctions::$gCacheServer->deleteCache(
+					key: CacheKey::token(token: $this->api->req->s['token'])
+				);
+			}
 
-            $this->api->res->dataEncode->addKeyData(
-                key: 'Results',
-                data: 'Password changed successfully'
-            );
-        }
+			$this->api->res->dataEncode->addKeyData(
+				key: 'Results',
+				data: 'Password changed successfully'
+			);
+		}
 
-        return [true];
-    }
+		return [true];
+	}
 }

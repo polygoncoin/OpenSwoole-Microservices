@@ -19,13 +19,13 @@ use Microservices\App\Web;
 
 $header = $defaultHeaders;
 if (isset($token)) {
-    $header[] = "Authorization: Bearer {$token}";
+	$header[] = "Authorization: Bearer {$token}";
 
-    return Web::trigger(
-        homeURL: $homeURL,
-        method: 'GET',
-        route: '/registration',
-        header: $header,
-        payload: ''
-    );
+	return Web::trigger(
+		homeURL: $homeURL,
+		method: 'GET',
+		route: '/registration',
+		header: $header,
+		payload: ''
+	);
 }

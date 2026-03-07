@@ -31,125 +31,125 @@ spl_autoload_register(callback:  'Microservices\Autoload::register');
 
 // Set coroutine options before you start a server...
 Coroutine::set(
-    [
-        'max_coroutine' => 100,
-        'max_concurrency' => 100,
-    ]
+	[
+		'max_coroutine' => 100,
+		'max_concurrency' => 100,
+	]
 );
 
 $server = new Server('127.0.0.1', 9501);
 
 $server->on(
-    'start',
-    function(Server $server): void {
-        echo 'Openswoole http server is started at http://127.0.0.1:9501' . "\n";
-    }
+	'start',
+	function(Server $server): void {
+		echo 'Openswoole http server is started at http://127.0.0.1:9501' . "\n";
+	}
 );
 
 $server->on(
-    'request',
-    function(Request $request, Response $response): void {
+	'request',
+	function(Request $request, Response $response): void {
 
-        // Load .env(s)
-        foreach (['.env','.env.rateLimiting','.env.enable','.env.cidr','.env.container'] as $envFilename) {
-            $env = parse_ini_file(filename: __DIR__ . DIRECTORY_SEPARATOR . $envFilename);
-            foreach ($env as $key => $value) {
-                putenv(assignment: "{$key}={$value}");
-            }
-        }
+		// Load .env(s)
+		foreach (['.env','.env.rateLimiting','.env.enable','.env.cidr','.env.container'] as $envFilename) {
+			$env = parse_ini_file(filename: __DIR__ . DIRECTORY_SEPARATOR . $envFilename);
+			foreach ($env as $key => $value) {
+				putenv(assignment: "{$key}={$value}");
+			}
+		}
 
-        Constants::init();
-        Env::$timestamp = time();
-        Env::init();
+		Constants::init();
+		Env::$timestamp = time();
+		Env::init();
 
-        $http = [];
-        $http['server']['host'] = 'localhost';
-        // $http['server']['host'] = 'public.localhost';
-        $http['server']['method'] = $request->server['request_method'];
+		$http = [];
+		$http['server']['host'] = 'localhost';
+		// $http['server']['host'] = 'public.localhost';
+		$http['server']['method'] = $request->server['request_method'];
 
-        if (
-            ((int)getenv('DISABLE_REQUESTS_VIA_PROXIES')) === 1
-            && !isset($request->server['remote_addr'])
-        ) {
-            $response->end("Invalid request");
-            return;
-        }
+		if (
+			((int)getenv('DISABLE_REQUESTS_VIA_PROXIES')) === 1
+			&& !isset($request->server['remote_addr'])
+			{
+			$response->end("Invalid request");
+			return;
+		}
 
-        if (isset($request->server['remote_addr'])) {
-            $http['server']['ip'] = $request->server['remote_addr'];
-        } else {// check proxy headers
-            if (isset($request->header['x-forwarded-for'])) {
-                $http['server']['ip'] = $request->header['x-forwarded-for'];
-            } elseif (isset($request->header['x-real-ip'])) {
-                $http['server']['ip'] = $request->header['x-real-ip'];
-            }
-        }
+		if (isset($request->server['remote_addr'])) {
+			$http['server']['ip'] = $request->server['remote_addr'];
+			else {// check proxy headers
+			if (isset($request->header['x-forwarded-for'])) {
+				$http['server']['ip'] = $request->header['x-forwarded-for'];
+				elseif (isset($request->header['x-real-ip'])) {
+				$http['server']['ip'] = $request->header['x-real-ip'];
+			}
+		}
 
-        $http['header'] = $request->header;
-        $http['get'] = &$request->get;
-        $http['post'] = $request->rawContent();
-        $http['files'] = &$request->files;
+		$http['header'] = $request->header;
+		$http['get'] = &$request->get;
+		$http['post'] = $request->rawContent();
+		$http['files'] = &$request->files;
 
-        if (
-            isset($http['get'][ROUTE_URL_PARAM])
-            && in_array(
-                needle: $http['get'][ROUTE_URL_PARAM],
-                haystack: [
-                    '/tests',
-                    '/auth-test',
-                    '/open-test',
-                    '/open-test-xml',
-                    '/supp-test'
-                ]
-            )
-        ) {
-            $tests = new Tests();
-            switch ($http['get'][ROUTE_URL_PARAM]) {
-                case '/tests':
-                    $response->end('<pre>'.print_r(value: $tests->processTests(), return: true));
-                    break;
-                case '/auth-test':
-                    $response->end('<pre>'.print_r(value: $tests->processAuth(), return: true));
-                    break;
-                case '/open-test':
-                    $response->end('<pre>'.print_r(value: $tests->processOpen(), return: true));
-                    break;
-                case '/open-test-xml':
-                    $response->end('<pre>'.print_r(value: $tests->processXml(), return: true));
-                    break;
-                case '/supp-test':
-                    $response->end('<pre>'.print_r(value: $tests->processSupplement(), return: true));
-                    break;
-            }
-        } else {
-            ob_start();
-            [$responseheaders, $responseContent, $responseCode] = Start::http(http: $http, streamData: true);
-            ob_clean();
+		if (
+			isset($http['get'][ROUTE_URL_PARAM])
+			&& in_array(
+				needle: $http['get'][ROUTE_URL_PARAM],
+				haystack: [
+					'/tests',
+					'/auth-test',
+					'/open-test',
+					'/open-test-xml',
+					'/supp-test'
+				]
+			)
+			{
+			$tests = new Tests();
+			switch ($http['get'][ROUTE_URL_PARAM]) {
+				case '/tests':
+					$response->end('<pre>'.print_r(value: $tests->processTests(), return: true));
+					break;
+				case '/auth-test':
+					$response->end('<pre>'.print_r(value: $tests->processAuth(), return: true));
+					break;
+				case '/open-test':
+					$response->end('<pre>'.print_r(value: $tests->processOpen(), return: true));
+					break;
+				case '/open-test-xml':
+					$response->end('<pre>'.print_r(value: $tests->processXml(), return: true));
+					break;
+				case '/supp-test':
+					$response->end('<pre>'.print_r(value: $tests->processSupplement(), return: true));
+					break;
+			}
+			else {
+			ob_start();
+			[$responseheaders, $responseContent, $responseCode] = Start::http(http: $http, streamData: true);
+			ob_clean();
 
-            $response->status($responseCode);
-            foreach ($responseheaders as $k => $v) {
-                $response->header($k, $v);
-            }
-            $response->end($responseContent);
-        }
-    }
+			$response->status($responseCode);
+			foreach ($responseheaders as $k => $v) {
+				$response->header($k, $v);
+			}
+			$response->end($responseContent);
+		}
+	}
 );
 
 /*
  * https://openswoole.com/docs/modules/swoole-server/configuration
  */
 $server->set(
-    [
-        // HTTP Server max execution time, since v4.8.0
-        // 'max_request_execution_time' => 10, // 10s
+	[
+		// HTTP Server max execution time, since v4.8.0
+		// 'max_request_execution_time' => 10, // 10s
 
-        // Compression
-        'http_compression' => true,
-        'http_compression_level' => 3, // 1 - 9
-        'compression_min_length' => 20,
-        'worker_num' =>   2,
-        'max_request' =>  1000,
-    ]
+		// Compression
+		'http_compression' => true,
+		'http_compression_level' => 3, // 1 - 9
+		'compression_min_length' => 20,
+		'worker_num' =>   2,
+		'max_request' =>  1000,
+	]
 );
 
 $server->start();

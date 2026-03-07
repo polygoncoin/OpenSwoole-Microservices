@@ -19,13 +19,13 @@ use Microservices\App\Env;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    Env::$cronRequestRoutePrefix => [
-        '{cron:string}' => [
-            'dataType' => DatabaseDataTypes::$Default,
-            '{id:int}'  => [
-                'dataType' => DatabaseDataTypes::$PrimaryKey,
-                '__FILE__' => false
-            ]
-        ]
-    ]
+	Env::$cronRequestRoutePrefix => [
+		'{cron:string}' => [
+			'dataType' => DatabaseDataTypes::$Default,
+			'{id:int}'  => [
+				'dataType' => DatabaseDataTypes::$PrimaryKey,
+				'__FILE__' => false
+			]
+		]
+	]
 ];

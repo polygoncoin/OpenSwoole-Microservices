@@ -35,60 +35,60 @@ use Microservices\Supplement\Upload\UploadTrait;
  */
 class Module1 implements UploadInterface
 {
-    use UploadTrait;
+	use UploadTrait;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-        DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+		DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
+	}
 
-    /**
-     * Initialize
-     *
-     * @return bool
-     */
-    public function init(): bool
-    {
-        return true;
-    }
+	/**
+	 * Initialize
+	 *
+	 * @return bool
+	 */
+	public function init(): bool
+	{
+		return true;
+	}
 
-    /**
-     * Process
-     *
-     * @param array $payload Payload
-     *
-     * @return array
-     */
-    public function process(array $payload = []): array
-    {
-        $absFilePath = $this->getLocation();
-        $this->saveFile(absFilePath: $absFilePath);
+	/**
+	 * Process
+	 *
+	 * @param array $payload Payload
+	 *
+	 * @return array
+	 */
+	public function process(array $payload = []): array
+	{
+		$absFilePath = $this->getLocation();
+		$this->saveFile(absFilePath: $absFilePath);
 
-        return [true];
-    }
+		return [true];
+	}
 
-    /**
-     * Function to get filename with location depending upon $sess
-     *
-     * @return string
-     */
-    private function getLocation(): string
-    {
-        return Constants::$DROP_BOX_DIR
-            . DIRECTORY_SEPARATOR . $this->api->req->cId
-            . DIRECTORY_SEPARATOR . 'test.png';
-    }
+	/**
+	 * Function to get filename with location depending upon $sess
+	 *
+	 * @return string
+	 */
+	private function getLocation(): string
+	{
+		return Constants::$DROP_BOX_DIR
+				DIRECTORY_SEPARATOR . $this->api->req->cId
+				DIRECTORY_SEPARATOR . 'test.png';
+	}
 }

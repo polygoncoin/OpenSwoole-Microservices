@@ -34,54 +34,54 @@ use Microservices\App\HttpStatus;
  */
 class HttpResponse
 {
-    /**
-     * Output Representation
-     *
-     * @var null|string
-     */
-    public $oRepresentation = null;
+	/**
+	 * Output Representation
+	 *
+	 * @var null|string
+	 */
+	public $oRepresentation = null;
 
-    /**
-     * HTTP Status
-     *
-     * @var int
-     */
-    public $httpStatus;
+	/**
+	 * HTTP Status
+	 *
+	 * @var int
+	 */
+	public $httpStatus;
 
-    /**
-     * JSON Encode object
-     *
-     * @var null|DataEncode
-     */
-    public $dataEncode = null;
+	/**
+	 * JSON Encode object
+	 *
+	 * @var null|DataEncode
+	 */
+	public $dataEncode = null;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-        $this->httpStatus = HttpStatus::$Ok;
-        $this->oRepresentation = Env::$oRepresentation;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+		$this->httpStatus = HttpStatus::$Ok;
+		$this->oRepresentation = Env::$oRepresentation;
+	}
 
-    /**
-     * Initialize
-     *
-     * @return void
-     */
-    public function init(): void
-    {
-        $this->dataEncode = new DataEncode(api: $this->api);
-        $this->dataEncode->init();
-    }
+	/**
+	 * Initialize
+	 *
+	 * @return void
+	 */
+	public function init(): void
+	{
+		$this->dataEncode = new DataEncode(api: $this->api);
+		$this->dataEncode->init();
+	}
 }

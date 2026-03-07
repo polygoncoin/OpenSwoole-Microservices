@@ -34,169 +34,169 @@ use Microservices\App\Functions;
  */
 class Reload
 {
-    use AppTrait;
+	use AppTrait;
 
-    /**
-     * Initialize
-     *
-     * @return bool
-     */
-    public function init(): bool
-    {
-        return true;
-    }
+	/**
+	 * Initialize
+	 *
+	 * @return bool
+	 */
+	public function init(): bool
+	{
+		return true;
+	}
 
-    /**
-     * Process
-     *
-     * @return bool
-     */
-    public function process(): bool
-    {
-        DbFunctions::connectGlobalCache();
+	/**
+	 * Process
+	 *
+	 * @return bool
+	 */
+	public function process(): bool
+	{
+		DbFunctions::connectGlobalCache();
 
-        $this->processDomainAndUser();
-        $this->processGroup();
+		$this->processDomainAndUser();
+		$this->processGroup();
 
-        return true;
-    }
+		return true;
+	}
 
-    /**
-     * Adds user details to cache
-     *
-     * @return void
-     */
-    private function processDomainAndUser(): void
-    {
-        DbFunctions::connectGlobalDb();
+	/**
+	 * Adds user details to cache
+	 *
+	 * @return void
+	 */
+	private function processDomainAndUser(): void
+	{
+		DbFunctions::connectGlobalDb();
 
-        DbFunctions::$gDbServer->execDbQuery(
-            sql: "
-                SELECT
-                    *
-                FROM
-                    `{$this->execPhpFunc(param: getenv(name: 'clientsTable'))}` C
-                ",
-            params: []
-        );
-        $cRows = DbFunctions::$gDbServer->fetchAll();
-        DbFunctions::$gDbServer->closeCursor();
-        foreach ($cRows as $cRow) {
-            if ($cRow['allowed_cidr'] !== null) {
-                $cCidrs = Functions::cidrsIpNumber(cidrString: $cRow['allowed_cidr']);
-                if (count(value: $cCidrs) > 0) {
-                    $cCidrKey = CacheKey::cCidr(cID: $cRow['id']);
-                    DbFunctions::$gCacheServer->setCache(
-                        key: $cCidrKey,
-                        value: json_encode(value: $cCidrs)
-                    );
-                }
-            }
-            if (!empty($cRow['open_api_domain'])) {
-                $c_key = CacheKey::clientOpenToWeb(
-                    hostname: $cRow['open_api_domain']
-                );
-                DbFunctions::$gCacheServer->setCache(
-                    key: $c_key,
-                    value: json_encode(value: $cRow)
-                );
-            }
-            $c_key = CacheKey::client(hostname: $cRow['api_domain']);
-            DbFunctions::$gCacheServer->setCache(
-                key: $c_key,
-                value: json_encode(value: $cRow)
-            );
-            $db = DbFunctions::connectDb(
-                dbServerType: getenv(name: $cRow['master_db_server_type']),
-                dbHostname: getenv(name: $cRow['master_db_hostname']),
-                dbPort: getenv(name: $cRow['master_db_port']),
-                dbUsername: getenv(name: $cRow['master_db_username']),
-                dbPassword: getenv(name: $cRow['master_db_password']),
-                dbDatabase: getenv(name: $cRow['master_db_database'])
-            );
+		DbFunctions::$gDbServer->execDbQuery(
+			sql: "
+				SELECT
+					 *
+				FROM
+					`{$this->execPhpFunc(param: getenv(name: 'clientsTable'))}` C
+				",
+			params: []
+		);
+		$cRows = DbFunctions::$gDbServer->fetchAll();
+		DbFunctions::$gDbServer->closeCursor();
+		foreach ($cRows as $cRow) {
+			if ($cRow['allowed_cidr'] !== null) {
+				$cCidrs = Functions::cidrsIpNumber(cidrString: $cRow['allowed_cidr']);
+				if (count(value: $cCidrs) > 0) {
+					$cCidrKey = CacheKey::cCidr(cID: $cRow['id']);
+					DbFunctions::$gCacheServer->setCache(
+						key: $cCidrKey,
+						value: json_encode(value: $cCidrs)
+					);
+				}
+			}
+			if (!empty($cRow['open_api_domain'])) {
+				$c_key = CacheKey::clientOpenToWeb(
+					hostname: $cRow['open_api_domain']
+				);
+				DbFunctions::$gCacheServer->setCache(
+					key: $c_key,
+					value: json_encode(value: $cRow)
+				);
+			}
+			$c_key = CacheKey::client(hostname: $cRow['api_domain']);
+			DbFunctions::$gCacheServer->setCache(
+				key: $c_key,
+				value: json_encode(value: $cRow)
+			);
+			$db = DbFunctions::connectDb(
+				dbServerType: getenv(name: $cRow['master_db_server_type']),
+				dbHostname: getenv(name: $cRow['master_db_hostname']),
+				dbPort: getenv(name: $cRow['master_db_port']),
+				dbUsername: getenv(name: $cRow['master_db_username']),
+				dbPassword: getenv(name: $cRow['master_db_password']),
+				dbDatabase: getenv(name: $cRow['master_db_database'])
+			);
 
-            $db->execDbQuery(
-                sql: "
-                    SELECT
-                        *
-                    FROM
-                        `{$this->execPhpFunc(param: getenv(name: $cRow['usersTable']))}` U
-                    ",
-                params: []
-            );
-            $uRows = $db->fetchAll();
-            $db->closeCursor();
-            foreach ($uRows as $uRow) {
-                if ($uRow['allowed_cidr'] !== null) {
-                    $uCidrs = Functions::cidrsIpNumber(cidrString: $uRow['allowed_cidr']);
-                    if (count(value: $uCidrs) > 0) {
-                        $uCidrKey = CacheKey::uCidr(
-                            cID: $cRow['id'],
-                            uID: $uRow['id']
-                        );
-                        DbFunctions::$gCacheServer->setCache(
-                            key: $uCidrKey,
-                            value: json_encode(value: $uCidrs)
-                        );
-                    }
-                }
-                $cu_key = CacheKey::clientUser(
-                    cID: $cRow['id'],
-                    username: $uRow['username']
-                );
-                DbFunctions::$gCacheServer->setCache(
-                    key: $cu_key,
-                    value: json_encode(value: $uRow)
-                );
-            }
-        }
-    }
+			$db->execDbQuery(
+				sql: "
+					SELECT
+						 *
+					FROM
+						`{$this->execPhpFunc(param: getenv(name: $cRow['usersTable']))}` U
+					",
+				params: []
+			);
+			$uRows = $db->fetchAll();
+			$db->closeCursor();
+			foreach ($uRows as $uRow) {
+				if ($uRow['allowed_cidr'] !== null) {
+					$uCidrs = Functions::cidrsIpNumber(cidrString: $uRow['allowed_cidr']);
+					if (count(value: $uCidrs) > 0) {
+						$uCidrKey = CacheKey::uCidr(
+							cID: $cRow['id'],
+							uID: $uRow['id']
+						);
+						DbFunctions::$gCacheServer->setCache(
+							key: $uCidrKey,
+							value: json_encode(value: $uCidrs)
+						);
+					}
+				}
+				$cu_key = CacheKey::clientUser(
+					cID: $cRow['id'],
+					username: $uRow['username']
+				);
+				DbFunctions::$gCacheServer->setCache(
+					key: $cu_key,
+					value: json_encode(value: $uRow)
+				);
+			}
+		}
+	}
 
-    /**
-     * Adds group details to cache
-     *
-     * @return void
-     */
-    private function processGroup(): void
-    {
-        DbFunctions::connectGlobalCache();
+	/**
+	 * Adds group details to cache
+	 *
+	 * @return void
+	 */
+	private function processGroup(): void
+	{
+		DbFunctions::connectGlobalCache();
 
-        DbFunctions::$gDbServer->execDbQuery(
-            sql: "
-                SELECT
-                    *
-                FROM
-                    `{$this->execPhpFunc(param: getenv(name: 'groupsTable'))}` G
-                ",
-            params: []
-        );
+		DbFunctions::$gDbServer->execDbQuery(
+			sql: "
+				SELECT
+					 *
+				FROM
+					`{$this->execPhpFunc(param: getenv(name: 'groupsTable'))}` G
+				",
+			params: []
+		);
 
-        while ($gRow = DbFunctions::$gDbServer->fetch(\PDO::FETCH_ASSOC)) {
-            $g_key = CacheKey::group(gID: $gRow['id']);
-            DbFunctions::$gCacheServer->setCache(key: $g_key, value: json_encode(value: $gRow));
-            if ($gRow['allowed_cidr'] !== null) {
-                $cidrs = Functions::cidrsIpNumber(cidrString: $gRow['allowed_cidr']);
-                if (count(value: $cidrs) > 0) {
-                    $cidrKey = CacheKey::gCidr(gID: $gRow['id']);
-                    DbFunctions::$gCacheServer->setCache(
-                        key: $cidrKey,
-                        value: json_encode(value: $cidrs)
-                    );
-                }
-            }
-        }
-        DbFunctions::$gDbServer->closeCursor();
-    }
+		while ($gRow = DbFunctions::$gDbServer->fetch(\PDO::FETCH_ASSOC)) {
+			$g_key = CacheKey::group(gID: $gRow['id']);
+			DbFunctions::$gCacheServer->setCache(key: $g_key, value: json_encode(value: $gRow));
+			if ($gRow['allowed_cidr'] !== null) {
+				$cidrs = Functions::cidrsIpNumber(cidrString: $gRow['allowed_cidr']);
+				if (count(value: $cidrs) > 0) {
+					$cidrKey = CacheKey::gCidr(gID: $gRow['id']);
+					DbFunctions::$gCacheServer->setCache(
+						key: $cidrKey,
+						value: json_encode(value: $cidrs)
+					);
+				}
+			}
+		}
+		DbFunctions::$gDbServer->closeCursor();
+	}
 
-    /**
-     * Remove token from cache
-     *
-     * @param string $token Token to be delete from cache
-     *
-     * @return void
-     */
-    private function processToken($token): void
-    {
-        DbFunctions::$gCacheServer->deleteCache(key: CacheKey::token(token: $token));
-    }
+	/**
+	 * Remove token from cache
+	 *
+	 * @param string $token Token to be delete from cache
+	 *
+	 * @return void
+	 */
+	private function processToken($token): void
+	{
+		DbFunctions::$gCacheServer->deleteCache(key: CacheKey::token(token: $token));
+	}
 }

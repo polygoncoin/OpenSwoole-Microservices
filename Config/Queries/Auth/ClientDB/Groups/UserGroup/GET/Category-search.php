@@ -16,13 +16,13 @@
 namespace Microservices\Config\Queries\Auth\ClientDB\Groups\UserGroup\GET;
 
 return [
-    '__QUERY__' => 'SELECT * FROM `category` WHERE `name` like CONCAT ('%', :name, '%');',
-    '__WHERE__' => [
-        [
-            'column' => 'name',
-            'fetchFrom' => 'queryParams',
-            'fetchFromValue' => 'name'
-        ]
-    ],
-    '__MODE__' => 'multipleRowFormat',
+	'__QUERY__' => 'SELECT * FROM `category` WHERE `name` like CONCAT ('%', :name, '%');',
+	'__WHERE__' => [
+		[
+			'column' => 'name',
+			'fetchFrom' => 'queryParams',
+			'fetchFromValue' => 'name'
+		]
+	],
+	'__MODE__' => 'multipleRowFormat',
 ];

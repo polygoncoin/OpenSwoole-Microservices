@@ -16,18 +16,18 @@
 namespace Microservices\Config\Queries\Auth\ClientDB\Groups\AdminGroup\GET;
 
 return [
-    '__QUERY__' => "SELECT * FROM `{$this->api->req->usersTable}` WHERE __WHERE__",
-    '__WHERE__' => [
-        [
-            'column' => 'is_deleted',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => 'No'
-        ],
-        [
-            'column' => 'id',
-            'fetchFrom' => 'routeParams',
-            'fetchFromValue' => 'id'
-        ]
-    ],
-    '__MODE__' => 'singleRowFormat'
+	'__QUERY__' => "SELECT * FROM `{$this->api->req->usersTable}` WHERE __WHERE__",
+	'__WHERE__' => [
+		[
+			'column' => 'is_deleted',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => 'No'
+		],
+		[
+			'column' => 'id',
+			'fetchFrom' => 'routeParams',
+			'fetchFromValue' => 'id'
+		]
+	],
+	'__MODE__' => 'singleRowFormat'
 ];

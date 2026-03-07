@@ -18,69 +18,69 @@ namespace Microservices\Config\Queries\Auth\ClientDB\Groups\UserGroup\DELETE;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    '__QUERY__' => "UPDATE `{$this->api->req->usersTable}` SET __SET__ WHERE __WHERE__",
-    '__SET__' => [
-        [
-            'column' => 'is_deleted',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => 'Yes'
-        ]
-    ],
-    '__WHERE__' => [
-        [
-            'column' => 'is_deleted',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => 'No'
-        ],
-        [
-            'column' => 'id',
-            'fetchFrom' => 'routeParams',
-            'fetchFromValue' => 'id',
-            'dataType' => DatabaseDataTypes::$PrimaryKey
-        ]
-    ],
-    '__SUB-QUERY__' => [
-        'address' => [
-            '__QUERY__' => 'UPDATE `address` SET __SET__ WHERE __WHERE__',
-            '__SET__' => [
-                [
-                    'column' => 'is_deleted',
-                    'fetchFrom' => 'custom',
-                    'fetchFromValue' => 'Yes'
-                ]
-            ],
-            '__WHERE__' => [
-                [
-                    'column' => 'is_deleted',
-                    'fetchFrom' => 'custom',
-                    'fetchFromValue' => 'No'
-                ],
-                [
-                    'column' => 'id',
-                    'fetchFrom' => 'payload',
-                    'fetchFromValue' => 'id',
-                    'dataType' => DatabaseDataTypes::$PrimaryKey
-                ],
-                [
-                    'column' => 'user_id',
-                    'fetchFrom' => 'routeParams',
-                    'fetchFromValue' => 'id',
-                    'dataType' => DatabaseDataTypes::$PrimaryKey
-                ],
-            ],
-        ]
-    ],
-    '__VALIDATE__' => [
-        [
-            'fn' => 'primaryKeyExist',
-            'fnArgs' => [
-                'table' => ['custom', $this->api->req->usersTable],
-                'primary' => ['custom', 'id'],
-                'id' => ['routeParams', 'id']
-            ],
-            'errorMessage' => 'Invalid registration id'
-        ],
-    ],
-    'useHierarchy' => true,
-    'idempotentWindow' => 10
+	'__QUERY__' => "UPDATE `{$this->api->req->usersTable}` SET __SET__ WHERE __WHERE__",
+	'__SET__' => [
+		[
+			'column' => 'is_deleted',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => 'Yes'
+		]
+	],
+	'__WHERE__' => [
+		[
+			'column' => 'is_deleted',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => 'No'
+		],
+		[
+			'column' => 'id',
+			'fetchFrom' => 'routeParams',
+			'fetchFromValue' => 'id',
+			'dataType' => DatabaseDataTypes::$PrimaryKey
+		]
+	],
+	'__SUB-QUERY__' => [
+		'address' => [
+			'__QUERY__' => 'UPDATE `address` SET __SET__ WHERE __WHERE__',
+			'__SET__' => [
+				[
+					'column' => 'is_deleted',
+					'fetchFrom' => 'custom',
+					'fetchFromValue' => 'Yes'
+				]
+			],
+			'__WHERE__' => [
+				[
+					'column' => 'is_deleted',
+					'fetchFrom' => 'custom',
+					'fetchFromValue' => 'No'
+				],
+				[
+					'column' => 'id',
+					'fetchFrom' => 'payload',
+					'fetchFromValue' => 'id',
+					'dataType' => DatabaseDataTypes::$PrimaryKey
+				],
+				[
+					'column' => 'user_id',
+					'fetchFrom' => 'routeParams',
+					'fetchFromValue' => 'id',
+					'dataType' => DatabaseDataTypes::$PrimaryKey
+				],
+			],
+		]
+	],
+	'__VALIDATE__' => [
+		[
+			'fn' => 'primaryKeyExist',
+			'fnArgs' => [
+				'table' => ['custom', $this->api->req->usersTable],
+				'primary' => ['custom', 'id'],
+				'id' => ['routeParams', 'id']
+			],
+			'errorMessage' => 'Invalid registration id'
+		],
+	],
+	'useHierarchy' => true,
+	'idempotentWindow' => 10
 ];

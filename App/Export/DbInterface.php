@@ -29,26 +29,26 @@ namespace Microservices\App\Export;
  */
 interface DbInterface
 {
-    /**
-     * Initialize
-     *
-     * @param string $hostname hostname
-     * @param string $port     port
-     * @param string $username username
-     * @param string $password password
-     * @param string $database database
-     *
-     * @return void
-     */
-    public function init($hostname, $port, $username, $password, $database): void;
+	/**
+	 * Initialize
+	 *
+	 * @param string $hostname hostname
+	 * @param string $port     port
+	 * @param string $username username
+	 * @param string $password password
+	 * @param string $database database
+	 *
+	 * @return void
+	 */
+	public function init($hostname, $port, $username, $password, $database): void;
 
-    /**
-     * Returns Shell Command
-     *
-     * @param string $sql    query
-     * @param array  $params query params
-     *
-     * @return string
-     */
-    public function getShellCommand($sql, $params = null): string;
+	/**
+	 * Returns Shell Command
+	 *
+	 * @param string $sql    query
+	 * @param array  $params query params
+	 *
+	 * @return string
+	 */
+	public function getShellCommand($sql, $params = null): string;
 }

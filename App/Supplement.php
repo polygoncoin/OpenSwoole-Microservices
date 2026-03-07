@@ -38,611 +38,611 @@ use Microservices\App\Web;
  */
 class Supplement
 {
-    use AppTrait;
+	use AppTrait;
 
-    /**
-     * Hook object
-     *
-     * @var null|Hook
-     */
-    private $hook = null;
+	/**
+	 * Hook object
+	 *
+	 * @var null|Hook
+	 */
+	private $hook = null;
 
-    /**
-     * DB Object
-     *
-     * @var null|object
-     */
-    public $db = null;
+	/**
+	 * DB Object
+	 *
+	 * @var null|object
+	 */
+	public $db = null;
 
-    /**
-     * Operate DML As Transactions
-     *
-     * @var null|Web
-     */
-    private $operateAsTransaction = null;
+	/**
+	 * Operate DML As Transactions
+	 *
+	 * @var null|Web
+	 */
+	private $operateAsTransaction = null;
 
-    /**
-     * JSON Encode object
-     *
-     * @var null|DataEncode
-     */
-    public $dataEncode = null;
+	/**
+	 * JSON Encode object
+	 *
+	 * @var null|DataEncode
+	 */
+	public $dataEncode = null;
 
-    /**
-     * Supplement Class object
-     *
-     * @var null|object
-     */
-    public $supplementObj = null;
+	/**
+	 * Supplement Class object
+	 *
+	 * @var null|object
+	 */
+	public $supplementObj = null;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-        $this->dataEncode = &$this->api->res->dataEncode;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+		$this->dataEncode = &$this->api->res->dataEncode;
+	}
 
-    /**
-     * Initialize
-     *
-     * @param object $supplementObj Supplement API object
-     *
-     * @return bool
-     */
-    public function init(&$supplementObj): bool
-    {
-        $this->supplementObj = &$supplementObj;
-        return true;
-    }
+	/**
+	 * Initialize
+	 *
+	 * @param object $supplementObj Supplement API object
+	 *
+	 * @return bool
+	 */
+	public function init(&$supplementObj): bool
+	{
+		$this->supplementObj = &$supplementObj;
+		return true;
+	}
 
-    /**
-     * Process
-     *
-     * @return bool|array
-     */
-    public function process(): bool|array
-    {
-        $Env = __NAMESPACE__ . '\Env';
+	/**
+	 * Process
+	 *
+	 * @return bool|array
+	 */
+	public function process(): bool|array
+	{
+		$Env = __NAMESPACE__ . '\Env';
 
-        // Load Queries
-        $sSqlConfig = include $this->api->req->rParser->sqlConfigFile;
+		// Load Queries
+		$sSqlConfig = include $this->api->req->rParser->sqlConfigFile;
 
-        // Rate Limiting request if configured for Route Queries.
-        $this->rateLimitRoute(sqlConfig: $sSqlConfig);
+		// Rate Limiting request if configured for Route Queries.
+		$this->rateLimitRoute(sqlConfig: $sSqlConfig);
 
-        // Use results in where clause of sub queries recursively
-        $useHierarchy = $this->getUseHierarchy(
-            sqlConfig: $sSqlConfig,
-            keyword: 'useHierarchy'
-        );
+		// Use results in where clause of sub queries recursively
+		$useHierarchy = $this->getUseHierarchy(
+			sqlConfig: $sSqlConfig,
+			keyword: 'useHierarchy'
+		);
 
-        if (Env::$enableConfigRequest) {
-            if (
-                $this->api->req->rParser->routeEndingWithReservedKeywordFlag
-                && ($this->api->req->rParser->routeEndingReservedKeyword === Env::$configRequestRouteKeyword)
-            ) {
-                $this->processSupplementConfig(
-                    sSqlConfig: $sSqlConfig,
-                    useHierarchy: $useHierarchy
-                );
-                return true;
-            }
-            if (
-                $this->api->req->rParser->routeEndingWithReservedKeywordFlag
-                && ($this->api->req->rParser->routeEndingReservedKeyword === Env::$importSampleRequestRouteKeyword)
-            ) {
-                $filename = date('Ymd-His') . '-import-sample.csv';
-                $headers = [];
-                // Export headers
-                $headers['Content-type'] = 'text/csv';
-                $headers['Content-Disposition'] = "attachment; filename={$filename}";
-                $headers['Pragma'] = 'no-cache';
-                $headers['Expires'] = '0';
+		if (Env::$enableConfigRequest) {
+			if (
+				$this->api->req->rParser->routeEndingWithReservedKeywordFlag
+				&& ($this->api->req->rParser->routeEndingReservedKeyword === Env::$configRequestRouteKeyword)
+				{
+				$this->processSupplementConfig(
+					sSqlConfig: $sSqlConfig,
+					useHierarchy: $useHierarchy
+				);
+				return true;
+			}
+			if (
+				$this->api->req->rParser->routeEndingWithReservedKeywordFlag
+				&& ($this->api->req->rParser->routeEndingReservedKeyword === Env::$importSampleRequestRouteKeyword)
+				{
+				$filename = date('Ymd-His') . '-import-sample.csv';
+				$headers = [];
+				// Export headers
+				$headers['Content-type'] = 'text/csv';
+				$headers['Content-Disposition'] = "attachment; filename={$filename}";
+				$headers['Pragma'] = 'no-cache';
+				$headers['Expires'] = '0';
 
-                $csv = $this->processImportConfig(
-                    wSqlConfig: $wSqlConfig,
-                    useHierarchy: $useHierarchy
-                );
+				$csv = $this->processImportConfig(
+					wSqlConfig: $wSqlConfig,
+					useHierarchy: $useHierarchy
+				);
 
-                return [$headers, $csv, HttpStatus::$Ok];
-            }
-        }
+				return [$headers, $csv, HttpStatus::$Ok];
+			}
+		}
 
-        if (
-            $this->api->res->oRepresentation === 'XSLT'
-            && isset($sSqlConfig['xsltFile'])
-        ) {
-            $this->dataEncode->xsltFile = $sSqlConfig['xsltFile'];
-        } elseif (
-            $this->api->res->oRepresentation === 'HTML'
-            && isset($sSqlConfig['htmlFile'])
-        ) {
-            $this->dataEncode->htmlFile = $sSqlConfig['htmlFile'];
-        } elseif (
-            $this->api->res->oRepresentation === 'PHP'
-            && isset($sSqlConfig['phpFile'])
-        ) {
-            $this->dataEncode->phpFile = $sSqlConfig['phpFile'];
-        }
+		if (
+			$this->api->res->oRepresentation === 'XSLT'
+			&& isset($sSqlConfig['xsltFile'])
+			{
+			$this->dataEncode->xsltFile = $sSqlConfig['xsltFile'];
+			elseif (
+			$this->api->res->oRepresentation === 'HTML'
+			&& isset($sSqlConfig['htmlFile'])
+			{
+			$this->dataEncode->htmlFile = $sSqlConfig['htmlFile'];
+			elseif (
+			$this->api->res->oRepresentation === 'PHP'
+			&& isset($sSqlConfig['phpFile'])
+			{
+			$this->dataEncode->phpFile = $sSqlConfig['phpFile'];
+		}
 
-        // Lag Response
-        $this->lagResponse(sqlConfig: $sSqlConfig);
+		// Lag Response
+		$this->lagResponse(sqlConfig: $sSqlConfig);
 
-        // Operate as Transaction (BEGIN COMMIT else ROLLBACK on error)
-        $this->operateAsTransaction = isset($sSqlConfig['isTransaction']) ?
-            $sSqlConfig['isTransaction'] : false;
+		// Operate as Transaction (BEGIN COMMIT else ROLLBACK on error)
+		$this->operateAsTransaction = isset($sSqlConfig['isTransaction']) ?
+			$sSqlConfig['isTransaction'] : false;
 
-        // Set Server mode to execute query on - Read / Write Server
-        DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
-        $this->db = &DbFunctions::$masterDb[$this->api->req->cId];
+		// Set Server mode to execute query on - Read / Write Server
+		DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
+		$this->db = &DbFunctions::$masterDb[$this->api->req->cId];
 
-        $this->processSupplement(
-            sSqlConfig: $sSqlConfig,
-            useHierarchy: $useHierarchy
-        );
-        if (isset($sSqlConfig['affectedCacheKeys'])) {
-            for (
-                $i = 0, $iCount = count(value: $sSqlConfig['affectedCacheKeys']);
-                $i < $iCount;
-                $i++
-            ) {
-                DbFunctions::delQueryCache(
-                    cacheKey: $sSqlConfig['affectedCacheKeys'][$i]
-                );
-            }
-        }
+		$this->processSupplement(
+			sSqlConfig: $sSqlConfig,
+			useHierarchy: $useHierarchy
+		);
+		if (isset($sSqlConfig['affectedCacheKeys'])) {
+			for (
+				$i = 0, $iCount = count(value: $sSqlConfig['affectedCacheKeys']);
+				$i < $iCount;
+				$i++
+				{
+				DbFunctions::delQueryCache(
+					cacheKey: $sSqlConfig['affectedCacheKeys'][$i]
+				);
+			}
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    /**
-     * Process write function for configuration
-     *
-     * @param array $sSqlConfig   Config from file
-     * @param bool  $useHierarchy Use results in where clause of sub queries
-     *
-     * @return void
-     */
-    private function processSupplementConfig(&$sSqlConfig, $useHierarchy): void
-    {
-        $this->dataEncode->startObject(key: 'Config');
-        $this->dataEncode->addKeyData(
-            key: 'Route',
-            data: $this->api->req->rParser->configuredRoute
-        );
-        $this->dataEncode->addKeyData(
-            key: 'Payload',
-            data: $this->getConfigParams(
-                sqlConfig: $sSqlConfig,
-                isFirstCall: true,
-                flag: $useHierarchy
-            )
-        );
-        $this->dataEncode->endObject();
-    }
+	/**
+	 * Process write function for configuration
+	 *
+	 * @param array $sSqlConfig   Config from file
+	 * @param bool  $useHierarchy Use results in where clause of sub queries
+	 *
+	 * @return void
+	 */
+	private function processSupplementConfig(&$sSqlConfig, $useHierarchy): void
+	{
+		$this->dataEncode->startObject(key: 'Config');
+		$this->dataEncode->addKeyData(
+			key: 'Route',
+			data: $this->api->req->rParser->configuredRoute
+		);
+		$this->dataEncode->addKeyData(
+			key: 'Payload',
+			data: $this->getConfigParams(
+				sqlConfig: $sSqlConfig,
+				isFirstCall: true,
+				flag: $useHierarchy
+			)
+		);
+		$this->dataEncode->endObject();
+	}
 
-    /**
-     * Process Function to insert/update
-     *
-     * @param array $sSqlConfig   Config from file
-     * @param bool  $useHierarchy Use results in where clause of sub queries
-     *
-     * @return void
-     * @throws \Exception
-     */
-    private function processSupplement(&$sSqlConfig, $useHierarchy): void
-    {
-        // Check for payloadType
-        if (isset($sSqlConfig['__PAYLOAD-TYPE__'])) {
-            $payloadType = $this->api->req->s['payloadType'];
-            if ($payloadType !== $sSqlConfig['__PAYLOAD-TYPE__']) {
-                throw new \Exception(
-                    message: 'Invalid payload type',
-                    code: HttpStatus::$BadRequest
-                );
-            }
-            // Check for maximum objects supported when payloadType is Array
-            if (
-                $sSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
-                && isset($sSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
-                && ($objCount = $this->api->req->dataDecode->count())
-                && ($objCount > $sSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
-            ) {
-                throw new \Exception(
-                    message: 'Maximum supported payload count is '
-                        . $sSqlConfig['__MAX-PAYLOAD-OBJECTS__'],
-                    code: HttpStatus::$BadRequest
-                );
-            }
-        }
+	/**
+	 * Process Function to insert/update
+	 *
+	 * @param array $sSqlConfig   Config from file
+	 * @param bool  $useHierarchy Use results in where clause of sub queries
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
+	private function processSupplement(&$sSqlConfig, $useHierarchy): void
+	{
+		// Check for payloadType
+		if (isset($sSqlConfig['__PAYLOAD-TYPE__'])) {
+			$payloadType = $this->api->req->s['payloadType'];
+			if ($payloadType !== $sSqlConfig['__PAYLOAD-TYPE__']) {
+				throw new \Exception(
+					message: 'Invalid payload type',
+					code: HttpStatus::$BadRequest
+				);
+			}
+			// Check for maximum objects supported when payloadType is Array
+			if (
+				$sSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
+				&& isset($sSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
+				&& ($objCount = $this->api->req->dataDecode->count())
+				&& ($objCount > $sSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
+				{
+				throw new \Exception(
+					message: 'Maximum supported payload count is '
+							$sSqlConfig['__MAX-PAYLOAD-OBJECTS__'],
+					code: HttpStatus::$BadRequest
+				);
+			}
+		}
 
-        // Set necessary fields
-        $this->api->req->s['necessaryArr'] = $this->getRequired(
-            sqlConfig: $sSqlConfig,
-            isFirstCall: true,
-            flag: $useHierarchy
-        );
+		// Set necessary fields
+		$this->api->req->s['necessaryArr'] = $this->getRequired(
+			sqlConfig: $sSqlConfig,
+			isFirstCall: true,
+			flag: $useHierarchy
+		);
 
-        if ($this->api->req->s['payloadType'] === 'Object') {
-            $this->dataEncode->startObject(key: 'Results');
-        } else {
-            $this->dataEncode->startObject(key: 'Results');
-            if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
-                $this->dataEncode->startArray(key: 'Rows');
-            }
-        }
+		if ($this->api->req->s['payloadType'] === 'Object') {
+			$this->dataEncode->startObject(key: 'Results');
+			else {
+			$this->dataEncode->startObject(key: 'Results');
+			if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
+				$this->dataEncode->startArray(key: 'Rows');
+			}
+		}
 
-        // Perform action
-        $iCount = $this->api->req->s['payloadType'] === 'Object' ?
-            1 : $this->api->req->dataDecode->count();
+		// Perform action
+		$iCount = $this->api->req->s['payloadType'] === 'Object' ?
+					$this->api->req->dataDecode->count();
 
-        for ($i = 0; $i < $iCount; $i++) {
-            $configKeys = [];
-            $payloadIndexes = [];
-            if ($i === 0) {
-                if ($this->api->req->s['payloadType'] === 'Object') {
-                    $payloadIndexes[] = '';
-                } else {
-                    $payloadIndexes[] = "{$i}";
-                }
-            } else {
-                $payloadIndexes[] = "{$i}";
-            }
+		for ($i = 0; $i < $iCount; $i++) {
+			$configKeys = [];
+			$payloadIndexes = [];
+			if ($i === 0) {
+				if ($this->api->req->s['payloadType'] === 'Object') {
+					$payloadIndexes[] = '';
+					else {
+					$payloadIndexes[] = "{$i}";
+				}
+				else {
+				$payloadIndexes[] = "{$i}";
+			}
 
-            // Check for Idempotent Window
-            [$idempotentWindow, $hashKey, $hashJson] = $this->checkIdempotent(
-                sqlConfig: $sSqlConfig,
-                payloadIndexes: $payloadIndexes
-            );
+			// Check for Idempotent Window
+			[$idempotentWindow, $hashKey, $hashJson] = $this->checkIdempotent(
+				sqlConfig: $sSqlConfig,
+				payloadIndexes: $payloadIndexes
+			);
 
-            // Begin DML operation
-            if ($hashJson === null) {
-                if ($this->operateAsTransaction) {
-                    $this->db->begin();
-                }
-                $response = [];
-                $this->execSupplement(
-                    sSqlConfig: $sSqlConfig,
-                    payloadIndexes: $payloadIndexes,
-                    configKeys: $configKeys,
-                    useHierarchy: $useHierarchy,
-                    response: $response,
-                    necessary: $this->api->req->s['necessaryArr']
-                );
+			// Begin DML operation
+			if ($hashJson === null) {
+				if ($this->operateAsTransaction) {
+					$this->db->begin();
+				}
+				$response = [];
+				$this->execSupplement(
+					sSqlConfig: $sSqlConfig,
+					payloadIndexes: $payloadIndexes,
+					configKeys: $configKeys,
+					useHierarchy: $useHierarchy,
+					response: $response,
+					necessary: $this->api->req->s['necessaryArr']
+				);
 
-                if ($this->api->res->httpStatus === HttpStatus::$Ok)
-                {
-                    if (
-                        $this->operateAsTransaction
-                        && ($this->db->beganTransaction === true)
-                    ) {
-                        $this->db->commit();
-                    }
+				if ($this->api->res->httpStatus === HttpStatus::$Ok)
+				{
+					if (
+						$this->operateAsTransaction
+						&& ($this->db->beganTransaction === true)
+						{
+						$this->db->commit();
+					}
 
-                    $arr = [];
-                    $arr['Status'] = HttpStatus::$Ok;
-                    if (Env::$enablePayloadInResponse) {
-                        $arr[Env::$payloadKeyInResponse] = $this->api->req->dataDecode->getCompleteArray(
-                            keys: implode(
-                                separator: ':',
-                                array: $payloadIndexes
-                            )
-                        );
-                    }
-                    $arr['Response'] = $response;
+					$arr = [];
+					$arr['Status'] = HttpStatus::$Ok;
+					if (Env::$enablePayloadInResponse) {
+						$arr[Env::$payloadKeyInResponse] = $this->api->req->dataDecode->getCompleteArray(
+							keys: implode(
+								separator: ':',
+								array: $payloadIndexes
+							)
+						);
+					}
+					$arr['Response'] = $response;
 
-                    if ($idempotentWindow) {
-                        DbFunctions::$gCacheServer->setCache(
-                            key: $hashKey,
-                            value: json_encode(value: $arr),
-                            expire: $idempotentWindow
-                        );
-                    }
-                } else { // Failure
-                    $arr = [];
-                    $arr['Status'] = $this->api->res->httpStatus;
-                    if (Env::$enablePayloadInResponse) {
-                        $arr[Env::$payloadKeyInResponse] = $this->api->req->dataDecode->getCompleteArray(
-                            keys: implode(
-                                separator: ':',
-                                array: $payloadIndexes
-                            )
-                        );
-                    }
-                    $arr['Error'] = $response;
-                }
-            } else {
-                $arr = json_decode(json: $hashJson, associative: true);
-            }
+					if ($idempotentWindow) {
+						DbFunctions::$gCacheServer->setCache(
+							key: $hashKey,
+							value: json_encode(value: $arr),
+							expire: $idempotentWindow
+						);
+					}
+					else { // Failure
+					$arr = [];
+					$arr['Status'] = $this->api->res->httpStatus;
+					if (Env::$enablePayloadInResponse) {
+						$arr[Env::$payloadKeyInResponse] = $this->api->req->dataDecode->getCompleteArray(
+							keys: implode(
+								separator: ':',
+								array: $payloadIndexes
+							)
+						);
+					}
+					$arr['Error'] = $response;
+				}
+				else {
+				$arr = json_decode(json: $hashJson, associative: true);
+			}
 
-            if ($payloadIndexes[0] === '') {
-                foreach ($arr as $k => $v) {
-                    $this->dataEncode->addKeyData(key: $k, data: $v);
-                }
-            } else {
-                if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
-                    $this->dataEncode->startObject(key: 'Row');
-                    foreach ($arr as $k => $v) {
-                        $this->dataEncode->addKeyData(key: $k, data: $v);
-                    }
-                    $this->dataEncode->endObject();
-                } else {
-                    $this->dataEncode->addKeyData(key: $i, data: $arr);
-                }
-            }
-        }
+			if ($payloadIndexes[0] === '') {
+				foreach ($arr as $k => $v) {
+					$this->dataEncode->addKeyData(key: $k, data: $v);
+				}
+				else {
+				if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
+					$this->dataEncode->startObject(key: 'Row');
+					foreach ($arr as $k => $v) {
+						$this->dataEncode->addKeyData(key: $k, data: $v);
+					}
+					$this->dataEncode->endObject();
+					else {
+					$this->dataEncode->addKeyData(key: $i, data: $arr);
+				}
+			}
+		}
 
-        if ($this->api->req->s['payloadType'] === 'Object') {
-            $this->dataEncode->endObject();
-        } else {
-            if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
-                $this->dataEncode->endArray();
-            }
-            $this->dataEncode->endObject();
-        }
-    }
+		if ($this->api->req->s['payloadType'] === 'Object') {
+			$this->dataEncode->endObject();
+			else {
+			if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
+				$this->dataEncode->endArray();
+			}
+			$this->dataEncode->endObject();
+		}
+	}
 
-    /**
-     * Function to execute supplement recursively
-     *
-     * @param array $sSqlConfig     Config from file
-     * @param array $payloadIndexes Payload Indexes
-     * @param array $configKeys     Config Keys
-     * @param bool  $useHierarchy   Use results in where clause of sub queries
-     * @param array $response       Response by reference
-     * @param array $necessary      Required fields
-     *
-     * @return void
-     * @throws \Exception
-     */
-    private function execSupplement(
-        &$sSqlConfig,
-        $payloadIndexes,
-        $configKeys,
-        $useHierarchy,
-        &$response,
-        &$necessary
-    ): void {
-        // Return if function is not set
-        if (!isset($sSqlConfig['__FUNCTION__'])) {
-            return;
-        }
+	/**
+	 * Function to execute supplement recursively
+	 *
+	 * @param array $sSqlConfig     Config from file
+	 * @param array $payloadIndexes Payload Indexes
+	 * @param array $configKeys     Config Keys
+	 * @param bool  $useHierarchy   Use results in where clause of sub queries
+	 * @param array $response       Response by reference
+	 * @param array $necessary      Required fields
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
+	private function execSupplement(
+		&$sSqlConfig,
+		$payloadIndexes,
+		$configKeys,
+		$useHierarchy,
+		&$response,
+		&$necessary
+	): void {
+		// Return if function is not set
+		if (!isset($sSqlConfig['__FUNCTION__'])) {
+			return;
+		}
 
-        $payloadIndex = is_array(value: $payloadIndexes) ?
-            trim(
-                string: implode(
-                    separator: ':',
-                    array: $payloadIndexes
-                ),
-                characters: ':'
-            ) : '';
+		$payloadIndex = is_array(value: $payloadIndexes) ?
+			trim(
+				string: implode(
+					separator: ':',
+					array: $payloadIndexes
+				),
+				characters: ':'
+					'';
 
-        $isObject = $this->api->req->dataDecode->dataType(
-            keys: $payloadIndex
-        ) === 'Object';
+		$isObject = $this->api->req->dataDecode->dataType(
+			keys: $payloadIndex
+			=== 'Object';
 
-        $iCount = $isObject ?
-            1 : $this->api->req->dataDecode->count(keys: $payloadIndex);
+		$iCount = $isObject ?
+					$this->api->req->dataDecode->count(keys: $payloadIndex);
 
-        for ($i = 0; $i < $iCount; $i++) {
-            if ($isObject) {
-                $_response = &$response;
-            } else {
-                $response[$i] = [];
-                $_response = &$response[$i];
-            }
+		for ($i = 0; $i < $iCount; $i++) {
+			if ($isObject) {
+				$_response = &$response;
+				else {
+				$response[$i] = [];
+				$_response = &$response[$i];
+			}
 
-            $payloadIndexes = $payloadIndexes;
-            if ($this->operateAsTransaction && !$this->db->beganTransaction) {
-                $_response['Error'] = 'Transaction rolled back';
-                return;
-            }
+			$payloadIndexes = $payloadIndexes;
+			if ($this->operateAsTransaction && !$this->db->beganTransaction) {
+				$_response['Error'] = 'Transaction rolled back';
+				return;
+			}
 
-            if ($isObject && $i > 0) {
-                return;
-            }
+			if ($isObject && $i > 0) {
+				return;
+			}
 
-            if (!$isObject && !$useHierarchy) {
-                array_push($payloadIndexes, $i);
-            }
+			if (!$isObject && !$useHierarchy) {
+				array_push($payloadIndexes, $i);
+			}
 
-            $payloadIndex = is_array(value: $payloadIndexes) ?
-                implode(separator: ':', array: $payloadIndexes) : '';
+			$payloadIndex = is_array(value: $payloadIndexes) ?
+				implode(separator: ':', array: $payloadIndexes) : '';
 
-            if (!$this->api->req->dataDecode->isset(keys: $payloadIndex)) {
-                if ($useHierarchy) {
-                    throw new \Exception(
-                        message: "Payload key '{$payloadIndex}' not set",
-                        code: HttpStatus::$NotFound
-                    );
-                } else {
-                    continue;
-                }
-            }
+			if (!$this->api->req->dataDecode->isset(keys: $payloadIndex)) {
+				if ($useHierarchy) {
+					throw new \Exception(
+						message: "Payload key '{$payloadIndex}' not set",
+						code: HttpStatus::$NotFound
+					);
+					else {
+					continue;
+				}
+			}
 
-            $this->api->req->s['payload'] = $this->api->req->dataDecode->get(
-                keys: $payloadIndex
-            );
+			$this->api->req->s['payload'] = $this->api->req->dataDecode->get(
+				keys: $payloadIndex
+			);
 
-            if (count(value: $necessary)) {
-                $this->api->req->s['necessary'] = $necessary;
-            } else {
-                $this->api->req->s['necessary'] = [];
-            }
+			if (count(value: $necessary)) {
+				$this->api->req->s['necessary'] = $necessary;
+				else {
+				$this->api->req->s['necessary'] = [];
+			}
 
-            // Validation
-            if (!$this->isValidPayload(sSqlConfig: $sSqlConfig, response: $_response)) {
-                continue;
-            }
+			// Validation
+			if (!$this->isValidPayload(sSqlConfig: $sSqlConfig, response: $_response)) {
+				continue;
+			}
 
-            // Execute Pre Sql Hooks
-            if (isset($sSqlConfig['__PRE-SQL-HOOKS__'])) {
-                if ($this->hook === null) {
-                    $this->hook = new Hook($this->api);
-                }
-                $this->hook->triggerHook(
-                    hookConfig: $sSqlConfig['__PRE-SQL-HOOKS__']
-                );
-            }
+			// Execute Pre Sql Hooks
+			if (isset($sSqlConfig['__PRE-SQL-HOOKS__'])) {
+				if ($this->hook === null) {
+					$this->hook = new Hook($this->api);
+				}
+				$this->hook->triggerHook(
+					hookConfig: $sSqlConfig['__PRE-SQL-HOOKS__']
+				);
+			}
 
-            // Execute function
-            $_response = $this->supplementObj->process(
-                $sSqlConfig['__FUNCTION__'],
-                $this->api->req->s['payload']
-            );
+			// Execute function
+			$_response = $this->supplementObj->process(
+				$sSqlConfig['__FUNCTION__'],
+				$this->api->req->s['payload']
+			);
 
-            if ($this->operateAsTransaction && !$this->db->beganTransaction) {
-                $_response['Error'] = 'Something went wrong';
-                return;
-            }
+			if ($this->operateAsTransaction && !$this->db->beganTransaction) {
+				$_response['Error'] = 'Something went wrong';
+				return;
+			}
 
-            $this->db->closeCursor();
+			$this->db->closeCursor();
 
-            // triggers
-            if (isset($sSqlConfig['__TRIGGERS__'])) {
-                $this->dataEncode->addKeyData(
-                    key: '__TRIGGERS__',
-                    data: $this->getTriggerData(
-                        triggerConfig: $sSqlConfig['__TRIGGERS__']
-                    )
-                );
-            }
+			// triggers
+			if (isset($sSqlConfig['__TRIGGERS__'])) {
+				$this->dataEncode->addKeyData(
+					key: '__TRIGGERS__',
+					data: $this->getTriggerData(
+						triggerConfig: $sSqlConfig['__TRIGGERS__']
+					)
+				);
+			}
 
-            // Execute Post Sql Hooks
-            if (isset($sSqlConfig['__POST-SQL-HOOKS__'])) {
-                if ($this->hook === null) {
-                    $this->hook = new Hook($this->api);
-                }
-                $this->hook->triggerHook(
-                    hookConfig: $sSqlConfig['__POST-SQL-HOOKS__']
-                );
-            }
+			// Execute Post Sql Hooks
+			if (isset($sSqlConfig['__POST-SQL-HOOKS__'])) {
+				if ($this->hook === null) {
+					$this->hook = new Hook($this->api);
+				}
+				$this->hook->triggerHook(
+					hookConfig: $sSqlConfig['__POST-SQL-HOOKS__']
+				);
+			}
 
-            // subQuery for payload
-            if (isset($sSqlConfig['__SUB-PAYLOAD__'])) {
-                $this->callExecSupplement(
-                    sSqlConfig: $sSqlConfig,
-                    payloadIndexes: $payloadIndexes,
-                    configKeys: $configKeys,
-                    useHierarchy: $useHierarchy,
-                    response: $_response,
-                    necessary: $necessary
-                );
-            }
-        }
-    }
+			// subQuery for payload
+			if (isset($sSqlConfig['__SUB-PAYLOAD__'])) {
+				$this->callExecSupplement(
+					sSqlConfig: $sSqlConfig,
+					payloadIndexes: $payloadIndexes,
+					configKeys: $configKeys,
+					useHierarchy: $useHierarchy,
+					response: $_response,
+					necessary: $necessary
+				);
+			}
+		}
+	}
 
-    /**
-     * Validate and call _writeDB
-     *
-     * @param array $sSqlConfig     Config from file
-     * @param array $payloadIndexes Payload Indexes
-     * @param array $configKeys     Config Keys
-     * @param bool  $useHierarchy   Use results in where clause of sub queries
-     * @param array $response       Response by reference
-     * @param array $necessary      Required fields
-     *
-     * @return void
-     */
-    private function callExecSupplement(
-        &$sSqlConfig,
-        $payloadIndexes,
-        $configKeys,
-        $useHierarchy,
-        &$response,
-        &$necessary
-    ): void {
-        if ($useHierarchy) {
-            $row = $this->api->req->s['payload'];
-            $this->resetFetchData(
-                fetchFrom: 'sqlPayload',
-                keys: $configKeys,
-                row: $row
-            );
-        }
+	/**
+	 * Validate and call _writeDB
+	 *
+	 * @param array $sSqlConfig     Config from file
+	 * @param array $payloadIndexes Payload Indexes
+	 * @param array $configKeys     Config Keys
+	 * @param bool  $useHierarchy   Use results in where clause of sub queries
+	 * @param array $response       Response by reference
+	 * @param array $necessary      Required fields
+	 *
+	 * @return void
+	 */
+	private function callExecSupplement(
+		&$sSqlConfig,
+		$payloadIndexes,
+		$configKeys,
+		$useHierarchy,
+		&$response,
+		&$necessary
+	): void {
+		if ($useHierarchy) {
+			$row = $this->api->req->s['payload'];
+			$this->resetFetchData(
+				fetchFrom: 'sqlPayload',
+				keys: $configKeys,
+				row: $row
+			);
+		}
 
-        if (isset($payloadIndexes[0]) && $payloadIndexes[0] === '') {
-            $payloadIndexes = array_shift($payloadIndexes);
-        }
-        if (!is_array(value: $payloadIndexes)) {
-             $payloadIndexes = [];
-        }
+		if (isset($payloadIndexes[0]) && $payloadIndexes[0] === '') {
+			$payloadIndexes = array_shift($payloadIndexes);
+		}
+		if (!is_array(value: $payloadIndexes)) {
+			$payloadIndexes = [];
+		}
 
-        if (
-            isset($sSqlConfig['__SUB-PAYLOAD__'])
-            && $this->isObject(arr: $sSqlConfig['__SUB-PAYLOAD__'])
-        ) {
-            foreach ($sSqlConfig['__SUB-PAYLOAD__'] as $module => &$sSqlConfig) {
-                $dataExists = false;
-                $payloadIndexes = $payloadIndexes;
-                $configKeys = $configKeys;
-                array_push($payloadIndexes, $module);
-                array_push($configKeys, $module);
-                $modulePayloadKey = is_array(value: $payloadIndexes) ?
-                    implode(separator: ':', array: $payloadIndexes) : '';
-                $dataExists = $this->api->req->dataDecode->isset(
-                    keys: $modulePayloadKey
-                );
-                if ($useHierarchy && !$dataExists) { // use parent data of a payload
-                    throw new \Exception(
-                        message: "Invalid payload: Module '{$module}' missing",
-                        code: HttpStatus::$NotFound
-                    );
-                }
-                if ($dataExists) {
-                    $necessary = $necessary[$module] ?? $necessary;
-                    $useHierarchy = $useHierarchy ?? $this->getUseHierarchy(
-                        sqlConfig: $sSqlConfig,
-                        keyword: 'useHierarchy'
-                    );
-                    $response[$module] = [];
-                    $response = &$response[$module];
-                    $this->execSupplement(
-                        sSqlConfig: $sSqlConfig,
-                        payloadIndexes: $payloadIndexes,
-                        configKeys: $configKeys,
-                        useHierarchy: $useHierarchy,
-                        response: $response,
-                        necessary: $necessary
-                    );
-                }
-            }
-        }
-    }
+		if (
+			isset($sSqlConfig['__SUB-PAYLOAD__'])
+			&& $this->isObject(arr: $sSqlConfig['__SUB-PAYLOAD__'])
+			{
+			foreach ($sSqlConfig['__SUB-PAYLOAD__'] as $module => &$sSqlConfig) {
+				$dataExists = false;
+				$payloadIndexes = $payloadIndexes;
+				$configKeys = $configKeys;
+				array_push($payloadIndexes, $module);
+				array_push($configKeys, $module);
+				$modulePayloadKey = is_array(value: $payloadIndexes) ?
+					implode(separator: ':', array: $payloadIndexes) : '';
+				$dataExists = $this->api->req->dataDecode->isset(
+					keys: $modulePayloadKey
+				);
+				if ($useHierarchy && !$dataExists) { // use parent data of a payload
+					throw new \Exception(
+						message: "Invalid payload: Module '{$module}' missing",
+						code: HttpStatus::$NotFound
+					);
+				}
+				if ($dataExists) {
+					$necessary = $necessary[$module] ?? $necessary;
+					$useHierarchy = $useHierarchy ?? $this->getUseHierarchy(
+						sqlConfig: $sSqlConfig,
+						keyword: 'useHierarchy'
+					);
+					$response[$module] = [];
+					$response = &$response[$module];
+					$this->execSupplement(
+						sSqlConfig: $sSqlConfig,
+						payloadIndexes: $payloadIndexes,
+						configKeys: $configKeys,
+						useHierarchy: $useHierarchy,
+						response: $response,
+						necessary: $necessary
+					);
+				}
+			}
+		}
+	}
 
-    /**
-     * Checks if the payload is valid
-     *
-     * @param array $sSqlConfig Config from file
-     * @param array $response   Response by reference
-     *
-     * @return bool
-     */
-    private function isValidPayload($sSqlConfig, $response): bool
-    {
-        $return = true;
-        $isValidData = true;
-        if (isset($sSqlConfig['__VALIDATE__'])) {
-            [$isValidData, $errors] = $this->validate(
-                validationConfig: $sSqlConfig['__VALIDATE__']
-            );
-            if ($isValidData !== true) {
-                $this->api->res->httpStatus = HttpStatus::$BadRequest;
-                $response['Error'] = $errors;
-                $return = false;
-            }
-        }
-        return $return;
-    }
+	/**
+	 * Checks if the payload is valid
+	 *
+	 * @param array $sSqlConfig Config from file
+	 * @param array $response   Response by reference
+	 *
+	 * @return bool
+	 */
+	private function isValidPayload($sSqlConfig, $response): bool
+	{
+		$return = true;
+		$isValidData = true;
+		if (isset($sSqlConfig['__VALIDATE__'])) {
+			[$isValidData, $errors] = $this->validate(
+				validationConfig: $sSqlConfig['__VALIDATE__']
+			);
+			if ($isValidData !== true) {
+				$this->api->res->httpStatus = HttpStatus::$BadRequest;
+				$response['Error'] = $errors;
+				$return = false;
+			}
+		}
+		return $return;
+	}
 }

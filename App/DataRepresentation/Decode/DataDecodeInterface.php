@@ -29,80 +29,80 @@ namespace Microservices\App\DataRepresentation\Decode;
  */
 interface DataDecodeInterface
 {
-    /**
-     * Initialize
-     *
-     * @return void
-     */
-    public function init(): void;
+	/**
+	 * Initialize
+	 *
+	 * @return void
+	 */
+	public function init(): void;
 
-    /**
-     * Validates data
-     *
-     * @return void
-     */
-    public function validate(): void;
+	/**
+	 * Validates data
+	 *
+	 * @return void
+	 */
+	public function validate(): void;
 
-    /**
-     * Index data
-     *
-     * @return void
-     */
-    public function indexData(): void;
+	/**
+	 * Index data
+	 *
+	 * @return void
+	 */
+	public function indexData(): void;
 
-    /**
-     * Keys exist
-     *
-     * @param null|string $keys Keys exist (values separated by colon)
-     *
-     * @return bool
-     */
-    public function isset($keys = null): bool;
+	/**
+	 * Keys exist
+	 *
+	 * @param null|string $keys Keys exist (values separated by colon)
+	 *
+	 * @return bool
+	 */
+	public function isset($keys = null): bool;
 
-    /**
-     * Key exist
-     *
-     * @param null|string $keys Keys exist (values separated by colon)
-     *
-     * @return string Object/Array
-     */
-    public function dataType($keys = null): string;
+	/**
+	 * Key exist
+	 *
+	 * @param null|string $keys Keys exist (values separated by colon)
+	 *
+	 * @return string Object/Array
+	 */
+	public function dataType($keys = null): string;
 
-    /**
-     * Count of array element
-     *
-     * @param null|string $keys Key values separated by colon
-     *
-     * @return int
-     */
-    public function count($keys = null): int;
+	/**
+	 * Count of array element
+	 *
+	 * @param null|string $keys Key values separated by colon
+	 *
+	 * @return int
+	 */
+	public function count($keys = null): int;
 
-    /**
-     * Pass the keys and get whole data content belonging to keys
-     *
-     * @param string $keys Key values separated by colon
-     *
-     * @return mixed
-     */
-    public function get($keys = ''): mixed;
+	/**
+	 * Pass the keys and get whole data content belonging to keys
+	 *
+	 * @param string $keys Key values separated by colon
+	 *
+	 * @return mixed
+	 */
+	public function get($keys = ''): mixed;
 
-    /**
-     * Get complete Data for Kays
-     *
-     * @param string $keys Key values separated by colon
-     *
-     * @return mixed
-     */
-    public function getCompleteArray($keys = ''): mixed;
+	/**
+	 * Get complete Data for Kays
+	 *
+	 * @param string $keys Key values separated by colon
+	 *
+	 * @return mixed
+	 */
+	public function getCompleteArray($keys = ''): mixed;
 
-    /**
-     * Start processing the data string for a keys
-     * Perform search inside keys of data like $data['data'][0]['data1']
-     *
-     * @param string $keys Key values separated by colon
-     *
-     * @return void
-     * @throws \Exception
-     */
-    public function load($keys): void;
+	/**
+	 * Start processing the data string for a keys
+	 * Perform search inside keys of data like $data['data'][0]['data1']
+	 *
+	 * @param string $keys Key values separated by colon
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
+	public function load($keys): void;
 }

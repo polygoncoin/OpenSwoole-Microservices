@@ -32,55 +32,55 @@ use Microservices\Supplement\Custom\CustomInterface;
  */
 class Custom
 {
-    /**
-     * Custom API object
-     *
-     * @var null|CustomInterface
-     */
-    private $customApi = null;
+	/**
+	 * Custom API object
+	 *
+	 * @var null|CustomInterface
+	 */
+	private $customApi = null;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+	}
 
-    /**
-     * Initialize
-     *
-     * @return bool
-     */
-    public function init(): bool
-    {
-        $class = 'Microservices\\Supplement\\Custom\\'
-            . ucfirst(string: $this->api->req->rParser->routeElements[1]);
+	/**
+	 * Initialize
+	 *
+	 * @return bool
+	 */
+	public function init(): bool
+	{
+		$class = 'Microservices\\Supplement\\Custom\\'
+				ucfirst(string: $this->api->req->rParser->routeElements[1]);
 
-        $this->customApi = new $class($this->api);
+		$this->customApi = new $class($this->api);
 
-        return $this->customApi->init();
-    }
+		return $this->customApi->init();
+	}
 
-    /**
-     * Process
-     *
-     * @param string $function Function
-     * @param array  $payload  Payload
-     *
-     * @return array
-     */
-    public function process($function, $payload): array
-    {
-        return $this->customApi->$function($payload);
-    }
+	/**
+	 * Process
+	 *
+	 * @param string $function Function
+	 * @param array  $payload  Payload
+	 *
+	 * @return array
+	 */
+	public function process($function, $payload): array
+	{
+		return $this->customApi->$function($payload);
+	}
 }

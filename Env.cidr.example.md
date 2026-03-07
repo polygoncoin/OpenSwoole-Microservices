@@ -1,4 +1,4 @@
-# Allowed IPs in CIDR format
+	Allowed IPs in CIDR format
 
 Classless Inter-Domain Routing (CIDR) is a method for assigning IP addresses to devices on the internet. Multiple CIDR separated by comma can be set here.
 
@@ -47,13 +47,13 @@ reloadRestrictedCidr='0.0.0.0/0'        ; reloadRequestRoutePrefix in .env.enabl
 To enable CIDR settings at Client / Group / User level one can set them in respective table and record
 
 ```SQL
-# Client level
+	Client level
 `client`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
 
-# Group level
+	Group level
 `group`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
 
-# User level
+	User level
 `user`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
 ```
 
@@ -64,9 +64,9 @@ Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoo
 
 ## Author
 
-👤 **Ramesh N. Jangid (Sharma)**
+	 **Ramesh N. Jangid (Sharma)**
 
-- Github: [@polygoncoin](https://github.com/polygoncoin)
+	Github: [@polygoncoin](https://github.com/polygoncoin)
 
 ## 📝 License
 

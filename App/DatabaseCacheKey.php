@@ -29,68 +29,68 @@ namespace Microservices\App;
  */
 class DatabaseCacheKey
 {
-    /**
-     * App key
-     *
-     * @var null|string $App
-     */
-    public static $App = null;
+	/**
+	 * App key
+	 *
+	 * @var null|string $App
+	 */
+	public static $App = null;
 
-    /**
-     * Client key
-     *
-     * @var null|string $Client
-     */
-    public static $Client = null;
+	/**
+	 * Client key
+	 *
+	 * @var null|string $Client
+	 */
+	public static $Client = null;
 
-    /**
-     * Group key
-     *
-     * @var null|string $Group
-     */
-    public static $Group = null;
+	/**
+	 * Group key
+	 *
+	 * @var null|string $Group
+	 */
+	public static $Group = null;
 
-    /**
-     * User key
-     *
-     * @var null|string $User
-     */
-    public static $User = null;
+	/**
+	 * User key
+	 *
+	 * @var null|string $User
+	 */
+	public static $User = null;
 
-    /**
-     * Category key
-     *
-     * @var null|string $Category
-     */
-    public static $Category = null;
+	/**
+	 * Category key
+	 *
+	 * @var null|string $Category
+	 */
+	public static $Category = null;
 
-    /**
-     * Category1 key
-     *
-     * @var null|string $Category1
-     */
-    public static $Category1 = null;
+	/**
+	 * Category1 key
+	 *
+	 * @var null|string $Category1
+	 */
+	public static $Category1 = null;
 
-    /**
-     * Initialize
-     *
-     * @param null|int $cID Client Id
-     * @param null|int $gID  Group Id
-     * @param null|int $uID   User Id
-     *
-     * @return void
-     */
-    public static function init(
-        $cID = null,
-        $gID = null,
-        $uID = null
-    ): void {
-        self::$App = 'app';
-        self::$Client = $cID !== null ? ":c:{$cID}" : '';
-        self::$Group = $gID !== null ? ":g:{$gID}" : '';
-        self::$User = $uID !== null ? ":u:{$uID}" : '';
+	/**
+	 * Initialize
+	 *
+	 * @param null|int $cID Client Id
+	 * @param null|int $gID  Group Id
+	 * @param null|int $uID   User Id
+	 *
+	 * @return void
+	 */
+	public static function init(
+		$cID = null,
+		$gID = null,
+		$uID = null
+	): void {
+		self::$App = 'app';
+		self::$Client = $cID !== null ? ":c:{$cID}" : '';
+		self::$Group = $gID !== null ? ":g:{$gID}" : '';
+		self::$User = $uID !== null ? ":u:{$uID}" : '';
 
-        self::$Category = self::$App . self::$Client . self::$Group . ':category';
-        self::$Category1 = self::$App . self::$Client . self::$Group . ':category:1';
-    }
+		self::$Category = self::$App . self::$Client . self::$Group . ':category';
+		self::$Category1 = self::$App . self::$Client . self::$Group . ':category:1';
+	}
 }

@@ -19,73 +19,73 @@ use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
 return [
-    '__QUERY__' => "UPDATE `{$Env::$clientsTable}` SET __SET__ WHERE __WHERE__",
-    '__SET__' => [
-        [
-            'column' => 'is_disabled',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => 'No'
-        ],
-        [
-            'column' => 'updated_by',
-            'fetchFrom' => 'uDetails',
-            'fetchFromValue' => 'id'
-        ],
-        [
-            'column' => 'updated_on',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => date(format: 'Y-m-d H:i:s')
-        ]
-    ],
-    '__WHERE__' => [
-        [
-            'column' => 'is_disabled',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => 'Yes'
-        ],
-        [
-            'column' => 'is_deleted',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => 'No'
-        ],
-        [
-            'column' => 'id',
-            'fetchFrom' => 'payload',
-            'fetchFromValue' => 'id',
-            'dataType' => DatabaseDataTypes::$INT
-        ]
-    ],
-    '__VALIDATE__' => [
-        [
-            'fn' => 'primaryKeyExist',
-            'fnArgs' => [
-                'table' => ['custom', Env::$clientsTable],
-                'primary' => ['custom', 'id'],
-                'id' => ['payload', 'id', DatabaseDataTypes::$INT]
-            ],
-            'errorMessage' => 'Invalid Client Id'
-        ],
-        [
-            'fn' => '_checkColumnValueExist',
-            'fnArgs' => [
-                'table' => ['custom', Env::$clientsTable],
-                'column' => ['custom', 'is_deleted'],
-                'columnValue' => ['custom', 'No'],
-                'primary' => ['custom', 'id'],
-                'id' => ['payload', 'id', DatabaseDataTypes::$INT],
-            ],
-            'errorMessage' => 'Record is deleted'
-        ],
-        [
-            'fn' => '_checkColumnValueExist',
-            'fnArgs' => [
-                'table' => ['custom', Env::$clientsTable],
-                'column' => ['custom', 'is_disabled'],
-                'columnValue' => ['custom', 'Yes'],
-                'primary' => ['custom', 'id'],
-                'id' => ['payload', 'id', DatabaseDataTypes::$INT],
-            ],
-            'errorMessage' => 'Record is already enabled'
-        ]
-    ]
+	'__QUERY__' => "UPDATE `{$Env::$clientsTable}` SET __SET__ WHERE __WHERE__",
+	'__SET__' => [
+		[
+			'column' => 'is_disabled',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => 'No'
+		],
+		[
+			'column' => 'updated_by',
+			'fetchFrom' => 'uDetails',
+			'fetchFromValue' => 'id'
+		],
+		[
+			'column' => 'updated_on',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => date(format: 'Y-m-d H:i:s')
+		]
+	],
+	'__WHERE__' => [
+		[
+			'column' => 'is_disabled',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => 'Yes'
+		],
+		[
+			'column' => 'is_deleted',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => 'No'
+		],
+		[
+			'column' => 'id',
+			'fetchFrom' => 'payload',
+			'fetchFromValue' => 'id',
+			'dataType' => DatabaseDataTypes::$INT
+		]
+	],
+	'__VALIDATE__' => [
+		[
+			'fn' => 'primaryKeyExist',
+			'fnArgs' => [
+				'table' => ['custom', Env::$clientsTable],
+				'primary' => ['custom', 'id'],
+				'id' => ['payload', 'id', DatabaseDataTypes::$INT]
+			],
+			'errorMessage' => 'Invalid Client Id'
+		],
+		[
+			'fn' => '_checkColumnValueExist',
+			'fnArgs' => [
+				'table' => ['custom', Env::$clientsTable],
+				'column' => ['custom', 'is_deleted'],
+				'columnValue' => ['custom', 'No'],
+				'primary' => ['custom', 'id'],
+				'id' => ['payload', 'id', DatabaseDataTypes::$INT],
+			],
+			'errorMessage' => 'Record is deleted'
+		],
+		[
+			'fn' => '_checkColumnValueExist',
+			'fnArgs' => [
+				'table' => ['custom', Env::$clientsTable],
+				'column' => ['custom', 'is_disabled'],
+				'columnValue' => ['custom', 'Yes'],
+				'primary' => ['custom', 'id'],
+				'id' => ['payload', 'id', DatabaseDataTypes::$INT],
+			],
+			'errorMessage' => 'Record is already enabled'
+		]
+	]
 ];

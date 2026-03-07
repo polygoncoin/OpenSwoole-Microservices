@@ -29,19 +29,19 @@ namespace Microservices\Supplement\Cron;
  */
 interface CronInterface
 {
-    /**
-     * Initialize
-     *
-     * @return bool
-     */
-    public function init();
+	/**
+	 * Initialize
+	 *
+	 * @return bool
+	 */
+	public function init();
 
-    /**
-     * Process
-     *
-     * @param array $payload Payload
-     *
-     * @return array
-     */
-    public function process(array $payload = []): array;
+	/**
+	 * Process
+	 *
+	 * @param array $payload Payload
+	 *
+	 * @return array
+	 */
+	public function process(array $payload = []): array;
 }

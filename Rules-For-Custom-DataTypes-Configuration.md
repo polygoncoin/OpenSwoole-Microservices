@@ -1,4 +1,4 @@
-# Custom DataTypes
+	Custom DataTypes
 
 ## Defining Custom DataTypes
 
@@ -50,51 +50,51 @@ This represents Custom DataType should pass this regular expression. This is an 
 public static $CustomINT = [
 
 // Required param
-    // PHP data type (bool, int, float, string)
-    'dataType' => 'int',
+	// PHP data type (bool, int, float, string)
+	'dataType' => 'int',
 
 // Optional params
-    // Value can be null
-    'canBeNull' => false,
-    // Minimum value (int)
-    'minValue' => false,
-    // Maximum value (int)
-    'maxValue' => false,
-    // Minimum length (string)
-    'minLength' => false,
-    // Maximum length (string)
-    'maxLength' => false,
-    // Any one value from the Array
-    'enumValues' => false,
-    // Values belonging to this Array
-    'setValues' => false,
+	// Value can be null
+	'canBeNull' => false,
+	// Minimum value (int)
+	'minValue' => false,
+	// Maximum value (int)
+	'maxValue' => false,
+	// Minimum length (string)
+	'minLength' => false,
+	// Maximum length (string)
+	'maxLength' => false,
+	// Any one value from the Array
+	'enumValues' => false,
+	// Values belonging to this Array
+	'setValues' => false,
 
-    // Values should pass this regex before use
-    'regex' => false
+	// Values should pass this regex before use
+	'regex' => false
 ];
 ```
 
 ### Custom DataTypes Example
 
-- $PrimaryKey
+	$PrimaryKey
 
 ```PHP
 public static $PrimaryKey = [
-    // PHP data type (bool, int, float, string)
-    'dataType' => 'int',
-    // Minimum value (int)
-    'minValue' => 1
+	// PHP data type (bool, int, float, string)
+	'dataType' => 'int',
+	// Minimum value (int)
+	'minValue' => 1
 ];
 
-- $Varchar50
+	$Varchar50
 
 public static $Varchar50 = [
-    // PHP data type (bool, int, float, string)
-    'dataType' => 'string',
-    // Minimum length (string)
-    'minLength' => 0,
-    // Maximum length (string)
-    'maxLength' => 50
+	// PHP data type (bool, int, float, string)
+	'dataType' => 'string',
+	// Minimum length (string)
+	'minLength' => 0,
+	// Maximum length (string)
+	'maxLength' => 50
 ];
 ```
 
@@ -109,9 +109,9 @@ Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoo
 
 ## Author
 
-👤 **Ramesh N. Jangid (Sharma)**
+	 **Ramesh N. Jangid (Sharma)**
 
-- Github: [@polygoncoin](https://github.com/polygoncoin)
+	Github: [@polygoncoin](https://github.com/polygoncoin)
 
 ## 📝 License
 

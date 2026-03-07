@@ -19,14 +19,14 @@ use Microservices\App\Env;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    Env::$customRequestRoutePrefix => [
-        '{custom:string}' => [
-            'dataType' => DatabaseDataTypes::$Default,
-            '__FILE__' => false,
-            '{id:int}'  => [
-                'dataType' => DatabaseDataTypes::$PrimaryKey,
-                '__FILE__' => false
-            ]
-        ]
-    ]
+	Env::$customRequestRoutePrefix => [
+		'{custom:string}' => [
+			'dataType' => DatabaseDataTypes::$Default,
+			'__FILE__' => false,
+			'{id:int}'  => [
+				'dataType' => DatabaseDataTypes::$PrimaryKey,
+				'__FILE__' => false
+			]
+		]
+	]
 ];

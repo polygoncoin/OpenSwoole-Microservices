@@ -16,27 +16,27 @@
 namespace Microservices\Config\Queries\Auth\ClientDB\Common;
 
 return [
-    '__PAYLOAD__' => [
-        [
-            'column' => 'username',
-            'fetchFrom' => 'payload',
-            'fetchFromValue' => 'username'
-        ],
-        [
-            'column' => 'password',
-            'fetchFrom' => 'payload',
-            'fetchFromValue' => 'password'
-        ],
-    ],
-    // '__VALIDATE__' => [
-    //     [
-    //         'fn' => 'primaryKeyExist',
-    //         'fnArgs' => [
-    //             'table' => ['custom', 'address'],
-    //             'primary' => ['custom', 'id'],
-    //             'id' => ['routeParams', 'id']
-    //         ],
-    //         'errorMessage' => 'Invalid address id'
-    //     ],
-    // ]
+	'__PAYLOAD__' => [
+		[
+			'column' => 'username',
+			'fetchFrom' => 'payload',
+			'fetchFromValue' => 'username'
+		],
+		[
+			'column' => 'password',
+			'fetchFrom' => 'payload',
+			'fetchFromValue' => 'password'
+		],
+	],
+	// '__VALIDATE__' => [
+	//     [
+	//         'fn' => 'primaryKeyExist',
+	//         'fnArgs' => [
+	//             'table' => ['custom', 'address'],
+	//             'primary' => ['custom', 'id'],
+	//             'id' => ['routeParams', 'id']
+	//         ],
+	//         'errorMessage' => 'Invalid address id'
+	//     ],
+	// ]
 ];

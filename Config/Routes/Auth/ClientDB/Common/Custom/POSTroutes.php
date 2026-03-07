@@ -20,15 +20,15 @@ use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
 return [
-    Env::$customRequestRoutePrefix => [
-        '{custom:string}' => [
-            'dataType' => DatabaseDataTypes::$Default,
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR
-                . DIRECTORY_SEPARATOR . 'ClientDB'
-                . DIRECTORY_SEPARATOR . 'Groups'
-                . DIRECTORY_SEPARATOR . 'UserGroup'
-                . DIRECTORY_SEPARATOR . 'POST'
-                . DIRECTORY_SEPARATOR . 'SupplementTest.php'
-        ]
-    ]
+	Env::$customRequestRoutePrefix => [
+		'{custom:string}' => [
+			'dataType' => DatabaseDataTypes::$Default,
+			'__FILE__' => Constants::$AUTH_QUERIES_DIR
+					DIRECTORY_SEPARATOR . 'ClientDB'
+					DIRECTORY_SEPARATOR . 'Groups'
+					DIRECTORY_SEPARATOR . 'UserGroup'
+					DIRECTORY_SEPARATOR . 'POST'
+					DIRECTORY_SEPARATOR . 'SupplementTest.php'
+		]
+	]
 ];

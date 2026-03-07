@@ -29,23 +29,23 @@ namespace Microservices\Supplement\Upload;
  */
 trait UploadTrait
 {
-    /**
-     * Saves file as stream
-     *
-     * @param string $absFilePath Absolute file path
-     *
-     * @return bool
-     */
-    private function saveFile($absFilePath): bool
-    {
-        $src = fopen(filename: "php://input", mode: "rb");
-        $dest = fopen(filename: $absFilePath, mode: 'wb');
+	/**
+	 * Saves file as stream
+	 *
+	 * @param string $absFilePath Absolute file path
+	 *
+	 * @return bool
+	 */
+	private function saveFile($absFilePath): bool
+	{
+		$src = fopen(filename: "php://input", mode: "rb");
+		$dest = fopen(filename: $absFilePath, mode: 'wb');
 
-        stream_copy_to_stream(from: $src, to: $dest);
+		stream_copy_to_stream(from: $src, to: $dest);
 
-        fclose(stream: $dest);
-        fclose(stream: $src);
+		fclose(stream: $dest);
+		fclose(stream: $src);
 
-        return true;
-    }
+		return true;
+	}
 }

@@ -19,78 +19,78 @@ use Microservices\App\DatabaseDataTypes;
 use Microservices\App\Env;
 
 return [
-    '__QUERY__' => "UPDATE `{$Env::$groupsTable}` SET __SET__ WHERE __WHERE__",
-    '__SET__' => [
-        [
-            'column' => 'name',
-            'fetchFrom' => 'payload',
-            'fetchFromValue' => 'name'
-        ],
-        [
-            'column' => 'client_id',
-            'fetchFrom' => 'payload',
-            'fetchFromValue' => 'client_id',
-            'dataType' => DatabaseDataTypes::$INT
-        ],
-        [
-            'column' => 'connection_id',
-            'fetchFrom' => 'payload',
-            'fetchFromValue' => 'connection_id',
-            'dataType' => DatabaseDataTypes::$INT
-        ],
-        [
-            'column' => 'allowed_cidr',
-            'fetchFrom' => 'payload',
-            'fetchFromValue' => 'allowed_cidr'
-        ],
-        [
-            'column' => 'comments',
-            'fetchFrom' => 'payload',
-            'fetchFromValue' => 'comments'
-        ],
-        [
-            'column' => 'updated_by',
-            'fetchFrom' => 'uDetails',
-            'fetchFromValue' => 'id'
-        ],
-        [
-            'column' => 'updated_on',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => date(format: 'Y-m-d H:i:s')
-        ]
-    ],
-    '__WHERE__' => [
-        [
-            'column' => 'is_approved',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => 'Yes'
-        ],
-        [
-            'column' => 'is_disabled',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => 'No'
-        ],
-        [
-            'column' => 'is_deleted',
-            'fetchFrom' => 'custom',
-            'fetchFromValue' => 'No'
-        ],
-        [
-            'column' => 'id',
-            'fetchFrom' => 'routeParams',
-            'fetchFromValue' => 'id',
-            'dataType' => DatabaseDataTypes::$INT
-        ]
-    ],
-    '__VALIDATE__' => [
-        [
-            'fn' => 'primaryKeyExist',
-            'fnArgs' => [
-                'table' => ['custom', Env::$groupsTable],
-                'primary' => ['custom', 'id'],
-                'id' => ['payload', 'id', DatabaseDataTypes::$INT]
-            ],
-            'errorMessage' => 'Invalid Group Id'
-        ],
-    ]
+	'__QUERY__' => "UPDATE `{$Env::$groupsTable}` SET __SET__ WHERE __WHERE__",
+	'__SET__' => [
+		[
+			'column' => 'name',
+			'fetchFrom' => 'payload',
+			'fetchFromValue' => 'name'
+		],
+		[
+			'column' => 'client_id',
+			'fetchFrom' => 'payload',
+			'fetchFromValue' => 'client_id',
+			'dataType' => DatabaseDataTypes::$INT
+		],
+		[
+			'column' => 'connection_id',
+			'fetchFrom' => 'payload',
+			'fetchFromValue' => 'connection_id',
+			'dataType' => DatabaseDataTypes::$INT
+		],
+		[
+			'column' => 'allowed_cidr',
+			'fetchFrom' => 'payload',
+			'fetchFromValue' => 'allowed_cidr'
+		],
+		[
+			'column' => 'comments',
+			'fetchFrom' => 'payload',
+			'fetchFromValue' => 'comments'
+		],
+		[
+			'column' => 'updated_by',
+			'fetchFrom' => 'uDetails',
+			'fetchFromValue' => 'id'
+		],
+		[
+			'column' => 'updated_on',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => date(format: 'Y-m-d H:i:s')
+		]
+	],
+	'__WHERE__' => [
+		[
+			'column' => 'is_approved',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => 'Yes'
+		],
+		[
+			'column' => 'is_disabled',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => 'No'
+		],
+		[
+			'column' => 'is_deleted',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => 'No'
+		],
+		[
+			'column' => 'id',
+			'fetchFrom' => 'routeParams',
+			'fetchFromValue' => 'id',
+			'dataType' => DatabaseDataTypes::$INT
+		]
+	],
+	'__VALIDATE__' => [
+		[
+			'fn' => 'primaryKeyExist',
+			'fnArgs' => [
+				'table' => ['custom', Env::$groupsTable],
+				'primary' => ['custom', 'id'],
+				'id' => ['payload', 'id', DatabaseDataTypes::$INT]
+			],
+			'errorMessage' => 'Invalid Group Id'
+		],
+	]
 ];

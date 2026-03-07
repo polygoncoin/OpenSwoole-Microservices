@@ -19,35 +19,35 @@ use Microservices\App\Constants;
 use Microservices\App\DatabaseDataTypes;
 
 return array_merge(
-    require Constants::$AUTH_QUERIES_DIR
-                . DIRECTORY_SEPARATOR . 'ClientDB'
-                . DIRECTORY_SEPARATOR . 'Common'
-                . DIRECTORY_SEPARATOR . 'Registration.php',
-    [
-        '__SET__' => [
-            [
-                'column' => 'firstname',
-                'fetchFrom' => 'payload',
-                'fetchFromValue' => 'firstname'
-            ],
-            [
-                'column' => 'lastname',
-                'fetchFrom' => 'payload',
-                'fetchFromValue' => 'lastname'
-            ],
-            [
-                'column' => 'email',
-                'fetchFrom' => 'payload',
-                'fetchFromValue' => 'email'
-            ],
-        ],
-        '__WHERE__' => [
-            [
-                'column' => 'id',
-                'fetchFrom' => 'routeParams',
-                'fetchFromValue' => 'id',
-                'dataType' => DatabaseDataTypes::$PrimaryKey
-            ]
-        ],
-    ]
+	require Constants::$AUTH_QUERIES_DIR
+					DIRECTORY_SEPARATOR . 'ClientDB'
+					DIRECTORY_SEPARATOR . 'Common'
+					DIRECTORY_SEPARATOR . 'Registration.php',
+	[
+		'__SET__' => [
+			[
+				'column' => 'firstname',
+				'fetchFrom' => 'payload',
+				'fetchFromValue' => 'firstname'
+			],
+			[
+				'column' => 'lastname',
+				'fetchFrom' => 'payload',
+				'fetchFromValue' => 'lastname'
+			],
+			[
+				'column' => 'email',
+				'fetchFrom' => 'payload',
+				'fetchFromValue' => 'email'
+			],
+		],
+		'__WHERE__' => [
+			[
+				'column' => 'id',
+				'fetchFrom' => 'routeParams',
+				'fetchFromValue' => 'id',
+				'dataType' => DatabaseDataTypes::$PrimaryKey
+			]
+		],
+	]
 );

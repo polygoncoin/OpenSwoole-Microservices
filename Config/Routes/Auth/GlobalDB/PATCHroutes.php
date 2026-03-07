@@ -19,64 +19,64 @@ use Microservices\App\Constants;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    'group' => [
-        '{id:int}'  => [
-            'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR
-                . DIRECTORY_SEPARATOR . 'GlobalDB'
-                . DIRECTORY_SEPARATOR . 'PATCH'
-                . DIRECTORY_SEPARATOR . 'groups.php',
-            'approve'  => [
-                '__FILE__' => Constants::$AUTH_QUERIES_DIR
-                    . DIRECTORY_SEPARATOR . 'GlobalDB'
-                    . DIRECTORY_SEPARATOR . 'PATCH'
-                    . DIRECTORY_SEPARATOR . 'approve'
-                    . DIRECTORY_SEPARATOR . 'groups.php',
-            ],
-            'disable'  => [
-                '__FILE__' => Constants::$AUTH_QUERIES_DIR
-                    . DIRECTORY_SEPARATOR . 'GlobalDB'
-                    . DIRECTORY_SEPARATOR . 'PATCH'
-                    . DIRECTORY_SEPARATOR . 'disable'
-                    . DIRECTORY_SEPARATOR . 'groups.php',
-            ],
-            'enable'  => [
-                '__FILE__' => Constants::$AUTH_QUERIES_DIR
-                    . DIRECTORY_SEPARATOR . 'GlobalDB'
-                    . DIRECTORY_SEPARATOR . 'PATCH'
-                    . DIRECTORY_SEPARATOR . 'enable'
-                    . DIRECTORY_SEPARATOR . 'groups.php',
-            ],
-        ],
-    ],
-    'client' => [
-        '{id:int}'  => [
-            'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR
-                . DIRECTORY_SEPARATOR . 'GlobalDB'
-                . DIRECTORY_SEPARATOR . 'PATCH'
-                . DIRECTORY_SEPARATOR . 'clients.php',
-            'approve'  => [
-                '__FILE__' => Constants::$AUTH_QUERIES_DIR
-                    . DIRECTORY_SEPARATOR . 'GlobalDB'
-                    . DIRECTORY_SEPARATOR . 'PATCH'
-                    . DIRECTORY_SEPARATOR . 'approve'
-                    . DIRECTORY_SEPARATOR . 'clients.php',
-            ],
-            'disable'  => [
-                '__FILE__' => Constants::$AUTH_QUERIES_DIR
-                    . DIRECTORY_SEPARATOR . 'GlobalDB'
-                    . DIRECTORY_SEPARATOR . 'PATCH'
-                    . DIRECTORY_SEPARATOR . 'disable'
-                    . DIRECTORY_SEPARATOR . 'clients.php',
-            ],
-            'enable'  => [
-                '__FILE__' => Constants::$AUTH_QUERIES_DIR
-                    . DIRECTORY_SEPARATOR . 'GlobalDB'
-                    . DIRECTORY_SEPARATOR . 'PATCH'
-                    . DIRECTORY_SEPARATOR . 'enable'
-                    . DIRECTORY_SEPARATOR . 'clients.php',
-            ],
-        ],
-    ],
+	'group' => [
+		'{id:int}'  => [
+			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'__FILE__' => Constants::$AUTH_QUERIES_DIR
+					DIRECTORY_SEPARATOR . 'GlobalDB'
+					DIRECTORY_SEPARATOR . 'PATCH'
+					DIRECTORY_SEPARATOR . 'groups.php',
+			'approve'  => [
+				'__FILE__' => Constants::$AUTH_QUERIES_DIR
+						DIRECTORY_SEPARATOR . 'GlobalDB'
+						DIRECTORY_SEPARATOR . 'PATCH'
+						DIRECTORY_SEPARATOR . 'approve'
+						DIRECTORY_SEPARATOR . 'groups.php',
+			],
+			'disable'  => [
+				'__FILE__' => Constants::$AUTH_QUERIES_DIR
+						DIRECTORY_SEPARATOR . 'GlobalDB'
+						DIRECTORY_SEPARATOR . 'PATCH'
+						DIRECTORY_SEPARATOR . 'disable'
+						DIRECTORY_SEPARATOR . 'groups.php',
+			],
+			'enable'  => [
+				'__FILE__' => Constants::$AUTH_QUERIES_DIR
+						DIRECTORY_SEPARATOR . 'GlobalDB'
+						DIRECTORY_SEPARATOR . 'PATCH'
+						DIRECTORY_SEPARATOR . 'enable'
+						DIRECTORY_SEPARATOR . 'groups.php',
+			],
+		],
+	],
+	'client' => [
+		'{id:int}'  => [
+			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'__FILE__' => Constants::$AUTH_QUERIES_DIR
+					DIRECTORY_SEPARATOR . 'GlobalDB'
+					DIRECTORY_SEPARATOR . 'PATCH'
+					DIRECTORY_SEPARATOR . 'clients.php',
+			'approve'  => [
+				'__FILE__' => Constants::$AUTH_QUERIES_DIR
+						DIRECTORY_SEPARATOR . 'GlobalDB'
+						DIRECTORY_SEPARATOR . 'PATCH'
+						DIRECTORY_SEPARATOR . 'approve'
+						DIRECTORY_SEPARATOR . 'clients.php',
+			],
+			'disable'  => [
+				'__FILE__' => Constants::$AUTH_QUERIES_DIR
+						DIRECTORY_SEPARATOR . 'GlobalDB'
+						DIRECTORY_SEPARATOR . 'PATCH'
+						DIRECTORY_SEPARATOR . 'disable'
+						DIRECTORY_SEPARATOR . 'clients.php',
+			],
+			'enable'  => [
+				'__FILE__' => Constants::$AUTH_QUERIES_DIR
+						DIRECTORY_SEPARATOR . 'GlobalDB'
+						DIRECTORY_SEPARATOR . 'PATCH'
+						DIRECTORY_SEPARATOR . 'enable'
+						DIRECTORY_SEPARATOR . 'clients.php',
+			],
+		],
+	],
 ];

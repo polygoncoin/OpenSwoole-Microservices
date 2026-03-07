@@ -29,27 +29,27 @@ namespace Microservices\Validation;
  */
 trait ValidatorTrait
 {
-    /**
-     * Validate string is alphanumeric
-     *
-     * @param string $v String
-     *
-     * @return bool|int
-     */
-    private function isAlphanumeric(&$v): bool|int
-    {
-        return preg_match(pattern: '/^[a-z0-9 .\-]+$/i', subject: $v);
-    }
+	/**
+	 * Validate string is alphanumeric
+	 *
+	 * @param string $v String
+	 *
+	 * @return bool|int
+	 */
+	private function isAlphanumeric(&$v): bool|int
+	{
+		return preg_match(pattern: '/^[a-z0-9 .\-]+$/i', subject: $v);
+	}
 
-    /**
-     * Validate string is an email
-     *
-     * @param string $v email address
-     *
-     * @return mixed
-     */
-    private function isEmail(&$v): mixed
-    {
-        return filter_var(value: $v, filter: FILTER_VALIDATE_EMAIL);
-    }
+	/**
+	 * Validate string is an email
+	 *
+	 * @param string $v email address
+	 *
+	 * @return mixed
+	 */
+	private function isEmail(&$v): mixed
+	{
+		return filter_var(value: $v, filter: FILTER_VALIDATE_EMAIL);
+	}
 }

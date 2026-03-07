@@ -21,19 +21,19 @@ $header = $defaultHeaders;
 $header[] = $contentType;
 
 $res = Web::trigger(
-    homeURL: $homeURL,
-    method: 'POST',
-    route: '/login',
-    header: $header,
-    payload: json_encode(value: $payload)
+	homeURL: $homeURL,
+	method: 'POST',
+	route: '/login',
+	header: $header,
+	payload: json_encode(value: $payload)
 );
 
 if (
-    !isset($res['response']['responseHeaders']['Set-Cookie'])
-    && isset($res['response']['responseBody']['Results']['Token'])
-    && $res
-) {
-    $token = $res['response']['responseBody']['Results']['Token'];
+	!isset($res['response']['responseHeaders']['Set-Cookie'])
+	&& isset($res['response']['responseBody']['Results']['Token'])
+	&& $res
+	{
+	$token = $res['response']['responseBody']['Results']['Token'];
 }
 
 return $res;

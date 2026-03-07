@@ -19,26 +19,26 @@ use Microservices\App\Constants;
 use Microservices\App\DatabaseDataTypes;
 
 return [
-    'registration' => [
-        '{id:int}'  => [
-            'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR
-                . DIRECTORY_SEPARATOR . 'ClientDB'
-                . DIRECTORY_SEPARATOR . 'Groups'
-                . DIRECTORY_SEPARATOR . 'UserGroup'
-                . DIRECTORY_SEPARATOR . 'PUT'
-                . DIRECTORY_SEPARATOR . 'Registration.php',
-        ],
-    ],
-    'address' => [
-        '{id:int}'  => [
-            'dataType' => DatabaseDataTypes::$PrimaryKey,
-            '__FILE__' => Constants::$AUTH_QUERIES_DIR
-                . DIRECTORY_SEPARATOR . 'ClientDB'
-                . DIRECTORY_SEPARATOR . 'Groups'
-                . DIRECTORY_SEPARATOR . 'UserGroup'
-                . DIRECTORY_SEPARATOR . 'PUT'
-                . DIRECTORY_SEPARATOR . 'Address.php',
-        ],
-    ]
+	'registration' => [
+		'{id:int}'  => [
+			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'__FILE__' => Constants::$AUTH_QUERIES_DIR
+					DIRECTORY_SEPARATOR . 'ClientDB'
+					DIRECTORY_SEPARATOR . 'Groups'
+					DIRECTORY_SEPARATOR . 'UserGroup'
+					DIRECTORY_SEPARATOR . 'PUT'
+					DIRECTORY_SEPARATOR . 'Registration.php',
+		],
+	],
+	'address' => [
+		'{id:int}'  => [
+			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'__FILE__' => Constants::$AUTH_QUERIES_DIR
+					DIRECTORY_SEPARATOR . 'ClientDB'
+					DIRECTORY_SEPARATOR . 'Groups'
+					DIRECTORY_SEPARATOR . 'UserGroup'
+					DIRECTORY_SEPARATOR . 'PUT'
+					DIRECTORY_SEPARATOR . 'Address.php',
+		],
+	]
 ];

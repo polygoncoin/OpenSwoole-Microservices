@@ -36,78 +36,78 @@ use Microservices\Validation\ValidatorInterface;
  */
 class Validator
 {
-    /**
-     * Validator object
-     *
-     * @var null|ValidatorInterface
-     */
-    private $v = null;
+	/**
+	 * Validator object
+	 *
+	 * @var null|ValidatorInterface
+	 */
+	private $v = null;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-        if (DbFunctions::$masterDb[$this->api->req->cId]->database === Env::$gDbServerDatabase) {
-            $this->v = new GlobalValidator($this->api);
-        } else {
-            $this->v = new ClientValidator($this->api);
-        }
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+		if (DbFunctions::$masterDb[$this->api->req->cId]->database === Env::$gDbServerDatabase) {
+			$this->v = new GlobalValidator($this->api);
+			else {
+			$this->v = new ClientValidator($this->api);
+		}
+	}
 
-    /**
-     * Validate payload
-     *
-     * @param array $validationConfig Validation configuration
-     *
-     * @return array
-     */
-    public function validate(&$validationConfig): array
-    {
-        if (
-            isset(($this->api->req->s['necessary']))
-            && count(value: $this->api->req->s['necessary']) > 0
-        ) {
-            if (
-                ([$isValidData, $errors] = $this->validateRequired())
-                && !$isValidData
-            ) {
-                return [$isValidData, $errors];
-            }
-        }
+	/**
+	 * Validate payload
+	 *
+	 * @param array $validationConfig Validation configuration
+	 *
+	 * @return array
+	 */
+	public function validate(&$validationConfig): array
+	{
+		if (
+			isset(($this->api->req->s['necessary']))
+			&& count(value: $this->api->req->s['necessary']) > 0
+			{
+			if (
+				([$isValidData, $errors] = $this->validateRequired())
+				&& !$isValidData
+				{
+				return [$isValidData, $errors];
+			}
+		}
 
-        return $this->v->validate(validationConfig: $validationConfig);
-    }
+		return $this->v->validate(validationConfig: $validationConfig);
+	}
 
-    /**
-     * Validate necessary payload
-     *
-     * @return array
-     */
-    private function validateRequired(): array
-    {
-        $isValidData = true;
-        $errors = [];
-        // Required fields payload validation
-        if (!empty($this->api->req->s['necessary']['payload'])) {
-            foreach ($this->api->req->s['necessary']['payload'] as $column => &$arr) {
-                if ($arr['necessary'] && !isset($this->api->req->s['payload'][$column])) {
-                    $errors[] = 'Missing necessary payload: ' . $column;
-                    $isValidData = false;
-                }
-            }
-        }
+	/**
+	 * Validate necessary payload
+	 *
+	 * @return array
+	 */
+	private function validateRequired(): array
+	{
+		$isValidData = true;
+		$errors = [];
+		// Required fields payload validation
+		if (!empty($this->api->req->s['necessary']['payload'])) {
+			foreach ($this->api->req->s['necessary']['payload'] as $column => &$arr) {
+				if ($arr['necessary'] && !isset($this->api->req->s['payload'][$column])) {
+					$errors[] = 'Missing necessary payload: ' . $column;
+					$isValidData = false;
+				}
+			}
+		}
 
-        return [$isValidData, $errors];
-    }
+		return [$isValidData, $errors];
+	}
 }

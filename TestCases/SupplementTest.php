@@ -16,11 +16,11 @@
 namespace Microservices\TestCases;
 
 if (!defined('GET')) {
-    define('GET', __DIR__ . DIRECTORY_SEPARATOR . 'GET');
-    define('POST', __DIR__ . DIRECTORY_SEPARATOR . 'POST');
-    define('PUT', __DIR__ . DIRECTORY_SEPARATOR . 'PUT');
-    define('PATCH', __DIR__ . DIRECTORY_SEPARATOR . 'PATCH');
-    define('DELETE', __DIR__ . DIRECTORY_SEPARATOR . 'DELETE');
+	define('GET', __DIR__ . DIRECTORY_SEPARATOR . 'GET');
+	define('POST', __DIR__ . DIRECTORY_SEPARATOR . 'POST');
+	define('PUT', __DIR__ . DIRECTORY_SEPARATOR . 'PUT');
+	define('PATCH', __DIR__ . DIRECTORY_SEPARATOR . 'PATCH');
+	define('DELETE', __DIR__ . DIRECTORY_SEPARATOR . 'DELETE');
 }
 
 // $apiVersion = 'X-API-Version: v1.0.0';
@@ -41,8 +41,8 @@ $response[] = include GET . DIRECTORY_SEPARATOR . 'Reload.php';
 
 // Client login
 $payload = [
-    'username' => 'client_1_group_1_user_1',
-    'password' => 'shames11'
+	'username' => 'client_1_group_1_user_1',
+	'password' => 'shames11'
 ];
 $response[] = include POST . DIRECTORY_SEPARATOR . 'Login.php';
 

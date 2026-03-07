@@ -31,39 +31,39 @@ use Microservices\App\Env;
  */
 class DatabaseOpenCacheKey
 {
-    /**
-     * App key
-     *
-     * @var null|string
-     */
-    public static $App = null;
+	/**
+	 * App key
+	 *
+	 * @var null|string
+	 */
+	public static $App = null;
 
-    /**
-     * Client key
-     *
-     * @var null|string
-     */
-    public static $Client = null;
+	/**
+	 * Client key
+	 *
+	 * @var null|string
+	 */
+	public static $Client = null;
 
-    /**
-     * Category key
-     *
-     * @var null|string
-     */
-    public static $Category = null;
+	/**
+	 * Category key
+	 *
+	 * @var null|string
+	 */
+	public static $Category = null;
 
-    /**
-     * Initialize
-     *
-     * @param null|int $cID Client Id
-     *
-     * @return void
-     */
-    public static function init($cID): void
-    {
-        self::$App = 'o:app' . Env::$oRepresentation;
-        self::$Client = ":c:{$cID}";
+	/**
+	 * Initialize
+	 *
+	 * @param null|int $cID Client Id
+	 *
+	 * @return void
+	 */
+	public static function init($cID): void
+	{
+		self::$App = 'o:app' . Env::$oRepresentation;
+		self::$Client = ":c:{$cID}";
 
-        self::$Category = self::$App . ':category';
-    }
+		self::$Category = self::$App . ':category';
+	}
 }

@@ -33,55 +33,55 @@ use Microservices\Hooks\HookTrait;
  */
 class Hook_Example implements HookInterface
 {
-    use HookTrait;
+	use HookTrait;
 
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+	}
 
-    /**
-     * Initialize
-     *
-     * @return bool
-     */
-    public function init(): bool
-    {
-        return true;
-    }
+	/**
+	 * Initialize
+	 *
+	 * @return bool
+	 */
+	public function init(): bool
+	{
+		return true;
+	}
 
-    /**
-     * Process
-     *
-     * @return bool
-     */
-    public function process(): bool
-    {
-        $this->execHook();
-        return true;
-    }
+	/**
+	 * Process
+	 *
+	 * @return bool
+	 */
+	public function process(): bool
+	{
+		$this->execHook();
+		return true;
+	}
 
-    /**
-     * Exec Hook related code
-     *
-     * @return void
-     * @throws \Exception
-     */
-    private function execHook(): void
-    {
-        // Change payload.
-        $this->api->req->s['payload']['hook'] = 'Yes';
-    }
+	/**
+	 * Exec Hook related code
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
+	private function execHook(): void
+	{
+		// Change payload.
+		$this->api->req->s['payload']['hook'] = 'Yes';
+	}
 }

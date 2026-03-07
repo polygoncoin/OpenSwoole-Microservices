@@ -29,86 +29,86 @@ namespace Microservices\App\Servers\Database;
  */
 interface DatabaseInterface
 {
-    /**
-     * Database connection
-     *
-     * @return void
-     */
-    public function connect(): void;
+	/**
+	 * Database connection
+	 *
+	 * @return void
+	 */
+	public function connect(): void;
 
-    /**
-     * Use Database
-     *
-     * @return void
-     */
-    public function useDatabase(): void;
+	/**
+	 * Use Database
+	 *
+	 * @return void
+	 */
+	public function useDatabase(): void;
 
-    /**
-     * Begin transaction
-     *
-     * @return void
-     */
-    public function begin(): void;
+	/**
+	 * Begin transaction
+	 *
+	 * @return void
+	 */
+	public function begin(): void;
 
-    /**
-     * Commit transaction
-     *
-     * @return void
-     */
-    public function commit(): void;
+	/**
+	 * Commit transaction
+	 *
+	 * @return void
+	 */
+	public function commit(): void;
 
-    /**
-     * Rollback transaction
-     *
-     * @return void
-     */
-    public function rollBack(): void;
+	/**
+	 * Rollback transaction
+	 *
+	 * @return void
+	 */
+	public function rollBack(): void;
 
-    /**
-     * Affected Rows by PDO
-     *
-     * @return bool|int
-     */
-    public function affectedRows(): bool|int;
+	/**
+	 * Affected Rows by PDO
+	 *
+	 * @return bool|int
+	 */
+	public function affectedRows(): bool|int;
 
-    /**
-     * Last Insert Id by PDO
-     *
-     * @return bool|int
-     */
-    public function lastInsertId(): bool|int;
+	/**
+	 * Last Insert Id by PDO
+	 *
+	 * @return bool|int
+	 */
+	public function lastInsertId(): bool|int;
 
-    /**
-     * Execute Parameterized query
-     *
-     * @param string $sql     Parameterized query
-     * @param array  $params  Parameterized query params
-     * @param bool   $pushPop Push Pop result set stmt
-     *
-     * @return void
-     */
-    public function execDbQuery($sql, $params = [], $pushPop = false): void;
+	/**
+	 * Execute Parameterized query
+	 *
+	 * @param string $sql     Parameterized query
+	 * @param array  $params  Parameterized query params
+	 * @param bool   $pushPop Push Pop result set stmt
+	 *
+	 * @return void
+	 */
+	public function execDbQuery($sql, $params = [], $pushPop = false): void;
 
-    /**
-     * Fetch single row from statement
-     *
-     * @return mixed
-     */
-    public function fetch(): mixed;
+	/**
+	 * Fetch single row from statement
+	 *
+	 * @return mixed
+	 */
+	public function fetch(): mixed;
 
-    /**
-     * Fetch all rows from statement
-     *
-     * @return array|bool
-     */
-    public function fetchAll(): array|bool;
+	/**
+	 * Fetch all rows from statement
+	 *
+	 * @return array|bool
+	 */
+	public function fetchAll(): array|bool;
 
-    /**
-     * Close statement cursor
-     *
-     * @param bool $pushPop Push Pop result set stmt
-     *
-     * @return void
-     */
-    public function closeCursor($pushPop = false): void;
+	/**
+	 * Close statement cursor
+	 *
+	 * @param bool $pushPop Push Pop result set stmt
+	 *
+	 * @return void
+	 */
+	public function closeCursor($pushPop = false): void;
 }

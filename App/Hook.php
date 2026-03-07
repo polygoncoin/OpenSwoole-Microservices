@@ -32,52 +32,52 @@ use Microservices\App\HttpStatus;
  */
 class Hook
 {
-    /**
-     * Api common Object
-     *
-     * @var null|Common
-     */
-    private $api = null;
+	/**
+	 * Api common Object
+	 *
+	 * @var null|Common
+	 */
+	private $api = null;
 
-    /**
-     * Constructor
-     *
-     * @param Common $api
-     */
-    public function __construct(Common &$api)
-    {
-        $this->api = &$api;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param Common $api
+	 */
+	public function __construct(Common &$api)
+	{
+		$this->api = &$api;
+	}
 
-    /**
-     * Triggers Hook
-     *
-     * @param array $hookConfig Hook configuration
-     *
-     * @return bool
-     */
-    public function triggerHook($hookConfig): bool
-    {
-        if (is_array(value: $hookConfig)) {
-            for ($i = 0, $iCount = count(value: $hookConfig); $i < $iCount; $i++) {
-                $hook = $hookConfig[$i];
-                $hookFile = Constants::$PUBLIC_HTML
-                    . DIRECTORY_SEPARATOR . 'Hooks'
-                    . DIRECTORY_SEPARATOR . $hook . '.php';
-                if (file_exists(filename: $hookFile)) {
-                    $hookClass = 'Microservices\\Hooks\\' . $hook;
-                    $hookObj = new $hookClass($this->api);
-                    if ($hookObj->init()) {
-                        $hookObj->process();
-                    }
-                } else {
-                    throw new \Exception(
-                        message: "Hook '{$hook}' missing",
-                        code: HttpStatus::$InternalServerError
-                    );
-                }
-            }
-        }
-        return true;
-    }
+	/**
+	 * Triggers Hook
+	 *
+	 * @param array $hookConfig Hook configuration
+	 *
+	 * @return bool
+	 */
+	public function triggerHook($hookConfig): bool
+	{
+		if (is_array(value: $hookConfig)) {
+			for ($i = 0, $iCount = count(value: $hookConfig); $i < $iCount; $i++) {
+				$hook = $hookConfig[$i];
+				$hookFile = Constants::$PUBLIC_HTML
+						DIRECTORY_SEPARATOR . 'Hooks'
+						DIRECTORY_SEPARATOR . $hook . '.php';
+				if (file_exists(filename: $hookFile)) {
+					$hookClass = 'Microservices\\Hooks\\' . $hook;
+					$hookObj = new $hookClass($this->api);
+					if ($hookObj->init()) {
+						$hookObj->process();
+					}
+					else {
+					throw new \Exception(
+						message: "Hook '{$hook}' missing",
+						code: HttpStatus::$InternalServerError
+					);
+				}
+			}
+		}
+		return true;
+	}
 }
