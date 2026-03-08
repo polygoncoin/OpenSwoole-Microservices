@@ -65,7 +65,7 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 	{
 
 		$filepath = $this->sessionSavePath . '/'
-				$this->sessionFilePrefix . $sessionId;
+			. $this->sessionFilePrefix . $sessionId;
 
 		if (file_exists(filename: $filepath)) {
 			$fileatime = fileatime(filename: $filepath);
@@ -89,7 +89,7 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 	public function setSession($sessionId, $sessionData): bool|int
 	{
 		$filepath = $this->sessionSavePath . '/'
-				$this->sessionFilePrefix . $sessionId;
+			. $this->sessionFilePrefix . $sessionId;
 		if (!file_exists(filename: $filepath)) {
 			touch(filename: $filepath);
 		}
@@ -123,7 +123,7 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 	public function touchSession($sessionId, $sessionData): bool
 	{
 		$filepath = $this->sessionSavePath . '/'
-				$this->sessionFilePrefix . $sessionId;
+			. $this->sessionFilePrefix . $sessionId;
 		return touch(filename: $filepath);
 	}
 
@@ -158,7 +158,7 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 	public function deleteSession($sessionId): bool
 	{
 		$filepath = $this->sessionSavePath . '/'
-				$this->sessionFilePrefix . $sessionId;
+			. $this->sessionFilePrefix . $sessionId;
 		if (file_exists(filename: $filepath)) {
 			unlink(filename: $filepath);
 		}
