@@ -107,7 +107,7 @@ class Api
 					Env::$importSampleRequestRouteKeyword
 				]
 			)
-			{
+		) {
 			$this->api->req->loadPayload();
 		}
 
@@ -135,7 +135,7 @@ class Api
 				if (
 					is_array($return)
 					&& count($return) === 3
-					{
+				) {
 					return $return;
 				}
 			}
@@ -169,14 +169,14 @@ class Api
 		if (
 			Env::$enableRoutesRequest
 			&& Env::$routesRequestRoute === $this->api->req->rParser->routeElements[0]
-			{
+		) {
 			$supplementApiClass = __NAMESPACE__ . '\\Routes';
 			$supplementObj = new $supplementApiClass($this->api);
 			if ($supplementObj->init()) {
 				$supplementObj->process();
 				$supplementProcessed = true;
 			}
-			else {
+		} else {
 			$supplementApiClass = null;
 			switch (true) {
 				case (

@@ -60,7 +60,7 @@ class DataDecode
 			$this->dataDecoder = new JsonDecode(
 				jsonFileHandle: $this->dataFileHandle
 			);
-			else {
+		} else {
 			$this->dataDecoder = new XmlDecode(
 				jsonFileHandle: $this->dataFileHandle
 			);

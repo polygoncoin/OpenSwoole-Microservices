@@ -19,7 +19,7 @@ $defaultHeaders[] = $cacheControl;
 
 $response = [];
 
-$homeURL = 'http://api.client001.localhost/Microservices/public_html/index.php';
+$homeURL = 'http://127.0.0.1:9501';
 ```
 
 Add, Comment or Uncomment depending on the requirement.

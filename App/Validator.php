@@ -60,7 +60,7 @@ class Validator
 		$this->api = &$api;
 		if (DbFunctions::$masterDb[$this->api->req->cId]->database === Env::$gDbServerDatabase) {
 			$this->v = new GlobalValidator($this->api);
-			else {
+		} else {
 			$this->v = new ClientValidator($this->api);
 		}
 	}
@@ -77,11 +77,11 @@ class Validator
 		if (
 			isset(($this->api->req->s['necessary']))
 			&& count(value: $this->api->req->s['necessary']) > 0
-			{
+		) {
 			if (
 				([$isValidData, $errors] = $this->validateRequired())
 				&& !$isValidData
-				{
+			) {
 				return [$isValidData, $errors];
 			}
 		}

@@ -112,14 +112,14 @@ class XmlEncode implements DataEncodeInterface
 					$this->write(
 						data: "<{$key}>{$this->escape(data: $value)}</{$key}>"
 					);
-					else {
+				} else {
 					$this->addKeyData(key: $key, data: $value);
 				}
 			}
 			if (!$isObject) {
 				$this->write(data: "</{$this->currentObject->key}>");
 			}
-			else {
+		} else {
 			$this->write(data: $this->escape(data: $data));
 		}
 	}

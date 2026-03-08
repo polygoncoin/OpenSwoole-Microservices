@@ -363,9 +363,9 @@ class Env
 						needle: $dataRepresentation,
 						haystack: self::$iAllowedRepresentation
 					)
-					{
+				) {
 					return true;
-					else {
+				} else {
 					throw new \Exception(
 						message: "Invalid Data Representation '{$dataRepresentation}'",
 						code: HttpStatus::$InternalServerError
@@ -378,9 +378,9 @@ class Env
 						needle: $dataRepresentation,
 						haystack: self::$oAllowedRepresentation
 					)
-					{
+				) {
 					return true;
-					else {
+				} else {
 					throw new \Exception(
 						message: "Invalid Data Representation '{$dataRepresentation}'",
 						code: HttpStatus::$InternalServerError

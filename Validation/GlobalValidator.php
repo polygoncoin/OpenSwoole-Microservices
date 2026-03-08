@@ -69,7 +69,7 @@ class GlobalValidator implements ValidatorInterface
 			foreach ($v['fnArgs'] as $attr => [$mode, $key]) {
 				if ($mode === 'custom') {
 					$args[$attr] = $key;
-					else {
+				} else {
 					$args[$attr] = $this->api->req->s[$mode][$key];
 				}
 			}

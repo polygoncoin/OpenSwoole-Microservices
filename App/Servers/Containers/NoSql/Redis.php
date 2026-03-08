@@ -91,7 +91,7 @@ class Redis implements NoSqlInterface
 		$password,
 		$database,
 		$table
-		{
+	) {
 		$this->hostname = $hostname;
 		$this->port = $port;
 		$this->username = $username;
@@ -122,7 +122,7 @@ class Redis implements NoSqlInterface
 			if (
 				($this->username !== '')
 				&& ($this->password !== '')
-				{
+			) {
 				$connParams['auth'] = [
 					$this->username,
 					$this->password
@@ -140,7 +140,7 @@ class Redis implements NoSqlInterface
 					code: HttpStatus::$InternalServerError
 				);
 			}
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			throw new \Exception(
 				message: $e->getMessage(),
 				code: HttpStatus::$InternalServerError
@@ -191,7 +191,7 @@ class Redis implements NoSqlInterface
 
 		if ($expire === null) {
 			return $this->cache->set($key, $value);
-			else {
+		} else {
 			return $this->cache->set($key, $value, $expire);
 		}
 	}

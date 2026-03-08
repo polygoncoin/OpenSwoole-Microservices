@@ -110,7 +110,7 @@ class MySql implements SqlInterface
 		$username,
 		$password,
 		$database
-		{
+	) {
 		$this->hostname = $hostname;
 		$this->port = $port;
 		$this->username = $username;
@@ -143,7 +143,7 @@ class MySql implements SqlInterface
 			if ($this->database !== null) {
 				$this->useDatabase();
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 			}
@@ -163,7 +163,7 @@ class MySql implements SqlInterface
 			if ($this->database !== null) {
 				$this->pdo->exec(statement: "USE `{$this->database}`");
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 				$this->rollBack();
@@ -183,7 +183,7 @@ class MySql implements SqlInterface
 		$this->beganTransaction = true;
 		try {
 			$this->pdo->beginTransaction();
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 			}
@@ -202,7 +202,7 @@ class MySql implements SqlInterface
 				$this->beganTransaction = false;
 				$this->pdo->commit();
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 			}
@@ -221,7 +221,7 @@ class MySql implements SqlInterface
 				$this->beganTransaction = false;
 				$this->pdo->rollBack();
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 			}
@@ -239,7 +239,7 @@ class MySql implements SqlInterface
 			if ($this->stmt) {
 				return (int)$this->stmt->rowCount();
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
@@ -261,7 +261,7 @@ class MySql implements SqlInterface
 			if (($lastInsertId = $this->pdo->lastInsertId()) !== false) {
 				return $lastInsertId;
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
@@ -296,7 +296,7 @@ class MySql implements SqlInterface
 			if ($this->stmt) {
 				$this->stmt->execute(params: $params);
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
@@ -317,7 +317,7 @@ class MySql implements SqlInterface
 			if ($this->stmt) {
 				return $this->stmt->fetch(mode: \PDO::FETCH_ASSOC);
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 			}
@@ -336,7 +336,7 @@ class MySql implements SqlInterface
 			if ($this->stmt) {
 				return $this->stmt->fetchAll(mode: \PDO::FETCH_ASSOC);
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 			}
@@ -360,7 +360,7 @@ class MySql implements SqlInterface
 					$this->stmt = array_pop(array: $this->stmts);
 				}
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 			}

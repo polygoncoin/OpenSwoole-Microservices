@@ -123,8 +123,8 @@ class Functions
 					replace: '',
 					subject: $cidrString
 				)
-				as $cidr
-			{
+			) as $cidr
+		) {
 			if (strpos(haystack: $cidr, needle: '/')) {
 				[$cidrIp, $bits] = explode(
 					separator: '/',
@@ -153,7 +153,7 @@ class Functions
 					'start' => $startIpNumber,
 					'end' => $endIpNumber
 				];
-				else {
+			} else {
 				if ($ipNumber = ip2long(ip: $cidr)) {
 					$response[] = [
 						'start' => $ipNumber,
@@ -181,7 +181,7 @@ class Functions
 
 		if (!is_array($againstCacheKey)) {
 			$againstCacheKeys = [$againstCacheKey];
-			else {
+		} else {
 			$againstCacheKeys = $againstCacheKey;
 		}
 
@@ -250,10 +250,10 @@ class Functions
 			if (
 				$cidr['start'] === 0
 				&& $cidr['end'] === 0
-				{
+			) {
 				$isValidIp = true;
 				break;
-				elseif ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
+			} elseif ($cidr['start'] <= $ipNumber && $ipNumber <= $cidr['end']) {
 				$isValidIp = true;
 				break;
 			}
@@ -272,5 +272,29 @@ class Functions
 	public static function uniqueHttpRequestHash($hashArray): string
 	{
 		return md5(json_encode($hashArray));
+	}
+
+	/**
+	 * Get Request IP
+	 *
+	 * @return string
+	 */
+	public static function getHttpRequestIP() {
+		// Check for shared internet connections (e.g., Cloudflare, proxy)
+		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+			$ip = $_SERVER['HTTP_CLIENT_IP'];
+		}
+		// Check if the user is behind a proxy and the IP is forwarded
+		elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			// HTTP_X_FORWARDED_FOR can contain a comma-separated list of IPs
+			// The first one is typically the original client IP
+			$ipList = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+			$ip = trim($ipList[0]);
+		}
+		// Default method: get the remote address directly
+		else {
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
+		return $ip;
 	}
 }

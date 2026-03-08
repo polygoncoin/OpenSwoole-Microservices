@@ -24,11 +24,11 @@ return [
 		'{custom:string}' => [
 			'dataType' => DatabaseDataTypes::$Default,
 			'__FILE__' => Constants::$AUTH_QUERIES_DIR
-					DIRECTORY_SEPARATOR . 'ClientDB'
-					DIRECTORY_SEPARATOR . 'Groups'
-					DIRECTORY_SEPARATOR . 'UserGroup'
-					DIRECTORY_SEPARATOR . 'POST'
-					DIRECTORY_SEPARATOR . 'SupplementTest.php'
+				. DIRECTORY_SEPARATOR . 'ClientDB'
+				. DIRECTORY_SEPARATOR . 'Groups'
+				. DIRECTORY_SEPARATOR . 'UserGroup'
+				. DIRECTORY_SEPARATOR . 'POST'
+				. DIRECTORY_SEPARATOR . 'SupplementTest.php'
 		]
 	]
 ];

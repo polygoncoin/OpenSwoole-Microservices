@@ -83,7 +83,7 @@ class JsonDecode implements DataDecodeInterface
 		if (
 			isset($fileStats['size'])
 			&& $fileStats['size'] > $this->allowedPayloadLength
-			{
+		) {
 			throw new \Exception(
 				message: 'File size greater than allowed size',
 				code: HttpStatus::$BadRequest
@@ -131,7 +131,7 @@ class JsonDecode implements DataDecodeInterface
 					if (
 						is_numeric(value: $keys[$i])
 						&& !isset($jsonFileIndex[$keys[$i]])
-						{
+					) {
 						$jsonFileIndex[$keys[$i]] = [];
 						if (!isset($jsonFileIndex['_c_'])) {
 							$jsonFileIndex['_c_'] = 0;
@@ -163,7 +163,7 @@ class JsonDecode implements DataDecodeInterface
 			foreach (explode(separator: ':', string: $keys) as $key) {
 				if (isset($jsonFileIndex[$key])) {
 					$jsonFileIndex = &$jsonFileIndex[$key];
-					else {
+				} else {
 					$return = false;
 					break;
 				}
@@ -186,7 +186,7 @@ class JsonDecode implements DataDecodeInterface
 			foreach (explode(separator: ':', string: $keys) as $key) {
 				if (isset($jsonFileIndex[$key])) {
 					$jsonFileIndex = &$jsonFileIndex[$key];
-					else {
+				} else {
 					throw new \Exception(
 						message: "Key '{$key}' not found",
 						code: HttpStatus::$BadRequest
@@ -216,7 +216,7 @@ class JsonDecode implements DataDecodeInterface
 			foreach (explode(separator: ':', string: $keys) as $key) {
 				if (isset($jsonFileIndex[$key])) {
 					$jsonFileIndex = &$jsonFileIndex[$key];
-					else {
+				} else {
 					throw new \Exception(
 						message: "Key '{$key}' not found",
 						code: HttpStatus::$BadRequest
@@ -295,7 +295,7 @@ class JsonDecode implements DataDecodeInterface
 			foreach (explode(separator: ':', string: $keys) as $key) {
 				if (isset($jsonFileIndex[$key])) {
 					$jsonFileIndex = &$jsonFileIndex[$key];
-					else {
+				} else {
 					throw new \Exception(
 						message: "Key '{$key}' not found",
 						code: HttpStatus::$BadRequest
@@ -306,7 +306,7 @@ class JsonDecode implements DataDecodeInterface
 		if (isset($jsonFileIndex['sIndex']) && isset($jsonFileIndex['eIndex'])) {
 			$this->jsonDecodeEngine->sIndex = (int)$jsonFileIndex['sIndex'];
 			$this->jsonDecodeEngine->eIndex = (int)$jsonFileIndex['eIndex'];
-			else {
+		} else {
 			throw new \Exception(
 				message: "Invalid keys '{$keys}'",
 				code: HttpStatus::$BadRequest

@@ -84,10 +84,10 @@ trait AppTrait
 				foreach ($sqlConfig[$options] as $config) {
 					$fetchFrom = $config['fetchFrom'];
 					$fKey = $config['fetchFromValue'];
-					$dataType = isset($config['dataType']) ?
-						$config['dataType'] : DatabaseDataTypes::$Default;
-					$require = isset($config['necessary']) ?
-						$config['necessary'] : false;
+					$dataType = isset($config['dataType'])
+						? $config['dataType'] : DatabaseDataTypes::$Default;
+					$require = isset($config['necessary'])
+						? $config['necessary'] : false;
 
 					if ($fetchFrom === 'function') {
 						continue;
@@ -114,7 +114,7 @@ trait AppTrait
 						needle: $fetchFrom,
 						haystack: ['sqlResults', 'sqlParams', 'sqlPayload']
 					)
-					{
+				) {
 					throw new \Exception(
 						message: "First query can not have {$fetchFrom} config",
 						code: HttpStatus::$InternalServerError
@@ -125,7 +125,7 @@ trait AppTrait
 						needle: $fetchFrom,
 						haystack: ['sqlResults', 'sqlParams', 'sqlPayload']
 					)
-					{
+				) {
 					$foundHierarchy = true;
 					break;
 				}
@@ -142,11 +142,11 @@ trait AppTrait
 		if (
 			isset($sqlConfig['__SUB-QUERY__'])
 			|| isset($sqlConfig['__SUB-PAYLOAD__'])
-			{
+		) {
 			if (
 				isset($sqlConfig['__SUB-QUERY__'])
 				&& !$this->isObject($sqlConfig['__SUB-QUERY__'])
-				{
+			) {
 				throw new \Exception(
 					message: 'Sub-Query should be an associative array',
 					code: HttpStatus::$InternalServerError
@@ -155,7 +155,7 @@ trait AppTrait
 			if (
 				isset($sqlConfig['__SUB-PAYLOAD__'])
 				&& !$this->isObject($sqlConfig['__SUB-PAYLOAD__'])
-				{
+			) {
 				throw new \Exception(
 					message: 'Sub-Payload should be an associative array',
 					code: HttpStatus::$InternalServerError
@@ -172,10 +172,10 @@ trait AppTrait
 						);
 						if ($flag) {
 							$necessaryFields[$module] = $sub_necessaryFields;
-							else {
+						} else {
 							foreach (
 								$sub_necessaryFields as $fetchFrom => &$fields
-								{
+							) {
 								if (!isset($necessaryFields[$fetchFrom])) {
 									$necessaryFields[$fetchFrom] = [];
 								}
@@ -249,7 +249,7 @@ trait AppTrait
 		if (
 			isset($sqlDetails['__SET__'])
 			&& count(value: $sqlDetails['__SET__']) !== 0
-			{
+		) {
 			$payloadVariables = $sqlDetails['__VARIABLES__'] ?? [];
 			[$params, $errors, $missExecution] = $this->getSqlParams(
 				$sqlDetails['__SET__'],
@@ -282,7 +282,7 @@ trait AppTrait
 			&& !$missExecution
 			&& isset($sqlDetails['__WHERE__'])
 			&& count(value: $sqlDetails['__WHERE__']) !== 0
-			{
+		) {
 			$wErrors = [];
 			$payloadVariables = $sqlDetails['__VARIABLES__'] ?? [];
 			[$sqlWhereParams, $wErrors, $wMissExecution] = $this->getSqlParams(
@@ -318,7 +318,7 @@ trait AppTrait
 						);
 					}
 				}
-				else {
+			} else {
 				$errors = array_merge($errors, $wErrors);
 			}
 		}
@@ -376,7 +376,7 @@ trait AppTrait
 		if (
 			isset($sqlDetails['__SET__'])
 			&& count(value: $sqlDetails['__SET__']) !== 0
-			{
+		) {
 			$payloadVariables = $sqlDetails['__VARIABLES__'] ?? [];
 			[$params, $errors, $missExecution] = $this->getSqlParams(
 				$sqlDetails['__SET__'],
@@ -404,7 +404,7 @@ trait AppTrait
 			&& !$missExecution
 			&& isset($sqlDetails['__WHERE__'])
 			&& count(value: $sqlDetails['__WHERE__']) !== 0
-			{
+		) {
 			$wErrors = [];
 			$payloadVariables = $sqlDetails['__VARIABLES__'] ?? [];
 			[$sqlWhereParams, $wErrors, $wMissExecution] = $this->getSqlParams(
@@ -436,7 +436,7 @@ trait AppTrait
 						);
 					}
 				}
-				else {
+			} else {
 				$errors = array_merge($errors, $wErrors);
 			}
 		}
@@ -480,12 +480,12 @@ trait AppTrait
 				$value = $function($this->api->req->s);
 				$sqlParams[$var] = $value;
 				continue;
-				elseif (
+			} elseif (
 				in_array(
 					needle: $fetchFrom,
 					haystack: ['sqlParams', 'sqlPayload']
 				)
-				{
+			) {
 				if (!isset($this->api->req->s[$fetchFrom])) {
 					$errors[] = "Missing key '{$fKey}' in '{$fetchFrom}'";
 					continue;
@@ -501,7 +501,7 @@ trait AppTrait
 				}
 				$sqlParams[$var] = $value;
 				continue;
-				elseif ($fetchFrom === 'sqlResults') {
+			} elseif ($fetchFrom === 'sqlResults') {
 				if (!isset($this->api->req->s[$fetchFrom])) {
 					$missExecution = true;
 					continue;
@@ -517,35 +517,35 @@ trait AppTrait
 				}
 				$sqlParams[$var] = $value;
 				continue;
-				elseif ($fetchFrom === 'custom') {
+			} elseif ($fetchFrom === 'custom') {
 				$value = $fKey;
 				$sqlParams[$var] = $value;
 				continue;
-				elseif ($fetchFrom === 'variables') {
+			} elseif ($fetchFrom === 'variables') {
 				if (isset($payloadVariables[$fKey])) {
 					$sqlParams[$var] = $payloadVariables[$fKey];
-					else {
+				} else {
 					$errors[] = "Missing '{$fetchFrom}' for '{$fKey}'";
 				}
 				continue;
-				elseif (isset($this->api->req->s[$fetchFrom][$fKey])) {
+			} elseif (isset($this->api->req->s[$fetchFrom][$fKey])) {
 				if (isset($this->api->req->s['necessary'][$fetchFrom][$fKey])) {
 					if (
 						DatabaseDataTypes::validateDataType(
 							data: $this->api->req->s[$fetchFrom][$fKey],
 							dataType: $this->api->req->s['necessary'][$fetchFrom][$fKey]
 						)
-						{
+					) {
 						$sqlParams[$var] = $this->api->req->s[$fetchFrom][$fKey];
 					}
-					else {
+				} else {
 					$sqlParams[$var] = $this->api->req->s[$fetchFrom][$fKey];
 				}
 				continue;
-				elseif ($this->api->req->s['necessary'][$fetchFrom][$fKey]['necessary']) {
+			} elseif ($this->api->req->s['necessary'][$fetchFrom][$fKey]['necessary']) {
 				$errors[] = "Missing necessary field '{$fetchFrom}' for '{$fKey}'";
 				continue;
-				else {
+			} else {
 				$errors[] = "Invalid configuration of '{$fetchFrom}' for '{$fKey}'";
 				continue;
 			}
@@ -592,13 +592,13 @@ trait AppTrait
 		if (
 			isset($sqlConfig['useHierarchy'])
 			&& $sqlConfig['useHierarchy'] === true
-			{
+		) {
 			return true;
 		}
 		if (
 			isset($sqlConfig['useResultSet'])
 			&& $sqlConfig['useResultSet'] === true
-			{
+		) {
 			return true;
 		}
 		return false;
@@ -637,9 +637,9 @@ trait AppTrait
 				$fetchFrom = $config['fetchFrom'];
 				$fKey = $config['fetchFromValue'];
 				$dataType = isset($config['dataType'])
-						$config['dataType'] : DatabaseDataTypes::$Default;
+					? $config['dataType'] : DatabaseDataTypes::$Default;
 				$require = isset($config['necessary'])
-						$config['necessary'] : false;
+					? $config['necessary'] : false;
 
 				if ($fetchFrom !== 'payload') {
 					continue;
@@ -647,7 +647,7 @@ trait AppTrait
 				if (
 					isset($result[$fKey])
 					&& $result[$fKey]['dataMode'] === 'Required'
-					{
+				) {
 					continue;
 				}
 				$dataType['dataMode'] = $require ? 'Required' : 'Optional';
@@ -660,10 +660,10 @@ trait AppTrait
 				foreach ($sqlConfig[$options] as $config) {
 					$fetchFrom = $config['fetchFrom'];
 					$fKey = $config['fetchFromValue'];
-					$dataType = isset($config['dataType']) ?
-						$config['dataType'] : DatabaseDataTypes::$Default;
-					$require = isset($config['necessary']) ?
-						$config['necessary'] : false;
+					$dataType = isset($config['dataType'])
+						? $config['dataType'] : DatabaseDataTypes::$Default;
+					$require = isset($config['necessary'])
+						? $config['necessary'] : false;
 
 					if ($fetchFrom !== 'payload') {
 						continue;
@@ -671,7 +671,7 @@ trait AppTrait
 					if (
 						isset($result[$fKey])
 						&& $result[$fKey]['dataMode'] === 'Required'
-						{
+					) {
 						continue;
 					}
 					$dataType['dataMode'] = $require ? 'Required' : 'Optional';
@@ -691,7 +691,7 @@ trait AppTrait
 						needle: $fetchFrom,
 						haystack: ['sqlResults', 'sqlParams', 'sqlPayload']
 					)
-					{
+				) {
 					$foundHierarchy = true;
 					break;
 				}
@@ -718,7 +718,7 @@ trait AppTrait
 						if (!empty($sub_necessaryFields)) {
 							$result[$module] = $sub_necessaryFields;
 						}
-						else {
+					} else {
 						foreach ($sub_necessaryFields as $fKey => $field) {
 							if (!isset($result[$fKey])) {
 								$result[$fKey] = $field;
@@ -773,7 +773,7 @@ trait AppTrait
 			Env::$enableRateLimitAtRouteLevel
 			|| !isset($sqlConfig['rateLimitMaxRequest'])
 			|| !isset($sqlConfig['rateLimitMaxRequestWindow'])
-			{
+		) {
 			return;
 		}
 
@@ -784,10 +784,10 @@ trait AppTrait
 			'Route' => $this->api->req->ROUTE,
 		];
 		if (isset($this->api->req->s['uDetails'])) {
-			$payloadSignature['gID'] = ($this->api->req->s['gDetails']['id'] !== null ?
-					$this->api->req->s['gDetails']['id'] : 0);
-			$payloadSignature['uID'] = ($this->api->req->s['uDetails']['id'] !== null ?
-					$this->api->req->s['uDetails']['id'] : 0);
+			$payloadSignature['gID'] = ($this->api->req->s['gDetails']['id'] !== null
+				? $this->api->req->s['gDetails']['id'] : 0);
+			$payloadSignature['uID'] = ($this->api->req->s['uDetails']['id'] !== null
+				? $this->api->req->s['uDetails']['id'] : 0);
 		}
 		$hash = json_encode(value: $payloadSignature);
 		$hashKey = md5(string: $hash);
@@ -818,7 +818,7 @@ trait AppTrait
 			isset($sqlConfig['idempotentWindow'])
 			&& is_numeric(value: $sqlConfig['idempotentWindow'])
 			&& $sqlConfig['idempotentWindow'] > 0
-			{
+		) {
 			$idempotentWindow = (int)$sqlConfig['idempotentWindow'];
 			if ($idempotentWindow) {
 				$payloadSignature = [
@@ -833,10 +833,10 @@ trait AppTrait
 					)
 				];
 				if (isset($this->api->req->s['uDetails'])) {
-					$payloadSignature['gID'] = ($this->api->req->s['gDetails']['id'] !== null ?
-							$this->api->req->s['gDetails']['id'] : 0);
-					$payloadSignature['uID'] = ($this->api->req->s['uDetails']['id'] !== null ?
-							$this->api->req->s['uDetails']['id'] : 0);
+					$payloadSignature['gID'] = ($this->api->req->s['gDetails']['id'] !== null
+						? $this->api->req->s['gDetails']['id'] : 0);
+					$payloadSignature['uID'] = ($this->api->req->s['uDetails']['id'] !== null
+						? $this->api->req->s['uDetails']['id'] : 0);
 				}
 
 				$hash = json_encode(value: $payloadSignature);
@@ -866,7 +866,7 @@ trait AppTrait
 		if (
 			isset($sqlConfig['responseLag'])
 			&& isset($sqlConfig['responseLag'])
-			{
+		) {
 			$payloadSignature = [
 				'IP' => $this->api->req->IP,
 				'cID' => $this->api->req->s['cDetails']['id'],
@@ -874,10 +874,10 @@ trait AppTrait
 				'Route' => $this->api->req->ROUTE,
 			];
 			if (isset($this->api->req->s['uDetails'])) {
-				$payloadSignature['gID'] = ($this->api->req->s['gDetails']['id'] !== null ?
-						$this->api->req->s['gDetails']['id'] : 0);
-				$payloadSignature['uID'] = ($this->api->req->s['uDetails']['id'] !== null ?
-						$this->api->req->s['uDetails']['id'] : 0);
+				$payloadSignature['gID'] = ($this->api->req->s['gDetails']['id'] !== null
+					? $this->api->req->s['gDetails']['id'] : 0);
+				$payloadSignature['uID'] = ($this->api->req->s['uDetails']['id'] !== null
+					? $this->api->req->s['uDetails']['id'] : 0);
 			}
 
 			$hash = json_encode(value: $payloadSignature);
@@ -885,7 +885,7 @@ trait AppTrait
 
 			if (DbFunctions::$gCacheServer->cacheExists(key: $hashKey)) {
 				$noOfRequest = DbFunctions::$gCacheServer->getCache(key: $hashKey);
-				else {
+			} else {
 				$noOfRequest = 0;
 			}
 
@@ -943,14 +943,14 @@ trait AppTrait
 			if ($result['allowed']) {
 				// Process the request
 				return true;
-				else {
+			} else {
 				// Return 429 Too Many Request
 				throw new \Exception(
 					message: $result['resetAt'] - Env::$timestamp,
 					code: HttpStatus::$TooManyRequest
 				);
 			}
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			// Handle connection errors
 			throw new \Exception(
 				message: $e->getMessage(),
@@ -982,7 +982,7 @@ trait AppTrait
 			!$isAssoc
 			&& isset($triggerConfig[0])
 			&& count(value: $triggerConfig) === 1
-			{
+		) {
 			$triggerConfig = $triggerConfig[0];
 			$isAssoc = true;
 		}
@@ -992,12 +992,12 @@ trait AppTrait
 			$http = $this->getTriggerHttp($triggerConfig);
 			[$responseheaders, $responseContent, $responseCode] = Start::http(http: $http);
 			$triggerOutput = &$responseContent;
-			else {
+		} else {
 			for (
 				$iTrigger = 0, $iTriggerCount = count($triggerConfig);
 				$iTrigger < $iTriggerCount;
 				$iTrigger++
-				{
+			) {
 				$http = $this->getTriggerHttp($triggerConfig[$iTrigger]);
 				[$responseheaders, $responseContent, $responseCode] = Start::http(http: $http);
 				$triggerOutput[] = &$responseContent;
@@ -1085,16 +1085,16 @@ trait AppTrait
 				$value = $function($this->api->req->s);
 				if ($var === null) {
 					$sqlParams[] = $value;
-					else {
+				} else {
 					$sqlParams[$var] = $value;
 				}
 				continue;
-				elseif (
+			} elseif (
 				in_array(
 					needle: $fetchFrom,
 					haystack: ['sqlResults', 'sqlParams', 'sqlPayload']
 				)
-				{
+			) {
 				$fetchFromKeys = explode(separator: ':', string: $fKey);
 				$value = $this->api->req->s[$fetchFrom];
 				foreach ($fetchFromKeys as $key) {
@@ -1108,27 +1108,27 @@ trait AppTrait
 				}
 				if ($var === null) {
 					$sqlParams[] = $value;
-					else {
+				} else {
 					$sqlParams[$var] = $value;
 				}
 				continue;
-				elseif ($fetchFrom === 'custom') {
+			} elseif ($fetchFrom === 'custom') {
 				$value = $fKey;
 				if ($var === null) {
 					$sqlParams[] = $value;
-					else {
+				} else {
 					$sqlParams[$var] = $value;
 				}
 				continue;
-				elseif (isset($this->api->req->s[$fetchFrom][$fKey])) {
+			} elseif (isset($this->api->req->s[$fetchFrom][$fKey])) {
 				$value = $this->api->req->s[$fetchFrom][$fKey];
 				if ($var === null) {
 					$sqlParams[] = $value;
-					else {
+				} else {
 					$sqlParams[$var] = $value;
 				}
 				continue;
-				else {
+			} else {
 				$errors[] = "Invalid configuration of '{$fetchFrom}' for '{$fKey}'";
 				continue;
 			}
@@ -1164,7 +1164,7 @@ trait AppTrait
 				for ($i = 0, $iCount = count($p); $i < $iCount; $i++) {
 					$header[] = $p[$i];
 				}
-				else {
+			} else {
 				$header[] = $p;
 			}
 		}
@@ -1196,7 +1196,7 @@ trait AppTrait
 		foreach ($configParams as $key => $value) {
 			if (isset($value['dataType'])) {
 				$fields[$header][] = "{$header}:{$key}";
-				else {
+			} else {
 				$returnHeader = $this->genCsvHelper("{$header}:{$key}", $value);
 				foreach ($returnHeader as $k => $v) {
 					$fields[$k] = $v;

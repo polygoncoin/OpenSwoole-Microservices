@@ -31,8 +31,7 @@ $res = Web::trigger(
 if (
 	!isset($res['response']['responseHeaders']['Set-Cookie'])
 	&& isset($res['response']['responseBody']['Results']['Token'])
-	&& $res
-	{
+) {
 	$token = $res['response']['responseBody']['Results']['Token'];
 }
 

@@ -120,7 +120,7 @@ class JsonEncode implements DataEncodeInterface
 		}
 		if (is_array(value: $data)) {
 			$this->write(data: json_encode(value: $data));
-			else {
+		} else {
 			$this->write(data: $this->escape(data: $data));
 		}
 		if ($this->currentObject) {

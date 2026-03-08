@@ -64,7 +64,7 @@ class ThirdParty
 	public function init(): bool
 	{
 		$class = 'Microservices\\Supplement\\ThirdParty\\'
-				ucfirst(string: $this->api->req->rParser->routeElements[1]);
+			. ucfirst(string: $this->api->req->rParser->routeElements[1]);
 
 		$this->thirdPartyApi = new $class($this->api);
 

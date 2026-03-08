@@ -64,7 +64,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 			if ($data = $this->memcacheD->get($sessionId)) {
 				return $this->decryptData(cipherText: $data);
 			}
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 		return false;
@@ -87,10 +87,10 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 					$this->encryptData(plainText: $sessionData),
 					$this->sessionMaxLifetime
 				)
-				{
+			) {
 				return true;
 			}
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 		return false;
@@ -126,7 +126,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 			if ($this->memcacheD->touch($sessionId, $this->sessionMaxLifetime)) {
 				return true;
 			}
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 		return false;
@@ -157,7 +157,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 			if ($this->memcacheD->delete($sessionId)) {
 				return true;
 			}
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 		return false;
@@ -193,7 +193,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 				$this->MEMCACHED_HOSTNAME,
 				$this->MEMCACHED_PORT
 			);
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 	}

@@ -64,7 +64,7 @@ class Custom
 	public function init(): bool
 	{
 		$class = 'Microservices\\Supplement\\Custom\\'
-				ucfirst(string: $this->api->req->rParser->routeElements[1]);
+			. ucfirst(string: $this->api->req->rParser->routeElements[1]);
 
 		$this->customApi = new $class($this->api);
 

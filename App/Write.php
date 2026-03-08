@@ -121,7 +121,7 @@ class Write
 			if (
 				$this->api->req->rParser->routeEndingWithReservedKeywordFlag
 				&& ($this->api->req->rParser->routeEndingReservedKeyword === Env::$configRequestRouteKeyword)
-				{
+			) {
 				$this->processWriteConfig(
 					wSqlConfig: $wSqlConfig,
 					useHierarchy: $useHierarchy
@@ -131,7 +131,7 @@ class Write
 			if (
 				$this->api->req->rParser->routeEndingWithReservedKeywordFlag
 				&& ($this->api->req->rParser->routeEndingReservedKeyword === Env::$importSampleRequestRouteKeyword)
-				{
+			) {
 				$filename = date('Ymd-His') . '-import-sample.csv';
 				$headers = [];
 				// Export headers
@@ -152,17 +152,17 @@ class Write
 		if (
 			$this->api->res->oRepresentation === 'XSLT'
 			&& isset($wSqlConfig['xsltFile'])
-			{
+		) {
 			$this->dataEncode->xsltFile = $wSqlConfig['xsltFile'];
-			elseif (
+		} elseif (
 			$this->api->res->oRepresentation === 'HTML'
 			&& isset($wSqlConfig['htmlFile'])
-			{
+		) {
 			$this->dataEncode->htmlFile = $wSqlConfig['htmlFile'];
-			elseif (
+		} elseif (
 			$this->api->res->oRepresentation === 'PHP'
 			&& isset($wSqlConfig['phpFile'])
-			{
+		) {
 			$this->dataEncode->phpFile = $wSqlConfig['phpFile'];
 		}
 
@@ -170,8 +170,8 @@ class Write
 		$this->lagResponse(sqlConfig: $wSqlConfig);
 
 		// Operate as Transaction (BEGIN COMMIT else ROLLBACK on error)
-		$this->operateAsTransaction = isset($wSqlConfig['isTransaction']) ?
-			$wSqlConfig['isTransaction'] : false;
+		$this->operateAsTransaction = isset($wSqlConfig['isTransaction'])
+			? $wSqlConfig['isTransaction'] : false;
 
 		// Set Server mode to execute query on - Read / Write Server
 		DbFunctions::setDbConnection(req: $this->api->req, fetchFrom: 'Master');
@@ -186,7 +186,7 @@ class Write
 				$i = 0, $iCount = count(value: $wSqlConfig['affectedCacheKeys']);
 				$i < $iCount;
 				$i++
-				{
+			) {
 				DbFunctions::delQueryCache(
 					cacheKey: $wSqlConfig['affectedCacheKeys'][$i]
 				);
@@ -250,10 +250,10 @@ class Write
 				&& isset($wSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
 				&& ($objCount = $this->api->req->dataDecode->count())
 				&& ($objCount > $wSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
-				{
+			) {
 				throw new \Exception(
 					message: 'Maximum supported payload count is '
-							$wSqlConfig['__MAX-PAYLOAD-OBJECTS__'],
+						. $wSqlConfig['__MAX-PAYLOAD-OBJECTS__'],
 					code: HttpStatus::$BadRequest
 				);
 			}
@@ -268,7 +268,7 @@ class Write
 
 		if ($this->api->req->s['payloadType'] === 'Object') {
 			$this->dataEncode->startObject(key: 'Results');
-			else {
+		} else {
 			$this->dataEncode->startObject(key: 'Results');
 			if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
 				$this->dataEncode->startArray(key: 'Rows');
@@ -276,8 +276,8 @@ class Write
 		}
 
 		// Perform action
-		$iCount = $this->api->req->s['payloadType'] === 'Object' ?
-					$this->api->req->dataDecode->count();
+		$iCount = $this->api->req->s['payloadType'] === 'Object'
+			? 1 : $this->api->req->dataDecode->count();
 
 		for ($i = 0; $i < $iCount; $i++) {
 			$configKeys = [];
@@ -285,10 +285,10 @@ class Write
 			if ($i === 0) {
 				if ($this->api->req->s['payloadType'] === 'Object') {
 					$payloadIndexes[] = '';
-					else {
+				} else {
 					$payloadIndexes[] = "{$i}";
 				}
-				else {
+			} else {
 				$payloadIndexes[] = "{$i}";
 			}
 
@@ -313,12 +313,11 @@ class Write
 					necessary: $this->api->req->s['necessaryArr']
 				);
 
-				if ($this->api->res->httpStatus === HttpStatus::$Ok)
-				{
+				if ($this->api->res->httpStatus === HttpStatus::$Ok) {
 					if (
 						$this->operateAsTransaction
 						&& ($this->db->beganTransaction === true)
-						{
+					) {
 						$this->db->commit();
 					}
 
@@ -341,7 +340,7 @@ class Write
 							expire: $idempotentWindow
 						);
 					}
-					else { // Failure
+				} else { // Failure
 					$arr = [];
 					$arr['Status'] = $this->api->res->httpStatus;
 					if (Env::$enablePayloadInResponse) {
@@ -354,7 +353,7 @@ class Write
 					}
 					$arr['Error'] = $response;
 				}
-				else {
+			} else {
 				$arr = json_decode(json: $hashJson, associative: true);
 			}
 
@@ -362,14 +361,14 @@ class Write
 				foreach ($arr as $k => $v) {
 					$this->dataEncode->addKeyData(key: $k, data: $v);
 				}
-				else {
+			} else {
 				if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
 					$this->dataEncode->startObject(key: 'Row');
 					foreach ($arr as $k => $v) {
 						$this->dataEncode->addKeyData(key: $k, data: $v);
 					}
 					$this->dataEncode->endObject();
-					else {
+				} else {
 					$this->dataEncode->addKeyData(key: $i, data: $arr);
 				}
 			}
@@ -377,7 +376,7 @@ class Write
 
 		if ($this->api->req->s['payloadType'] === 'Object') {
 			$this->dataEncode->endObject();
-			else {
+		} else {
 			if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
 				$this->dataEncode->endArray();
 			}
@@ -406,21 +405,21 @@ class Write
 		&$response,
 		&$necessary
 	): void {
-		$payloadIndex = is_array(value: $payloadIndexes) ?
-			trim(
+		$payloadIndex = is_array(value: $payloadIndexes)
+			? trim(
 				string: implode(
 					separator: ':',
 					array: $payloadIndexes
 				),
 				characters: ':'
-					'';
+			) : '';
 
 		$isObject = $this->api->req->dataDecode->dataType(
 			keys: $payloadIndex
-			=== 'Object';
+		) === 'Object';
 
-		$iCount = $isObject ?
-					$this->api->req->dataDecode->count(keys: $payloadIndex);
+		$iCount = $isObject
+			? 1 : $this->api->req->dataDecode->count(keys: $payloadIndex);
 
 		$mode = getenv(name: $this->api->req->s['cDetails']['master_query_placeholder']);
 		$fn = "getSqlAndParams{$mode}Mode";
@@ -428,7 +427,7 @@ class Write
 		for ($i = 0; $i < $iCount; $i++) {
 			if ($isObject) {
 				$_response = &$response;
-				else {
+			} else {
 				$response[$i] = [];
 				$_response = &$response[$i];
 			}
@@ -446,8 +445,8 @@ class Write
 			if (!$isObject && !$useHierarchy) {
 				array_push($payloadIndexes, $i);
 			}
-			$payloadIndex = is_array(value: $payloadIndexes) ?
-				implode(separator: ':', array: $payloadIndexes) : '';
+			$payloadIndex = is_array(value: $payloadIndexes)
+				? implode(separator: ':', array: $payloadIndexes) : '';
 
 			if (!$this->api->req->dataDecode->isset(keys: $payloadIndex)) {
 				throw new \Exception(
@@ -462,14 +461,14 @@ class Write
 
 			if (count(value: $necessary)) {
 				$this->api->req->s['necessary'] = $necessary;
-				else {
+			} else {
 				$this->api->req->s['necessary'] = [];
 			}
 
 			if (
 				Env::$enableGlobalCounter
 				&& isset($wSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'])
-				{
+			) {
 				$wSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'] = Counter::getGlobalCounter();
 			}
 
@@ -477,7 +476,7 @@ class Write
 			if (
 				isset($wSqlConfig['__VALIDATE__'])
 				&& !$this->isValidPayload(wSqlConfig: $wSqlConfig, response: $_response)
-				{
+			) {
 				continue;
 			}
 
@@ -517,14 +516,14 @@ class Write
 				if (
 					Env::$enableGlobalCounter
 					&& isset($wSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'])
-					{
+				) {
 					$id = $wSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'];
-					else {
+				} else {
 					$id = $this->db->lastInsertId();
 				}
 				$_response[$wSqlConfig['__INSERT-IDs__']] = $id;
 				$this->api->req->s['__INSERT-IDs__'][$wSqlConfig['__INSERT-IDs__']] = $id;
-				else {
+			} else {
 				$affectedRows = $this->db->affectedRows();
 				$_response['affectedRows'] = $affectedRows;
 			}
@@ -603,7 +602,7 @@ class Write
 		if (
 			isset($wSqlConfig['__SUB-QUERY__'])
 			&& $this->isObject(arr: $wSqlConfig['__SUB-QUERY__'])
-			{
+		) {
 			foreach ($wSqlConfig['__SUB-QUERY__'] as $module => &$wSqlConfig) {
 				$dataExists = false;
 				$modulePayloadIndex = $payloadIndexes;
@@ -611,20 +610,20 @@ class Write
 				array_push($modulePayloadIndex, $module);
 				array_push($moduleConfigKeys, $module);
 
-				$modulePayloadIndexKey = is_array(value: $modulePayloadIndex) ?
-					implode(separator: ':', array: $modulePayloadIndex) : '';
+				$modulePayloadIndexKey = is_array(value: $modulePayloadIndex)
+					? implode(separator: ':', array: $modulePayloadIndex) : '';
 				$isObject = $this->api->req->dataDecode->dataType(
 					keys: $modulePayloadIndexKey
-					=== 'Object';
+				) === 'Object';
 
-				$iCount = $isObject ?
-							$this->api->req->dataDecode->count(keys: $modulePayloadIndexKey);
+				$iCount = $isObject
+					? 1 : $this->api->req->dataDecode->count(keys: $modulePayloadIndexKey);
 
 				for ($i = 0; $i < $iCount; $i++) {
 					$modulePayloadIndexItt = $modulePayloadIndex;
 					if ($isObject) {
 						$modulePayloadIndexIttKey = $modulePayloadIndexKey;
-						else {
+					} else {
 						$modulePayloadIndexIttKey = "{$modulePayloadIndexKey}:{$i}";
 						array_push($modulePayloadIndexItt, $i);
 					}

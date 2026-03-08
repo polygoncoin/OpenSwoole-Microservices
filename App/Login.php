@@ -134,7 +134,7 @@ class Login
 			);
 			if ($result['allowed']) {
 				// Process the request
-				else {
+			} else {
 				// Return 429 Too Many Request
 				throw new \Exception(
 					message: $result['resetAt'] - Env::$timestamp,
@@ -181,7 +181,7 @@ class Login
 					message: 'Missing necessary parameters',
 					code: HttpStatus::$NotFound
 				);
-				else {
+			} else {
 				$this->$value = $this->payload[$value];
 			}
 		}
@@ -216,7 +216,7 @@ class Login
 		if (
 			empty($this->uDetails['id'])
 			|| empty($this->uDetails['id'])
-			{
+		) {
 			throw new \Exception(
 				message: 'Invalid credentials',
 				code: HttpStatus::$Unauthorized
@@ -272,7 +272,7 @@ class Login
 		);
 		if ($result['allowed']) {
 			// Process the request
-			else {
+		} else {
 			// Return 429 Too Many Request
 			throw new \Exception(
 				message: $result['resetAt'] - Env::$timestamp,
@@ -285,7 +285,7 @@ class Login
 				password: $this->password,
 				hash: $this->uDetails['password_hash']
 			)
-			{
+		) {
 			throw new \Exception(
 				message: 'Invalid credentials',
 				code: HttpStatus::$Unauthorized
@@ -308,7 +308,7 @@ class Login
 				!$this->cacheExists(
 					key: CacheKey::token(token: $token)
 				)
-				{
+			) {
 				$this->setCache(
 					key: CacheKey::token(token: $token),
 					value: '{}',
@@ -375,7 +375,7 @@ class Login
 								$tData['uniqueHttpRequestHash'] === $uniqueHttpRequestHash
 								&& $userConcurrencyKeyExist
 								&& $userConcurrencyKeyData === $token
-								{
+							) {
 								$timeLeft = Env::$timestamp - $tData['timestamp'];
 								if ((Constants::$TOKEN_EXPIRY_TIME - $timeLeft) > 0) {
 									$tokenFoundData = $tData;
@@ -383,11 +383,11 @@ class Login
 									continue;
 								}
 							}
-							else {
+						} else {
 							if (
 								$tData['uniqueHttpRequestHash'] === $uniqueHttpRequestHash
 								&& $userConcurrencyKeyData === $token
-								{
+							) {
 								$timeLeft = Env::$timestamp - $tData['timestamp'];
 								if ((Constants::$TOKEN_EXPIRY_TIME - $timeLeft) > 0) {
 									$tokenFoundData = $tData;
@@ -405,21 +405,21 @@ class Login
 							);
 							unset($userTokenKeyData[$token]);
 						}
-						else {
+					} else {
 						unset($userTokenKeyData[$token]);
 					}
 				}
 				if (
 					Env::$enableConcurrentLogins
 					&& count($userTokenKeyData) >= Env::$maxConcurrentLogins
-					{
+				) {
 					throw new \Exception(
 						message: 'Account already in use. '
-								'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
+							. 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
 						code: HttpStatus::$Conflict
 					);
 				}
-				else {
+			} else {
 				$this->deleteCache(key: $userTokenKey);
 			}
 		}
@@ -442,7 +442,7 @@ class Login
 			);
 			if (Env::$enableConcurrentLogins) {
 				$userTokenKeyData[$newTokenData['token']] = $newTokenData;
-				else {
+			} else {
 				$userTokenKeyData = [
 					$newTokenData['token'] => $newTokenData
 				];
@@ -566,7 +566,7 @@ class Login
 							&& $userConcurrencyKeyExist
 							&& $userConcurrencyKeyData === $sessionId
 							&& $sessionId === session_id()
-							{
+						) {
 							$timeLeft = Env::$timestamp - $tData['sessionExpiryTimestamp'];
 							if ((Constants::$TOKEN_EXPIRY_TIME - $timeLeft) > 0) {
 								$sessionFoundData = $tData;
@@ -574,11 +574,11 @@ class Login
 								continue;
 							}
 						}
-						else {
+					} else {
 						if (
 							$tData['uniqueHttpRequestHash'] === $uniqueHttpRequestHash
 							&& $sessionId === session_id()
-							{
+						) {
 							$timeLeft = Env::$timestamp - $tData['sessionExpiryTimestamp'];
 							if ((Constants::$TOKEN_EXPIRY_TIME - $timeLeft) > 0) {
 								$sessionFoundData = $tData;
@@ -599,12 +599,12 @@ class Login
 					if (count($userSessionKeyData) >= Env::$maxConcurrentLogins) {
 						throw new \Exception(
 							message: 'Account already in use. '
-									'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
+								. 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
 							code: HttpStatus::$Conflict
 						);
 					}
 				}
-				else {
+			} else {
 				$this->deleteCache(key: $userSessionKey);
 			}
 		}
@@ -627,7 +627,7 @@ class Login
 
 			if (Env::$enableConcurrentLogins) {
 				$userSessionKeyData[$newSessionData['sessionId']] = $newSessionData;
-				else {
+			} else {
 				$userSessionKeyData = [
 					$newSessionData['sessionId'] => $newSessionData
 				];

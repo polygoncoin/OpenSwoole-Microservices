@@ -91,12 +91,12 @@ class PhpEncode implements DataEncodeInterface
 						$this->currentObject->returnArray[$k] = $this->escape(data: $v);
 					}
 				}
-				else {
+			} else {
 				if (is_array($data)) {
 					foreach ($data as $v) {
 						$this->currentObject->returnArray[] = $this->escape(data: $v);
 					}
-					else {
+				} else {
 					$this->currentObject->returnArray[] = $this->escape(data: $data);
 				}
 			}
@@ -129,7 +129,7 @@ class PhpEncode implements DataEncodeInterface
 				foreach ($data as $k => $v) {
 					$data[$k] = $this->escape($v);
 				}
-				else {
+			} else {
 				$data = nl2br(htmlspecialchars($data));
 			}
 		}
@@ -235,10 +235,10 @@ class PhpEncode implements DataEncodeInterface
 			$this->currentObject = array_pop(array: $this->objects);
 			if ($key !== '') {
 				$this->currentObject->returnArray[$key] = &$returnArray;
-				else {
+			} else {
 				$this->currentObject->returnArray[] = &$returnArray;
 			}
-			else {
+		} else {
 			$this->finalArray = &$returnArray;
 		}
 	}
@@ -282,10 +282,10 @@ class PhpEncode implements DataEncodeInterface
 			$this->currentObject = array_pop(array: $this->objects);
 			if ($key !== '') {
 				$this->currentObject->returnArray[$key] = &$returnArray;
-				else {
+			} else {
 				$this->currentObject->returnArray[] = &$returnArray;
 			}
-			else {
+		} else {
 			$this->finalArray = &$returnArray;
 		}
 	}

@@ -121,7 +121,7 @@ class Web
 					// // Create a CURLFile object
 					// if (function_exists('curl_file_create')) {
 					//     $cFile = curl_file_create($file, mime_content_type($file), basename($file));
-					// } else {
+					//} else {
 					//     // Fallback for very old PHP versions (deprecated)
 					//     $cFile = '@' . realpath($file);
 					// }
@@ -202,19 +202,19 @@ class Web
 			$return['response']['errorCode'] = $errorCode;
 			$return['response']['errorMessage'] = $errorMessage;
 			$return['response']['errorConstants'] = $errorConstants;
-			else {
+		} else {
 			if (
 				strpos(
 					haystack: $responseContentType,
 					needle: 'application/json;'
-					!== false
+				) !== false
 				&& (
 					(strpos(haystack: $responseBody, needle: '[') === 0)
 					|| (strpos(haystack: $responseBody, needle: '{') === 0)
 				)
-				{
+			) {
 				$response = json_decode(json: $responseBody, associative: true);
-				else {
+			} else {
 				$response = $responseBody;
 			}
 
@@ -244,12 +244,12 @@ class Web
 			if (isset($h[1])) {
 				if (!isset($headers[$h[0]])) {
 					$headers[$h[0]] = trim(string: $h[1]);
-					elseif (is_array(value: $headers[$h[0]])) {
+				} elseif (is_array(value: $headers[$h[0]])) {
 					$headers[$h[0]] = array_merge(
 						$headers[$h[0]],
 						[trim(string: $h[1])]
 					);
-					else {
+				} else {
 					$headers[$h[0]] = array_merge(
 						[$headers[$h[0]]],
 						[trim(string: $h[1])]
@@ -257,10 +257,10 @@ class Web
 				}
 
 				$key = $h[0];
-				else {
+			} else {
 				if (substr(string: $h[0], offset: 0, length: 1) == "\t") {
 					$headers[$key] .= "\r\n\t" . trim(string: $h[0]);
-					elseif (!$key) {
+				} elseif (!$key) {
 					$headers[0] = trim(string: $h[0]);
 				}
 			}
@@ -311,7 +311,7 @@ class Web
 			}
 			if (is_array(value: $value)) {
 				self::genXmlPayload(params: $value, payload: $payload, rowsFlag: $rows);
-				else {
+			} else {
 				$payload .= htmlspecialchars(string: $value);
 			}
 			if ($isObject) {

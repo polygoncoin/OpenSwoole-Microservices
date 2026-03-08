@@ -62,15 +62,15 @@ class Hook
 			for ($i = 0, $iCount = count(value: $hookConfig); $i < $iCount; $i++) {
 				$hook = $hookConfig[$i];
 				$hookFile = Constants::$PUBLIC_HTML
-						DIRECTORY_SEPARATOR . 'Hooks'
-						DIRECTORY_SEPARATOR . $hook . '.php';
+					. DIRECTORY_SEPARATOR . 'Hooks'
+					. DIRECTORY_SEPARATOR . $hook . '.php';
 				if (file_exists(filename: $hookFile)) {
 					$hookClass = 'Microservices\\Hooks\\' . $hook;
 					$hookObj = new $hookClass($this->api);
 					if ($hookObj->init()) {
 						$hookObj->process();
 					}
-					else {
+				} else {
 					throw new \Exception(
 						message: "Hook '{$hook}' missing",
 						code: HttpStatus::$InternalServerError

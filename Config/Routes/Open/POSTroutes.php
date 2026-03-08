@@ -20,12 +20,12 @@ use Microservices\App\Constants;
 return [
 	'registration' => [
 		'__FILE__' => Constants::$OPEN_QUERIES_DIR
-				DIRECTORY_SEPARATOR . 'POST'
-				DIRECTORY_SEPARATOR . 'Registration.php',
+			. DIRECTORY_SEPARATOR . 'POST'
+			. DIRECTORY_SEPARATOR . 'Registration.php',
 	],
 	'registration-with-address' => [
 		'__FILE__' => Constants::$OPEN_QUERIES_DIR
-				DIRECTORY_SEPARATOR . 'POST'
-				DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
+			. DIRECTORY_SEPARATOR . 'POST'
+			. DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
 	],
 ];

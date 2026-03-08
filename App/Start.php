@@ -73,13 +73,13 @@ class Start
 
 				return [$headers, $data, $status];
 			}
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			if (!in_array(needle: $e->getCode(), haystack: [400, 429])) {
 				list($usec, $sec) = explode(separator: ' ', string: microtime());
 				$dateTime = date(
 					format: 'Y-m-d H:i:s',
 					timestamp: $sec
-						substr(string: $usec, offset: 1);
+				) . substr(string: $usec, offset: 1);
 
 				// Log request details
 				$logDetails = [
@@ -103,7 +103,7 @@ class Start
 					'Message' => 'Too Many Request',
 					'RetryAfter' => $e->getMessage()
 				];
-				else {
+			} else {
 				$arr = [
 					'Status' => $e->getCode(),
 					'Message' => $e->getMessage()

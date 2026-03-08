@@ -61,7 +61,7 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 		if (
 			isset($_COOKIE[$this->sessionDataName])
 			&& !empty($_COOKIE[$this->sessionDataName])
-			{
+		) {
 			$sessionData = $this->decryptData(
 				cipherText: $_COOKIE[$this->sessionDataName]
 			);
@@ -70,7 +70,7 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 				isset($sessionDataArr['_TS_'])
 				&& ($time = $sessionDataArr['_TS_'] + $this->sessionMaxLifetime)
 				&& $time > Env::$timestamp
-				{
+			) {
 				return $sessionData;
 			}
 		}
@@ -96,7 +96,7 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 			ob_end_clean();
 			die(
 				'Session data length exceeds max 4 kilobytes (KB)'
-						supported per Cookie'
+					. ' supported per Cookie'
 			);
 		}
 
@@ -114,8 +114,8 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 						strpos(
 							haystack: $_SERVER['HTTP_HOST'],
 							needle: 'localhost'
-							=== false
-							true : false
+						) === false
+					) ? true : false
 				),
 				'httponly' => true,
 				'samesite' => 'Strict'
@@ -155,7 +155,7 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 			ob_end_clean();
 			die(
 				'Session data length exceeds max 4 kilobytes (KB)'
-						supported per Cookie'
+					. ' supported per Cookie'
 			);
 		}
 
@@ -174,7 +174,9 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 							haystack: $_SERVER['HTTP_HOST'],
 							needle: 'localhost'
 							=== false
-							true : false
+						)
+						? true : false
+					)
 				),
 				'httponly' => true,
 				'samesite' => 'Strict'

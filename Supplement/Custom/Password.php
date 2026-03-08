@@ -76,7 +76,7 @@ class Password implements CustomInterface
 	{
 		if ($this->api->req->s['payloadType'] === 'Object') {
 			$payload = $this->api->req->dataDecode->get();
-			else {
+		} else {
 			$payload = $this->api->req->dataDecode->get('0');
 		}
 		$this->api->req->s['payload'] = $payload;

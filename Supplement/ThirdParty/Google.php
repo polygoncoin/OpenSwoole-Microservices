@@ -90,7 +90,7 @@ class Google implements ThirdPartyInterface
 		if (empty($output)) {
 			$output = ['Error' => 'Nothing returned by ipify'];
 			$this->api->res->httpStatus = HttpStatus::$InternalServerError;
-			else {
+		} else {
 			$output = json_decode(json: $output, associative: true);
 		}
 		// End the calls with json response with dataEncode object

@@ -202,7 +202,7 @@ class DbFunctions
 				if (
 					isset(self::$masterCache[$req->s['cDetails']['id']])
 					&& self::$masterCache[$req->s['cDetails']['id']] !== null
-					{
+				) {
 					return;
 				}
 
@@ -323,7 +323,7 @@ class DbFunctions
 				if (
 					isset(self::$masterDb[$req->s['cDetails']['id']])
 					&& self::$masterDb[$req->s['cDetails']['id']] !== null
-					{
+				) {
 					return;
 				}
 
@@ -341,7 +341,7 @@ class DbFunctions
 				if (
 					isset(self::$slaveDb[$req->s['cDetails']['id']])
 					&& self::$slaveDb[$req->s['cDetails']['id']] !== null
-					{
+				) {
 					return;
 				}
 
@@ -376,7 +376,7 @@ class DbFunctions
 	{
 		if ($req->open) {
 			DatabaseOpenCacheKey::init(cID: $req->s['cDetails']['id']);
-			else {
+		} else {
 			DatabaseCacheKey::init(
 				cID: $req->s['cDetails']['id'],
 				gID: $req->s['gDetails']['id'],

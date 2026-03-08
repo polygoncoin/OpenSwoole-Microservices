@@ -134,7 +134,7 @@ class Microservices
 					&& strpos(
 						haystack: $this->api->req->ROUTE,
 						needle: '/' . Env::$cronRequestRoutePrefix
-						=== 0
+					) === 0
 				):
 				if ($this->api->req->IP !== Env::$cronRestrictedCidr) {
 					throw new \Exception(
@@ -198,7 +198,7 @@ class Microservices
 					$this->endData();
 				}
 			}
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->log(e: $e);
 		}
 
@@ -305,7 +305,7 @@ class Microservices
 			// may also be using PUT, PATCH, HEAD etc
 			$methods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
 			$headers['Access-Control-Allow-Methods'] = $methods;
-			else {
+		} else {
 			switch ($this->api->res->oRepresentation) {
 				case 'XML':
 				case 'XSLT':

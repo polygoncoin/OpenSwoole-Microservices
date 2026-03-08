@@ -99,7 +99,7 @@ class RedisQueryCache implements QueryCacheInterface
 		$password,
 		$database,
 		$table
-		{
+	) {
 		$this->hostname = $hostname;
 		$this->port = $port;
 		$this->username = $username;
@@ -129,7 +129,7 @@ class RedisQueryCache implements QueryCacheInterface
 				database: $this->database,
 				table: $this->table
 			);
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			throw new \Exception(
 				message: $e->getMessage(),
 				code: HttpStatus::$InternalServerError

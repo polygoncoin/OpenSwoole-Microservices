@@ -70,7 +70,7 @@ class Memcached implements NoSqlInterface
 		$password,
 		$database,
 		$table
-		{
+	) {
 		$this->hostname = $hostname;
 		$this->port = $port;
 	}
@@ -97,7 +97,7 @@ class Memcached implements NoSqlInterface
 		try {
 			$this->cache = new \Memcached();
 			$this->cache->addServer($this->hostname, $this->port);
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			throw new \Exception(
 				message: $e->getMessage(),
 				code: HttpStatus::$InternalServerError
@@ -148,7 +148,7 @@ class Memcached implements NoSqlInterface
 
 		if ($expire === null) {
 			return $this->cache->set($key, $value);
-			else {
+		} else {
 			return $this->cache->set($key, $value, $expire);
 		}
 	}

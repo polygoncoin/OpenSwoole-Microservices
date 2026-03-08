@@ -77,7 +77,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 		if (
 			($row = $this->getSql(sql: $sql, params: $params))
 			&& isset($row['sessionData'])
-			{
+		) {
 			return $this->decryptData(cipherText: $row['sessionData']);
 		}
 		return false;
@@ -223,7 +223,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 					\PDO::ATTR_EMULATE_PREPARES => false,
 				]
 			);
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 	}
@@ -257,7 +257,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 					break;
 			}
 			$stmt->closeCursor();
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 		return $row;
@@ -280,7 +280,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 			);
 			$stmt->execute(params: $params);
 			$stmt->closeCursor();
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 		return true;

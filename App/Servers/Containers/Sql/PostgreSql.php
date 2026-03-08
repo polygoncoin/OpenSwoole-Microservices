@@ -110,7 +110,7 @@ class PostgreSql implements SqlInterface
 		$username,
 		$password,
 		$database
-		{
+	) {
 		$this->hostname = $hostname;
 		$this->port = $port;
 		$this->username = $username;
@@ -137,7 +137,7 @@ class PostgreSql implements SqlInterface
 				password: $this->password,
 			);
 			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 			}
@@ -166,7 +166,7 @@ class PostgreSql implements SqlInterface
 		$this->beganTransaction = true;
 		try {
 			$this->pdo->beginTransaction();
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 			}
@@ -185,7 +185,7 @@ class PostgreSql implements SqlInterface
 				$this->beganTransaction = false;
 				$this->pdo->commit();
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 			}
@@ -204,7 +204,7 @@ class PostgreSql implements SqlInterface
 				$this->beganTransaction = false;
 				$this->pdo->rollBack();
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 			}
@@ -222,7 +222,7 @@ class PostgreSql implements SqlInterface
 			if ($this->stmt) {
 				return $this->stmt->rowCount();
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
@@ -244,7 +244,7 @@ class PostgreSql implements SqlInterface
 			if ($this->stmt !== false) {
 				return $this->stmt->fetchColumn();
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
@@ -279,7 +279,7 @@ class PostgreSql implements SqlInterface
 			if ($this->stmt) {
 				$this->stmt->execute(params: $params);
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
@@ -300,7 +300,7 @@ class PostgreSql implements SqlInterface
 			if ($this->stmt) {
 				return $this->stmt->fetch(mode: \PDO::FETCH_ASSOC);
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 			}
@@ -319,7 +319,7 @@ class PostgreSql implements SqlInterface
 			if ($this->stmt) {
 				return $this->stmt->fetchAll(mode: \PDO::FETCH_ASSOC);
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 			}
@@ -343,7 +343,7 @@ class PostgreSql implements SqlInterface
 					$this->stmt = array_pop(array: $this->stmts);
 				}
 			}
-			catch (\PDOException $e) {
+		} catch (\PDOException $e) {
 			if ((int)$this->pdo->errorCode()) {
 				$this->log(e: $e);
 			}

@@ -99,7 +99,7 @@ class MySqlQueryCache implements QueryCacheInterface
 		$password,
 		$database,
 		$table
-		{
+	) {
 		$this->hostname = $hostname;
 		$this->port = $port;
 		$this->username = $username;
@@ -128,7 +128,7 @@ class MySqlQueryCache implements QueryCacheInterface
 				password: $this->password,
 				database: $this->database
 			);
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			throw new \Exception(
 				message: $e->getMessage(),
 				code: HttpStatus::$InternalServerError

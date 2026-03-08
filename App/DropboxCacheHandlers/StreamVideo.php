@@ -96,7 +96,8 @@ class StreamVideo
 				haystack: $this->http['header']['range'],
 				needle: 'bytes='
 				!== false
-			{
+			)
+		) {
 			return HttpStatus::$BadRequest;
 		}
 
@@ -167,12 +168,12 @@ class StreamVideo
 				needle: $this->streamTill,
 				haystack: ['', '1']
 			)
-			{
+		) {
 			// Mac Safari does not support HTTP/1.1 206 response for first
 			// request while fetching video content.
 			// Regex pattern from https://regex101.com/r/gRLirS/1
 			$safariBrowserPattern = '`(\s|^)AppleWebKit/[\d\.]+\s+\(.+\)\s+'
-					'Version/(1[0-9]|[2-9][0-9]|\d{3,})(\.|$|\s)`i';
+				. 'Version/(1[0-9]|[2-9][0-9]|\d{3,})(\.|$|\s)`i';
 			$safariBrowser = preg_match(
 				pattern: $safariBrowserPattern,
 				subject: $this->http['header']['user-agent']
@@ -181,16 +182,16 @@ class StreamVideo
 				$this->streamTill = $this->size - 1;
 				$headers['Content-Length'] = $this->size;
 				return [$headers, $status];
-				else {
-				$chunkSize = $this->size > $this->chunkSize ?
-					$this->chunkSize : $this->size;
+			} else {
+				$chunkSize = $this->size > $this->chunkSize
+					? $this->chunkSize : $this->size;
 				$this->streamTill = $chunkSize - 1;
 				$streamSize = $this->streamTill - $this->streamFrom + 1;
 			}
-			else {
+		} else {
 			if ($this->size > ($this->streamFrom + $this->chunkSize)) {
 				$this->streamTill = $this->streamFrom + $this->chunkSize;
-				else {
+			} else {
 				$this->streamTill = $this->size - 1;
 			}
 			$streamSize = $this->streamTill - $this->streamFrom + 1;
@@ -198,7 +199,7 @@ class StreamVideo
 		$status = HttpStatus::$PartialContent;
 		$headers['Content-Length'] = $streamSize;
 		$headers['Content-Range'] = 'bytes ' . $this->streamFrom . '-'
-				$this->streamTill . '/' . $this->size;
+			. $this->streamTill . '/' . $this->size;
 
 		return [$headers, $status];
 	}

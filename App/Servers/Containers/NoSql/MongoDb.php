@@ -117,7 +117,7 @@ class MongoDb implements NoSqlInterface
 		$password,
 		$database,
 		$table
-		{
+	) {
 		$this->hostname = $hostname;
 		$this->port = $port;
 		$this->username = $username;
@@ -144,8 +144,8 @@ class MongoDb implements NoSqlInterface
 				if ($this->username !== null && $this->password !== null) {
 					$UP = "{$this->username}:{$this->password}@";
 				}
-				$this->uri = 'mongodb://' . $UP .
-					$this->hostname . ':' . $this->port;
+				$this->uri = 'mongodb://' . $UP
+					. $this->hostname . ':' . $this->port;
 			}
 			$this->cache = new \MongoDB\Client($this->uri);
 
@@ -161,7 +161,7 @@ class MongoDb implements NoSqlInterface
 				['expireAt' => 1],
 				['expireAfterSeconds' => 0]
 			);
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			throw new \Exception(
 				message: $e->getMessage(),
 				code: HttpStatus::$InternalServerError
@@ -225,7 +225,7 @@ class MongoDb implements NoSqlInterface
 			if ($this->collectionObj->insertOne($document)) {
 				return true;
 			}
-			else {
+		} else {
 			// Current UTC timestamp
 			$document['expireAt'] = new MongoDB\BSON\UTCDateTime(
 				(Env::$timestamp + $expire) * 1000

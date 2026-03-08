@@ -19,17 +19,17 @@ use Microservices\App\Constants;
 
 return array_merge(
 	require Constants::$AUTH_ROUTES_DIR
-			DIRECTORY_SEPARATOR . 'ClientDB'
-			DIRECTORY_SEPARATOR . 'Common'
-			DIRECTORY_SEPARATOR . 'GETroutes.php',
+		. DIRECTORY_SEPARATOR . 'ClientDB'
+		. DIRECTORY_SEPARATOR . 'Common'
+		. DIRECTORY_SEPARATOR . 'GETroutes.php',
 	require Constants::$AUTH_ROUTES_DIR
-			DIRECTORY_SEPARATOR . 'ClientDB'
-			DIRECTORY_SEPARATOR . 'Common'
-			DIRECTORY_SEPARATOR . 'Custom'
-			DIRECTORY_SEPARATOR . 'GETroutes.php',
+		. DIRECTORY_SEPARATOR . 'ClientDB'
+		. DIRECTORY_SEPARATOR . 'Common'
+		. DIRECTORY_SEPARATOR . 'Custom'
+		. DIRECTORY_SEPARATOR . 'GETroutes.php',
 	require Constants::$AUTH_ROUTES_DIR
-			DIRECTORY_SEPARATOR . 'ClientDB'
-			DIRECTORY_SEPARATOR . 'Common'
-			DIRECTORY_SEPARATOR . 'ThirdParty'
-			DIRECTORY_SEPARATOR . 'GETroutes.php'
+		. DIRECTORY_SEPARATOR . 'ClientDB'
+		. DIRECTORY_SEPARATOR . 'Common'
+		. DIRECTORY_SEPARATOR . 'ThirdParty'
+		. DIRECTORY_SEPARATOR . 'GETroutes.php'
 );

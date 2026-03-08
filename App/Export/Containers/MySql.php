@@ -140,7 +140,8 @@ class MySql implements DbInterface
 				haystack: $sql,
 				needle: ':'
 				!== count(value: $params)
-			{
+			)
+		) {
 			throw new \Exception(
 				message: 'Parameterized query has mismatch in number of params'
 			);
@@ -152,7 +153,7 @@ class MySql implements DbInterface
 			if (substr_count(haystack: $sql, needle: $value) > 1) {
 				throw new \Exception(
 					message: 'Parameterized query has more than one '
-							"occurrence of param '{$value}'"
+						. "occurrence of param '{$value}'"
 				);
 			}
 			$paramPos[$value] = strpos(haystack: $sql, needle: $value);
@@ -164,7 +165,8 @@ class MySql implements DbInterface
 					offset: $value,
 					length: strlen(string: $key)
 					!== $key
-				{
+				)
+			) {
 				throw new \Exception(message: "Invalid param key '{$key}'");
 			}
 		}
@@ -230,7 +232,7 @@ class MySql implements DbInterface
 					subject: $sql
 				);
 				$bindParams = array_merge($bindParams, $tmpParams);
-				else {
+			} else {
 				$bindParams[$key] = $values;
 			}
 		}
@@ -238,12 +240,10 @@ class MySql implements DbInterface
 		//Replace parameterized values.
 		foreach ($bindParams as $key => $value) {
 			if (!ctype_digit(text: $value)) {
-				$value = "'" .
-					mysqli_real_escape_string(
-						mysql: $mysqli,
-						string: $value
-						.
-				"'";
+				$value = "'" . mysqli_real_escape_string(
+					mysql: $mysqli,
+					string: $value
+				) . "'";
 			}
 			$sql = str_replace(search: $key, replace: $value, subject: $sql);
 		}
@@ -268,12 +268,12 @@ class MySql implements DbInterface
 
 		// Shell command.
 		$shellCommand = $this->binaryLoc . ' '
-				'--host=' . escapeshellarg(arg: $this->hostname) . ' '
-				'--port=' . escapeshellarg(arg: $this->port) . ' '
-				'--user=' . escapeshellarg(arg: $this->username) . ' '
-				'--password=' . escapeshellarg(arg: $this->password) . ' '
-				'--database=' . escapeshellarg(arg: $this->database) . ' '
-				'--execute=' . escapeshellarg(arg: $sql);
+			. '--host=' . escapeshellarg(arg: $this->hostname) . ' '
+			. '--port=' . escapeshellarg(arg: $this->port) . ' '
+			. '--user=' . escapeshellarg(arg: $this->username) . ' '
+			. '--password=' . escapeshellarg(arg: $this->password) . ' '
+			. '--database=' . escapeshellarg(arg: $this->database) . ' '
+			. '--execute=' . escapeshellarg(arg: $sql);
 
 		return $shellCommand;
 	}

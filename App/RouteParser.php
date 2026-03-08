@@ -136,19 +136,19 @@ class RouteParser
 		if ($routeFileLocation === null) {
 			if ($this->api->req->open) {
 				$routeFileLocation = Constants::$OPEN_ROUTES_DIR
-						DIRECTORY_SEPARATOR . $this->api->req->METHOD . 'routes.php';
-				else {
+					. DIRECTORY_SEPARATOR . $this->api->req->METHOD . 'routes.php';
+			} else {
 				$routeFileLocation = Constants::$AUTH_ROUTES_DIR
-						DIRECTORY_SEPARATOR . 'ClientDB'
-						DIRECTORY_SEPARATOR . 'Groups'
-						DIRECTORY_SEPARATOR . $this->api->req->s['gDetails']['name']
-						DIRECTORY_SEPARATOR . $this->api->req->METHOD . 'routes.php';
+					. DIRECTORY_SEPARATOR . 'ClientDB'
+					. DIRECTORY_SEPARATOR . 'Groups'
+					. DIRECTORY_SEPARATOR . $this->api->req->s['gDetails']['name']
+					. DIRECTORY_SEPARATOR . $this->api->req->METHOD . 'routes.php';
 			}
 		}
 
 		if (file_exists(filename: $routeFileLocation)) {
 			$routesConfig = include $routeFileLocation;
-			else {
+		} else {
 			throw new \Exception(
 				message: 'Route file missing: ' . $this->api->req->METHOD . ' method',
 				code: HttpStatus::$InternalServerError
@@ -167,7 +167,7 @@ class RouteParser
 					needle: $key,
 					haystack: ['__PRE-ROUTE-HOOKS__', '__POST-ROUTE-HOOKS__']
 				)
-				{
+			) {
 				$this->routeHook[$key] = $element;
 				continue;
 			}
@@ -177,39 +177,39 @@ class RouteParser
 				$routesConfig = &$routesConfig[$element];
 				$this->checkPresenceOfDynamicString(element: $element);
 				continue;
-				elseif ( // Route starting with reserved keyword
+			} elseif ( // Route starting with reserved keyword
 				$key === 0
 				&& $this->isStartingWithReservedRouteKeyword(routeStartingKeyword: $element)
-				{
+			) {
 				continue;
-				elseif ( // Route ending with reserved keyword
+			} elseif ( // Route ending with reserved keyword
 				$key === $routeLastElementPos
 				&& $this->isEndingWithReservedRouteKeyword(routeEndingKeyword: $element)
-				{
+			) {
 				break;
-				else { // Route element is a variable/dynamic input
+			} else { // Route element is a variable/dynamic input
 				if (
 					(isset($routesConfig['__FILE__']) && count(value: $routesConfig) > 2)
 					|| (!isset($routesConfig['__FILE__']) && count(value: $routesConfig) > 0)
-					{
+				) {
 					[
 						$foundIntRoute,
 						$foundIntParamName,
 						$foundStringRoute,
 						$foundStringParamName
-							$this->findRouteAndParamName(
+					] = $this->findRouteAndParamName(
 						routesConfig: $routesConfig,
 						element: $element
 					);
 					if ($foundIntRoute) {
 						$configuredRoute[] = $foundIntRoute;
-						$this->api->req->s['routeParams'][$foundIntParamName]
-								(int)$element;
-						elseif ($foundStringRoute) {
+						$this->api->req->s['routeParams'][$foundIntParamName] =
+							(int)$element;
+					} elseif ($foundStringRoute) {
 						$configuredRoute[] = $foundStringRoute;
-						$this->api->req->s['routeParams'][$foundStringParamName]
-								urldecode(string: $element);
-						else {
+						$this->api->req->s['routeParams'][$foundStringParamName] =
+							urldecode(string: $element);
+					} else {
 						throw new \Exception(
 							message: 'Route not supported',
 							code: HttpStatus::$BadRequest
@@ -218,7 +218,7 @@ class RouteParser
 					$routesConfig = &$routesConfig[
 						($foundIntRoute ? $foundIntRoute : $foundStringRoute)
 					];
-					else {
+				} else {
 					throw new \Exception(
 						message: 'Route not supported',
 						code: HttpStatus::$BadRequest
@@ -230,7 +230,7 @@ class RouteParser
 						dataRepresentation: $routesConfig['iRepresentation'],
 						mode: 'input'
 					)
-					{
+				) {
 					Env::$iRepresentation = $routesConfig['iRepresentation'];
 				}
 			}
@@ -245,7 +245,7 @@ class RouteParser
 				dataRepresentation: $this->api->http['get']['iRepresentation'],
 				mode: 'input'
 			)
-			{
+		) {
 			Env::$iRepresentation = $this->api->http['get']['iRepresentation'];
 		}
 
@@ -266,7 +266,7 @@ class RouteParser
 		if (
 			Env::$enableCidrCheck
 			&& in_array($routeStartingKeyword, Env::$reservedRoutesPrefix)
-			{
+		) {
 			$this->routeStartingWithReservedKeywordFlag = true;
 			$this->routeStartingReservedKeyword = $routeStartingKeyword;
 			$isValidIp = Functions::checkCidr(
@@ -298,21 +298,21 @@ class RouteParser
 		if (
 			Env::$enableConfigRequest
 			&& Env::$configRequestRouteKeyword === $routeEndingKeyword
-			{
+		) {
 			$this->routeEndingWithReservedKeywordFlag = true;
 			$this->routeEndingReservedKeyword = Env::$configRequestRouteKeyword;
 			$return = true;
-			elseif (
+		} elseif (
 			Env::$enableImportRequest
 			&& Env::$importRequestRouteKeyword === $routeEndingKeyword
-			{
+		) {
 			$this->routeEndingWithReservedKeywordFlag = true;
 			$this->routeEndingReservedKeyword = Env::$importRequestRouteKeyword;
 			$return = true;
-			elseif (
+		} elseif (
 			Env::$enableImportSampleRequest
 			&& Env::$importSampleRequestRouteKeyword === $routeEndingKeyword
-			{
+		) {
 			$this->routeEndingWithReservedKeywordFlag = true;
 			$this->routeEndingReservedKeyword = Env::$importSampleRequestRouteKeyword;
 			$return = true;
@@ -404,7 +404,7 @@ class RouteParser
 					$routesConfig['__FILE__'] === false
 					|| file_exists(filename: $routesConfig['__FILE__'])
 				)
-				{
+			) {
 				throw new \Exception(
 					message: 'Missing config for ' . $this->api->req->METHOD . ' method',
 					code: HttpStatus::$InternalServerError
@@ -415,7 +415,7 @@ class RouteParser
 		if (
 			!empty($routesConfig['__FILE__'])
 			&& file_exists(filename: $routesConfig['__FILE__'])
-			{
+		) {
 			$Constants = __NAMESPACE__ . '\Constants';
 			$Env = __NAMESPACE__ . '\Env';
 
@@ -430,7 +430,7 @@ class RouteParser
 					dataRepresentation: $sqlConfig['oRepresentation'],
 					mode: 'output'
 				)
-				{
+			) {
 				$this->api->res->oRepresentation = $sqlConfig['oRepresentation'];
 			}
 		}
@@ -443,7 +443,7 @@ class RouteParser
 				dataRepresentation: $this->api->http['get']['oRepresentation'],
 				mode: 'output'
 			)
-			{
+		) {
 			$this->api->res->oRepresentation = $this->api->http['get']['oRepresentation'];
 		}
 	}
@@ -488,7 +488,7 @@ class RouteParser
 			if (
 				strpos(haystack: $routeElement, needle: '{') === 0
 				&& isset($routesConfig[$routeElement]['dataType'])
-				{
+			) {
 				$dataType = $routesConfig[$routeElement]['dataType'];
 				// Is a dynamic URI element
 				$this->processRouteElement(

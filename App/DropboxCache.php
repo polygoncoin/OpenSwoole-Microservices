@@ -107,7 +107,7 @@ class DropboxCache
 		}
 
 		$this->modeDropBox = Constants::$DROP_BOX_DIR
-				DIRECTORY_SEPARATOR . $mode;
+			. DIRECTORY_SEPARATOR . $mode;
 
 		$filePath = DIRECTORY_SEPARATOR . trim(
 			string: str_replace(
@@ -162,10 +162,10 @@ class DropboxCache
 				if (
 					(
 						$httpStatus = $videoStream->init($this->fileLocation)
-						!== HttpStatus::$Ok
-					{
+					) !== HttpStatus::$Ok
+				) {
 					$return = [$headers, $data, $httpStatus];
-					else {
+				} else {
 					$return = $videoStream->serveContent();
 				}
 				break;
@@ -196,13 +196,14 @@ class DropboxCache
 				&& strpos(
 					haystack: $this->http['header']['HTTP_IF_NONE_MATCH'],
 					needle: $eTag
-					!== false
+				) !== false
 			)
 			|| (isset($this->http['header']['HTTP_IF_MODIFIED_SINCE'])
-			&& @strtotime(
-				datetime: $this->http['header']['HTTP_IF_MODIFIED_SINCE']
-				== $modifiedTime)
-			{
+				&& @strtotime(
+					datetime: $this->http['header']['HTTP_IF_MODIFIED_SINCE']
+				) == $modifiedTime
+			)
+		) {
 			$status = HttpStatus::$NotModified;
 			return [$headers, $data, $status];
 		}
@@ -217,7 +218,7 @@ class DropboxCache
 		$headers['Last-Modified'] = gmdate(
 			format: 'D, d M Y H:i:s',
 			timestamp: $modifiedTime
-					GMT';
+		) . ' GMT';
 		$headers['Etag'] = "\"{$eTag}\"";
 		$headers['Expires'] = -1;
 		$headers['Content-Type'] = "{$this->mimeType}";

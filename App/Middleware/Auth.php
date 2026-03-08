@@ -67,17 +67,17 @@ class Auth
 		if (
 			isset($_SESSION)
 			&& isset($_SESSION['id'])
-			{
+		) {
 			$this->api->req->s['uDetails'] = $_SESSION;
 			$this->api->req->s['token'] = 'sessions';
-			elseif (
+		} elseif (
 			($this->api->req->HTTP_AUTHORIZATION !== null)
 			&& preg_match(
 				pattern: '/Bearer\s(\S+)/',
 				subject: $this->api->req->HTTP_AUTHORIZATION,
 				matches: $matches
 			)
-			{
+		) {
 			$this->api->req->s['token'] = $matches[1];
 			$tokenKey = CacheKey::token(
 				token: $this->api->req->s['token']
@@ -86,7 +86,7 @@ class Auth
 				!DbFunctions::$gCacheServer->cacheExists(
 					key: $tokenKey
 				)
-				{
+			) {
 				throw new \Exception(
 					message: 'Token expired',
 					code: HttpStatus::$BadRequest
@@ -110,18 +110,18 @@ class Auth
 					if ($userConcurrencyKeyData !== $this->api->req->s['token']) {
 						throw new \Exception(
 							message: 'Account already in use. '
-									'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
+								. 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
 							code: HttpStatus::$Conflict
 						);
 					}
-					else {
+				} else {
 					$this->setCache(
 						key: $userConcurrencyKey,
 						value: $this->api->req->s['token'],
 						expire: Env::$concurrentAccessInterval
 					);
 				}
-				else {
+			} else {
 				if ($this->api->req->s['uDetails']['uniqueHttpRequestHash'] !== $uniqueHttpRequestHash) {
 					throw new \Exception(
 						message: 'Token not supported from this Browser/Device',
@@ -154,7 +154,7 @@ class Auth
 		if (
 			empty($this->api->req->s['uDetails']['id'])
 			|| empty($this->api->req->s['uDetails']['id'])
-			{
+		) {
 			throw new \Exception(
 				message: 'Invalid session',
 				code: HttpStatus::$InternalServerError

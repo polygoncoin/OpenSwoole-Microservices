@@ -84,20 +84,20 @@ class Constants
 		self::$XSLT_DIR = self::$OUTPUT_FORMAT_DIR . DIRECTORY_SEPARATOR . 'XSLT';
 
 		self::$AUTH_ROUTES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config'
-				DIRECTORY_SEPARATOR . 'Routes'
-				DIRECTORY_SEPARATOR . 'Auth';
+			. DIRECTORY_SEPARATOR . 'Routes'
+			. DIRECTORY_SEPARATOR . 'Auth';
 
 		self::$OPEN_ROUTES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config'
-				DIRECTORY_SEPARATOR . 'Routes'
-				DIRECTORY_SEPARATOR . 'Open';
+			. DIRECTORY_SEPARATOR . 'Routes'
+			. DIRECTORY_SEPARATOR . 'Open';
 
 		self::$AUTH_QUERIES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config'
-				DIRECTORY_SEPARATOR . 'Queries'
-				DIRECTORY_SEPARATOR . 'Auth';
+			. DIRECTORY_SEPARATOR . 'Queries'
+			. DIRECTORY_SEPARATOR . 'Auth';
 
 		self::$OPEN_QUERIES_DIR = self::$PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Config'
-				DIRECTORY_SEPARATOR . 'Queries'
-				DIRECTORY_SEPARATOR . 'Open';
+			. DIRECTORY_SEPARATOR . 'Queries'
+			. DIRECTORY_SEPARATOR . 'Open';
 
 		self::$WEB_COOKIES_DIR = self::$DOC_ROOT . DIRECTORY_SEPARATOR . 'WebCookies';
 		if (!is_dir(filename: self::$WEB_COOKIES_DIR)) {

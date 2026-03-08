@@ -67,10 +67,10 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 			if (
 				$this->redis->exists($sessionId)
 				&& ($data = $this->redis->get($sessionId))
-				{
+			) {
 				return $this->decryptData(cipherText: $data);
 			}
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 		return false;
@@ -93,10 +93,10 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 					$this->encryptData(plainText: $sessionData),
 					$this->sessionMaxLifetime
 				)
-				{
+			) {
 				return true;
 			}
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 		return false;
@@ -132,7 +132,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 			if ($this->redis->expire($sessionId, $this->sessionMaxLifetime)) {
 				return true;
 			}
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 		return false;
@@ -163,7 +163,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 			if ($this->redis->del($sessionId)) {
 				return true;
 			}
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 		return false;
@@ -203,7 +203,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 			if (
 				$this->REDIS_USERNAME !== null
 				&& $this->REDIS_PASSWORD !== null
-				{
+			) {
 				$connParams['auth'] = [
 					$this->REDIS_USERNAME,
 					$this->REDIS_PASSWORD
@@ -214,7 +214,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 				$connParams
 			);
 			$this->redis->select($this->REDIS_DATABASE);
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 	}

@@ -23,18 +23,18 @@ return [
 		'{id:int}'  => [
 			'dataType' => DatabaseDataTypes::$PrimaryKey,
 			'__FILE__' => Constants::$AUTH_QUERIES_DIR
-					DIRECTORY_SEPARATOR . 'GlobalDB'
-					DIRECTORY_SEPARATOR . 'PUT'
-					DIRECTORY_SEPARATOR . 'groups.php',
+				. DIRECTORY_SEPARATOR . 'GlobalDB'
+				. DIRECTORY_SEPARATOR . 'PUT'
+				. DIRECTORY_SEPARATOR . 'groups.php',
 		],
 	],
 	'client' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseDataTypes::$PrimaryKey,
 			'__FILE__' => Constants::$AUTH_QUERIES_DIR
-					DIRECTORY_SEPARATOR . 'GlobalDB'
-					DIRECTORY_SEPARATOR . 'PUT'
-					DIRECTORY_SEPARATOR . 'clients.php',
+				. DIRECTORY_SEPARATOR . 'GlobalDB'
+				. DIRECTORY_SEPARATOR . 'PUT'
+				. DIRECTORY_SEPARATOR . 'clients.php',
 		],
 	],
 ];

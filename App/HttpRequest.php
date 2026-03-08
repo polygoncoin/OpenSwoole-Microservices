@@ -134,7 +134,7 @@ class HttpRequest
 				string: $this->api->http['get'][ROUTE_URL_PARAM],
 				characters: '/'
 			);
-			else {
+		} else {
 			$this->ROUTE = '';
 		}
 
@@ -144,12 +144,12 @@ class HttpRequest
 					isset($this->api->http['header'])
 					&& isset($this->api->http['header']['authorization'])
 					&& $this->api->http['header']['authorization'] !== null
-					{
+				) {
 					$this->HTTP_AUTHORIZATION = $this->api->http['header']['authorization'];
 					$this->open = false;
-					elseif ($this->ROUTE === '/login') {
+				} elseif ($this->ROUTE === '/login') {
 					$this->open = false;
-					elseif (Env::$enableOpenRequest) {
+				} elseif (Env::$enableOpenRequest) {
 					$this->open = true;
 				}
 				break;
@@ -157,7 +157,7 @@ class HttpRequest
 				if (
 					isset($_SESSION)
 					&& isset($_SESSION['id'])
-					{
+				) {
 					if ($_SESSION['sessionExpiryTimestamp'] <= Env::$timestamp) {
 						throw new \Exception(
 							message: 'Current session has expired. Please login',
@@ -176,18 +176,18 @@ class HttpRequest
 							if ($userConcurrencyKeyData !== $sessionId) {
 								throw new \Exception(
 									message: 'Account already in use. '
-											'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
+										. 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
 									code: HttpStatus::$Conflict
 								);
 							}
-							else {
+						} else {
 							$this->setCache(
 								key: $userConcurrencyKey,
 								value: $sessionId,
 								expire: Env::$concurrentAccessInterval
 							);
 						}
-						else {
+					} else {
 						if ($this->api->req->s['uDetails']['uniqueHttpRequestHash'] !== $uniqueHttpRequestHash) {
 							throw new \Exception(
 								message: 'Session not supported from this Browser/Device',
@@ -196,9 +196,9 @@ class HttpRequest
 						}
 					}
 					$this->open = false;
-					elseif ($this->ROUTE === '/login') {
+				} elseif ($this->ROUTE === '/login') {
 					$this->open = false;
-					else {
+				} else {
 					$this->open = true;
 				}
 				break;
@@ -213,7 +213,7 @@ class HttpRequest
 		if (
 			$this->open === true
 			&& !Env::$enableOpenRequest
-			{
+		) {
 			throw new \Exception(
 				message: "Open to web request are disabled",
 				code: HttpStatus::$InternalServerError
@@ -222,7 +222,7 @@ class HttpRequest
 		if (
 			$this->open === false
 			&& !Env::$enableAuthRequest
-			{
+		) {
 			throw new \Exception(
 				message: "Auth based request are disabled",
 				code: HttpStatus::$InternalServerError
@@ -272,7 +272,7 @@ class HttpRequest
 
 		if ($this->open) {
 			$cKey = CacheKey::clientOpenToWeb(hostname: $this->HOST);
-			else {
+		} else {
 			$cKey = CacheKey::client(hostname: $this->HOST);
 		}
 		if (!DbFunctions::$gCacheServer->cacheExists(key: $cKey)) {
@@ -307,7 +307,7 @@ class HttpRequest
 		if ($this->METHOD === Constants::$GET) {
 			$this->urlDecode(value: $this->api->http['get']);
 			$this->s['payloadType'] = 'Object';
-			else {
+		} else {
 			$this->setPayloadStream();
 			rewind(stream: $this->payloadStream);
 
@@ -399,7 +399,7 @@ class HttpRequest
 		if (
 			isset($array[0])
 			&& is_array(value: $array[0]) && count(value: $array) === 1
-			{
+		) {
 			$array = &$array[0];
 			if (empty($array)) {
 				return;
@@ -439,11 +439,11 @@ class HttpRequest
 			foreach ($value as &$v) {
 				if (is_array(value: $v)) {
 					$this->urlDecode(value: $v);
-					else {
+				} else {
 					$v = urldecode(string: $v);
 				}
 			}
-			else {
+		} else {
 			$value = urldecode(string: $value);
 		}
 	}
@@ -483,10 +483,10 @@ class HttpRequest
 						$i = 0, $iCount = count($v);
 						$i < $iCount;
 						$i++
-						{
+					) {
 						if (($i+1) === $iCount) {
 							$_headerData['__column__'][$v[$i]] = $key;
-							else {
+						} else {
 							if (!isset($_headerData[$v[$i]])) {
 								$_headerData[$v[$i]] = [];
 							}
@@ -515,7 +515,7 @@ class HttpRequest
 			if ($modeArr === $_mode) {
 				$dataEncode->endObject();
 				$dataEncode->startObject();
-				else {
+			} else {
 				$_modeArr = [];
 				$modeCount = count($modeArr);
 				$_modeCount = count($_mode);
@@ -524,11 +524,11 @@ class HttpRequest
 					$i = 0;
 					$i < $_modeCount;
 					$i++
-					{
+				) {
 					if (
 						!isset($modeArr[$i])
 						|| ($modeArr[$i] !== $_mode[$i])
-						{
+					) {
 						break;
 					}
 					$_modeArr[$i] = $_mode[$i];

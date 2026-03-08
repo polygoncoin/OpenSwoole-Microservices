@@ -80,7 +80,7 @@ class RateLimiter
 		if (
 			$this->cache === null
 			&& (!Env::$enableRateLimiting)
-			{
+		) {
 			return [
 				'allowed' => true,
 				'remaining' => 1,
@@ -98,7 +98,7 @@ class RateLimiter
 
 		if ($this->cache->cacheExists($key)) {
 			$requestCount = (int)$this->cache->getCache($key);
-			else {
+		} else {
 			$requestCount = 0;
 			$this->cache->setCache($key, $requestCount, $remainder);
 		}

@@ -123,7 +123,7 @@ class Read
 			Env::$enableResponseCaching
 			&& isset($rSqlConfig['cacheKey'])
 			&& !isset($this->api->req->s['queryParams']['orderBy'])
-			{
+		) {
 			$json = DbFunctions::getQueryCache(
 				cacheKey: $rSqlConfig['cacheKey']
 			);
@@ -135,7 +135,7 @@ class Read
 				);
 				$this->api->res->dataEncode->appendData(data: $json);
 				return true;
-				else {
+			} else {
 				$toBeCached = true;
 			}
 		}
@@ -143,27 +143,27 @@ class Read
 		if (
 			Env::$enableResponseCaching
 			&& $toBeCached
-			{
+		) {
 			$this->dataEncode = new DataEncode(api: $this->api);
 			$this->dataEncode->init(header: false);
-			else {
+		} else {
 			$this->dataEncode = &$this->api->res->dataEncode;
 		}
 
 		if (
 			$this->api->res->oRepresentation === 'XSLT'
 			&& isset($rSqlConfig['xsltFile'])
-			{
+		) {
 			$this->dataEncode->xsltFile = $rSqlConfig['xsltFile'];
-			elseif (
+		} elseif (
 			$this->api->res->oRepresentation === 'HTML'
 			&& isset($rSqlConfig['htmlFile'])
-			{
+		) {
 			$this->dataEncode->htmlFile = $rSqlConfig['htmlFile'];
-			elseif (
+		} elseif (
 			$this->api->res->oRepresentation === 'PHP'
 			&& isset($rSqlConfig['phpFile'])
-			{
+		) {
 			$this->dataEncode->phpFile = $rSqlConfig['phpFile'];
 		}
 
@@ -185,12 +185,12 @@ class Read
 			Env::$enableConfigRequest
 			&& $this->api->req->rParser->routeEndingWithReservedKeywordFlag
 			&& ($this->api->req->rParser->routeEndingReservedKeyword === Env::$configRequestRouteKeyword)
-			{
+		) {
 			$this->processReadConfig(
 				rSqlConfig: $rSqlConfig,
 				useResultSet: $useResultSet
 			);
-			else {
+		} else {
 			$this->processRead(
 				rSqlConfig: $rSqlConfig,
 				useResultSet: $useResultSet
@@ -200,7 +200,7 @@ class Read
 		if (
 			Env::$enableResponseCaching
 			&& $toBeCached
-			{
+		) {
 			$json = $this->dataEncode->getData();
 			DbFunctions::setQueryCache(
 				cacheKey: $rSqlConfig['cacheKey'],
@@ -256,7 +256,7 @@ class Read
 
 		if (isset($this->api->req->s['necessaryArr'])) {
 			$this->api->req->s['necessary'] = $this->api->req->s['necessaryArr'];
-			else {
+		} else {
 			$this->api->req->s['necessary'] = [];
 		}
 
@@ -304,7 +304,7 @@ class Read
 				case 'singleRowFormat':
 					if ($isFirstCall) {
 						$this->dataEncode->startObject(key: 'Results');
-						else {
+					} else {
 						$this->dataEncode->startObject();
 					}
 					$this->fetchSingleRow(
@@ -322,10 +322,10 @@ class Read
 							$this->dataEncode->startObject(key: 'Results');
 							$this->fetchRowsCount(rSqlConfig: $rSqlConfig);
 							$this->dataEncode->startArray(key: 'Data');
-							else {
+						} else {
 							$this->dataEncode->startArray(key: 'Results');
 						}
-						else {
+					} else {
 						$this->dataEncode->startArray(
 							key: $configKeys[count(value: $configKeys) - 1]
 						);
@@ -418,7 +418,7 @@ class Read
 					}
 				}
 			}
-			else {
+		} else {
 			if ($isFirstCall) {
 				$this->api->res->httpStatus = HttpStatus::$NotFound;
 				return;
@@ -594,7 +594,7 @@ class Read
 			}
 			if ($singleColumn) {
 				$this->dataEncode->encode(data: $row[key(array: $row)]);
-				elseif (isset($rSqlConfig['__SUB-QUERY__'])) {
+			} elseif (isset($rSqlConfig['__SUB-QUERY__'])) {
 				$this->dataEncode->startObject();
 				foreach ($row as $key => $value) {
 					$this->dataEncode->addKeyData(key: $key, data: $value);
@@ -606,7 +606,7 @@ class Read
 					useResultSet: $useResultSet
 				);
 				$this->dataEncode->endObject();
-				else {
+			} else {
 				$this->dataEncode->encode(data: $row);
 			}
 		}
@@ -640,7 +640,7 @@ class Read
 		if (
 			isset($rSqlConfig['__SUB-QUERY__'])
 			&& $this->isObject(arr: $rSqlConfig['__SUB-QUERY__'])
-			{
+		) {
 			foreach ($rSqlConfig['__SUB-QUERY__'] as $key => &$rSqlConfig) {
 				$configKeys = $configKeys;
 				$configKeys[] = $key;
@@ -680,7 +680,7 @@ class Read
 			sqlDetails: $rSqlConfig
 		);
 		$serverMode = isset($rSqlConfig['fetchFrom'])
-				$rSqlConfig['fetchFrom'] : 'Slave';
+			? $rSqlConfig['fetchFrom'] : 'Slave';
 
 		$dbDetails = [];
 		switch ($serverMode) {
@@ -707,21 +707,21 @@ class Read
 			if (
 				isset($rSqlConfig['exportFile'])
 				&& !empty($rSqlConfig['exportFile'])
-				{
+			) {
 				$return = $export->initDownload(
 					downloadFile: $downloadFile,
 					sql: $sql,
 					params: $sqlParams,
 					exportFile: $rSqlConfig['exportFile']
 				);
-				else {
+			} else {
 				$return = $export->initDownload(
 					downloadFile: $downloadFile,
 					sql: $sql,
 					params: $sqlParams
 				);
 			}
-			else {
+		} else {
 			if (isset($rSqlConfig['exportFile'])) {
 				$return = $export->saveExport(
 					sql: $sql,

@@ -441,56 +441,56 @@ class DatabaseDataTypes
 			&& isset($dataType['canBeNull'])
 			&& $dataType['canBeNull'] === true
 			&& $data === null
-			{
+		) {
 			return true;
 		}
 		if (
 			$returnFlag
 			&& isset($dataType['minValue'])
 			&& $dataType['minValue'] <= $data
-			{
+		) {
 			$returnFlag = false;
 		}
 		if (
 			$returnFlag
 			&& isset($dataType['maxValue'])
 			&& $data <= $dataType['maxValue']
-			{
+		) {
 			$returnFlag = false;
 		}
 		if (
 			$returnFlag
 			&& isset($dataType['minLength'])
 			&& $dataType['minLength'] <= strlen(string: $data)
-			{
+		) {
 			$returnFlag = false;
 		}
 		if (
 			$returnFlag
 			&& isset($dataType['maxLength'])
 			&& strlen(string: $data) <= $dataType['maxLength']
-			{
+		) {
 			$returnFlag = false;
 		}
 		if (
 			$returnFlag
 			&& isset($dataType['enumValues'])
 			&& in_array(needle: $data, haystack: $dataType['enumValues'])
-			{
+		) {
 			$returnFlag = false;
 		}
 		if (
 			$returnFlag
 			&& isset($dataType['setValues'])
 			&& empty(array_diff([$data], $dataType['setValues']))
-			{
+		) {
 			$returnFlag = false;
 		}
 		if (
 			$returnFlag
 			&& isset($dataType['regex'])
 			&& preg_match(pattern: $dataType['regex'], subject: $data) === 0
-			{
+		) {
 			$returnFlag = false;
 		}
 

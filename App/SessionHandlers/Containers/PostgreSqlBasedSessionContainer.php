@@ -215,15 +215,15 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 			if (
 				$this->PGSQL_USERNAME !== null
 				&& $this->PGSQL_PASSWORD !== null
-				{
+			) {
 				$UP = "user={$this->PGSQL_USERNAME} password={$this->PGSQL_PASSWORD}";
 			}
 			$this->pgSqlConn = pg_connect(
-				"host={$this->PGSQL_HOSTNAME} " .
-				"port={$this->PGSQL_PORT} " .
-				"dbname={$this->PGSQL_DATABASE} {$UP}"
+				"host={$this->PGSQL_HOSTNAME} "
+				. "port={$this->PGSQL_PORT} "
+				. "dbname={$this->PGSQL_DATABASE} {$UP}"
 			);
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 	}
@@ -250,7 +250,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 				pg_free_result($result);
 				return $row;
 			}
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 		return false;
@@ -271,7 +271,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 			if ($result) {
 				return true;
 			}
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}
 		return false;

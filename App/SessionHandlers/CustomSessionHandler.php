@@ -142,7 +142,7 @@ class CustomSessionHandler implements
 				$this->sessionData = &$sessionData;
 			}
 			$this->foundSession = true;
-			else {
+		} else {
 			if (is_null(value: $this->creatingSessionId)) {
 				$this->unsetSessionCookie();
 			}
@@ -175,7 +175,7 @@ class CustomSessionHandler implements
 
 		do {
 			$sessionId = $this->getRandomString();
-			while ($this->validateId(sessionId: $sessionId) === true);
+		} while ($this->validateId(sessionId: $sessionId) === true);
 
 		$this->creatingSessionId = null;
 
@@ -226,7 +226,7 @@ class CustomSessionHandler implements
 				sessionId: $sessionId,
 				sessionData: $sessionData
 			)
-			{
+		) {
 			$this->isTimestampUpdated = true;
 		}
 
@@ -262,7 +262,7 @@ class CustomSessionHandler implements
 				sessionId: $sessionId,
 				sessionData: $sessionData
 			)
-			{
+		) {
 			$this->isTimestampUpdated = true;
 		}
 
@@ -379,7 +379,7 @@ class CustomSessionHandler implements
 			isset($this->container->sessionOptions['read_and_close'])
 			&& $this->container->sessionOptions['read_and_close'] === true
 			&& $this->creatingSessionId === true
-			{
+		) {
 			// Remove Session Set-Cookie headers
 			$headers = headers_list();
 			$headerFound = false;

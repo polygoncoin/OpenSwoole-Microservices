@@ -52,7 +52,7 @@ class Routes
 	 * @var string
 	 */
 	private $routesFolder = DIRECTORY_SEPARATOR . 'Config'
-			DIRECTORY_SEPARATOR . 'Routes';
+		. DIRECTORY_SEPARATOR . 'Routes';
 
 	/**
 	 * Route config ignore keys
@@ -106,19 +106,19 @@ class Routes
 		$httpRoutes = [];
 		if ($this->api->req->open) {
 			$userRoutesFolder = Constants::$PUBLIC_HTML . $this->routesFolder
-					DIRECTORY_SEPARATOR . 'Open';
-			else {
+				. DIRECTORY_SEPARATOR . 'Open';
+		} else {
 			$userRoutesFolder = Constants::$PUBLIC_HTML . $this->routesFolder
-					DIRECTORY_SEPARATOR . 'Auth'
-					DIRECTORY_SEPARATOR . 'ClientDB'
-					DIRECTORY_SEPARATOR . 'Groups'
-					DIRECTORY_SEPARATOR . $this->api->req->s['gDetails']['name'];
+				. DIRECTORY_SEPARATOR . 'Auth'
+				. DIRECTORY_SEPARATOR . 'ClientDB'
+				. DIRECTORY_SEPARATOR . 'Groups'
+				. DIRECTORY_SEPARATOR . $this->api->req->s['gDetails']['name'];
 		}
 
 		foreach ($this->httpMethods as $method) {
 			$httpRoutes[$method] = [];
 			$routeFileLocation =  $userRoutesFolder
-					DIRECTORY_SEPARATOR . $method . 'routes.php';
+				. DIRECTORY_SEPARATOR . $method . 'routes.php';
 			if (!file_exists(filename: $routeFileLocation)) {
 				continue;
 			}

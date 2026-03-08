@@ -21,28 +21,28 @@ use Microservices\App\DatabaseDataTypes;
 return [
 	'login' => [
 		'__FILE__' => Constants::$OPEN_QUERIES_DIR
-				DIRECTORY_SEPARATOR . 'GET'
-				DIRECTORY_SEPARATOR . 'Login.php',
+			. DIRECTORY_SEPARATOR . 'GET'
+			. DIRECTORY_SEPARATOR . 'Login.php',
 	],
 	'category' => [
 		'__FILE__' => Constants::$OPEN_QUERIES_DIR
-				DIRECTORY_SEPARATOR . 'GET'
-				DIRECTORY_SEPARATOR . 'Category-all.php',
+			. DIRECTORY_SEPARATOR . 'GET'
+			. DIRECTORY_SEPARATOR . 'Category-all.php',
 		'search' => [
 			'__FILE__' => Constants::$OPEN_QUERIES_DIR
-					DIRECTORY_SEPARATOR . 'GET'
-					DIRECTORY_SEPARATOR . 'Category-search.php',
+				. DIRECTORY_SEPARATOR . 'GET'
+				. DIRECTORY_SEPARATOR . 'Category-search.php',
 		],
 		'{id:int}' => [
 			'dataType' => DatabaseDataTypes::$PrimaryKey,
 			'__FILE__' => Constants::$OPEN_QUERIES_DIR
-					DIRECTORY_SEPARATOR . 'GET'
-					DIRECTORY_SEPARATOR . 'Category-Single.php',
+				. DIRECTORY_SEPARATOR . 'GET'
+				. DIRECTORY_SEPARATOR . 'Category-Single.php',
 		],
 		'download' => [
 			'__FILE__' => Constants::$OPEN_QUERIES_DIR
-					DIRECTORY_SEPARATOR . 'GET'
-					DIRECTORY_SEPARATOR . 'Download.php',
+				. DIRECTORY_SEPARATOR . 'GET'
+				. DIRECTORY_SEPARATOR . 'Download.php',
 		]
 	]
 ];

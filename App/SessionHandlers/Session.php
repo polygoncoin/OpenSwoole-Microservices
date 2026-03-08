@@ -161,7 +161,7 @@ class Session
 				needle: self::$sessionMode,
 				haystack: ['File', 'MySql', 'PostgreSql', 'MongoDb', 'Redis', 'Memcached', 'Cookie']
 			)
-			{
+		) {
 			die('Invalid "sessionMode"');
 		}
 
@@ -263,7 +263,7 @@ class Session
 	{
 		// Initialize Container
 		$containerClassName = 'Microservices\\App\\SessionHandlers\\Containers\\'
-				self::$sessionMode . 'BasedSessionContainer';
+			. self::$sessionMode . 'BasedSessionContainer';
 		self::$sessionContainer = new $containerClassName();
 
 		// Setting required common parameters
@@ -317,7 +317,7 @@ class Session
 		if (
 			!empty(self::$ENCRYPTION_PASS_PHRASE)
 			&& !empty(self::$ENCRYPTION_IV)
-			{
+		) {
 			self::$sessionContainer->passphrase = base64_decode(
 				string: self::$ENCRYPTION_PASS_PHRASE
 			);
@@ -362,7 +362,7 @@ class Session
 
 		if (isset($options['gc_maxlifetime'])) {
 			self::$sessionMaxLifetime = $options['gc_maxlifetime'];
-			else {
+		} else {
 			self::$sessionMaxLifetime = Constants::$TOKEN_EXPIRY_TIME;
 		}
 
@@ -379,8 +379,8 @@ class Session
 				!in_array(
 					'localhost',
 					explode('.', self::$sessionDomain)
-				)
-					true : false,
+				) ? true : false
+			),
 			'cookie_httponly' => true,
 			'cookie_samesite' => 'Strict'
 		];
@@ -396,7 +396,7 @@ class Session
 						needle: $option,
 						haystack: ['name', 'serialize_handler', 'gc_maxlifetime']
 					)
-					{
+				) {
 					// Skip option
 					continue;
 				}
@@ -416,7 +416,7 @@ class Session
 	public static function initSessionHandler($sessionMode, $options = []): void
 	{
 		$env = parse_ini_file(filename: Constants::$DOC_ROOT
-				DIRECTORY_SEPARATOR . '.env.session'
+			. DIRECTORY_SEPARATOR . '.env.session'
 		);
 		foreach ($env as $var => $value) {
 			self::$$var = $value;
@@ -430,8 +430,8 @@ class Session
 		}
 		if (self::$sessionMode === 'File') {
 			if (empty(self::$sessionSavePath)) {
-				self::$sessionSavePath = (session_save_path() ?
-					session_save_path() : sys_get_temp_dir()) . '/session-files';
+				self::$sessionSavePath = (session_save_path()
+					? session_save_path() : sys_get_temp_dir()) . '/session-files';
 			}
 			if (strpos(self::$sessionSavePath, '/') !== 0) {
 				self::$sessionSavePath =
@@ -457,7 +457,7 @@ class Session
 		if (
 			isset($_COOKIE[self::$sessionName])
 			&& !empty($_COOKIE[self::$sessionName])
-			{
+		) {
 			$options = self::$options;
 			$options['read_and_close'] = true;
 

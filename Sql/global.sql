@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS `global_counter`;
 
 CREATE TABLE `global_counter` (
 	`id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY AUTO_INCREMENT
-	ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `client`;
 
@@ -53,7 +53,7 @@ CREATE TABLE `client` (
 	`is_approved` enum('Yes','No') NOT NULL DEFAULT 'No',
 	`is_disabled` enum('Yes','No') NOT NULL DEFAULT 'No',
 	`is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No'
-	ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `group`;
 
@@ -74,12 +74,12 @@ CREATE TABLE `group` (
 	`is_approved` enum('Yes','No') NOT NULL DEFAULT 'No',
 	`is_disabled` enum('Yes','No') NOT NULL DEFAULT 'No',
 	`is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No'
-	ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 LOCK TABLES `client` WRITE;
 /*!40000 ALTER TABLE `client` DISABLE KEYS */;
 INSERT INTO `client` VALUES
-(1,'Client 001','0.0.0.0/0','localhost', 'public.localhost','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','clientUsersTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','No','No');
+(1,'Client 001','0.0.0.0/0','api.client001.localhost','localhost','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','clientUsersTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','No','No');
 /*!40000 ALTER TABLE `client` ENABLE KEYS */;
 UNLOCK TABLES;
 

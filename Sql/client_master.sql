@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS `user`;
-
 CREATE TABLE `user` (
 	`id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	`client_id` int NOT NULL,
@@ -24,10 +23,9 @@ CREATE TABLE `user` (
 	`is_approved` enum('Yes','No') NOT NULL DEFAULT 'No',
 	`is_disabled` enum('Yes','No') NOT NULL DEFAULT 'No',
 	`is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No'
-	ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `address`;
-
 CREATE TABLE `address` (
 	`id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	`client_id` int NOT NULL,
@@ -42,10 +40,9 @@ CREATE TABLE `address` (
 	`is_approved` enum('Yes','No') NOT NULL DEFAULT 'No',
 	`is_disabled` enum('Yes','No') NOT NULL DEFAULT 'No',
 	`is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No'
-	ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `category`;
-
 CREATE TABLE `category` (
 	`id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	`parent_id` int NOT NULL DEFAULT 0,
@@ -59,15 +56,14 @@ CREATE TABLE `category` (
 	`is_approved` enum('Yes','No') NOT NULL DEFAULT 'No',
 	`is_disabled` enum('Yes','No') NOT NULL DEFAULT 'No',
 	`is_deleted` enum('Yes','No') NOT NULL DEFAULT 'No'
-	ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `api_cache`;
-
 CREATE TABLE `api_cache` (
 	`key` CHAR(128) NOT NULL,
 	`value` BLOB,
 	UNIQUE INDEX api_cache_key (`key`)
-	ENGINE=InnoDB;
+) ENGINE=InnoDB;
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;

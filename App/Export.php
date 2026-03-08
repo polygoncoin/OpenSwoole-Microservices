@@ -202,11 +202,11 @@ class Export
 		if (!is_null(value: $exportFile)) {
 			$tmpFilename = $exportFile;
 			$shellCommand .= ' > ' . escapeshellarg(arg: $tmpFilename);
-			elseif ($this->useTmpFile) {
+		} elseif ($this->useTmpFile) {
 			// Generate temporary file for storing output of shell command on server
 			$tmpFilename = tempnam(directory: sys_get_temp_dir(), prefix: 'CSV');
 			$shellCommand .= ' > ' . escapeshellarg(arg: $tmpFilename);
-			else {
+		} else {
 			$tmpFilename = null;
 			$shellCommand .= ' 2>&1';
 		}
@@ -249,7 +249,7 @@ class Export
 				exportFile: $tmpFilename,
 				downloadFile: $downloadFile
 			);
-			else {
+		} else {
 			// Set headers
 			$headers = $this->getCsvHeaders(filename: $downloadFile);
 

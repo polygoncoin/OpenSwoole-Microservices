@@ -98,7 +98,7 @@ class RedisCache implements CacheInterface
 		$password,
 		$database,
 		$table
-		{
+	) {
 		$this->hostname = $hostname;
 		$this->port = $port;
 		$this->username = $username;
@@ -128,7 +128,7 @@ class RedisCache implements CacheInterface
 				database: $this->database,
 				table: $this->table
 			);
-			catch (\Exception $e) {
+		} catch (\Exception $e) {
 			throw new \Exception(
 				message: $e->getMessage(),
 				code: HttpStatus::$InternalServerError
