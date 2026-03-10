@@ -63,8 +63,8 @@ $server->on(
 		Env::init();
 
 		$http = [];
-		$http['server']['host'] = 'localhost';
-		// $http['server']['host'] = 'public.localhost';
+		$http['server']['host'] = 'api.client001.localhost'; // Auth
+		// $http['server']['host'] = 'localhost'; // Open
 		$http['server']['method'] = $request->server['request_method'];
 
 		if (
