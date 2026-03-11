@@ -39,11 +39,11 @@ class DatabaseOpenCacheKey
 	public static $App = null;
 
 	/**
-	 * Client key
+	 * Customer key
 	 *
 	 * @var null|string
 	 */
-	public static $Client = null;
+	public static $Customer = null;
 
 	/**
 	 * Category key
@@ -55,14 +55,14 @@ class DatabaseOpenCacheKey
 	/**
 	 * Initialize
 	 *
-	 * @param null|int $cID Client Id
+	 * @param null|int $cID Customer Id
 	 *
 	 * @return void
 	 */
 	public static function init($cID): void
 	{
 		self::$App = 'o:app' . Env::$oRepresentation;
-		self::$Client = ":c:{$cID}";
+		self::$Customer = ":c:{$cID}";
 
 		self::$Category = self::$App . ':category';
 	}

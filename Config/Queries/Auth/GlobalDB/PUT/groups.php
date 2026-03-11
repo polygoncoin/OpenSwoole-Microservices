@@ -27,9 +27,9 @@ return [
 			'fetchFromValue' => 'name'
 		],
 		[
-			'column' => 'client_id',
+			'column' => 'customer_id',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'client_id',
+			'fetchFromValue' => 'customer_id',
 			'dataType' => DatabaseDataTypes::$INT
 		],
 		[

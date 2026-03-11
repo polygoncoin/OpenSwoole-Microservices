@@ -68,7 +68,7 @@ class MySql implements DbInterface
 	private $database = null;
 
 	/**
-	 * Mysql Client binary location (One can find this by "which mysql" command)
+	 * Mysql Customer binary location (One can find this by "which mysql" command)
 	 *
 	 * @var null|string
 	 */
@@ -91,7 +91,7 @@ class MySql implements DbInterface
 		}
 		$this->binaryLoc = Env::$mySqlBinaryLocationOnWebServer;
 		if (!file_exists(filename: $this->binaryLoc)) {
-			throw new \Exception(message: 'Issue: missing MySql Client locally');
+			throw new \Exception(message: 'Issue: missing MySql Customer locally');
 		}
 	}
 

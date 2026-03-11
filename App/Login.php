@@ -98,7 +98,7 @@ class Login
 	 */
 	public function init(): bool
 	{
-		$this->api->req->loadClientDetails();
+		$this->api->req->loadCustomerDetails();
 
 		return true;
 	}
@@ -196,12 +196,12 @@ class Login
 	private function loadUserDetails(): void
 	{
 		$cID = $this->api->req->s['cDetails']['id'];
-		$clientUserKey = CacheKey::clientUser(
+		$customerUserKey = CacheKey::customerUser(
 			cID: $cID,
 			username: $this->payload['username']
 		);
-		// Redis - one can find the userID from client username
-		if (!$this->cacheExists(key: $clientUserKey)) {
+		// Redis - one can find the userID from customer username
+		if (!$this->cacheExists(key: $customerUserKey)) {
 			throw new \Exception(
 				message: 'Invalid credentials',
 				code: HttpStatus::$Unauthorized
@@ -209,7 +209,7 @@ class Login
 		}
 		$this->uDetails = json_decode(
 			json: $this->getCache(
-				key: $clientUserKey
+				key: $customerUserKey
 			),
 			associative: true
 		);

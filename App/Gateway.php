@@ -80,7 +80,7 @@ class Gateway
 	 */
 	public function initGateway(): void
 	{
-		$this->api->req->loadClientDetails();
+		$this->api->req->loadCustomerDetails();
 
 		if (!$this->api->req->open) {
 			$this->api->req->auth->loadUserDetails();
@@ -98,8 +98,8 @@ class Gateway
 	{
 		$this->rateLimiter = new RateLimiter();
 
-		// Client Rate Limiting
-		$this->rateLimitClient();
+		// Customer Rate Limiting
+		$this->rateLimitCustomer();
 
 		if (!$this->api->req->open) {
 			// Group Rate Limiting
@@ -197,21 +197,21 @@ class Gateway
 	}
 
 	/**
-	 * Rate Limit Client Request
+	 * Rate Limit Customer Request
 	 *
 	 * @return void
 	 */
-	private function rateLimitClient(): void
+	private function rateLimitCustomer(): void
 	{
 		if (
-			!Env::$enableRateLimitAtClientLevel
+			!Env::$enableRateLimitAtCustomerLevel
 			|| empty($this->api->req->s['cDetails']['rateLimitMaxRequest'])
 			|| empty($this->api->req->s['cDetails']['rateLimitMaxRequestWindow'])
 		) {
 			return;
 		}
 
-		$rateLimitClientPrefix = Env::$rateLimitClientPrefix;
+		$rateLimitCustomerPrefix = Env::$rateLimitCustomerPrefix;
 		$rateLimitMaxRequest =
 				$this->api->req->s['cDetails']['rateLimitMaxRequest'];
 		$rateLimitMaxRequestWindow =
@@ -219,7 +219,7 @@ class Gateway
 		$key = $this->api->req->s['cDetails']['id'];
 
 		$this->rateLimitChecked = $this->checkRateLimit(
-			rateLimitPrefix: $rateLimitClientPrefix,
+			rateLimitPrefix: $rateLimitCustomerPrefix,
 			rateLimitMaxRequest: $rateLimitMaxRequest,
 			rateLimitMaxRequestWindow: $rateLimitMaxRequestWindow,
 			key: $key
@@ -227,7 +227,7 @@ class Gateway
 	}
 
 	/**
-	 * Rate Limit Client Group Request
+	 * Rate Limit Customer Group Request
 	 *
 	 * @return void
 	 */
@@ -259,7 +259,7 @@ class Gateway
 	}
 
 	/**
-	 * Rate Limit Client Group User Request
+	 * Rate Limit Customer Group User Request
 	 *
 	 * @return void
 	 */
@@ -291,7 +291,7 @@ class Gateway
 	}
 
 	/**
-	 * Rate Limit Client Group User Request Delay
+	 * Rate Limit Customer Group User Request Delay
 	 *
 	 * @return void
 	 */

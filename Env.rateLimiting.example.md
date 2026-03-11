@@ -26,7 +26,7 @@ rateLimitServerPort=11211               ; Redis-6379 / Memcached-11211
 ```ini
 ; 1 = true / 0 = false
 enableRateLimitAtIpLevel=0              ; Function = IP
-enableRateLimitAtClientLevel=0          ; Function = Client ID
+enableRateLimitAtCustomerLevel=0          ; Function = Customer ID
 enableRateLimitAtGroupLevel=0           ; Function = Group ID
 enableRateLimitAtUserLevel=0            ; Function = User ID
 enableRateLimitAtRouteLevel=0           ; Function = Configured Route
@@ -39,8 +39,8 @@ enableRateLimitAtUsersRequestLevel=0    ; Function = Request & User ID
 ```ini
 ; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to user)
 rateLimitIPPrefix='IPRL:'
-; Client based Rate Limitng (GRL) Key prefix used in Redis
-rateLimitClientPrefix='CRL:'
+; Customer based Rate Limitng (GRL) Key prefix used in Redis
+rateLimitCustomerPrefix='CRL:'
 ; Group based Rate Limitng (GRL) Key prefix used in Redis
 rateLimitGroupPrefix='GRL:'
 ; User based Rate Limitng (URL) Key prefix used in Redis
@@ -70,12 +70,12 @@ rateLimitUsersMaxRequest=1             ; Max one request allowed for 10 seconds
 rateLimitUsersMaxRequestWindow=10      ; Max one request allowed for 10 seconds
 ```
 
-## Client/Group/User based Rate Limiting details are set in respective DB Tables for records
+## Customer/Group/User based Rate Limiting details are set in respective DB Tables for records
 
 ```SQL
--- Client level
-`client`.`rateLimitMaxRequest` int DEFAULT NULL,
-`client`.`rateLimitMaxRequestWindow` int DEFAULT NULL,
+-- Customer level
+`customer`.`rateLimitMaxRequest` int DEFAULT NULL,
+`customer`.`rateLimitMaxRequestWindow` int DEFAULT NULL,
 
 -- Group level
 `group`.`rateLimitMaxRequest` int DEFAULT NULL,

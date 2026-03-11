@@ -1,0 +1,90 @@
+<?php
+
+/**
+ * API Query config
+ * php version 8.3
+ *
+ * @category  API_Query_Config
+ * @package   Openswoole_Microservices
+ * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
+ * @copyright © 2026 Ramesh N. Jangid (Sharma)
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
+
+namespace Microservices\Config\Queries\Auth\CustomerDB\Groups\UserGroup\PATCH;
+
+use Microservices\App\DatabaseDataTypes;
+
+return [
+	'__QUERY__' => "UPDATE `{$this->api->req->usersTable}` SET __SET__ WHERE __WHERE__",
+	'__SET__' => [
+		[
+			'column' => 'firstname',
+			'fetchFrom' => 'payload',
+			'fetchFromValue' => 'firstname'
+		],
+		[
+			'column' => 'lastname',
+			'fetchFrom' => 'payload',
+			'fetchFromValue' => 'lastname'
+		],
+		[
+			'column' => 'email',
+			'fetchFrom' => 'payload',
+			'fetchFromValue' => 'email'
+		],
+	],
+	'__WHERE__' => [
+		[
+			'column' => 'is_deleted',
+			'fetchFrom' => 'custom',
+			'fetchFromValue' => 'No'
+		],
+		[
+			'column' => 'id',
+			'fetchFrom' => 'routeParams',
+			'fetchFromValue' => 'id',
+			'dataType' => DatabaseDataTypes::$PrimaryKey
+		]
+	],
+	'__SUB-QUERY__' => [
+		'address' => [
+			'__QUERY__' => 'UPDATE `address` SET __SET__ WHERE __WHERE__',
+			'__SET__' => [
+				[
+					'column' => 'address',
+					'fetchFrom' => 'payload',
+					'fetchFromValue' => 'address'
+				]
+			],
+			'__WHERE__' => [
+				[
+					'column' => 'is_deleted',
+					'fetchFrom' => 'custom',
+					'fetchFromValue' => 'No'
+				],
+				[
+					'column' => 'id',
+					'fetchFrom' => 'payload',
+					'fetchFromValue' => 'id',
+					'dataType' => DatabaseDataTypes::$PrimaryKey
+				],
+			],
+		]
+	],
+	'__VALIDATE__' => [
+		[
+			'fn' => 'primaryKeyExist',
+			'fnArgs' => [
+				'table' => ['custom', $this->api->req->usersTable],
+				'primary' => ['custom', 'id'],
+				'id' => ['routeParams', 'id']
+			],
+			'errorMessage' => 'Invalid registration id'
+		],
+	],
+	'useHierarchy' => true,
+	'idempotentWindow' => 10
+];

@@ -44,11 +44,11 @@ reloadRestrictedCidr='0.0.0.0/0'        ; reloadRequestRoutePrefix in .env.enabl
 
 ## Configuring in DB Tables
 
-To enable CIDR settings at Client / Group / User level one can set them in respective table and record
+To enable CIDR settings at Customer / Group / User level one can set them in respective table and record
 
 ```SQL
--- Client level
-`client`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
+-- Customer level
+`customer`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
 
 -- Group level
 `group`.`allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',

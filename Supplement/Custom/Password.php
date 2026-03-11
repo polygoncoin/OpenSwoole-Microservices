@@ -108,7 +108,7 @@ class Password implements CustomInterface
 			DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
 
 			$cID = $this->api->req->s['cDetails']['id'];
-			$cu_key = CacheKey::clientUser(
+			$cu_key = CacheKey::customerUser(
 				cID: $cID,
 				username: $userName
 			);

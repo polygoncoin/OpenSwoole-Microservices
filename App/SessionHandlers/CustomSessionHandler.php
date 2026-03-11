@@ -294,7 +294,7 @@ class CustomSessionHandler implements
 	 */
 	public function destroy($sessionId): bool
 	{
-		// Deleting session cookies set on client end
+		// Deleting session cookies set on customer end
 		$this->unsetSessionCookie();
 
 		return $this->container->deleteSession(sessionId: $sessionId);

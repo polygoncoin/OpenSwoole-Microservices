@@ -139,7 +139,7 @@ class RouteParser
 					. DIRECTORY_SEPARATOR . $this->api->req->METHOD . 'routes.php';
 			} else {
 				$routeFileLocation = Constants::$AUTH_ROUTES_DIR
-					. DIRECTORY_SEPARATOR . 'ClientDB'
+					. DIRECTORY_SEPARATOR . 'CustomerDB'
 					. DIRECTORY_SEPARATOR . 'Groups'
 					. DIRECTORY_SEPARATOR . $this->api->req->s['gDetails']['name']
 					. DIRECTORY_SEPARATOR . $this->api->req->METHOD . 'routes.php';

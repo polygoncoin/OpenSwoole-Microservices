@@ -29,7 +29,7 @@ return [
 			// 'fetchFrom' => 'queryParams', // Fetch value from query string
 			// 'fetchFrom' => 'payload', // Fetch value from payload
 			// 'fetchFrom' => 'function', // Fetch value from function
-			// 'fetchFrom' => 'cDetails', // Fetch value from client Details
+			// 'fetchFrom' => 'cDetails', // Fetch value from customer Details
 			// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 			// 'fetchFrom' => 'custom', // Static values
 			// 'fetchFrom' => 'variables', // to fetch values as per __VARIABLES__ keys
@@ -59,7 +59,7 @@ return [
 			// 'fetchFrom' => 'queryParams', // Fetch value from query string
 			// 'fetchFrom' => 'payload', // Fetch value from payload
 			// 'fetchFrom' => 'function', // Fetch value from function
-			// 'fetchFrom' => 'cDetails', // Fetch value from client Details
+			// 'fetchFrom' => 'cDetails', // Fetch value from customer Details
 			// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 			// 'fetchFrom' => 'custom', // Static values
 			// 'fetchFrom' => 'variables', // to fetch values as per __VARIABLES__ keys
@@ -110,7 +110,7 @@ return [
 					// 'fetchFrom' => 'queryParams', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetails', // Fetch value from client Details
+					// 'fetchFrom' => 'cDetails', // Fetch value from customer Details
 					// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 					// 'fetchFrom' => 'custom', // Static values
 					// 'fetchFrom' => 'variables', // to fetch values as per current module/<sub-key> __VARIABLES__ keys
@@ -169,7 +169,7 @@ return [
 					// 'fetchFrom' => 'queryParams', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetails', // Fetch value from client Details
+					// 'fetchFrom' => 'cDetails', // Fetch value from customer Details
 					// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 					// 'fetchFrom' => 'custom', // Static values
 					// 'fetchFrom' => '__INSERT-IDs__', // Sql Insert Ids
@@ -187,7 +187,7 @@ return [
 					// 'fetchFrom' => 'queryParams', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetails', // Fetch value from client Details
+					// 'fetchFrom' => 'cDetails', // Fetch value from customer Details
 					// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 					// 'fetchFrom' => 'custom', // Static values
 					// 'fetchFrom' => '__INSERT-IDs__', // Sql Insert Ids
@@ -203,7 +203,7 @@ return [
 					// 'fetchFrom' => 'queryParams', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetails', // Fetch value from client Details
+					// 'fetchFrom' => 'cDetails', // Fetch value from customer Details
 					// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 					// 'fetchFrom' => 'custom', // Static values
 					// 'fetchFrom' => '__INSERT-IDs__', // Sql Insert Ids
@@ -285,7 +285,7 @@ return [
 ```PHP
 '__SUB-QUERY__' => [
 	//Here the module1 properties are reused for write operation.
-	'module1' => include $Constants::$ROOT . DIRECTORY_SEPARATOR . 'Config/Queries/ClientDB/Common/reusefilename.php',
+	'module1' => include $Constants::$ROOT . DIRECTORY_SEPARATOR . 'Config/Queries/CustomerDB/Common/reusefilename.php',
 ]
 ```
 
@@ -306,7 +306,7 @@ return [
 			// 'fetchFrom' => 'queryParams', // Fetch value from query string
 			// 'fetchFrom' => 'payload', // Fetch value from payload
 			// 'fetchFrom' => 'function', // Fetch value from function
-			// 'fetchFrom' => 'cDetails', // Fetch value from client Details
+			// 'fetchFrom' => 'cDetails', // Fetch value from customer Details
 			// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 			// 'fetchFrom' => 'custom', // Static values
 			'fetchFromValue' => 'id',                       // key (id)
@@ -333,7 +333,7 @@ return [
 			// 'fetchFrom' => 'queryParams', // Fetch value from query string
 			// 'fetchFrom' => 'payload', // Fetch value from payload
 			// 'fetchFrom' => 'function', // Fetch value from function
-			// 'fetchFrom' => 'cDetails', // Fetch value from client Details
+			// 'fetchFrom' => 'cDetails', // Fetch value from customer Details
 			// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 			// 'fetchFrom' => 'custom', // Static values
 			'fetchFromValue' => 'id',                       // key (id)
@@ -366,7 +366,7 @@ return [
 					// 'fetchFrom' => 'queryParams', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetails', // Fetch value from client Details
+					// 'fetchFrom' => 'cDetails', // Fetch value from customer Details
 					// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 					// 'fetchFrom' => 'custom', // Static values
 					'fetchFromValue' => 'id',                       // key (id)
@@ -415,7 +415,7 @@ return [
 					// 'fetchFrom' => 'queryParams', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetails', // Fetch value from client Details
+					// 'fetchFrom' => 'cDetails', // Fetch value from customer Details
 					// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 					// 'fetchFrom' => 'custom', // Static values
 					'fetchFromValue' => 'address'
@@ -429,7 +429,7 @@ return [
 					// 'fetchFrom' => 'queryParams', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetails', // Fetch value from client Details
+					// 'fetchFrom' => 'cDetails', // Fetch value from customer Details
 					// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 					// 'fetchFrom' => 'custom', // Static values
 					'fetchFromValue' => 'address'
@@ -444,7 +444,7 @@ return [
 					// 'fetchFrom' => 'queryParams', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetails', // Fetch value from client Details
+					// 'fetchFrom' => 'cDetails', // Fetch value from customer Details
 					// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 					// 'fetchFrom' => 'custom', // Static values
 					'fetchFromValue' => 'address'
@@ -519,7 +519,7 @@ return [
 
 ## Database
 
-- Dedicated database for respective client can be configured
+- Dedicated database for respective customer can be configured
 - This can also handle Master / Slave implementaion respectively
 
 ## fetchFrom

@@ -21,7 +21,7 @@ return [
 	'__QUERY__' => "INSERT INTO `{$this->api->req->usersTable}` SET __SET__",
 	'__SET__' => [
 		[
-			'column' => 'client_id',
+			'column' => 'customer_id',
 			'fetchFrom' => 'cDetails',
 			'fetchFromValue' => 'id'
 		],

@@ -51,14 +51,14 @@ class DbFunctions
 	public static $gDbServer = null;
 
 	/**
-	 * Client Master
+	 * Customer Master
 	 *
 	 * @var Object[]
 	 */
 	public static $masterDb = [];
 
 	/**
-	 * Client Slave
+	 * Customer Slave
 	 *
 	 * @var Object[]
 	 */
@@ -73,14 +73,14 @@ class DbFunctions
 	public static $gCacheServer = null;
 
 	/**
-	 * Client Master
+	 * Customer Master
 	 *
 	 * @var Object[]
 	 */
 	public static $masterCache = [];
 
 	/**
-	 * Client Slave
+	 * Customer Slave
 	 *
 	 * @var Object[]
 	 */
@@ -436,7 +436,7 @@ class DbFunctions
 	/**
 	 * Returns Cache Master Server Details
 	 *
-	 * @param array $cDetails Client details
+	 * @param array $cDetails Customer details
 	 *
 	 * @return array
 	 */
@@ -456,7 +456,7 @@ class DbFunctions
 	/**
 	 * Returns Cache Slave Server Details
 	 *
-	 * @param array $cDetails Client details
+	 * @param array $cDetails Customer details
 	 *
 	 * @return array
 	 */
@@ -476,7 +476,7 @@ class DbFunctions
 	/**
 	 * Returns Db Master Server Details
 	 *
-	 * @param array $cDetails Client details
+	 * @param array $cDetails Customer details
 	 *
 	 * @return array
 	 */
@@ -495,7 +495,7 @@ class DbFunctions
 	/**
 	 * Returns Database Slave Server Details
 	 *
-	 * @param array $cDetails Client details
+	 * @param array $cDetails Customer details
 	 *
 	 * @return array
 	 */

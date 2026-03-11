@@ -20,7 +20,7 @@ xmlhttp . onreadystatechange = function() {
 };
 
 var payload = {
-	"username":"client_1_user_1",
+	"username":"customer_1_user_1",
 	"password":"shames11"
 };
 

@@ -66,10 +66,10 @@ gDbServerQueryPlaceholder='Named' ; Named(:param) / Unnamed(?)
 
 ```ini
 ; Master database on global MySql server
-masterDatabase='client_master'             ; contains all entities necessary for a new client
+masterDatabase='customer_master'             ; contains all entities necessary for a new customer
 
 ; Tables
-clientsTable='client'
+customerTable='customer'
 groupsTable='group'
 
 ; Sql query placeholder
@@ -84,7 +84,7 @@ maxResultsPerPage=1000
 
 As the heading describes below are the settings for global counter for the primary Key column of respective table. The setting when enable will generate a global auto-increment counter<br />
 
-This enables identify client details easily while moving him from a common database for all to a dedicated client X database.
+This enables identify customer details easily while moving him from a common database for all to a dedicated customer X database.
 
 Enable below config for same.
 

@@ -110,7 +110,7 @@ class Routes
 		} else {
 			$userRoutesFolder = Constants::$WWW . $this->routesFolder
 				. DIRECTORY_SEPARATOR . 'Auth'
-				. DIRECTORY_SEPARATOR . 'ClientDB'
+				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . $this->api->req->s['gDetails']['name'];
 		}

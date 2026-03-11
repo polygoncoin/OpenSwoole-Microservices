@@ -42,7 +42,7 @@ $homeURL = 'http://127.0.0.1:9501';
 $response[] = include AUTH_GET . DIRECTORY_SEPARATOR . 'Reload.php';
 
 $payload = [
-	'username' => 'client_1_group_1_user_1',
+	'username' => 'customer_1_group_1_user_1',
 	'password' => 'shames11'
 ];
 $response[] = include AUTH_POST . DIRECTORY_SEPARATOR . 'Login.php';
@@ -76,7 +76,7 @@ $response[] = include AUTH_POST . DIRECTORY_SEPARATOR . 'CategoryConfig.php';
 
 // Admin login
 $payload = [
-	'username' => 'client_1_admin_1',
+	'username' => 'customer_1_admin_1',
 	'password' => 'shames11'
 ];
 $response[] = include AUTH_POST . DIRECTORY_SEPARATOR . 'Login.php';

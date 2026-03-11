@@ -75,7 +75,7 @@ class Reload
 				SELECT
 					 *
 				FROM
-					`{$this->execPhpFunc(param: getenv(name: 'clientsTable'))}` C
+					`{$this->execPhpFunc(param: getenv(name: 'customerTable'))}` C
 				",
 			params: []
 		);
@@ -93,7 +93,7 @@ class Reload
 				}
 			}
 			if (!empty($cRow['open_api_domain'])) {
-				$c_key = CacheKey::clientOpenToWeb(
+				$c_key = CacheKey::customerOpenToWeb(
 					hostname: $cRow['open_api_domain']
 				);
 				DbFunctions::$gCacheServer->setCache(
@@ -101,7 +101,7 @@ class Reload
 					value: json_encode(value: $cRow)
 				);
 			}
-			$c_key = CacheKey::client(hostname: $cRow['api_domain']);
+			$c_key = CacheKey::customer(hostname: $cRow['api_domain']);
 			DbFunctions::$gCacheServer->setCache(
 				key: $c_key,
 				value: json_encode(value: $cRow)
@@ -140,7 +140,7 @@ class Reload
 						);
 					}
 				}
-				$cu_key = CacheKey::clientUser(
+				$cu_key = CacheKey::customerUser(
 					cID: $cRow['id'],
 					username: $uRow['username']
 				);

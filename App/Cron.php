@@ -65,7 +65,7 @@ class Cron
 	public function init(): bool
 	{
 		$routeFileLocation = Constants::$AUTH_ROUTES_DIR
-			. DIRECTORY_SEPARATOR . 'ClientDB'
+			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Common'
 			. DIRECTORY_SEPARATOR . 'Cron'
 			. DIRECTORY_SEPARATOR . $this->api->req->METHOD . 'routes.php';

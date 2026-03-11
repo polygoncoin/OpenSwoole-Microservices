@@ -71,7 +71,7 @@ class Env
 	public static $gDbServerQueryPlaceholder = null;
 
 	public static $masterDatabase = null;
-	public static $clientsTable = null;
+	public static $customerTable = null;
 	public static $groupsTable = null;
 	public static $queryPlaceholder = null;
 	public static $defaultPerPage = null;
@@ -127,7 +127,7 @@ class Env
 
 	public static $enableRateLimiting = null;
 	public static $enableRateLimitAtIpLevel = null;
-	public static $enableRateLimitAtClientLevel = null;
+	public static $enableRateLimitAtCustomerLevel = null;
 	public static $enableRateLimitAtGroupLevel = null;
 	public static $enableRateLimitAtUserLevel = null;
 	public static $enableRateLimitAtRouteLevel = null;
@@ -139,7 +139,7 @@ class Env
 	public static $rateLimitServerPort = null;
 
 	public static $rateLimitIPPrefix = null;
-	public static $rateLimitClientPrefix = null;
+	public static $rateLimitCustomerPrefix = null;
 	public static $rateLimitGroupPrefix = null;
 	public static $rateLimitUserPrefix = null;
 	public static $rateLimitRoutePrefix = null;
@@ -218,7 +218,7 @@ class Env
 		self::$gDbServerQueryPlaceholder = getenv(name: 'gDbServerQueryPlaceholder');
 
 		self::$masterDatabase = getenv(name: 'masterDatabase');
-		self::$clientsTable = getenv(name: 'clientsTable');
+		self::$customerTable = getenv(name: 'customerTable');
 		self::$groupsTable = getenv(name: 'groupsTable');
 		self::$queryPlaceholder = getenv(name: 'queryPlaceholder');
 		self::$defaultPerPage = (int)getenv(name: 'defaultPerPage');
@@ -274,7 +274,7 @@ class Env
 
 		self::$enableRateLimiting = (bool)((int)getenv(name: 'enableRateLimiting'));
 		self::$enableRateLimitAtIpLevel = (bool)((int)getenv(name: 'enableRateLimitAtIpLevel'));
-		self::$enableRateLimitAtClientLevel = (bool)((int)getenv(name: 'enableRateLimitAtClientLevel'));
+		self::$enableRateLimitAtCustomerLevel = (bool)((int)getenv(name: 'enableRateLimitAtCustomerLevel'));
 		self::$enableRateLimitAtGroupLevel = (bool)((int)getenv(name: 'enableRateLimitAtGroupLevel'));
 		self::$enableRateLimitAtUserLevel = (bool)((int)getenv(name: 'enableRateLimitAtUserLevel'));
 		self::$enableRateLimitAtRouteLevel = (bool)((int)getenv(name: 'enableRateLimitAtRouteLevel'));
@@ -286,7 +286,7 @@ class Env
 		self::$rateLimitServerPort = (int)getenv(name: 'rateLimitServerPort');
 
 		self::$rateLimitIPPrefix = getenv(name: 'rateLimitIPPrefix');
-		self::$rateLimitClientPrefix = getenv(name: 'rateLimitClientPrefix');
+		self::$rateLimitCustomerPrefix = getenv(name: 'rateLimitCustomerPrefix');
 		self::$rateLimitGroupPrefix = getenv(name: 'rateLimitGroupPrefix');
 		self::$rateLimitUserPrefix = getenv(name: 'rateLimitUserPrefix');
 		self::$rateLimitRoutePrefix = getenv(name: 'rateLimitRoutePrefix');

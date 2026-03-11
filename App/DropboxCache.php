@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Client side Dropbox Caching
+ * Customer side Dropbox Caching
  * php version 8.3
  *
- * @category  ClientDropboxCache
+ * @category  CustomerDropboxCache
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -21,10 +21,10 @@ use Microservices\App\HttpStatus;
 use Microservices\App\DropboxCacheHandlers\StreamVideo;
 
 /**
- * Client side Caching via E-tags
+ * Customer side Caching via E-tags
  * php version 8.3
  *
- * @category  ClientDropboxCache_Etag
+ * @category  CustomerDropboxCache_Etag
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)

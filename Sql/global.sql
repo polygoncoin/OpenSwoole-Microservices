@@ -4,8 +4,8 @@ CREATE TABLE `global_counter` (
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `client`;
-CREATE TABLE `client` (
+DROP TABLE IF EXISTS `customer`;
+CREATE TABLE `customer` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) DEFAULT NULL,
     `allowed_cidr` TEXT,
@@ -59,7 +59,7 @@ DROP TABLE IF EXISTS `group`;
 CREATE TABLE `group` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(100) NOT NULL,
-    `client_id` INT DEFAULT NULL,
+    `customer_id` INT DEFAULT NULL,
     `allowed_cidr` TEXT,
     `rateLimitMaxRequest` INT DEFAULT NULL,
     `rateLimitMaxRequestWindow` INT DEFAULT NULL,
@@ -76,13 +76,13 @@ CREATE TABLE `group` (
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
-LOCK TABLES `client` WRITE;
-INSERT INTO `client` VALUES
-(1,'Client 001','0.0.0.0/0','api.client001.localhost','localhost','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','clientUsersTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes', 'No','No');
+LOCK TABLES `customer` WRITE;
+INSERT INTO `customer` VALUES
+(1,'Customer 001','0.0.0.0/0','api.customer001.localhost','localhost','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','customerUsersTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes', 'No','No');
 UNLOCK TABLES;
 
 LOCK TABLES `group` WRITE;
 INSERT INTO `group` VALUES
-(2,'Client001UserGroup1',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes', 'No','No'),
+(2,'Customer001UserGroup1',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes', 'No','No'),
 (3,'AdminGroup',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes', 'No','No');
 UNLOCK TABLES;

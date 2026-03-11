@@ -37,11 +37,11 @@ class DatabaseCacheKey
 	public static $App = null;
 
 	/**
-	 * Client key
+	 * Customer key
 	 *
-	 * @var null|string $Client
+	 * @var null|string $Customer
 	 */
-	public static $Client = null;
+	public static $Customer = null;
 
 	/**
 	 * Group key
@@ -74,7 +74,7 @@ class DatabaseCacheKey
 	/**
 	 * Initialize
 	 *
-	 * @param null|int $cID Client Id
+	 * @param null|int $cID Customer Id
 	 * @param null|int $gID  Group Id
 	 * @param null|int $uID   User Id
 	 *
@@ -86,11 +86,11 @@ class DatabaseCacheKey
 		$uID = null
 	): void {
 		self::$App = 'app';
-		self::$Client = $cID !== null ? ":c:{$cID}" : '';
+		self::$Customer = $cID !== null ? ":c:{$cID}" : '';
 		self::$Group = $gID !== null ? ":g:{$gID}" : '';
 		self::$User = $uID !== null ? ":u:{$uID}" : '';
 
-		self::$Category = self::$App . self::$Client . self::$Group . ':category';
-		self::$Category1 = self::$App . self::$Client . self::$Group . ':category:1';
+		self::$Category = self::$App . self::$Customer . self::$Group . ':category';
+		self::$Category1 = self::$App . self::$Customer . self::$Group . ':category:1';
 	}
 }

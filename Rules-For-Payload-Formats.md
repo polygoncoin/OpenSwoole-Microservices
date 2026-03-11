@@ -55,7 +55,7 @@ var payload = [
 ## HttpRequest Variables
 
 - **$session\['uDetails'\]** Session Data.
-This remains same for every request and contains keys like id, group\_id, client\_id
+This remains same for every request and contains keys like id, group\_id, customer\_id
 
 - **$session\['routeParams'\]** Data passed in URI.
 Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $session\['routeParams'\] will hold these dynamic values as below.
@@ -71,7 +71,7 @@ For **GET** method, the **$\_GET** is the payload.
 
 ## Hierarchy Configs
 
-- Config/Queries/ClientDB/GET/Category.php
+- Config/Queries/CustomerDB/GET/Category.php
 >In this file one can confirm how previous select data is used recursively in subQuery select as indicated by useHierarchy flag.
 
 ```PHP
@@ -82,7 +82,7 @@ For **GET** method, the **$\_GET** is the payload.
 ],
 ```
 
-- Config/Queries/ClientDB/POST/Category.php .Here a request can handle the hierarchy for write operations.
+- Config/Queries/CustomerDB/POST/Category.php .Here a request can handle the hierarchy for write operations.
 
 ```PHP
 return [

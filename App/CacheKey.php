@@ -30,38 +30,38 @@ namespace Microservices\App;
 class CacheKey
 {
 	/**
-	 * Get Client Key
+	 * Get Customer Key
 	 *
 	 * @param string $hostname Hostname
 	 *
 	 * @return string
 	 */
-	public static function clientOpenToWeb(&$hostname): string
+	public static function customerOpenToWeb(&$hostname): string
 	{
 		return "c:otw:{$hostname}";
 	}
 
 	/**
-	 * Get Client Key
+	 * Get Customer Key
 	 *
 	 * @param string $hostname Hostname
 	 *
 	 * @return string
 	 */
-	public static function client($hostname): string
+	public static function customer($hostname): string
 	{
 		return "c:{$hostname}";
 	}
 
 	/**
-	 * Get Client User Key
+	 * Get Customer User Key
 	 *
-	 * @param int    $cID Client Id
+	 * @param int    $cID Customer Id
 	 * @param string $username Hostname
 	 *
 	 * @return string
 	 */
-	public static function clientUser($cID, $username): string
+	public static function customerUser($cID, $username): string
 	{
 		return "cu:{$cID}:u:{$username}";
 	}
@@ -79,9 +79,9 @@ class CacheKey
 	}
 
 	/**
-	 * Get Client CIDR Key
+	 * Get Customer CIDR Key
 	 *
-	 * @param int $cID Client Id
+	 * @param int $cID Customer Id
 	 *
 	 * @return string
 	 */
@@ -105,7 +105,7 @@ class CacheKey
 	/**
 	 * Get User CIDR Key
 	 *
-	 * @param int $cID Client Id
+	 * @param int $cID Customer Id
 	 * @param int $uID User Id
 	 *
 	 * @return string

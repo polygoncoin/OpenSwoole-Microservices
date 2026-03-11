@@ -104,14 +104,14 @@ class HttpRequest
 	public $rParser = null;
 
 	/**
-	 * Client Id
+	 * Customer Id
 	 *
 	 * @var null|int
 	 */
 	public $cId = null;
 
 	/**
-	 * Client user table
+	 * Customer user table
 	 *
 	 * @var null|string
 	 */
@@ -243,7 +243,7 @@ class HttpRequest
 	 */
 	public function init(): bool
 	{
-		$this->loadClientDetails();
+		$this->loadCustomerDetails();
 
 		if (!$this->open) {
 			$this->auth->loadUserDetails();
@@ -257,12 +257,12 @@ class HttpRequest
 	}
 
 	/**
-	 * Load Client Details
+	 * Load Customer Details
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function loadClientDetails(): void
+	public function loadCustomerDetails(): void
 	{
 		if (isset($this->s['cDetails'])) {
 			return;
@@ -271,9 +271,9 @@ class HttpRequest
 		DbFunctions::connectGlobalCache();
 
 		if ($this->open) {
-			$cKey = CacheKey::clientOpenToWeb(hostname: $this->HOST);
+			$cKey = CacheKey::customerOpenToWeb(hostname: $this->HOST);
 		} else {
-			$cKey = CacheKey::client(hostname: $this->HOST);
+			$cKey = CacheKey::customer(hostname: $this->HOST);
 		}
 		if (!DbFunctions::$gCacheServer->cacheExists(key: $cKey)) {
 			throw new \Exception(

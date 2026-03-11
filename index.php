@@ -51,7 +51,14 @@ $server->on(
 	function(Request $request, Response $response): void {
 
 		// Load .env(s)
-		foreach (['.env','.env.rateLimiting','.env.enable','.env.cidr','.env.container'] as $envFilename) {
+		foreach ([
+			'.env',
+			'.env.cidr',
+			'.env.customer.container',
+			'.env.enable',
+			'.env.global.container',
+			'.env.rateLimiting'
+		] as $envFilename) {
 			$env = parse_ini_file(filename: __DIR__ . DIRECTORY_SEPARATOR . $envFilename);
 			foreach ($env as $key => $value) {
 				putenv(assignment: "{$key}={$value}");
@@ -63,7 +70,7 @@ $server->on(
 		Env::init();
 
 		$http = [];
-		$http['server']['host'] = 'api.client001.localhost'; // Auth
+		$http['server']['host'] = 'api.customer001.localhost'; // Auth
 		// $http['server']['host'] = 'localhost'; // Open
 		$http['server']['method'] = $request->server['request_method'];
 

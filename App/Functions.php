@@ -287,7 +287,7 @@ class Functions
 		// Check if the user is behind a proxy and the IP is forwarded
 		elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
 			// HTTP_X_FORWARDED_FOR can contain a comma-separated list of IPs
-			// The first one is typically the original client IP
+			// The first one is typically the original customer IP
 			$ipList = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
 			$ip = trim($ipList[0]);
 		}

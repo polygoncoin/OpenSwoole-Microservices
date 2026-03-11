@@ -26,7 +26,7 @@ This is a light & easy low code API generator using configuration arrays. It can
 ## SQL Files
 
 - **Sql/global.sql** Import this SQL file on your **MySql global** instance
-- **Sql/client\_master.sql** Import this SQL file on your **MySql client** instance
+- **Sql/customer\_master.sql** Import this SQL file on your **MySql customer** instance
 
 - **Note**: One can import both sql's in a single database to start with. Just configure the same details in the environment files.
 
@@ -81,7 +81,7 @@ These files locations are used in routes config to be used for generating respon
 #### /Config/Queries
 
 - **/Config/Queries/Auth/GlobalDB** for global database.
-- **/Config/Queries/Auth/ClientDB** for client (including all hosts and their databases).
+- **/Config/Queries/Auth/CustomerDB** for customer (including all hosts and their databases).
 - **/Config/Queries/Open** for Open to Web API's (No Authentication).
 
 #### Files

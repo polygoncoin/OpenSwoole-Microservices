@@ -49,7 +49,7 @@ class Export
 	public $useTmpFile = false;
 
 	/**
-	 * Used to remove file once CSV content is transferred on client machine
+	 * Used to remove file once CSV content is transferred on customer machine
 	 *
 	 * @var bool
 	 */
@@ -217,7 +217,7 @@ class Export
 	/**
 	 * Initialize download.
 	 *
-	 * @param $downloadFile Name of CSV file on client side.
+	 * @param $downloadFile Name of CSV file on customer side.
 	 * @param $sql          Sql query
 	 * @param $params       Sql query params
 	 * @param $exportFile   Absolute file path with filename
@@ -292,7 +292,7 @@ class Export
 	/**
 	 * Set CSV file headers
 	 *
-	 * @param $filename Name to be used to save CSV file on client machine.
+	 * @param $filename Name to be used to save CSV file on customer machine.
 	 *
 	 * @return array
 	 */
@@ -312,7 +312,7 @@ class Export
 	 * Get data from CSV file
 	 *
 	 * @param $exportFile   Absolute file location of CSV file.
-	 * @param $downloadFile Name to be used to save CSV file on client machine.
+	 * @param $downloadFile Name to be used to save CSV file on customer machine.
 	 *
 	 * @return array
 	 */

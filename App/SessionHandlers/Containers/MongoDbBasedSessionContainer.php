@@ -224,7 +224,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 				$this->MONGODB_URI = 'mongodb://' . $UP
 					. $this->MONGODB_HOSTNAME . ':' . $this->MONGODB_PORT;
 			}
-			$this->mongo = new \MongoDB\Client($this->MONGODB_URI);
+			$this->mongo = new \MongoDB\Customer($this->MONGODB_URI);
 
 			// Select a database
 			$this->database = $this->mongo->selectDatabase($this->MONGODB_DATABASE);
