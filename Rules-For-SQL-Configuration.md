@@ -252,8 +252,8 @@ return [
 	// Control response time as per number of hits by configuring lags in seconds as below
 	'responseLag' => [
 		// No of Request => Seconds Lag
-			=> 0,
-			=> 10,
+		10	=> 0,
+		20	=> 10,
 	],
 
 	// Any among below can be used for DML operations (These are Optional keys)
@@ -285,7 +285,7 @@ return [
 ```PHP
 '__SUB-QUERY__' => [
 	//Here the module1 properties are reused for write operation.
-	'module1' => include $Constants::$DOC_ROOT . DIRECTORY_SEPARATOR . 'Config/Queries/ClientDB/Common/reusefilename.php',
+	'module1' => include $Constants::$ROOT . DIRECTORY_SEPARATOR . 'Config/Queries/ClientDB/Common/reusefilename.php',
 ]
 ```
 
@@ -491,8 +491,8 @@ return [
 	// Control response time as per number of hits by configuring lags in seconds as below
 	'responseLag' => [
 		// No of Request => Seconds Lag
-			=> 0,
-			=> 10,
+		10	=> 0,
+		20	=> 10,
 	],
 
 	// Any among below can be used for DML operations (These are Optional keys)

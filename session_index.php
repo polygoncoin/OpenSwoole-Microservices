@@ -22,10 +22,10 @@ use Microservices\App\Env;
 use Microservices\App\Start;
 use Microservices\TestCases\Tests;
 
-define('PUBLIC_HTML', __DIR__);
+define('ROOT', __DIR__);
 define('ROUTE_URL_PARAM', 'route');
 
-require_once PUBLIC_HTML . DIRECTORY_SEPARATOR . 'Autoload.php';
+require_once ROOT . DIRECTORY_SEPARATOR . 'Autoload.php';
 spl_autoload_register(callback:  'Microservices\Autoload::register');
 
 $server = new Server('127.0.0.1', 9501);

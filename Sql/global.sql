@@ -49,9 +49,9 @@ CREATE TABLE `client` (
     `approved_on` TIMESTAMP NULL DEFAULT NULL,
     `updated_by` INT DEFAULT NULL,
     `updated_on` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `is_approved` ENUM('Yes','No') NOT NULL DEFAULT 'No',
-    `is_disabled` ENUM('Yes','No') NOT NULL DEFAULT 'No',
-    `is_deleted` ENUM('Yes','No') NOT NULL DEFAULT 'No',
+    `is_approved` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
+    `is_disabled` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
+    `is_deleted` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
@@ -70,19 +70,19 @@ CREATE TABLE `group` (
     `approved_on` TIMESTAMP NULL DEFAULT NULL,
     `updated_by` INT DEFAULT NULL,
     `updated_on` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `is_approved` ENUM('Yes','No') NOT NULL DEFAULT 'No',
-    `is_disabled` ENUM('Yes','No') NOT NULL DEFAULT 'No',
-    `is_deleted` ENUM('Yes','No') NOT NULL DEFAULT 'No',
+    `is_approved` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
+    `is_disabled` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
+    `is_deleted` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
 LOCK TABLES `client` WRITE;
 INSERT INTO `client` VALUES
-(1,'Client 001','0.0.0.0/0','api.client001.localhost','localhost','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','clientUsersTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','No','No');
+(1,'Client 001','0.0.0.0/0','api.client001.localhost','localhost','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','clientUsersTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable','gCacheServerType','gCacheServerHostname','gCacheServerPort','gCacheServerUsername','gCacheServerPassword','gCacheServerDatabase','gCacheServerTable',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes', 'No','No');
 UNLOCK TABLES;
 
 LOCK TABLES `group` WRITE;
 INSERT INTO `group` VALUES
-(2,'Client001UserGroup1',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes','No','No'),
-(3,'AdminGroup',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes','No','No');
+(2,'Client001UserGroup1',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes', 'No','No'),
+(3,'AdminGroup',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes', 'No','No');
 UNLOCK TABLES;

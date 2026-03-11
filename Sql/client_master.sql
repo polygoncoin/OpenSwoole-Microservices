@@ -20,9 +20,9 @@ CREATE TABLE `user` (
     `approved_on` TIMESTAMP NULL DEFAULT NULL,
     `updated_by` INT DEFAULT NULL,
     `updated_on` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `is_approved` ENUM('Yes','No') NOT NULL DEFAULT 'No',
-    `is_disabled` ENUM('Yes','No') NOT NULL DEFAULT 'No',
-    `is_deleted` ENUM('Yes','No') NOT NULL DEFAULT 'No',
+    `is_approved` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
+    `is_disabled` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
+    `is_deleted` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
@@ -38,9 +38,9 @@ CREATE TABLE `address` (
     `approved_on` TIMESTAMP NULL DEFAULT NULL,
     `updated_by` INT DEFAULT NULL,
     `updated_on` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `is_approved` ENUM('Yes','No') NOT NULL DEFAULT 'No',
-    `is_disabled` ENUM('Yes','No') NOT NULL DEFAULT 'No',
-    `is_deleted` ENUM('Yes','No') NOT NULL DEFAULT 'No',
+    `is_approved` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
+    `is_disabled` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
+    `is_deleted` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
@@ -55,9 +55,9 @@ CREATE TABLE `category` (
     `approved_on` TIMESTAMP NULL DEFAULT NULL,
     `updated_by` INT DEFAULT NULL,
     `updated_on` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `is_approved` ENUM('Yes','No') NOT NULL DEFAULT 'No',
-    `is_disabled` ENUM('Yes','No') NOT NULL DEFAULT 'No',
-    `is_deleted` ENUM('Yes','No') NOT NULL DEFAULT 'No',
+    `is_approved` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
+    `is_disabled` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
+    `is_deleted` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
@@ -70,6 +70,6 @@ CREATE TABLE `api_cache` (
 
 LOCK TABLES `user` WRITE;
 INSERT INTO `user` VALUES
-(4,1,'test1','test1','test1@test.com','client_1_group_1_user_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','0.0.0.0/0',2,'',0,NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','No','No'),
-(5,1,'admin1','admin1','admin1@test.com','client_1_admin_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','0.0.0.0/0',3,'',0,NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','No','No');
+(4,1,'test1','test1','test1@test.com','client_1_group_1_user_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','0.0.0.0/0',2,'',0,NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes', 'No','No'),
+(5,1,'admin1','admin1','admin1@test.com','client_1_admin_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','0.0.0.0/0',3,'',0,NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes', 'No','No');
 UNLOCK TABLES;

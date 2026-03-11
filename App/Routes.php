@@ -105,10 +105,10 @@ class Routes
 
 		$httpRoutes = [];
 		if ($this->api->req->open) {
-			$userRoutesFolder = Constants::$PUBLIC_HTML . $this->routesFolder
+			$userRoutesFolder = Constants::$WWW . $this->routesFolder
 				. DIRECTORY_SEPARATOR . 'Open';
 		} else {
-			$userRoutesFolder = Constants::$PUBLIC_HTML . $this->routesFolder
+			$userRoutesFolder = Constants::$WWW . $this->routesFolder
 				. DIRECTORY_SEPARATOR . 'Auth'
 				. DIRECTORY_SEPARATOR . 'ClientDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
