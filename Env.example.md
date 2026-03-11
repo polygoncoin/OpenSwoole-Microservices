@@ -31,53 +31,36 @@ enablePayloadInResponse=1               ; 1 = true / 0 = false
 payloadKeyInResponse='Payload'
 ```
 
-## Global Container Details
-
-### Global cache
-
-```ini
-; (Redis) user <username> allcommands allkeys on ><password>
-; used to save user and token related details
-; Supported Containers - Redis / Memcached / MongoDb
-gCacheServerType='Redis'
-gCacheServerHostname='127.0.0.1'
-gCacheServerPort=6379
-gCacheServerUsername='ramesh'
-gCacheServerPassword='shames11'
-gCacheServerDatabase=0
-gCacheServerTable='global_cache' ; For MongoDb
-```
-
-### Global Database
-
-```ini
-; Global Database details - global.sql
-; Supported Containers - MySql / PostgreSql
-gDbServerType='MySql'
-gDbServerHostname='127.0.0.1'
-gDbServerPort=3306
-gDbServerUsername='root'
-gDbServerPassword='shames11'
-gDbServerDatabase='global'
-gDbServerQueryPlaceholder='Named' ; Named(:param) / Unnamed(?)
-```
-
 ## Other database configs
 
 ```ini
-; Master database on global MySql server
-masterDatabase='customer_master'             ; contains all entities necessary for a new customer
-
-; Tables
-customerTable='customer'
-groupsTable='group'
-
-; Sql query placeholder
-queryPlaceholder='Named'            ; Named(:param) / Unnamed(?)
-
 ; Default perPage (records per page)
 defaultPerPage=10
 maxResultsPerPage=1000
+```
+
+## Global counter
+
+As the heading describes below are the settings for global counter for the primary Key column of respective table. The setting when enable will generate a global auto-increment counter<br />
+
+This enables identify customer details easily while moving him from a common database for all to a dedicated customer X database.
+
+Enable below config for same.
+
+```ini
+; Global Auto-Increment counter details
+enableGlobalCounter=0               ; 1 = true / 0 = false
+gCounter='global_counter'           ; Key or Table
+gCounterMode='Cache'                ; Globally configured Cache / Database
+```
+
+## Idempotent
+
+This helps managing cache for idempotent request.
+
+```ini
+; Settings to avoid Idempotent request
+idempotentSecret='changeme'         ; hash_hmac secret
 ```
 
 ## Global counter
