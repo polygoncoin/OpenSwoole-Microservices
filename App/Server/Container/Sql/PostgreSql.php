@@ -98,11 +98,11 @@ class PostgreSql implements SqlInterface
 	/**
 	 * Constructor
 	 *
-	 * @param string      $dbServerHostname Hostname
-	 * @param string      $dbServerPort     Port
-	 * @param string      $dbServerUsername Username
-	 * @param string      $dbServerPassword Password
-	 * @param null|string $dbServerDB Database
+	 * @param string      $dbServerHostname Database Server Hostname
+	 * @param int         $dbServerPort     Database Server Port
+	 * @param string      $dbServerUsername Database Server Username
+	 * @param string      $dbServerPassword Database Server Password
+	 * @param null|string $dbServerDB       Database Server Database
 	 */
 	public function __construct(
 		$dbServerHostname,

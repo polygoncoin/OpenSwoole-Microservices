@@ -33,58 +33,58 @@ use Microservices\App\Server\Container\NoSql\MongoDb as Cache_MongoDb;
  */
 class MongoDbQueryCache implements QueryCacheInterface
 {
-	// "mongodb://<cacheServerUsername>:<cacheServerPassword>@<cluster-url>:<cacheServerPort>/<database-name>
+	// "mongodb://<queryCacheServerUsername>:<queryCacheServerPassword>@<cluster-url>:<queryCacheServerPort>/<database-name>
 	// ?retryWrites=true&w=majority"
 	private $uri = null;
 
 	/**
-	 * Cache Server Hostname
+	 * Query Cache Server Hostname
 	 *
 	 * @var null|string
 	 */
-	private $cacheServerHostname = null;
+	private $queryCacheServerHostname = null;
 
 	/**
-	 * Cache Server Port
+	 * Query Cache Server Port
 	 *
 	 * @var null|int
 	 */
-	private $cacheServerPort = null;
+	private $queryCacheServerPort = null;
 
 	/**
-	 * Cache Server Username
+	 * Query Cache Server Username
 	 *
 	 * @var null|string
 	 */
-	private $cacheServerUsername = null;
+	private $queryCacheServerUsername = null;
 
 	/**
-	 * Cache Server Password
+	 * Query Cache Server Password
 	 *
 	 * @var null|string
 	 */
-	private $cacheServerPassword = null;
+	private $queryCacheServerPassword = null;
 
 	/**
-	 * Cache Server DB
+	 * Query Cache Server DB
 	 *
 	 * @var null|string
 	 */
-	private $cacheServerDB = null;
+	private $queryCacheServerDB = null;
 
 	/**
 	 * Cache collection
 	 *
 	 * @var null|string
 	 */
-	public $cacheServerTable = null;
+	public $queryCacheServerTable = null;
 
 	/**
 	 * Cache Object
 	 *
 	 * @var null|Cache_MongoDb
 	 */
-	private $cacheServerObj = null;
+	private $queryCacheServerObj = null;
 
 	/**
 	 * Database Object
@@ -103,49 +103,49 @@ class MongoDbQueryCache implements QueryCacheInterface
 	/**
 	 * Constructor
 	 *
-	 * @param string $cacheServerHostname Hostname
-	 * @param string $cacheServerPort     Port
-	 * @param string $cacheServerUsername Username
-	 * @param string $cacheServerPassword Password
-	 * @param string $cacheServerDB       Database
-	 * @param string $cacheServerTable    Table
+	 * @param string      $queryCacheServerHostname Query Cache Server Hostname
+	 * @param int         $queryCacheServerPort     Query Cache Server Port
+	 * @param string      $queryCacheServerUsername Query Cache Server Username
+	 * @param string      $queryCacheServerPassword Query Cache Server Password
+	 * @param null|string $queryCacheServerDB       Query Cache Server Database
+	 * @param null|string $queryCacheServerTable    Query Cache Server Table
 	 */
 	public function __construct(
-		$cacheServerHostname,
-		$cacheServerPort,
-		$cacheServerUsername,
-		$cacheServerPassword,
-		$cacheServerDB,
-		$cacheServerTable
+		$queryCacheServerHostname,
+		$queryCacheServerPort,
+		$queryCacheServerUsername,
+		$queryCacheServerPassword,
+		$queryCacheServerDB,
+		$queryCacheServerTable
 	) {
-		$this->cacheServerHostname = $cacheServerHostname;
-		$this->cacheServerPort = $cacheServerPort;
-		$this->cacheServerUsername = $cacheServerUsername;
-		$this->cacheServerPassword = $cacheServerPassword;
-		$this->cacheServerDB = $cacheServerDB;
-		$this->cacheServerTable = $cacheServerTable;
+		$this->queryCacheServerHostname = $queryCacheServerHostname;
+		$this->queryCacheServerPort = $queryCacheServerPort;
+		$this->queryCacheServerUsername = $queryCacheServerUsername;
+		$this->queryCacheServerPassword = $queryCacheServerPassword;
+		$this->queryCacheServerDB = $queryCacheServerDB;
+		$this->queryCacheServerTable = $queryCacheServerTable;
 	}
 
 	/**
-	 * Cache Server Object
+	 * Query Cache Server Object
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
 	public function connect(): void
 	{
-		if ($this->cacheServerObj !== null) {
+		if ($this->queryCacheServerObj !== null) {
 			return;
 		}
 
 		try {
-			$this->cacheServerObj = new Cache_MongoDb(
-				cacheServerHostname: $this->cacheServerHostname,
-				cacheServerPort: $this->cacheServerPort,
-				cacheServerUsername: $this->cacheServerUsername,
-				cacheServerPassword: $this->cacheServerPassword,
-				cacheServerDB: $this->cacheServerDB,
-				cacheServerTable: $this->cacheServerTable
+			$this->queryCacheServerObj = new Cache_MongoDb(
+				queryCacheServerHostname: $this->queryCacheServerHostname,
+				queryCacheServerPort: $this->queryCacheServerPort,
+				queryCacheServerUsername: $this->queryCacheServerUsername,
+				queryCacheServerPassword: $this->queryCacheServerPassword,
+				queryCacheServerDB: $this->queryCacheServerDB,
+				queryCacheServerTable: $this->queryCacheServerTable
 			);
 		} catch (\Exception $e) {
 			throw new \Exception(
@@ -166,7 +166,7 @@ class MongoDbQueryCache implements QueryCacheInterface
 	{
 		$this->connect();
 
-		return $this->cacheServerObj->cacheExists(key: $key);
+		return $this->queryCacheServerObj->cacheExists(key: $key);
 	}
 
 	/**
@@ -180,7 +180,7 @@ class MongoDbQueryCache implements QueryCacheInterface
 	{
 		$this->connect();
 
-		return $this->cacheServerObj->getCache($key);
+		return $this->queryCacheServerObj->getCache($key);
 	}
 
 	/**
@@ -195,7 +195,7 @@ class MongoDbQueryCache implements QueryCacheInterface
 	{
 		$this->connect();
 
-		return $this->cacheServerObj->setCache($key, $value);
+		return $this->queryCacheServerObj->setCache($key, $value);
 	}
 
 	/**
@@ -209,6 +209,6 @@ class MongoDbQueryCache implements QueryCacheInterface
 	{
 		$this->connect();
 
-		return $this->cacheServerObj->deleteCache($key);
+		return $this->queryCacheServerObj->deleteCache($key);
 	}
 }

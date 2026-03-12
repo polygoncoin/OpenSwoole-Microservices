@@ -77,12 +77,12 @@ class Redis implements NoSqlInterface
 	/**
 	 * Constructor
 	 *
-	 * @param string $cacheServerHostname Hostname
-	 * @param string $cacheServerPort     Port
-	 * @param string $cacheServerUsername Username
-	 * @param string $cacheServerPassword Password
-	 * @param string $cacheServerDB       Database
-	 * @param string $cacheServerTable    Table
+	 * @param string      $cacheServerHostname Cache Server Hostname
+	 * @param int         $cacheServerPort     Cache Server Port
+	 * @param string      $cacheServerUsername Cache Server Username
+	 * @param string      $cacheServerPassword Cache Server Password
+	 * @param null|string $cacheServerDB       Cache Server Database
+	 * @param null|string $cacheServerTable    Cache Server Table
 	 */
 	public function __construct(
 		$cacheServerHostname,

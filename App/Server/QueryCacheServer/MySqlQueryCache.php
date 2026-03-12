@@ -34,99 +34,99 @@ use Microservices\App\Server\Container\Sql\MySql as DB_MySql;
 class MySqlQueryCache implements QueryCacheInterface
 {
 	/**
-	 * Cache Server Hostname
+	 * Query Cache Server Hostname
 	 *
 	 * @var null|string
 	 */
-	private $cacheServerHostname = null;
+	private $queryCacheServerHostname = null;
 
 	/**
-	 * Cache Server Port
+	 * Query Cache Server Port
 	 *
 	 * @var null|int
 	 */
-	private $cacheServerPort = null;
+	private $queryCacheServerPort = null;
 
 	/**
-	 * Cache Server Username
+	 * Query Cache Server Username
 	 *
 	 * @var null|string
 	 */
-	private $cacheServerUsername = null;
+	private $queryCacheServerUsername = null;
 
 	/**
-	 * Cache Server Password
+	 * Query Cache Server Password
 	 *
 	 * @var null|string
 	 */
-	private $cacheServerPassword = null;
+	private $queryCacheServerPassword = null;
 
 	/**
-	 * Cache Server DB
+	 * Query Cache Server DB
 	 *
 	 * @var null|string
 	 */
-	private $cacheServerDB = null;
+	private $queryCacheServerDB = null;
 
 	/**
-	 * Cache cacheServerTable
+	 * Cache queryCacheServerTable
 	 *
 	 * @var null|string
 	 */
-	private $cacheServerTable = null;
+	private $queryCacheServerTable = null;
 
 	/**
-	 * Cache Server Object
+	 * Query Cache Server Object
 	 *
 	 * @var null|DB_MySql
 	 */
-	private $cacheServerObj = null;
+	private $queryCacheServerObj = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param string $cacheServerHostname Hostname
-	 * @param int    $cacheServerPort     Port
-	 * @param string $cacheServerUsername Username
-	 * @param string $cacheServerPassword Password
-	 * @param string $cacheServerDB       Database
-	 * @param string $cacheServerTable    Table
+	 * @param string $queryCacheServerHostname Hostname
+	 * @param int    $queryCacheServerPort     Port
+	 * @param string $queryCacheServerUsername Username
+	 * @param string $queryCacheServerPassword Password
+	 * @param string $queryCacheServerDB       Database
+	 * @param string $queryCacheServerTable    Table
 	 */
 	public function __construct(
-		$cacheServerHostname,
-		$cacheServerPort,
-		$cacheServerUsername,
-		$cacheServerPassword,
-		$cacheServerDB,
-		$cacheServerTable
+		$queryCacheServerHostname,
+		$queryCacheServerPort,
+		$queryCacheServerUsername,
+		$queryCacheServerPassword,
+		$queryCacheServerDB,
+		$queryCacheServerTable
 	) {
-		$this->cacheServerHostname = $cacheServerHostname;
-		$this->cacheServerPort = $cacheServerPort;
-		$this->cacheServerUsername = $cacheServerUsername;
-		$this->cacheServerPassword = $cacheServerPassword;
-		$this->cacheServerDB = $cacheServerDB;
-		$this->cacheServerTable = $cacheServerTable;
+		$this->queryCacheServerHostname = $queryCacheServerHostname;
+		$this->queryCacheServerPort = $queryCacheServerPort;
+		$this->queryCacheServerUsername = $queryCacheServerUsername;
+		$this->queryCacheServerPassword = $queryCacheServerPassword;
+		$this->queryCacheServerDB = $queryCacheServerDB;
+		$this->queryCacheServerTable = $queryCacheServerTable;
 	}
 
 	/**
-	 * Cache Server Object
+	 * Query Cache Server Object
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
 	public function connect(): void
 	{
-		if ($this->cacheServerObj !== null) {
+		if ($this->queryCacheServerObj !== null) {
 			return;
 		}
 
 		try {
-			$this->cacheServerObj = new DB_MySql(
-				dbServerHostname: $this->cacheServerHostname,
-				dbServerPort: $this->cacheServerPort,
-				dbServerUsername: $this->cacheServerUsername,
-				dbServerPassword: $this->cacheServerPassword,
-				dbServerDB: $this->cacheServerDB
+			$this->queryCacheServerObj = new DB_MySql(
+				dbServerHostname: $this->queryCacheServerHostname,
+				dbServerPort: $this->queryCacheServerPort,
+				dbServerUsername: $this->queryCacheServerUsername,
+				dbServerPassword: $this->queryCacheServerPassword,
+				dbServerDB: $this->queryCacheServerDB
 			);
 		} catch (\Exception $e) {
 			throw new \Exception(
@@ -149,14 +149,14 @@ class MySqlQueryCache implements QueryCacheInterface
 
 		$sql = "
 			SELECT count(1) as count
-			FROM {$this->cacheServerTable}
+			FROM {$this->queryCacheServerTable}
 			WHERE `key` = :key
 		";
 		$params = [':key' => $key];
 
-		$this->cacheServerObj->execDbQuery(sql: $sql, params: $params);
-		$row = $this->cacheServerObj->fetch();
-		$this->cacheServerObj->closeCursor();
+		$this->queryCacheServerObj->execDbQuery(sql: $sql, params: $params);
+		$row = $this->queryCacheServerObj->fetch();
+		$this->queryCacheServerObj->closeCursor();
 
 		return $row['count'] === 1;
 	}
@@ -174,17 +174,17 @@ class MySqlQueryCache implements QueryCacheInterface
 
 		$sql = "
 			SELECT value
-			FROM {$this->cacheServerTable}
+			FROM {$this->queryCacheServerTable}
 			WHERE `key` = :key
 		";
 		$params = [':key' => $key];
 
-		$this->cacheServerObj->execDbQuery(sql: $sql, params: $params);
-		if ($row = $this->cacheServerObj->fetch()) {
-			$this->cacheServerObj->closeCursor();
+		$this->queryCacheServerObj->execDbQuery(sql: $sql, params: $params);
+		if ($row = $this->queryCacheServerObj->fetch()) {
+			$this->queryCacheServerObj->closeCursor();
 			return $row['value'];
 		}
-		$this->cacheServerObj->closeCursor();
+		$this->queryCacheServerObj->closeCursor();
 		return false;
 	}
 
@@ -202,13 +202,13 @@ class MySqlQueryCache implements QueryCacheInterface
 		$this->deleteCache($key);
 
 		$sql = "
-			INSERT INTO {$this->cacheServerTable}
+			INSERT INTO {$this->queryCacheServerTable}
 			SET `key` = :key, value = :value
 		";
 		$params = [':key' => $key, ':value' => $value];
 
-		$this->cacheServerObj->execDbQuery(sql: $sql, params: $params);
-		$this->cacheServerObj->closeCursor();
+		$this->queryCacheServerObj->execDbQuery(sql: $sql, params: $params);
+		$this->queryCacheServerObj->closeCursor();
 
 		return true;
 	}
@@ -224,11 +224,11 @@ class MySqlQueryCache implements QueryCacheInterface
 	{
 		$this->connect();
 
-		$sql = "DELETE FROM {$this->cacheServerTable} WHERE `key` = :key";
+		$sql = "DELETE FROM {$this->queryCacheServerTable} WHERE `key` = :key";
 		$params = [':key' => $key];
 
-		$this->cacheServerObj->execDbQuery(sql: $sql, params: $params);
-		$this->cacheServerObj->closeCursor();
+		$this->queryCacheServerObj->execDbQuery(sql: $sql, params: $params);
+		$this->queryCacheServerObj->closeCursor();
 
 		return true;
 	}

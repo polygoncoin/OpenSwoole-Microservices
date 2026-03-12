@@ -109,25 +109,25 @@ class DbFunctions
 
 		$sqlResultsCacheServerNS = 'Microservices\\App\\Server\\QueryCacheServer\\' . $cacheServerType . 'QueryCache';
 		self::$sqlResultsCacheServer = new $sqlResultsCacheServerNS(
-			Env::$sqlResultsCacheServerHostname,
-			Env::$sqlResultsCacheServerPort,
-			Env::$sqlResultsCacheServerUsername,
-			Env::$sqlResultsCacheServerPassword,
-			Env::$sqlResultsCacheServerDB,
-			Env::$sqlResultsCacheServerTable
+			queryCacheServerHostname: Env::$sqlResultsCacheServerHostname,
+			queryCacheServerPort: Env::$sqlResultsCacheServerPort,
+			queryCacheServerUsername: Env::$sqlResultsCacheServerUsername,
+			queryCacheServerPassword: Env::$sqlResultsCacheServerPassword,
+			queryCacheServerDB: Env::$sqlResultsCacheServerDB,
+			queryCacheServerTable: Env::$sqlResultsCacheServerTable
 		);
 	}
 
 	/**
 	 * Set Cache
 	 *
-	 * @param string $cacheServerType Cache type
-	 * @param string $cacheServerHostname   Hostname
-	 * @param int    $cacheServerPort       Port
-	 * @param string $cacheServerUsername   Username
-	 * @param string $cacheServerPassword   Password
-	 * @param string $cacheServerDB   Database
-	 * @param string $cacheServerTable      Table
+	 * @param string      $cacheServerType     Cache Server Type
+	 * @param string      $cacheServerHostname Cache Server Hostname
+	 * @param int         $cacheServerPort     Cache Server Port
+	 * @param string      $cacheServerUsername Cache Server Username
+	 * @param string      $cacheServerPassword Cache Server Password
+	 * @param null|string $cacheServerDB       Cache Server Database
+	 * @param null|string $cacheServerTable    Cache Server Table
 	 *
 	 * @return object
 	 */
@@ -148,12 +148,12 @@ class DbFunctions
 		}
 		$cacheNS = 'Microservices\\App\\Server\\CacheServer\\' . $cacheServerType . 'Cache';
 		return new $cacheNS(
-			$cacheServerHostname,
-			$cacheServerPort,
-			$cacheServerUsername,
-			$cacheServerPassword,
-			$cacheServerDB,
-			$cacheServerTable
+			cacheServerHostname: $cacheServerHostname,
+			cacheServerPort: $cacheServerPort,
+			cacheServerUsername: $cacheServerUsername,
+			cacheServerPassword: $cacheServerPassword,
+			cacheServerDB: $cacheServerDB,
+			cacheServerTable: $cacheServerTable
 		);
 	}
 
@@ -246,12 +246,12 @@ class DbFunctions
 	/**
 	 * Set DB
 	 *
-	 * @param string $dbServerType Cache Type
-	 * @param string $dbServerHostname   Hostname
-	 * @param int    $dbServerPort       Port
-	 * @param string $dbServerUsername   Username
-	 * @param string $dbServerPassword   Password
-	 * @param string $dbServerDB         Database
+	 * @param string      $dbServerType     Database Server Type
+	 * @param string      $dbServerHostname Database Server Hostname
+	 * @param int         $dbServerPort     Database Server Port
+	 * @param string      $dbServerUsername Database Server Username
+	 * @param string      $dbServerPassword Database Server Password
+	 * @param null|string $dbServerDB       Database Server Database
 	 *
 	 * @return object
 	 */
@@ -271,11 +271,11 @@ class DbFunctions
 		}
 		$dbNS = 'Microservices\\App\\Server\\DatabaseServer\\' . $dbServerType . 'Database';
 		return new $dbNS(
-			$dbServerHostname,
-			$dbServerPort,
-			$dbServerUsername,
-			$dbServerPassword,
-			$dbServerDB
+			dbServerHostname: $dbServerHostname,
+			dbServerPort: $dbServerPort,
+			dbServerUsername: $dbServerUsername,
+			dbServerPassword: $dbServerPassword,
+			dbServerDB: $dbServerDB
 		);
 	}
 

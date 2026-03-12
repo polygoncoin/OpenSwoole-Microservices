@@ -30,7 +30,7 @@ namespace Microservices\App\Server\QueryCacheServer;
 interface QueryCacheInterface
 {
 	/**
-	 * Cache Server Object
+	 * Query Cache Server Object
 	 *
 	 * @return void
 	 */
