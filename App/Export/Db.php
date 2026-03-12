@@ -71,7 +71,7 @@ class Db
 	 * @param string $port     port
 	 * @param string $username username
 	 * @param string $password password
-	 * @param string $database database
+	 * @param string $db database
 	 *
 	 * @return void
 	 * @throws \Exception
@@ -81,14 +81,14 @@ class Db
 		$port,
 		$username,
 		$password,
-		$database
+		$db
 	): void {
 		$this->containerObj->init(
 			hostname: $hostname,
 			port: $port,
 			username: $username,
 			password: $password,
-			database: $database
+			db: $db
 		);
 	}
 

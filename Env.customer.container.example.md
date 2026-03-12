@@ -13,7 +13,7 @@ gCacheServerHostname='127.0.0.1'
 gCacheServerPort=6379
 gCacheServerUsername=''
 gCacheServerPassword=''
-gCacheServerDatabase=0
+gCacheServerDB=0
 ```
 
 ### Global Database Server configuration - global.sql
@@ -25,7 +25,7 @@ gDbServerHostname='127.0.0.1'
 gDbServerPort=3306
 gDbServerUsername='username'
 gDbServerPassword='password'
-gDbServerDatabase='<global>'
+gDbServerDB='<global>'
 
 ; Tables in <global> database on the server
 groupsTable='group'
@@ -38,36 +38,36 @@ These **Global Cache Server configuration (Redis)** and **Global Database Server
 
 ```SQL
 `customer`.`master_db_server_type` varchar(255) NOT NULL,
-`customer`.`master_db_hostname` varchar(255) NOT NULL,
-`customer`.`master_db_port` varchar(255) NOT NULL,
-`customer`.`master_db_username` varchar(255) NOT NULL,
-`customer`.`master_db_password` varchar(255) NOT NULL,
-`customer`.`master_db_database` varchar(255) NOT NULL,
-`customer`.`master_query_placeholder` varchar(255) NOT NULL,
+`customer`.`master_db_server_hostname` varchar(255) NOT NULL,
+`customer`.`master_db_server_port` varchar(255) NOT NULL,
+`customer`.`master_db_server_username` varchar(255) NOT NULL,
+`customer`.`master_db_server_password` varchar(255) NOT NULL,
+`customer`.`master_db_server_db` varchar(255) NOT NULL,
+`customer`.`master_db_server_query_placeholder` varchar(255) NOT NULL,
 `customer`.`slave_db_server_type` varchar(255) NOT NULL,
-`customer`.`slave_db_hostname` varchar(255) NOT NULL,
-`customer`.`slave_db_port` varchar(255) NOT NULL,
-`customer`.`slave_db_username` varchar(255) NOT NULL,
-`customer`.`slave_db_password` varchar(255) NOT NULL,
-`customer`.`slave_db_database` varchar(255) NOT NULL,
-`customer`.`slave_query_placeholder` varchar(255) NOT NULL,
+`customer`.`slave_db_server_hostname` varchar(255) NOT NULL,
+`customer`.`slave_db_server_port` varchar(255) NOT NULL,
+`customer`.`slave_db_server_username` varchar(255) NOT NULL,
+`customer`.`slave_db_server_password` varchar(255) NOT NULL,
+`customer`.`slave_db_server_db` varchar(255) NOT NULL,
+`customer`.`slave_db_server_query_placeholder` varchar(255) NOT NULL,
 `customer`.`master_cache_server_type` varchar(255) NOT NULL,
-`customer`.`master_cache_hostname` varchar(255) NOT NULL,
-`customer`.`master_cache_port` varchar(255) NOT NULL,
-`customer`.`master_cache_username` varchar(255) NOT NULL,
-`customer`.`master_cache_password` varchar(255) NOT NULL,
-`customer`.`master_cache_database` varchar(255) NOT NULL,
-`customer`.`master_cache_table` varchar(255) NOT NULL,
+`customer`.`master_cache_server_hostname` varchar(255) NOT NULL,
+`customer`.`master_cache_server_port` varchar(255) NOT NULL,
+`customer`.`master_cache_server_username` varchar(255) NOT NULL,
+`customer`.`master_cache_server_password` varchar(255) NOT NULL,
+`customer`.`master_cache_server_db` varchar(255) NOT NULL,
+`customer`.`master_cache_server_table` varchar(255) NOT NULL,
 `customer`.`slave_cache_server_type` varchar(255) NOT NULL,
-`customer`.`slave_cache_hostname` varchar(255) NOT NULL,
-`customer`.`slave_cache_port` varchar(255) NOT NULL,
-`customer`.`slave_cache_username` varchar(255) NOT NULL,
-`customer`.`slave_cache_password` varchar(255) NOT NULL,
-`customer`.`slave_cache_database` varchar(255) NOT NULL,
-`customer`.`slave_cache_table` varchar(255) NOT NULL,
+`customer`.`slave_cache_server_hostname` varchar(255) NOT NULL,
+`customer`.`slave_cache_server_port` varchar(255) NOT NULL,
+`customer`.`slave_cache_server_username` varchar(255) NOT NULL,
+`customer`.`slave_cache_server_password` varchar(255) NOT NULL,
+`customer`.`slave_cache_server_db` varchar(255) NOT NULL,
+`customer`.`slave_cache_server_table` varchar(255) NOT NULL,
 ```
 
-- **Note**: Only the Key details in the environment file are to be set in columns of respective record. Eg. for column master_db_hostname the value to be set is 'gDbServerType' and not '127.0.0.1'. The configured values for the Key are picked from the env files.
+- **Note**: Only the Key details in the environment file are to be set in columns of respective record. Eg. for column master_db_server_hostname the value to be set is 'gDbServerType' and not '127.0.0.1'. The configured values for the Key are picked from the env files.
 
 The slave details can take same values as master if presently your system doesn't have such implementation.
 
@@ -80,7 +80,7 @@ If there is a requirement from customer X to have a dedicated database like <dat
 Make a new config variable as below and set this Key in the above table for customer X record in customer table.
 
 ```ini
-cDbServerDatabase='<database-x>'
+cDatabaseServerDB='<database-x>'
 ```
 
 ### Dedicated DB server
@@ -98,7 +98,7 @@ cCacheServerHostname='127.0.0.1'
 cCacheServerPort=6379
 cCacheServerUsername='username'
 cCacheServerPassword='password'
-cCacheServerDatabase=0
+cCacheServerDB=0
 cCacheServerTable='customer_001'      ; For MongoDb
 ```
 
@@ -111,11 +111,11 @@ cDbServerHostname001='127.0.0.1'
 cDbServerPort001=3306
 cDbServerUsername001='username'
 cDbServerPassword001='password'
-cDbServerDatabase001='customer_001'
+cCacheServerDB001='customer_001'
 cDbServerQueryPlaceholder001='Named'; Named(:param) / Unnamed(?)
 
 ; Customer Database table containing user login details
-cDbServerDatabaseUsersTable='user'
+cDatabaseServerDBUsersTable='user'
 ```
 
 ### Going forward
@@ -132,8 +132,8 @@ customerUsersTable='user'         ;Table in customer database containing user de
 These column contains keys containing details about the way the queries are build to use data provided for SQL's'
 
 ```SQL
-`customer`.`master_query_placeholder` varchar(255) NOT NULL,
-`customer`.`slave_query_placeholder` varchar(255) NOT NULL,
+`customer`.`master_db_server_query_placeholder` varchar(255) NOT NULL,
+`customer`.`slave_db_server_query_placeholder` varchar(255) NOT NULL,
 ```
 
 #### Named(:param)
@@ -161,7 +161,7 @@ sqlResultsCacheServerHostname='127.0.0.1'
 sqlResultsCacheServerPort=6379
 sqlResultsCacheServerUsername='username'
 sqlResultsCacheServerPassword='password'
-sqlResultsCacheServerDatabase=0
+sqlResultsCacheServerDB=0
 sqlResultsCacheServerTable='api_cache' ; For MySql / PostgreSql / MongoDb
 ```
 

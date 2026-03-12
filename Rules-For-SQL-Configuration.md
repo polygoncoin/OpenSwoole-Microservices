@@ -34,7 +34,7 @@ return [
 			// 'fetchFrom' => 'custom', // Static values
 			// 'fetchFrom' => 'variables', // to fetch values as per __VARIABLES__ keys
 			'fetchFromValue' => 'id',                       // key (id)
-			'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
+			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 			'required' => Constants::$REQUIRED              // Represents required field
 		],
 			// Fetch value from function
@@ -64,7 +64,7 @@ return [
 			// 'fetchFrom' => 'custom', // Static values
 			// 'fetchFrom' => 'variables', // to fetch values as per __VARIABLES__ keys
 			'fetchFromValue' => 'id',                       // key (id)
-			'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
+			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 			'required' => Constants::$REQUIRED              // Represents required field
 		],
 		[...]
@@ -115,7 +115,7 @@ return [
 					// 'fetchFrom' => 'custom', // Static values
 					// 'fetchFrom' => 'variables', // to fetch values as per current module/<sub-key> __VARIABLES__ keys
 					'fetchFromValue' => 'id',                       // key (id)
-					'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
+					'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 					'required' => Constants::$REQUIRED              // Represents required field
 				],
 				// Database DataTypes settings required when useHierarchy is true
@@ -310,7 +310,7 @@ return [
 			// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 			// 'fetchFrom' => 'custom', // Static values
 			'fetchFromValue' => 'id',                       // key (id)
-			'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
+			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 			'required' => Constants::$REQUIRED              // Represents required field
 		],
 		[...]
@@ -337,7 +337,7 @@ return [
 			// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 			// 'fetchFrom' => 'custom', // Static values
 			'fetchFromValue' => 'id',                       // key (id)
-			'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
+			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 			'required' => Constants::$REQUIRED              // Represents required field
 		],
 		[...]
@@ -370,7 +370,7 @@ return [
 					// 'fetchFrom' => 'uDetails', // Fetch value from user Details session
 					// 'fetchFrom' => 'custom', // Static values
 					'fetchFromValue' => 'id',                       // key (id)
-					'dataType' => DatabaseDataTypes::$PrimaryKey,   // key data type
+					'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 					'required' => Constants::$REQUIRED              // Represents required field
 				],
 				// Database DataTypes settings required when useHierarchy is true

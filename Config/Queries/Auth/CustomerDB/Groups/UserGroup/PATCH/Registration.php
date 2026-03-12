@@ -16,7 +16,7 @@
 namespace Microservices\Config\Queries\Auth\CustomerDB\Groups\UserGroup\PATCH;
 
 use Microservices\App\Constants;
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 
 return array_merge(
 	require Constants::$AUTH_QUERIES_DIR
@@ -46,7 +46,7 @@ return array_merge(
 				'column' => 'id',
 				'fetchFrom' => 'routeParams',
 				'fetchFromValue' => 'id',
-				'dataType' => DatabaseDataTypes::$PrimaryKey
+				'dataType' => DatabaseServerDataType::$PrimaryKey
 			]
 		],
 	]

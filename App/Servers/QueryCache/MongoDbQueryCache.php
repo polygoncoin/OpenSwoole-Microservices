@@ -70,7 +70,7 @@ class MongoDbQueryCache implements QueryCacheInterface
 	 *
 	 * @var null|string
 	 */
-	private $database = null;
+	private $db = null;
 
 	/**
 	 * Cache collection
@@ -84,14 +84,14 @@ class MongoDbQueryCache implements QueryCacheInterface
 	 *
 	 * @var null|Cache_MongoDb
 	 */
-	private $cache = null;
+	private $cacheObj = null;
 
 	/**
 	 * Database Object
 	 *
 	 * @var null|Object
 	 */
-	private $databaseObj = null;
+	private $dbObj = null;
 
 	/**
 	 * Collection Object
@@ -107,7 +107,7 @@ class MongoDbQueryCache implements QueryCacheInterface
 	 * @param string $port     Port .env string
 	 * @param string $username Username .env string
 	 * @param string $password Password .env string
-	 * @param string $database Database .env string
+	 * @param string $db Database .env string
 	 * @param string $table    Table .env string
 	 */
 	public function __construct(
@@ -115,14 +115,14 @@ class MongoDbQueryCache implements QueryCacheInterface
 		$port,
 		$username,
 		$password,
-		$database,
+		$db,
 		$table
 	) {
 		$this->hostname = $hostname;
 		$this->port = $port;
 		$this->username = $username;
 		$this->password = $password;
-		$this->database = $database;
+		$this->db = $db;
 		$this->table = $table;
 	}
 
@@ -134,17 +134,17 @@ class MongoDbQueryCache implements QueryCacheInterface
 	 */
 	public function connect(): void
 	{
-		if ($this->cache !== null) {
+		if ($this->cacheObj !== null) {
 			return;
 		}
 
 		try {
-			$this->cache = new Cache_MongoDb(
+			$this->cacheObj = new Cache_MongoDb(
 				hostname: $this->hostname,
 				port: $this->port,
 				username: $this->username,
 				password: $this->password,
-				database: $this->database,
+				db: $this->db,
 				table: $this->table
 			);
 		} catch (\Exception $e) {
@@ -166,7 +166,7 @@ class MongoDbQueryCache implements QueryCacheInterface
 	{
 		$this->connect();
 
-		return $this->cache->cacheExists(key: $key);
+		return $this->cacheObj->cacheExists(key: $key);
 	}
 
 	/**
@@ -180,7 +180,7 @@ class MongoDbQueryCache implements QueryCacheInterface
 	{
 		$this->connect();
 
-		return $this->cache->getCache($key);
+		return $this->cacheObj->getCache($key);
 	}
 
 	/**
@@ -195,7 +195,7 @@ class MongoDbQueryCache implements QueryCacheInterface
 	{
 		$this->connect();
 
-		return $this->cache->setCache($key, $value);
+		return $this->cacheObj->setCache($key, $value);
 	}
 
 	/**
@@ -209,6 +209,6 @@ class MongoDbQueryCache implements QueryCacheInterface
 	{
 		$this->connect();
 
-		return $this->cache->deleteCache($key);
+		return $this->cacheObj->deleteCache($key);
 	}
 }

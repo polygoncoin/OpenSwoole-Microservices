@@ -112,7 +112,7 @@ class CustomerValidator implements ValidatorInterface
 	 */
 	private function getPrimaryCount(&$table, $primary, &$id): int
 	{
-		$db = DbFunctions::$masterDb[$this->api->req->cId]->database;
+		$db = DbFunctions::$masterDb[$this->api->req->cId]->db;
 		$sql = "
 			SELECT count(1) as `count`
 			FROM `{$db}`.`{$table}`

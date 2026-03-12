@@ -66,7 +66,7 @@ class MySqlQueryCache implements QueryCacheInterface
 	 *
 	 * @var null|string
 	 */
-	private $database = null;
+	private $db = null;
 
 	/**
 	 * Cache table
@@ -80,7 +80,7 @@ class MySqlQueryCache implements QueryCacheInterface
 	 *
 	 * @var null|DB_MySql
 	 */
-	private $cache = null;
+	private $cacheObj = null;
 
 	/**
 	 * Constructor
@@ -89,7 +89,7 @@ class MySqlQueryCache implements QueryCacheInterface
 	 * @param int    $port     Port .env string
 	 * @param string $username Username .env string
 	 * @param string $password Password .env string
-	 * @param string $database Database .env string
+	 * @param string $db Database .env string
 	 * @param string $table    Table .env string
 	 */
 	public function __construct(
@@ -97,14 +97,14 @@ class MySqlQueryCache implements QueryCacheInterface
 		$port,
 		$username,
 		$password,
-		$database,
+		$db,
 		$table
 	) {
 		$this->hostname = $hostname;
 		$this->port = $port;
 		$this->username = $username;
 		$this->password = $password;
-		$this->database = $database;
+		$this->db = $db;
 		$this->table = $table;
 	}
 
@@ -116,17 +116,17 @@ class MySqlQueryCache implements QueryCacheInterface
 	 */
 	public function connect(): void
 	{
-		if ($this->cache !== null) {
+		if ($this->cacheObj !== null) {
 			return;
 		}
 
 		try {
-			$this->cache = new DB_MySql(
+			$this->cacheObj = new DB_MySql(
 				hostname: $this->hostname,
 				port: $this->port,
 				username: $this->username,
 				password: $this->password,
-				database: $this->database
+				db: $this->db
 			);
 		} catch (\Exception $e) {
 			throw new \Exception(
@@ -154,9 +154,9 @@ class MySqlQueryCache implements QueryCacheInterface
 		";
 		$params = [':key' => $key];
 
-		$this->cache->execDbQuery(sql: $sql, params: $params);
-		$row = $this->cache->fetch();
-		$this->cache->closeCursor();
+		$this->cacheObj->execDbQuery(sql: $sql, params: $params);
+		$row = $this->cacheObj->fetch();
+		$this->cacheObj->closeCursor();
 
 		return $row['count'] === 1;
 	}
@@ -179,12 +179,12 @@ class MySqlQueryCache implements QueryCacheInterface
 		";
 		$params = [':key' => $key];
 
-		$this->cache->execDbQuery(sql: $sql, params: $params);
-		if ($row = $this->cache->fetch()) {
-			$this->cache->closeCursor();
+		$this->cacheObj->execDbQuery(sql: $sql, params: $params);
+		if ($row = $this->cacheObj->fetch()) {
+			$this->cacheObj->closeCursor();
 			return $row['value'];
 		}
-		$this->cache->closeCursor();
+		$this->cacheObj->closeCursor();
 		return false;
 	}
 
@@ -207,8 +207,8 @@ class MySqlQueryCache implements QueryCacheInterface
 		";
 		$params = [':key' => $key, ':value' => $value];
 
-		$this->cache->execDbQuery(sql: $sql, params: $params);
-		$this->cache->closeCursor();
+		$this->cacheObj->execDbQuery(sql: $sql, params: $params);
+		$this->cacheObj->closeCursor();
 
 		return true;
 	}
@@ -227,8 +227,8 @@ class MySqlQueryCache implements QueryCacheInterface
 		$sql = "DELETE FROM {$this->table} WHERE `key` = :key";
 		$params = [':key' => $key];
 
-		$this->cache->execDbQuery(sql: $sql, params: $params);
-		$this->cache->closeCursor();
+		$this->cacheObj->execDbQuery(sql: $sql, params: $params);
+		$this->cacheObj->closeCursor();
 
 		return true;
 	}

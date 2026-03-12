@@ -15,8 +15,8 @@
 
 namespace Microservices\App;
 
-use Microservices\App\DatabaseCacheKey;
-use Microservices\App\DatabaseOpenCacheKey;
+use Microservices\App\CacheServerAuthKey;
+use Microservices\App\CacheServerOpenKey;
 use Microservices\App\Env;
 use Microservices\App\HttpRequest;
 use Microservices\App\HttpStatus;
@@ -113,7 +113,7 @@ class DbFunctions
 			Env::$sqlResultsCacheServerPort,
 			Env::$sqlResultsCacheServerUsername,
 			Env::$sqlResultsCacheServerPassword,
-			Env::$sqlResultsCacheServerDatabase,
+			Env::$sqlResultsCacheServerDB,
 			Env::$sqlResultsCacheServerTable
 		);
 	}
@@ -122,23 +122,23 @@ class DbFunctions
 	 * Set Cache
 	 *
 	 * @param string $cacheServerType Cache type
-	 * @param string $cacheHostname   Hostname
-	 * @param int    $cachePort       Port
-	 * @param string $cacheUsername   Username
-	 * @param string $cachePassword   Password
-	 * @param string $cacheDatabase   Database
-	 * @param string $cacheTable      Table
+	 * @param string $cacheServerHostname   Hostname
+	 * @param int    $cacheServerPort       Port
+	 * @param string $cacheServerUsername   Username
+	 * @param string $cacheServerPassword   Password
+	 * @param string $cacheServerDB   Database
+	 * @param string $cacheServerTable      Table
 	 *
 	 * @return object
 	 */
 	public static function connectCache(
 		$cacheServerType,
-		$cacheHostname,
-		$cachePort,
-		$cacheUsername,
-		$cachePassword,
-		$cacheDatabase,
-		$cacheTable
+		$cacheServerHostname,
+		$cacheServerPort,
+		$cacheServerUsername,
+		$cacheServerPassword,
+		$cacheServerDB,
+		$cacheServerTable
 	): object {
 		if (!in_array($cacheServerType, ['Redis', 'Memcached', 'MongoDb'])) {
 			throw new \Exception(
@@ -148,12 +148,12 @@ class DbFunctions
 		}
 		$cacheNS = 'Microservices\\App\\Servers\\Cache\\' . $cacheServerType . 'Cache';
 		return new $cacheNS(
-			$cacheHostname,
-			$cachePort,
-			$cacheUsername,
-			$cachePassword,
-			$cacheDatabase,
-			$cacheTable
+			$cacheServerHostname,
+			$cacheServerPort,
+			$cacheServerUsername,
+			$cacheServerPassword,
+			$cacheServerDB,
+			$cacheServerTable
 		);
 	}
 
@@ -169,12 +169,12 @@ class DbFunctions
 		}
 		self::$gCacheServer = self::connectCache(
 			cacheServerType: Env::$gCacheServerType,
-			cacheHostname: Env::$gCacheServerHostname,
-			cachePort: Env::$gCacheServerPort,
-			cacheUsername: Env::$gCacheServerUsername,
-			cachePassword: Env::$gCacheServerPassword,
-			cacheDatabase: Env::$gCacheServerDatabase,
-			cacheTable: Env::$gCacheServerTable
+			cacheServerHostname: Env::$gCacheServerHostname,
+			cacheServerPort: Env::$gCacheServerPort,
+			cacheServerUsername: Env::$gCacheServerUsername,
+			cacheServerPassword: Env::$gCacheServerPassword,
+			cacheServerDB: Env::$gCacheServerDB,
+			cacheServerTable: Env::$gCacheServerTable
 		);
 	}
 
@@ -209,12 +209,12 @@ class DbFunctions
 				$masterCacheDetails = self::getCacheMasterDetails(cDetails: $req->s['cDetails']);
 				self::$masterCache[$req->s['cDetails']['id']] = self::connectCache(
 					cacheServerType: $masterCacheDetails['cacheServerType'],
-					cacheHostname: $masterCacheDetails['cacheHostname'],
-					cachePort: $masterCacheDetails['cachePort'],
-					cacheUsername: $masterCacheDetails['cacheUsername'],
-					cachePassword: $masterCacheDetails['cachePassword'],
-					cacheDatabase: $masterCacheDetails['cacheDatabase'],
-					cacheTable: $masterCacheDetails['cacheTable']
+					cacheServerHostname: $masterCacheDetails['cacheServerHostname'],
+					cacheServerPort: $masterCacheDetails['cacheServerPort'],
+					cacheServerUsername: $masterCacheDetails['cacheServerUsername'],
+					cacheServerPassword: $masterCacheDetails['cacheServerPassword'],
+					cacheServerDB: $masterCacheDetails['cacheServerDB'],
+					cacheServerTable: $masterCacheDetails['cacheServerTable']
 				);
 				break;
 			case 'Slave':
@@ -225,12 +225,12 @@ class DbFunctions
 				$slaveCacheDetails = self::getCacheSlaveDetails(cDetails: $req->s['cDetails']);
 				self::$slaveCache[$req->s['cDetails']['id']] = self::connectCache(
 					cacheServerType: $slaveCacheDetails['cacheServerType'],
-					cacheHostname: $slaveCacheDetails['cacheHostname'],
-					cachePort: $slaveCacheDetails['cachePort'],
-					cacheUsername: $slaveCacheDetails['cacheUsername'],
-					cachePassword: $slaveCacheDetails['cachePassword'],
-					cacheDatabase: $slaveCacheDetails['cacheDatabase'],
-					cacheTable: $slaveCacheDetails['cacheTable']
+					cacheServerHostname: $slaveCacheDetails['cacheServerHostname'],
+					cacheServerPort: $slaveCacheDetails['cacheServerPort'],
+					cacheServerUsername: $slaveCacheDetails['cacheServerUsername'],
+					cacheServerPassword: $slaveCacheDetails['cacheServerPassword'],
+					cacheServerDB: $slaveCacheDetails['cacheServerDB'],
+					cacheServerTable: $slaveCacheDetails['cacheServerTable']
 				);
 				break;
 			default:
@@ -247,21 +247,21 @@ class DbFunctions
 	 * Set DB
 	 *
 	 * @param string $dbServerType Cache type
-	 * @param string $dbHostname   Hostname
-	 * @param int    $dbPort       Port
-	 * @param string $dbUsername   Username
-	 * @param string $dbPassword   Password
-	 * @param string $dbDatabase   Database
+	 * @param string $dbServerHostname   Hostname
+	 * @param int    $dbServerPort       Port
+	 * @param string $dbServerUsername   Username
+	 * @param string $dbServerPassword   Password
+	 * @param string $dbServerDB   Database
 	 *
 	 * @return object
 	 */
 	public static function connectDb(
 		$dbServerType,
-		$dbHostname,
-		$dbPort,
-		$dbUsername,
-		$dbPassword,
-		$dbDatabase
+		$dbServerHostname,
+		$dbServerPort,
+		$dbServerUsername,
+		$dbServerPassword,
+		$dbServerDB
 	): object {
 		if (!in_array($dbServerType, ['MySql', 'PostgreSql'])) {
 			throw new \Exception(
@@ -271,11 +271,11 @@ class DbFunctions
 		}
 		$dbNS = 'Microservices\\App\\Servers\\Database\\' . $dbServerType . 'Database';
 		return new $dbNS(
-			$dbHostname,
-			$dbPort,
-			$dbUsername,
-			$dbPassword,
-			$dbDatabase
+			$dbServerHostname,
+			$dbServerPort,
+			$dbServerUsername,
+			$dbServerPassword,
+			$dbServerDB
 		);
 	}
 
@@ -291,11 +291,11 @@ class DbFunctions
 		}
 		self::$gDbServer = self::connectDb(
 			dbServerType: Env::$gDbServerType,
-			dbHostname: Env::$gDbServerHostname,
-			dbPort: Env::$gDbServerPort,
-			dbUsername: Env::$gDbServerUsername,
-			dbPassword: Env::$gDbServerPassword,
-			dbDatabase: Env::$gDbServerDatabase
+			dbServerHostname: Env::$gDbServerHostname,
+			dbServerPort: Env::$gDbServerPort,
+			dbServerUsername: Env::$gDbServerUsername,
+			dbServerPassword: Env::$gDbServerPassword,
+			dbServerDB: Env::$gDbServerDB
 		);
 	}
 
@@ -330,11 +330,11 @@ class DbFunctions
 				$masterDbDetails = self::getDbMasterDetails(cDetails: $req->s['cDetails']);
 				self::$masterDb[$req->s['cDetails']['id']] = self::connectDb(
 					dbServerType: $masterDbDetails['dbServerType'],
-					dbHostname: $masterDbDetails['dbHostname'],
-					dbPort: $masterDbDetails['dbPort'],
-					dbUsername: $masterDbDetails['dbUsername'],
-					dbPassword: $masterDbDetails['dbPassword'],
-					dbDatabase: $masterDbDetails['dbDatabase']
+					dbServerHostname: $masterDbDetails['dbServerHostname'],
+					dbServerPort: $masterDbDetails['dbServerPort'],
+					dbServerUsername: $masterDbDetails['dbServerUsername'],
+					dbServerPassword: $masterDbDetails['dbServerPassword'],
+					dbServerDB: $masterDbDetails['dbServerDB']
 				);
 				break;
 			case 'Slave':
@@ -348,11 +348,11 @@ class DbFunctions
 				$slaveDbDetails = self::getDbSlaveDetails(cDetails: $req->s['cDetails']);
 				self::$slaveDb[$req->s['cDetails']['id']] = self::connectDb(
 					dbServerType: $slaveDbDetails['dbServerType'],
-					dbHostname: $slaveDbDetails['dbHostname'],
-					dbPort: $slaveDbDetails['dbPort'],
-					dbUsername: $slaveDbDetails['dbUsername'],
-					dbPassword: $slaveDbDetails['dbPassword'],
-					dbDatabase: $slaveDbDetails['dbDatabase']
+					dbServerHostname: $slaveDbDetails['dbServerHostname'],
+					dbServerPort: $slaveDbDetails['dbServerPort'],
+					dbServerUsername: $slaveDbDetails['dbServerUsername'],
+					dbServerPassword: $slaveDbDetails['dbServerPassword'],
+					dbServerDB: $slaveDbDetails['dbServerDB']
 				);
 				break;
 			default:
@@ -372,12 +372,12 @@ class DbFunctions
 	 *
 	 * @return void
 	 */
-	public static function setDatabaseCacheKey(&$req): void
+	public static function setCacheServerAuthKey(&$req): void
 	{
 		if ($req->open) {
-			DatabaseOpenCacheKey::init(cID: $req->s['cDetails']['id']);
+			CacheServerOpenKey::init(cID: $req->s['cDetails']['id']);
 		} else {
-			DatabaseCacheKey::init(
+			CacheServerAuthKey::init(
 				cID: $req->s['cDetails']['id'],
 				gID: $req->s['gDetails']['id'],
 				uID: $req->s['uDetails']['id']
@@ -444,12 +444,12 @@ class DbFunctions
 	{
 		return [
 			'cacheServerType' => getenv(name: $cDetails['master_cache_server_type']),
-			'cacheHostname' => getenv(name: $cDetails['master_cache_hostname']),
-			'cachePort' => getenv(name: $cDetails['master_cache_port']),
-			'cacheUsername' => getenv(name: $cDetails['master_cache_username']),
-			'cachePassword' => getenv(name: $cDetails['master_cache_password']),
-			'cacheDatabase' => getenv(name: $cDetails['master_cache_database']),
-			'cacheTable' => getenv(name: $cDetails['master_cache_table'])
+			'cacheServerHostname' => getenv(name: $cDetails['master_cache_server_hostname']),
+			'cacheServerPort' => getenv(name: $cDetails['master_cache_server_port']),
+			'cacheServerUsername' => getenv(name: $cDetails['master_cache_server_username']),
+			'cacheServerPassword' => getenv(name: $cDetails['master_cache_server_password']),
+			'cacheServerDB' => getenv(name: $cDetails['master_cache_server_db']),
+			'cacheServerTable' => getenv(name: $cDetails['master_cache_server_table'])
 		];
 	}
 
@@ -464,12 +464,12 @@ class DbFunctions
 	{
 		return [
 			'cacheServerType' => getenv(name: $cDetails['slave_cache_server_type']),
-			'cacheHostname' => getenv(name: $cDetails['slave_cache_hostname']),
-			'cachePort' => getenv(name: $cDetails['slave_cache_port']),
-			'cacheUsername' => getenv(name: $cDetails['slave_cache_username']),
-			'cachePassword' => getenv(name: $cDetails['slave_cache_password']),
-			'cacheDatabase' => getenv(name: $cDetails['slave_cache_database']),
-			'cacheTable' => getenv(name: $cDetails['slave_cache_table'])
+			'cacheServerHostname' => getenv(name: $cDetails['slave_cache_server_hostname']),
+			'cacheServerPort' => getenv(name: $cDetails['slave_cache_server_port']),
+			'cacheServerUsername' => getenv(name: $cDetails['slave_cache_server_username']),
+			'cacheServerPassword' => getenv(name: $cDetails['slave_cache_server_password']),
+			'cacheServerDB' => getenv(name: $cDetails['slave_cache_server_db']),
+			'cacheServerTable' => getenv(name: $cDetails['slave_cache_server_table'])
 		];
 	}
 
@@ -484,11 +484,11 @@ class DbFunctions
 	{
 		return [
 			'dbServerType' => getenv(name: $cDetails['master_db_server_type']),
-			'dbHostname' => getenv(name: $cDetails['master_db_hostname']),
-			'dbPort' => getenv(name: $cDetails['master_db_port']),
-			'dbUsername' => getenv(name: $cDetails['master_db_username']),
-			'dbPassword' => getenv(name: $cDetails['master_db_password']),
-			'dbDatabase' => getenv(name: $cDetails['master_db_database']),
+			'dbServerHostname' => getenv(name: $cDetails['master_db_server_hostname']),
+			'dbServerPort' => getenv(name: $cDetails['master_db_server_port']),
+			'dbServerUsername' => getenv(name: $cDetails['master_db_server_username']),
+			'dbServerPassword' => getenv(name: $cDetails['master_db_server_password']),
+			'dbServerDB' => getenv(name: $cDetails['master_db_server_db']),
 		];
 	}
 
@@ -503,11 +503,11 @@ class DbFunctions
 	{
 		return [
 			'dbServerType' => getenv(name: $cDetails['slave_db_server_type']),
-			'dbHostname' => getenv(name: $cDetails['slave_db_hostname']),
-			'dbPort' => getenv(name: $cDetails['slave_db_port']),
-			'dbUsername' => getenv(name: $cDetails['slave_db_username']),
-			'dbPassword' => getenv(name: $cDetails['slave_db_password']),
-			'dbDatabase' => getenv(name: $cDetails['slave_db_database']),
+			'dbServerHostname' => getenv(name: $cDetails['slave_db_server_hostname']),
+			'dbServerPort' => getenv(name: $cDetails['slave_db_server_port']),
+			'dbServerUsername' => getenv(name: $cDetails['slave_db_server_username']),
+			'dbServerPassword' => getenv(name: $cDetails['slave_db_server_password']),
+			'dbServerDB' => getenv(name: $cDetails['slave_db_server_db']),
 		];
 	}
 }

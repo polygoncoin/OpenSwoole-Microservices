@@ -44,7 +44,7 @@ class Login
 	 *
 	 * @var null|object
 	 */
-	public $db = null;
+	public $dbObj = null;
 
 	/**
 	 * Username for login
@@ -497,10 +497,10 @@ class Login
 	private function updateDB(&$userData): void
 	{
 		DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
-		$this->db = &DbFunctions::$masterDb[$this->api->req->cId];
+		$this->dbObj = &DbFunctions::$masterDb[$this->api->req->cId];
 
 		$usersTable = $this->api->req->usersTable;
-		$this->db->execDbQuery(
+		$this->dbObj->execDbQuery(
 			sql: "
 				UPDATE
 					`{$usersTable}`

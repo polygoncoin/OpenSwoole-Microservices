@@ -67,7 +67,7 @@ class Export
 	 *
 	 * @var null|Db
 	 */
-	public $db = null;
+	public $dbObj = null;
 
 	/**
 	 * Api common Object
@@ -87,8 +87,8 @@ class Export
 	public function __construct(&$api, $dbServerType)
 	{
 		$this->api = &$api;
-		$this->dbServerType = $dbServerType;
-		$this->db = new Db(dbServerType: $this->dbServerType);
+		$this->dbObjServerType = $dbServerType;
+		$this->dbObj = new Db(dbServerType: $this->dbObjServerType);
 	}
 
 	/**
@@ -98,18 +98,18 @@ class Export
 	 * @param string $port     port
 	 * @param string $username Username
 	 * @param string $password Password
-	 * @param string $database Database
+	 * @param string $db Database
 	 *
 	 * @return void
 	 */
-	public function init($hostname, $port, $username, $password, $database): void
+	public function init($hostname, $port, $username, $password, $db): void
 	{
-		$this->db->init(
+		$this->dbObj->init(
 			hostname: $hostname,
 			port: $port,
 			username: $username,
 			password: $password,
-			database: $database
+			db: $db
 		);
 		$this->validateConnection();
 	}
@@ -138,7 +138,7 @@ class Export
 			case 'TSV':
 				if ($linesArr[1] !== '1') {
 					throw new \Exception(
-						message: "Issue while connecting to {$this->dbServerType} TSV Host",
+						message: "Issue while connecting to {$this->dbObjServerType} TSV Host",
 						code: HttpStatus::$InternalServerError
 					);
 				}
@@ -146,7 +146,7 @@ class Export
 			case 'CSV':
 				if ($linesArr[1] !== '"1"') {
 					throw new \Exception(
-						message: "Issue while connecting to {$this->dbServerType} CSV Host",
+						message: "Issue while connecting to {$this->dbObjServerType} CSV Host",
 						code: HttpStatus::$InternalServerError
 					);
 				}
@@ -194,7 +194,7 @@ class Export
 		$params = [],
 		$exportFile = null
 	): array {
-		$shellCommand = $this->db->getShellCommand(sql: $sql, params: $params);
+		$shellCommand = $this->dbObj->getShellCommand(sql: $sql, params: $params);
 		if ($this->exportMode === 'CSV') {
 			$shellCommand .= ' | sed -e \'s/"/""/g ; s/\t/","/g ; s/^/"/g ; s/$/"/g\'';
 		}

@@ -46,7 +46,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	public $MONGODB_COLLECTION = null;
 
 	private $mongo = null;
-	private $database = null;
+	private $dbObj = null;
 	private $collection = null;
 
 	/**
@@ -227,10 +227,10 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 			$this->mongo = new \MongoDB\Customer($this->MONGODB_URI);
 
 			// Select a database
-			$this->database = $this->mongo->selectDatabase($this->MONGODB_DATABASE);
+			$this->dbObj = $this->mongo->selectDatabase($this->MONGODB_DATABASE);
 
 			// Select a collection
-			$this->collection = $this->database->selectCollection($this->MONGODB_COLLECTION);
+			$this->collection = $this->dbObj->selectCollection($this->MONGODB_COLLECTION);
 		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}

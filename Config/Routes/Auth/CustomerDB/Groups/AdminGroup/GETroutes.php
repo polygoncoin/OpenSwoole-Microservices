@@ -16,7 +16,7 @@
 namespace Microservices\Config\Routes\Auth\CustomerDB\Groups\AdminGroup;
 
 use Microservices\App\Constants;
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 
 return [
@@ -36,7 +36,7 @@ return [
 				. DIRECTORY_SEPARATOR . 'Category-search.php',
 		],
 		'{id:int}' => [
-			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
 			'__FILE__' => Constants::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
@@ -53,7 +53,7 @@ return [
 			. DIRECTORY_SEPARATOR . 'GET'
 			. DIRECTORY_SEPARATOR . 'Registration-all.php',
 		'{id:int}'  => [
-			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
 			'__FILE__' => Constants::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
@@ -70,7 +70,7 @@ return [
 			. DIRECTORY_SEPARATOR . 'GET'
 			. DIRECTORY_SEPARATOR . 'Address-all.php',
 		'{id:int}'  => [
-			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
 			'__FILE__' => Constants::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
@@ -87,7 +87,7 @@ return [
 			. DIRECTORY_SEPARATOR . 'GET'
 			. DIRECTORY_SEPARATOR . 'Registration-With-Address-all.php',
 		'{id:int}'  => [
-			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
 			'__FILE__' => Constants::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
@@ -99,7 +99,7 @@ return [
 	Env::$routesRequestRoute => [
 		'__FILE__' => false,
 		'{method:string}' => [
-			'dataType' => DatabaseDataTypes::$HttpMethods,
+			'dataType' => DatabaseServerDataType::$HttpMethods,
 			'__FILE__' => false
 		]
 	]

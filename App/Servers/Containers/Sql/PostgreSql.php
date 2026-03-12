@@ -65,7 +65,7 @@ class PostgreSql implements SqlInterface
 	 *
 	 * @var null|string
 	 */
-	public $database = null;
+	public $db = null;
 
 	/**
 	 * Database connection
@@ -102,20 +102,20 @@ class PostgreSql implements SqlInterface
 	 * @param string      $port     Port .env string
 	 * @param string      $username Username .env string
 	 * @param string      $password Password .env string
-	 * @param null|string $database Database .env string
+	 * @param null|string $db Database .env string
 	 */
 	public function __construct(
 		$hostname,
 		$port,
 		$username,
 		$password,
-		$database
+		$db
 	) {
 		$this->hostname = $hostname;
 		$this->port = $port;
 		$this->username = $username;
 		$this->password = $password;
-		$this->database = $database;
+		$this->db = $db;
 	}
 
 	/**
@@ -132,7 +132,7 @@ class PostgreSql implements SqlInterface
 		try {
 			$pdo = new PDO($dsn, $user, $password);
 			$this->pdo = new \PDO(
-				dsn: "pgsql:host={$this->hostname};port={$this->port};dbname={$this->database}",
+				dsn: "pgsql:host={$this->hostname};port={$this->port};dbname={$this->db}",
 				username: $this->username,
 				password: $this->password,
 			);

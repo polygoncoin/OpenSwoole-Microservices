@@ -16,12 +16,12 @@
 namespace Microservices\Config\Routes\Auth\CustomerDB\Common\Customer;
 
 use Microservices\App\Env;
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 
 return [
 	Env::$uploadRequestRoutePrefix => [
 		'{module:string}' => [
-			'dataType' => DatabaseDataTypes::$Default,
+			'dataType' => DatabaseServerDataType::$Default,
 			'__FILE__' => false
 		]
 	]

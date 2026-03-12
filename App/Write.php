@@ -52,7 +52,7 @@ class Write
 	 *
 	 * @var null|object
 	 */
-	public $db = null;
+	public $dbObj = null;
 
 	/**
 	 * Operate DML As Transactions
@@ -175,7 +175,7 @@ class Write
 
 		// Set Server mode to execute query on - Read / Write Server
 		DbFunctions::setDbConnection(req: $this->api->req, fetchFrom: 'Master');
-		$this->db = &DbFunctions::$masterDb[$this->api->req->cId];
+		$this->dbObj = &DbFunctions::$masterDb[$this->api->req->cId];
 
 		$this->processWrite(
 			wSqlConfig: $wSqlConfig,
@@ -301,7 +301,7 @@ class Write
 			// Begin DML operation
 			if ($hashJson === null) {
 				if ($this->operateAsTransaction) {
-					$this->db->begin();
+					$this->dbObj->begin();
 				}
 				$response = [];
 				$this->writeDB(
@@ -316,9 +316,9 @@ class Write
 				if ($this->api->res->httpStatus === HttpStatus::$Ok) {
 					if (
 						$this->operateAsTransaction
-						&& ($this->db->beganTransaction === true)
+						&& ($this->dbObj->beganTransaction === true)
 					) {
-						$this->db->commit();
+						$this->dbObj->commit();
 					}
 
 					$arr = [];
@@ -421,7 +421,7 @@ class Write
 		$iCount = $isObject
 			? 1 : $this->api->req->dataDecode->count(keys: $payloadIndex);
 
-		$mode = getenv(name: $this->api->req->s['cDetails']['master_query_placeholder']);
+		$mode = getenv(name: $this->api->req->s['cDetails']['master_db_server_query_placeholder']);
 		$fn = "getSqlAndParams{$mode}Mode";
 
 		for ($i = 0; $i < $iCount; $i++) {
@@ -433,7 +433,7 @@ class Write
 			}
 
 			$payloadIndexes = $payloadIndexes;
-			if ($this->operateAsTransaction && !$this->db->beganTransaction) {
+			if ($this->operateAsTransaction && !$this->dbObj->beganTransaction) {
 				$_response['Error'] = 'Transaction rolled back';
 				return;
 			}
@@ -497,7 +497,7 @@ class Write
 
 			if (!empty($errors)) {
 				$_response['Error'] = $errors;
-				$this->db->rollBack();
+				$this->dbObj->rollBack();
 				return;
 			}
 
@@ -506,8 +506,8 @@ class Write
 			}
 
 			// Execute Query
-			$this->db->execDbQuery(sql: $sql, params: $sqlParams);
-			if ($this->operateAsTransaction && !$this->db->beganTransaction) {
+			$this->dbObj->execDbQuery(sql: $sql, params: $sqlParams);
+			if ($this->operateAsTransaction && !$this->dbObj->beganTransaction) {
 				$_response['Error'] = 'Something went wrong';
 				return;
 			}
@@ -519,15 +519,15 @@ class Write
 				) {
 					$id = $wSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'];
 				} else {
-					$id = $this->db->lastInsertId();
+					$id = $this->dbObj->lastInsertId();
 				}
 				$_response[$wSqlConfig['__INSERT-IDs__']] = $id;
 				$this->api->req->s['__INSERT-IDs__'][$wSqlConfig['__INSERT-IDs__']] = $id;
 			} else {
-				$affectedRows = $this->db->affectedRows();
+				$affectedRows = $this->dbObj->affectedRows();
 				$_response['affectedRows'] = $affectedRows;
 			}
-			$this->db->closeCursor();
+			$this->dbObj->closeCursor();
 
 			// triggers
 			if (isset($wSqlConfig['__TRIGGERS__'])) {

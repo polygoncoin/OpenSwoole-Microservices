@@ -51,7 +51,7 @@ class Memcached implements NoSqlInterface
 	 *
 	 * @var null|\Memcached
 	 */
-	private $cache = null;
+	private $cacheObj = null;
 
 	/**
 	 * Constructor
@@ -60,7 +60,7 @@ class Memcached implements NoSqlInterface
 	 * @param string $port     Port .env string
 	 * @param string $username Username .env string
 	 * @param string $password Password .env string
-	 * @param string $database Database .env string
+	 * @param string $db Database .env string
 	 * @param string $table    Table .env string
 	 */
 	public function __construct(
@@ -68,7 +68,7 @@ class Memcached implements NoSqlInterface
 		$port,
 		$username,
 		$password,
-		$database,
+		$db,
 		$table
 	) {
 		$this->hostname = $hostname;
@@ -83,7 +83,7 @@ class Memcached implements NoSqlInterface
 	 */
 	public function connect(): void
 	{
-		if ($this->cache !== null) {
+		if ($this->cacheObj !== null) {
 			return;
 		}
 
@@ -95,8 +95,8 @@ class Memcached implements NoSqlInterface
 		}
 
 		try {
-			$this->cache = new \Memcached();
-			$this->cache->addServer($this->hostname, $this->port);
+			$this->cacheObj = new \Memcached();
+			$this->cacheObj->addServer($this->hostname, $this->port);
 		} catch (\Exception $e) {
 			throw new \Exception(
 				message: $e->getMessage(),
@@ -130,7 +130,7 @@ class Memcached implements NoSqlInterface
 	{
 		$this->connect();
 
-		return $this->cache->get($key);
+		return $this->cacheObj->get($key);
 	}
 
 	/**
@@ -147,9 +147,9 @@ class Memcached implements NoSqlInterface
 		$this->connect();
 
 		if ($expire === null) {
-			return $this->cache->set($key, $value);
+			return $this->cacheObj->set($key, $value);
 		} else {
-			return $this->cache->set($key, $value, $expire);
+			return $this->cacheObj->set($key, $value, $expire);
 		}
 	}
 
@@ -165,7 +165,7 @@ class Memcached implements NoSqlInterface
 	{
 		$this->connect();
 
-		return $this->cache->increment($key, $offset);
+		return $this->cacheObj->increment($key, $offset);
 	}
 
 	/**
@@ -179,6 +179,6 @@ class Memcached implements NoSqlInterface
 	{
 		$this->connect();
 
-		return $this->cache->delete($key);
+		return $this->cacheObj->delete($key);
 	}
 }

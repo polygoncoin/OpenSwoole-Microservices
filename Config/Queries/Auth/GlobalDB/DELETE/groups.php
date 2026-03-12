@@ -15,7 +15,7 @@
 
 namespace Microservices\Config\Queries\Auth\GlobalDB\DELETE;
 
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 
 return [
@@ -47,7 +47,7 @@ return [
 			'column' => 'id',
 			'fetchFrom' => 'routeParams',
 			'fetchFromValue' => 'id',
-			'dataType' => DatabaseDataTypes::$INT
+			'dataType' => DatabaseServerDataType::$INT
 		]
 	],
 	'__VALIDATE__' => [
@@ -56,7 +56,7 @@ return [
 			'fnArgs' => [
 				'table' => ['custom', Env::$groupsTable],
 				'primary' => ['custom', 'id'],
-				'id' => ['payload', 'id', DatabaseDataTypes::$INT]
+				'id' => ['payload', 'id', DatabaseServerDataType::$INT]
 			],
 			'errorMessage' => 'Invalid Group Id'
 		],
@@ -67,7 +67,7 @@ return [
 				'column' => ['custom', 'is_deleted'],
 				'columnValue' => ['custom', 'No'],
 				'primary' => ['custom', 'id'],
-				'id' => ['payload', 'id', DatabaseDataTypes::$INT],
+				'id' => ['payload', 'id', DatabaseServerDataType::$INT],
 			],
 			'errorMessage' => 'Record is already deleted'
 		]

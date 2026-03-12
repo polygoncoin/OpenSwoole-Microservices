@@ -15,7 +15,7 @@
 
 namespace Microservices\Config\Queries\Open\POST;
 
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 
 return [
 	'__QUERY__' => "INSERT INTO `{$this->api->req->usersTable}` SET __SET__",

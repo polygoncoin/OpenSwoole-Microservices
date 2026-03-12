@@ -70,7 +70,7 @@ class MongoDb implements NoSqlInterface
 	 *
 	 * @var null|string
 	 */
-	private $database = null;
+	private $db = null;
 
 	/**
 	 * Cache collection
@@ -84,14 +84,14 @@ class MongoDb implements NoSqlInterface
 	 *
 	 * @var null|\MongoDB\Customer
 	 */
-	private $cache = null;
+	private $cacheObj = null;
 
 	/**
 	 * Database Object
 	 *
 	 * @var null|Object
 	 */
-	private $databaseObj = null;
+	private $dbObj = null;
 
 	/**
 	 * Collection Object
@@ -107,7 +107,7 @@ class MongoDb implements NoSqlInterface
 	 * @param string $port     Port .env string
 	 * @param string $username Username .env string
 	 * @param string $password Password .env string
-	 * @param string $database Database .env string
+	 * @param string $db Database .env string
 	 * @param string $table    Table .env string
 	 */
 	public function __construct(
@@ -115,14 +115,14 @@ class MongoDb implements NoSqlInterface
 		$port,
 		$username,
 		$password,
-		$database,
+		$db,
 		$table
 	) {
 		$this->hostname = $hostname;
 		$this->port = $port;
 		$this->username = $username;
 		$this->password = $password;
-		$this->database = $database;
+		$this->db = $db;
 		$this->table = $table;
 	}
 
@@ -134,7 +134,7 @@ class MongoDb implements NoSqlInterface
 	 */
 	public function connect(): void
 	{
-		if ($this->cache !== null) {
+		if ($this->cacheObj !== null) {
 			return;
 		}
 
@@ -147,13 +147,13 @@ class MongoDb implements NoSqlInterface
 				$this->uri = 'mongodb://' . $UP
 					. $this->hostname . ':' . $this->port;
 			}
-			$this->cache = new \MongoDB\Customer($this->uri);
+			$this->cacheObj = new \MongoDB\Customer($this->uri);
 
 			// Select a database
-			$this->databaseObj = $this->cache->selectDatabase($this->database);
+			$this->dbObj = $this->cacheObj->selectDatabase($this->db);
 
 			// Select a collection
-			$this->collectionObj = $this->databaseObj->selectCollection($this->table);
+			$this->collectionObj = $this->dbObj->selectCollection($this->table);
 
 			// Create the TTL index
 			// Set the indexed field to 'expireAt' and expireAfterSeconds to 0

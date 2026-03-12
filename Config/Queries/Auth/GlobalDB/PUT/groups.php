@@ -15,7 +15,7 @@
 
 namespace Microservices\Config\Queries\Auth\GlobalDB\PUT;
 
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 
 return [
@@ -30,13 +30,13 @@ return [
 			'column' => 'customer_id',
 			'fetchFrom' => 'payload',
 			'fetchFromValue' => 'customer_id',
-			'dataType' => DatabaseDataTypes::$INT
+			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'connection_id',
 			'fetchFrom' => 'payload',
 			'fetchFromValue' => 'connection_id',
-			'dataType' => DatabaseDataTypes::$INT
+			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'allowed_cidr',
@@ -79,7 +79,7 @@ return [
 			'column' => 'id',
 			'fetchFrom' => 'routeParams',
 			'fetchFromValue' => 'id',
-			'dataType' => DatabaseDataTypes::$INT
+			'dataType' => DatabaseServerDataType::$INT
 		]
 	],
 	'__VALIDATE__' => [
@@ -88,7 +88,7 @@ return [
 			'fnArgs' => [
 				'table' => ['custom', Env::$groupsTable],
 				'primary' => ['custom', 'id'],
-				'id' => ['payload', 'id', DatabaseDataTypes::$INT]
+				'id' => ['payload', 'id', DatabaseServerDataType::$INT]
 			],
 			'errorMessage' => 'Invalid Group Id'
 		],

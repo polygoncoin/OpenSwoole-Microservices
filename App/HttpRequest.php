@@ -251,7 +251,7 @@ class HttpRequest
 		}
 
 		$this->rParser->parseRoute();
-		DbFunctions::setDatabaseCacheKey($this);
+		DbFunctions::setCacheServerAuthKey($this);
 
 		return true;
 	}

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Server side Cache keys - Open to web
+ * Server side Cache keys - Auth based
  * php version 8.3
  *
  * @category  CacheServerKeys
@@ -15,13 +15,11 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Env;
-
 /**
- * Server side Cache keys - Open
+ * Server side Cache keys - Auth
  * php version 8.3
  *
- * @category  CacheServerKeys_Open
+ * @category  CacheServerKeys_Auth
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -29,41 +27,70 @@ use Microservices\App\Env;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class DatabaseOpenCacheKey
+class CacheServerAuthKey
 {
 	/**
 	 * App key
 	 *
-	 * @var null|string
+	 * @var null|string $App
 	 */
 	public static $App = null;
 
 	/**
 	 * Customer key
 	 *
-	 * @var null|string
+	 * @var null|string $Customer
 	 */
 	public static $Customer = null;
 
 	/**
+	 * Group key
+	 *
+	 * @var null|string $Group
+	 */
+	public static $Group = null;
+
+	/**
+	 * User key
+	 *
+	 * @var null|string $User
+	 */
+	public static $User = null;
+
+	/**
 	 * Category key
 	 *
-	 * @var null|string
+	 * @var null|string $Category
 	 */
 	public static $Category = null;
+
+	/**
+	 * Category1 key
+	 *
+	 * @var null|string $Category1
+	 */
+	public static $Category1 = null;
 
 	/**
 	 * Initialize
 	 *
 	 * @param null|int $cID Customer Id
+	 * @param null|int $gID  Group Id
+	 * @param null|int $uID   User Id
 	 *
 	 * @return void
 	 */
-	public static function init($cID): void
-	{
-		self::$App = 'o:app' . Env::$oRepresentation;
-		self::$Customer = ":c:{$cID}";
+	public static function init(
+		$cID = null,
+		$gID = null,
+		$uID = null
+	): void {
+		self::$App = 'app';
+		self::$Customer = $cID !== null ? ":c:{$cID}" : '';
+		self::$Group = $gID !== null ? ":g:{$gID}" : '';
+		self::$User = $uID !== null ? ":u:{$uID}" : '';
 
-		self::$Category = self::$App . ':category';
+		self::$Category = self::$App . self::$Customer . self::$Group . ':category';
+		self::$Category1 = self::$App . self::$Customer . self::$Group . ':category:1';
 	}
 }

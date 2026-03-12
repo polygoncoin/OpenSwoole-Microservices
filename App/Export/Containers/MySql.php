@@ -65,7 +65,7 @@ class MySql implements DbInterface
 	 *
 	 * @var null|string
 	 */
-	private $database = null;
+	private $db = null;
 
 	/**
 	 * Mysql Customer binary location (One can find this by "which mysql" command)
@@ -102,17 +102,17 @@ class MySql implements DbInterface
 	 * @param string $port     port
 	 * @param string $username username
 	 * @param string $password password
-	 * @param string $database database
+	 * @param string $db database
 	 *
 	 * @return void
 	 */
-	public function init($hostname, $port, $username, $password, $database): void
+	public function init($hostname, $port, $username, $password, $db): void
 	{
 		$this->hostname = $hostname;
 		$this->port = $port;
 		$this->username = $username;
 		$this->password = $password;
-		$this->database = $database;
+		$this->db = $db;
 	}
 
 	/**
@@ -194,7 +194,7 @@ class MySql implements DbInterface
 			hostname: $this->hostname,
 			username: $this->username,
 			password: $this->password,
-			database: $this->database,
+			db: $this->db,
 			port: $this->port,
 		);
 		if (!$mysqli) {
@@ -272,7 +272,7 @@ class MySql implements DbInterface
 			. '--port=' . escapeshellarg(arg: $this->port) . ' '
 			. '--user=' . escapeshellarg(arg: $this->username) . ' '
 			. '--password=' . escapeshellarg(arg: $this->password) . ' '
-			. '--database=' . escapeshellarg(arg: $this->database) . ' '
+			. '--database=' . escapeshellarg(arg: $this->db) . ' '
 			. '--execute=' . escapeshellarg(arg: $sql);
 
 		return $shellCommand;

@@ -17,7 +17,7 @@ namespace Microservices\App;
 
 use Microservices\App\Common;
 use Microservices\App\Constants;
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 use Microservices\App\Functions;
 use Microservices\App\HttpStatus;
@@ -364,7 +364,7 @@ class RouteParser
 		if ($paramDataType === 'int' && ctype_digit(text: $element)) {
 			$foundIntRoute = $routeElement;
 			$foundIntParamName = $paramName;
-			DatabaseDataTypes::validateDataType(
+			DatabaseServerDataType::validateDataType(
 				data: $element,
 				dataType: $dataType
 			);
@@ -372,7 +372,7 @@ class RouteParser
 		if ($paramDataType === 'string') {
 			$foundStringRoute = $routeElement;
 			$foundStringParamName = $paramName;
-			DatabaseDataTypes::validateDataType(
+			DatabaseServerDataType::validateDataType(
 				data: $element,
 				dataType: $dataType
 			);

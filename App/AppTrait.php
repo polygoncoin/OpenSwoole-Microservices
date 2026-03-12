@@ -18,7 +18,7 @@ namespace Microservices\App;
 use Microservices\App\Start;
 use Microservices\App\Counter;
 use Microservices\App\Constants;
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 use Microservices\App\DbFunctions;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
@@ -85,7 +85,7 @@ trait AppTrait
 					$fetchFrom = $config['fetchFrom'];
 					$fKey = $config['fetchFromValue'];
 					$dataType = isset($config['dataType'])
-						? $config['dataType'] : DatabaseDataTypes::$Default;
+						? $config['dataType'] : DatabaseServerDataType::$Default;
 					$require = isset($config['necessary'])
 						? $config['necessary'] : false;
 
@@ -531,7 +531,7 @@ trait AppTrait
 			} elseif (isset($this->api->req->s[$fetchFrom][$fKey])) {
 				if (isset($this->api->req->s['necessary'][$fetchFrom][$fKey])) {
 					if (
-						DatabaseDataTypes::validateDataType(
+						DatabaseServerDataType::validateDataType(
 							data: $this->api->req->s[$fetchFrom][$fKey],
 							dataType: $this->api->req->s['necessary'][$fetchFrom][$fKey]
 						)
@@ -623,21 +623,21 @@ trait AppTrait
 				'column' => 'page',
 				'fetchFrom' => 'queryParams',
 				'fetchFromValue' => 'page',
-				'dataType' => DatabaseDataTypes::$INT,
+				'dataType' => DatabaseServerDataType::$INT,
 				'necessary' => Constants::$REQUIRED
 			];
 			$sqlConfig['__CONFIG__'][] = [
 				'column' => 'perPage',
 				'fetchFrom' => 'queryParams',
 				'fetchFromValue' => 'perPage',
-				'dataType' => DatabaseDataTypes::$INT
+				'dataType' => DatabaseServerDataType::$INT
 			];
 
 			foreach ($sqlConfig['__CONFIG__'] as $config) {
 				$fetchFrom = $config['fetchFrom'];
 				$fKey = $config['fetchFromValue'];
 				$dataType = isset($config['dataType'])
-					? $config['dataType'] : DatabaseDataTypes::$Default;
+					? $config['dataType'] : DatabaseServerDataType::$Default;
 				$require = isset($config['necessary'])
 					? $config['necessary'] : false;
 
@@ -661,7 +661,7 @@ trait AppTrait
 					$fetchFrom = $config['fetchFrom'];
 					$fKey = $config['fetchFromValue'];
 					$dataType = isset($config['dataType'])
-						? $config['dataType'] : DatabaseDataTypes::$Default;
+						? $config['dataType'] : DatabaseServerDataType::$Default;
 					$require = isset($config['necessary'])
 						? $config['necessary'] : false;
 

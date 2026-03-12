@@ -106,16 +106,16 @@ class Reload
 				key: $c_key,
 				value: json_encode(value: $cRow)
 			);
-			$db = DbFunctions::connectDb(
+			$dbObj = DbFunctions::connectDb(
 				dbServerType: getenv(name: $cRow['master_db_server_type']),
-				dbHostname: getenv(name: $cRow['master_db_hostname']),
-				dbPort: getenv(name: $cRow['master_db_port']),
-				dbUsername: getenv(name: $cRow['master_db_username']),
-				dbPassword: getenv(name: $cRow['master_db_password']),
-				dbDatabase: getenv(name: $cRow['master_db_database'])
+				dbServerHostname: getenv(name: $cRow['master_db_server_hostname']),
+				dbServerPort: getenv(name: $cRow['master_db_server_port']),
+				dbServerUsername: getenv(name: $cRow['master_db_server_username']),
+				dbServerPassword: getenv(name: $cRow['master_db_server_password']),
+				dbServerDB: getenv(name: $cRow['master_db_server_db'])
 			);
 
-			$db->execDbQuery(
+			$dbObj->execDbQuery(
 				sql: "
 					SELECT
 						 *
@@ -124,8 +124,8 @@ class Reload
 					",
 				params: []
 			);
-			$uRows = $db->fetchAll();
-			$db->closeCursor();
+			$uRows = $dbObj->fetchAll();
+			$dbObj->closeCursor();
 			foreach ($uRows as $uRow) {
 				if ($uRow['allowed_cidr'] !== null) {
 					$uCidrs = Functions::cidrsIpNumber(cidrString: $uRow['allowed_cidr']);

@@ -15,7 +15,7 @@
 
 namespace Microservices\Config\Queries\Auth\CustomerDB\Groups\UserGroup\DELETE;
 
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 
 return [
 	'__QUERY__' => "UPDATE `{$this->api->req->usersTable}` SET __SET__ WHERE __WHERE__",
@@ -36,7 +36,7 @@ return [
 			'column' => 'id',
 			'fetchFrom' => 'routeParams',
 			'fetchFromValue' => 'id',
-			'dataType' => DatabaseDataTypes::$PrimaryKey
+			'dataType' => DatabaseServerDataType::$PrimaryKey
 		]
 	],
 	'__SUB-QUERY__' => [
@@ -59,13 +59,13 @@ return [
 					'column' => 'id',
 					'fetchFrom' => 'payload',
 					'fetchFromValue' => 'id',
-					'dataType' => DatabaseDataTypes::$PrimaryKey
+					'dataType' => DatabaseServerDataType::$PrimaryKey
 				],
 				[
 					'column' => 'user_id',
 					'fetchFrom' => 'routeParams',
 					'fetchFromValue' => 'id',
-					'dataType' => DatabaseDataTypes::$PrimaryKey
+					'dataType' => DatabaseServerDataType::$PrimaryKey
 				],
 			],
 		]

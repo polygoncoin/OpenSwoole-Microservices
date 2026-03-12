@@ -16,15 +16,15 @@
 namespace Microservices\Config\Routes\Auth\CustomerDB\Common\Custom;
 
 use Microservices\App\Env;
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 
 return [
 	Env::$customRequestRoutePrefix => [
 		'{custom:string}' => [
-			'dataType' => DatabaseDataTypes::$Default,
+			'dataType' => DatabaseServerDataType::$Default,
 			'__FILE__' => false,
 			'{id:int}'  => [
-				'dataType' => DatabaseDataTypes::$PrimaryKey,
+				'dataType' => DatabaseServerDataType::$PrimaryKey,
 				'__FILE__' => false
 			]
 		]

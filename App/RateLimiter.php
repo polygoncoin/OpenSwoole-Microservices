@@ -37,7 +37,7 @@ class RateLimiter
 	 *
 	 * @var null|Object
 	 */
-	public $cache = null;
+	public $cacheObj = null;
 
 	/**
 	 * Constructor
@@ -50,14 +50,14 @@ class RateLimiter
 			return;
 		}
 
-		$this->cache = DbFunctions::connectCache(
+		$this->cacheObj = DbFunctions::connectCache(
 			cacheServerType: Env::$rateLimitServerType,
-			cacheHostname: Env::$rateLimitServerHostname,
-			cachePort: Env::$rateLimitServerPort,
-			cacheUsername: '',
-			cachePassword: '',
-			cacheDatabase: '',
-			cacheTable: ''
+			cacheServerHostname: Env::$rateLimitServerHostname,
+			cacheServerPort: Env::$rateLimitServerPort,
+			cacheServerUsername: '',
+			cacheServerPassword: '',
+			cacheServerDB: '',
+			cacheServerTable: ''
 		);
 	}
 
@@ -78,7 +78,7 @@ class RateLimiter
 		$key
 	): array {
 		if (
-			$this->cache === null
+			$this->cacheObj === null
 			&& (!Env::$enableRateLimiting)
 		) {
 			return [
@@ -96,11 +96,11 @@ class RateLimiter
 
 		$key = $prefix . $key;
 
-		if ($this->cache->cacheExists($key)) {
-			$requestCount = (int)$this->cache->getCache($key);
+		if ($this->cacheObj->cacheExists($key)) {
+			$requestCount = (int)$this->cacheObj->getCache($key);
 		} else {
 			$requestCount = 0;
-			$this->cache->setCache($key, $requestCount, $remainder);
+			$this->cacheObj->setCache($key, $requestCount, $remainder);
 		}
 		$requestCount++;
 
@@ -109,7 +109,7 @@ class RateLimiter
 		$resetAt = Env::$timestamp + $remainder;
 
 		if ($allowed) {
-			$this->cache->incrementCache($key);
+			$this->cacheObj->incrementCache($key);
 		}
 
 		return [

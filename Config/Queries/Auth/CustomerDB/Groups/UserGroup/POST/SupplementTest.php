@@ -24,7 +24,7 @@ return [
 		//     'column' => 'id',
 		//     'fetchFrom' => 'routeParams',
 		//     'fetchFromValue' => 'id',
-		//     'dataType' => DatabaseDataTypes::$PrimaryKey,
+		//     'dataType' => DatabaseServerDataType::$PrimaryKey,
 		//     'required' => Constants::$REQUIRED
 		// ],
 		[

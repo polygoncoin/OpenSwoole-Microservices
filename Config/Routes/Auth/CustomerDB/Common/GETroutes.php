@@ -16,7 +16,7 @@
 namespace Microservices\Config\Routes\Auth\CustomerDB\Common;
 
 use Microservices\App\Constants;
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 
 return [
@@ -36,7 +36,7 @@ return [
 				. DIRECTORY_SEPARATOR . 'SearchCategory.php',
 		],
 		'{id:int}' => [
-			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
 			'__FILE__' => Constants::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
@@ -47,7 +47,7 @@ return [
 	],
 	'registration' => [
 		'{id:int}'  => [
-			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
 			'__FILE__' => Constants::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
@@ -58,7 +58,7 @@ return [
 	],
 	'address' => [
 		'{id:int}'  => [
-			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
 			'__FILE__' => Constants::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
@@ -69,7 +69,7 @@ return [
 	],
 	'registration-with-address' => [
 		'{id:int}'  => [
-			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
 			'__FILE__' => Constants::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
@@ -81,7 +81,7 @@ return [
 	Env::$routesRequestRoute => [
 		'__FILE__' => false,
 		'{method:string}' => [
-			'dataType' => DatabaseDataTypes::$HttpMethods,
+			'dataType' => DatabaseServerDataType::$HttpMethods,
 			'__FILE__' => false
 		]
 	]

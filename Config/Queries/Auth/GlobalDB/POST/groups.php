@@ -15,7 +15,7 @@
 
 namespace Microservices\Config\Queries\Auth\GlobalDB\POST;
 
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 
 return [
 	'__QUERY__' => "INSERT INTO `{$Env::$groupsTable}` SET __SET__",
@@ -29,13 +29,13 @@ return [
 			'column' => 'customer_id',
 			'fetchFrom' => 'payload',
 			'fetchFromValue' => 'customer_id',
-			'dataType' => DatabaseDataTypes::$INT
+			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'connection_id',
 			'fetchFrom' => 'payload',
 			'fetchFromValue' => 'connection_id',
-			'dataType' => DatabaseDataTypes::$INT
+			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'allowed_cidr',

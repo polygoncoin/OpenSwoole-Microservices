@@ -15,7 +15,7 @@
 
 namespace Microservices\Config\Queries\Auth\CustomerDB\Groups\UserGroup\POST;
 
-use Microservices\App\DatabaseCacheKey;
+use Microservices\App\CacheServerAuthKey;
 
 return [
 	'__QUERY__' => 'INSERT INTO `category` SET __SET__',
@@ -70,7 +70,7 @@ return [
 	],
 	'useHierarchy' => true,
 	'affectedCacheKeys' => [
-		DatabaseCacheKey::$Category,
-		DatabaseCacheKey::$Category1
+		CacheServerAuthKey::$Category,
+		CacheServerAuthKey::$Category1
 	]
 ];

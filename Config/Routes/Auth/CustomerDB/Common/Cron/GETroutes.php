@@ -16,15 +16,15 @@
 namespace Microservices\Config\Routes\Auth\CustomerDB\Common\Cron;
 
 use Microservices\App\Env;
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 
 return [
 	Env::$cronRequestRoutePrefix => [
 		'{cron:string}' => [
-			'dataType' => DatabaseDataTypes::$Default,
+			'dataType' => DatabaseServerDataType::$Default,
 			'__FILE__' => false,
 			'{id:int}'  => [
-				'dataType' => DatabaseDataTypes::$PrimaryKey,
+				'dataType' => DatabaseServerDataType::$PrimaryKey,
 				'__FILE__' => false
 			]
 		]

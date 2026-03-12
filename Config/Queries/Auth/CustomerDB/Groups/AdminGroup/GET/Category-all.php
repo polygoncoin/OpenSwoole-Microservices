@@ -15,7 +15,7 @@
 
 namespace Microservices\Config\Queries\Auth\CustomerDB\Groups\AdminGroup\GET;
 
-use Microservices\App\DatabaseCacheKey;
+use Microservices\App\CacheServerAuthKey;
 
 return [
 	'countQuery' => 'SELECT count(1) as `count` FROM `category` WHERE __WHERE__',
@@ -89,5 +89,5 @@ return [
 	],
 	'useResultSet' => true,
 	'fetchFrom' => 'Master',
-	'cacheKey' => DatabaseCacheKey::$Category
+	'cacheKey' => CacheServerAuthKey::$Category
 ];

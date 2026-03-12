@@ -36,11 +36,11 @@ interface DbInterface
 	 * @param string $port     port
 	 * @param string $username username
 	 * @param string $password password
-	 * @param string $database database
+	 * @param string $db database
 	 *
 	 * @return void
 	 */
-	public function init($hostname, $port, $username, $password, $database): void;
+	public function init($hostname, $port, $username, $password, $db): void;
 
 	/**
 	 * Returns Shell Command

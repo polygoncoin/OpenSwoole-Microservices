@@ -65,7 +65,7 @@ class RedisCache implements CacheInterface
 	 *
 	 * @var null|string
 	 */
-	private $database = null;
+	private $db = null;
 
 	/**
 	 * Cache collection
@@ -79,7 +79,7 @@ class RedisCache implements CacheInterface
 	 *
 	 * @var null|Cache_Redis
 	 */
-	private $cache = null;
+	private $cacheObj = null;
 
 	/**
 	 * Constructor
@@ -88,7 +88,7 @@ class RedisCache implements CacheInterface
 	 * @param string $port     Port .env string
 	 * @param string $username Username .env string
 	 * @param string $password Password .env string
-	 * @param string $database Database .env string
+	 * @param string $db Database .env string
 	 * @param string $table    Table .env string
 	 */
 	public function __construct(
@@ -96,14 +96,14 @@ class RedisCache implements CacheInterface
 		$port,
 		$username,
 		$password,
-		$database,
+		$db,
 		$table
 	) {
 		$this->hostname = $hostname;
 		$this->port = $port;
 		$this->username = $username;
 		$this->password = $password;
-		$this->database = $database;
+		$this->db = $db;
 		$this->table = $table;
 	}
 
@@ -115,17 +115,17 @@ class RedisCache implements CacheInterface
 	 */
 	public function connect(): void
 	{
-		if ($this->cache !== null) {
+		if ($this->cacheObj !== null) {
 			return;
 		}
 
 		try {
-			$this->cache = new Cache_Redis(
+			$this->cacheObj = new Cache_Redis(
 				hostname: $this->hostname,
 				port: $this->port,
 				username: $this->username,
 				password: $this->password,
-				database: $this->database,
+				db: $this->db,
 				table: $this->table
 			);
 		} catch (\Exception $e) {
@@ -147,7 +147,7 @@ class RedisCache implements CacheInterface
 	{
 		$this->connect();
 
-		return $this->cache->cacheExists(key: $key);
+		return $this->cacheObj->cacheExists(key: $key);
 	}
 
 	/**
@@ -161,7 +161,7 @@ class RedisCache implements CacheInterface
 	{
 		$this->connect();
 
-		return $this->cache->getCache($key);
+		return $this->cacheObj->getCache($key);
 	}
 
 	/**
@@ -177,7 +177,7 @@ class RedisCache implements CacheInterface
 	{
 		$this->connect();
 
-		return $this->cache->setCache($key, $value, $expire);
+		return $this->cacheObj->setCache($key, $value, $expire);
 	}
 
 	/**
@@ -192,7 +192,7 @@ class RedisCache implements CacheInterface
 	{
 		$this->connect();
 
-		return $this->cache->incrementCache($key, $offset);
+		return $this->cacheObj->incrementCache($key, $offset);
 	}
 
 	/**
@@ -206,6 +206,6 @@ class RedisCache implements CacheInterface
 	{
 		$this->connect();
 
-		return $this->cache->deleteCache($key);
+		return $this->cacheObj->deleteCache($key);
 	}
 }

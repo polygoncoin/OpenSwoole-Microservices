@@ -15,7 +15,7 @@
 
 namespace Microservices\Config\Queries\Auth\CustomerDB\Groups\UserGroup\POST;
 
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 
 return [
 	'__QUERY__' => 'INSERT INTO `address` SET __SET__',
@@ -29,7 +29,7 @@ return [
 			'column' => 'user_id',
 			'fetchFrom' => 'payload',
 			'fetchFromValue' => 'user_id',
-			'dataType' => DatabaseDataTypes::$INT
+			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'address',

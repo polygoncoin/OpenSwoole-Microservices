@@ -16,7 +16,7 @@
 namespace Microservices\Config\Routes\Auth\GlobalDB;
 
 use Microservices\App\Constants;
-use Microservices\App\DatabaseDataTypes;
+use Microservices\App\DatabaseServerDataType;
 
 return [
 	'group' => [
@@ -25,7 +25,7 @@ return [
 			. DIRECTORY_SEPARATOR . 'GET'
 			. DIRECTORY_SEPARATOR . 'groups.php',
 		'{id:int}'  => [
-			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
 			'__FILE__' => Constants::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'GlobalDB'
 				. DIRECTORY_SEPARATOR . 'GET'
@@ -38,7 +38,7 @@ return [
 			. DIRECTORY_SEPARATOR . 'GET'
 			. DIRECTORY_SEPARATOR . 'customer.php',
 		'{id:int}'  => [
-			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
 			'__FILE__' => Constants::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'GlobalDB'
 				. DIRECTORY_SEPARATOR . 'GET'

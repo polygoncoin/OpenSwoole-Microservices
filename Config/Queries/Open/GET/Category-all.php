@@ -16,7 +16,7 @@
 namespace Microservices\Config\Queries\Open\GET;
 
 use Microservices\App\Constants;
-use Microservices\App\DatabaseOpenCacheKey;
+use Microservices\App\CacheServerOpenKey;
 
 return [
 	'countQuery' => 'SELECT count(1) as `count` FROM `category` WHERE __WHERE__',
@@ -90,7 +90,7 @@ return [
 	],
 	'useResultSet' => true,
 	'fetchFrom' => 'Master',
-	'cacheKey' => DatabaseOpenCacheKey::$Category,
+	'cacheKey' => CacheServerOpenKey::$Category,
 	'responseLag' => [
 		// No of Request => Seconds Lag
 		1 => 0,

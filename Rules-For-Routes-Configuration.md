@@ -18,7 +18,7 @@ return [
 return [
 	'tableName' => [
 		'{id:int}' => [
-			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
 			'__FILE__' => 'SQL file location'
 		]
 	]
@@ -31,11 +31,11 @@ return [
 return [
 	'tableName' => [
 		'{id:int}' => [
-			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
 			'__FILE__' => 'SQL file location for integer data type'
 		],
 		'{id:string}' => [
-			'dataType' => DatabaseDataTypes::$Default,
+			'dataType' => DatabaseServerDataType::$Default,
 			'__FILE__' => 'SQL file location for string data type'
 		]
 	]
@@ -47,7 +47,7 @@ return [
 ```PHP
 return [
 	'{tableName:string}' => [
-		'dataType' => DatabaseDataTypes::$Tables,
+		'dataType' => DatabaseServerDataType::$Tables,
 		'{id:int}' => [
 			'__FILE__' => 'SQL file location'
 		]
@@ -60,7 +60,7 @@ return [
 ```PHP
 return [
 	'{tableName:string}' => [
-		'dataType' => DatabaseDataTypes::$Tables,
+		'dataType' => DatabaseServerDataType::$Tables,
 		'__FILE__' => 'SQL file location',
 		'__PRE-ROUTE-HOOKS__' => [// These will apply recursively
 			'Hook_1',
@@ -71,7 +71,7 @@ return [
 			'...'
 		]
 		'{id:int}' => [
-			'dataType' => DatabaseDataTypes::$PrimaryKey,
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
 			'__FILE__' => 'SQL file location',
 			'__PRE-ROUTE-HOOKS__' => [], // For noi hooks
 			'__POST-ROUTE-HOOKS__' => [] // For noi hooks

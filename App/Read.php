@@ -66,7 +66,7 @@ class Read
 	 *
 	 * @var null|object
 	 */
-	public $db = null;
+	public $dbObj = null;
 
 	/**
 	 * Api common Object
@@ -171,9 +171,9 @@ class Read
 		$fetchFrom = $rSqlConfig['fetchFrom'] ?? 'Slave';
 		DbFunctions::setDbConnection($this->api->req, fetchFrom: $fetchFrom);
 		$fetchFrom = strtolower($fetchFrom);
-		$this->modeColumn = $fetchFrom . '_query_placeholder';
+		$this->modeColumn = $fetchFrom . '_db_server_query_placeholder';
 		$dbObj = $fetchFrom . 'Db';
-		$this->db = &(DbFunctions::$$dbObj)[$this->api->req->cId];
+		$this->dbObj = &(DbFunctions::$$dbObj)[$this->api->req->cId];
 
 		// Use result set recursively flag
 		$useResultSet = $this->getUseHierarchy(
@@ -400,8 +400,8 @@ class Read
 			return;
 		}
 
-		$this->db->execDbQuery(sql: $sql, params: $sqlParams);
-		if ($row = $this->db->fetch()) {
+		$this->dbObj->execDbQuery(sql: $sql, params: $sqlParams);
+		if ($row = $this->dbObj->fetch()) {
 			foreach ($row as $key => $value) {
 				$this->dataEncode->addKeyData(key: $key, data: $value);
 			}
@@ -424,7 +424,7 @@ class Read
 				return;
 			}
 		}
-		$this->db->closeCursor();
+		$this->dbObj->closeCursor();
 
 		if (isset($rSqlConfig['__SUB-QUERY__'])) {
 			$this->callReadDB(
@@ -489,9 +489,9 @@ class Read
 			return;
 		}
 
-		$this->db->execDbQuery(sql: $sql, params: $sqlParams);
-		$row = $this->db->fetch();
-		$this->db->closeCursor();
+		$this->dbObj->execDbQuery(sql: $sql, params: $sqlParams);
+		$row = $this->dbObj->fetch();
+		$this->dbObj->closeCursor();
 
 		$totalRowsCount = $row['count'];
 		$totalPages = ceil(
@@ -582,8 +582,8 @@ class Read
 
 		$singleColumn = false;
 		$pushPop = true;
-		$this->db->execDbQuery(sql: $sql, params: $sqlParams, pushPop: $pushPop);
-		for ($i = 0; $row = $this->db->fetch();) {
+		$this->dbObj->execDbQuery(sql: $sql, params: $sqlParams, pushPop: $pushPop);
+		for ($i = 0; $row = $this->dbObj->fetch();) {
 			if ($i === 0) {
 				if (count(value: $row) === 1) {
 					$singleColumn = true;
@@ -610,7 +610,7 @@ class Read
 				$this->dataEncode->encode(data: $row);
 			}
 		}
-		$this->db->closeCursor(pushPop: $pushPop);
+		$this->dbObj->closeCursor(pushPop: $pushPop);
 	}
 
 	/**
@@ -695,11 +695,11 @@ class Read
 		// Export
 		$export = new Export(api: $this->api, dbServerType: $dbDetails['dbServerType']);
 		$export->init(
-			hostname: $dbDetails['dbHostname'],
-			port: $dbDetails['dbPort'],
-			username: $dbDetails['dbUsername'],
-			password: $dbDetails['dbPassword'],
-			database: $dbDetails['dbDatabase']
+			hostname: $dbDetails['dbServerHostname'],
+			port: $dbDetails['dbServerPort'],
+			username: $dbDetails['dbServerUsername'],
+			password: $dbDetails['dbServerPassword'],
+			db: $dbDetails['dbServerDB']
 		);
 
 		if (isset($rSqlConfig['downloadFile'])) {
