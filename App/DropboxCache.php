@@ -18,7 +18,7 @@ namespace Microservices\App;
 use Microservices\App\Common;
 use Microservices\App\Constants;
 use Microservices\App\HttpStatus;
-use Microservices\App\DropboxCacheHandlers\StreamVideo;
+use Microservices\App\DropboxCacheHandler\StreamVideo;
 
 /**
  * Customer side Caching via E-tags

@@ -107,7 +107,7 @@ class DbFunctions
 			);
 		}
 
-		$sqlResultsCacheServerNS = 'Microservices\\App\\Servers\\QueryCache\\' . $cacheServerType . 'QueryCache';
+		$sqlResultsCacheServerNS = 'Microservices\\App\\Server\\QueryCacheServer\\' . $cacheServerType . 'QueryCache';
 		self::$sqlResultsCacheServer = new $sqlResultsCacheServerNS(
 			Env::$sqlResultsCacheServerHostname,
 			Env::$sqlResultsCacheServerPort,
@@ -146,7 +146,7 @@ class DbFunctions
 				code: HttpStatus::$InternalServerError
 			);
 		}
-		$cacheNS = 'Microservices\\App\\Servers\\Cache\\' . $cacheServerType . 'Cache';
+		$cacheNS = 'Microservices\\App\\Server\\CacheServer\\' . $cacheServerType . 'Cache';
 		return new $cacheNS(
 			$cacheServerHostname,
 			$cacheServerPort,
@@ -246,12 +246,12 @@ class DbFunctions
 	/**
 	 * Set DB
 	 *
-	 * @param string $dbServerType Cache type
+	 * @param string $dbServerType Cache Type
 	 * @param string $dbServerHostname   Hostname
 	 * @param int    $dbServerPort       Port
 	 * @param string $dbServerUsername   Username
 	 * @param string $dbServerPassword   Password
-	 * @param string $dbServerDB   Database
+	 * @param string $dbServerDB         Database
 	 *
 	 * @return object
 	 */
@@ -269,7 +269,7 @@ class DbFunctions
 				code: HttpStatus::$InternalServerError
 			);
 		}
-		$dbNS = 'Microservices\\App\\Servers\\Database\\' . $dbServerType . 'Database';
+		$dbNS = 'Microservices\\App\\Server\\DatabaseServer\\' . $dbServerType . 'Database';
 		return new $dbNS(
 			$dbServerHostname,
 			$dbServerPort,

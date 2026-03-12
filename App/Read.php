@@ -66,7 +66,7 @@ class Read
 	 *
 	 * @var null|object
 	 */
-	public $dbObj = null;
+	public $dbServerObj = null;
 
 	/**
 	 * Api common Object
@@ -172,8 +172,8 @@ class Read
 		DbFunctions::setDbConnection($this->api->req, fetchFrom: $fetchFrom);
 		$fetchFrom = strtolower($fetchFrom);
 		$this->modeColumn = $fetchFrom . '_db_server_query_placeholder';
-		$dbObj = $fetchFrom . 'Db';
-		$this->dbObj = &(DbFunctions::$$dbObj)[$this->api->req->cId];
+		$dbServerObj = $fetchFrom . 'Db';
+		$this->dbServerObj = &(DbFunctions::$$dbServerObj)[$this->api->req->cId];
 
 		// Use result set recursively flag
 		$useResultSet = $this->getUseHierarchy(
@@ -400,8 +400,8 @@ class Read
 			return;
 		}
 
-		$this->dbObj->execDbQuery(sql: $sql, params: $sqlParams);
-		if ($row = $this->dbObj->fetch()) {
+		$this->dbServerObj->execDbQuery(sql: $sql, params: $sqlParams);
+		if ($row = $this->dbServerObj->fetch()) {
 			foreach ($row as $key => $value) {
 				$this->dataEncode->addKeyData(key: $key, data: $value);
 			}
@@ -424,7 +424,7 @@ class Read
 				return;
 			}
 		}
-		$this->dbObj->closeCursor();
+		$this->dbServerObj->closeCursor();
 
 		if (isset($rSqlConfig['__SUB-QUERY__'])) {
 			$this->callReadDB(
@@ -489,9 +489,9 @@ class Read
 			return;
 		}
 
-		$this->dbObj->execDbQuery(sql: $sql, params: $sqlParams);
-		$row = $this->dbObj->fetch();
-		$this->dbObj->closeCursor();
+		$this->dbServerObj->execDbQuery(sql: $sql, params: $sqlParams);
+		$row = $this->dbServerObj->fetch();
+		$this->dbServerObj->closeCursor();
 
 		$totalRowsCount = $row['count'];
 		$totalPages = ceil(
@@ -582,8 +582,8 @@ class Read
 
 		$singleColumn = false;
 		$pushPop = true;
-		$this->dbObj->execDbQuery(sql: $sql, params: $sqlParams, pushPop: $pushPop);
-		for ($i = 0; $row = $this->dbObj->fetch();) {
+		$this->dbServerObj->execDbQuery(sql: $sql, params: $sqlParams, pushPop: $pushPop);
+		for ($i = 0; $row = $this->dbServerObj->fetch();) {
 			if ($i === 0) {
 				if (count(value: $row) === 1) {
 					$singleColumn = true;
@@ -610,7 +610,7 @@ class Read
 				$this->dataEncode->encode(data: $row);
 			}
 		}
-		$this->dbObj->closeCursor(pushPop: $pushPop);
+		$this->dbServerObj->closeCursor(pushPop: $pushPop);
 	}
 
 	/**

@@ -52,7 +52,7 @@ class Supplement
 	 *
 	 * @var null|object
 	 */
-	public $dbObj = null;
+	public $dbServerObj = null;
 
 	/**
 	 * Operate DML As Transactions
@@ -185,7 +185,7 @@ class Supplement
 
 		// Set Server mode to execute query on - Read / Write Server
 		DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
-		$this->dbObj = &DbFunctions::$masterDb[$this->api->req->cId];
+		$this->dbServerObj = &DbFunctions::$masterDb[$this->api->req->cId];
 
 		$this->processSupplement(
 			sSqlConfig: $sSqlConfig,
@@ -309,7 +309,7 @@ class Supplement
 			// Begin DML operation
 			if ($hashJson === null) {
 				if ($this->operateAsTransaction) {
-					$this->dbObj->begin();
+					$this->dbServerObj->begin();
 				}
 				$response = [];
 				$this->execSupplement(
@@ -324,9 +324,9 @@ class Supplement
 				if ($this->api->res->httpStatus === HttpStatus::$Ok) {
 					if (
 						$this->operateAsTransaction
-						&& ($this->dbObj->beganTransaction === true)
+						&& ($this->dbServerObj->beganTransaction === true)
 					) {
-						$this->dbObj->commit();
+						$this->dbServerObj->commit();
 					}
 
 					$arr = [];
@@ -443,7 +443,7 @@ class Supplement
 			}
 
 			$payloadIndexes = $payloadIndexes;
-			if ($this->operateAsTransaction && !$this->dbObj->beganTransaction) {
+			if ($this->operateAsTransaction && !$this->dbServerObj->beganTransaction) {
 				$_response['Error'] = 'Transaction rolled back';
 				return;
 			}
@@ -501,12 +501,12 @@ class Supplement
 				$this->api->req->s['payload']
 			);
 
-			if ($this->operateAsTransaction && !$this->dbObj->beganTransaction) {
+			if ($this->operateAsTransaction && !$this->dbServerObj->beganTransaction) {
 				$_response['Error'] = 'Something went wrong';
 				return;
 			}
 
-			$this->dbObj->closeCursor();
+			$this->dbServerObj->closeCursor();
 
 			// triggers
 			if (isset($sSqlConfig['__TRIGGERS__'])) {

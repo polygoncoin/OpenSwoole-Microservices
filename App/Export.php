@@ -16,7 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\Common;
-use Microservices\App\Export\Db;
+use Microservices\App\Export\DB;
 use Microservices\App\HttpStatus;
 
 /**
@@ -67,7 +67,7 @@ class Export
 	 *
 	 * @var null|Db
 	 */
-	public $dbObj = null;
+	public $dbServerObj = null;
 
 	/**
 	 * Api common Object
@@ -87,24 +87,24 @@ class Export
 	public function __construct(&$api, $dbServerType)
 	{
 		$this->api = &$api;
-		$this->dbObjServerType = $dbServerType;
-		$this->dbObj = new Db(dbServerType: $this->dbObjServerType);
+		$this->dbServerType = $dbServerType;
+		$this->dbServerObj = new DB(dbServerType: $this->dbServerType);
 	}
 
 	/**
 	 * Initialize
 	 *
 	 * @param string $hostname Hostname
-	 * @param string $port     port
+	 * @param string $port     Port
 	 * @param string $username Username
 	 * @param string $password Password
-	 * @param string $db Database
+	 * @param string $db       Database
 	 *
 	 * @return void
 	 */
 	public function init($hostname, $port, $username, $password, $db): void
 	{
-		$this->dbObj->init(
+		$this->dbServerObj->init(
 			hostname: $hostname,
 			port: $port,
 			username: $username,
@@ -138,7 +138,7 @@ class Export
 			case 'TSV':
 				if ($linesArr[1] !== '1') {
 					throw new \Exception(
-						message: "Issue while connecting to {$this->dbObjServerType} TSV Host",
+						message: "Issue while connecting to {$this->dbServerType} TSV Host",
 						code: HttpStatus::$InternalServerError
 					);
 				}
@@ -146,7 +146,7 @@ class Export
 			case 'CSV':
 				if ($linesArr[1] !== '"1"') {
 					throw new \Exception(
-						message: "Issue while connecting to {$this->dbObjServerType} CSV Host",
+						message: "Issue while connecting to {$this->dbServerType} CSV Host",
 						code: HttpStatus::$InternalServerError
 					);
 				}
@@ -194,7 +194,7 @@ class Export
 		$params = [],
 		$exportFile = null
 	): array {
-		$shellCommand = $this->dbObj->getShellCommand(sql: $sql, params: $params);
+		$shellCommand = $this->dbServerObj->getShellCommand(sql: $sql, params: $params);
 		if ($this->exportMode === 'CSV') {
 			$shellCommand .= ' | sed -e \'s/"/""/g ; s/\t/","/g ; s/^/"/g ; s/$/"/g\'';
 		}

@@ -23,7 +23,7 @@ use Microservices\App\Env;
 use Microservices\App\Functions;
 use Microservices\App\HttpStatus;
 use Microservices\App\RateLimiter;
-use Microservices\App\SessionHandlers\Session;
+use Microservices\App\SessionHandler\Session;
 
 /**
  * Login
@@ -44,7 +44,7 @@ class Login
 	 *
 	 * @var null|object
 	 */
-	public $dbObj = null;
+	public $dbServerObj = null;
 
 	/**
 	 * Username for login
@@ -497,10 +497,10 @@ class Login
 	private function updateDB(&$userData): void
 	{
 		DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
-		$this->dbObj = &DbFunctions::$masterDb[$this->api->req->cId];
+		$this->dbServerObj = &DbFunctions::$masterDb[$this->api->req->cId];
 
 		$usersTable = $this->api->req->usersTable;
-		$this->dbObj->execDbQuery(
+		$this->dbServerObj->execDbQuery(
 			sql: "
 				UPDATE
 					`{$usersTable}`

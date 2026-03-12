@@ -5,7 +5,7 @@
 ```ini
 ; (Redis) user <username> allcommands allkeys on ><password>
 ; used to save user and token related details
-; Supported Containers - Redis / Memcached / MongoDb
+; Supported Container - Redis / Memcached / MongoDb
 gCacheServerType='Redis'
 gCacheServerHostname='127.0.0.1'
 gCacheServerPort=6379
@@ -19,7 +19,7 @@ gCacheServerTable='global_cache' ; For MongoDb
 
 ```ini
 ; Global Database details - global.sql
-; Supported Containers - MySql / PostgreSql
+; Supported Container - MySql / PostgreSql
 gDbServerType='MySql'
 gDbServerHostname='127.0.0.1'
 gDbServerPort=3306

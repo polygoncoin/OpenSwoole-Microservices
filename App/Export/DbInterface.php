@@ -32,11 +32,11 @@ interface DbInterface
 	/**
 	 * Initialize
 	 *
-	 * @param string $hostname hostname
-	 * @param string $port     port
-	 * @param string $username username
-	 * @param string $password password
-	 * @param string $db database
+	 * @param string $hostname Hostname
+	 * @param string $port     Port
+	 * @param string $username Username
+	 * @param string $password Password
+	 * @param string $db       Database
 	 *
 	 * @return void
 	 */

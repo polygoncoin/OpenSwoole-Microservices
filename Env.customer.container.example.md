@@ -1,6 +1,6 @@
-# Containers
+# Container
 
-In this package the Containers are Database / Caching tools used for maintaining dynamic data.<br />
+In this package the Container are Database / Caching tools used for maintaining dynamic data.<br />
 
 ## Server configuration Example
 
@@ -92,7 +92,7 @@ Make a new config variables as below and set this Key in the above table for cus
 - Customer Cache
 
 ```ini
-; Supported Containers - Redis / Memcached / MongoDb
+; Supported Container - Redis / Memcached / MongoDb
 cCacheServerType='Redis'
 cCacheServerHostname='127.0.0.1'
 cCacheServerPort=6379
@@ -105,7 +105,7 @@ cCacheServerTable='customer_001'      ; For MongoDb
 - Dedicated database
 
 ```ini
-; Supported Containers - MySql / PostgreSql
+; Supported Container - MySql / PostgreSql
 cDbServerType001='MySql'
 cDbServerHostname001='127.0.0.1'
 cDbServerPort001=3306
@@ -155,7 +155,7 @@ INSERT INTO `user` SET `firstname` = ?;
 Below settings are not to be configured in any table. They are used as it is. Only need to make required config value changes in below.
 
 ```ini
-; Supported Containers - Redis / Memcached / MySql / PostgreSql / MongoDb
+; Supported Container - Redis / Memcached / MySql / PostgreSql / MongoDb
 sqlResultsCacheServerType='Redis'
 sqlResultsCacheServerHostname='127.0.0.1'
 sqlResultsCacheServerPort=6379

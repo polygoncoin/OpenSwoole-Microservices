@@ -29,7 +29,7 @@ use Microservices\App\Export\DbInterface;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class Db
+class DB
 {
 	/**
 	 * Allow creation of temporary file required for streaming large data
@@ -50,7 +50,7 @@ class Db
 	 *
 	 * @var null|DbInterface
 	 */
-	public $containerObj = null;
+	public $dbServerObj = null;
 
 	/**
 	 * Constructor
@@ -60,18 +60,18 @@ class Db
 	public function __construct($dbServerType)
 	{
 		$this->dbServerType = $dbServerType;
-		$class = "Microservices\\App\\Export\\Containers\\" . $this->dbServerType;
-		$this->containerObj = new $class();
+		$class = "Microservices\\App\\Export\\Container\\" . $this->dbServerType;
+		$this->dbServerObj = new $class();
 	}
 
 	/**
 	 * Initialize
 	 *
-	 * @param string $hostname hostname
-	 * @param string $port     port
-	 * @param string $username username
-	 * @param string $password password
-	 * @param string $db database
+	 * @param string $hostname Hostname
+	 * @param string $port     Port
+	 * @param string $username Username
+	 * @param string $password Password
+	 * @param string $db       Database
 	 *
 	 * @return void
 	 * @throws \Exception
@@ -83,7 +83,7 @@ class Db
 		$password,
 		$db
 	): void {
-		$this->containerObj->init(
+		$this->dbServerObj->init(
 			hostname: $hostname,
 			port: $port,
 			username: $username,
@@ -107,7 +107,7 @@ class Db
 			throw new \Exception(message: 'Empty Sql query');
 		}
 
-		return $this->containerObj->getShellCommand(
+		return $this->dbServerObj->getShellCommand(
 			sql: $sql,
 			params: $params
 		);

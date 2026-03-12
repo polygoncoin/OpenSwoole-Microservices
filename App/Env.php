@@ -16,7 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\HttpStatus;
-use Microservices\App\SessionHandlers\Session;
+use Microservices\App\SessionHandler\Session;
 
 /**
  * Environment

@@ -106,7 +106,7 @@ class Reload
 				key: $c_key,
 				value: json_encode(value: $cRow)
 			);
-			$dbObj = DbFunctions::connectDb(
+			$dbServerObj = DbFunctions::connectDb(
 				dbServerType: getenv(name: $cRow['master_db_server_type']),
 				dbServerHostname: getenv(name: $cRow['master_db_server_hostname']),
 				dbServerPort: getenv(name: $cRow['master_db_server_port']),
@@ -115,7 +115,7 @@ class Reload
 				dbServerDB: getenv(name: $cRow['master_db_server_db'])
 			);
 
-			$dbObj->execDbQuery(
+			$dbServerObj->execDbQuery(
 				sql: "
 					SELECT
 						 *
@@ -124,8 +124,8 @@ class Reload
 					",
 				params: []
 			);
-			$uRows = $dbObj->fetchAll();
-			$dbObj->closeCursor();
+			$uRows = $dbServerObj->fetchAll();
+			$dbServerObj->closeCursor();
 			foreach ($uRows as $uRow) {
 				if ($uRow['allowed_cidr'] !== null) {
 					$uCidrs = Functions::cidrsIpNumber(cidrString: $uRow['allowed_cidr']);
