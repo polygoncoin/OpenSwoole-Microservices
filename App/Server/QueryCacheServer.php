@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Handling Query Cache via Memcached
+ * Query Cache
  * php version 8.3
  *
- * @category  QueryCache
+ * @category  Server
  * @package   Sahar.Guru
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -13,17 +13,16 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App\Server\QueryCacheServer;
+namespace Microservices\App\Server;
 
 use Microservices\App\HttpStatus;
 use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
-use Microservices\App\Server\Container\NoSql\Memcached as Cache_Memcached;
 
 /**
- * Query Caching via Memcached
+ * Query Cache Server
  * php version 8.3
  *
- * @category  QueryCache_Memcached
+ * @category  Query Cache Server
  * @package   Sahar.Guru
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -31,8 +30,15 @@ use Microservices\App\Server\Container\NoSql\Memcached as Cache_Memcached;
  * @link      https://github.com/polygoncoin/sahar.guru
  * @since     Class available since Release 1.0.0
  */
-class MemcachedQueryCache implements QueryCacheServerInterface
+class QueryCacheServer
 {
+	/**
+	 * Query Cache Server Type
+	 *
+	 * @var null|string
+	 */
+	private $queryCacheServerType = null;
+
 	/**
 	 * Query Cache Server Hostname
 	 *
@@ -69,30 +75,27 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 	private $queryCacheServerDB = null;
 
 	/**
-	 * Query Cache Server Table
+	 * Cache collection
 	 *
 	 * @var null|string
 	 */
 	public $queryCacheServerTable = null;
 
 	/**
-	 * Query Cache Server Object
-	 *
-	 * @var null|Cache_Memcached
-	 */
-	private $queryCacheServerObj = null;
-
-	/**
 	 * Constructor
 	 *
+	 * @param string      $queryCacheServerType     Query Cache Server Type
 	 * @param string      $queryCacheServerHostname Query Cache Server Hostname
 	 * @param int         $queryCacheServerPort     Query Cache Server Port
 	 * @param string      $queryCacheServerUsername Query Cache Server Username
 	 * @param string      $queryCacheServerPassword Query Cache Server Password
 	 * @param null|string $queryCacheServerDB       Query Cache Server Database
 	 * @param null|string $queryCacheServerTable    Query Cache Server Table
+	 *
+	 * @return QueryCacheServerInterface
 	 */
 	public function __construct(
+        $queryCacheServerType,
 		$queryCacheServerHostname,
 		$queryCacheServerPort,
 		$queryCacheServerUsername,
@@ -100,97 +103,51 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 		$queryCacheServerDB,
 		$queryCacheServerTable
 	) {
+		$this->queryCacheServerType = $queryCacheServerType;
 		$this->queryCacheServerHostname = $queryCacheServerHostname;
 		$this->queryCacheServerPort = $queryCacheServerPort;
 		$this->queryCacheServerUsername = $queryCacheServerUsername;
 		$this->queryCacheServerPassword = $queryCacheServerPassword;
 		$this->queryCacheServerDB = $queryCacheServerDB;
 		$this->queryCacheServerTable = $queryCacheServerTable;
+
+		return $this->connectQueryCacheServer();
 	}
 
 	/**
-	 * Query Cache Server Object
+	 * Connect Query Cache Server
 	 *
-	 * @return void
-	 * @throws \Exception
+	 * @return QueryCacheServerInterface
 	 */
-	public function connect(): void
+	public static function connectQueryCacheServer(): QueryCacheServerInterface
 	{
-		if ($this->queryCacheServerObj !== null) {
-			return;
-		}
-
-		try {
-			$this->queryCacheServerObj = new Cache_Memcached(
-				queryCacheServerHostname: $this->queryCacheServerHostname,
-				queryCacheServerPort: $this->queryCacheServerPort,
-				queryCacheServerUsername: $this->queryCacheServerUsername,
-				queryCacheServerPassword: $this->queryCacheServerPassword,
-				queryCacheServerDB: $this->queryCacheServerDB,
-				queryCacheServerTable: $this->queryCacheServerTable
-			);
-		} catch (\Exception $e) {
+		if (
+            !in_array(
+                $this->queryCacheServerType, [
+                    'Redis',
+                    'Memcached',
+                    'MongoDb',
+                    'MySql',
+                    'PostgreSql'
+                ]
+            )
+        ) {
 			throw new \Exception(
-				message: $e->getMessage(),
+				message: 'Invalid query cache type',
 				code: HttpStatus::$InternalServerError
 			);
 		}
-	}
 
-	/**
-	 * Checks if cache key exist
-	 *
-	 * @param string $key Cache key
-	 *
-	 * @return mixed
-	 */
-	public function cacheExists($key): mixed
-	{
-		$this->connect();
+		$queryCacheServerNS = 'Microservices\\App\\Server\\QueryCacheServer\\'
+            . $this->queryCacheServerType . 'QueryCache';
 
-		return $this->queryCacheServerObj->cacheExists(key: $key);
-	}
-
-	/**
-	 * Get cache on basis of key
-	 *
-	 * @param string $key Cache key
-	 *
-	 * @return mixed
-	 */
-	public function getCache($key): mixed
-	{
-		$this->connect();
-
-		return $this->queryCacheServerObj->getCache($key);
-	}
-
-	/**
-	 * Set cache on basis of key
-	 *
-	 * @param string $key    Cache key
-	 * @param string $value  Cache value
-	 *
-	 * @return mixed
-	 */
-	public function setCache($key, $value): mixed
-	{
-		$this->connect();
-
-		return $this->queryCacheServerObj->setCache($key, $value);
-	}
-
-	/**
-	 * Delete basis of key
-	 *
-	 * @param string $key Cache key
-	 *
-	 * @return mixed
-	 */
-	public function deleteCache($key): mixed
-	{
-		$this->connect();
-
-		return $this->queryCacheServerObj->deleteCache($key);
+		return new $queryCacheServerNS(
+			queryCacheServerHostname: $this->queryCacheServerHostname,
+			queryCacheServerPort: $this->queryCacheServerPort,
+			queryCacheServerUsername: $this->queryCacheServerUsername,
+			queryCacheServerPassword: $this->queryCacheServerPassword,
+			queryCacheServerDB: $this->queryCacheServerDB,
+			queryCacheServerTable: $this->queryCacheServerTable
+		);
 	}
 }

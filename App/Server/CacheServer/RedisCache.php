@@ -15,7 +15,7 @@
 
 namespace Microservices\App\Server\CacheServer;
 
-use Microservices\App\Server\CacheServer\CacheInterface;
+use Microservices\App\Server\CacheServer\CacheServerInterface;
 use Microservices\App\Server\Container\NoSql\Redis as Cache_Redis;
 
 /**
@@ -30,7 +30,7 @@ use Microservices\App\Server\Container\NoSql\Redis as Cache_Redis;
  * @link      https://github.com/polygoncoin/sahar.guru
  * @since     Class available since Release 1.0.0
  */
-class RedisCache implements CacheInterface
+class RedisCache implements CacheServerInterface
 {
 	/**
 	 * Cache Server Hostname

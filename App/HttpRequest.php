@@ -268,7 +268,7 @@ class HttpRequest
 			return;
 		}
 
-		DbFunctions::connectGlobalCache();
+		DbFunctions::connectGlobalCacheServer();
 
 		if ($this->open) {
 			$cKey = CacheKey::customerOpenToWeb(hostname: $this->HOST);

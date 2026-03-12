@@ -16,7 +16,7 @@
 namespace Microservices\App\Server\QueryCacheServer;
 
 use Microservices\App\HttpStatus;
-use Microservices\App\Server\QueryCacheServer\QueryCacheInterface;
+use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
 use Microservices\App\Server\Container\Sql\PostgreSql as DB_PostgreSql;
 
 /**
@@ -31,7 +31,7 @@ use Microservices\App\Server\Container\Sql\PostgreSql as DB_PostgreSql;
  * @link      https://github.com/polygoncoin/sahar.guru
  * @since     Class available since Release 1.0.0
  */
-class PostgreSqlQueryCache implements QueryCacheInterface
+class PostgreSqlQueryCache implements QueryCacheServerInterface
 {
 	/**
 	 * Query Cache Server Hostname

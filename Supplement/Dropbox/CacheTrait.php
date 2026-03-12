@@ -4,7 +4,7 @@
  * DropboxCacheAPI
  * php version 8.3
  *
- * @category  DropboxCacheAPI_Interface
+ * @category  DropboxCacheAPI_Trait
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -13,13 +13,13 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Supplement\DropboxCache;
+namespace Microservices\Supplement\Dropbox;
 
 /**
- * DropboxCacheAPI Interface
+ * DropboxCacheAPI Trait
  * php version 8.3
  *
- * @category  DropboxCacheAPI_Interface
+ * @category  DropboxCacheAPI_Trait
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -27,21 +27,6 @@ namespace Microservices\Supplement\DropboxCache;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-interface CacheInterface
+trait CacheTrait
 {
-	/**
-	 * Initialize
-	 *
-	 * @return bool
-	 */
-	public function init(): bool;
-
-	/**
-	 * Process
-	 *
-	 * @param array $payload Payload
-	 *
-	 * @return array
-	 */
-	public function process(array $payload = []): array;
 }

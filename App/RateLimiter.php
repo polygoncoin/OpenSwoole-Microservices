@@ -50,7 +50,7 @@ class RateLimiter
 			return;
 		}
 
-		$this->cacheServerObj = DbFunctions::connectCache(
+		$this->cacheServerObj = DbFunctions::connectCacheServer(
 			cacheServerType: Env::$rateLimitServerType,
 			cacheServerHostname: Env::$rateLimitServerHostname,
 			cacheServerPort: Env::$rateLimitServerPort,

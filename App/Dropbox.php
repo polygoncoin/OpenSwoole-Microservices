@@ -18,7 +18,7 @@ namespace Microservices\App;
 use Microservices\App\Common;
 use Microservices\App\Constants;
 use Microservices\App\HttpStatus;
-use Microservices\App\DropboxCacheHandler\StreamVideo;
+use Microservices\App\DropboxHandler\StreamVideo;
 
 /**
  * Customer side Caching via E-tags
@@ -32,7 +32,7 @@ use Microservices\App\DropboxCacheHandler\StreamVideo;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class DropboxCache
+class Dropbox
 {
 	/**
 	 * File request details

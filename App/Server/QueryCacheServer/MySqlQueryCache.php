@@ -16,7 +16,7 @@
 namespace Microservices\App\Server\QueryCacheServer;
 
 use Microservices\App\HttpStatus;
-use Microservices\App\Server\QueryCacheServer\QueryCacheInterface;
+use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
 use Microservices\App\Server\Container\Sql\MySql as DB_MySql;
 
 /**
@@ -31,7 +31,7 @@ use Microservices\App\Server\Container\Sql\MySql as DB_MySql;
  * @link      https://github.com/polygoncoin/sahar.guru
  * @since     Class available since Release 1.0.0
  */
-class MySqlQueryCache implements QueryCacheInterface
+class MySqlQueryCache implements QueryCacheServerInterface
 {
 	/**
 	 * Query Cache Server Hostname

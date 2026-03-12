@@ -156,13 +156,13 @@ Below settings are not to be configured in any table. They are used as it is. On
 
 ```ini
 ; Supported Container - Redis / Memcached / MySql / PostgreSql / MongoDb
-sqlResultsCacheServerType='Redis'
-sqlResultsCacheServerHostname='127.0.0.1'
-sqlResultsCacheServerPort=6379
-sqlResultsCacheServerUsername='username'
-sqlResultsCacheServerPassword='password'
-sqlResultsCacheServerDB=0
-sqlResultsCacheServerTable='api_cache' ; For MySql / PostgreSql / MongoDb
+queryCacheServerType='Redis'
+queryCacheServerHostname='127.0.0.1'
+queryCacheServerPort=6379
+queryCacheServerUsername='username'
+queryCacheServerPassword='password'
+queryCacheServerDB=0
+queryCacheServerTable='api_cache' ; For MySql / PostgreSql / MongoDb
 ```
 
 ## Contributing

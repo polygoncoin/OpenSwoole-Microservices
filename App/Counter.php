@@ -49,11 +49,11 @@ class Counter
 		switch (Env::$gCounterMode) {
 			case 'Cache':
 				$key = Env::$gCounter;
-				DbFunctions::connectGlobalCache();
+				DbFunctions::connectGlobalCacheServer();
 				$id = DbFunctions::$gCacheServer->incrementCache($key);
 				break;
 			case 'Database':
-				DbFunctions::connectGlobalDb();
+				DbFunctions::connectGlobalDatabaseServer();
 
 				$table = Env::$gDbServerDB . '.' . Env::$gCounter;
 				$sql = "INSERT INTO {$table}() VALUES()";

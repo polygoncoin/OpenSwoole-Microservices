@@ -160,13 +160,13 @@ class Env
 	public static $rateLimitMaxUserLoginRequestWindow = null;
 ///////////////
 
-	public static $sqlResultsCacheServerType = null;
-	public static $sqlResultsCacheServerHostname = null;
-	public static $sqlResultsCacheServerPort = null;
-	public static $sqlResultsCacheServerUsername = null;
-	public static $sqlResultsCacheServerPassword = null;
-	public static $sqlResultsCacheServerDB = null;
-	public static $sqlResultsCacheServerTable = null;
+	public static $queryCacheServerType = null;
+	public static $queryCacheServerHostname = null;
+	public static $queryCacheServerPort = null;
+	public static $queryCacheServerUsername = null;
+	public static $queryCacheServerPassword = null;
+	public static $queryCacheServerDB = null;
+	public static $queryCacheServerTable = null;
 ///////////////
 
 	public static $reservedRoutesPrefix = null;
@@ -307,13 +307,13 @@ class Env
 		self::$rateLimitMaxUserLoginRequestWindow = (int)getenv(name: 'rateLimitMaxUserLoginRequestWindow');
 		//////////////////
 
-		self::$sqlResultsCacheServerType = getenv(name: 'sqlResultsCacheServerType');
-		self::$sqlResultsCacheServerHostname = getenv(name: 'sqlResultsCacheServerHostname');
-		self::$sqlResultsCacheServerPort = getenv(name: 'sqlResultsCacheServerPort');
-		self::$sqlResultsCacheServerUsername = getenv(name: 'sqlResultsCacheServerUsername');
-		self::$sqlResultsCacheServerPassword = getenv(name: 'sqlResultsCacheServerPassword');
-		self::$sqlResultsCacheServerDB = getenv(name: 'sqlResultsCacheServerDB');
-		self::$sqlResultsCacheServerTable = getenv(name: 'sqlResultsCacheServerTable');
+		self::$queryCacheServerType = getenv(name: 'queryCacheServerType');
+		self::$queryCacheServerHostname = getenv(name: 'queryCacheServerHostname');
+		self::$queryCacheServerPort = getenv(name: 'queryCacheServerPort');
+		self::$queryCacheServerUsername = getenv(name: 'queryCacheServerUsername');
+		self::$queryCacheServerPassword = getenv(name: 'queryCacheServerPassword');
+		self::$queryCacheServerDB = getenv(name: 'queryCacheServerDB');
+		self::$queryCacheServerTable = getenv(name: 'queryCacheServerTable');
 		//////////////////
 
 		self::$reservedRoutesPrefix = [

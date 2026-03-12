@@ -1,10 +1,10 @@
 <?php
 
 /**
- * NoSql Container
+ * Query Cache
  * php version 8.3
  *
- * @category  Cache
+ * @category  QueryCache
  * @package   Sahar.Guru
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -13,13 +13,13 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App\Server\CacheServer;
+namespace Microservices\App\Server\QueryCacheServer;
 
 /**
- * NoSql Container (Cache) Interface
+ * Query Cache Interface
  * php version 8.3
  *
- * @category  Cache_Interface
+ * @category  Query_Cache_Interface
  * @package   Sahar.Guru
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -27,13 +27,12 @@ namespace Microservices\App\Server\CacheServer;
  * @link      https://github.com/polygoncoin/sahar.guru
  * @since     Class available since Release 1.0.0
  */
-interface CacheInterface
+interface QueryCacheServerInterface
 {
 	/**
-	 * Cache Server Object
+	 * Query Cache Server Object
 	 *
 	 * @return void
-	 * @throws \Exception
 	 */
 	public function connect(): void;
 
@@ -60,24 +59,13 @@ interface CacheInterface
 	 *
 	 * @param string $key    Cache key
 	 * @param string $value  Cache value
-	 * @param int    $expire Seconds to expire. Default 0 - doesn't expire
 	 *
 	 * @return mixed
 	 */
-	public function setCache($key, $value, $expire = null): mixed;
+	public function setCache($key, $value): mixed;
 
 	/**
-	 * Increment Key value with offset
-	 *
-	 * @param string $key    Cache key
-	 * @param int    $offset Offset
-	 *
-	 * @return int
-	 */
-	public function incrementCache($key, $offset = 1): int;
-
-	/**
-	 * Delete basis of key
+	 * Delete cache on basis of key
 	 *
 	 * @param string $key Cache key
 	 *

@@ -27,7 +27,7 @@ namespace Microservices\App\Server\DatabaseServer;
  * @link      https://github.com/polygoncoin/sahar.guru
  * @since     Class available since Release 1.0.0
  */
-interface DatabaseInterface
+interface DatabaseServerInterface
 {
 	/**
 	 * Database Server Object

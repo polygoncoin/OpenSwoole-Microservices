@@ -15,7 +15,7 @@
 
 namespace Microservices\App\Server\DatabaseServer;
 
-use Microservices\App\Server\DatabaseServer\DatabaseInterface;
+use Microservices\App\Server\DatabaseServer\DatabaseServerInterface;
 use Microservices\App\Server\Container\Sql\MySql as DB_MySql;
 
 /**
@@ -30,6 +30,6 @@ use Microservices\App\Server\Container\Sql\MySql as DB_MySql;
  * @link      https://github.com/polygoncoin/sahar.guru
  * @since     Class available since Release 1.0.0
  */
-class MySqlDatabase extends DB_MySql implements DatabaseInterface
+class MySqlDatabase extends DB_MySql implements DatabaseServerInterface
 {
 }

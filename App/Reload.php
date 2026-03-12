@@ -53,7 +53,7 @@ class Reload
 	 */
 	public function process(): bool
 	{
-		DbFunctions::connectGlobalCache();
+		DbFunctions::connectGlobalCacheServer();
 
 		$this->processDomainAndUser();
 		$this->processGroup();
@@ -68,7 +68,7 @@ class Reload
 	 */
 	private function processDomainAndUser(): void
 	{
-		DbFunctions::connectGlobalDb();
+		DbFunctions::connectGlobalDatabaseServer();
 
 		DbFunctions::$gDbServer->execDbQuery(
 			sql: "
@@ -106,7 +106,7 @@ class Reload
 				key: $c_key,
 				value: json_encode(value: $cRow)
 			);
-			$dbServerObj = DbFunctions::connectDb(
+			$dbServerObj = DbFunctions::connectDatabaseServer(
 				dbServerType: getenv(name: $cRow['master_db_server_type']),
 				dbServerHostname: getenv(name: $cRow['master_db_server_hostname']),
 				dbServerPort: getenv(name: $cRow['master_db_server_port']),
@@ -159,7 +159,7 @@ class Reload
 	 */
 	private function processGroup(): void
 	{
-		DbFunctions::connectGlobalCache();
+		DbFunctions::connectGlobalCacheServer();
 
 		DbFunctions::$gDbServer->execDbQuery(
 			sql: "
