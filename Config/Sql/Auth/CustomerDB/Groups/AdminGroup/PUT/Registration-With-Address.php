@@ -18,7 +18,7 @@ namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\AdminGroup\PUT;
 use Microservices\App\DatabaseServerDataType;
 
 return [
-	'__QUERY__' => "UPDATE `{$this->api->req->usersTable}` SET __SET__ WHERE __WHERE__",
+	'__QUERY__' => "UPDATE `{$this->http->req->usersTable}` SET __SET__ WHERE __WHERE__",
 	'__SET__' => [
 		[
 			'column' => 'firstname',
@@ -93,7 +93,7 @@ return [
 		[
 			'fn' => 'primaryKeyExist',
 			'fnArgs' => [
-				'table' => ['custom', $this->api->req->usersTable],
+				'table' => ['custom', $this->http->req->usersTable],
 				'primary' => ['custom', 'id'],
 				'id' => ['routeParams', 'id']
 			],

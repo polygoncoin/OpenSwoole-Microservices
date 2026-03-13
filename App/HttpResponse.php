@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
@@ -56,20 +56,20 @@ class HttpResponse
 	public $dataEncode = null;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 		$this->httpStatus = HttpStatus::$Ok;
 		$this->oRepresentation = Env::$oRepresentation;
 	}
@@ -81,7 +81,7 @@ class HttpResponse
 	 */
 	public function init(): void
 	{
-		$this->dataEncode = new DataEncode(api: $this->api);
+		$this->dataEncode = new DataEncode(http: $this->http);
 		$this->dataEncode->init();
 	}
 }

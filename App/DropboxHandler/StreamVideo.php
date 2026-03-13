@@ -33,11 +33,11 @@ use Microservices\App\HttpStatus;
 class StreamVideo
 {
 	/**
-	 * File request details
+	 * Http Request Details
 	 *
 	 * @var null|array
 	 */
-	private $http = null;
+	private $iConfig = null;
 
 	/**
 	 * Streamed Video cache duration.
@@ -74,11 +74,11 @@ class StreamVideo
 	/**
 	 * Constructor
 	 *
-	 * @param array $http HTTP request details
+	 * @param array $iConfig Http Request Details
 	 */
-	public function __construct(&$http)
+	public function __construct(&$iConfig)
 	{
-		$this->http = &$http;
+		$this->iConfig = &$iConfig;
 	}
 
 	/**
@@ -92,8 +92,8 @@ class StreamVideo
 	{
 		// Check Range header
 		if (
-			!isset($this->http['header']['range']) && strpos(
-				haystack: $this->http['header']['range'],
+			!isset($this->iConfig['header']['range']) && strpos(
+				haystack: $this->iConfig['header']['range'],
 				needle: 'bytes='
 				!== false
 			)
@@ -103,7 +103,7 @@ class StreamVideo
 
 		$this->file = $file;
 		// Set buffer Range
-		$range = explode(separator: '=', string: $this->http['header']['range'])[1];
+		$range = explode(separator: '=', string: $this->iConfig['header']['range'])[1];
 		list($this->streamFrom, $this->streamTill) = explode(
 			separator: '-',
 			string: $range
@@ -176,7 +176,7 @@ class StreamVideo
 				. 'Version/(1[0-9]|[2-9][0-9]|\d{3,})(\.|$|\s)`i';
 			$safariBrowser = preg_match(
 				pattern: $safariBrowserPattern,
-				subject: $this->http['header']['user-agent']
+				subject: $this->iConfig['header']['user-agent']
 			);
 			if ($safariBrowser) {
 				$this->streamTill = $this->size - 1;

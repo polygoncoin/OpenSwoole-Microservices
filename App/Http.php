@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Common
+ * Http Class
  * php version 8.3
  *
- * @category  Common
+ * @category  Http
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -19,10 +19,10 @@ use Microservices\App\HttpRequest;
 use Microservices\App\HttpResponse;
 
 /**
- * Common Class
+ * Http Class
  * php version 8.3
  *
- * @category  Common
+ * @category  Http
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -30,7 +30,7 @@ use Microservices\App\HttpResponse;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class Common
+class Http
 {
 	/**
 	 * Microservices HTTP Request
@@ -47,24 +47,24 @@ class Common
 	public $res = null;
 
 	/**
-	 * Microservices Request Details
+	 * Http Request Details
 	 *
 	 * @var null|array
 	 */
-	public $http = null;
+	public $iConfig = null;
 
 	/**
 	 * Initialize
 	 *
-	 * @param array $http HTTP request details
+	 * @param array $iConfig Http Request Details
 	 *
 	 * @return void
 	 */
-	public function init(&$http): void
+	public function init(&$iConfig): void
 	{
-		$this->http = &$http;
-		$this->req = new HttpRequest(api: $this);
-		$this->res = new HttpResponse(api: $this);
+		$this->iConfig = &$iConfig;
+		$this->req = new HttpRequest(http: $this);
+		$this->res = new HttpResponse(http: $this);
 	}
 
 	/**

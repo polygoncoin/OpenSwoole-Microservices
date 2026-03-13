@@ -204,7 +204,7 @@ trait AppTrait
 	public function validate(&$validationConfig): array
 	{
 		if ($this->validator === null) {
-			$this->validator = new Validator($this->api);
+			$this->validator = new Validator($this->http);
 		}
 
 		return $this->validator->validate(validationConfig: $validationConfig);
@@ -477,7 +477,7 @@ trait AppTrait
 			$fKey = $config['fetchFromValue'];
 			if ($fetchFrom === 'function') {
 				$function = $fKey;
-				$value = $function($this->api->req->s);
+				$value = $function($this->http->req->s);
 				$sqlParams[$var] = $value;
 				continue;
 			} elseif (
@@ -486,12 +486,12 @@ trait AppTrait
 					haystack: ['sqlParams', 'sqlPayload']
 				)
 			) {
-				if (!isset($this->api->req->s[$fetchFrom])) {
+				if (!isset($this->http->req->s[$fetchFrom])) {
 					$errors[] = "Missing key '{$fKey}' in '{$fetchFrom}'";
 					continue;
 				}
 				$fetchFromKeys = explode(separator: ':', string: $fKey);
-				$value = $this->api->req->s[$fetchFrom];
+				$value = $this->http->req->s[$fetchFrom];
 				foreach ($fetchFromKeys as $key) {
 					if (!isset($value[$key])) {
 						$errors[] = "Missing hierarchy key '{$key}' of '{$fKey}' in '{$fetchFrom}'";
@@ -502,12 +502,12 @@ trait AppTrait
 				$sqlParams[$var] = $value;
 				continue;
 			} elseif ($fetchFrom === 'sqlResults') {
-				if (!isset($this->api->req->s[$fetchFrom])) {
+				if (!isset($this->http->req->s[$fetchFrom])) {
 					$missExecution = true;
 					continue;
 				}
 				$fetchFromKeys = explode(separator: ':', string: $fKey);
-				$value = $this->api->req->s[$fetchFrom];
+				$value = $this->http->req->s[$fetchFrom];
 				foreach ($fetchFromKeys as $key) {
 					if (!isset($value[$key])) {
 						$missExecution = true;
@@ -528,21 +528,21 @@ trait AppTrait
 					$errors[] = "Missing '{$fetchFrom}' for '{$fKey}'";
 				}
 				continue;
-			} elseif (isset($this->api->req->s[$fetchFrom][$fKey])) {
-				if (isset($this->api->req->s['necessary'][$fetchFrom][$fKey])) {
+			} elseif (isset($this->http->req->s[$fetchFrom][$fKey])) {
+				if (isset($this->http->req->s['necessary'][$fetchFrom][$fKey])) {
 					if (
 						DatabaseServerDataType::validateDataType(
-							data: $this->api->req->s[$fetchFrom][$fKey],
-							dataType: $this->api->req->s['necessary'][$fetchFrom][$fKey]
+							data: $this->http->req->s[$fetchFrom][$fKey],
+							dataType: $this->http->req->s['necessary'][$fetchFrom][$fKey]
 						)
 					) {
-						$sqlParams[$var] = $this->api->req->s[$fetchFrom][$fKey];
+						$sqlParams[$var] = $this->http->req->s[$fetchFrom][$fKey];
 					}
 				} else {
-					$sqlParams[$var] = $this->api->req->s[$fetchFrom][$fKey];
+					$sqlParams[$var] = $this->http->req->s[$fetchFrom][$fKey];
 				}
 				continue;
-			} elseif ($this->api->req->s['necessary'][$fetchFrom][$fKey]['necessary']) {
+			} elseif ($this->http->req->s['necessary'][$fetchFrom][$fKey]['necessary']) {
 				$errors[] = "Missing necessary field '{$fetchFrom}' for '{$fKey}'";
 				continue;
 			} else {
@@ -744,10 +744,10 @@ trait AppTrait
 	private function resetFetchData($fetchFrom, $keys, $row): void
 	{
 		if (empty($keys) || count(value: $keys) === 0) {
-			$this->api->req->s[$fetchFrom] = [];
-			$this->api->req->s[$fetchFrom]['return'] = [];
+			$this->http->req->s[$fetchFrom] = [];
+			$this->http->req->s[$fetchFrom]['return'] = [];
 		}
-		$httpReq = &$this->api->req->s[$fetchFrom]['return'];
+		$httpReq = &$this->http->req->s[$fetchFrom]['return'];
 		if (!empty($keys)) {
 			foreach ($keys as $k) {
 				if (!isset($httpReq[$k])) {
@@ -778,16 +778,16 @@ trait AppTrait
 		}
 
 		$payloadSignature = [
-			'IP' => $this->api->req->IP,
-			'cID' => $this->api->req->s['cDetails']['id'],
-			'httpMethod' => $this->api->req->METHOD,
-			'Route' => $this->api->req->ROUTE,
+			'IP' => $this->http->req->IP,
+			'cID' => $this->http->req->s['cDetails']['id'],
+			'httpMethod' => $this->http->req->METHOD,
+			'Route' => $this->http->req->ROUTE,
 		];
-		if (isset($this->api->req->s['uDetails'])) {
-			$payloadSignature['gID'] = ($this->api->req->s['gDetails']['id'] !== null
-				? $this->api->req->s['gDetails']['id'] : 0);
-			$payloadSignature['uID'] = ($this->api->req->s['uDetails']['id'] !== null
-				? $this->api->req->s['uDetails']['id'] : 0);
+		if (isset($this->http->req->s['uDetails'])) {
+			$payloadSignature['gID'] = ($this->http->req->s['gDetails']['id'] !== null
+				? $this->http->req->s['gDetails']['id'] : 0);
+			$payloadSignature['uID'] = ($this->http->req->s['uDetails']['id'] !== null
+				? $this->http->req->s['uDetails']['id'] : 0);
 		}
 		$hash = json_encode(value: $payloadSignature);
 		$hashKey = md5(string: $hash);
@@ -824,19 +824,19 @@ trait AppTrait
 				$payloadSignature = [
 					'idempotentSecret' => Env::$idempotentSecret,
 					'idempotentWindow' => $idempotentWindow,
-					'IP' => $this->api->req->IP,
-					'cID' => $this->api->req->s['cDetails']['id'],
-					'httpMethod' => $this->api->req->METHOD,
-					'Route' => $this->api->req->ROUTE,
-					'payload' => $this->api->req->dataDecode->get(
+					'IP' => $this->http->req->IP,
+					'cID' => $this->http->req->s['cDetails']['id'],
+					'httpMethod' => $this->http->req->METHOD,
+					'Route' => $this->http->req->ROUTE,
+					'payload' => $this->http->req->dataDecode->get(
 						implode(separator: ':', array: $payloadIndexes)
 					)
 				];
-				if (isset($this->api->req->s['uDetails'])) {
-					$payloadSignature['gID'] = ($this->api->req->s['gDetails']['id'] !== null
-						? $this->api->req->s['gDetails']['id'] : 0);
-					$payloadSignature['uID'] = ($this->api->req->s['uDetails']['id'] !== null
-						? $this->api->req->s['uDetails']['id'] : 0);
+				if (isset($this->http->req->s['uDetails'])) {
+					$payloadSignature['gID'] = ($this->http->req->s['gDetails']['id'] !== null
+						? $this->http->req->s['gDetails']['id'] : 0);
+					$payloadSignature['uID'] = ($this->http->req->s['uDetails']['id'] !== null
+						? $this->http->req->s['uDetails']['id'] : 0);
 				}
 
 				$hash = json_encode(value: $payloadSignature);
@@ -868,16 +868,16 @@ trait AppTrait
 			&& isset($sqlConfig['responseLag'])
 		) {
 			$payloadSignature = [
-				'IP' => $this->api->req->IP,
-				'cID' => $this->api->req->s['cDetails']['id'],
-				'httpMethod' => $this->api->req->METHOD,
-				'Route' => $this->api->req->ROUTE,
+				'IP' => $this->http->req->IP,
+				'cID' => $this->http->req->s['cDetails']['id'],
+				'httpMethod' => $this->http->req->METHOD,
+				'Route' => $this->http->req->ROUTE,
 			];
-			if (isset($this->api->req->s['uDetails'])) {
-				$payloadSignature['gID'] = ($this->api->req->s['gDetails']['id'] !== null
-					? $this->api->req->s['gDetails']['id'] : 0);
-				$payloadSignature['uID'] = ($this->api->req->s['uDetails']['id'] !== null
-					? $this->api->req->s['uDetails']['id'] : 0);
+			if (isset($this->http->req->s['uDetails'])) {
+				$payloadSignature['gID'] = ($this->http->req->s['gDetails']['id'] !== null
+					? $this->http->req->s['gDetails']['id'] : 0);
+				$payloadSignature['uID'] = ($this->http->req->s['uDetails']['id'] !== null
+					? $this->http->req->s['uDetails']['id'] : 0);
 			}
 
 			$hash = json_encode(value: $payloadSignature);
@@ -929,7 +929,7 @@ trait AppTrait
 		$key
 	): bool {
 		if ($this->rateLimiter === null) {
-			$this->rateLimiter = new RateLimiter($this->api->req);
+			$this->rateLimiter = new RateLimiter($this->http->req);
 		}
 
 		try {
@@ -968,14 +968,14 @@ trait AppTrait
 	 */
 	public function getTriggerData($triggerConfig): mixed
 	{
-		if (!isset($this->api->req->s['token'])) {
+		if (!isset($this->http->req->s['token'])) {
 			throw new \Exception(
 				message: 'Missing token',
 				code: HttpStatus::$InternalServerError
 			);
 		}
 
-		$http = [];
+		$iConfig = [];
 
 		$isAssoc = (!isset($triggerConfig[0])) ? true : false;
 		if (
@@ -989,8 +989,8 @@ trait AppTrait
 
 		$triggerOutput = [];
 		if ($isAssoc) {
-			$http = $this->getTriggerHttp($triggerConfig);
-			[$responseheaders, $responseContent, $responseCode] = Start::http(http: $http);
+			$iConfig = $this->getTriggerHttp($triggerConfig);
+			[$responseheaders, $responseContent, $responseCode] = Start::http(iConfig: $iConfig);
 			$triggerOutput = &$responseContent;
 		} else {
 			for (
@@ -998,8 +998,8 @@ trait AppTrait
 				$iTrigger < $iTriggerCount;
 				$iTrigger++
 			) {
-				$http = $this->getTriggerHttp($triggerConfig[$iTrigger]);
-				[$responseheaders, $responseContent, $responseCode] = Start::http(http: $http);
+				$iConfig = $this->getTriggerHttp($triggerConfig[$iTrigger]);
+				[$responseheaders, $responseContent, $responseCode] = Start::http(iConfig: $iConfig);
 				$triggerOutput[] = &$responseContent;
 			}
 		}
@@ -1048,16 +1048,16 @@ trait AppTrait
 			}
 		}
 
-		$http['server']['host'] = $this->api->http['server']['host'];
-		$http['server']['method'] = $method;
-		$http['server']['ip'] = $this->api->http['server']['ip'];
-		$http['header'] = $this->api->http['header'];
-		$http['post'] = json_encode($payloadArr);
-		$http['get'] = $queryStringArr;
-		$http['get'][ROUTE_URL_PARAM] = $route;
-		$http['isWebRequest'] = false;
+		$iConfig['server']['host'] = $this->http->iConfig['server']['host'];
+		$iConfig['server']['method'] = $method;
+		$iConfig['server']['ip'] = $this->http->iConfig['server']['ip'];
+		$iConfig['header'] = $this->http->iConfig['header'];
+		$iConfig['post'] = json_encode($payloadArr);
+		$iConfig['get'] = $queryStringArr;
+		$iConfig['get'][ROUTE_URL_PARAM] = $route;
+		$iConfig['isWebRequest'] = false;
 
-		return $http;
+		return $iConfig;
 	}
 
 	/**
@@ -1082,7 +1082,7 @@ trait AppTrait
 			$fKey = $config['fetchFromValue'];
 			if ($fetchFrom === 'function') {
 				$function = $fKey;
-				$value = $function($this->api->req->s);
+				$value = $function($this->http->req->s);
 				if ($var === null) {
 					$sqlParams[] = $value;
 				} else {
@@ -1096,7 +1096,7 @@ trait AppTrait
 				)
 			) {
 				$fetchFromKeys = explode(separator: ':', string: $fKey);
-				$value = $this->api->req->s[$fetchFrom];
+				$value = $this->http->req->s[$fetchFrom];
 				foreach ($fetchFromKeys as $key) {
 					if (!isset($value[$key])) {
 						throw new \Exception(
@@ -1120,8 +1120,8 @@ trait AppTrait
 					$sqlParams[$var] = $value;
 				}
 				continue;
-			} elseif (isset($this->api->req->s[$fetchFrom][$fKey])) {
-				$value = $this->api->req->s[$fetchFrom][$fKey];
+			} elseif (isset($this->http->req->s[$fetchFrom][$fKey])) {
+				$value = $this->http->req->s[$fetchFrom][$fKey];
 				if ($var === null) {
 					$sqlParams[] = $value;
 				} else {

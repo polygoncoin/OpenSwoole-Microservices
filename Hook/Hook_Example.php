@@ -15,7 +15,7 @@
 
 namespace Microservices\Hook;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\Hook\HookInterface;
 use Microservices\Hook\HookTrait;
 
@@ -36,20 +36,20 @@ class Hook_Example implements HookInterface
 	use HookTrait;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 	}
 
 	/**
@@ -82,6 +82,6 @@ class Hook_Example implements HookInterface
 	private function execHook(): void
 	{
 		// Change payload.
-		$this->api->req->s['payload']['hook'] = 'Yes';
+		$this->http->req->s['payload']['hook'] = 'Yes';
 	}
 }

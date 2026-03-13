@@ -16,7 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\Constant;
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\Env;
 
 /**
@@ -62,20 +62,20 @@ class Route
 	private $reservedKeys = ['dataType'];
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 	}
 
 	/**
@@ -104,7 +104,7 @@ class Route
 		$Env = __NAMESPACE__ . '\Env';
 
 		$httpRoutes = [];
-		if ($this->api->req->open) {
+		if ($this->http->req->open) {
 			$userRoutesFolder = Constant::$WWW . $this->routesFolder
 				. DIRECTORY_SEPARATOR . 'Open';
 		} else {
@@ -112,7 +112,7 @@ class Route
 				. DIRECTORY_SEPARATOR . 'Auth'
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
-				. DIRECTORY_SEPARATOR . $this->api->req->s['gDetails']['name'];
+				. DIRECTORY_SEPARATOR . $this->http->req->s['gDetails']['name'];
 		}
 
 		foreach ($this->httpMethods as $method) {
@@ -130,7 +130,7 @@ class Route
 				httpRoutes: $httpRoutes[$method]
 			);
 		}
-		$this->api->res->dataEncode->addKeyData(
+		$this->http->res->dataEncode->addKeyData(
 			key: 'Results',
 			data: $httpRoutes
 		);

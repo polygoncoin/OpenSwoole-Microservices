@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\Constant;
 use Microservices\App\HttpStatus;
 use Microservices\App\DropboxHandler\StreamVideo;
@@ -35,18 +35,18 @@ use Microservices\App\DropboxHandler\StreamVideo;
 class Dropbox
 {
 	/**
-	 * File request details
+	 * Http Request Details
 	 *
 	 * @var null|array
 	 */
-	private $http = null;
+	private $iConfig = null;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * File Location
@@ -84,13 +84,13 @@ class Dropbox
 	/**
 	 * Constructor
 	 *
-	 * @param array $http HTTP request details
-	 * @param Common $api
+	 * @param array $iConfig Http Request Details
+	 * @param Http  $http
 	 */
-	public function __construct(&$http, &$api = null)
+	public function __construct(&$iConfig, &$http = null)
 	{
+		$this->iConfig = &$iConfig;
 		$this->http = &$http;
-		$this->api = &$api;
 	}
 
 	/**
@@ -102,7 +102,7 @@ class Dropbox
 	 */
 	public function init($mode): bool
 	{
-		if (!isset($this->http['get'][ROUTE_URL_PARAM])) {
+		if (!isset($this->iConfig['get'][ROUTE_URL_PARAM])) {
 			return false;
 		}
 
@@ -113,13 +113,13 @@ class Dropbox
 			string: str_replace(
 				search: ['../', '..\\', '/', '\\'],
 				replace: ['', '', DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR],
-				subject: urldecode(string: $this->http['get'][ROUTE_URL_PARAM])
+				subject: urldecode(string: $this->iConfig['get'][ROUTE_URL_PARAM])
 			),
 			characters: './\\'
 		);
 
 		if ($mode === 'Closed') {
-			$this->modeDropBox .= DIRECTORY_SEPARATOR . $this->api->req->cId;
+			$this->modeDropBox .= DIRECTORY_SEPARATOR . $this->http->req->cId;
 			$this->validateFileRequest();
 		}
 		$this->fileLocation = $this->modeDropBox . $filePath;
@@ -137,7 +137,7 @@ class Dropbox
 	 */
 	public function validateFileRequest(): void
 	{
-		// check logic for user is allowed to access the file as per $this->api->req->s
+		// check logic for user is allowed to access the file as per $this->http->req->s
 		// $this->fileLocation;
 	}
 
@@ -158,7 +158,7 @@ class Dropbox
 		switch (true) {
 			case in_array($this->mimeType, $this->supportedVideoMimes):
 				// Serve Video
-				$videoStream = new StreamVideo($this->http);
+				$videoStream = new StreamVideo(iConfig: $this->iConfig);
 				if (
 					(
 						$httpStatus = $videoStream->init($this->fileLocation)
@@ -192,15 +192,15 @@ class Dropbox
 		$eTag = "{$modifiedTime}";
 
 		if (
-			(isset($this->http['header']['HTTP_IF_NONE_MATCH'])
+			(isset($this->iConfig['header']['HTTP_IF_NONE_MATCH'])
 				&& strpos(
-					haystack: $this->http['header']['HTTP_IF_NONE_MATCH'],
+					haystack: $this->iConfig['header']['HTTP_IF_NONE_MATCH'],
 					needle: $eTag
 				) !== false
 			)
-			|| (isset($this->http['header']['HTTP_IF_MODIFIED_SINCE'])
+			|| (isset($this->iConfig['header']['HTTP_IF_MODIFIED_SINCE'])
 				&& @strtotime(
-					datetime: $this->http['header']['HTTP_IF_MODIFIED_SINCE']
+					datetime: $this->iConfig['header']['HTTP_IF_MODIFIED_SINCE']
 				) == $modifiedTime
 			)
 		) {

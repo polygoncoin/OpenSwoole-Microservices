@@ -15,7 +15,7 @@
 
 namespace Microservices\Config\Sql\Auth\GlobalDB\GET;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 
 return [
 	'all' => [
@@ -65,4 +65,4 @@ return [
 		],
 		'__MODE__' => 'singleRowFormat'
 	]
-][isset($this->api->req->s['routeParams']['id'])?'single':'all'];
+][isset($this->http->req->s['routeParams']['id'])?'single':'all'];

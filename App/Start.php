@@ -27,15 +27,15 @@ class Start
 	/**
 	 * Process http request data
 	 *
-	 * @param array $http       HTTP request details
+	 * @param array $iConfig    HTTP request details
 	 * @param bool  $streamData false - represent child request
 	 *
 	 * @return array
 	 */
-	public static function http($http, $streamData = false)
+	public static function http($iConfig, $streamData = false)
 	{
-		if ($http['server']['method'] === Constant::$GET) {
-			$dropboxCache = new Dropbox(http: $http);
+		if ($iConfig['server']['method'] === Constant::$GET) {
+			$dropboxCache = new Dropbox(iConfig: $iConfig);
 			if ($dropboxCache->init(mode: 'Open')) {
 				// File exists - Serve from Dropbox
 				return $dropboxCache->process();
@@ -46,9 +46,9 @@ class Start
 		$headers = [];
 
 		try {
-			$Microservices = new Microservices(http: $http);
+			$Microservices = new Microservices(iConfig: $iConfig);
 
-			if ($streamData && $http['server']['method'] == 'OPTIONS') {
+			if ($streamData && $iConfig['server']['method'] == 'OPTIONS') {
 				// Setting CORS
 				$headers = $Microservices->getHeaders();
 				$data = '{}';
@@ -69,7 +69,7 @@ class Start
 				}
 
 				$data = $Microservices->returnResults();
-				$status = $Microservices->api->res->httpStatus;
+				$status = $Microservices->http->res->httpStatus;
 
 				return [$headers, $data, $status];
 			}
@@ -89,7 +89,7 @@ class Start
 						'HttpCode' => $e->getCode(),
 						'HttpMessage' => $e->getMessage()
 					],
-					'Details' => $Microservices->api->req->s
+					'Details' => $Microservices->http->req->s
 				];
 				$logsObj = new Log();
 				$logsObj->log(logDetails: $logDetails);
@@ -110,7 +110,7 @@ class Start
 				];
 			}
 
-			// $dataEncode = new DataEncode(http: $http);
+			// $dataEncode = new DataEncode(iConfig: $iConfig);
 			// $dataEncode->init();
 			// $dataEncode->startObject();
 			// $dataEncode->addKeyData(key: 'Error', data: $arr);

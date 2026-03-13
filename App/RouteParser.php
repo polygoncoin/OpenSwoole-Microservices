@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
@@ -93,20 +93,20 @@ class RouteParser
 	public $sqlConfigFile = null;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 	}
 
 	/**
@@ -124,25 +124,25 @@ class RouteParser
 
 		$this->routeElements = explode(
 			separator: '/',
-			string: trim(string: $this->api->req->ROUTE, characters: '/')
+			string: trim(string: $this->http->req->ROUTE, characters: '/')
 		);
 		$routeLastElementPos = count(value: $this->routeElements) - 1;
 		// if ($this->routeElements[$routeLastElementPos] === Env::$importSampleRequestRouteKeyword) {
-		//     if (isset($this->api->http['get']['method'])) {
-		//         $this->api->req->METHOD = $this->api->http['get']['method'];
+		//     if (isset($this->http->iConfig['get']['method'])) {
+		//         $this->http->req->METHOD = $this->http->iConfig['get']['method'];
 		//     }
 		// }
 
 		if ($routeFileLocation === null) {
-			if ($this->api->req->open) {
+			if ($this->http->req->open) {
 				$routeFileLocation = Constant::$OPEN_ROUTES_DIR
-					. DIRECTORY_SEPARATOR . $this->api->req->METHOD . 'routes.php';
+					. DIRECTORY_SEPARATOR . $this->http->req->METHOD . 'routes.php';
 			} else {
 				$routeFileLocation = Constant::$AUTH_ROUTES_DIR
 					. DIRECTORY_SEPARATOR . 'CustomerDB'
 					. DIRECTORY_SEPARATOR . 'Groups'
-					. DIRECTORY_SEPARATOR . $this->api->req->s['gDetails']['name']
-					. DIRECTORY_SEPARATOR . $this->api->req->METHOD . 'routes.php';
+					. DIRECTORY_SEPARATOR . $this->http->req->s['gDetails']['name']
+					. DIRECTORY_SEPARATOR . $this->http->req->METHOD . 'routes.php';
 			}
 		}
 
@@ -150,7 +150,7 @@ class RouteParser
 			$routesConfig = include $routeFileLocation;
 		} else {
 			throw new \Exception(
-				message: 'Route file missing: ' . $this->api->req->METHOD . ' method',
+				message: 'Route file missing: ' . $this->http->req->METHOD . ' method',
 				code: HttpStatus::$InternalServerError
 			);
 		}
@@ -203,11 +203,11 @@ class RouteParser
 					);
 					if ($foundIntRoute) {
 						$configuredRoute[] = $foundIntRoute;
-						$this->api->req->s['routeParams'][$foundIntParamName] =
+						$this->http->req->s['routeParams'][$foundIntParamName] =
 							(int)$element;
 					} elseif ($foundStringRoute) {
 						$configuredRoute[] = $foundStringRoute;
-						$this->api->req->s['routeParams'][$foundStringParamName] =
+						$this->http->req->s['routeParams'][$foundStringParamName] =
 							urldecode(string: $element);
 					} else {
 						throw new \Exception(
@@ -240,13 +240,13 @@ class RouteParser
 		// Switch Input data representation if set in URL param
 		if (
 			Env::$enableInputRepresentationAsQueryParam
-			&& isset($this->api->http['get']['iRepresentation'])
+			&& isset($this->http->iConfig['get']['iRepresentation'])
 			&& Env::isValidDataRep(
-				dataRepresentation: $this->api->http['get']['iRepresentation'],
+				dataRepresentation: $this->http->iConfig['get']['iRepresentation'],
 				mode: 'input'
 			)
 		) {
-			Env::$iRepresentation = $this->api->http['get']['iRepresentation'];
+			Env::$iRepresentation = $this->http->iConfig['get']['iRepresentation'];
 		}
 
 		$this->configuredRoute = '/' . implode(separator: '/', array: $configuredRoute);
@@ -270,7 +270,7 @@ class RouteParser
 			$this->routeStartingWithReservedKeywordFlag = true;
 			$this->routeStartingReservedKeyword = $routeStartingKeyword;
 			$isValidIp = CommonFunction::checkCidr(
-				IP: $this->api->req->IP,
+				IP: $this->http->req->IP,
 				cidrString: Env::$reservedRoutesCidrString[$routeStartingKeyword]
 			);
 			if (!$isValidIp) {
@@ -406,7 +406,7 @@ class RouteParser
 				)
 			) {
 				throw new \Exception(
-					message: 'Missing config for ' . $this->api->req->METHOD . ' method',
+					message: 'Missing config for ' . $this->http->req->METHOD . ' method',
 					code: HttpStatus::$InternalServerError
 				);
 			}
@@ -431,20 +431,20 @@ class RouteParser
 					mode: 'output'
 				)
 			) {
-				$this->api->res->oRepresentation = $sqlConfig['oRepresentation'];
+				$this->http->res->oRepresentation = $sqlConfig['oRepresentation'];
 			}
 		}
 
 		// Switch Output data representation if set in URL param
 		if (
 			Env::$enableOutputRepresentationAsQueryParam
-			&& isset($this->api->http['get']['oRepresentation'])
+			&& isset($this->http->iConfig['get']['oRepresentation'])
 			&& Env::isValidDataRep(
-				dataRepresentation: $this->api->http['get']['oRepresentation'],
+				dataRepresentation: $this->http->iConfig['get']['oRepresentation'],
 				mode: 'output'
 			)
 		) {
-			$this->api->res->oRepresentation = $this->api->http['get']['oRepresentation'];
+			$this->http->res->oRepresentation = $this->http->iConfig['get']['oRepresentation'];
 		}
 	}
 
@@ -463,7 +463,7 @@ class RouteParser
 				offset: 1,
 				length: strpos(haystack: $element, needle: ':') - 1
 			);
-			$this->api->req->s['routeParams'][$param] = $element;
+			$this->http->req->s['routeParams'][$param] = $element;
 		}
 	}
 

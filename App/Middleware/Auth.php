@@ -16,7 +16,7 @@
 namespace Microservices\App\Middleware;
 
 use Microservices\App\CacheKey;
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
@@ -36,20 +36,20 @@ use Microservices\App\HttpStatus;
 class Auth
 {
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 	}
 
 	/**
@@ -60,7 +60,7 @@ class Auth
 	 */
 	public function loadUserDetails(): void
 	{
-		if (isset($this->api->req->s['uDetails'])) {
+		if (isset($this->http->req->s['uDetails'])) {
 			return;
 		}
 
@@ -68,19 +68,19 @@ class Auth
 			isset($_SESSION)
 			&& isset($_SESSION['id'])
 		) {
-			$this->api->req->s['uDetails'] = $_SESSION;
-			$this->api->req->s['token'] = 'sessions';
+			$this->http->req->s['uDetails'] = $_SESSION;
+			$this->http->req->s['token'] = 'sessions';
 		} elseif (
-			($this->api->req->HTTP_AUTHORIZATION !== null)
+			($this->http->req->HTTP_AUTHORIZATION !== null)
 			&& preg_match(
 				pattern: '/Bearer\s(\S+)/',
-				subject: $this->api->req->HTTP_AUTHORIZATION,
+				subject: $this->http->req->HTTP_AUTHORIZATION,
 				matches: $matches
 			)
 		) {
-			$this->api->req->s['token'] = $matches[1];
+			$this->http->req->s['token'] = $matches[1];
 			$tokenKey = CacheKey::token(
-				token: $this->api->req->s['token']
+				token: $this->http->req->s['token']
 			);
 			if (
 				!DbCommonFunction::$gCacheServer->cacheExists(
@@ -92,7 +92,7 @@ class Auth
 					code: HttpStatus::$BadRequest
 				);
 			}
-			$this->api->req->s['uDetails'] = json_decode(
+			$this->http->req->s['uDetails'] = json_decode(
 				json: DbCommonFunction::$gCacheServer->getCache(
 					key: $tokenKey
 				),
@@ -100,13 +100,13 @@ class Auth
 			);
 			if (Env::$enableConcurrentLogins) {
 				$userConcurrencyKey = CacheKey::userConcurrency(
-					uID: $this->api->req->s['uDetails']['id']
+					uID: $this->http->req->s['uDetails']['id']
 				);
 				if (DbCommonFunction::$gCacheServer->cacheExists(key: $userConcurrencyKey)) {
 					$userConcurrencyKeyData = DbCommonFunction::$gCacheServer->getCache(
 						key: $userConcurrencyKey
 					);
-					if ($userConcurrencyKeyData !== $this->api->req->s['token']) {
+					if ($userConcurrencyKeyData !== $this->http->req->s['token']) {
 						throw new \Exception(
 							message: 'Account already in use. '
 								. 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
@@ -116,12 +116,12 @@ class Auth
 				} else {
 					$this->setCache(
 						key: $userConcurrencyKey,
-						value: $this->api->req->s['token'],
+						value: $this->http->req->s['token'],
 						expire: Env::$concurrentAccessInterval
 					);
 				}
 			} else {
-				if ($this->api->req->s['uDetails']['uniqueHttpRequestHash'] !== $this->api->http['uniqueHttpRequestHash']) {
+				if ($this->http->req->s['uDetails']['uniqueHttpRequestHash'] !== $this->http->iConfig['uniqueHttpRequestHash']) {
 					throw new \Exception(
 						message: 'Token not supported from this Browser/Device',
 						code: HttpStatus::$PreconditionFailed
@@ -129,7 +129,7 @@ class Auth
 				}
 			}
 		}
-		if (empty($this->api->req->s['token'])) {
+		if (empty($this->http->req->s['token'])) {
 			throw new \Exception(
 				message: 'Token missing',
 				code: HttpStatus::$BadRequest
@@ -145,14 +145,14 @@ class Auth
 	 */
 	public function loadGroupDetails(): void
 	{
-		if (isset($this->api->req->s['gDetails'])) {
+		if (isset($this->http->req->s['gDetails'])) {
 			return;
 		}
 
 		// Load gDetails
 		if (
-			empty($this->api->req->s['uDetails']['id'])
-			|| empty($this->api->req->s['uDetails']['id'])
+			empty($this->http->req->s['uDetails']['id'])
+			|| empty($this->http->req->s['uDetails']['id'])
 		) {
 			throw new \Exception(
 				message: 'Invalid session',
@@ -161,7 +161,7 @@ class Auth
 		}
 
 		$gKey = CacheKey::group(
-			gID: $this->api->req->s['uDetails']['group_id']
+			gID: $this->http->req->s['uDetails']['group_id']
 		);
 		if (!DbCommonFunction::$gCacheServer->cacheExists(key: $gKey)) {
 			throw new \Exception(
@@ -170,7 +170,7 @@ class Auth
 			);
 		}
 
-		$this->api->req->s['gDetails'] = json_decode(
+		$this->http->req->s['gDetails'] = json_decode(
 			json: DbCommonFunction::$gCacheServer->getCache(
 				key: $gKey
 			),

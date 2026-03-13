@@ -16,7 +16,7 @@
 namespace Microservices\Supplement\Custom;
 
 use Microservices\App\CacheKey;
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\DbCommonFunction;
 use Microservices\Supplement\Custom\CustomInterface;
 use Microservices\Supplement\Custom\CustomTrait;
@@ -38,20 +38,20 @@ class Password implements CustomInterface
 	use CustomTrait;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 	}
 
 	/**
@@ -61,7 +61,7 @@ class Password implements CustomInterface
 	 */
 	public function init(): bool
 	{
-		$this->api->req->loadPayload();
+		$this->http->req->loadPayload();
 		return true;
 	}
 
@@ -74,25 +74,25 @@ class Password implements CustomInterface
 	 */
 	public function process(array $payload = []): array
 	{
-		if ($this->api->req->s['payloadType'] === 'Object') {
-			$payload = $this->api->req->dataDecode->get();
+		if ($this->http->req->s['payloadType'] === 'Object') {
+			$payload = $this->http->req->dataDecode->get();
 		} else {
-			$payload = $this->api->req->dataDecode->get('0');
+			$payload = $this->http->req->dataDecode->get('0');
 		}
-		$this->api->req->s['payload'] = $payload;
+		$this->http->req->s['payload'] = $payload;
 
-		$oldPassword = $this->api->req->s['payload']['old_password'];
-		$oldPasswordHash = $this->api->req->s['uDetails']['password_hash'];
+		$oldPassword = $this->http->req->s['payload']['old_password'];
+		$oldPasswordHash = $this->http->req->s['uDetails']['password_hash'];
 
 		if (password_verify(password: $oldPassword, hash: $oldPasswordHash)) {
-			$userName = $this->api->req->s['uDetails']['username'];
-			$newPassword = $this->api->req->s['payload']['new_password'];
+			$userName = $this->http->req->s['uDetails']['username'];
+			$newPassword = $this->http->req->s['payload']['new_password'];
 			$newPasswordHash = password_hash(
 				password: $newPassword,
 				algo: PASSWORD_DEFAULT
 			);
 
-			$usersTable = $this->api->req->usersTable;
+			$usersTable = $this->http->req->usersTable;
 			$sql = "
 				UPDATE `{$usersTable}`
 				SET password_hash = :password_hash
@@ -104,10 +104,10 @@ class Password implements CustomInterface
 				':is_deleted' => 'No',
 			];
 
-			DbCommonFunction::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
-			DbCommonFunction::$masterDb[$this->api->req->cId]->closeCursor();
+			DbCommonFunction::$masterDb[$this->http->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
+			DbCommonFunction::$masterDb[$this->http->req->cId]->closeCursor();
 
-			$cID = $this->api->req->s['cDetails']['id'];
+			$cID = $this->http->req->s['cDetails']['id'];
 			$cu_key = CacheKey::customerUser(
 				cID: $cID,
 				username: $userName
@@ -125,11 +125,11 @@ class Password implements CustomInterface
 					value: json_encode(value: $uDetails)
 				);
 				DbCommonFunction::$gCacheServer->deleteCache(
-					key: CacheKey::token(token: $this->api->req->s['token'])
+					key: CacheKey::token(token: $this->http->req->s['token'])
 				);
 			}
 
-			$this->api->res->dataEncode->addKeyData(
+			$this->http->res->dataEncode->addKeyData(
 				key: 'Results',
 				data: 'Password changed successfully'
 			);

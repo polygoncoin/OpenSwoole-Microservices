@@ -15,7 +15,7 @@
 
 namespace Microservices\Validation;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\Validation\ValidatorInterface;
@@ -38,20 +38,20 @@ class CustomerValidator implements ValidatorInterface
 	use ValidatorTrait;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 	}
 
 	/**
@@ -71,7 +71,7 @@ class CustomerValidator implements ValidatorInterface
 				if ($mode === 'custom') {
 					$args[$attr] = $key;
 				} else {
-					$args[$attr] = $this->api->req->s[$mode][$key];
+					$args[$attr] = $this->http->req->s[$mode][$key];
 				}
 			}
 			$fn = $v['fn'];
@@ -112,15 +112,15 @@ class CustomerValidator implements ValidatorInterface
 	 */
 	private function getPrimaryCount(&$table, $primary, &$id): int
 	{
-		$dbServerDB = DbCommonFunction::$masterDb[$this->api->req->cId]->dbServerDB;
+		$dbServerDB = DbCommonFunction::$masterDb[$this->http->req->cId]->dbServerDB;
 		$sql = "
 			SELECT count(1) as `count`
 			FROM `{$dbServerDB}`.`{$table}`
 			WHERE `{$primary}` = ?
 		";
 		$params = [$id];
-		DbCommonFunction::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $params);
-		return (int)(DbCommonFunction::$masterDb[$this->api->req->cId]->fetch())['count'];
+		DbCommonFunction::$masterDb[$this->http->req->cId]->execDbQuery(sql: $sql, params: $params);
+		return (int)(DbCommonFunction::$masterDb[$this->http->req->cId]->fetch())['count'];
 	}
 
 	/**
@@ -135,9 +135,9 @@ class CustomerValidator implements ValidatorInterface
 		extract(array: $args);
 		$sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
 		$params = [$id];
-		DbCommonFunction::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $params);
-		$row = DbCommonFunction::$masterDb[$this->api->req->cId]->fetch();
-		DbCommonFunction::$masterDb[$this->api->req->cId]->closeCursor();
+		DbCommonFunction::$masterDb[$this->http->req->cId]->execDbQuery(sql: $sql, params: $params);
+		$row = DbCommonFunction::$masterDb[$this->http->req->cId]->fetch();
+		DbCommonFunction::$masterDb[$this->http->req->cId]->closeCursor();
 		return ($row['count'] === 0) ? false : true;
 	}
 }

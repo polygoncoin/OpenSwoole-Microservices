@@ -15,7 +15,7 @@
 
 namespace Microservices\Supplement\Custom;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\DbCommonFunction;
 use Microservices\Supplement\Custom\CustomInterface;
 use Microservices\Supplement\Custom\CustomTrait;
@@ -37,21 +37,21 @@ class Category implements CustomInterface
 	use CustomTrait;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
-		DbCommonFunction::setDbConnection($this->api->req, fetchFrom: 'Slave');
+		$this->http = &$http;
+		DbCommonFunction::setDbConnection($this->http->req, fetchFrom: 'Slave');
 	}
 
 	/**
@@ -82,10 +82,10 @@ class Category implements CustomInterface
 			':is_deleted' => 'No',
 			':parent_id' => 0,
 		];
-		DbCommonFunction::$slaveDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
-		$rows = DbCommonFunction::$slaveDb[$this->api->req->cId]->fetchAll();
-		DbCommonFunction::$slaveDb[$this->api->req->cId]->closeCursor();
-		$this->api->res->dataEncode->addKeyData(key: 'Results', data: $rows);
+		DbCommonFunction::$slaveDb[$this->http->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
+		$rows = DbCommonFunction::$slaveDb[$this->http->req->cId]->fetchAll();
+		DbCommonFunction::$slaveDb[$this->http->req->cId]->closeCursor();
+		$this->http->res->dataEncode->addKeyData(key: 'Results', data: $rows);
 		return [true];
 	}
 }

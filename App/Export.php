@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\Export\ExportDatabaseServer;
 use Microservices\App\HttpStatus;
 
@@ -70,23 +70,23 @@ class Export
 	public $dbServerObj = null;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http   $http
 	 * @param string $dbServerType Database Type (eg. MySql)
 	 *
 	 * @throws \Exception
 	 */
-	public function __construct(&$api, $dbServerType)
+	public function __construct(&$http, $dbServerType)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 		$this->dbServerType = $dbServerType;
 		$this->dbServerObj = new ExportDatabaseServer(dbServerType: $this->dbServerType);
 	}

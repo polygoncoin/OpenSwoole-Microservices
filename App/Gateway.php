@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\Env;
 use Microservices\App\CommonFunction;
 use Microservices\App\HttpStatus;
@@ -57,20 +57,20 @@ class Gateway
 	private $rateLimitChecked = false;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 	}
 
 	/**
@@ -80,10 +80,10 @@ class Gateway
 	 */
 	public function initGateway(): void
 	{
-		$this->api->req->loadCustomerDetails();
+		$this->http->req->loadCustomerDetails();
 
-		if (!$this->api->req->open) {
-			$this->api->req->auth->loadUserDetails();
+		if (!$this->http->req->open) {
+			$this->http->req->auth->loadUserDetails();
 			$this->checkCidr();
 		}
 		$this->checkRateLimits();
@@ -101,7 +101,7 @@ class Gateway
 		// Customer Rate Limiting
 		$this->rateLimitCustomer();
 
-		if (!$this->api->req->open) {
+		if (!$this->http->req->open) {
 			// Group Rate Limiting
 			$this->rateLimitGroup();
 
@@ -177,19 +177,19 @@ class Gateway
 		}
 
 		$cCidrKey = CacheKey::cCidr(
-			cID: $this->api->req->s['cDetails']['id']
+			cID: $this->http->req->s['cDetails']['id']
 		);
 		$gCidrKey = CacheKey::gCidr(
-			gID: $this->api->req->s['uDetails']['group_id']
+			gID: $this->http->req->s['uDetails']['group_id']
 		);
 		$uCidrKey = CacheKey::uCidr(
-			cID: $this->api->req->s['cDetails']['id'],
-			uID: $this->api->req->s['uDetails']['id']
+			cID: $this->http->req->s['cDetails']['id'],
+			uID: $this->http->req->s['uDetails']['id']
 		);
 		foreach ([$cCidrKey, $gCidrKey, $uCidrKey] as $key) {
 			if (!$this->cidrChecked) {
 				$this->cidrChecked = CommonFunction::checkCacheCidr(
-					IP: $this->api->req->IP,
+					IP: $this->http->req->IP,
 					againstCacheKey: $key
 				);
 			}
@@ -205,18 +205,18 @@ class Gateway
 	{
 		if (
 			!Env::$enableRateLimitAtCustomerLevel
-			|| empty($this->api->req->s['cDetails']['rateLimitMaxRequest'])
-			|| empty($this->api->req->s['cDetails']['rateLimitMaxRequestWindow'])
+			|| empty($this->http->req->s['cDetails']['rateLimitMaxRequest'])
+			|| empty($this->http->req->s['cDetails']['rateLimitMaxRequestWindow'])
 		) {
 			return;
 		}
 
 		$rateLimitCustomerPrefix = Env::$rateLimitCustomerPrefix;
 		$rateLimitMaxRequest =
-				$this->api->req->s['cDetails']['rateLimitMaxRequest'];
+				$this->http->req->s['cDetails']['rateLimitMaxRequest'];
 		$rateLimitMaxRequestWindow =
-				$this->api->req->s['cDetails']['rateLimitMaxRequestWindow'];
-		$key = $this->api->req->s['cDetails']['id'];
+				$this->http->req->s['cDetails']['rateLimitMaxRequestWindow'];
+		$key = $this->http->req->s['cDetails']['id'];
 
 		$this->rateLimitChecked = $this->checkRateLimit(
 			rateLimitPrefix: $rateLimitCustomerPrefix,
@@ -235,8 +235,8 @@ class Gateway
 	{
 		if (
 			!Env::$enableRateLimitAtGroupLevel
-			|| empty($this->api->req->s['gDetails']['rateLimitMaxRequest'])
-			|| empty($this->api->req->s['gDetails']['rateLimitMaxRequestWindow'])
+			|| empty($this->http->req->s['gDetails']['rateLimitMaxRequest'])
+			|| empty($this->http->req->s['gDetails']['rateLimitMaxRequestWindow'])
 		) {
 			return;
 		}
@@ -244,11 +244,11 @@ class Gateway
 		$rateLimitGroupPrefix =
 			Env::$rateLimitGroupPrefix;
 		$rateLimitMaxRequest =
-			$this->api->req->s['gDetails']['rateLimitMaxRequest'];
+			$this->http->req->s['gDetails']['rateLimitMaxRequest'];
 		$rateLimitMaxRequestWindow =
-			$this->api->req->s['gDetails']['rateLimitMaxRequestWindow'];
-		$key = $this->api->req->s['cDetails']['id'] . ':'
-			. $this->api->req->s['uDetails']['id'];
+			$this->http->req->s['gDetails']['rateLimitMaxRequestWindow'];
+		$key = $this->http->req->s['cDetails']['id'] . ':'
+			. $this->http->req->s['uDetails']['id'];
 
 		$this->rateLimitChecked = $this->checkRateLimit(
 			rateLimitPrefix: $rateLimitGroupPrefix,
@@ -267,20 +267,20 @@ class Gateway
 	{
 		if (
 			!Env::$enableRateLimitAtUserLevel
-			|| empty($this->api->req->s['uDetails']['rateLimitMaxRequest'])
-			|| empty($this->api->req->s['uDetails']['rateLimitMaxRequestWindow'])
+			|| empty($this->http->req->s['uDetails']['rateLimitMaxRequest'])
+			|| empty($this->http->req->s['uDetails']['rateLimitMaxRequestWindow'])
 		) {
 			return;
 		}
 
 		$rateLimitUserPrefix = Env::$rateLimitUserPrefix;
 		$rateLimitMaxRequest =
-			$this->api->req->s['gDetails']['rateLimitMaxRequest'];
+			$this->http->req->s['gDetails']['rateLimitMaxRequest'];
 		$rateLimitMaxRequestWindow =
-			$this->api->req->s['gDetails']['rateLimitMaxRequestWindow'];
-		$key = $this->api->req->s['cDetails']['id'] . ':'
-			. $this->api->req->s['uDetails']['id'] . ':'
-			. $this->api->req->s['uDetails']['user_id'];
+			$this->http->req->s['gDetails']['rateLimitMaxRequestWindow'];
+		$key = $this->http->req->s['cDetails']['id'] . ':'
+			. $this->http->req->s['uDetails']['id'] . ':'
+			. $this->http->req->s['uDetails']['user_id'];
 
 		$this->rateLimitChecked = $this->checkRateLimit(
 			rateLimitPrefix: $rateLimitUserPrefix,
@@ -304,8 +304,8 @@ class Gateway
 		$rateLimitUserPrefix = Env::$rateLimitUsersRequestPrefix;
 		$rateLimitMaxRequest = Env::$rateLimitUsersMaxRequest;
 		$rateLimitMaxRequestWindow = Env::$rateLimitUsersMaxRequestWindow;
-		$key = $this->api->req->s['cDetails']['id'] . ':'
-			. $this->api->req->s['uDetails']['id'];
+		$key = $this->http->req->s['cDetails']['id'] . ':'
+			. $this->http->req->s['uDetails']['id'];
 
 		$this->rateLimitChecked = $this->checkRateLimit(
 			rateLimitPrefix: $rateLimitUserPrefix,
@@ -329,7 +329,7 @@ class Gateway
 		$rateLimitIPPrefix = Env::$rateLimitIPPrefix;
 		$rateLimitIPMaxRequest = Env::$rateLimitIPMaxRequest;
 		$rateLimitIPMaxRequestWindow = Env::$rateLimitIPMaxRequestWindow;
-		$key = $this->api->req->IP;
+		$key = $this->http->req->IP;
 
 		$this->checkRateLimit(
 			rateLimitPrefix: $rateLimitIPPrefix,

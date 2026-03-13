@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 
 /**
  * Common Function File
@@ -34,7 +34,7 @@ class CommonFunction
 	/**
 	 * Check Errors related to File Upload
 	 *
-	 * @param array $httpFiles $this->api->http['files']
+	 * @param array $httpFiles $this->http->iConfig['files']
 	 *
 	 * @return void
 	 * @throws \Exception
@@ -169,7 +169,7 @@ class CommonFunction
 	/**
 	 * Check Cache CIDR
 	 *
-	 * @param string       $IP              $this->api->req->IP
+	 * @param string       $IP              $this->http->req->IP
 	 * @param string|array $againstCacheKey Cache Key(s)
 	 *
 	 * @return null|bool
@@ -212,7 +212,7 @@ class CommonFunction
 	/**
 	 * Check CIDR
 	 *
-	 * @param string $IP         $this->api->req->IP
+	 * @param string $IP         $this->http->req->IP
 	 * @param string $cidrString CIDRs
 	 *
 	 * @return null|bool
@@ -235,7 +235,7 @@ class CommonFunction
 	/**
 	 * Belongs to Cidrs range
 	 *
-	 * @param string $IP    $this->api->req->IP
+	 * @param string $IP    $this->http->req->IP
 	 * @param array  $cidrs Cache Key(s)
 	 *
 	 * @return bool

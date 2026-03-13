@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\Supplement\ThirdParty\ThirdPartyInterface;
 
 /**
@@ -40,20 +40,20 @@ class ThirdParty
 	private $thirdPartyApi = null;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 	}
 
 	/**
@@ -64,9 +64,9 @@ class ThirdParty
 	public function init(): bool
 	{
 		$class = 'Microservices\\Supplement\\ThirdParty\\'
-			. ucfirst(string: $this->api->req->rParser->routeElements[1]);
+			. ucfirst(string: $this->http->req->rParser->routeElements[1]);
 
-		$this->thirdPartyApi = new $class($this->api);
+		$this->thirdPartyApi = new $class($this->http);
 
 		return $this->thirdPartyApi->init();
 	}

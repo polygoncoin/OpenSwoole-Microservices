@@ -15,7 +15,7 @@
 
 namespace Microservices\Supplement\Upload;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\Constant;
 use Microservices\App\DbCommonFunction;
 use Microservices\Supplement\Upload\UploadInterface;
@@ -38,21 +38,21 @@ class Module1 implements UploadInterface
 	use UploadTrait;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
-		DbCommonFunction::setDbConnection($this->api->req, fetchFrom: 'Master');
+		$this->http = &$http;
+		DbCommonFunction::setDbConnection($this->http->req, fetchFrom: 'Master');
 	}
 
 	/**
@@ -88,7 +88,7 @@ class Module1 implements UploadInterface
 	private function getLocation(): string
 	{
 		return Constant::$DROP_BOX_DIR
-			. DIRECTORY_SEPARATOR . $this->api->req->cId
+			. DIRECTORY_SEPARATOR . $this->http->req->cId
 			. DIRECTORY_SEPARATOR . 'test.png';
 	}
 }

@@ -16,7 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\Constant;
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\Supplement\Cron\CronInterface;
 
 /**
@@ -41,20 +41,20 @@ class Cron
 	private $cronApi = null;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 	}
 
 	/**
@@ -68,13 +68,13 @@ class Cron
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Common'
 			. DIRECTORY_SEPARATOR . 'Cron'
-			. DIRECTORY_SEPARATOR . $this->api->req->METHOD . 'routes.php';
-		$this->api->req->rParser->parseRoute(routeFileLocation: $routeFileLocation);
+			. DIRECTORY_SEPARATOR . $this->http->req->METHOD . 'routes.php';
+		$this->http->req->rParser->parseRoute(routeFileLocation: $routeFileLocation);
 
 		$class = 'Microservices\\Supplement\\Cron\\'
-			. ucfirst(string: $this->api->req->rParser->routeElements[1]);
+			. ucfirst(string: $this->http->req->rParser->routeElements[1]);
 
-		$this->cronApi = new $class($this->api);
+		$this->cronApi = new $class($this->http);
 
 		return $this->cronApi->init();
 	}

@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\Env;
 use Microservices\App\CommonFunction;
 use Microservices\App\Gateway;
@@ -50,28 +50,28 @@ class Microservices
 	private $tsEnd = null;
 
 	/**
-	 * Microservices Request Details
+	 * Http Request Details
 	 *
 	 * @var null|array
+	 */
+	public $iConfig = null;
+
+	/**
+	 * Http Object
+	 *
+	 * @var null|Http
 	 */
 	public $http = null;
 
 	/**
-	 * Api common Object
-	 *
-	 * @var null|Common
-	 */
-	public $api = null;
-
-	/**
 	 * Constructor
 	 *
-	 * @param array $http HTTP request details
+	 * @param array $iConfig Http Request Details
 	 */
-	public function __construct(&$http)
+	public function __construct(&$iConfig)
 	{
-		$this->http = &$http;
-		$this->api = new Common($this->http);
+		$this->iConfig = &$iConfig;
+		$this->http = new Http($this->iConfig);
 	}
 
 	/**
@@ -82,9 +82,9 @@ class Microservices
 	 */
 	public function init(): bool
 	{
-		$this->api->init(http: $this->http);
+		$this->http->init(iConfig: $this->iConfig);
 
-		if (!isset($this->http['get'][ROUTE_URL_PARAM])) {
+		if (!isset($this->iConfig['get'][ROUTE_URL_PARAM])) {
 			throw new \Exception(
 				message: 'Missing route',
 				code: HttpStatus::$NotFound
@@ -115,7 +115,7 @@ class Microservices
 	 */
 	public function startData(): void
 	{
-		$this->api->res->dataEncode->startObject();
+		$this->http->res->dataEncode->startObject();
 	}
 
 	/**
@@ -132,11 +132,11 @@ class Microservices
 			case (
 					Env::$enableCronRequest
 					&& strpos(
-						haystack: $this->api->req->ROUTE,
+						haystack: $this->http->req->ROUTE,
 						needle: '/' . Env::$cronRequestRoutePrefix
 					) === 0
 				):
-				if ($this->api->req->IP !== Env::$cronRestrictedCidr) {
+				if ($this->http->req->IP !== Env::$cronRestrictedCidr) {
 					throw new \Exception(
 						message: 'Source IP is not supported',
 						code: HttpStatus::$NotFound
@@ -145,17 +145,17 @@ class Microservices
 				$class = __NAMESPACE__ . '\\Cron';
 				break;
 
-			case $this->api->req->ROUTE === '/logout':
+			case $this->http->req->ROUTE === '/logout':
 				$class = __NAMESPACE__ . '\\Logout';
 				break;
 
 			// Requires HTTP auth username and password
 			case (
 					Env::$enableReloadRequest
-					&& $this->api->req->ROUTE === '/' . Env::$reloadRequestRoutePrefix
+					&& $this->http->req->ROUTE === '/' . Env::$reloadRequestRoutePrefix
 				):
 				$isValidIp = CommonFunction::checkCidr(
-					IP: $this->api->req->IP,
+					IP: $this->http->req->IP,
 					cidrString: Env::$reloadRestrictedCidr
 				);
 				if (!$isValidIp) {
@@ -168,13 +168,13 @@ class Microservices
 				break;
 
 			// Generates auth token
-			case $this->api->req->ROUTE === '/login':
+			case $this->http->req->ROUTE === '/login':
 				$class = __NAMESPACE__ . '\\Login';
 				break;
 
 			// Requires auth token
 			default:
-				$gateway = new Gateway($this->api);
+				$gateway = new Gateway($this->http);
 				$gateway->initGateway();
 				$gateway = null;
 
@@ -185,9 +185,9 @@ class Microservices
 		// Class found
 		try {
 			if ($class !== null) {
-				$api = new $class($this->api);
+				$api = new $class($this->http);
 				if ($api->init()) {
-					$this->api->initResponse();
+					$this->http->initResponse();
 					$this->startData();
 					$return = $api->process();
 					if (is_array($return) && count($return) === 3) {
@@ -212,9 +212,9 @@ class Microservices
 	 */
 	public function addStatus(): void
 	{
-		$this->api->res->dataEncode->addKeyData(
+		$this->http->res->dataEncode->addKeyData(
 			key: 'Status',
-			data: $this->api->res->httpStatus
+			data: $this->http->res->httpStatus
 		);
 	}
 
@@ -230,22 +230,22 @@ class Microservices
 			$time = ceil(num: ($this->tsEnd - $this->tsStart) * 1000);
 			$memory = ceil(num: memory_get_peak_usage() / 1000);
 
-			$this->api->res->dataEncode->startObject(key: 'Stats');
-			$this->api->res->dataEncode->startObject(key: 'Performance');
-			$this->api->res->dataEncode->addKeyData(
+			$this->http->res->dataEncode->startObject(key: 'Stats');
+			$this->http->res->dataEncode->startObject(key: 'Performance');
+			$this->http->res->dataEncode->addKeyData(
 				key: 'total-time-taken',
 				data: "{$time} ms"
 			);
-			$this->api->res->dataEncode->addKeyData(
+			$this->http->res->dataEncode->addKeyData(
 				key: 'peak-memory-usage',
 				data: "{$memory} KB"
 			);
-			$this->api->res->dataEncode->endObject();
-			$this->api->res->dataEncode->addKeyData(
+			$this->http->res->dataEncode->endObject();
+			$this->http->res->dataEncode->addKeyData(
 				key: 'getrusage',
 				data: getrusage()
 			);
-			$this->api->res->dataEncode->endObject();
+			$this->http->res->dataEncode->endObject();
 		}
 	}
 
@@ -256,8 +256,8 @@ class Microservices
 	 */
 	public function endData(): void
 	{
-		$this->api->res->dataEncode->endObject();
-		$this->api->res->dataEncode->end();
+		$this->http->res->dataEncode->endObject();
+		$this->http->res->dataEncode->end();
 	}
 
 	/**
@@ -267,8 +267,8 @@ class Microservices
 	 */
 	public function outputResults(): void
 	{
-		http_response_code(response_code: $this->api->res->httpStatus);
-		$this->api->res->dataEncode->streamData();
+		http_response_code(response_code: $this->http->res->httpStatus);
+		$this->http->res->dataEncode->streamData();
 	}
 
 	/**
@@ -278,7 +278,7 @@ class Microservices
 	 */
 	public function returnResults(): bool|string
 	{
-		return $this->api->res->dataEncode->getData();
+		return $this->http->res->dataEncode->getData();
 	}
 
 	/**
@@ -289,7 +289,7 @@ class Microservices
 	public function getHeaders(): array
 	{
 		$headers = [];
-		$headers['Access-Control-Allow-Origin'] = $this->http['server']['host'];
+		$headers['Access-Control-Allow-Origin'] = $this->iConfig['server']['host'];
 		$headers['Vary'] = 'Origin';
 		$headers['Access-Control-Allow-Headers'] = '*';
 
@@ -301,12 +301,12 @@ class Microservices
 		$headers['Cross-Origin-Opener-Policy'] = 'unsafe-none';
 
 		// Access-Control headers are received during OPTIONS request
-		if ($this->http['server']['method'] == 'OPTIONS') {
+		if ($this->iConfig['server']['method'] == 'OPTIONS') {
 			// may also be using PUT, PATCH, HEAD etc
 			$methods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
 			$headers['Access-Control-Allow-Methods'] = $methods;
 		} else {
-			switch ($this->api->res->oRepresentation) {
+			switch ($this->http->res->oRepresentation) {
 				case 'XML':
 				case 'XSLT':
 					$headers['Content-Type'] = 'text/xml; charset=utf-8';

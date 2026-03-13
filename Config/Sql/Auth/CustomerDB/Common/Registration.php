@@ -16,12 +16,12 @@
 namespace Microservices\Config\Sql\Auth\CustomerDB\Common;
 
 return [
-	'__QUERY__' => "UPDATE `{$this->api->req->usersTable}` SET __SET__ WHERE __WHERE__",
+	'__QUERY__' => "UPDATE `{$this->http->req->usersTable}` SET __SET__ WHERE __WHERE__",
 	'__VALIDATE__' => [
 		[
 			'fn' => 'primaryKeyExist',
 			'fnArgs' => [
-				'table' => ['custom', $this->api->req->usersTable],
+				'table' => ['custom', $this->http->req->usersTable],
 				'primary' => ['custom', 'id'],
 				'id' => ['routeParams', 'id']
 			],

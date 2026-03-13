@@ -16,7 +16,7 @@
 namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\UserGroup\POST;
 
 return [
-	'__QUERY__' => "INSERT INTO `{$this->api->req->usersTable}` SET __SET__",
+	'__QUERY__' => "INSERT INTO `{$this->http->req->usersTable}` SET __SET__",
 	'__SET__' => [
 		[
 			'column' => 'customer_id',

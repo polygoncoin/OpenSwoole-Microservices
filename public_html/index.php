@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session Index
+ * Index
  * php version 8.3
  *
  * @category  Start
@@ -13,6 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Openswoole\Coroutine;
 use Openswoole\Http\Server;
 use Openswoole\Http\Request;
 use Openswoole\Http\Response;
@@ -23,11 +24,19 @@ use Microservices\App\CommonFunction;
 use Microservices\App\Start;
 use Microservices\TestCase\Test;
 
-define('ROOT', __DIR__);
+define('ROOT', realpath(path: __DIR__ . DIRECTORY_SEPARATOR . '../'));
 define('ROUTE_URL_PARAM', 'route');
 
 require_once ROOT . DIRECTORY_SEPARATOR . 'Autoload.php';
 spl_autoload_register(callback:  'Microservices\Autoload::register');
+
+// Set coroutine options before you start a server...
+Coroutine::set(
+	[
+		'max_coroutine' => 100,
+		'max_concurrency' => 100,
+	]
+);
 
 $server = new Server('127.0.0.1', 9501);
 
@@ -51,7 +60,7 @@ $server->on(
 			'.env.global.container',
 			'.env.rateLimiting'
 		] as $envFilename) {
-			$env = parse_ini_file(filename: __DIR__ . DIRECTORY_SEPARATOR . $envFilename);
+			$env = parse_ini_file(filename: ROOT . DIRECTORY_SEPARATOR . $envFilename);
 			foreach ($env as $key => $value) {
 				putenv(assignment: "{$key}={$value}");
 			}
@@ -61,10 +70,10 @@ $server->on(
 		Env::$timestamp = time();
 		Env::init();
 
-		$http = [];
-		$http['server']['host'] = 'api.customer001.localhost'; // Auth
-		// $http['server']['host'] = 'localhost'; // Open
-		$http['server']['method'] = $request->server['request_method'];
+		$iConfig = [];
+		$iConfig['server']['host'] = 'api.customer001.localhost'; // Auth
+		// $iConfig['server']['host'] = 'localhost'; // Open
+		$iConfig['server']['method'] = $request->server['request_method'];
 
 		if (
 			((int)getenv('DISABLE_REQUESTS_VIA_PROXIES')) === 1
@@ -75,20 +84,20 @@ $server->on(
 		}
 
 		if (isset($request->server['remote_addr'])) {
-			$http['server']['ip'] = $request->server['remote_addr'];
+			$iConfig['server']['ip'] = $request->server['remote_addr'];
 		} else {// check proxy headers
 			if (isset($request->header['x-forwarded-for'])) {
-				$http['server']['ip'] = $request->header['x-forwarded-for'];
-			} elseif (isset($request->header['x-real-ip'])) {
-				$http['server']['ip'] = $request->header['x-real-ip'];
+				$iConfig['server']['ip'] = $request->header['x-forwarded-for'];
+		} elseif (isset($request->header['x-real-ip'])) {
+				$iConfig['server']['ip'] = $request->header['x-real-ip'];
 			}
 		}
 
-		$http['header'] = $request->header;
-		$http['get'] = &$request->get;
-		$http['post'] = $request->rawContent();
-		$http['files'] = &$request->files;
-		$http['uniqueHttpRequestHash'] = CommonFunction::uniqueHttpRequestHash(
+		$iConfig['header'] = $request->header;
+		$iConfig['get'] = &$request->get;
+		$iConfig['post'] = $request->rawContent();
+		$iConfig['files'] = &$request->files;
+		$iConfig['uniqueHttpRequestHash'] = CommonFunction::uniqueHttpRequestHash(
 			hashArray: [
 				// $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '',
 				// $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
@@ -98,9 +107,9 @@ $server->on(
 		);
 
 		if (
-			isset($http['get'][ROUTE_URL_PARAM])
+			isset($iConfig['get'][ROUTE_URL_PARAM])
 			&& in_array(
-				needle: $http['get'][ROUTE_URL_PARAM],
+				needle: $iConfig['get'][ROUTE_URL_PARAM],
 				haystack: [
 					'/tests',
 					'/auth-test',
@@ -111,7 +120,7 @@ $server->on(
 			)
 		) {
 			$tests = new Test();
-			switch ($http['get'][ROUTE_URL_PARAM]) {
+			switch ($iConfig['get'][ROUTE_URL_PARAM]) {
 				case '/tests':
 					$response->end('<pre>'.print_r(value: $tests->processTests(), return: true));
 					break;
@@ -130,7 +139,7 @@ $server->on(
 			}
 		} else {
 			ob_start();
-			[$responseheaders, $responseContent, $responseCode] = Start::http(http: $http, streamData: true);
+			[$responseheaders, $responseContent, $responseCode] = Start::http(iConfig: $iConfig, streamData: true);
 			@ob_clean();
 
 			$response->status($responseCode);
@@ -147,8 +156,15 @@ $server->on(
  */
 $server->set(
 	[
-		// Disable Coroutines for Traditional PHP Sessions
-		'enable_coroutine' => false,
+		// HTTP Server max execution time, since v4.8.0
+		// 'max_request_execution_time' => 10, // 10s
+
+		// Compression
+		'http_compression' => true,
+		'http_compression_level' => 3, // 1 - 9
+		'compression_min_length' => 20,
+		'worker_num' =>   2,
+		'max_request' =>  1000,
 	]
 );
 

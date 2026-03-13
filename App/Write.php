@@ -16,7 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\AppTrait;
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
@@ -69,21 +69,21 @@ class Write
 	public $dataEncode = null;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
-		$this->dataEncode = &$this->api->res->dataEncode;
+		$this->http = &$http;
+		$this->dataEncode = &$this->http->res->dataEncode;
 	}
 
 	/**
@@ -106,7 +106,7 @@ class Write
 		$Env = __NAMESPACE__ . '\Env';
 
 		// Load Sql
-		$wSqlConfig = include $this->api->req->rParser->sqlConfigFile;
+		$wSqlConfig = include $this->http->req->rParser->sqlConfigFile;
 
 		// Rate Limiting request if configured for Route Sql.
 		$this->rateLimitRoute(sqlConfig: $wSqlConfig);
@@ -119,8 +119,8 @@ class Write
 
 		if (Env::$enableConfigRequest) {
 			if (
-				$this->api->req->rParser->routeEndingWithReservedKeywordFlag
-				&& ($this->api->req->rParser->routeEndingReservedKeyword === Env::$configRequestRouteKeyword)
+				$this->http->req->rParser->routeEndingWithReservedKeywordFlag
+				&& ($this->http->req->rParser->routeEndingReservedKeyword === Env::$configRequestRouteKeyword)
 			) {
 				$this->processWriteConfig(
 					wSqlConfig: $wSqlConfig,
@@ -129,8 +129,8 @@ class Write
 				return true;
 			}
 			if (
-				$this->api->req->rParser->routeEndingWithReservedKeywordFlag
-				&& ($this->api->req->rParser->routeEndingReservedKeyword === Env::$importSampleRequestRouteKeyword)
+				$this->http->req->rParser->routeEndingWithReservedKeywordFlag
+				&& ($this->http->req->rParser->routeEndingReservedKeyword === Env::$importSampleRequestRouteKeyword)
 			) {
 				$filename = date('Ymd-His') . '-import-sample.csv';
 				$headers = [];
@@ -150,17 +150,17 @@ class Write
 		}
 
 		if (
-			$this->api->res->oRepresentation === 'XSLT'
+			$this->http->res->oRepresentation === 'XSLT'
 			&& isset($wSqlConfig['xsltFile'])
 		) {
 			$this->dataEncode->xsltFile = $wSqlConfig['xsltFile'];
 		} elseif (
-			$this->api->res->oRepresentation === 'HTML'
+			$this->http->res->oRepresentation === 'HTML'
 			&& isset($wSqlConfig['htmlFile'])
 		) {
 			$this->dataEncode->htmlFile = $wSqlConfig['htmlFile'];
 		} elseif (
-			$this->api->res->oRepresentation === 'PHP'
+			$this->http->res->oRepresentation === 'PHP'
 			&& isset($wSqlConfig['phpFile'])
 		) {
 			$this->dataEncode->phpFile = $wSqlConfig['phpFile'];
@@ -174,8 +174,8 @@ class Write
 			? $wSqlConfig['isTransaction'] : false;
 
 		// Set Server mode to execute query on - Read / Write Server
-		DbCommonFunction::setDbConnection(req: $this->api->req, fetchFrom: 'Master');
-		$this->dbServerObj = &DbCommonFunction::$masterDb[$this->api->req->cId];
+		DbCommonFunction::setDbConnection(req: $this->http->req, fetchFrom: 'Master');
+		$this->dbServerObj = &DbCommonFunction::$masterDb[$this->http->req->cId];
 
 		$this->processWrite(
 			wSqlConfig: $wSqlConfig,
@@ -209,7 +209,7 @@ class Write
 		$this->dataEncode->startObject(key: 'Config');
 		$this->dataEncode->addKeyData(
 			key: 'Route',
-			data: $this->api->req->rParser->configuredRoute
+			data: $this->http->req->rParser->configuredRoute
 		);
 		if (Env::$enablePayloadInResponse) {
 			$this->dataEncode->addKeyData(
@@ -237,7 +237,7 @@ class Write
 	{
 		// Check for payloadType
 		if (isset($wSqlConfig['__PAYLOAD-TYPE__'])) {
-			$payloadType = $this->api->req->s['payloadType'];
+			$payloadType = $this->http->req->s['payloadType'];
 			if ($payloadType !== $wSqlConfig['__PAYLOAD-TYPE__']) {
 				throw new \Exception(
 					message: 'Invalid payload type',
@@ -248,7 +248,7 @@ class Write
 			if (
 				$wSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
 				&& isset($wSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
-				&& ($objCount = $this->api->req->dataDecode->count())
+				&& ($objCount = $this->http->req->dataDecode->count())
 				&& ($objCount > $wSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
 			) {
 				throw new \Exception(
@@ -260,30 +260,30 @@ class Write
 		}
 
 		// Set necessary fields
-		$this->api->req->s['necessaryArr'] = $this->getRequired(
+		$this->http->req->s['necessaryArr'] = $this->getRequired(
 			sqlConfig: $wSqlConfig,
 			isFirstCall: true,
 			flag: $useHierarchy
 		);
 
-		if ($this->api->req->s['payloadType'] === 'Object') {
+		if ($this->http->req->s['payloadType'] === 'Object') {
 			$this->dataEncode->startObject(key: 'Results');
 		} else {
 			$this->dataEncode->startObject(key: 'Results');
-			if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
+			if (in_array($this->http->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
 				$this->dataEncode->startArray(key: 'Rows');
 			}
 		}
 
 		// Perform action
-		$iCount = $this->api->req->s['payloadType'] === 'Object'
-			? 1 : $this->api->req->dataDecode->count();
+		$iCount = $this->http->req->s['payloadType'] === 'Object'
+			? 1 : $this->http->req->dataDecode->count();
 
 		for ($i = 0; $i < $iCount; $i++) {
 			$configKeys = [];
 			$payloadIndexes = [];
 			if ($i === 0) {
-				if ($this->api->req->s['payloadType'] === 'Object') {
+				if ($this->http->req->s['payloadType'] === 'Object') {
 					$payloadIndexes[] = '';
 				} else {
 					$payloadIndexes[] = "{$i}";
@@ -310,10 +310,10 @@ class Write
 					configKeys: $configKeys,
 					useHierarchy: $useHierarchy,
 					response: $response,
-					necessary: $this->api->req->s['necessaryArr']
+					necessary: $this->http->req->s['necessaryArr']
 				);
 
-				if ($this->api->res->httpStatus === HttpStatus::$Ok) {
+				if ($this->http->res->httpStatus === HttpStatus::$Ok) {
 					if (
 						$this->operateAsTransaction
 						&& ($this->dbServerObj->beganTransaction === true)
@@ -324,7 +324,7 @@ class Write
 					$arr = [];
 					$arr['Status'] = HttpStatus::$Ok;
 					if (Env::$enablePayloadInResponse) {
-						$arr[Env::$payloadKeyInResponse] = $this->api->req->dataDecode->getCompleteArray(
+						$arr[Env::$payloadKeyInResponse] = $this->http->req->dataDecode->getCompleteArray(
 							keys: implode(
 								separator: ':',
 								array: $payloadIndexes
@@ -342,9 +342,9 @@ class Write
 					}
 				} else { // Failure
 					$arr = [];
-					$arr['Status'] = $this->api->res->httpStatus;
+					$arr['Status'] = $this->http->res->httpStatus;
 					if (Env::$enablePayloadInResponse) {
-						$arr[Env::$payloadKeyInResponse] = $this->api->req->dataDecode->getCompleteArray(
+						$arr[Env::$payloadKeyInResponse] = $this->http->req->dataDecode->getCompleteArray(
 							keys: implode(
 								separator: ':',
 								array: $payloadIndexes
@@ -362,7 +362,7 @@ class Write
 					$this->dataEncode->addKeyData(key: $k, data: $v);
 				}
 			} else {
-				if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
+				if (in_array($this->http->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
 					$this->dataEncode->startObject(key: 'Row');
 					foreach ($arr as $k => $v) {
 						$this->dataEncode->addKeyData(key: $k, data: $v);
@@ -374,10 +374,10 @@ class Write
 			}
 		}
 
-		if ($this->api->req->s['payloadType'] === 'Object') {
+		if ($this->http->req->s['payloadType'] === 'Object') {
 			$this->dataEncode->endObject();
 		} else {
-			if (in_array($this->api->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
+			if (in_array($this->http->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
 				$this->dataEncode->endArray();
 			}
 			$this->dataEncode->endObject();
@@ -414,14 +414,14 @@ class Write
 				characters: ':'
 			) : '';
 
-		$isObject = $this->api->req->dataDecode->dataType(
+		$isObject = $this->http->req->dataDecode->dataType(
 			keys: $payloadIndex
 		) === 'Object';
 
 		$iCount = $isObject
-			? 1 : $this->api->req->dataDecode->count(keys: $payloadIndex);
+			? 1 : $this->http->req->dataDecode->count(keys: $payloadIndex);
 
-		$mode = getenv(name: $this->api->req->s['cDetails']['master_db_server_query_placeholder']);
+		$mode = getenv(name: $this->http->req->s['cDetails']['master_db_server_query_placeholder']);
 		$fn = "getSqlAndParams{$mode}Mode";
 
 		for ($i = 0; $i < $iCount; $i++) {
@@ -448,21 +448,21 @@ class Write
 			$payloadIndex = is_array(value: $payloadIndexes)
 				? implode(separator: ':', array: $payloadIndexes) : '';
 
-			if (!$this->api->req->dataDecode->isset(keys: $payloadIndex)) {
+			if (!$this->http->req->dataDecode->isset(keys: $payloadIndex)) {
 				throw new \Exception(
 					message: "Payload key '{$payloadIndex}' not set",
 					code: HttpStatus::$NotFound
 				);
 			}
 
-			$this->api->req->s['payload'] = $this->api->req->dataDecode->get(
+			$this->http->req->s['payload'] = $this->http->req->dataDecode->get(
 				keys: $payloadIndex
 			);
 
 			if (count(value: $necessary)) {
-				$this->api->req->s['necessary'] = $necessary;
+				$this->http->req->s['necessary'] = $necessary;
 			} else {
-				$this->api->req->s['necessary'] = [];
+				$this->http->req->s['necessary'] = [];
 			}
 
 			if (
@@ -483,7 +483,7 @@ class Write
 			// Execute Pre Sql Hook
 			if (isset($wSqlConfig['__PRE-SQL-HOOKS__'])) {
 				if ($this->hook === null) {
-					$this->hook = new Hook($this->api);
+					$this->hook = new Hook($this->http);
 				}
 				$this->hook->triggerHook(
 					hookConfig: $wSqlConfig['__PRE-SQL-HOOKS__']
@@ -522,7 +522,7 @@ class Write
 					$id = $this->dbServerObj->lastInsertId();
 				}
 				$_response[$wSqlConfig['__INSERT-IDs__']] = $id;
-				$this->api->req->s['__INSERT-IDs__'][$wSqlConfig['__INSERT-IDs__']] = $id;
+				$this->http->req->s['__INSERT-IDs__'][$wSqlConfig['__INSERT-IDs__']] = $id;
 			} else {
 				$affectedRows = $this->dbServerObj->affectedRows();
 				$_response['affectedRows'] = $affectedRows;
@@ -542,7 +542,7 @@ class Write
 			// Execute Post Sql Hook
 			if (isset($wSqlConfig['__POST-SQL-HOOKS__'])) {
 				if ($this->hook === null) {
-					$this->hook = new Hook($this->api);
+					$this->hook = new Hook($this->http);
 				}
 				$this->hook->triggerHook(
 					hookConfig: $wSqlConfig['__POST-SQL-HOOKS__']
@@ -584,7 +584,7 @@ class Write
 		&$necessary
 	): void {
 		if ($useHierarchy) {
-			$row = $this->api->req->s['payload'];
+			$row = $this->http->req->s['payload'];
 			$this->resetFetchData(
 				fetchFrom: 'sqlPayload',
 				keys: $configKeys,
@@ -612,12 +612,12 @@ class Write
 
 				$modulePayloadIndexKey = is_array(value: $modulePayloadIndex)
 					? implode(separator: ':', array: $modulePayloadIndex) : '';
-				$isObject = $this->api->req->dataDecode->dataType(
+				$isObject = $this->http->req->dataDecode->dataType(
 					keys: $modulePayloadIndexKey
 				) === 'Object';
 
 				$iCount = $isObject
-					? 1 : $this->api->req->dataDecode->count(keys: $modulePayloadIndexKey);
+					? 1 : $this->http->req->dataDecode->count(keys: $modulePayloadIndexKey);
 
 				for ($i = 0; $i < $iCount; $i++) {
 					$modulePayloadIndexItt = $modulePayloadIndex;
@@ -628,7 +628,7 @@ class Write
 						array_push($modulePayloadIndexItt, $i);
 					}
 
-					$dataExists = $this->api->req->dataDecode->isset(
+					$dataExists = $this->http->req->dataDecode->isset(
 						keys: $modulePayloadIndexIttKey
 					);
 
@@ -677,7 +677,7 @@ class Write
 				validationConfig: $wSqlConfig['__VALIDATE__']
 			);
 			if ($isValidData !== true) {
-				$this->api->res->httpStatus = HttpStatus::$BadRequest;
+				$this->http->res->httpStatus = HttpStatus::$BadRequest;
 				$response = $errors;
 				$return = false;
 			}

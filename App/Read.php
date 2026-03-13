@@ -16,7 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\AppTrait;
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
@@ -69,20 +69,20 @@ class Read
 	public $dbServerObj = null;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 	}
 
 	/**
@@ -105,7 +105,7 @@ class Read
 		$Env = __NAMESPACE__ . '\Env';
 
 		// Load Sql
-		$rSqlConfig = include $this->api->req->rParser->sqlConfigFile;
+		$rSqlConfig = include $this->http->req->rParser->sqlConfigFile;
 
 		// Rate Limiting request if configured for Route Sql.
 		$this->rateLimitRoute(sqlConfig: $rSqlConfig);
@@ -122,18 +122,18 @@ class Read
 		if (
 			Env::$enableResponseCaching
 			&& isset($rSqlConfig['cacheKey'])
-			&& !isset($this->api->req->s['queryParams']['orderBy'])
+			&& !isset($this->http->req->s['queryParams']['orderBy'])
 		) {
 			$json = DbCommonFunction::getQueryCache(
 				cacheKey: $rSqlConfig['cacheKey']
 			);
 			if ($json !== null) {
 				$cacheHit = 'true';
-				$this->api->res->dataEncode->appendKeyData(
+				$this->http->res->dataEncode->appendKeyData(
 					key: 'cacheHit',
 					data: $cacheHit
 				);
-				$this->api->res->dataEncode->appendData(data: $json);
+				$this->http->res->dataEncode->appendData(data: $json);
 				return true;
 			} else {
 				$toBeCached = true;
@@ -144,24 +144,24 @@ class Read
 			Env::$enableResponseCaching
 			&& $toBeCached
 		) {
-			$this->dataEncode = new DataEncode(api: $this->api);
+			$this->dataEncode = new DataEncode(http: $this->http);
 			$this->dataEncode->init(header: false);
 		} else {
-			$this->dataEncode = &$this->api->res->dataEncode;
+			$this->dataEncode = &$this->http->res->dataEncode;
 		}
 
 		if (
-			$this->api->res->oRepresentation === 'XSLT'
+			$this->http->res->oRepresentation === 'XSLT'
 			&& isset($rSqlConfig['xsltFile'])
 		) {
 			$this->dataEncode->xsltFile = $rSqlConfig['xsltFile'];
 		} elseif (
-			$this->api->res->oRepresentation === 'HTML'
+			$this->http->res->oRepresentation === 'HTML'
 			&& isset($rSqlConfig['htmlFile'])
 		) {
 			$this->dataEncode->htmlFile = $rSqlConfig['htmlFile'];
 		} elseif (
-			$this->api->res->oRepresentation === 'PHP'
+			$this->http->res->oRepresentation === 'PHP'
 			&& isset($rSqlConfig['phpFile'])
 		) {
 			$this->dataEncode->phpFile = $rSqlConfig['phpFile'];
@@ -169,11 +169,11 @@ class Read
 
 		// Set Server mode to execute query on - Read / Write Server
 		$fetchFrom = $rSqlConfig['fetchFrom'] ?? 'Slave';
-		DbCommonFunction::setDbConnection($this->api->req, fetchFrom: $fetchFrom);
+		DbCommonFunction::setDbConnection($this->http->req, fetchFrom: $fetchFrom);
 		$fetchFrom = strtolower($fetchFrom);
 		$this->modeColumn = $fetchFrom . '_db_server_query_placeholder';
 		$dbServerObj = $fetchFrom . 'Db';
-		$this->dbServerObj = &(DbCommonFunction::$$dbServerObj)[$this->api->req->cId];
+		$this->dbServerObj = &(DbCommonFunction::$$dbServerObj)[$this->http->req->cId];
 
 		// Use result set recursively flag
 		$useResultSet = $this->getUseHierarchy(
@@ -183,8 +183,8 @@ class Read
 
 		if (
 			Env::$enableConfigRequest
-			&& $this->api->req->rParser->routeEndingWithReservedKeywordFlag
-			&& ($this->api->req->rParser->routeEndingReservedKeyword === Env::$configRequestRouteKeyword)
+			&& $this->http->req->rParser->routeEndingWithReservedKeywordFlag
+			&& ($this->http->req->rParser->routeEndingReservedKeyword === Env::$configRequestRouteKeyword)
 		) {
 			$this->processReadConfig(
 				rSqlConfig: $rSqlConfig,
@@ -206,7 +206,7 @@ class Read
 				cacheKey: $rSqlConfig['cacheKey'],
 				json: $json
 			);
-			$this->api->res->dataEncode->appendData(data: $json);
+			$this->http->res->dataEncode->appendData(data: $json);
 		}
 
 		return true;
@@ -225,7 +225,7 @@ class Read
 		$this->dataEncode->startObject(key: 'Config');
 		$this->dataEncode->addKeyData(
 			key: 'Route',
-			data: $this->api->req->rParser->configuredRoute
+			data: $this->http->req->rParser->configuredRoute
 		);
 		$this->dataEncode->addKeyData(
 			key: 'Payload',
@@ -248,16 +248,16 @@ class Read
 	 */
 	private function processRead(&$rSqlConfig, $useResultSet): void
 	{
-		$this->api->req->s['necessaryArr'] = $this->getRequired(
+		$this->http->req->s['necessaryArr'] = $this->getRequired(
 			sqlConfig: $rSqlConfig,
 			isFirstCall: true,
 			flag: $useResultSet
 		);
 
-		if (isset($this->api->req->s['necessaryArr'])) {
-			$this->api->req->s['necessary'] = $this->api->req->s['necessaryArr'];
+		if (isset($this->http->req->s['necessaryArr'])) {
+			$this->http->req->s['necessary'] = $this->http->req->s['necessaryArr'];
 		} else {
-			$this->api->req->s['necessary'] = [];
+			$this->http->req->s['necessary'] = [];
 		}
 
 		// Start Read operation
@@ -291,7 +291,7 @@ class Read
 		// Execute Pre Sql Hook
 		if (isset($rSqlConfig['__PRE-SQL-HOOKS__'])) {
 			if ($this->hook === null) {
-				$this->hook = new Hook($this->api);
+				$this->hook = new Hook($this->http);
 			}
 			$this->hook->triggerHook(
 				hookConfig: $rSqlConfig['__PRE-SQL-HOOKS__']
@@ -357,7 +357,7 @@ class Read
 		// Execute Post Sql Hook
 		if (isset($rSqlConfig['__POST-SQL-HOOKS__'])) {
 			if ($this->hook === null) {
-				$this->hook = new Hook($this->api);
+				$this->hook = new Hook($this->http);
 			}
 			$this->hook->triggerHook(
 				hookConfig: $rSqlConfig['__POST-SQL-HOOKS__']
@@ -382,7 +382,7 @@ class Read
 		&$configKeys,
 		$useResultSet
 	): void {
-		$mode = getenv(name: $this->api->req->s['cDetails'][$this->modeColumn]);
+		$mode = getenv(name: $this->http->req->s['cDetails'][$this->modeColumn]);
 		$fn = "getSqlAndParams{$mode}Mode";
 		[$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
 			sqlDetails: $rSqlConfig,
@@ -420,7 +420,7 @@ class Read
 			}
 		} else {
 			if ($isFirstCall) {
-				$this->api->res->httpStatus = HttpStatus::$NotFound;
+				$this->http->res->httpStatus = HttpStatus::$NotFound;
 				return;
 			}
 		}
@@ -456,23 +456,23 @@ class Read
 		unset($rSqlConfig['__COUNT-SQL-COMMENT__']);
 		unset($rSqlConfig['countQuery']);
 
-		$this->api->req->s['queryParams']['page']  = $this->api->http['get']['page'] ?? 1;
-		$this->api->req->s['queryParams']['perPage']  = $this->api->http['get']['perPage'] ??
+		$this->http->req->s['queryParams']['page']  = $this->http->iConfig['get']['page'] ?? 1;
+		$this->http->req->s['queryParams']['perPage']  = $this->http->iConfig['get']['perPage'] ??
 			Env::$defaultPerPage;
 
-		if ($this->api->req->s['queryParams']['perPage'] > Env::$maxResultsPerPage) {
+		if ($this->http->req->s['queryParams']['perPage'] > Env::$maxResultsPerPage) {
 			throw new \Exception(
 				message: 'perPage exceeds max perPage value of ' . Env::$maxResultsPerPage,
 				code: HttpStatus::$Forbidden
 			);
 		}
 
-		$this->api->req->s['queryParams']['start'] = (
-			($this->api->req->s['queryParams']['page'] - 1) *
-			$this->api->req->s['queryParams']['perPage']
+		$this->http->req->s['queryParams']['start'] = (
+			($this->http->req->s['queryParams']['page'] - 1) *
+			$this->http->req->s['queryParams']['perPage']
 		);
 
-		$mode = getenv(name: $this->api->req->s['cDetails'][$this->modeColumn]);
+		$mode = getenv(name: $this->http->req->s['cDetails'][$this->modeColumn]);
 		$fn = "getSqlAndParams{$mode}Mode";
 		[$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
 			sqlDetails: $rSqlConfig
@@ -495,16 +495,16 @@ class Read
 
 		$totalRowsCount = $row['count'];
 		$totalPages = ceil(
-			num: $totalRowsCount / $this->api->req->s['queryParams']['perPage']
+			num: $totalRowsCount / $this->http->req->s['queryParams']['perPage']
 		);
 
 		$this->dataEncode->addKeyData(
 			key: 'page',
-			data: $this->api->req->s['queryParams']['page']
+			data: $this->http->req->s['queryParams']['page']
 		);
 		$this->dataEncode->addKeyData(
 			key: 'perPage',
-			data: $this->api->req->s['queryParams']['perPage']
+			data: $this->http->req->s['queryParams']['perPage']
 		);
 		$this->dataEncode->addKeyData(
 			key: 'totalPages',
@@ -533,7 +533,7 @@ class Read
 		&$configKeys,
 		$useResultSet
 	): void {
-		$mode = getenv(name: $this->api->req->s['cDetails'][$this->modeColumn]);
+		$mode = getenv(name: $this->http->req->s['cDetails'][$this->modeColumn]);
 		$fn = "getSqlAndParams{$mode}Mode";
 		[$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
 			sqlDetails: $rSqlConfig,
@@ -552,10 +552,10 @@ class Read
 		}
 
 		if ($isFirstCall) {
-			if (isset($this->api->req->s['queryParams']['orderBy'])) {
+			if (isset($this->http->req->s['queryParams']['orderBy'])) {
 				$orderByStrArr = [];
 				$orderByArr = json_decode(
-					json: $this->api->req->s['queryParams']['orderBy'],
+					json: $this->http->req->s['queryParams']['orderBy'],
 					associative: true
 				);
 				foreach ($orderByArr as $k => $v) {
@@ -575,8 +575,8 @@ class Read
 		}
 
 		if (isset($rSqlConfig['countQuery'])) {
-			$start = $this->api->req->s['queryParams']['start'];
-			$offset = $this->api->req->s['queryParams']['perPage'];
+			$start = $this->http->req->s['queryParams']['start'];
+			$offset = $this->http->req->s['queryParams']['perPage'];
 			$sql .= " LIMIT {$start}, {$offset}";
 		}
 
@@ -674,7 +674,7 @@ class Read
 			return [[], '', HttpStatus::$NotFound];
 		}
 
-		$mode = getenv(name: $this->api->req->s['cDetails'][$this->modeColumn]);
+		$mode = getenv(name: $this->http->req->s['cDetails'][$this->modeColumn]);
 		$fn = "getSqlAndParams{$mode}Mode";
 		[$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
 			sqlDetails: $rSqlConfig
@@ -685,15 +685,15 @@ class Read
 		$dbDetails = [];
 		switch ($serverMode) {
 			case 'Master':
-				$dbDetails = DbCommonFunction::getDbMasterDetails($this->api->req);
+				$dbDetails = DbCommonFunction::getDbMasterDetails($this->http->req);
 				break;
 			case 'Slave':
-				$dbDetails = DbCommonFunction::getDbSlaveDetails($this->api->req);
+				$dbDetails = DbCommonFunction::getDbSlaveDetails($this->http->req);
 				break;
 		}
 
 		// Export
-		$export = new Export(api: $this->api, dbServerType: $dbDetails['dbServerType']);
+		$export = new Export(http: $this->http, dbServerType: $dbDetails['dbServerType']);
 		$export->init(
 			dbServerHostname: $dbDetails['dbServerHostname'],
 			dbServerPort: $dbDetails['dbServerPort'],

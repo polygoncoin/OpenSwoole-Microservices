@@ -15,7 +15,7 @@
 
 namespace Microservices\Supplement\Dropbox;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\DbCommonFunction;
 use Microservices\Supplement\Dropbox\DropboxInterface;
 use Microservices\Supplement\Dropbox\CacheTrait;
@@ -37,21 +37,21 @@ class Category implements DropboxInterface
 	use CacheTrait;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
-		DbCommonFunction::setDbConnection($this->api->req, fetchFrom: 'Slave');
+		$this->http = &$http;
+		DbCommonFunction::setDbConnection($this->http->req, fetchFrom: 'Slave');
 	}
 
 	/**

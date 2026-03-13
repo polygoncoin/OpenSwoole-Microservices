@@ -16,7 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\CacheKey;
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\Constant;
 use Microservices\App\DataRepresentation\DataDecode;
 use Microservices\App\DataRepresentation\DataEncode;
@@ -41,13 +41,6 @@ use Microservices\App\RouteParser;
 class HttpRequest
 {
 	/**
-	 * SQL Cache object
-	 *
-	 * @var null|Object
-	 */
-	public $sqlCache = null;
-
-	/**
 	 * Auth middleware object
 	 *
 	 * @var null|Auth
@@ -62,11 +55,11 @@ class HttpRequest
 	public $dataDecode = null;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Session details of a request
@@ -120,18 +113,18 @@ class HttpRequest
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 
-		$this->HOST = $this->api->http['server']['host'];
-		$this->METHOD = $this->api->http['server']['method'];
-		$this->IP = $this->api->http['server']['ip'];
-		if (isset($this->api->http['get'][ROUTE_URL_PARAM])) {
+		$this->HOST = $this->http->iConfig['server']['host'];
+		$this->METHOD = $this->http->iConfig['server']['method'];
+		$this->IP = $this->http->iConfig['server']['ip'];
+		if (isset($this->http->iConfig['get'][ROUTE_URL_PARAM])) {
 			$this->ROUTE = '/' . trim(
-				string: $this->api->http['get'][ROUTE_URL_PARAM],
+				string: $this->http->iConfig['get'][ROUTE_URL_PARAM],
 				characters: '/'
 			);
 		} else {
@@ -141,11 +134,11 @@ class HttpRequest
 		switch (Env::$authMode) {
 			case 'Token':
 				if (
-					isset($this->api->http['header'])
-					&& isset($this->api->http['header']['authorization'])
-					&& $this->api->http['header']['authorization'] !== null
+					isset($this->http->iConfig['header'])
+					&& isset($this->http->iConfig['header']['authorization'])
+					&& $this->http->iConfig['header']['authorization'] !== null
 				) {
-					$this->HTTP_AUTHORIZATION = $this->api->http['header']['authorization'];
+					$this->HTTP_AUTHORIZATION = $this->http->iConfig['header']['authorization'];
 					$this->open = false;
 				} elseif ($this->ROUTE === '/login') {
 					$this->open = false;
@@ -188,7 +181,7 @@ class HttpRequest
 							);
 						}
 					} else {
-						if ($this->api->req->s['uDetails']['uniqueHttpRequestHash'] !== $this->api->http['uniqueHttpRequestHash']) {
+						if ($this->http->req->s['uDetails']['uniqueHttpRequestHash'] !== $this->http->iConfig['uniqueHttpRequestHash']) {
 							throw new \Exception(
 								message: 'Session not supported from this Browser/Device',
 								code: HttpStatus::$PreconditionFailed
@@ -230,10 +223,10 @@ class HttpRequest
 		}
 
 		if (!$this->open) {
-			$this->auth = new Auth($this->api);
+			$this->auth = new Auth($this->http);
 		}
 
-		$this->rParser = new RouteParser($this->api);
+		$this->rParser = new RouteParser($this->http);
 	}
 
 	/**
@@ -303,9 +296,9 @@ class HttpRequest
 			return;
 		}
 
-		$this->s['queryParams'] = &$this->api->http['get'];
+		$this->s['queryParams'] = &$this->http->iConfig['get'];
 		if ($this->METHOD === Constant::$GET) {
-			$this->urlDecode(value: $this->api->http['get']);
+			$this->urlDecode(value: $this->http->iConfig['get']);
 			$this->s['payloadType'] = 'Object';
 		} else {
 			$this->setPayloadStream();
@@ -332,17 +325,17 @@ class HttpRequest
 			case (
 				$this->rParser->routeEndingWithReservedKeywordFlag
 				&& ($this->rParser->routeEndingReservedKeyword === Env::$importRequestRouteKeyword)
-				&& isset($this->api->http['files']['file']['tmp_name'])
+				&& isset($this->http->iConfig['files']['file']['tmp_name'])
 			):
 				$content = $this->formatCsvPayload(
-					csvFile: $this->api->http['files']['file']['tmp_name']
+					csvFile: $this->http->iConfig['files']['file']['tmp_name']
 				);
 				break;
 			case Env::$iRepresentation === 'XML':
-				$content = $this->convertXmlToJson(xmlString: $this->api->http['post']);
+				$content = $this->convertXmlToJson(xmlString: $this->http->iConfig['post']);
 				break;
 			default:
-				$content = $this->api->http['post'];
+				$content = $this->http->iConfig['post'];
 		}
 		$this->payloadStream = fopen(
 			filename: "php://memory",
@@ -429,7 +422,7 @@ class HttpRequest
 	/**
 	 * Function to find payload is an object/array
 	 *
-	 * @param array|string $value Array vales to be decoded. Basically $http['get']
+	 * @param array|string $value Array vales to be decoded. Basically $iConfig['get']
 	 *
 	 * @return void
 	 */
@@ -457,7 +450,7 @@ class HttpRequest
 	 */
 	public function formatCsvPayload($csvFile): string
 	{
-		$dataEncode = new DataEncode(api: $this->api);
+		$dataEncode = new DataEncode(http: $this->http);
 		$dataEncode->init(header: false);
 		$dataEncode->startObject();
 

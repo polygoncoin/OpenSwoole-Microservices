@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\Validation\CustomerValidator;
@@ -44,24 +44,24 @@ class Validator
 	private $v = null;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
-		if (DbCommonFunction::$masterDb[$this->api->req->cId]->dbServerDB === Env::$gDbServerDB) {
-			$this->v = new GlobalValidator($this->api);
+		$this->http = &$http;
+		if (DbCommonFunction::$masterDb[$this->http->req->cId]->dbServerDB === Env::$gDbServerDB) {
+			$this->v = new GlobalValidator($this->http);
 		} else {
-			$this->v = new CustomerValidator($this->api);
+			$this->v = new CustomerValidator($this->http);
 		}
 	}
 
@@ -75,8 +75,8 @@ class Validator
 	public function validate(&$validationConfig): array
 	{
 		if (
-			isset(($this->api->req->s['necessary']))
-			&& count(value: $this->api->req->s['necessary']) > 0
+			isset(($this->http->req->s['necessary']))
+			&& count(value: $this->http->req->s['necessary']) > 0
 		) {
 			if (
 				([$isValidData, $errors] = $this->validateRequired())
@@ -99,9 +99,9 @@ class Validator
 		$isValidData = true;
 		$errors = [];
 		// Required fields payload validation
-		if (!empty($this->api->req->s['necessary']['payload'])) {
-			foreach ($this->api->req->s['necessary']['payload'] as $column => &$arr) {
-				if ($arr['necessary'] && !isset($this->api->req->s['payload'][$column])) {
+		if (!empty($this->http->req->s['necessary']['payload'])) {
+			foreach ($this->http->req->s['necessary']['payload'] as $column => &$arr) {
+				if ($arr['necessary'] && !isset($this->http->req->s['payload'][$column])) {
 					$errors[] = 'Missing necessary payload: ' . $column;
 					$isValidData = false;
 				}

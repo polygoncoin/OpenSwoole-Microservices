@@ -16,7 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\CacheKey;
-use Microservices\App\Common;
+use Microservices\App\Http;
 use Microservices\App\Constant;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
@@ -75,20 +75,20 @@ class Login
 	private $payload = [];
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 	}
 
 	/**
@@ -98,7 +98,7 @@ class Login
 	 */
 	public function init(): bool
 	{
-		$this->api->req->loadCustomerDetails();
+		$this->http->req->loadCustomerDetails();
 
 		return true;
 	}
@@ -112,7 +112,7 @@ class Login
 	public function process(): bool
 	{
 		// Check request method is POST
-		if ($this->api->req->METHOD !== Constant::$POST) {
+		if ($this->http->req->METHOD !== Constant::$POST) {
 			throw new \Exception(
 				message: 'Invalid request method',
 				code: HttpStatus::$NotFound
@@ -130,7 +130,7 @@ class Login
 				prefix: Env::$rateLimitUsersPerIpPrefix,
 				maxRequest: Env::$rateLimitUsersPerIpMaxUsers,
 				secondsWindow: Env::$rateLimitUsersPerIpMaxUsersWindow,
-				key: $this->api->req->IP
+				key: $this->http->req->IP
 			);
 			if ($result['allowed']) {
 				// Process the request
@@ -164,15 +164,15 @@ class Login
 	private function loadPayload(): void
 	{
 		// Check request method is POST
-		if ($this->api->req->METHOD !== Constant::$POST) {
+		if ($this->http->req->METHOD !== Constant::$POST) {
 			throw new \Exception(
 				message: 'Invalid request method',
 				code: HttpStatus::$NotFound
 			);
 		}
 
-		$this->api->req->loadPayload();
-		$this->payload = $this->api->req->dataDecode->get();
+		$this->http->req->loadPayload();
+		$this->payload = $this->http->req->dataDecode->get();
 
 		// Check for necessary conditions variables
 		foreach (['username', 'password'] as $value) {
@@ -195,7 +195,7 @@ class Login
 	 */
 	private function loadUserDetails(): void
 	{
-		$cID = $this->api->req->s['cDetails']['id'];
+		$cID = $this->http->req->s['cDetails']['id'];
 		$customerUserKey = CacheKey::customerUser(
 			cID: $cID,
 			username: $this->payload['username']
@@ -232,23 +232,23 @@ class Login
 	 */
 	private function validateRequestIp(): void
 	{
-		$ipNumber = ip2long(ip: $this->api->req->IP);
+		$ipNumber = ip2long(ip: $this->http->req->IP);
 
 		$cCidrKey = CacheKey::cCidr(
-			cID: $this->api->req->s['cDetails']['id']
+			cID: $this->http->req->s['cDetails']['id']
 		);
 		$gCidrKey = CacheKey::gCidr(
 			gID: $this->uDetails['group_id']
 		);
 		$uCidrKey = CacheKey::uCidr(
-			cID: $this->api->req->s['cDetails']['id'],
+			cID: $this->http->req->s['cDetails']['id'],
 			uID: $this->uDetails['id']
 		);
 		$cidrChecked = false;
 		foreach ([$cCidrKey, $gCidrKey, $uCidrKey] as $key) {
 			if (!$cidrChecked) {
 				$cidrChecked = CommonFunction::checkCacheCidr(
-					IP: $this->api->req->IP,
+					IP: $this->http->req->IP,
 					againstCacheKey: $key
 				);
 			}
@@ -268,7 +268,7 @@ class Login
 			prefix: Env::$rateLimitUserLoginPrefix,
 			maxRequest: Env::$rateLimitMaxUserLoginRequest,
 			secondsWindow: Env::$rateLimitMaxUserLoginRequestWindow,
-			key: $this->api->req->IP . $this->username
+			key: $this->http->req->IP . $this->username
 		);
 		if ($result['allowed']) {
 			// Process the request
@@ -331,7 +331,7 @@ class Login
 	 */
 	private function outputTokenDetails(): void
 	{
-		$uniqueHttpRequestHash = $this->api->http['uniqueHttpRequestHash'];
+		$uniqueHttpRequestHash = $this->http->iConfig['uniqueHttpRequestHash'];
 
 		$userTokenKey = CacheKey::userToken(
 			uID: $this->uDetails['id']
@@ -482,9 +482,9 @@ class Login
 			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constant::$TOKEN_EXPIRY_TIME - $time))
 		];
 
-		$this->api->initResponse();
-		$this->api->res->dataEncode->startObject();
-		$this->api->res->dataEncode->addKeyData(key: 'Results', data: $output);
+		$this->http->initResponse();
+		$this->http->res->dataEncode->startObject();
+		$this->http->res->dataEncode->addKeyData(key: 'Results', data: $output);
 	}
 
 	/**
@@ -496,10 +496,10 @@ class Login
 	 */
 	private function updateDB(&$userData): void
 	{
-		DbCommonFunction::setDbConnection($this->api->req, fetchFrom: 'Master');
-		$this->dbServerObj = &DbCommonFunction::$masterDb[$this->api->req->cId];
+		DbCommonFunction::setDbConnection($this->http->req, fetchFrom: 'Master');
+		$this->dbServerObj = &DbCommonFunction::$masterDb[$this->http->req->cId];
 
-		$usersTable = $this->api->req->usersTable;
+		$usersTable = $this->http->req->usersTable;
 		$this->dbServerObj->execDbQuery(
 			sql: "
 				UPDATE
@@ -522,7 +522,7 @@ class Login
 	 */
 	private function startSession(): void
 	{
-		$uniqueHttpRequestHash = $this->api->http['uniqueHttpRequestHash'];
+		$uniqueHttpRequestHash = $this->http->iConfig['uniqueHttpRequestHash'];
 
 		$userSessionKey = CacheKey::userSessionId(
 			uID: $this->uDetails['id']
@@ -667,9 +667,9 @@ class Login
 			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constant::$TOKEN_EXPIRY_TIME - $time))
 		];
 
-		$this->api->initResponse();
-		$this->api->res->dataEncode->startObject();
-		$this->api->res->dataEncode->addKeyData(key: 'Results', data: $output);
+		$this->http->initResponse();
+		$this->http->res->dataEncode->startObject();
+		$this->http->res->dataEncode->addKeyData(key: 'Results', data: $output);
 	}
 
 	/**

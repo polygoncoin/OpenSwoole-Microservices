@@ -18,7 +18,7 @@ namespace Microservices\App\DataRepresentation;
 use Microservices\App\DataRepresentation\Encode\PhpEncode;
 use Microservices\App\DataRepresentation\Encode\JsonEncode;
 use Microservices\App\DataRepresentation\Encode\XmlEncode;
-use Microservices\App\Common;
+use Microservices\App\Http;
 
 /**
  * Creates Data Representation Output
@@ -42,11 +42,11 @@ class DataEncode
 	private $tempStream = null;
 
 	/**
-	 * Api common Object
+	 * Http Object
 	 *
-	 * @var null|Common
+	 * @var null|Http
 	 */
-	private $api = null;
+	private $http = null;
 
 	/**
 	 * Temporary Stream
@@ -79,11 +79,11 @@ class DataEncode
 	/**
 	 * Constructor
 	 *
-	 * @param Common $api
+	 * @param Http $http
 	 */
-	public function __construct(Common &$api)
+	public function __construct(Http &$http)
 	{
-		$this->api = &$api;
+		$this->http = &$http;
 	}
 
 	/**
@@ -95,20 +95,20 @@ class DataEncode
 	 */
 	public function init($header = true): void
 	{
-		if ($this->api->http['server']['method'] === 'GET') {
-			if ($this->api->res->oRepresentation === 'PHP') {
+		if ($this->http->iConfig['server']['method'] === 'GET') {
+			if ($this->http->res->oRepresentation === 'PHP') {
 				$this->tempStream = [];
 			} else {
 				$this->tempStream = fopen(filename: "php://temp", mode: "rw+b");
 			}
 		} else {
-			if ($this->api->res->oRepresentation === 'PHP') {
+			if ($this->http->res->oRepresentation === 'PHP') {
 				$this->tempStream = [];
 			} else {
 				$this->tempStream = fopen(filename: "php://memory", mode: "rw+b");
 			}
 		}
-		switch ($this->api->res->oRepresentation) {
+		switch ($this->http->res->oRepresentation) {
 			case 'JSON':
 				$this->dataEncoder = new JsonEncode(
 					tempStream: $this->tempStream,
@@ -264,7 +264,7 @@ class DataEncode
 
 		switch (true) {
 			case (
-					$this->api->res->oRepresentation === 'XSLT'
+					$this->http->res->oRepresentation === 'XSLT'
 					&& $this->xsltFile !== null
 					&& file_exists(filename: $this->xsltFile)
 				):
@@ -272,7 +272,7 @@ class DataEncode
 				fclose(stream: $this->tempStream);
 				break;
 			case (
-					$this->api->res->oRepresentation === 'HTML'
+					$this->http->res->oRepresentation === 'HTML'
 					&& $this->htmlFile !== null
 					&& file_exists(filename: $this->htmlFile)
 				):
@@ -280,7 +280,7 @@ class DataEncode
 				fclose(stream: $this->tempStream);
 				break;
 			case (
-					$this->api->res->oRepresentation === 'PHP'
+					$this->http->res->oRepresentation === 'PHP'
 					&& $this->phpFile !== null
 					&& file_exists(filename: $this->phpFile)
 				):
@@ -309,7 +309,7 @@ class DataEncode
 
 		switch (true) {
 			case (
-					$this->api->res->oRepresentation === 'XSLT'
+					$this->http->res->oRepresentation === 'XSLT'
 					&& $this->xsltFile !== null
 					&& file_exists(filename: $this->xsltFile)
 				):
@@ -317,7 +317,7 @@ class DataEncode
 				fclose(stream: $this->tempStream);
 				break;
 			case (
-					$this->api->res->oRepresentation === 'HTML'
+					$this->http->res->oRepresentation === 'HTML'
 					&& $this->htmlFile !== null
 					&& file_exists(filename: $this->htmlFile)
 				):
@@ -325,7 +325,7 @@ class DataEncode
 				fclose(stream: $this->tempStream);
 				break;
 			case (
-					$this->api->res->oRepresentation === 'PHP'
+					$this->http->res->oRepresentation === 'PHP'
 					&& $this->phpFile !== null
 					&& file_exists(filename: $this->phpFile)
 				):

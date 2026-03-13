@@ -16,8 +16,8 @@
 namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\AdminGroup\GET;
 
 return [
-	'countQuery' => "SELECT count(1) as `count` FROM `{$this->api->req->usersTable}` WHERE __WHERE__",
-	'__QUERY__' => "SELECT * FROM `{$this->api->req->usersTable}` WHERE __WHERE__",
+	'countQuery' => "SELECT count(1) as `count` FROM `{$this->http->req->usersTable}` WHERE __WHERE__",
+	'__QUERY__' => "SELECT * FROM `{$this->http->req->usersTable}` WHERE __WHERE__",
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
