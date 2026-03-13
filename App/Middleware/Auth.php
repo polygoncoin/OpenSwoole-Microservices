@@ -98,7 +98,6 @@ class Auth
 				),
 				associative: true
 			);
-			$uniqueHttpRequestHash = $this->api->http['hash'];
 			if (Env::$enableConcurrentLogins) {
 				$userConcurrencyKey = CacheKey::userConcurrency(
 					uID: $this->api->req->s['uDetails']['id']
@@ -122,7 +121,7 @@ class Auth
 					);
 				}
 			} else {
-				if ($this->api->req->s['uDetails']['uniqueHttpRequestHash'] !== $uniqueHttpRequestHash) {
+				if ($this->api->req->s['uDetails']['uniqueHttpRequestHash'] !== $this->api->http['uniqueHttpRequestHash']) {
 					throw new \Exception(
 						message: 'Token not supported from this Browser/Device',
 						code: HttpStatus::$PreconditionFailed

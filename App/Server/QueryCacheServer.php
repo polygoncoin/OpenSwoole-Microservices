@@ -5,11 +5,11 @@
  * php version 8.3
  *
  * @category  Server
- * @package   Sahar.Guru
+ * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/sahar.guru
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 
@@ -23,11 +23,11 @@ use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
  * php version 8.3
  *
  * @category  Query Cache Server
- * @package   Sahar.Guru
+ * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/sahar.guru
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 class QueryCacheServer
@@ -91,8 +91,6 @@ class QueryCacheServer
 	 * @param string      $queryCacheServerPassword Query Cache Server Password
 	 * @param null|string $queryCacheServerDB       Query Cache Server Database
 	 * @param null|string $queryCacheServerTable    Query Cache Server Table
-	 *
-	 * @return QueryCacheServerInterface
 	 */
 	public function __construct(
         $queryCacheServerType,
@@ -110,8 +108,6 @@ class QueryCacheServer
 		$this->queryCacheServerPassword = $queryCacheServerPassword;
 		$this->queryCacheServerDB = $queryCacheServerDB;
 		$this->queryCacheServerTable = $queryCacheServerTable;
-
-		return $this->connectQueryCacheServer();
 	}
 
 	/**
@@ -119,7 +115,7 @@ class QueryCacheServer
 	 *
 	 * @return QueryCacheServerInterface
 	 */
-	public static function connectQueryCacheServer(): QueryCacheServerInterface
+	public function connectQueryCacheServer(): QueryCacheServerInterface
 	{
 		if (
             !in_array(

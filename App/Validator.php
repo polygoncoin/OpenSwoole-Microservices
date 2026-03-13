@@ -58,7 +58,7 @@ class Validator
 	public function __construct(Common &$api)
 	{
 		$this->api = &$api;
-		if (DbFunctions::$masterDb[$this->api->req->cId]->db === Env::$gDbServerDB) {
+		if (DbFunctions::$masterDb[$this->api->req->cId]->dbServerDB === Env::$gDbServerDB) {
 			$this->v = new GlobalValidator($this->api);
 		} else {
 			$this->v = new CustomerValidator($this->api);

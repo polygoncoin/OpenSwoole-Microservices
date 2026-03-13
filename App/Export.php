@@ -16,7 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\Common;
-use Microservices\App\Export\DB;
+use Microservices\App\Export\ExportDatabaseServer;
 use Microservices\App\HttpStatus;
 
 /**
@@ -65,7 +65,7 @@ class Export
 	/**
 	 * DB Object
 	 *
-	 * @var null|Db
+	 * @var null|ExportDatabaseServer
 	 */
 	public $dbServerObj = null;
 
@@ -88,28 +88,34 @@ class Export
 	{
 		$this->api = &$api;
 		$this->dbServerType = $dbServerType;
-		$this->dbServerObj = new DB(dbServerType: $this->dbServerType);
+		$this->dbServerObj = new ExportDatabaseServer(dbServerType: $this->dbServerType);
 	}
 
 	/**
 	 * Initialize
 	 *
-	 * @param string $hostname Hostname
-	 * @param string $port     Port
-	 * @param string $username Username
-	 * @param string $password Password
-	 * @param string $db       Database
+	 * @param string      $dbServerHostname Database Server Hostname
+	 * @param int         $dbServerPort     Database Server Port
+	 * @param string      $dbServerUsername Database Server Username
+	 * @param string      $dbServerPassword Database Server Password
+	 * @param null|string $dbServerDB       Database Server Database
 	 *
 	 * @return void
 	 */
-	public function init($hostname, $port, $username, $password, $db): void
+	public function init(
+		$dbServerHostname,
+		$dbServerPort,
+		$dbServerUsername,
+		$dbServerPassword,
+		$dbServerDB
+	): void
 	{
 		$this->dbServerObj->init(
-			hostname: $hostname,
-			port: $port,
-			username: $username,
-			password: $password,
-			db: $db
+			dbServerHostname: $dbServerHostname,
+			dbServerPort: $dbServerPort,
+			dbServerUsername: $dbServerUsername,
+			dbServerPassword: $dbServerPassword,
+			dbServerDB: $dbServerDB
 		);
 		$this->validateConnection();
 	}

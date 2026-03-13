@@ -55,7 +55,7 @@ class CacheServerOpenKey
 	/**
 	 * Initialize
 	 *
-	 * @param null|int $cID Customer Id
+	 * @param null|int $cID Customer ID
 	 *
 	 * @return void
 	 */

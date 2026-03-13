@@ -16,7 +16,7 @@
 namespace Microservices\App\Export\Container;
 
 use Microservices\App\Env;
-use Microservices\App\Export\DbInterface;
+use Microservices\App\Export\ExportDatabaseServerInterface;
 
 /**
  * Export CSV MySql container.
@@ -30,42 +30,42 @@ use Microservices\App\Export\DbInterface;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class MySql implements DbInterface
+class MySql implements ExportDatabaseServerInterface
 {
 	/**
 	 * Database Server Hostname
 	 *
 	 * @var null|string
 	 */
-	private $hostname = null;
+	private $dbServerHostname = null;
 
 	/**
 	 * Database Server Port
 	 *
-	 * @var null|int
+	 * @var null|string
 	 */
-	private $port = null;
+	private $dbServerPort = null;
 
 	/**
 	 * Database Server Username
 	 *
 	 * @var null|string
 	 */
-	private $username = null;
+	private $dbServerUsername = null;
 
 	/**
 	 * Database Server Password
 	 *
 	 * @var null|string
 	 */
-	private $password = null;
+	private $dbServerPassword = null;
 
 	/**
 	 * Database Server DB
 	 *
 	 * @var null|string
 	 */
-	private $db = null;
+	public $dbServerDB = null;
 
 	/**
 	 * Mysql Customer binary location (One can find this by "which mysql" command)
@@ -98,21 +98,27 @@ class MySql implements DbInterface
 	/**
 	 * Initialize
 	 *
-	 * @param string $hostname Hostname
-	 * @param string $port     Port
-	 * @param string $username Username
-	 * @param string $password Password
-	 * @param string $db       Database
+	 * @param string      $dbServerHostname Database Server Hostname
+	 * @param int         $dbServerPort     Database Server Port
+	 * @param string      $dbServerUsername Database Server Username
+	 * @param string      $dbServerPassword Database Server Password
+	 * @param null|string $dbServerDB       Database Server Database
 	 *
 	 * @return void
 	 */
-	public function init($hostname, $port, $username, $password, $db): void
+	public function init(
+		$dbServerHostname,
+		$dbServerPort,
+		$dbServerUsername,
+		$dbServerPassword,
+		$dbServerDB
+	): void
 	{
-		$this->hostname = $hostname;
-		$this->port = $port;
-		$this->username = $username;
-		$this->password = $password;
-		$this->db = $db;
+		$this->dbServerHostname = $dbServerHostname;
+		$this->dbServerPort = $dbServerPort;
+		$this->dbServerUsername = $dbServerUsername;
+		$this->dbServerPassword = $dbServerPassword;
+		$this->dbServerDB = $dbServerDB;
 	}
 
 	/**

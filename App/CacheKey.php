@@ -56,8 +56,8 @@ class CacheKey
 	/**
 	 * Get Customer User Key
 	 *
-	 * @param int    $cID Customer Id
-	 * @param string $username Hostname
+	 * @param int    $cID      Customer ID
+	 * @param string $username Username
 	 *
 	 * @return string
 	 */
@@ -69,7 +69,7 @@ class CacheKey
 	/**
 	 * Get Group Key
 	 *
-	 * @param int $gID Group Id
+	 * @param int $gID Group ID
 	 *
 	 * @return string
 	 */
@@ -81,7 +81,7 @@ class CacheKey
 	/**
 	 * Get Customer CIDR Key
 	 *
-	 * @param int $cID Customer Id
+	 * @param int $cID Customer ID
 	 *
 	 * @return string
 	 */
@@ -93,7 +93,7 @@ class CacheKey
 	/**
 	 * Get Group CIDR Key
 	 *
-	 * @param int $gID Group Id
+	 * @param int $gID Group ID
 	 *
 	 * @return string
 	 */
@@ -105,8 +105,8 @@ class CacheKey
 	/**
 	 * Get User CIDR Key
 	 *
-	 * @param int $cID Customer Id
-	 * @param int $uID User Id
+	 * @param int $cID Customer ID
+	 * @param int $uID User ID
 	 *
 	 * @return string
 	 */
@@ -130,7 +130,7 @@ class CacheKey
 	/**
 	 * Get User Token Key
 	 *
-	 * @param int $uID User Id
+	 * @param int $uID User ID
 	 *
 	 * @return string
 	 */
@@ -142,7 +142,7 @@ class CacheKey
 	/**
 	 * Get User Token Key
 	 *
-	 * @param int $uID User Id
+	 * @param int $uID User ID
 	 *
 	 * @return string
 	 */
@@ -154,7 +154,7 @@ class CacheKey
 	/**
 	 * Get Key maintaining Concurrency Interval(active session) For Current User
 	 *
-	 * @param int $uID User Id
+	 * @param int $uID User ID
 	 *
 	 * @return string
 	 */

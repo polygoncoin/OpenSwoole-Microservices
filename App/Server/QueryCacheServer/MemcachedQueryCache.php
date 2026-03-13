@@ -5,11 +5,11 @@
  * php version 8.3
  *
  * @category  QueryCache
- * @package   Sahar.Guru
+ * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/sahar.guru
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 
@@ -24,11 +24,11 @@ use Microservices\App\Server\Container\NoSql\Memcached as Cache_Memcached;
  * php version 8.3
  *
  * @category  QueryCache_Memcached
- * @package   Sahar.Guru
+ * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/sahar.guru
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 class MemcachedQueryCache implements QueryCacheServerInterface
@@ -122,12 +122,12 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 
 		try {
 			$this->queryCacheServerObj = new Cache_Memcached(
-				queryCacheServerHostname: $this->queryCacheServerHostname,
-				queryCacheServerPort: $this->queryCacheServerPort,
-				queryCacheServerUsername: $this->queryCacheServerUsername,
-				queryCacheServerPassword: $this->queryCacheServerPassword,
-				queryCacheServerDB: $this->queryCacheServerDB,
-				queryCacheServerTable: $this->queryCacheServerTable
+				cacheServerHostname: $this->queryCacheServerHostname,
+				cacheServerPort: $this->queryCacheServerPort,
+				cacheServerUsername: $this->queryCacheServerUsername,
+				cacheServerPassword: $this->queryCacheServerPassword,
+				cacheServerDB: $this->queryCacheServerDB,
+				cacheServerTable: $this->queryCacheServerTable
 			);
 		} catch (\Exception $e) {
 			throw new \Exception(

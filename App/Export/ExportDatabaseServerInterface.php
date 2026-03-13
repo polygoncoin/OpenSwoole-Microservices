@@ -27,20 +27,20 @@ namespace Microservices\App\Export;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-interface DbInterface
+interface DatabaseServerInterface
 {
 	/**
 	 * Initialize
 	 *
-	 * @param string $hostname Hostname
-	 * @param string $port     Port
-	 * @param string $username Username
-	 * @param string $password Password
-	 * @param string $db       Database
+	 * @param string      $dbServerHostname Database Server Hostname
+	 * @param int         $dbServerPort     Database Server Port
+	 * @param string      $dbServerUsername Database Server Username
+	 * @param string      $dbServerPassword Database Server Password
+	 * @param null|string $dbServerDB       Database Server Database
 	 *
 	 * @return void
 	 */
-	public function init($hostname, $port, $username, $password, $db): void;
+	public function init($dbServerHostname, $dbServerPort, $dbServerUsername, $dbServerPassword, $dbServerDB): void;
 
 	/**
 	 * Returns Shell Command

@@ -331,7 +331,7 @@ class Login
 	 */
 	private function outputTokenDetails(): void
 	{
-		$uniqueHttpRequestHash = $this->api->http['hash'];
+		$uniqueHttpRequestHash = $this->api->http['uniqueHttpRequestHash'];
 
 		$userTokenKey = CacheKey::userToken(
 			uID: $this->uDetails['id']
@@ -522,7 +522,7 @@ class Login
 	 */
 	private function startSession(): void
 	{
-		$uniqueHttpRequestHash = $this->api->http['hash'];
+		$uniqueHttpRequestHash = $this->api->http['uniqueHttpRequestHash'];
 
 		$userSessionKey = CacheKey::userSessionId(
 			uID: $this->uDetails['id']

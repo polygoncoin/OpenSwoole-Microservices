@@ -15,7 +15,7 @@
 
 namespace Microservices\App\Export;
 
-use Microservices\App\Export\DbInterface;
+use Microservices\App\Export\ExportDatabaseServerInterface;
 
 /**
  * Export CSV
@@ -29,7 +29,7 @@ use Microservices\App\Export\DbInterface;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class DB
+class DatabaseServer
 {
 	/**
 	 * Allow creation of temporary file required for streaming large data
@@ -48,7 +48,7 @@ class DB
 	/**
 	 * DB Class Object as per dbServerType
 	 *
-	 * @var null|DbInterface
+	 * @var null|ExportDatabaseServerInterface
 	 */
 	public $dbServerObj = null;
 
@@ -67,28 +67,28 @@ class DB
 	/**
 	 * Initialize
 	 *
-	 * @param string $hostname Hostname
-	 * @param string $port     Port
-	 * @param string $username Username
-	 * @param string $password Password
-	 * @param string $db       Database
+	 * @param string      $dbServerHostname Database Server Hostname
+	 * @param int         $dbServerPort     Database Server Port
+	 * @param string      $dbServerUsername Database Server Username
+	 * @param string      $dbServerPassword Database Server Password
+	 * @param null|string $dbServerDB       Database Server Database
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
 	public function init(
-		$hostname,
-		$port,
-		$username,
-		$password,
-		$db
+		$dbServerHostname,
+		$dbServerPort,
+		$dbServerUsername,
+		$dbServerPassword,
+		$dbServerDB
 	): void {
 		$this->dbServerObj->init(
-			hostname: $hostname,
-			port: $port,
-			username: $username,
-			password: $password,
-			db: $db
+			dbServerHostname: $dbServerHostname,
+			dbServerPort: $dbServerPort,
+			dbServerUsername: $dbServerUsername,
+			dbServerPassword: $dbServerPassword,
+			dbServerDB: $dbServerDB
 		);
 	}
 

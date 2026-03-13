@@ -106,16 +106,16 @@ class CustomerValidator implements ValidatorInterface
 	 *
 	 * @param string $table   Table Name
 	 * @param string $primary Primary Key
-	 * @param int    $id      Primary Id
+	 * @param int    $id      Primary ID
 	 *
 	 * @return int 0/1
 	 */
 	private function getPrimaryCount(&$table, $primary, &$id): int
 	{
-		$db = DbFunctions::$masterDb[$this->api->req->cId]->db;
+		$dbServerDB = DbFunctions::$masterDb[$this->api->req->cId]->dbServerDB;
 		$sql = "
 			SELECT count(1) as `count`
-			FROM `{$db}`.`{$table}`
+			FROM `{$dbServerDB}`.`{$table}`
 			WHERE `{$primary}` = ?
 		";
 		$params = [$id];

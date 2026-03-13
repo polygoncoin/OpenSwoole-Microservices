@@ -5,11 +5,11 @@
  * php version 8.3
  *
  * @category  Server
- * @package   Sahar.Guru
+ * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/sahar.guru
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 
@@ -23,11 +23,11 @@ use Microservices\App\Server\CacheServer\CacheServerInterface;
  * php version 8.3
  *
  * @category  Cache Server
- * @package   Sahar.Guru
+ * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/sahar.guru
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 class CacheServer
@@ -91,8 +91,6 @@ class CacheServer
 	 * @param string      $cacheServerPassword Cache Server Password
 	 * @param null|string $cacheServerDB       Cache Server Database
 	 * @param null|string $cacheServerTable    Cache Server Table
-	 *
-	 * @return CacheServerInterface
 	 */
 	public function __construct(
         $cacheServerType,
@@ -110,8 +108,6 @@ class CacheServer
 		$this->cacheServerPassword = $cacheServerPassword;
 		$this->cacheServerDB = $cacheServerDB;
 		$this->cacheServerTable = $cacheServerTable;
-
-		return $this->connectCacheServer();
 	}
 
 	/**
@@ -119,7 +115,7 @@ class CacheServer
 	 *
 	 * @return CacheServerInterface
 	 */
-	public static function connectCacheServer(): CacheServerInterface
+	public function connectCacheServer(): CacheServerInterface
 	{
 		if (
             !in_array(

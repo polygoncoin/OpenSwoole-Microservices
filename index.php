@@ -20,6 +20,7 @@ use Openswoole\Http\Response;
 
 use Microservices\App\Constants;
 use Microservices\App\Env;
+use Microservices\App\Functions;
 use Microservices\App\Start;
 use Microservices\TestCases\Tests;
 
@@ -96,6 +97,14 @@ $server->on(
 		$http['get'] = &$request->get;
 		$http['post'] = $request->rawContent();
 		$http['files'] = &$request->files;
+		$http['uniqueHttpRequestHash'] = Functions::uniqueHttpRequestHash(
+			hashArray: [
+				// $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '',
+				// $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
+				// $_SERVER['HTTP_ACCEPT'] ?? '',
+				// $_SERVER['HTTP_USER_AGENT'] ?? ''
+			]
+		);
 
 		if (
 			isset($http['get'][ROUTE_URL_PARAM])

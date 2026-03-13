@@ -5,11 +5,11 @@
  * php version 8.3
  *
  * @category  Database
- * @package   Sahar.Guru
+ * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/sahar.guru
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 
@@ -23,11 +23,11 @@ use Microservices\App\Server\Container\Sql\PostgreSql as DB_PostgreSql;
  * php version 8.3
  *
  * @category  Database_PostgreSql
- * @package   Sahar.Guru
+ * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/sahar.guru
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 class PostgreSqlDatabase extends DB_PostgreSql implements DatabaseServerInterface

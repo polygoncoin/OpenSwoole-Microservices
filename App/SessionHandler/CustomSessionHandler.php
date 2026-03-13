@@ -63,7 +63,7 @@ class CustomSessionHandler implements
 	private $foundSession = null;
 
 	/**
-	 * Session Id
+	 * Session ID
 	 *
 	 * @var string
 	 */
@@ -205,7 +205,7 @@ class CustomSessionHandler implements
 	 *
 	 * A callable with the following signature
 	 *
-	 * @param string $sessionId   Session Id
+	 * @param string $sessionId   Session ID
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool true for success or false for failure

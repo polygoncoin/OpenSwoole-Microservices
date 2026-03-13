@@ -5,11 +5,11 @@
  * php version 8.3
  *
  * @category  Server
- * @package   Sahar.Guru
+ * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/sahar.guru
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
 
@@ -23,14 +23,14 @@ use Microservices\App\Server\DatabaseServer\DatabaseServerInterface;
  * php version 8.3
  *
  * @category  Database Server
- * @package   Sahar.Guru
+ * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/sahar.guru
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class DbServer
+class DatabaseServer
 {
 	/**
 	 * Database Server Type
@@ -109,7 +109,7 @@ class DbServer
 	 *
 	 * @return DatabaseServerInterface
 	 */
-	public static function connectDatabaseServer(): DatabaseServerInterface
+	public function connectDatabaseServer(): DatabaseServerInterface
 	{
 		if (!in_array($this->dbServerType, ['MySql', 'PostgreSql'])) {
 			throw new \Exception(

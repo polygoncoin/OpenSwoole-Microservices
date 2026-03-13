@@ -74,9 +74,9 @@ class CacheServerAuthKey
 	/**
 	 * Initialize
 	 *
-	 * @param null|int $cID Customer Id
-	 * @param null|int $gID  Group Id
-	 * @param null|int $uID   User Id
+	 * @param null|int $cID Customer ID
+	 * @param null|int $gID  Group ID
+	 * @param null|int $uID   User ID
 	 *
 	 * @return void
 	 */

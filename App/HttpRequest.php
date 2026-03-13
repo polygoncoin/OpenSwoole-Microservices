@@ -104,7 +104,7 @@ class HttpRequest
 	public $rParser = null;
 
 	/**
-	 * Customer Id
+	 * Customer ID
 	 *
 	 * @var null|int
 	 */
@@ -188,7 +188,7 @@ class HttpRequest
 							);
 						}
 					} else {
-						if ($this->api->req->s['uDetails']['uniqueHttpRequestHash'] !== $uniqueHttpRequestHash) {
+						if ($this->api->req->s['uDetails']['uniqueHttpRequestHash'] !== $this->api->http['uniqueHttpRequestHash']) {
 							throw new \Exception(
 								message: 'Session not supported from this Browser/Device',
 								code: HttpStatus::$PreconditionFailed
