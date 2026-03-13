@@ -36,18 +36,18 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 {
 	// "mongodb://<username>:<password>@<cluster-url>:<port>/<database-name>
 	// ?retryWrites=true&w=majority"
-	public $MONGODB_URI = null;
+	public $mongoDbServerUri = null;
 
-	public $MONGODB_HOSTNAME = null;
-	public $MONGODB_PORT = null;
-	public $MONGODB_USERNAME = null;
-	public $MONGODB_PASSWORD = null;
-	public $MONGODB_DATABASE = null;
-	public $MONGODB_COLLECTION = null;
+	public $mongoDbServerHostname = null;
+	public $mongoDbServerPort = null;
+	public $mongoDbServerUsername = null;
+	public $mongoDbServerPassword = null;
+	public $mongoDbServerDB = null;
+	public $mongoDbServerCollection = null;
 
-	private $mongo = null;
-	private $dbServerObj = null;
-	private $collection = null;
+	private $mongoDbServerObj = null;
+	private $dbObj = null;
+	private $collectionObj = null;
 
 	/**
 	 * Initialize
@@ -74,7 +74,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 		try {
 			$filter = ['sessionId' => $sessionId];
 
-			if ($document = $this->collection->findOne($filter)) {
+			if ($document = $this->collectionObj->findOne($filter)) {
 				$lastAccessed = Env::$timestamp - $this->sessionMaxLifetime;
 				if ($document['lastAccessed'] > $lastAccessed) {
 					return $this->decryptData(cipherText: $document['sessionData']);
@@ -102,7 +102,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 				"lastAccessed" => Env::$timestamp,
 				"sessionData" => $this->encryptData(plainText: $sessionData)
 			];
-			if ($this->collection->insertOne($document)) {
+			if ($this->collectionObj->insertOne($document)) {
 				return true;
 			}
 		} catch (\Exception $e) {
@@ -129,7 +129,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 					"sessionData" => $this->encryptData(plainText: $sessionData)
 				]
 			];
-			if ($this->collection->updateOne($filter, $update)) {
+			if ($this->collectionObj->updateOne($filter, $update)) {
 				return true;
 			}
 		} catch (\Exception $e) {
@@ -156,7 +156,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 				]
 			];
 
-			if ($this->collection->updateOne($filter, $update)) {
+			if ($this->collectionObj->updateOne($filter, $update)) {
 				return true;
 			}
 		} catch (\Exception $e) {
@@ -189,7 +189,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 		try {
 			$filter = ['sessionId' => $sessionId];
 
-			if ($this->collection->deleteOne($filter)) {
+			if ($this->collectionObj->deleteOne($filter)) {
 				return true;
 			}
 		} catch (\Exception $e) {
@@ -205,7 +205,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	public function closeSession(): void
 	{
-		$this->mongo = null;
+		$this->mongoDbServerObj = null;
 	}
 
 	/**
@@ -216,21 +216,21 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	private function connect(): void
 	{
 		try {
-			if ($this->MONGODB_URI === null) {
+			if ($this->mongoDbServerUri === null) {
 				$UP = '';
-				if ($this->MONGODB_USERNAME !== null && $this->MONGODB_PASSWORD !== null) {
-					$UP = "{$this->MONGODB_USERNAME}:{$this->MONGODB_PASSWORD}@";
+				if ($this->mongoDbServerUsername !== null && $this->mongoDbServerPassword !== null) {
+					$UP = "{$this->mongoDbServerUsername}:{$this->mongoDbServerPassword}@";
 				}
-				$this->MONGODB_URI = 'mongodb://' . $UP
-					. $this->MONGODB_HOSTNAME . ':' . $this->MONGODB_PORT;
+				$this->mongoDbServerUri = 'mongodb://' . $UP
+					. $this->mongoDbServerHostname . ':' . $this->mongoDbServerPort;
 			}
-			$this->mongo = new \MongoDB\Customer($this->MONGODB_URI);
+			$this->mongoDbServerObj = new \MongoDB\Customer($this->mongoDbServerUri);
 
 			// Select a database
-			$this->dbServerObj = $this->mongo->selectDatabase($this->MONGODB_DATABASE);
+			$this->dbObj = $this->mongoDbServerObj->selectDatabase($this->mongoDbServerDB);
 
 			// Select a collection
-			$this->collection = $this->dbServerObj->selectCollection($this->MONGODB_COLLECTION);
+			$this->collectionObj = $this->dbObj->selectCollection($this->mongoDbServerCollection);
 		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}

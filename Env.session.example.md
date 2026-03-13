@@ -29,55 +29,55 @@ ENCRYPTION_IV='HnPG5az9Xaxam9G9tMuRaw=='
 
 ```ini
 ; MySQL
-MYSQL_HOSTNAME='localhost'
-MYSQL_PORT=3306
-MYSQL_USERNAME='root'
-MYSQL_PASSWORD='shames11'
-MYSQL_DATABASE='session_db'
-MYSQL_TABLE='sessions'
+mySqlServerHostname='localhost'
+mySqlServerPort=3306
+mySqlServerUsername='root'
+mySqlServerPassword='shames11'
+mySqlServerDB='session_db'
+mySqlServerTable='sessions'
 ```
 
 ## PostgreSQL based PHP Session related configs
 
 ```ini
 ; PostgreSQL
-PGSQL_HOSTNAME='localhost'
-PGSQL_PORT=5432
-PGSQL_USERNAME=''
-PGSQL_PASSWORD=''
-PGSQL_DATABASE='session_db'
-PGSQL_TABLE='sessions'
+pgSqlServerHostname='localhost'
+pgSqlServerPort=5432
+pgSqlServerUsername=''
+pgSqlServerPassword=''
+pgSqlServerDB='session_db'
+pgSqlServerTable='sessions'
 ```
 
 ## MongoDB based PHP Session related configs
 
 ```ini
 ; MongoDB
-MONGODB_HOSTNAME='localhost'
-MONGODB_PORT=27017
-MONGODB_USERNAME=''
-MONGODB_PASSWORD=''
-MONGODB_DATABASE='session_db'
-MONGODB_COLLECTION='sessions'
+mongoDbServerHostname='localhost'
+mongoDbServerPort=27017
+mongoDbServerUsername=''
+mongoDbServerPassword=''
+mongoDbServerDB='session_db'
+mongoDbServerCollection='sessions'
 ```
 
 ## Redis based PHP Session related configs
 
 ```ini
 ; Redis
-REDIS_HOSTNAME='localhost'
-REDIS_PORT=6379
-REDIS_USERNAME=''
-REDIS_PASSWORD=''
-REDIS_DATABASE=0;
+redisServerHostname='localhost'
+redisServerPort=6379
+redisServerUsername=''
+redisServerPassword=''
+redisServerDB=0;
 ```
 
 ## Memcached based PHP Session related configs
 
 ```ini
 ; Memcached
-MEMCACHED_HOSTNAME='localhost'
-MEMCACHED_PORT=11211
+memcachedServerHostname='localhost'
+memcachedServerPort=11211
 ```
 
 ## Cookie based PHP Session related configs

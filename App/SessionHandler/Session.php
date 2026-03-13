@@ -64,39 +64,39 @@ class Session
 	public static $ENCRYPTION_IV = null;
 
 	/* MySql Session config */
-	public static $MYSQL_HOSTNAME = '';
-	public static $MYSQL_PORT = 3306;
-	public static $MYSQL_USERNAME = '';
-	public static $MYSQL_PASSWORD = '';
-	public static $MYSQL_DATABASE = '';
-	public static $MYSQL_TABLE = '';
+	public static $mySqlServerHostname = '';
+	public static $mySqlServerPort = 3306;
+	public static $mySqlServerUsername = '';
+	public static $mySqlServerPassword = '';
+	public static $mySqlServerDB = '';
+	public static $mySqlServerTable = '';
 
 	/* PostgreSql Session config */
-	public static $PGSQL_HOSTNAME = '';
-	public static $PGSQL_PORT = 5432;
-	public static $PGSQL_USERNAME = null;
-	public static $PGSQL_PASSWORD = null;
-	public static $PGSQL_DATABASE = '';
-	public static $PGSQL_TABLE = '';
+	public static $pgSqlServerHostname = '';
+	public static $pgSqlServerPort = 5432;
+	public static $pgSqlServerUsername = null;
+	public static $pgSqlServerPassword = null;
+	public static $pgSqlServerDB = '';
+	public static $pgSqlServerTable = '';
 
 	/* MongoDb Session config */
-	public static $MONGODB_HOSTNAME = '';
-	public static $MONGODB_PORT = 27017;
-	public static $MONGODB_USERNAME = null;
-	public static $MONGODB_PASSWORD = null;
-	public static $MONGODB_DATABASE = '';
-	public static $MONGODB_COLLECTION = '';
+	public static $mongoDbServerHostname = '';
+	public static $mongoDbServerPort = 27017;
+	public static $mongoDbServerUsername = null;
+	public static $mongoDbServerPassword = null;
+	public static $mongoDbServerDB = '';
+	public static $mongoDbServerCollection = '';
 
 	/* Redis Session config */
-	public static $REDIS_HOSTNAME = '';
-	public static $REDIS_PORT = 6379;
-	public static $REDIS_USERNAME = null;
-	public static $REDIS_PASSWORD = null;
-	public static $REDIS_DATABASE = 0;
+	public static $redisServerHostname = '';
+	public static $redisServerPort = 6379;
+	public static $redisServerUsername = null;
+	public static $redisServerPassword = null;
+	public static $redisServerDB = 0;
 
 	/* Memcached Session config */
-	public static $MEMCACHED_HOSTNAME = '';
-	public static $MEMCACHED_PORT = 11211;
+	public static $memcachedServerHostname = '';
+	public static $memcachedServerPort = 11211;
 
 	/**
 	 * Session Id Cookie name
@@ -185,70 +185,70 @@ class Session
 				}
 				break;
 			case 'MySql':
-				if (empty(self::$MYSQL_HOSTNAME)) {
-					die('Invalid "MYSQL_HOSTNAME"');
+				if (empty(self::$mySqlServerHostname)) {
+					die('Invalid "mySqlServerHostname"');
 				}
-				if (empty(self::$MYSQL_PORT)) {
-					die('Invalid "MYSQL_PORT"');
+				if (empty(self::$mySqlServerPort)) {
+					die('Invalid "mySqlServerPort"');
 				}
-				if (empty(self::$MYSQL_USERNAME)) {
-					die('Invalid "MYSQL_USERNAME"');
+				if (empty(self::$mySqlServerUsername)) {
+					die('Invalid "mySqlServerUsername"');
 				}
-				if (empty(self::$MYSQL_PASSWORD)) {
-					die('Invalid "MYSQL_PASSWORD"');
+				if (empty(self::$mySqlServerPassword)) {
+					die('Invalid "mySqlServerPassword"');
 				}
-				if (empty(self::$MYSQL_DATABASE)) {
-					die('Invalid "MYSQL_DATABASE"');
+				if (empty(self::$mySqlServerDB)) {
+					die('Invalid "mySqlServerDB"');
 				}
-				if (empty(self::$MYSQL_TABLE)) {
-					die('Invalid "MYSQL_TABLE"');
+				if (empty(self::$mySqlServerTable)) {
+					die('Invalid "mySqlServerTable"');
 				}
 				break;
 			case 'PostgreSql':
-				if (empty(self::$PGSQL_HOSTNAME)) {
-					die('Invalid "PGSQL_HOSTNAME"');
+				if (empty(self::$pgSqlServerHostname)) {
+					die('Invalid "pgSqlServerHostname"');
 				}
-				if (empty(self::$PGSQL_PORT)) {
-					die('Invalid "PGSQL_PORT"');
+				if (empty(self::$pgSqlServerPort)) {
+					die('Invalid "pgSqlServerPort"');
 				}
-				if (empty(self::$PGSQL_DATABASE)) {
-					die('Invalid "PGSQL_DATABASE"');
+				if (empty(self::$pgSqlServerDB)) {
+					die('Invalid "pgSqlServerDB"');
 				}
-				if (empty(self::$PGSQL_TABLE)) {
-					die('Invalid "PGSQL_TABLE"');
+				if (empty(self::$pgSqlServerTable)) {
+					die('Invalid "pgSqlServerTable"');
 				}
 				break;
 			case 'MongoDb':
-				if (empty(self::$MONGODB_HOSTNAME)) {
-					die('Invalid "MONGODB_HOSTNAME"');
+				if (empty(self::$mongoDbServerHostname)) {
+					die('Invalid "mongoDbServerHostname"');
 				}
-				if (empty(self::$MONGODB_PORT)) {
-					die('Invalid "MONGODB_PORT"');
+				if (empty(self::$mongoDbServerPort)) {
+					die('Invalid "mongoDbServerPort"');
 				}
-				if (empty(self::$MONGODB_DATABASE)) {
-					die('Invalid "MONGODB_DATABASE"');
+				if (empty(self::$mongoDbServerDB)) {
+					die('Invalid "mongoDbServerDB"');
 				}
-				if (empty(self::$MONGODB_COLLECTION)) {
-					die('Invalid "MONGODB_COLLECTION"');
+				if (empty(self::$mongoDbServerCollection)) {
+					die('Invalid "mongoDbServerCollection"');
 				}
 				break;
 			case 'Redis':
-				if (empty(self::$REDIS_HOSTNAME)) {
-					die('Invalid "REDIS_HOSTNAME"');
+				if (empty(self::$redisServerHostname)) {
+					die('Invalid "redisServerHostname"');
 				}
-				if (empty(self::$REDIS_PORT)) {
-					die('Invalid "REDIS_PORT"');
+				if (empty(self::$redisServerPort)) {
+					die('Invalid "redisServerPort"');
 				}
-				if (empty(self::$REDIS_DATABASE) && self::$REDIS_DATABASE != 0) {
-					die('Invalid "REDIS_DATABASE"');
+				if (empty(self::$redisServerDB) && self::$redisServerDB != 0) {
+					die('Invalid "redisServerDB"');
 				}
 				break;
 			case 'Memcached':
-				if (empty(self::$MEMCACHED_HOSTNAME)) {
-					die('Invalid "MEMCACHED_HOSTNAME"');
+				if (empty(self::$memcachedServerHostname)) {
+					die('Invalid "memcachedServerHostname"');
 				}
-				if (empty(self::$MEMCACHED_PORT)) {
-					die('Invalid "MEMCACHED_PORT"');
+				if (empty(self::$memcachedServerPort)) {
+					die('Invalid "memcachedServerPort"');
 				}
 				break;
 		}
@@ -269,44 +269,44 @@ class Session
 		// Setting required common parameters
 		self::$sessionContainer->sessionOptions = self::$options;
 		self::$sessionContainer->sessionName = self::$sessionName;
-		self::$sessionContainer->sessionMaxLifetime = self::$sessionMaxLifetime;
+		self::$sessionContainer->sessionMaxLifetime = (int)self::$sessionMaxLifetime;
 
 		// Setting required parameters as per sessionMode
 		switch (self::$sessionMode) {
 			case 'MySql':
-				self::$sessionContainer->MYSQL_HOSTNAME = self::$MYSQL_HOSTNAME;
-				self::$sessionContainer->MYSQL_PORT = self::$MYSQL_PORT;
-				self::$sessionContainer->MYSQL_USERNAME = self::$MYSQL_USERNAME;
-				self::$sessionContainer->MYSQL_PASSWORD = self::$MYSQL_PASSWORD;
-				self::$sessionContainer->MYSQL_DATABASE = self::$MYSQL_DATABASE;
-				self::$sessionContainer->MYSQL_TABLE = self::$MYSQL_TABLE;
+				self::$sessionContainer->mySqlServerHostname = self::$mySqlServerHostname;
+				self::$sessionContainer->mySqlServerPort = (int)self::$mySqlServerPort;
+				self::$sessionContainer->mySqlServerUsername = self::$mySqlServerUsername;
+				self::$sessionContainer->mySqlServerPassword = self::$mySqlServerPassword;
+				self::$sessionContainer->mySqlServerDB = self::$mySqlServerDB;
+				self::$sessionContainer->mySqlServerTable = self::$mySqlServerTable;
 				break;
 			case 'PostgreSql':
-				self::$sessionContainer->PGSQL_HOSTNAME = self::$PGSQL_HOSTNAME;
-				self::$sessionContainer->PGSQL_PORT = self::$PGSQL_PORT;
-				self::$sessionContainer->PGSQL_USERNAME = self::$PGSQL_USERNAME;
-				self::$sessionContainer->PGSQL_PASSWORD = self::$PGSQL_PASSWORD;
-				self::$sessionContainer->PGSQL_DATABASE = self::$PGSQL_DATABASE;
-				self::$sessionContainer->PGSQL_TABLE = self::$PGSQL_TABLE;
+				self::$sessionContainer->pgSqlServerHostname = self::$pgSqlServerHostname;
+				self::$sessionContainer->pgSqlServerPort = (int)self::$pgSqlServerPort;
+				self::$sessionContainer->pgSqlServerUsername = self::$pgSqlServerUsername;
+				self::$sessionContainer->pgSqlServerPassword = self::$pgSqlServerPassword;
+				self::$sessionContainer->pgSqlServerDB = self::$pgSqlServerDB;
+				self::$sessionContainer->pgSqlServerTable = self::$pgSqlServerTable;
 				break;
 			case 'MongoDb':
-				self::$sessionContainer->MONGODB_HOSTNAME = self::$MONGODB_HOSTNAME;
-				self::$sessionContainer->MONGODB_PORT = self::$MONGODB_PORT;
-				self::$sessionContainer->MONGODB_USERNAME = self::$MONGODB_USERNAME;
-				self::$sessionContainer->MONGODB_PASSWORD = self::$MONGODB_PASSWORD;
-				self::$sessionContainer->MONGODB_DATABASE = self::$MONGODB_DATABASE;
-				self::$sessionContainer->MONGODB_COLLECTION = self::$MONGODB_COLLECTION;
+				self::$sessionContainer->mongoDbServerHostname = self::$mongoDbServerHostname;
+				self::$sessionContainer->mongoDbServerPort = (int)self::$mongoDbServerPort;
+				self::$sessionContainer->mongoDbServerUsername = self::$mongoDbServerUsername;
+				self::$sessionContainer->mongoDbServerPassword = self::$mongoDbServerPassword;
+				self::$sessionContainer->mongoDbServerDB = self::$mongoDbServerDB;
+				self::$sessionContainer->mongoDbServerCollection = self::$mongoDbServerCollection;
 				break;
 			case 'Redis':
-				self::$sessionContainer->REDIS_HOSTNAME = self::$REDIS_HOSTNAME;
-				self::$sessionContainer->REDIS_PORT = self::$REDIS_PORT;
-				self::$sessionContainer->REDIS_USERNAME = self::$REDIS_USERNAME;
-				self::$sessionContainer->REDIS_PASSWORD = self::$REDIS_PASSWORD;
-				self::$sessionContainer->REDIS_DATABASE = self::$REDIS_DATABASE;
+				self::$sessionContainer->redisServerHostname = self::$redisServerHostname;
+				self::$sessionContainer->redisServerPort = (int)self::$redisServerPort;
+				self::$sessionContainer->redisServerUsername = self::$redisServerUsername;
+				self::$sessionContainer->redisServerPassword = self::$redisServerPassword;
+				self::$sessionContainer->redisServerDB = self::$redisServerDB;
 				break;
 			case 'Memcached':
-				self::$sessionContainer->MEMCACHED_HOSTNAME = self::$MEMCACHED_HOSTNAME;
-				self::$sessionContainer->MEMCACHED_PORT = self::$MEMCACHED_PORT;
+				self::$sessionContainer->memcachedServerHostname = self::$memcachedServerHostname;
+				self::$sessionContainer->memcachedServerPort = (int)self::$memcachedServerPort;
 				break;
 			case 'Cookie':
 				self::$sessionContainer->sessionDataName = self::$sessionDataName;
@@ -361,9 +361,9 @@ class Session
 		}
 
 		if (isset($options['gc_maxlifetime'])) {
-			self::$sessionMaxLifetime = $options['gc_maxlifetime'];
+			self::$sessionMaxLifetime = (int)$options['gc_maxlifetime'];
 		} else {
-			self::$sessionMaxLifetime = Constant::$TOKEN_EXPIRY_TIME;
+			self::$sessionMaxLifetime = (int)Constant::$TOKEN_EXPIRY_TIME;
 		}
 
 		self::$options = [ // always required.
@@ -371,7 +371,7 @@ class Session
 			'name' => self::$sessionName,
 			'serialize_handler' => 'php_serialize',
 			'lazy_write' => true,
-			'gc_maxlifetime' => self::$sessionMaxLifetime,
+			'gc_maxlifetime' => (int)self::$sessionMaxLifetime,
 			'cookie_lifetime' => 0,
 			'cookie_path' => '/',
 			'cookie_domain' => '',

@@ -34,14 +34,14 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	SessionContainerInterface
 {
-	public $MYSQL_HOSTNAME = null;
-	public $MYSQL_PORT = null;
-	public $MYSQL_USERNAME = null;
-	public $MYSQL_PASSWORD = null;
-	public $MYSQL_DATABASE = null;
-	public $MYSQL_TABLE = null;
+	public $mySqlServerHostname = null;
+	public $mySqlServerPort = null;
+	public $mySqlServerUsername = null;
+	public $mySqlServerPassword = null;
+	public $mySqlServerDB = null;
+	public $mySqlServerTable = null;
 
-	private $pdo = null;
+	private $mySqlServerObj = null;
 
 	/**
 	 * Initialize
@@ -67,7 +67,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	{
 		$sql = "
 			SELECT `sessionData`
-			FROM `{$this->MYSQL_DATABASE}`.`{$this->MYSQL_TABLE}`
+			FROM `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
 			WHERE `sessionId` = :sessionId AND lastAccessed > :lastAccessed
 		";
 		$params = [
@@ -94,7 +94,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	public function setSession($sessionId, $sessionData): bool|int
 	{
 		$sql = "
-			INSERT INTO `{$this->MYSQL_DATABASE}`.`{$this->MYSQL_TABLE}`
+			INSERT INTO `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
 			SET
 				`sessionData` = :sessionData,
 				`lastAccessed` = :lastAccessed,
@@ -120,7 +120,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	public function updateSession($sessionId, $sessionData): bool|int
 	{
 		$sql = "
-			UPDATE `{$this->MYSQL_DATABASE}`.`{$this->MYSQL_TABLE}`
+			UPDATE `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
 			SET
 				`sessionData` = :sessionData,
 				`lastAccessed` = :lastAccessed
@@ -147,7 +147,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	public function touchSession($sessionId, $sessionData): bool
 	{
 		$sql = "
-			UPDATE `{$this->MYSQL_DATABASE}`.`{$this->MYSQL_TABLE}`
+			UPDATE `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
 			SET `lastAccessed` = :lastAccessed
 			WHERE `sessionId` = :sessionId
 		";
@@ -169,7 +169,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	{
 		$lastAccessed = Env::$timestamp - $sessionMaxLifetime;
 		$sql = "
-			DELETE FROM `{$this->MYSQL_DATABASE}`.`{$this->MYSQL_TABLE}`
+			DELETE FROM `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
 			WHERE `lastAccessed` < :lastAccessed
 		";
 		$params = [
@@ -188,7 +188,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	public function deleteSession($sessionId): bool
 	{
 		$sql = "
-			DELETE FROM `{$this->MYSQL_DATABASE}`.`{$this->MYSQL_TABLE}`
+			DELETE FROM `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
 			WHERE `sessionId` = :sessionId
 		";
 		$params = [
@@ -204,7 +204,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	public function closeSession(): void
 	{
-		$this->pdo = null;
+		$this->mySqlServerObj = null;
 	}
 
 	/**
@@ -215,10 +215,10 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	private function connect(): void
 	{
 		try {
-			$this->pdo = new \PDO(
-				dsn: "mysql:host={$this->MYSQL_HOSTNAME}",
-				username: $this->MYSQL_USERNAME,
-				password: $this->MYSQL_PASSWORD,
+			$this->mySqlServerObj = new \PDO(
+				dsn: "mysql:host={$this->mySqlServerHostname}",
+				username: $this->mySqlServerUsername,
+				password: $this->mySqlServerPassword,
 				options: [
 					\PDO::ATTR_EMULATE_PREPARES => false,
 				]
@@ -240,7 +240,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	{
 		$row = [];
 		try {
-			$stmt = $this->pdo->prepare(
+			$stmt = $this->mySqlServerObj->prepare(
 				query: $sql,
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
@@ -274,7 +274,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	private function execSql($sql, $params = []): bool
 	{
 		try {
-			$stmt = $this->pdo->prepare(
+			$stmt = $this->mySqlServerObj->prepare(
 				query: $sql,
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);

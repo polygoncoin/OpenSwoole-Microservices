@@ -33,13 +33,13 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 class RedisBasedSessionContainer extends SessionContainerHelper implements
 	SessionContainerInterface
 {
-	public $REDIS_HOSTNAME = null;
-	public $REDIS_PORT = null;
-	public $REDIS_USERNAME = null;
-	public $REDIS_PASSWORD = null;
-	public $REDIS_DATABASE = null;
+	public $redisServerHostname = null;
+	public $redisServerPort = null;
+	public $redisServerUsername = null;
+	public $redisServerPassword = null;
+	public $redisServerDB = null;
 
-	private $redis = null;
+	private $redisServerObj = null;
 
 	/**
 	 * Initialize
@@ -65,8 +65,8 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	{
 		try {
 			if (
-				$this->redis->exists($sessionId)
-				&& ($data = $this->redis->get($sessionId))
+				$this->redisServerObj->exists($sessionId)
+				&& ($data = $this->redisServerObj->get($sessionId))
 			) {
 				return $this->decryptData(cipherText: $data);
 			}
@@ -88,7 +88,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	{
 		try {
 			if (
-				$this->redis->set(
+				$this->redisServerObj->set(
 					$sessionId,
 					$this->encryptData(plainText: $sessionData),
 					$this->sessionMaxLifetime
@@ -129,7 +129,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	public function touchSession($sessionId, $sessionData): bool
 	{
 		try {
-			if ($this->redis->expire($sessionId, $this->sessionMaxLifetime)) {
+			if ($this->redisServerObj->expire($sessionId, $this->sessionMaxLifetime)) {
 				return true;
 			}
 		} catch (\Exception $e) {
@@ -160,7 +160,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	public function deleteSession($sessionId): bool
 	{
 		try {
-			if ($this->redis->del($sessionId)) {
+			if ($this->redisServerObj->del($sessionId)) {
 				return true;
 			}
 		} catch (\Exception $e) {
@@ -176,7 +176,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	public function closeSession(): void
 	{
-		$this->redis = null;
+		$this->redisServerObj = null;
 	}
 
 	/**
@@ -195,25 +195,25 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 			}
 
 			$connParams = [
-				'host' => $this->REDIS_HOSTNAME,
-				'port' => (int)$this->REDIS_PORT,
+				'host' => $this->redisServerHostname,
+				'port' => (int)$this->redisServerPort,
 				'connectTimeout' => 2.5
 			];
 
 			if (
-				$this->REDIS_USERNAME !== null
-				&& $this->REDIS_PASSWORD !== null
+				$this->redisServerUsername !== null
+				&& $this->redisServerPassword !== null
 			) {
 				$connParams['auth'] = [
-					$this->REDIS_USERNAME,
-					$this->REDIS_PASSWORD
+					$this->redisServerUsername,
+					$this->redisServerPassword
 				];
 			}
 
-			$this->redis = new \Redis( // phpcs:ignore
+			$this->redisServerObj = new \Redis( // phpcs:ignore
 				$connParams
 			);
-			$this->redis->select($this->REDIS_DATABASE);
+			$this->redisServerObj->select($this->redisServerDB);
 		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}

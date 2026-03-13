@@ -33,10 +33,10 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	SessionContainerInterface
 {
-	public $MEMCACHED_HOSTNAME = null;
-	public $MEMCACHED_PORT = null;
+	public $memcachedServerHostname = null;
+	public $memcachedServerPort = null;
 
-	private $memcacheD = null;
+	private $memcachedServerObj = null;
 
 	/**
 	 * Initialize
@@ -61,7 +61,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	public function getSession($sessionId): bool|string
 	{
 		try {
-			if ($data = $this->memcacheD->get($sessionId)) {
+			if ($data = $this->memcachedServerObj->get($sessionId)) {
 				return $this->decryptData(cipherText: $data);
 			}
 		} catch (\Exception $e) {
@@ -82,7 +82,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	{
 		try {
 			if (
-				$this->memcacheD->set(
+				$this->memcachedServerObj->set(
 					$sessionId,
 					$this->encryptData(plainText: $sessionData),
 					$this->sessionMaxLifetime
@@ -123,7 +123,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	public function touchSession($sessionId, $sessionData): bool
 	{
 		try {
-			if ($this->memcacheD->touch($sessionId, $this->sessionMaxLifetime)) {
+			if ($this->memcachedServerObj->touch($sessionId, $this->sessionMaxLifetime)) {
 				return true;
 			}
 		} catch (\Exception $e) {
@@ -154,7 +154,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	public function deleteSession($sessionId): bool
 	{
 		try {
-			if ($this->memcacheD->delete($sessionId)) {
+			if ($this->memcachedServerObj->delete($sessionId)) {
 				return true;
 			}
 		} catch (\Exception $e) {
@@ -170,7 +170,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	public function closeSession(): void
 	{
-		$this->memcacheD = null;
+		$this->memcachedServerObj = null;
 	}
 
 	/**
@@ -188,10 +188,10 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 				);
 			}
 
-			$this->memcacheD = new \Memcached(); // phpcs:ignore
-			$this->memcacheD->addServer(
-				$this->MEMCACHED_HOSTNAME,
-				$this->MEMCACHED_PORT
+			$this->memcachedServerObj = new \Memcached(); // phpcs:ignore
+			$this->memcachedServerObj->addServer(
+				$this->memcachedServerHostname,
+				$this->memcachedServerPort
 			);
 		} catch (\Exception $e) {
 			$this->manageException(e: $e);

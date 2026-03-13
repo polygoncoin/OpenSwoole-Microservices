@@ -34,14 +34,14 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	SessionContainerInterface
 {
-	public $PGSQL_HOSTNAME = null;
-	public $PGSQL_PORT = null;
-	public $PGSQL_USERNAME = null;
-	public $PGSQL_PASSWORD = null;
-	public $PGSQL_DATABASE = null;
-	public $PGSQL_TABLE = null;
+	public $pgSqlServerHostname = null;
+	public $pgSqlServerPort = null;
+	public $pgSqlServerUsername = null;
+	public $pgSqlServerPassword = null;
+	public $pgSqlServerDB = null;
+	public $pgSqlServerTable = null;
 
-	private $pgSqlConn = null;
+	private $pgSqlServerObj = null;
 
 	/**
 	 * Initialize
@@ -67,7 +67,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	{
 		$sql = "
 			SELECT session_data
-			FROM {$this->PGSQL_TABLE}
+			FROM {$this->pgSqlServerTable}
 			WHERE session_id = $1 AND last_accessed > $2
 		";
 		$params = [
@@ -93,7 +93,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public function setSession($sessionId, $sessionData): bool|int
 	{
 		$sql = "
-			INSERT INTO {$this->PGSQL_TABLE} (session_id, last_accessed, session_data)
+			INSERT INTO {$this->pgSqlServerTable} (session_id, last_accessed, session_data)
 			VALUES ($1, $2, $3)
 		";
 		$params = [
@@ -116,7 +116,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public function updateSession($sessionId, $sessionData): bool|int
 	{
 		$sql = "
-			UPDATE {$this->PGSQL_TABLE}
+			UPDATE {$this->pgSqlServerTable}
 			SET
 				last_accessed = $1,
 				session_data = $2
@@ -143,7 +143,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public function touchSession($sessionId, $sessionData): bool
 	{
 		$sql = "
-			UPDATE {$this->PGSQL_TABLE}
+			UPDATE {$this->pgSqlServerTable}
 			SET last_accessed = $1
 			WHERE session_id = $2
 		";
@@ -164,7 +164,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public function gcSession($sessionMaxLifetime): bool
 	{
 		$sql = "
-			DELETE FROM {$this->PGSQL_TABLE}
+			DELETE FROM {$this->pgSqlServerTable}
 			WHERE last_accessed < $1
 		";
 		$params = [
@@ -183,7 +183,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public function deleteSession($sessionId): bool
 	{
 		$sql = "
-			DELETE FROM {$this->PGSQL_TABLE}
+			DELETE FROM {$this->pgSqlServerTable}
 			WHERE session_id = $1
 		";
 		$params = [
@@ -199,8 +199,8 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	public function closeSession(): void
 	{
-		pg_close($this->pgSqlConn);
-		$this->pgSqlConn = null;
+		pg_close($this->pgSqlServerObj);
+		$this->pgSqlServerObj = null;
 	}
 
 	/**
@@ -213,15 +213,15 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		try {
 			$UP = '';
 			if (
-				$this->PGSQL_USERNAME !== null
-				&& $this->PGSQL_PASSWORD !== null
+				$this->pgSqlServerUsername !== null
+				&& $this->pgSqlServerPassword !== null
 			) {
-				$UP = "user={$this->PGSQL_USERNAME} password={$this->PGSQL_PASSWORD}";
+				$UP = "user={$this->pgSqlServerUsername} password={$this->pgSqlServerPassword}";
 			}
-			$this->pgSqlConn = pg_connect(
-				"host={$this->PGSQL_HOSTNAME} "
-				. "port={$this->PGSQL_PORT} "
-				. "dbname={$this->PGSQL_DATABASE} {$UP}"
+			$this->pgSqlServerObj = pg_connect(
+				"host={$this->pgSqlServerHostname} "
+				. "port={$this->pgSqlServerPort} "
+				. "dbname={$this->pgSqlServerDB} {$UP}"
 			);
 		} catch (\Exception $e) {
 			$this->manageException(e: $e);
@@ -240,7 +240,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	{
 		try {
 			// Execute the query with parameters
-			$result = pg_query_params($this->pgSqlConn, $sql, $params);
+			$result = pg_query_params($this->pgSqlServerObj, $sql, $params);
 			if ($result) {
 				$row = [];
 				$rowsCount = pg_num_rows($result);
@@ -267,7 +267,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	private function execSql($sql, $params): bool
 	{
 		try {
-			$result = pg_query_params($this->pgSqlConn, $sql, $params);
+			$result = pg_query_params($this->pgSqlServerObj, $sql, $params);
 			if ($result) {
 				return true;
 			}
