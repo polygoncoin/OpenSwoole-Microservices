@@ -176,7 +176,7 @@ class StreamVideo
 				. 'Version/(1[0-9]|[2-9][0-9]|\d{3,})(\.|$|\s)`i';
 			$safariBrowser = preg_match(
 				pattern: $safariBrowserPattern,
-				subject: $this->iConfig['header']['user-agent']
+				subject: $this->iConfig['header']['userAgent']
 			);
 			if ($safariBrowser) {
 				$this->streamTill = $this->size - 1;

@@ -71,10 +71,10 @@ class Auth
 			$this->http->req->s['uDetails'] = $_SESSION;
 			$this->http->req->s['token'] = 'sessions';
 		} elseif (
-			($this->http->req->HTTP_AUTHORIZATION !== null)
+			($this->http->iConfig['header']['tokenHeader'] !== null)
 			&& preg_match(
 				pattern: '/Bearer\s(\S+)/',
-				subject: $this->http->req->HTTP_AUTHORIZATION,
+				subject: $this->http->iConfig['header']['tokenHeader'],
 				matches: $matches
 			)
 		) {
@@ -121,7 +121,7 @@ class Auth
 					);
 				}
 			} else {
-				if ($this->http->req->s['uDetails']['uniqueHttpRequestHash'] !== $this->http->iConfig['uniqueHttpRequestHash']) {
+				if ($this->http->req->s['uDetails']['httpRequestHash'] !== $this->http->iConfig['httpRequestHash']) {
 					throw new \Exception(
 						message: 'Token not supported from this Browser/Device',
 						code: HttpStatus::$PreconditionFailed

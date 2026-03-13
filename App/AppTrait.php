@@ -778,10 +778,10 @@ trait AppTrait
 		}
 
 		$payloadSignature = [
-			'IP' => $this->http->req->IP,
+			'IP' => $this->http->iConfig['server']['httpRequestIP'],
 			'cID' => $this->http->req->s['cDetails']['id'],
-			'httpMethod' => $this->http->req->METHOD,
-			'Route' => $this->http->req->ROUTE,
+			'httpMethod' => $this->http->iConfig['server']['httpMethod'],
+			'Route' => $this->http->iConfig['get'][ROUTE_URL_PARAM],
 		];
 		if (isset($this->http->req->s['uDetails'])) {
 			$payloadSignature['gID'] = ($this->http->req->s['gDetails']['id'] !== null
@@ -824,10 +824,10 @@ trait AppTrait
 				$payloadSignature = [
 					'idempotentSecret' => Env::$idempotentSecret,
 					'idempotentWindow' => $idempotentWindow,
-					'IP' => $this->http->req->IP,
+					'IP' => $this->http->iConfig['server']['httpRequestIP'],
 					'cID' => $this->http->req->s['cDetails']['id'],
-					'httpMethod' => $this->http->req->METHOD,
-					'Route' => $this->http->req->ROUTE,
+					'httpMethod' => $this->http->iConfig['server']['httpMethod'],
+					'Route' => $this->http->iConfig['get'][ROUTE_URL_PARAM],
 					'payload' => $this->http->req->dataDecode->get(
 						implode(separator: ':', array: $payloadIndexes)
 					)
@@ -868,10 +868,10 @@ trait AppTrait
 			&& isset($sqlConfig['responseLag'])
 		) {
 			$payloadSignature = [
-				'IP' => $this->http->req->IP,
+				'IP' => $this->http->iConfig['server']['httpRequestIP'],
 				'cID' => $this->http->req->s['cDetails']['id'],
-				'httpMethod' => $this->http->req->METHOD,
-				'Route' => $this->http->req->ROUTE,
+				'httpMethod' => $this->http->iConfig['server']['httpMethod'],
+				'Route' => $this->http->iConfig['get'][ROUTE_URL_PARAM],
 			];
 			if (isset($this->http->req->s['uDetails'])) {
 				$payloadSignature['gID'] = ($this->http->req->s['gDetails']['id'] !== null
@@ -1048,9 +1048,9 @@ trait AppTrait
 			}
 		}
 
-		$iConfig['server']['host'] = $this->http->iConfig['server']['host'];
-		$iConfig['server']['method'] = $method;
-		$iConfig['server']['ip'] = $this->http->iConfig['server']['ip'];
+		$iConfig['server']['domainName'] = $this->http->iConfig['server']['domainName'];
+		$iConfig['server']['httpMethod'] = $method;
+		$iConfig['server']['httpRequestIP'] = $this->http->iConfig['server']['httpRequestIP'];
 		$iConfig['header'] = $this->http->iConfig['header'];
 		$iConfig['post'] = json_encode($payloadArr);
 		$iConfig['get'] = $queryStringArr;

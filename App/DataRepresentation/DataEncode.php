@@ -15,6 +15,7 @@
 
 namespace Microservices\App\DataRepresentation;
 
+use Microservices\App\Constant;
 use Microservices\App\DataRepresentation\Encode\PhpEncode;
 use Microservices\App\DataRepresentation\Encode\JsonEncode;
 use Microservices\App\DataRepresentation\Encode\XmlEncode;
@@ -95,7 +96,7 @@ class DataEncode
 	 */
 	public function init($header = true): void
 	{
-		if ($this->http->iConfig['server']['method'] === 'GET') {
+		if ($this->http->iConfig['server']['httpMethod'] === Constant::$GET) {
 			if ($this->http->res->oRepresentation === 'PHP') {
 				$this->tempStream = [];
 			} else {

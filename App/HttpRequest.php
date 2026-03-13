@@ -76,15 +76,6 @@ class HttpRequest
 	public $open = null;
 
 	/**
-	 * Details variable from $http
-	 */
-	public $HOST = null;
-	public $METHOD = null;
-	public $HTTP_AUTHORIZATION = null;
-	public $IP = null;
-	public $ROUTE = null;
-
-	/**
 	 * Payload stream
 	 */
 	public $payloadStream = null;
@@ -119,28 +110,24 @@ class HttpRequest
 	{
 		$this->http = &$http;
 
-		$this->HOST = $this->http->iConfig['server']['host'];
-		$this->METHOD = $this->http->iConfig['server']['method'];
-		$this->IP = $this->http->iConfig['server']['ip'];
 		if (isset($this->http->iConfig['get'][ROUTE_URL_PARAM])) {
-			$this->ROUTE = '/' . trim(
+			$this->http->iConfig['get'][ROUTE_URL_PARAM] = '/' . trim(
 				string: $this->http->iConfig['get'][ROUTE_URL_PARAM],
 				characters: '/'
 			);
 		} else {
-			$this->ROUTE = '';
+			$this->http->iConfig['get'][ROUTE_URL_PARAM] = '';
 		}
 
 		switch (Env::$authMode) {
 			case 'Token':
 				if (
 					isset($this->http->iConfig['header'])
-					&& isset($this->http->iConfig['header']['authorization'])
-					&& $this->http->iConfig['header']['authorization'] !== null
+					&& isset($this->http->iConfig['header']['tokenHeader'])
+					&& $this->http->iConfig['header']['tokenHeader'] !== null
 				) {
-					$this->HTTP_AUTHORIZATION = $this->http->iConfig['header']['authorization'];
 					$this->open = false;
-				} elseif ($this->ROUTE === '/login') {
+				} elseif ($this->http->iConfig['get'][ROUTE_URL_PARAM] === '/login') {
 					$this->open = false;
 				} elseif (Env::$enableOpenRequest) {
 					$this->open = true;
@@ -181,7 +168,7 @@ class HttpRequest
 							);
 						}
 					} else {
-						if ($this->http->req->s['uDetails']['uniqueHttpRequestHash'] !== $this->http->iConfig['uniqueHttpRequestHash']) {
+						if ($this->http->req->s['uDetails']['httpRequestHash'] !== $this->http->iConfig['httpRequestHash']) {
 							throw new \Exception(
 								message: 'Session not supported from this Browser/Device',
 								code: HttpStatus::$PreconditionFailed
@@ -189,7 +176,7 @@ class HttpRequest
 						}
 					}
 					$this->open = false;
-				} elseif ($this->ROUTE === '/login') {
+				} elseif ($this->http->iConfig['get'][ROUTE_URL_PARAM] === '/login') {
 					$this->open = false;
 				} else {
 					$this->open = true;
@@ -223,10 +210,10 @@ class HttpRequest
 		}
 
 		if (!$this->open) {
-			$this->auth = new Auth($this->http);
+			$this->auth = new Auth(http: $this->http);
 		}
 
-		$this->rParser = new RouteParser($this->http);
+		$this->rParser = new RouteParser(http: $this->http);
 	}
 
 	/**
@@ -264,13 +251,13 @@ class HttpRequest
 		DbCommonFunction::connectGlobalCacheServer();
 
 		if ($this->open) {
-			$cKey = CacheKey::customerOpenToWeb(domainName: $this->HOST);
+			$cKey = CacheKey::customerOpenToWeb(domainName: $this->http->iConfig['server']['domainName']);
 		} else {
-			$cKey = CacheKey::customer(domainName: $this->HOST);
+			$cKey = CacheKey::customer(domainName: $this->http->iConfig['server']['domainName']);
 		}
 		if (!DbCommonFunction::$gCacheServer->cacheExists(key: $cKey)) {
 			throw new \Exception(
-				message: "Invalid Host '{$this->HOST}'",
+				message: "Invalid Host '{$this->http->iConfig['server']['domainName']}'",
 				code: HttpStatus::$InternalServerError
 			);
 		}
@@ -297,7 +284,7 @@ class HttpRequest
 		}
 
 		$this->s['queryParams'] = &$this->http->iConfig['get'];
-		if ($this->METHOD === Constant::$GET) {
+		if ($this->http->iConfig['server']['httpMethod'] === Constant::$GET) {
 			$this->urlDecode(value: $this->http->iConfig['get']);
 			$this->s['payloadType'] = 'Object';
 		} else {

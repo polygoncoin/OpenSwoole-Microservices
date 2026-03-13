@@ -169,7 +169,7 @@ class CommonFunction
 	/**
 	 * Check Cache CIDR
 	 *
-	 * @param string       $IP              $this->http->req->IP
+	 * @param string       $IP              $this->http->iConfig['server']['httpRequestIP']
 	 * @param string|array $againstCacheKey Cache Key(s)
 	 *
 	 * @return null|bool
@@ -212,7 +212,7 @@ class CommonFunction
 	/**
 	 * Check CIDR
 	 *
-	 * @param string $IP         $this->http->req->IP
+	 * @param string $IP         $this->http->iConfig['server']['httpRequestIP']
 	 * @param string $cidrString CIDRs
 	 *
 	 * @return null|bool
@@ -235,7 +235,7 @@ class CommonFunction
 	/**
 	 * Belongs to Cidrs range
 	 *
-	 * @param string $IP    $this->http->req->IP
+	 * @param string $IP    $this->http->iConfig['server']['httpRequestIP']
 	 * @param array  $cidrs Cache Key(s)
 	 *
 	 * @return bool
@@ -269,7 +269,7 @@ class CommonFunction
 	 *
 	 * @return string
 	 */
-	public static function uniqueHttpRequestHash($hashArray): string
+	public static function httpRequestHash($hashArray): string
 	{
 		return md5(json_encode($hashArray));
 	}

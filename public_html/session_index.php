@@ -62,9 +62,9 @@ $server->on(
 		Env::init();
 
 		$iConfig = [];
-		$iConfig['server']['host'] = 'api.customer001.localhost'; // Auth
-		// $iConfig['server']['host'] = 'localhost'; // Open
-		$iConfig['server']['method'] = $request->server['request_method'];
+		$iConfig['server']['domainName'] = 'api.customer001.localhost'; // Auth
+		// $iConfig['server']['domainName'] = 'localhost'; // Open
+		$iConfig['server']['httpMethod'] = $request->server['request_method'];
 
 		if (
 			((int)getenv('DISABLE_REQUESTS_VIA_PROXIES')) === 1
@@ -75,12 +75,12 @@ $server->on(
 		}
 
 		if (isset($request->server['remote_addr'])) {
-			$iConfig['server']['ip'] = $request->server['remote_addr'];
+			$iConfig['server']['httpRequestIP'] = $request->server['remote_addr'];
 		} else {// check proxy headers
 			if (isset($request->header['x-forwarded-for'])) {
-				$iConfig['server']['ip'] = $request->header['x-forwarded-for'];
+				$iConfig['server']['httpRequestIP'] = $request->header['x-forwarded-for'];
 			} elseif (isset($request->header['x-real-ip'])) {
-				$iConfig['server']['ip'] = $request->header['x-real-ip'];
+				$iConfig['server']['httpRequestIP'] = $request->header['x-real-ip'];
 			}
 		}
 
@@ -88,7 +88,7 @@ $server->on(
 		$iConfig['get'] = &$request->get;
 		$iConfig['post'] = $request->rawContent();
 		$iConfig['files'] = &$request->files;
-		$iConfig['uniqueHttpRequestHash'] = CommonFunction::uniqueHttpRequestHash(
+		$iConfig['httpRequestHash'] = CommonFunction::httpRequestHash(
 			hashArray: [
 				// $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '',
 				// $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',

@@ -132,11 +132,11 @@ class Microservices
 			case (
 					Env::$enableCronRequest
 					&& strpos(
-						haystack: $this->http->req->ROUTE,
+						haystack: $this->http->iConfig['get'][ROUTE_URL_PARAM],
 						needle: '/' . Env::$cronRequestRoutePrefix
 					) === 0
 				):
-				if ($this->http->req->IP !== Env::$cronRestrictedCidr) {
+				if ($this->http->iConfig['server']['httpRequestIP'] !== Env::$cronRestrictedCidr) {
 					throw new \Exception(
 						message: 'Source IP is not supported',
 						code: HttpStatus::$NotFound
@@ -145,17 +145,17 @@ class Microservices
 				$class = __NAMESPACE__ . '\\Cron';
 				break;
 
-			case $this->http->req->ROUTE === '/logout':
+			case $this->http->iConfig['get'][ROUTE_URL_PARAM] === '/logout':
 				$class = __NAMESPACE__ . '\\Logout';
 				break;
 
 			// Requires HTTP auth username and password
 			case (
 					Env::$enableReloadRequest
-					&& $this->http->req->ROUTE === '/' . Env::$reloadRequestRoutePrefix
+					&& $this->http->iConfig['get'][ROUTE_URL_PARAM] === '/' . Env::$reloadRequestRoutePrefix
 				):
 				$isValidIp = CommonFunction::checkCidr(
-					IP: $this->http->req->IP,
+					IP: $this->http->iConfig['server']['httpRequestIP'],
 					cidrString: Env::$reloadRestrictedCidr
 				);
 				if (!$isValidIp) {
@@ -168,7 +168,7 @@ class Microservices
 				break;
 
 			// Generates auth token
-			case $this->http->req->ROUTE === '/login':
+			case $this->http->iConfig['get'][ROUTE_URL_PARAM] === '/login':
 				$class = __NAMESPACE__ . '\\Login';
 				break;
 
@@ -289,7 +289,7 @@ class Microservices
 	public function getHeaders(): array
 	{
 		$headers = [];
-		$headers['Access-Control-Allow-Origin'] = $this->iConfig['server']['host'];
+		$headers['Access-Control-Allow-Origin'] = $this->iConfig['server']['domainName'];
 		$headers['Vary'] = 'Origin';
 		$headers['Access-Control-Allow-Headers'] = '*';
 
@@ -301,7 +301,7 @@ class Microservices
 		$headers['Cross-Origin-Opener-Policy'] = 'unsafe-none';
 
 		// Access-Control headers are received during OPTIONS request
-		if ($this->iConfig['server']['method'] == 'OPTIONS') {
+		if ($this->iConfig['server']['httpMethod'] == 'OPTIONS') {
 			// may also be using PUT, PATCH, HEAD etc
 			$methods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
 			$headers['Access-Control-Allow-Methods'] = $methods;

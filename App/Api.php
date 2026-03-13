@@ -79,7 +79,7 @@ class Api
 	 */
 	public function process(): mixed
 	{
-		if ($this->http->req->METHOD === Constant::$GET) {
+		if ($this->http->iConfig['server']['httpMethod'] === Constant::$GET) {
 			$dropboxCache = new Dropbox(iConfig: $this->http->iConfig, http: $this->http);
 			if ($dropboxCache->init(mode: 'Closed')) {
 				// File exists - Serve from Dropbox
@@ -116,7 +116,7 @@ class Api
 		}
 
 		$class = null;
-		switch ($this->http->req->METHOD) {
+		switch ($this->http->iConfig['server']['httpMethod']) {
 			case Constant::$GET:
 				$class = __NAMESPACE__ . '\\Read';
 				break;

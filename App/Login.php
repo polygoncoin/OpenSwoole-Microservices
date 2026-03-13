@@ -112,7 +112,7 @@ class Login
 	public function process(): bool
 	{
 		// Check request method is POST
-		if ($this->http->req->METHOD !== Constant::$POST) {
+		if ($this->http->iConfig['server']['httpMethod'] !== Constant::$POST) {
 			throw new \Exception(
 				message: 'Invalid request method',
 				code: HttpStatus::$NotFound
@@ -130,7 +130,7 @@ class Login
 				prefix: Env::$rateLimitUsersPerIpPrefix,
 				maxRequest: Env::$rateLimitUsersPerIpMaxUsers,
 				secondsWindow: Env::$rateLimitUsersPerIpMaxUsersWindow,
-				key: $this->http->req->IP
+				key: $this->http->iConfig['server']['httpRequestIP']
 			);
 			if ($result['allowed']) {
 				// Process the request
@@ -164,7 +164,7 @@ class Login
 	private function loadPayload(): void
 	{
 		// Check request method is POST
-		if ($this->http->req->METHOD !== Constant::$POST) {
+		if ($this->http->iConfig['server']['httpMethod'] !== Constant::$POST) {
 			throw new \Exception(
 				message: 'Invalid request method',
 				code: HttpStatus::$NotFound
@@ -232,7 +232,7 @@ class Login
 	 */
 	private function validateRequestIp(): void
 	{
-		$ipNumber = ip2long(ip: $this->http->req->IP);
+		$ipNumber = ip2long(ip: $this->http->iConfig['server']['httpRequestIP']);
 
 		$cCidrKey = CacheKey::cCidr(
 			cID: $this->http->req->s['cDetails']['id']
@@ -248,7 +248,7 @@ class Login
 		foreach ([$cCidrKey, $gCidrKey, $uCidrKey] as $key) {
 			if (!$cidrChecked) {
 				$cidrChecked = CommonFunction::checkCacheCidr(
-					IP: $this->http->req->IP,
+					IP: $this->http->iConfig['server']['httpRequestIP'],
 					againstCacheKey: $key
 				);
 			}
@@ -268,7 +268,7 @@ class Login
 			prefix: Env::$rateLimitUserLoginPrefix,
 			maxRequest: Env::$rateLimitMaxUserLoginRequest,
 			secondsWindow: Env::$rateLimitMaxUserLoginRequestWindow,
-			key: $this->http->req->IP . $this->username
+			key: $this->http->iConfig['server']['httpRequestIP'] . $this->username
 		);
 		if ($result['allowed']) {
 			// Process the request
@@ -331,7 +331,7 @@ class Login
 	 */
 	private function outputTokenDetails(): void
 	{
-		$uniqueHttpRequestHash = $this->http->iConfig['uniqueHttpRequestHash'];
+		$httpRequestHash = $this->http->iConfig['httpRequestHash'];
 
 		$userTokenKey = CacheKey::userToken(
 			uID: $this->uDetails['id']
@@ -372,7 +372,7 @@ class Login
 					if ($this->cacheExists(key: CacheKey::token(token: $token))) {
 						if (Env::$enableConcurrentLogins) {
 							if (
-								$tData['uniqueHttpRequestHash'] === $uniqueHttpRequestHash
+								$tData['httpRequestHash'] === $httpRequestHash
 								&& $userConcurrencyKeyExist
 								&& $userConcurrencyKeyData === $token
 							) {
@@ -385,7 +385,7 @@ class Login
 							}
 						} else {
 							if (
-								$tData['uniqueHttpRequestHash'] === $uniqueHttpRequestHash
+								$tData['httpRequestHash'] === $httpRequestHash
 								&& $userConcurrencyKeyData === $token
 							) {
 								$timeLeft = Env::$timestamp - $tData['timestamp'];
@@ -426,7 +426,7 @@ class Login
 
 		if (!$tokenFound) {
 			$newTokenData = $this->generateToken();
-			$newTokenData['uniqueHttpRequestHash'] = $uniqueHttpRequestHash;
+			$newTokenData['httpRequestHash'] = $httpRequestHash;
 
 			unset($this->uDetails['password_hash']);
 			foreach ($newTokenData as $k => $v) {
@@ -522,7 +522,7 @@ class Login
 	 */
 	private function startSession(): void
 	{
-		$uniqueHttpRequestHash = $this->http->iConfig['uniqueHttpRequestHash'];
+		$httpRequestHash = $this->http->iConfig['httpRequestHash'];
 
 		$userSessionKey = CacheKey::userSessionId(
 			uID: $this->uDetails['id']
@@ -562,7 +562,7 @@ class Login
 				foreach ($userSessionKeyData as $sessionId => $tData) {
 					if (Env::$enableConcurrentLogins) {
 						if (
-							$tData['uniqueHttpRequestHash'] === $uniqueHttpRequestHash
+							$tData['httpRequestHash'] === $httpRequestHash
 							&& $userConcurrencyKeyExist
 							&& $userConcurrencyKeyData === $sessionId
 							&& $sessionId === session_id()
@@ -576,7 +576,7 @@ class Login
 						}
 					} else {
 						if (
-							$tData['uniqueHttpRequestHash'] === $uniqueHttpRequestHash
+							$tData['httpRequestHash'] === $httpRequestHash
 							&& $sessionId === session_id()
 						) {
 							$timeLeft = Env::$timestamp - $tData['sessionExpiryTimestamp'];
@@ -614,7 +614,7 @@ class Login
 			$newSessionData = [
 				'sessionId' => session_id(),
 				'timestamp' => Env::$timestamp,
-				'uniqueHttpRequestHash' => $uniqueHttpRequestHash,
+				'httpRequestHash' => $httpRequestHash,
 				'sessionExpiryTimestamp' => (Env::$timestamp + Constant::$TOKEN_EXPIRY_TIME)
 			];
 

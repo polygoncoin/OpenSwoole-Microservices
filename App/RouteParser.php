@@ -124,25 +124,25 @@ class RouteParser
 
 		$this->routeElements = explode(
 			separator: '/',
-			string: trim(string: $this->http->req->ROUTE, characters: '/')
+			string: trim(string: $this->http->iConfig['get'][ROUTE_URL_PARAM], characters: '/')
 		);
 		$routeLastElementPos = count(value: $this->routeElements) - 1;
 		// if ($this->routeElements[$routeLastElementPos] === Env::$importSampleRequestRouteKeyword) {
-		//     if (isset($this->http->iConfig['get']['method'])) {
-		//         $this->http->req->METHOD = $this->http->iConfig['get']['method'];
+		//     if (isset($this->http->iConfig['server']['httpMethod'])) {
+		//         $this->http->iConfig['server']['httpMethod'] = $this->http->iConfig['server']['httpMethod'];
 		//     }
 		// }
 
 		if ($routeFileLocation === null) {
 			if ($this->http->req->open) {
 				$routeFileLocation = Constant::$OPEN_ROUTES_DIR
-					. DIRECTORY_SEPARATOR . $this->http->req->METHOD . 'routes.php';
+					. DIRECTORY_SEPARATOR . $this->http->iConfig['server']['httpMethod'] . 'routes.php';
 			} else {
 				$routeFileLocation = Constant::$AUTH_ROUTES_DIR
 					. DIRECTORY_SEPARATOR . 'CustomerDB'
 					. DIRECTORY_SEPARATOR . 'Groups'
 					. DIRECTORY_SEPARATOR . $this->http->req->s['gDetails']['name']
-					. DIRECTORY_SEPARATOR . $this->http->req->METHOD . 'routes.php';
+					. DIRECTORY_SEPARATOR . $this->http->iConfig['server']['httpMethod'] . 'routes.php';
 			}
 		}
 
@@ -150,7 +150,7 @@ class RouteParser
 			$routesConfig = include $routeFileLocation;
 		} else {
 			throw new \Exception(
-				message: 'Route file missing: ' . $this->http->req->METHOD . ' method',
+				message: 'Route file missing: ' . $this->http->iConfig['server']['httpMethod'] . ' method',
 				code: HttpStatus::$InternalServerError
 			);
 		}
@@ -270,7 +270,7 @@ class RouteParser
 			$this->routeStartingWithReservedKeywordFlag = true;
 			$this->routeStartingReservedKeyword = $routeStartingKeyword;
 			$isValidIp = CommonFunction::checkCidr(
-				IP: $this->http->req->IP,
+				IP: $this->http->iConfig['server']['httpRequestIP'],
 				cidrString: Env::$reservedRoutesCidrString[$routeStartingKeyword]
 			);
 			if (!$isValidIp) {
@@ -406,7 +406,7 @@ class RouteParser
 				)
 			) {
 				throw new \Exception(
-					message: 'Missing config for ' . $this->http->req->METHOD . ' method',
+					message: 'Missing config for ' . $this->http->iConfig['server']['httpMethod'] . ' method',
 					code: HttpStatus::$InternalServerError
 				);
 			}

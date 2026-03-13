@@ -34,7 +34,7 @@ class Start
 	 */
 	public static function http($iConfig, $streamData = false)
 	{
-		if ($iConfig['server']['method'] === Constant::$GET) {
+		if ($iConfig['server']['httpMethod'] === Constant::$GET) {
 			$dropboxCache = new Dropbox(iConfig: $iConfig);
 			if ($dropboxCache->init(mode: 'Open')) {
 				// File exists - Serve from Dropbox
@@ -48,7 +48,7 @@ class Start
 		try {
 			$Microservices = new Microservices(iConfig: $iConfig);
 
-			if ($streamData && $iConfig['server']['method'] == 'OPTIONS') {
+			if ($streamData && $iConfig['server']['httpMethod'] == 'OPTIONS') {
 				// Setting CORS
 				$headers = $Microservices->getHeaders();
 				$data = '{}';

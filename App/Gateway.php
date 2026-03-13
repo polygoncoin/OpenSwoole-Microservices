@@ -189,7 +189,7 @@ class Gateway
 		foreach ([$cCidrKey, $gCidrKey, $uCidrKey] as $key) {
 			if (!$this->cidrChecked) {
 				$this->cidrChecked = CommonFunction::checkCacheCidr(
-					IP: $this->http->req->IP,
+					IP: $this->http->iConfig['server']['httpRequestIP'],
 					againstCacheKey: $key
 				);
 			}
@@ -329,7 +329,7 @@ class Gateway
 		$rateLimitIPPrefix = Env::$rateLimitIPPrefix;
 		$rateLimitIPMaxRequest = Env::$rateLimitIPMaxRequest;
 		$rateLimitIPMaxRequestWindow = Env::$rateLimitIPMaxRequestWindow;
-		$key = $this->http->req->IP;
+		$key = $this->http->iConfig['server']['httpRequestIP'];
 
 		$this->checkRateLimit(
 			rateLimitPrefix: $rateLimitIPPrefix,
