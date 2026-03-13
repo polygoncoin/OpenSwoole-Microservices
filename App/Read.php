@@ -695,11 +695,11 @@ class Read
 		// Export
 		$export = new Export(api: $this->api, dbServerType: $dbDetails['dbServerType']);
 		$export->init(
-			hostname: $dbDetails['dbServerHostname'],
-			port: $dbDetails['dbServerPort'],
-			username: $dbDetails['dbServerUsername'],
-			password: $dbDetails['dbServerPassword'],
-			db: $dbDetails['dbServerDB']
+			dbServerHostname: $dbDetails['dbServerHostname'],
+			dbServerPort: $dbDetails['dbServerPort'],
+			dbServerUsername: $dbDetails['dbServerUsername'],
+			dbServerPassword: $dbDetails['dbServerPassword'],
+			dbServerDB: $dbDetails['dbServerDB']
 		);
 
 		if (isset($rSqlConfig['downloadFile'])) {

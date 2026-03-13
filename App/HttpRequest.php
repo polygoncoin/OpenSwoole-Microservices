@@ -271,9 +271,9 @@ class HttpRequest
 		DbFunctions::connectGlobalCacheServer();
 
 		if ($this->open) {
-			$cKey = CacheKey::customerOpenToWeb(hostname: $this->HOST);
+			$cKey = CacheKey::customerOpenToWeb(domainName: $this->HOST);
 		} else {
-			$cKey = CacheKey::customer(hostname: $this->HOST);
+			$cKey = CacheKey::customer(domainName: $this->HOST);
 		}
 		if (!DbFunctions::$gCacheServer->cacheExists(key: $cKey)) {
 			throw new \Exception(

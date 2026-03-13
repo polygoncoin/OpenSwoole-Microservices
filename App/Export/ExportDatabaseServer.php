@@ -29,7 +29,7 @@ use Microservices\App\Export\ExportDatabaseServerInterface;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class DatabaseServer
+class ExportDatabaseServer
 {
 	/**
 	 * Allow creation of temporary file required for streaming large data

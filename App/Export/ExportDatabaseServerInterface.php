@@ -27,7 +27,7 @@ namespace Microservices\App\Export;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-interface DatabaseServerInterface
+interface ExportDatabaseServerInterface
 {
 	/**
 	 * Initialize

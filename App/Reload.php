@@ -94,14 +94,14 @@ class Reload
 			}
 			if (!empty($cRow['open_api_domain'])) {
 				$c_key = CacheKey::customerOpenToWeb(
-					hostname: $cRow['open_api_domain']
+					domainName: $cRow['open_api_domain']
 				);
 				DbFunctions::$gCacheServer->setCache(
 					key: $c_key,
 					value: json_encode(value: $cRow)
 				);
 			}
-			$c_key = CacheKey::customer(hostname: $cRow['api_domain']);
+			$c_key = CacheKey::customer(domainName: $cRow['api_domain']);
 			DbFunctions::$gCacheServer->setCache(
 				key: $c_key,
 				value: json_encode(value: $cRow)

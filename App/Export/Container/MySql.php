@@ -197,11 +197,11 @@ class MySql implements ExportDatabaseServerInterface
 
 		//mysqli connection
 		$mysqli = mysqli_connect(
-			hostname: $this->hostname,
-			username: $this->username,
-			password: $this->password,
-			db: $this->db,
-			port: $this->port,
+			hostname: $this->dbServerHostname,
+			username: $this->dbServerUsername,
+			password: $this->dbServerPassword,
+			db: $this->dbServerDB,
+			port: $this->dbServerPort
 		);
 		if (!$mysqli) {
 			throw new \Exception(
@@ -274,11 +274,11 @@ class MySql implements ExportDatabaseServerInterface
 
 		// Shell command.
 		$shellCommand = $this->binaryLoc . ' '
-			. '--host=' . escapeshellarg(arg: $this->hostname) . ' '
-			. '--port=' . escapeshellarg(arg: $this->port) . ' '
-			. '--user=' . escapeshellarg(arg: $this->username) . ' '
-			. '--password=' . escapeshellarg(arg: $this->password) . ' '
-			. '--database=' . escapeshellarg(arg: $this->db) . ' '
+			. '--host=' . escapeshellarg(arg: $this->dbServerHostname) . ' '
+			. '--port=' . escapeshellarg(arg: $this->dbServerPort) . ' '
+			. '--user=' . escapeshellarg(arg: $this->dbServerUsername) . ' '
+			. '--password=' . escapeshellarg(arg: $this->dbServerPassword) . ' '
+			. '--database=' . escapeshellarg(arg: $this->dbServerDB) . ' '
 			. '--execute=' . escapeshellarg(arg: $sql);
 
 		return $shellCommand;

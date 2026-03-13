@@ -32,25 +32,25 @@ class CacheKey
 	/**
 	 * Get Customer Key
 	 *
-	 * @param string $hostname Hostname
+	 * @param string $domainName Domain Name
 	 *
 	 * @return string
 	 */
-	public static function customerOpenToWeb(&$hostname): string
+	public static function customerOpenToWeb(&$domainName): string
 	{
-		return "c:otw:{$hostname}";
+		return "c:otw:{$domainName}";
 	}
 
 	/**
 	 * Get Customer Key
 	 *
-	 * @param string $hostname Hostname
+	 * @param string $domainName Domain Name
 	 *
 	 * @return string
 	 */
-	public static function customer($hostname): string
+	public static function customer($domainName): string
 	{
-		return "c:{$hostname}";
+		return "c:{$domainName}";
 	}
 
 	/**

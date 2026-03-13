@@ -330,7 +330,7 @@ class DataEncode
 					&& file_exists(filename: $this->phpFile)
 				):
 				$finalArray = &$this->dataEncoder->finalArray;
-				ob_clean();
+				@ob_clean();
 				include_once $this->phpFile;
 				$streamContent = ob_get_clean();
 				$this->tempStream = null;
