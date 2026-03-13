@@ -18,7 +18,7 @@ namespace Microservices\App;
 use Microservices\App\AppTrait;
 use Microservices\App\Common;
 use Microservices\App\DataRepresentation\DataEncode;
-use Microservices\App\DbFunctions;
+use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\HttpStatus;
@@ -105,10 +105,10 @@ class Write
 	{
 		$Env = __NAMESPACE__ . '\Env';
 
-		// Load Queries
+		// Load Sql
 		$wSqlConfig = include $this->api->req->rParser->sqlConfigFile;
 
-		// Rate Limiting request if configured for Route Queries.
+		// Rate Limiting request if configured for Route Sql.
 		$this->rateLimitRoute(sqlConfig: $wSqlConfig);
 
 		// Use results in where clause of sub queries recursively
@@ -174,8 +174,8 @@ class Write
 			? $wSqlConfig['isTransaction'] : false;
 
 		// Set Server mode to execute query on - Read / Write Server
-		DbFunctions::setDbConnection(req: $this->api->req, fetchFrom: 'Master');
-		$this->dbServerObj = &DbFunctions::$masterDb[$this->api->req->cId];
+		DbCommonFunction::setDbConnection(req: $this->api->req, fetchFrom: 'Master');
+		$this->dbServerObj = &DbCommonFunction::$masterDb[$this->api->req->cId];
 
 		$this->processWrite(
 			wSqlConfig: $wSqlConfig,
@@ -187,7 +187,7 @@ class Write
 				$i < $iCount;
 				$i++
 			) {
-				DbFunctions::delQueryCache(
+				DbCommonFunction::delQueryCache(
 					cacheKey: $wSqlConfig['affectedCacheKeys'][$i]
 				);
 			}
@@ -334,7 +334,7 @@ class Write
 					$arr['Response'] = $response;
 
 					if ($idempotentWindow) {
-						DbFunctions::$gCacheServer->setCache(
+						DbCommonFunction::$gCacheServer->setCache(
 							key: $hashKey,
 							value: json_encode(value: $arr),
 							expire: $idempotentWindow
@@ -480,7 +480,7 @@ class Write
 				continue;
 			}
 
-			// Execute Pre Sql Hooks
+			// Execute Pre Sql Hook
 			if (isset($wSqlConfig['__PRE-SQL-HOOKS__'])) {
 				if ($this->hook === null) {
 					$this->hook = new Hook($this->api);
@@ -539,7 +539,7 @@ class Write
 				);
 			}
 
-			// Execute Post Sql Hooks
+			// Execute Post Sql Hook
 			if (isset($wSqlConfig['__POST-SQL-HOOKS__'])) {
 				if ($this->hook === null) {
 					$this->hook = new Hook($this->api);

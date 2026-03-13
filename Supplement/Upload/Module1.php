@@ -16,8 +16,8 @@
 namespace Microservices\Supplement\Upload;
 
 use Microservices\App\Common;
-use Microservices\App\Constants;
-use Microservices\App\DbFunctions;
+use Microservices\App\Constant;
+use Microservices\App\DbCommonFunction;
 use Microservices\Supplement\Upload\UploadInterface;
 use Microservices\Supplement\Upload\UploadTrait;
 
@@ -52,7 +52,7 @@ class Module1 implements UploadInterface
 	public function __construct(Common &$api)
 	{
 		$this->api = &$api;
-		DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
+		DbCommonFunction::setDbConnection($this->api->req, fetchFrom: 'Master');
 	}
 
 	/**
@@ -87,7 +87,7 @@ class Module1 implements UploadInterface
 	 */
 	private function getLocation(): string
 	{
-		return Constants::$DROP_BOX_DIR
+		return Constant::$DROP_BOX_DIR
 			. DIRECTORY_SEPARATOR . $this->api->req->cId
 			. DIRECTORY_SEPARATOR . 'test.png';
 	}

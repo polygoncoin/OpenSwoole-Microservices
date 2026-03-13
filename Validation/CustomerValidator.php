@@ -16,7 +16,7 @@
 namespace Microservices\Validation;
 
 use Microservices\App\Common;
-use Microservices\App\DbFunctions;
+use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\Validation\ValidatorInterface;
 use Microservices\Validation\ValidatorTrait;
@@ -112,15 +112,15 @@ class CustomerValidator implements ValidatorInterface
 	 */
 	private function getPrimaryCount(&$table, $primary, &$id): int
 	{
-		$dbServerDB = DbFunctions::$masterDb[$this->api->req->cId]->dbServerDB;
+		$dbServerDB = DbCommonFunction::$masterDb[$this->api->req->cId]->dbServerDB;
 		$sql = "
 			SELECT count(1) as `count`
 			FROM `{$dbServerDB}`.`{$table}`
 			WHERE `{$primary}` = ?
 		";
 		$params = [$id];
-		DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $params);
-		return (int)(DbFunctions::$masterDb[$this->api->req->cId]->fetch())['count'];
+		DbCommonFunction::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $params);
+		return (int)(DbCommonFunction::$masterDb[$this->api->req->cId]->fetch())['count'];
 	}
 
 	/**
@@ -135,9 +135,9 @@ class CustomerValidator implements ValidatorInterface
 		extract(array: $args);
 		$sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
 		$params = [$id];
-		DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $params);
-		$row = DbFunctions::$masterDb[$this->api->req->cId]->fetch();
-		DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
+		DbCommonFunction::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $params);
+		$row = DbCommonFunction::$masterDb[$this->api->req->cId]->fetch();
+		DbCommonFunction::$masterDb[$this->api->req->cId]->closeCursor();
 		return ($row['count'] === 0) ? false : true;
 	}
 }

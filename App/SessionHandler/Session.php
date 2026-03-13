@@ -15,7 +15,7 @@
 
 namespace Microservices\App\SessionHandler;
 
-use Microservices\App\Constants;
+use Microservices\App\Constant;
 use Microservices\App\SessionHandler\CustomSessionHandler;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 
@@ -363,7 +363,7 @@ class Session
 		if (isset($options['gc_maxlifetime'])) {
 			self::$sessionMaxLifetime = $options['gc_maxlifetime'];
 		} else {
-			self::$sessionMaxLifetime = Constants::$TOKEN_EXPIRY_TIME;
+			self::$sessionMaxLifetime = Constant::$TOKEN_EXPIRY_TIME;
 		}
 
 		self::$options = [ // always required.
@@ -415,7 +415,7 @@ class Session
 	 */
 	public static function initSessionHandler($sessionMode, $options = []): void
 	{
-		$env = parse_ini_file(filename: Constants::$ROOT
+		$env = parse_ini_file(filename: Constant::$ROOT
 			. DIRECTORY_SEPARATOR . '.env.session'
 		);
 		foreach ($env as $var => $value) {

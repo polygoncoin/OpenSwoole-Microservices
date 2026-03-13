@@ -17,7 +17,7 @@ namespace Microservices\App;
 
 use Microservices\App\Common;
 use Microservices\App\Env;
-use Microservices\App\Functions;
+use Microservices\App\CommonFunction;
 use Microservices\App\HttpStatus;
 use Microservices\App\RateLimiter;
 
@@ -188,7 +188,7 @@ class Gateway
 		);
 		foreach ([$cCidrKey, $gCidrKey, $uCidrKey] as $key) {
 			if (!$this->cidrChecked) {
-				$this->cidrChecked = Functions::checkCacheCidr(
+				$this->cidrChecked = CommonFunction::checkCacheCidr(
 					IP: $this->api->req->IP,
 					againstCacheKey: $key
 				);

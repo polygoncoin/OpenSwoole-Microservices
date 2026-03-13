@@ -17,10 +17,10 @@ namespace Microservices\App;
 
 use Microservices\App\CacheKey;
 use Microservices\App\Common;
-use Microservices\App\Constants;
+use Microservices\App\Constant;
 use Microservices\App\DataRepresentation\DataDecode;
 use Microservices\App\DataRepresentation\DataEncode;
-use Microservices\App\DbFunctions;
+use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\Middleware\Auth;
@@ -169,8 +169,8 @@ class HttpRequest
 							uID: $_SESSION['id']
 						);
 						$sessionId = session_id();
-						if (DbFunctions::$gCacheServer->cacheExists(key: $userConcurrencyKey)) {
-							$userConcurrencyKeyData = DbFunctions::$gCacheServer->getCache(
+						if (DbCommonFunction::$gCacheServer->cacheExists(key: $userConcurrencyKey)) {
+							$userConcurrencyKeyData = DbCommonFunction::$gCacheServer->getCache(
 								key: $userConcurrencyKey
 							);
 							if ($userConcurrencyKeyData !== $sessionId) {
@@ -251,7 +251,7 @@ class HttpRequest
 		}
 
 		$this->rParser->parseRoute();
-		DbFunctions::setCacheServerAuthKey($this);
+		DbCommonFunction::setCacheServerAuthKey($this);
 
 		return true;
 	}
@@ -268,14 +268,14 @@ class HttpRequest
 			return;
 		}
 
-		DbFunctions::connectGlobalCacheServer();
+		DbCommonFunction::connectGlobalCacheServer();
 
 		if ($this->open) {
 			$cKey = CacheKey::customerOpenToWeb(domainName: $this->HOST);
 		} else {
 			$cKey = CacheKey::customer(domainName: $this->HOST);
 		}
-		if (!DbFunctions::$gCacheServer->cacheExists(key: $cKey)) {
+		if (!DbCommonFunction::$gCacheServer->cacheExists(key: $cKey)) {
 			throw new \Exception(
 				message: "Invalid Host '{$this->HOST}'",
 				code: HttpStatus::$InternalServerError
@@ -283,7 +283,7 @@ class HttpRequest
 		}
 
 		$this->s['cDetails'] = json_decode(
-			json: DbFunctions::$gCacheServer->getCache(
+			json: DbCommonFunction::$gCacheServer->getCache(
 				key: $cKey
 			),
 			associative: true
@@ -304,7 +304,7 @@ class HttpRequest
 		}
 
 		$this->s['queryParams'] = &$this->api->http['get'];
-		if ($this->METHOD === Constants::$GET) {
+		if ($this->METHOD === Constant::$GET) {
 			$this->urlDecode(value: $this->api->http['get']);
 			$this->s['payloadType'] = 'Object';
 		} else {

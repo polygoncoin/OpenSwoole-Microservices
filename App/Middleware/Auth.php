@@ -17,7 +17,7 @@ namespace Microservices\App\Middleware;
 
 use Microservices\App\CacheKey;
 use Microservices\App\Common;
-use Microservices\App\DbFunctions;
+use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 
@@ -83,7 +83,7 @@ class Auth
 				token: $this->api->req->s['token']
 			);
 			if (
-				!DbFunctions::$gCacheServer->cacheExists(
+				!DbCommonFunction::$gCacheServer->cacheExists(
 					key: $tokenKey
 				)
 			) {
@@ -93,7 +93,7 @@ class Auth
 				);
 			}
 			$this->api->req->s['uDetails'] = json_decode(
-				json: DbFunctions::$gCacheServer->getCache(
+				json: DbCommonFunction::$gCacheServer->getCache(
 					key: $tokenKey
 				),
 				associative: true
@@ -102,8 +102,8 @@ class Auth
 				$userConcurrencyKey = CacheKey::userConcurrency(
 					uID: $this->api->req->s['uDetails']['id']
 				);
-				if (DbFunctions::$gCacheServer->cacheExists(key: $userConcurrencyKey)) {
-					$userConcurrencyKeyData = DbFunctions::$gCacheServer->getCache(
+				if (DbCommonFunction::$gCacheServer->cacheExists(key: $userConcurrencyKey)) {
+					$userConcurrencyKeyData = DbCommonFunction::$gCacheServer->getCache(
 						key: $userConcurrencyKey
 					);
 					if ($userConcurrencyKeyData !== $this->api->req->s['token']) {
@@ -163,7 +163,7 @@ class Auth
 		$gKey = CacheKey::group(
 			gID: $this->api->req->s['uDetails']['group_id']
 		);
-		if (!DbFunctions::$gCacheServer->cacheExists(key: $gKey)) {
+		if (!DbCommonFunction::$gCacheServer->cacheExists(key: $gKey)) {
 			throw new \Exception(
 				message: "Cache '{$gKey}' missing",
 				code: HttpStatus::$InternalServerError
@@ -171,7 +171,7 @@ class Auth
 		}
 
 		$this->api->req->s['gDetails'] = json_decode(
-			json: DbFunctions::$gCacheServer->getCache(
+			json: DbCommonFunction::$gCacheServer->getCache(
 				key: $gKey
 			),
 			associative: true

@@ -16,7 +16,7 @@ enableCidrCheck=0                      ; 1 = true / 0 = false in
 
 Below are top level CIDR settings for a set of system routes (starting / ending with)
 
-### Routes starting with configured params keyword for respective comment
+### Route starting with configured params keyword for respective comment
 
 ```ini
 dropboxRestrictedCidr='0.0.0.0/0'       ; dropboxRequestRoutePrefix in .env.enable
@@ -26,7 +26,7 @@ thirdPatyRestrictedCidr='0.0.0.0/0'     ; thirdPartyRequestRoutePrefix in .env.e
 uploadRestrictedCidr='0.0.0.0/0'        ; uploadRequestRoutePrefix in .env.enable
 ```
 
-### Routes ending with configured params keyword for respective comment
+### Route ending with configured params keyword for respective comment
 
 ```ini
 configRestrictedCidr='0.0.0.0/0'        ; configRequestRouteKeyword in .env.enable
@@ -35,7 +35,7 @@ importRestrictedCidr='0.0.0.0/0'        ; importRequestRouteKeyword in .env.enab
 importSampleRestrictedCidr='0.0.0.0/0'  ; importSampleRequestRouteKeyword in .env.enable
 ```
 
-### Routes exact configured params keyword for respective comment
+### Route exact configured params keyword for respective comment
 
 ```ini
 routesRestrictedCidr='0.0.0.0/0'        ; routesRequestRoute in .env.enable

@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\DbFunctions;
+use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 
 /**
@@ -49,18 +49,18 @@ class Counter
 		switch (Env::$gCounterMode) {
 			case 'Cache':
 				$key = Env::$gCounter;
-				DbFunctions::connectGlobalCacheServer();
-				$id = DbFunctions::$gCacheServer->incrementCache($key);
+				DbCommonFunction::connectGlobalCacheServer();
+				$id = DbCommonFunction::$gCacheServer->incrementCache($key);
 				break;
 			case 'Database':
-				DbFunctions::connectGlobalDatabaseServer();
+				DbCommonFunction::connectGlobalDatabaseServer();
 
 				$table = Env::$gDbServerDB . '.' . Env::$gCounter;
 				$sql = "INSERT INTO {$table}() VALUES()";
 				$sqlParams = [];
 
-				DbFunctions::$gDbServer->execDbQuery(sql: $sql, params: $sqlParams);
-				$id = DbFunctions::$gDbServer->lastInsertId();
+				DbCommonFunction::$gDbServer->execDbQuery(sql: $sql, params: $sqlParams);
+				$id = DbCommonFunction::$gDbServer->lastInsertId();
 				break;
 		}
 

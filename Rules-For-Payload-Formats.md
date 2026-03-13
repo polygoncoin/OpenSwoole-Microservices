@@ -71,7 +71,7 @@ For **GET** method, the **$\_GET** is the payload.
 
 ## Hierarchy Configs
 
-- Config/Queries/CustomerDB/GET/Category.php
+- Config/Sql/CustomerDB/GET/Category.php
 >In this file one can confirm how previous select data is used recursively in subQuery select as indicated by useHierarchy flag.
 
 ```PHP
@@ -82,7 +82,7 @@ For **GET** method, the **$\_GET** is the payload.
 ],
 ```
 
-- Config/Queries/CustomerDB/POST/Category.php .Here a request can handle the hierarchy for write operations.
+- Config/Sql/CustomerDB/POST/Category.php .Here a request can handle the hierarchy for write operations.
 
 ```PHP
 return [

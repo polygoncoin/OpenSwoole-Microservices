@@ -25,9 +25,9 @@ enableThirdPartyRequest=1               ; 1 = true / 0 = false
 enableUploadRequest=1                   ; 1 = true / 0 = false
 ```
 
-## Routes keyword
+## Route keyword
 
-### Routes starting with configured params keyword
+### Route starting with configured params keyword
 
 ```ini
 dropboxRequestRoutePrefix='cdn'
@@ -37,7 +37,7 @@ thirdPartyRequestRoutePrefix='thirdParty'
 uploadRequestRoutePrefix='upload'
 ```
 
-### Routes ending with configured params keyword
+### Route ending with configured params keyword
 
 ```ini
 configRequestRouteKeyword='config'      ; to append "/config" at the end of route

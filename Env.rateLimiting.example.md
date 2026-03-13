@@ -26,7 +26,7 @@ rateLimitServerPort=11211               ; Redis-6379 / Memcached-11211
 ```ini
 ; 1 = true / 0 = false
 enableRateLimitAtIpLevel=0              ; Function = IP
-enableRateLimitAtCustomerLevel=0          ; Function = Customer ID
+enableRateLimitAtCustomerLevel=0        ; Function = Customer ID
 enableRateLimitAtGroupLevel=0           ; Function = Group ID
 enableRateLimitAtUserLevel=0            ; Function = User ID
 enableRateLimitAtRouteLevel=0           ; Function = Configured Route

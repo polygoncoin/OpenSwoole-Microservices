@@ -17,7 +17,7 @@ namespace Microservices\Supplement\Custom;
 
 use Microservices\App\CacheKey;
 use Microservices\App\Common;
-use Microservices\App\DbFunctions;
+use Microservices\App\DbCommonFunction;
 use Microservices\Supplement\Custom\CustomInterface;
 use Microservices\Supplement\Custom\CustomTrait;
 
@@ -104,27 +104,27 @@ class Password implements CustomInterface
 				':is_deleted' => 'No',
 			];
 
-			DbFunctions::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
-			DbFunctions::$masterDb[$this->api->req->cId]->closeCursor();
+			DbCommonFunction::$masterDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
+			DbCommonFunction::$masterDb[$this->api->req->cId]->closeCursor();
 
 			$cID = $this->api->req->s['cDetails']['id'];
 			$cu_key = CacheKey::customerUser(
 				cID: $cID,
 				username: $userName
 			);
-			if (DbFunctions::$gCacheServer->cacheExists(key: $cu_key)) {
+			if (DbCommonFunction::$gCacheServer->cacheExists(key: $cu_key)) {
 				$uDetails = json_decode(
-					json: DbFunctions::$gCacheServer->getCache(
+					json: DbCommonFunction::$gCacheServer->getCache(
 						key: $cu_key
 					),
 					associative: true
 				);
 				$uDetails['password_hash'] = $newPasswordHash;
-				DbFunctions::$gCacheServer->setCache(
+				DbCommonFunction::$gCacheServer->setCache(
 					key: $cu_key,
 					value: json_encode(value: $uDetails)
 				);
-				DbFunctions::$gCacheServer->deleteCache(
+				DbCommonFunction::$gCacheServer->deleteCache(
 					key: CacheKey::token(token: $this->api->req->s['token'])
 				);
 			}

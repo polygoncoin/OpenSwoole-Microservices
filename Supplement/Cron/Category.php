@@ -16,7 +16,7 @@
 namespace Microservices\Supplement\Cron;
 
 use Microservices\App\Common;
-use Microservices\App\DbFunctions;
+use Microservices\App\DbCommonFunction;
 use Microservices\App\HttpStatus;
 use Microservices\Supplement\Cron\CronInterface;
 use Microservices\Supplement\Cron\CronTrait;
@@ -52,7 +52,7 @@ class Category implements CronInterface
 	public function __construct(Common &$api)
 	{
 		$this->api = &$api;
-		DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Slave');
+		DbCommonFunction::setDbConnection($this->api->req, fetchFrom: 'Slave');
 	}
 
 	/**

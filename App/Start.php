@@ -16,8 +16,8 @@
 namespace Microservices\App;
 
 use Microservices\App\Dropbox;
-use Microservices\App\Constants;
-use Microservices\App\Logs;
+use Microservices\App\Constant;
+use Microservices\App\Log;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\HttpStatus;
 use Microservices\App\Microservices;
@@ -34,7 +34,7 @@ class Start
 	 */
 	public static function http($http, $streamData = false)
 	{
-		if ($http['server']['method'] === Constants::$GET) {
+		if ($http['server']['method'] === Constant::$GET) {
 			$dropboxCache = new Dropbox(http: $http);
 			if ($dropboxCache->init(mode: 'Open')) {
 				// File exists - Serve from Dropbox
@@ -91,7 +91,7 @@ class Start
 					],
 					'Details' => $Microservices->api->req->s
 				];
-				$logsObj = new Logs();
+				$logsObj = new Log();
 				$logsObj->log(logDetails: $logDetails);
 			}
 

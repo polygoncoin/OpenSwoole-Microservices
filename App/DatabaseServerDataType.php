@@ -330,7 +330,7 @@ class DatabaseServerDataType
 {
 	/**
 	 * Example to create custom data type
-	 * You can configure them in /Config/Queries folder as a data type
+	 * You can configure them in /Config/Sql folder as a data type
 	 * This will validate the received payload/uriParam/etc data where this is
 	 * configured
 	 *

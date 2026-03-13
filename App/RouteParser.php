@@ -16,10 +16,10 @@
 namespace Microservices\App;
 
 use Microservices\App\Common;
-use Microservices\App\Constants;
+use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
-use Microservices\App\Functions;
+use Microservices\App\CommonFunction;
 use Microservices\App\HttpStatus;
 
 /**
@@ -119,7 +119,7 @@ class RouteParser
 	 */
 	public function parseRoute($routeFileLocation = null): void
 	{
-		$Constants = __NAMESPACE__ . '\Constants';
+		$Constant = __NAMESPACE__ . '\Constant';
 		$Env = __NAMESPACE__ . '\Env';
 
 		$this->routeElements = explode(
@@ -135,10 +135,10 @@ class RouteParser
 
 		if ($routeFileLocation === null) {
 			if ($this->api->req->open) {
-				$routeFileLocation = Constants::$OPEN_ROUTES_DIR
+				$routeFileLocation = Constant::$OPEN_ROUTES_DIR
 					. DIRECTORY_SEPARATOR . $this->api->req->METHOD . 'routes.php';
 			} else {
-				$routeFileLocation = Constants::$AUTH_ROUTES_DIR
+				$routeFileLocation = Constant::$AUTH_ROUTES_DIR
 					. DIRECTORY_SEPARATOR . 'CustomerDB'
 					. DIRECTORY_SEPARATOR . 'Groups'
 					. DIRECTORY_SEPARATOR . $this->api->req->s['gDetails']['name']
@@ -269,7 +269,7 @@ class RouteParser
 		) {
 			$this->routeStartingWithReservedKeywordFlag = true;
 			$this->routeStartingReservedKeyword = $routeStartingKeyword;
-			$isValidIp = Functions::checkCidr(
+			$isValidIp = CommonFunction::checkCidr(
 				IP: $this->api->req->IP,
 				cidrString: Env::$reservedRoutesCidrString[$routeStartingKeyword]
 			);
@@ -384,7 +384,7 @@ class RouteParser
 	/**
 	 * Validate config file
 	 *
-	 * @param array $routesConfig Routes config
+	 * @param array $routesConfig Route config
 	 *
 	 * @return void
 	 * @throws \Exception
@@ -416,7 +416,7 @@ class RouteParser
 			!empty($routesConfig['__FILE__'])
 			&& file_exists(filename: $routesConfig['__FILE__'])
 		) {
-			$Constants = __NAMESPACE__ . '\Constants';
+			$Constant = __NAMESPACE__ . '\Constant';
 			$Env = __NAMESPACE__ . '\Env';
 
 			$this->sqlConfigFile = $routesConfig['__FILE__'];
@@ -451,7 +451,7 @@ class RouteParser
 	/**
 	 * Check presence of Dynamic String in URL same as configured in Route file.
 	 *
-	 * @param string $element Routes element
+	 * @param string $element Route element
 	 *
 	 * @return void
 	 */
@@ -470,8 +470,8 @@ class RouteParser
 	/**
 	 * Find ROute and Param Name from Dynamic String configured in Route file.
 	 *
-	 * @param array  $routesConfig  Routes config
-	 * @param string $element Routes element
+	 * @param array  $routesConfig  Route config
+	 * @param string $element Route element
 	 *
 	 * @return array
 	 */

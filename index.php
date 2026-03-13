@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Start
+ * Index
  * php version 8.3
  *
  * @category  Start
@@ -18,11 +18,11 @@ use Openswoole\Http\Server;
 use Openswoole\Http\Request;
 use Openswoole\Http\Response;
 
-use Microservices\App\Constants;
+use Microservices\App\Constant;
 use Microservices\App\Env;
-use Microservices\App\Functions;
+use Microservices\App\CommonFunction;
 use Microservices\App\Start;
-use Microservices\TestCases\Tests;
+use Microservices\TestCase\Tests;
 
 define('ROOT', __DIR__);
 define('ROUTE_URL_PARAM', 'route');
@@ -66,7 +66,7 @@ $server->on(
 			}
 		}
 
-		Constants::init();
+		Constant::init();
 		Env::$timestamp = time();
 		Env::init();
 
@@ -97,7 +97,7 @@ $server->on(
 		$http['get'] = &$request->get;
 		$http['post'] = $request->rawContent();
 		$http['files'] = &$request->files;
-		$http['uniqueHttpRequestHash'] = Functions::uniqueHttpRequestHash(
+		$http['uniqueHttpRequestHash'] = CommonFunction::uniqueHttpRequestHash(
 			hashArray: [
 				// $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '',
 				// $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',

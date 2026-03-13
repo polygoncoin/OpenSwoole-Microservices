@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Constants;
+use Microservices\App\Constant;
 use Microservices\App\Common;
 use Microservices\Supplement\Cron\CronInterface;
 
@@ -64,7 +64,7 @@ class Cron
 	 */
 	public function init(): bool
 	{
-		$routeFileLocation = Constants::$AUTH_ROUTES_DIR
+		$routeFileLocation = Constant::$AUTH_ROUTES_DIR
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Common'
 			. DIRECTORY_SEPARATOR . 'Cron'

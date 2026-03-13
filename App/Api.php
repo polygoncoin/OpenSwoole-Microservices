@@ -16,7 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\Dropbox;
-use Microservices\App\Constants;
+use Microservices\App\Constant;
 use Microservices\App\Common;
 use Microservices\App\Env;
 use Microservices\App\Hook;
@@ -79,7 +79,7 @@ class Api
 	 */
 	public function process(): mixed
 	{
-		if ($this->api->req->METHOD === Constants::$GET) {
+		if ($this->api->req->METHOD === Constant::$GET) {
 			$dropboxCache = new Dropbox(http: $this->api->http, api: $this->api);
 			if ($dropboxCache->init(mode: 'Closed')) {
 				// File exists - Serve from Dropbox
@@ -88,7 +88,7 @@ class Api
 			$dropboxCache = null;
 		}
 
-		// Execute Pre Route Hooks
+		// Execute Pre Route Hook
 		if (isset($this->api->req->rParser->routeHook['__PRE-ROUTE-HOOKS__'])) {
 			if ($this->hook === null) {
 				$this->hook = new Hook($this->api);
@@ -117,13 +117,13 @@ class Api
 
 		$class = null;
 		switch ($this->api->req->METHOD) {
-			case Constants::$GET:
+			case Constant::$GET:
 				$class = __NAMESPACE__ . '\\Read';
 				break;
-			case Constants::$POST:
-			case Constants::$PUT:
-			case Constants::$PATCH:
-			case Constants::$DELETE:
+			case Constant::$POST:
+			case Constant::$PUT:
+			case Constant::$PATCH:
+			case Constant::$DELETE:
 				$class = __NAMESPACE__ . '\\Write';
 				break;
 		}
@@ -144,7 +144,7 @@ class Api
 		// Check & Process Cron / ThirdParty calls
 		$this->processAfterPayload();
 
-		// Execute Post Route Hooks
+		// Execute Post Route Hook
 		if (isset($this->api->req->rParser->routeHook['__POST-ROUTE-HOOKS__'])) {
 			if ($this->hook === null) {
 				$this->hook = new Hook($this->api);
@@ -170,7 +170,7 @@ class Api
 			Env::$enableRoutesRequest
 			&& Env::$routesRequestRoute === $this->api->req->rParser->routeElements[0]
 		) {
-			$supplementApiClass = __NAMESPACE__ . '\\Routes';
+			$supplementApiClass = __NAMESPACE__ . '\\Route';
 			$supplementObj = new $supplementApiClass($this->api);
 			if ($supplementObj->init()) {
 				$supplementObj->process();

@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Constants;
+use Microservices\App\Constant;
 
 /**
  * Web class
@@ -77,7 +77,7 @@ class Web
 		$curlConfig[\CURLOPT_RETURNTRANSFER] = true;
 
 		$cookieFileName = '/' . md5($homeURL) . '-cookies.txt';
-		$cookieFile = Constants::$WEB_COOKIES_DIR . $cookieFileName;
+		$cookieFile = Constant::$WEB_COOKIES_DIR . $cookieFileName;
 		$curlConfig[\CURLOPT_COOKIEJAR] = $cookieFile; // Store cookies
 		$curlConfig[\CURLOPT_COOKIEFILE] = $cookieFile; // Read cookies
 
@@ -188,20 +188,20 @@ class Web
 			$errorCode = curl_errno(handle: $curl);
 			$errorMessage = curl_error(handle: $curl);
 
-			$errorConstants = [];
+			$errorConstant = [];
 
 			$list   = get_defined_constants(true);
 			$list   = preg_grep('/^CURLE_/', array_flip($list['curl']));
 
 			foreach ($list as $const) {
 				if (constant($const) === $errorCode) {
-					$errorConstants[] = $const;
+					$errorConstant[] = $const;
 				}
 			}
 
 			$return['response']['errorCode'] = $errorCode;
 			$return['response']['errorMessage'] = $errorMessage;
-			$return['response']['errorConstants'] = $errorConstants;
+			$return['response']['errorConstant'] = $errorConstant;
 		} else {
 			if (
 				strpos(

@@ -16,7 +16,7 @@
 namespace Microservices\Supplement\Custom;
 
 use Microservices\App\Common;
-use Microservices\App\DbFunctions;
+use Microservices\App\DbCommonFunction;
 use Microservices\Supplement\Custom\CustomInterface;
 use Microservices\Supplement\Custom\CustomTrait;
 
@@ -51,7 +51,7 @@ class Category implements CustomInterface
 	public function __construct(Common &$api)
 	{
 		$this->api = &$api;
-		DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Slave');
+		DbCommonFunction::setDbConnection($this->api->req, fetchFrom: 'Slave');
 	}
 
 	/**
@@ -82,9 +82,9 @@ class Category implements CustomInterface
 			':is_deleted' => 'No',
 			':parent_id' => 0,
 		];
-		DbFunctions::$slaveDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
-		$rows = DbFunctions::$slaveDb[$this->api->req->cId]->fetchAll();
-		DbFunctions::$slaveDb[$this->api->req->cId]->closeCursor();
+		DbCommonFunction::$slaveDb[$this->api->req->cId]->execDbQuery(sql: $sql, params: $sqlParams);
+		$rows = DbCommonFunction::$slaveDb[$this->api->req->cId]->fetchAll();
+		DbCommonFunction::$slaveDb[$this->api->req->cId]->closeCursor();
 		$this->api->res->dataEncode->addKeyData(key: 'Results', data: $rows);
 		return [true];
 	}

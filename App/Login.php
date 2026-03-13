@@ -17,10 +17,10 @@ namespace Microservices\App;
 
 use Microservices\App\CacheKey;
 use Microservices\App\Common;
-use Microservices\App\Constants;
-use Microservices\App\DbFunctions;
+use Microservices\App\Constant;
+use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
-use Microservices\App\Functions;
+use Microservices\App\CommonFunction;
 use Microservices\App\HttpStatus;
 use Microservices\App\RateLimiter;
 use Microservices\App\SessionHandler\Session;
@@ -112,7 +112,7 @@ class Login
 	public function process(): bool
 	{
 		// Check request method is POST
-		if ($this->api->req->METHOD !== Constants::$POST) {
+		if ($this->api->req->METHOD !== Constant::$POST) {
 			throw new \Exception(
 				message: 'Invalid request method',
 				code: HttpStatus::$NotFound
@@ -164,7 +164,7 @@ class Login
 	private function loadPayload(): void
 	{
 		// Check request method is POST
-		if ($this->api->req->METHOD !== Constants::$POST) {
+		if ($this->api->req->METHOD !== Constant::$POST) {
 			throw new \Exception(
 				message: 'Invalid request method',
 				code: HttpStatus::$NotFound
@@ -247,7 +247,7 @@ class Login
 		$cidrChecked = false;
 		foreach ([$cCidrKey, $gCidrKey, $uCidrKey] as $key) {
 			if (!$cidrChecked) {
-				$cidrChecked = Functions::checkCacheCidr(
+				$cidrChecked = CommonFunction::checkCacheCidr(
 					IP: $this->api->req->IP,
 					againstCacheKey: $key
 				);
@@ -312,7 +312,7 @@ class Login
 				$this->setCache(
 					key: CacheKey::token(token: $token),
 					value: '{}',
-					expire: Constants::$TOKEN_EXPIRY_TIME
+					expire: Constant::$TOKEN_EXPIRY_TIME
 				);
 				$userTokenKeyData = [
 					'token' => $token,
@@ -377,7 +377,7 @@ class Login
 								&& $userConcurrencyKeyData === $token
 							) {
 								$timeLeft = Env::$timestamp - $tData['timestamp'];
-								if ((Constants::$TOKEN_EXPIRY_TIME - $timeLeft) > 0) {
+								if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) > 0) {
 									$tokenFoundData = $tData;
 									$tokenFound = true;
 									continue;
@@ -389,7 +389,7 @@ class Login
 								&& $userConcurrencyKeyData === $token
 							) {
 								$timeLeft = Env::$timestamp - $tData['timestamp'];
-								if ((Constants::$TOKEN_EXPIRY_TIME - $timeLeft) > 0) {
+								if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) > 0) {
 									$tokenFoundData = $tData;
 									$tokenFound = true;
 									continue;
@@ -397,7 +397,7 @@ class Login
 							}
 						}
 						$timeLeft = Env::$timestamp - $tData['timestamp'];
-						if ((Constants::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
+						if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
 							$this->deleteCache(
 								key: CacheKey::token(
 									token: $token
@@ -438,7 +438,7 @@ class Login
 				value: json_encode(
 					value: $this->uDetails
 				),
-				expire: Constants::$TOKEN_EXPIRY_TIME
+				expire: Constant::$TOKEN_EXPIRY_TIME
 			);
 			if (Env::$enableConcurrentLogins) {
 				$userTokenKeyData[$newTokenData['token']] = $newTokenData;
@@ -467,7 +467,7 @@ class Login
 			value: json_encode(
 				value: $userTokenKeyData
 			),
-			expire: Constants::$TOKEN_EXPIRY_TIME
+			expire: Constant::$TOKEN_EXPIRY_TIME
 		);
 		if (Env::$enableConcurrentLogins) {
 			$this->setCache(
@@ -479,7 +479,7 @@ class Login
 		$time = Env::$timestamp - $tokenFoundData['timestamp'];
 		$output = [
 			'Token' => $tokenFoundData['token'],
-			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constants::$TOKEN_EXPIRY_TIME - $time))
+			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constant::$TOKEN_EXPIRY_TIME - $time))
 		];
 
 		$this->api->initResponse();
@@ -496,8 +496,8 @@ class Login
 	 */
 	private function updateDB(&$userData): void
 	{
-		DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
-		$this->dbServerObj = &DbFunctions::$masterDb[$this->api->req->cId];
+		DbCommonFunction::setDbConnection($this->api->req, fetchFrom: 'Master');
+		$this->dbServerObj = &DbCommonFunction::$masterDb[$this->api->req->cId];
 
 		$usersTable = $this->api->req->usersTable;
 		$this->dbServerObj->execDbQuery(
@@ -568,7 +568,7 @@ class Login
 							&& $sessionId === session_id()
 						) {
 							$timeLeft = Env::$timestamp - $tData['sessionExpiryTimestamp'];
-							if ((Constants::$TOKEN_EXPIRY_TIME - $timeLeft) > 0) {
+							if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) > 0) {
 								$sessionFoundData = $tData;
 								$sessionFound = true;
 								continue;
@@ -580,7 +580,7 @@ class Login
 							&& $sessionId === session_id()
 						) {
 							$timeLeft = Env::$timestamp - $tData['sessionExpiryTimestamp'];
-							if ((Constants::$TOKEN_EXPIRY_TIME - $timeLeft) > 0) {
+							if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) > 0) {
 								$sessionFoundData = $tData;
 								$sessionFound = true;
 								continue;
@@ -589,7 +589,7 @@ class Login
 					}
 					if (isset($tData['sessionExpiryTimestamp'])) {
 						$timeLeft = Env::$timestamp - $tData['sessionExpiryTimestamp'];
-						if ((Constants::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
+						if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
 							Session::deleteSession(sessionId: $sessionId);
 							unset($userSessionKeyData[$sessionId]);
 						}
@@ -615,7 +615,7 @@ class Login
 				'sessionId' => session_id(),
 				'timestamp' => Env::$timestamp,
 				'uniqueHttpRequestHash' => $uniqueHttpRequestHash,
-				'sessionExpiryTimestamp' => (Env::$timestamp + Constants::$TOKEN_EXPIRY_TIME)
+				'sessionExpiryTimestamp' => (Env::$timestamp + Constant::$TOKEN_EXPIRY_TIME)
 			];
 
 			unset($this->uDetails['password_hash']);
@@ -652,7 +652,7 @@ class Login
 			value: json_encode(
 				value: $userSessionKeyData
 			),
-			expire: Constants::$TOKEN_EXPIRY_TIME
+			expire: Constant::$TOKEN_EXPIRY_TIME
 		);
 		if (Env::$enableConcurrentLogins) {
 			$this->setCache(
@@ -664,7 +664,7 @@ class Login
 		$time = Env::$timestamp - $sessionFoundData['sessionExpiryTimestamp'];
 		$output = [
 			'SessionId' => $sessionFoundData['sessionId'],
-			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constants::$TOKEN_EXPIRY_TIME - $time))
+			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constant::$TOKEN_EXPIRY_TIME - $time))
 		];
 
 		$this->api->initResponse();
@@ -680,7 +680,7 @@ class Login
 	 * @return mixed
 	 */
 	private function cacheExists($key) {
-		return DbFunctions::$gCacheServer->cacheExists(key: $key);
+		return DbCommonFunction::$gCacheServer->cacheExists(key: $key);
 	}
 
 	/**
@@ -691,7 +691,7 @@ class Login
 	 * @return mixed
 	 */
 	private function getCache($key) {
-		return DbFunctions::$gCacheServer->getCache(key: $key);
+		return DbCommonFunction::$gCacheServer->getCache(key: $key);
 	}
 
 	/**
@@ -704,7 +704,7 @@ class Login
 	 * @return mixed
 	 */
 	private function setCache($key, $value, $expire = 0) {
-		return DbFunctions::$gCacheServer->setCache(
+		return DbCommonFunction::$gCacheServer->setCache(
 			key: $key,
 			value: $value,
 			expire: $expire
@@ -719,6 +719,6 @@ class Login
 	 * @return mixed
 	 */
 	private function deleteCache($key) {
-		return DbFunctions::$gCacheServer->deleteCache(key: $key);
+		return DbCommonFunction::$gCacheServer->deleteCache(key: $key);
 	}
 }

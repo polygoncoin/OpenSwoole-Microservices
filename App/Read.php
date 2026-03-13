@@ -18,7 +18,7 @@ namespace Microservices\App;
 use Microservices\App\AppTrait;
 use Microservices\App\Common;
 use Microservices\App\DataRepresentation\DataEncode;
-use Microservices\App\DbFunctions;
+use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\Export;
 use Microservices\App\Hook;
@@ -104,10 +104,10 @@ class Read
 	{
 		$Env = __NAMESPACE__ . '\Env';
 
-		// Load Queries
+		// Load Sql
 		$rSqlConfig = include $this->api->req->rParser->sqlConfigFile;
 
-		// Rate Limiting request if configured for Route Queries.
+		// Rate Limiting request if configured for Route Sql.
 		$this->rateLimitRoute(sqlConfig: $rSqlConfig);
 
 		// Lag Response
@@ -124,7 +124,7 @@ class Read
 			&& isset($rSqlConfig['cacheKey'])
 			&& !isset($this->api->req->s['queryParams']['orderBy'])
 		) {
-			$json = DbFunctions::getQueryCache(
+			$json = DbCommonFunction::getQueryCache(
 				cacheKey: $rSqlConfig['cacheKey']
 			);
 			if ($json !== null) {
@@ -169,11 +169,11 @@ class Read
 
 		// Set Server mode to execute query on - Read / Write Server
 		$fetchFrom = $rSqlConfig['fetchFrom'] ?? 'Slave';
-		DbFunctions::setDbConnection($this->api->req, fetchFrom: $fetchFrom);
+		DbCommonFunction::setDbConnection($this->api->req, fetchFrom: $fetchFrom);
 		$fetchFrom = strtolower($fetchFrom);
 		$this->modeColumn = $fetchFrom . '_db_server_query_placeholder';
 		$dbServerObj = $fetchFrom . 'Db';
-		$this->dbServerObj = &(DbFunctions::$$dbServerObj)[$this->api->req->cId];
+		$this->dbServerObj = &(DbCommonFunction::$$dbServerObj)[$this->api->req->cId];
 
 		// Use result set recursively flag
 		$useResultSet = $this->getUseHierarchy(
@@ -202,7 +202,7 @@ class Read
 			&& $toBeCached
 		) {
 			$json = $this->dataEncode->getData();
-			DbFunctions::setQueryCache(
+			DbCommonFunction::setQueryCache(
 				cacheKey: $rSqlConfig['cacheKey'],
 				json: $json
 			);
@@ -288,7 +288,7 @@ class Read
 	): void {
 		$isObject = $this->isObject(arr: $rSqlConfig);
 
-		// Execute Pre Sql Hooks
+		// Execute Pre Sql Hook
 		if (isset($rSqlConfig['__PRE-SQL-HOOKS__'])) {
 			if ($this->hook === null) {
 				$this->hook = new Hook($this->api);
@@ -354,7 +354,7 @@ class Read
 			);
 		}
 
-		// Execute Post Sql Hooks
+		// Execute Post Sql Hook
 		if (isset($rSqlConfig['__POST-SQL-HOOKS__'])) {
 			if ($this->hook === null) {
 				$this->hook = new Hook($this->api);
@@ -685,10 +685,10 @@ class Read
 		$dbDetails = [];
 		switch ($serverMode) {
 			case 'Master':
-				$dbDetails = DbFunctions::getDbMasterDetails($this->api->req);
+				$dbDetails = DbCommonFunction::getDbMasterDetails($this->api->req);
 				break;
 			case 'Slave':
-				$dbDetails = DbFunctions::getDbSlaveDetails($this->api->req);
+				$dbDetails = DbCommonFunction::getDbSlaveDetails($this->api->req);
 				break;
 		}
 

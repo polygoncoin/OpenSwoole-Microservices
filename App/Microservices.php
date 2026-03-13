@@ -17,7 +17,7 @@ namespace Microservices\App;
 
 use Microservices\App\Common;
 use Microservices\App\Env;
-use Microservices\App\Functions;
+use Microservices\App\CommonFunction;
 use Microservices\App\Gateway;
 use Microservices\App\HttpStatus;
 
@@ -154,7 +154,7 @@ class Microservices
 					Env::$enableReloadRequest
 					&& $this->api->req->ROUTE === '/' . Env::$reloadRequestRoutePrefix
 				):
-				$isValidIp = Functions::checkCidr(
+				$isValidIp = CommonFunction::checkCidr(
 					IP: $this->api->req->IP,
 					cidrString: Env::$reloadRestrictedCidr
 				);

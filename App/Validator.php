@@ -16,7 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\Common;
-use Microservices\App\DbFunctions;
+use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\Validation\CustomerValidator;
 use Microservices\Validation\GlobalValidator;
@@ -58,7 +58,7 @@ class Validator
 	public function __construct(Common &$api)
 	{
 		$this->api = &$api;
-		if (DbFunctions::$masterDb[$this->api->req->cId]->dbServerDB === Env::$gDbServerDB) {
+		if (DbCommonFunction::$masterDb[$this->api->req->cId]->dbServerDB === Env::$gDbServerDB) {
 			$this->v = new GlobalValidator($this->api);
 		} else {
 			$this->v = new CustomerValidator($this->api);

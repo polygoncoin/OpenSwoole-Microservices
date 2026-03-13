@@ -16,7 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\Common;
-use Microservices\App\Constants;
+use Microservices\App\Constant;
 use Microservices\App\HttpStatus;
 use Microservices\App\DropboxHandler\StreamVideo;
 
@@ -106,7 +106,7 @@ class Dropbox
 			return false;
 		}
 
-		$this->modeDropBox = Constants::$DROP_BOX_DIR
+		$this->modeDropBox = Constant::$DROP_BOX_DIR
 			. DIRECTORY_SEPARATOR . $mode;
 
 		$filePath = DIRECTORY_SEPARATOR . trim(

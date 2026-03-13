@@ -35,7 +35,7 @@ return [
 			// 'fetchFrom' => 'variables', // to fetch values as per __VARIABLES__ keys
 			'fetchFromValue' => 'id',                       // key (id)
 			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
-			'required' => Constants::$REQUIRED              // Represents required field
+			'required' => Constant::$REQUIRED              // Represents required field
 		],
 			// Fetch value from function
 			'column' => 'password',
@@ -65,7 +65,7 @@ return [
 			// 'fetchFrom' => 'variables', // to fetch values as per __VARIABLES__ keys
 			'fetchFromValue' => 'id',                       // key (id)
 			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
-			'required' => Constants::$REQUIRED              // Represents required field
+			'required' => Constant::$REQUIRED              // Represents required field
 		],
 		[...]
 	],
@@ -116,7 +116,7 @@ return [
 					// 'fetchFrom' => 'variables', // to fetch values as per current module/<sub-key> __VARIABLES__ keys
 					'fetchFromValue' => 'id',                       // key (id)
 					'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
-					'required' => Constants::$REQUIRED              // Represents required field
+					'required' => Constant::$REQUIRED              // Represents required field
 				],
 				// Database DataTypes settings required when useHierarchy is true
 				// to validate each data set before procedding forward
@@ -215,12 +215,12 @@ return [
 		[...]
 	],
 
-	// Hooks
-	'__PRE-SQL-HOOKS__' => [// Array of Hooks class name in exec order
+	// Hook
+	'__PRE-SQL-HOOKS__' => [// Array of Hook class name in exec order
 		'Hook_Example1',
 		'...'
 	],
-	'__POST-SQL-HOOKS__' => [// Array of Hooks class name in exec order
+	'__POST-SQL-HOOKS__' => [// Array of Hook class name in exec order
 		'Hook_Example2',
 		'...'
 	],
@@ -285,7 +285,7 @@ return [
 ```PHP
 '__SUB-QUERY__' => [
 	//Here the module1 properties are reused for write operation.
-	'module1' => include $Constants::$ROOT . DIRECTORY_SEPARATOR . 'Config/Queries/CustomerDB/Common/reusefilename.php',
+	'module1' => include $Constant::$ROOT . DIRECTORY_SEPARATOR . 'Config/Sql/CustomerDB/Common/reusefilename.php',
 ]
 ```
 
@@ -311,7 +311,7 @@ return [
 			// 'fetchFrom' => 'custom', // Static values
 			'fetchFromValue' => 'id',                       // key (id)
 			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
-			'required' => Constants::$REQUIRED              // Represents required field
+			'required' => Constant::$REQUIRED              // Represents required field
 		],
 		[...]
 	]
@@ -338,7 +338,7 @@ return [
 			// 'fetchFrom' => 'custom', // Static values
 			'fetchFromValue' => 'id',                       // key (id)
 			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
-			'required' => Constants::$REQUIRED              // Represents required field
+			'required' => Constant::$REQUIRED              // Represents required field
 		],
 		[...]
 	],
@@ -371,7 +371,7 @@ return [
 					// 'fetchFrom' => 'custom', // Static values
 					'fetchFromValue' => 'id',                       // key (id)
 					'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
-					'required' => Constants::$REQUIRED              // Represents required field
+					'required' => Constant::$REQUIRED              // Represents required field
 				],
 				// Database DataTypes settings required when useHierarchy is true
 				// to validate each data set before procedding forward
@@ -455,12 +455,12 @@ return [
 		[...]
 	],
 
-	// Hooks
-	'__PRE-SQL-HOOKS__' => [// Array of Hooks class name in exec order
+	// Hook
+	'__PRE-SQL-HOOKS__' => [// Array of Hook class name in exec order
 		'Hook_Example1',
 		'...'
 	],
-	'__POST-SQL-HOOKS__' => [// Array of Hooks class name in exec order
+	'__POST-SQL-HOOKS__' => [// Array of Hook class name in exec order
 		'Hook_Example2',
 		'...'
 	],

@@ -6,6 +6,6 @@
 .env.rateLimiting
 .env.session
 /App/SessionHandlers/sessions/*
-/Logs/*
+/Log/*
 /vendor/
-/WebCookies/*
+/WebCookie/*

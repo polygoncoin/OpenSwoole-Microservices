@@ -18,7 +18,7 @@ namespace Microservices\App;
 use Microservices\App\AppTrait;
 use Microservices\App\Common;
 use Microservices\App\DataRepresentation\DataEncode;
-use Microservices\App\DbFunctions;
+use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\HttpStatus;
@@ -115,10 +115,10 @@ class Supplement
 	{
 		$Env = __NAMESPACE__ . '\Env';
 
-		// Load Queries
+		// Load Sql
 		$sSqlConfig = include $this->api->req->rParser->sqlConfigFile;
 
-		// Rate Limiting request if configured for Route Queries.
+		// Rate Limiting request if configured for Route Sql.
 		$this->rateLimitRoute(sqlConfig: $sSqlConfig);
 
 		// Use results in where clause of sub queries recursively
@@ -184,8 +184,8 @@ class Supplement
 			? $sSqlConfig['isTransaction'] : false;
 
 		// Set Server mode to execute query on - Read / Write Server
-		DbFunctions::setDbConnection($this->api->req, fetchFrom: 'Master');
-		$this->dbServerObj = &DbFunctions::$masterDb[$this->api->req->cId];
+		DbCommonFunction::setDbConnection($this->api->req, fetchFrom: 'Master');
+		$this->dbServerObj = &DbCommonFunction::$masterDb[$this->api->req->cId];
 
 		$this->processSupplement(
 			sSqlConfig: $sSqlConfig,
@@ -197,7 +197,7 @@ class Supplement
 				$i < $iCount;
 				$i++
 			) {
-				DbFunctions::delQueryCache(
+				DbCommonFunction::delQueryCache(
 					cacheKey: $sSqlConfig['affectedCacheKeys'][$i]
 				);
 			}
@@ -342,7 +342,7 @@ class Supplement
 					$arr['Response'] = $response;
 
 					if ($idempotentWindow) {
-						DbFunctions::$gCacheServer->setCache(
+						DbCommonFunction::$gCacheServer->setCache(
 							key: $hashKey,
 							value: json_encode(value: $arr),
 							expire: $idempotentWindow
@@ -485,7 +485,7 @@ class Supplement
 				continue;
 			}
 
-			// Execute Pre Sql Hooks
+			// Execute Pre Sql Hook
 			if (isset($sSqlConfig['__PRE-SQL-HOOKS__'])) {
 				if ($this->hook === null) {
 					$this->hook = new Hook($this->api);
@@ -518,7 +518,7 @@ class Supplement
 				);
 			}
 
-			// Execute Post Sql Hooks
+			// Execute Post Sql Hook
 			if (isset($sSqlConfig['__POST-SQL-HOOKS__'])) {
 				if ($this->hook === null) {
 					$this->hook = new Hook($this->api);

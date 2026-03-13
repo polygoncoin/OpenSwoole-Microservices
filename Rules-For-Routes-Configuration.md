@@ -1,4 +1,4 @@
-# Routes Configuration Rules
+# Route Configuration Rules
 
 ## Available configuration syntax explained
 
@@ -55,7 +55,7 @@ return [
 ];
 ```
 
-## Hooks
+## Hook
 
 ```PHP
 return [
@@ -115,7 +115,7 @@ public static $PrimaryKey = [
 ];
 ```
 
-## Special Routes
+## Special Route
 
 - Appending route with **/config** returns the payload information that should be supplied; both necessary and optional with desired format.
 

@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\DbFunctions;
+use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 
 /**
@@ -50,7 +50,7 @@ class RateLimiter
 			return;
 		}
 
-		$this->cacheServerObj = DbFunctions::connectCacheServer(
+		$this->cacheServerObj = DbCommonFunction::connectCacheServer(
 			cacheServerType: Env::$rateLimitServerType,
 			cacheServerHostname: Env::$rateLimitServerHostname,
 			cacheServerPort: Env::$rateLimitServerPort,

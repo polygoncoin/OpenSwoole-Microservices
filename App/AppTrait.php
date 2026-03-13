@@ -17,9 +17,9 @@ namespace Microservices\App;
 
 use Microservices\App\Start;
 use Microservices\App\Counter;
-use Microservices\App\Constants;
+use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
-use Microservices\App\DbFunctions;
+use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\RateLimiter;
@@ -624,7 +624,7 @@ trait AppTrait
 				'fetchFrom' => 'queryParams',
 				'fetchFromValue' => 'page',
 				'dataType' => DatabaseServerDataType::$INT,
-				'necessary' => Constants::$REQUIRED
+				'necessary' => Constant::$REQUIRED
 			];
 			$sqlConfig['__CONFIG__'][] = [
 				'column' => 'perPage',
@@ -760,7 +760,7 @@ trait AppTrait
 	}
 
 	/**
-	 * Rate Limiting request if configured for Route Queries
+	 * Rate Limiting request if configured for Route Sql
 	 *
 	 * @param array $sqlConfig Config from file
 	 *
@@ -841,10 +841,10 @@ trait AppTrait
 
 				$hash = json_encode(value: $payloadSignature);
 				$hashKey = md5(string: $hash);
-				if (DbFunctions::$gCacheServer->cacheExists(key: $hashKey)) {
+				if (DbCommonFunction::$gCacheServer->cacheExists(key: $hashKey)) {
 					$hashJson = str_replace(
 						search: 'JSON',
-						replace: DbFunctions::$gCacheServer->getCache(key: $hashKey),
+						replace: DbCommonFunction::$gCacheServer->getCache(key: $hashKey),
 						subject: '{"Idempotent": JSON, "Status": 200}'
 					);
 				}
@@ -883,13 +883,13 @@ trait AppTrait
 			$hash = json_encode(value: $payloadSignature);
 			$hashKey = 'LAG:' . md5(string: $hash);
 
-			if (DbFunctions::$gCacheServer->cacheExists(key: $hashKey)) {
-				$noOfRequest = DbFunctions::$gCacheServer->getCache(key: $hashKey);
+			if (DbCommonFunction::$gCacheServer->cacheExists(key: $hashKey)) {
+				$noOfRequest = DbCommonFunction::$gCacheServer->getCache(key: $hashKey);
 			} else {
 				$noOfRequest = 0;
 			}
 
-			DbFunctions::$gCacheServer->setCache(
+			DbCommonFunction::$gCacheServer->setCache(
 				key: $hashKey,
 				value: ++$noOfRequest,
 				expire: 3600

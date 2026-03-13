@@ -1,0 +1,53 @@
+<?php
+
+/**
+ * API Query config
+ * php version 8.3
+ *
+ * @category  API_Query_Config
+ * @package   Openswoole_Microservices
+ * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
+ * @copyright © 2026 Ramesh N. Jangid (Sharma)
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
+
+namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\UserGroup\PATCH;
+
+use Microservices\App\Constant;
+use Microservices\App\DatabaseServerDataType;
+
+return array_merge(
+	require Constant::$AUTH_QUERIES_DIR
+		. DIRECTORY_SEPARATOR . 'CustomerDB'
+		. DIRECTORY_SEPARATOR . 'Common'
+		. DIRECTORY_SEPARATOR . 'Registration.php',
+	[
+		'__SET__' => [
+			[
+				'column' => 'firstname',
+				'fetchFrom' => 'payload',
+				'fetchFromValue' => 'firstname'
+			],
+			[
+				'column' => 'lastname',
+				'fetchFrom' => 'payload',
+				'fetchFromValue' => 'lastname'
+			],
+			[
+				'column' => 'email',
+				'fetchFrom' => 'payload',
+				'fetchFromValue' => 'email'
+			],
+		],
+		'__WHERE__' => [
+			[
+				'column' => 'id',
+				'fetchFrom' => 'routeParams',
+				'fetchFromValue' => 'id',
+				'dataType' => DatabaseServerDataType::$PrimaryKey
+			]
+		],
+	]
+);

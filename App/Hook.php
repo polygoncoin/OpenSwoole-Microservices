@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Constants;
+use Microservices\App\Constant;
 use Microservices\App\HttpStatus;
 
 /**
@@ -61,11 +61,11 @@ class Hook
 		if (is_array(value: $hookConfig)) {
 			for ($i = 0, $iCount = count(value: $hookConfig); $i < $iCount; $i++) {
 				$hook = $hookConfig[$i];
-				$hookFile = Constants::$WWW
-					. DIRECTORY_SEPARATOR . 'Hooks'
+				$hookFile = Constant::$WWW
+					. DIRECTORY_SEPARATOR . 'Hook'
 					. DIRECTORY_SEPARATOR . $hook . '.php';
 				if (file_exists(filename: $hookFile)) {
-					$hookClass = 'Microservices\\Hooks\\' . $hook;
+					$hookClass = 'Microservices\\Hook\\' . $hook;
 					$hookObj = new $hookClass($this->api);
 					if ($hookObj->init()) {
 						$hookObj->process();
