@@ -2,7 +2,7 @@
 
 ## Defining Test Cases in file
 
-To start with one can create a new file eg. <some>Tests.php containing a sample code
+To start with one can create a new file eg. <some>Test.php containing a sample code
 
 ```PHP
 // $apiVersion = 'X-API-Version: v1.0.0';
@@ -97,9 +97,9 @@ One can add any number of files and respective route file entries.
 
 To access these files one can define resepctive route and access them in browser.<br/>
 
-index.php/?route=/&lt;some&gt; Tests (to be configured in index.php)
+index.php/?route=/&lt;some&gt; Test (to be configured in index.php)
 
-If you have multiple test cases files for the project and want to check for all of them; one can configure same in Tests.php and acceess via browser.
+If you have multiple test cases files for the project and want to check for all of them; one can configure same in Test.php and acceess via browser.
 
 index.php/?route=/tests (configured in index.php)
 

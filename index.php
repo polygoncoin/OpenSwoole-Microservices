@@ -22,7 +22,7 @@ use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\CommonFunction;
 use Microservices\App\Start;
-use Microservices\TestCase\Tests;
+use Microservices\TestCase\Test;
 
 define('ROOT', __DIR__);
 define('ROUTE_URL_PARAM', 'route');
@@ -119,7 +119,7 @@ $server->on(
 				]
 			)
 		) {
-			$tests = new Tests();
+			$tests = new Test();
 			switch ($http['get'][ROUTE_URL_PARAM]) {
 				case '/tests':
 					$response->end('<pre>'.print_r(value: $tests->processTests(), return: true));

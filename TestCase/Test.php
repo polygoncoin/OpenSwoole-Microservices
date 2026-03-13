@@ -4,7 +4,7 @@
  * Test Case
  * php version 8.3
  *
- * @category  Tests
+ * @category  Test
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -16,10 +16,10 @@
 namespace Microservices\TestCase;
 
 /**
- * Tests
+ * Test
  * php version 8.3
  *
- * @category  Tests
+ * @category  Test
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -27,7 +27,7 @@ namespace Microservices\TestCase;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class Tests
+class Test
 {
 	/**
 	 * Process Auth based request
@@ -52,7 +52,7 @@ class Tests
 	 */
 	public function processAuth(): array
 	{
-		return include __DIR__ . DIRECTORY_SEPARATOR . 'AuthTests.php';
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'AuthTest.php';
 	}
 
 	/**
@@ -62,7 +62,7 @@ class Tests
 	 */
 	public function processOpen(): array
 	{
-		return include __DIR__ . DIRECTORY_SEPARATOR . 'OpenTests.php';
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'OpenTest.php';
 	}
 
 	/**
@@ -72,7 +72,7 @@ class Tests
 	 */
 	public function processXml(): array
 	{
-		return include __DIR__ . DIRECTORY_SEPARATOR . 'OpenTestsXml.php';
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'OpenTestXml.php';
 	}
 
 	/**
