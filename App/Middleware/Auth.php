@@ -15,7 +15,7 @@
 
 namespace Microservices\App\Middleware;
 
-use Microservices\App\CacheKey;
+use Microservices\App\CacheServerKey;
 use Microservices\App\Http;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
@@ -79,7 +79,7 @@ class Auth
 			)
 		) {
 			$this->http->req->s['token'] = $matches[1];
-			$tokenKey = CacheKey::token(
+			$tokenKey = CacheServerKey::token(
 				token: $this->http->req->s['token']
 			);
 			if (
@@ -99,7 +99,7 @@ class Auth
 				associative: true
 			);
 			if (Env::$enableConcurrentLogins) {
-				$userConcurrencyKey = CacheKey::userConcurrency(
+				$userConcurrencyKey = CacheServerKey::userConcurrency(
 					uID: $this->http->req->s['uDetails']['id']
 				);
 				if (DbCommonFunction::$gCacheServer->cacheExists(key: $userConcurrencyKey)) {
@@ -160,7 +160,7 @@ class Auth
 			);
 		}
 
-		$gKey = CacheKey::group(
+		$gKey = CacheServerKey::group(
 			gID: $this->http->req->s['uDetails']['group_id']
 		);
 		if (!DbCommonFunction::$gCacheServer->cacheExists(key: $gKey)) {

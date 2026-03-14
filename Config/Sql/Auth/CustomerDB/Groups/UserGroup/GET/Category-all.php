@@ -16,7 +16,7 @@
 namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\UserGroup\GET;
 
 use Microservices\App\Constant;
-use Microservices\App\CacheServerAuthKey;
+use Microservices\App\QueryCacheServerKey;
 
 return [
 	'countQuery' => 'SELECT count(1) as `count` FROM `category` WHERE __WHERE__',
@@ -90,7 +90,11 @@ return [
 	],
 	'useResultSet' => true,
 	'fetchFrom' => 'Master',
-	// 'cacheKey' => CacheServerAuthKey::$Category,
+	// 'cacheKey' => QueryCacheServerKey::category(
+	// 	customerID: $this->http->req->s['cDetails']['id'],
+	// 	groupID: $this->http->req->s['gDetails']['id'],
+	// 	isOpenToWebRequest: false
+	// ),
 	'oRepresentation' => 'PHP',
 	'phpFile' => Constant::$PHP_DIR . DIRECTORY_SEPARATOR . 'index.php'
 ];

@@ -15,8 +15,6 @@
 
 namespace Microservices\App;
 
-use Microservices\App\CacheServerAuthKey;
-use Microservices\App\CacheServerOpenKey;
 use Microservices\App\Env;
 use Microservices\App\HttpRequest;
 use Microservices\App\HttpStatus;
@@ -352,26 +350,6 @@ class DbCommonFunction
 		}
 
 		return;
-	}
-
-	/**
-	 * Set Cache prefix key
-	 *
-	 * @param HttpRequest $req
-	 *
-	 * @return void
-	 */
-	public static function setCacheServerAuthKey(&$req): void
-	{
-		if ($req->open) {
-			CacheServerOpenKey::init(cID: $req->s['cDetails']['id']);
-		} else {
-			CacheServerAuthKey::init(
-				cID: $req->s['cDetails']['id'],
-				gID: $req->s['gDetails']['id'],
-				uID: $req->s['uDetails']['id']
-			);
-		}
 	}
 
 	/**

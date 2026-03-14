@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\CacheKey;
+use Microservices\App\CacheServerKey;
 use Microservices\App\Http;
 use Microservices\App\Constant;
 use Microservices\App\DbCommonFunction;
@@ -196,7 +196,7 @@ class Login
 	private function loadUserDetails(): void
 	{
 		$cID = $this->http->req->s['cDetails']['id'];
-		$customerUserKey = CacheKey::customerUser(
+		$customerUserKey = CacheServerKey::customerUser(
 			cID: $cID,
 			username: $this->payload['username']
 		);
@@ -234,13 +234,13 @@ class Login
 	{
 		$ipNumber = ip2long(ip: $this->http->iConfig['server']['httpRequestIP']);
 
-		$cCidrKey = CacheKey::cCidr(
+		$cCidrKey = CacheServerKey::cCidr(
 			cID: $this->http->req->s['cDetails']['id']
 		);
-		$gCidrKey = CacheKey::gCidr(
+		$gCidrKey = CacheServerKey::gCidr(
 			gID: $this->uDetails['group_id']
 		);
-		$uCidrKey = CacheKey::uCidr(
+		$uCidrKey = CacheServerKey::uCidr(
 			cID: $this->http->req->s['cDetails']['id'],
 			uID: $this->uDetails['id']
 		);
@@ -306,11 +306,11 @@ class Login
 
 			if (
 				!$this->cacheExists(
-					key: CacheKey::token(token: $token)
+					key: CacheServerKey::token(token: $token)
 				)
 			) {
 				$this->setCache(
-					key: CacheKey::token(token: $token),
+					key: CacheServerKey::token(token: $token),
 					value: '{}',
 					expire: Constant::$TOKEN_EXPIRY_TIME
 				);
@@ -333,7 +333,7 @@ class Login
 	{
 		$httpRequestHash = $this->http->iConfig['httpRequestHash'];
 
-		$userTokenKey = CacheKey::userToken(
+		$userTokenKey = CacheServerKey::userToken(
 			uID: $this->uDetails['id']
 		);
 
@@ -350,7 +350,7 @@ class Login
 		}
 
 		if (Env::$enableConcurrentLogins) {
-			$userConcurrencyKey = CacheKey::userConcurrency(
+			$userConcurrencyKey = CacheServerKey::userConcurrency(
 				uID: $this->uDetails['id']
 			);
 
@@ -369,7 +369,7 @@ class Login
 		if ($userTokenKeyExist) {
 			if (count($userTokenKeyData) > 0) {
 				foreach ($userTokenKeyData as $token => $tData) {
-					if ($this->cacheExists(key: CacheKey::token(token: $token))) {
+					if ($this->cacheExists(key: CacheServerKey::token(token: $token))) {
 						if (Env::$enableConcurrentLogins) {
 							if (
 								$tData['httpRequestHash'] === $httpRequestHash
@@ -399,7 +399,7 @@ class Login
 						$timeLeft = Env::$timestamp - $tData['timestamp'];
 						if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
 							$this->deleteCache(
-								key: CacheKey::token(
+								key: CacheServerKey::token(
 									token: $token
 								)
 							);
@@ -434,7 +434,7 @@ class Login
 			}
 
 			$this->setCache(
-				key: CacheKey::token(token: $newTokenData['token']),
+				key: CacheServerKey::token(token: $newTokenData['token']),
 				value: json_encode(
 					value: $this->uDetails
 				),
@@ -524,7 +524,7 @@ class Login
 	{
 		$httpRequestHash = $this->http->iConfig['httpRequestHash'];
 
-		$userSessionKey = CacheKey::userSessionId(
+		$userSessionKey = CacheServerKey::userSessionId(
 			uID: $this->uDetails['id']
 		);
 
@@ -541,7 +541,7 @@ class Login
 		}
 
 		if (Env::$enableConcurrentLogins) {
-			$userConcurrencyKey = CacheKey::userConcurrency(
+			$userConcurrencyKey = CacheServerKey::userConcurrency(
 				uID: $this->uDetails['id']
 			);
 

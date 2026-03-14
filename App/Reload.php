@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Load CacheServerKeys_Required
+ * Load Cache Server Key
  * php version 8.3
  *
  * @category  Reload
@@ -16,12 +16,12 @@
 namespace Microservices\App;
 
 use Microservices\App\AppTrait;
-use Microservices\App\CacheKey;
+use Microservices\App\CacheServerKey;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\CommonFunction;
 
 /**
- * Load CacheServerKeys_Required
+ * Load Cache Server Key
  * php version 8.3
  *
  * @category  Reload
@@ -85,7 +85,7 @@ class Reload
 			if ($cRow['allowed_cidr'] !== null) {
 				$cCidrs = CommonFunction::cidrsIpNumber(cidrString: $cRow['allowed_cidr']);
 				if (count(value: $cCidrs) > 0) {
-					$cCidrKey = CacheKey::cCidr(cID: $cRow['id']);
+					$cCidrKey = CacheServerKey::cCidr(cID: $cRow['id']);
 					DbCommonFunction::$gCacheServer->setCache(
 						key: $cCidrKey,
 						value: json_encode(value: $cCidrs)
@@ -93,7 +93,7 @@ class Reload
 				}
 			}
 			if (!empty($cRow['open_api_domain'])) {
-				$c_key = CacheKey::customerOpenToWeb(
+				$c_key = CacheServerKey::customerOpenToWeb(
 					domainName: $cRow['open_api_domain']
 				);
 				DbCommonFunction::$gCacheServer->setCache(
@@ -101,7 +101,7 @@ class Reload
 					value: json_encode(value: $cRow)
 				);
 			}
-			$c_key = CacheKey::customer(domainName: $cRow['api_domain']);
+			$c_key = CacheServerKey::customer(domainName: $cRow['api_domain']);
 			DbCommonFunction::$gCacheServer->setCache(
 				key: $c_key,
 				value: json_encode(value: $cRow)
@@ -130,7 +130,7 @@ class Reload
 				if ($uRow['allowed_cidr'] !== null) {
 					$uCidrs = CommonFunction::cidrsIpNumber(cidrString: $uRow['allowed_cidr']);
 					if (count(value: $uCidrs) > 0) {
-						$uCidrKey = CacheKey::uCidr(
+						$uCidrKey = CacheServerKey::uCidr(
 							cID: $cRow['id'],
 							uID: $uRow['id']
 						);
@@ -140,7 +140,7 @@ class Reload
 						);
 					}
 				}
-				$cu_key = CacheKey::customerUser(
+				$cu_key = CacheServerKey::customerUser(
 					cID: $cRow['id'],
 					username: $uRow['username']
 				);
@@ -172,12 +172,12 @@ class Reload
 		);
 
 		while ($gRow = DbCommonFunction::$gDbServer->fetch(\PDO::FETCH_ASSOC)) {
-			$g_key = CacheKey::group(gID: $gRow['id']);
+			$g_key = CacheServerKey::group(gID: $gRow['id']);
 			DbCommonFunction::$gCacheServer->setCache(key: $g_key, value: json_encode(value: $gRow));
 			if ($gRow['allowed_cidr'] !== null) {
 				$cidrs = CommonFunction::cidrsIpNumber(cidrString: $gRow['allowed_cidr']);
 				if (count(value: $cidrs) > 0) {
-					$cidrKey = CacheKey::gCidr(gID: $gRow['id']);
+					$cidrKey = CacheServerKey::gCidr(gID: $gRow['id']);
 					DbCommonFunction::$gCacheServer->setCache(
 						key: $cidrKey,
 						value: json_encode(value: $cidrs)
@@ -197,6 +197,6 @@ class Reload
 	 */
 	private function processToken($token): void
 	{
-		DbCommonFunction::$gCacheServer->deleteCache(key: CacheKey::token(token: $token));
+		DbCommonFunction::$gCacheServer->deleteCache(key: CacheServerKey::token(token: $token));
 	}
 }

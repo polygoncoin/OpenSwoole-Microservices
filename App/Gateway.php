@@ -82,7 +82,7 @@ class Gateway
 	{
 		$this->http->req->loadCustomerDetails();
 
-		if (!$this->http->req->open) {
+		if (!$this->http->req->isOpenToWebRequest) {
 			$this->http->req->auth->loadUserDetails();
 			$this->checkCidr();
 		}
@@ -101,7 +101,7 @@ class Gateway
 		// Customer Rate Limiting
 		$this->rateLimitCustomer();
 
-		if (!$this->http->req->open) {
+		if (!$this->http->req->isOpenToWebRequest) {
 			// Group Rate Limiting
 			$this->rateLimitGroup();
 
@@ -176,13 +176,13 @@ class Gateway
 			return;
 		}
 
-		$cCidrKey = CacheKey::cCidr(
+		$cCidrKey = CacheServerKey::cCidr(
 			cID: $this->http->req->s['cDetails']['id']
 		);
-		$gCidrKey = CacheKey::gCidr(
+		$gCidrKey = CacheServerKey::gCidr(
 			gID: $this->http->req->s['uDetails']['group_id']
 		);
-		$uCidrKey = CacheKey::uCidr(
+		$uCidrKey = CacheServerKey::uCidr(
 			cID: $this->http->req->s['cDetails']['id'],
 			uID: $this->http->req->s['uDetails']['id']
 		);

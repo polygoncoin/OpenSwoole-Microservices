@@ -15,7 +15,7 @@
 
 namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\UserGroup\POST;
 
-use Microservices\App\CacheServerAuthKey;
+use Microservices\App\QueryCacheServerKey;
 
 return [
 	'__QUERY__' => 'INSERT INTO `category` SET __SET__',
@@ -70,7 +70,15 @@ return [
 	],
 	'useHierarchy' => true,
 	'affectedCacheKeys' => [
-		CacheServerAuthKey::$Category,
-		CacheServerAuthKey::$Category1
+		QueryCacheServerKey::category(
+			customerID: $this->http->req->s['cDetails']['id'],
+			groupID: $this->http->req->s['gDetails']['id'],
+			isOpenToWebRequest: false
+		),
+		QueryCacheServerKey::category1(
+			customerID: $this->http->req->s['cDetails']['id'],
+			groupID: $this->http->req->s['gDetails']['id'],
+			isOpenToWebRequest: false
+		)
 	]
 ];

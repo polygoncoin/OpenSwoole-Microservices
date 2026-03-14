@@ -134,7 +134,7 @@ class RouteParser
 		// }
 
 		if ($routeFileLocation === null) {
-			if ($this->http->req->open) {
+			if ($this->http->req->isOpenToWebRequest) {
 				$routeFileLocation = Constant::$OPEN_ROUTES_DIR
 					. DIRECTORY_SEPARATOR . $this->http->iConfig['server']['httpMethod'] . 'routes.php';
 			} else {

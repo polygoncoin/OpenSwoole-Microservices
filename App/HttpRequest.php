@@ -15,7 +15,7 @@
 
 namespace Microservices\App;
 
-use Microservices\App\CacheKey;
+use Microservices\App\CacheServerKey;
 use Microservices\App\Http;
 use Microservices\App\Constant;
 use Microservices\App\DataRepresentation\DataDecode;
@@ -69,11 +69,11 @@ class HttpRequest
 	public $s = null;
 
 	/**
-	 * Open To World Request
+	 * Open To Web Request
 	 *
 	 * @var null|bool
 	 */
-	public $open = null;
+	public $isOpenToWebRequest = null;
 
 	/**
 	 * Payload stream
@@ -126,11 +126,11 @@ class HttpRequest
 					&& isset($this->http->iConfig['header']['tokenHeader'])
 					&& $this->http->iConfig['header']['tokenHeader'] !== null
 				) {
-					$this->open = false;
+					$this->isOpenToWebRequest = false;
 				} elseif ($this->http->iConfig['get'][ROUTE_URL_PARAM] === '/login') {
-					$this->open = false;
+					$this->isOpenToWebRequest = false;
 				} elseif (Env::$enableOpenRequest) {
-					$this->open = true;
+					$this->isOpenToWebRequest = true;
 				}
 				break;
 			case 'Session':
@@ -145,7 +145,7 @@ class HttpRequest
 						);
 					}
 					if (Env::$enableConcurrentLogins) {
-						$userConcurrencyKey = CacheKey::userConcurrency(
+						$userConcurrencyKey = CacheServerKey::userConcurrency(
 							uID: $_SESSION['id']
 						);
 						$sessionId = session_id();
@@ -175,23 +175,23 @@ class HttpRequest
 							);
 						}
 					}
-					$this->open = false;
+					$this->isOpenToWebRequest = false;
 				} elseif ($this->http->iConfig['get'][ROUTE_URL_PARAM] === '/login') {
-					$this->open = false;
+					$this->isOpenToWebRequest = false;
 				} else {
-					$this->open = true;
+					$this->isOpenToWebRequest = true;
 				}
 				break;
 		}
 
-		if ($this->open === null) {
+		if ($this->isOpenToWebRequest === null) {
 			throw new \Exception(
 				message: "Open to web & Auth based request are disabled",
 				code: HttpStatus::$InternalServerError
 			);
 		}
 		if (
-			$this->open === true
+			$this->isOpenToWebRequest === true
 			&& !Env::$enableOpenRequest
 		) {
 			throw new \Exception(
@@ -200,7 +200,7 @@ class HttpRequest
 			);
 		}
 		if (
-			$this->open === false
+			$this->isOpenToWebRequest === false
 			&& !Env::$enableAuthRequest
 		) {
 			throw new \Exception(
@@ -209,7 +209,7 @@ class HttpRequest
 			);
 		}
 
-		if (!$this->open) {
+		if (!$this->isOpenToWebRequest) {
 			$this->auth = new Auth(http: $this->http);
 		}
 
@@ -225,13 +225,12 @@ class HttpRequest
 	{
 		$this->loadCustomerDetails();
 
-		if (!$this->open) {
+		if (!$this->isOpenToWebRequest) {
 			$this->auth->loadUserDetails();
 			$this->auth->loadGroupDetails();
 		}
 
 		$this->rParser->parseRoute();
-		DbCommonFunction::setCacheServerAuthKey($this);
 
 		return true;
 	}
@@ -250,10 +249,10 @@ class HttpRequest
 
 		DbCommonFunction::connectGlobalCacheServer();
 
-		if ($this->open) {
-			$cKey = CacheKey::customerOpenToWeb(domainName: $this->http->iConfig['server']['domainName']);
+		if ($this->isOpenToWebRequest) {
+			$cKey = CacheServerKey::customerOpenToWeb(domainName: $this->http->iConfig['server']['domainName']);
 		} else {
-			$cKey = CacheKey::customer(domainName: $this->http->iConfig['server']['domainName']);
+			$cKey = CacheServerKey::customer(domainName: $this->http->iConfig['server']['domainName']);
 		}
 		if (!DbCommonFunction::$gCacheServer->cacheExists(key: $cKey)) {
 			throw new \Exception(

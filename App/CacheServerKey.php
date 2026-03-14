@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Server side Cache keys
+ * Cache Server Key
  * php version 8.3
  *
- * @category  CacheServerKeys
+ * @category  Cache Server Key
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -16,10 +16,10 @@
 namespace Microservices\App;
 
 /**
- * Server side Cache keys - Required
+ * Cache Server Key
  * php version 8.3
  *
- * @category  CacheServerKeys_Required
+ * @category  Cache Server Key
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -27,7 +27,7 @@ namespace Microservices\App;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class CacheKey
+class CacheServerKey
 {
 	/**
 	 * Get Customer Key

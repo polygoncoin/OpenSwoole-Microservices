@@ -16,7 +16,7 @@
 namespace Microservices\Config\Sql\Open\GET;
 
 use Microservices\App\Constant;
-use Microservices\App\CacheServerOpenKey;
+use Microservices\App\QueryCacheServerKey;
 
 return [
 	'countQuery' => 'SELECT count(1) as `count` FROM `category` WHERE __WHERE__',
@@ -90,7 +90,11 @@ return [
 	],
 	'useResultSet' => true,
 	'fetchFrom' => 'Master',
-	'cacheKey' => CacheServerOpenKey::$Category,
+	'cacheKey' => QueryCacheServerKey::category(
+		customerID: $this->http->req->s['cDetails']['id'],
+		groupID: null,
+		isOpenToWebRequest: true
+	),
 	'responseLag' => [
 		// No of Request => Seconds Lag
 		1 => 0,

@@ -15,7 +15,7 @@
 
 namespace Microservices\Supplement\Custom;
 
-use Microservices\App\CacheKey;
+use Microservices\App\CacheServerKey;
 use Microservices\App\Http;
 use Microservices\App\DbCommonFunction;
 use Microservices\Supplement\Custom\CustomInterface;
@@ -108,7 +108,7 @@ class Password implements CustomInterface
 			DbCommonFunction::$masterDb[$this->http->req->cId]->closeCursor();
 
 			$cID = $this->http->req->s['cDetails']['id'];
-			$cu_key = CacheKey::customerUser(
+			$cu_key = CacheServerKey::customerUser(
 				cID: $cID,
 				username: $userName
 			);
@@ -125,7 +125,7 @@ class Password implements CustomInterface
 					value: json_encode(value: $uDetails)
 				);
 				DbCommonFunction::$gCacheServer->deleteCache(
-					key: CacheKey::token(token: $this->http->req->s['token'])
+					key: CacheServerKey::token(token: $this->http->req->s['token'])
 				);
 			}
 
