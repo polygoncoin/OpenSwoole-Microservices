@@ -15,9 +15,9 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Http;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\Env;
+use Microservices\App\Http;
 use Microservices\App\HttpStatus;
 
 /**

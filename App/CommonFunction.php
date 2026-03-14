@@ -15,8 +15,6 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Http;
-
 /**
  * Common Function File
  * php version 8.3

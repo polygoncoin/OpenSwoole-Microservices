@@ -16,8 +16,8 @@
 namespace Microservices\App;
 
 use Microservices\App\Constant;
-use Microservices\App\Http;
 use Microservices\App\Env;
+use Microservices\App\Http;
 
 /**
  * Route - Available routes

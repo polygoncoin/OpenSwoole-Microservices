@@ -30,67 +30,175 @@ namespace Microservices\App;
 class QueryCacheServerKey
 {
 	/**
-	 * App key
+	 * Open To Web App key
 	 *
-	 * @var null|string $App
+	 * @var string
 	 */
-	public static $App = null;
+	public static $oApp = 'o:app';
 
 	/**
-	 * Customer key
+	 * Auth Based App key
 	 *
-	 * @var null|string $Customer
+	 * @var string
 	 */
-	public static $Customer = null;
+	public static $aApp = 'a:app';
 
 	/**
-	 * Group key
+	 * Customer Key
 	 *
-	 * @var null|string $Group
+	 * @param int  $customerID         Customer ID
+	 * @param bool $isOpenToWebRequest
+	 *
+	 * @return string
 	 */
-	public static $Group = null;
+	public static function customer(
+		$customerID,
+		$isOpenToWebRequest = false
+	): string
+	{
+		$appKey = self::appKey($isOpenToWebRequest);
+		$customerKey = self::customerKey($customerID);
+
+		return $appKey . $customerKey;
+	}
 
 	/**
-	 * User key
+	 * User Group Key
 	 *
-	 * @var null|string $User
+	 * @param int  $customerID         Customer ID
+	 * @param int  $groupID            Group ID
+	 * @param bool $isOpenToWebRequest
+	 *
+	 * @return string
 	 */
-	public static $User = null;
+	public static function group(
+		$customerID = null,
+		$groupID = null,
+		$isOpenToWebRequest = false
+	): string
+	{
+		$appKey = self::appKey($isOpenToWebRequest);
+		$customerKey = self::customerKey($customerID);
+		$groupKey = self::groupKey($groupID);
+
+		return $appKey . $customerKey . $groupKey;
+	}
 
 	/**
-	 * Category key
+	 * Customer Group User Key
 	 *
-	 * @var null|string $Category
+	 * @param int  $customerID         Customer ID
+	 * @param int  $groupID            Group ID
+	 * @param int  $userID             User ID
+	 * @param bool $isOpenToWebRequest
+	 *
+	 * @return string
 	 */
-	public static $Category = null;
+	public static function user(
+		$customerID = null,
+		$groupID = null,
+		$userID = null,
+		$isOpenToWebRequest = false
+	): string
+	{
+		$appKey = self::appKey($isOpenToWebRequest);
+		$customerKey = self::customerKey($customerID);
+		$groupKey = self::groupKey($groupID);
+		$userKey = self::userKey($userID);
+
+		return $appKey . $customerKey . $groupKey . $userKey;
+	}
 
 	/**
-	 * Category1 key
+	 * Category
 	 *
-	 * @var null|string $Category1
+	 * @param int  $customerID         Customer ID
+	 * @param int  $groupID            Group ID
+	 * @param int  $userID             User ID
+	 * @param bool $isOpenToWebRequest
+	 *
+	 * @return string
 	 */
-	public static $Category1 = null;
+	public static function category(
+		$customerID = null,
+		$groupID = null,
+		$isOpenToWebRequest = false
+	): string
+	{
+		$appKey = self::appKey($isOpenToWebRequest);
+		$customerKey = self::customerKey($customerID);
+		$groupKey = self::groupKey($groupID);
+
+		return $appKey . $customerKey . $groupKey . ':category';
+	}
 
 	/**
-	 * Initialize
+	 * Category1
 	 *
-	 * @param null|int $cID Customer ID
-	 * @param null|int $gID  Group ID
-	 * @param null|int $uID   User ID
+	 * @param int  $customerID         Customer ID
+	 * @param int  $groupID            Group ID
+	 * @param bool $isOpenToWebRequest
 	 *
-	 * @return void
+	 * @return string
 	 */
-	public static function init(
-		$cID = null,
-		$gID = null,
-		$uID = null
-	): void {
-		self::$App = 'app';
-		self::$Customer = $cID !== null ? ":c:{$cID}" : '';
-		self::$Group = $gID !== null ? ":g:{$gID}" : '';
-		self::$User = $uID !== null ? ":u:{$uID}" : '';
+	public static function category1(
+		$customerID = null,
+		$groupID = null,
+		$isOpenToWebRequest = false
+	): string
+	{
+		$appKey = self::appKey($isOpenToWebRequest);
+		$customerKey = self::customerKey($customerID);
+		$groupKey = self::groupKey($groupID);
 
-		self::$Category = self::$App . self::$Customer . self::$Group . ':category';
-		self::$Category1 = self::$App . self::$Customer . self::$Group . ':category:1';
+		return $appKey . $customerKey . $groupKey . ':category:1';
+	}
+
+	/**
+	 * App Key Details
+	 *
+	 * @param bool $isOpenToWebRequest
+	 *
+	 * @return string
+	 */
+	private static function appKey($isOpenToWebRequest = false): string
+	{
+		return $isOpenToWebRequest ? self::$oApp : self::$aApp;
+	}
+
+	/**
+	 * Customer Key Details
+	 *
+	 * @param int $customerID Customer ID
+	 *
+	 * @return string
+	 */
+	private static function customerKey($customerID): string
+	{
+		return $customerID !== null ? ":c:{$customerID}" : '';
+	}
+
+	/**
+	 * Group Key Details
+	 *
+	 * @param int $groupID Group ID
+	 *
+	 * @return string
+	 */
+	private static function groupKey($groupID): string
+	{
+		return $groupID !== null ? ":g:{$groupID}" : '';
+	}
+
+	/**
+	 * User Key Details
+	 *
+	 * @param int $userID User ID
+	 *
+	 * @return string
+	 */
+	private static function userKey($userID): string
+	{
+		return $userID !== null ? ":u:{$userID}" : '';
 	}
 }

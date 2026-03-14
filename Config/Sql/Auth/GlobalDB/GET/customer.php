@@ -15,8 +15,6 @@
 
 namespace Microservices\Config\Sql\Auth\GlobalDB\GET;
 
-use Microservices\App\Http;
-
 return [
 	'all' => [
 		'countQuery' => "SELECT count(1) as `count` FROM `{$Env::$customerTable}` WHERE __WHERE__",

@@ -94,6 +94,9 @@ $server->on(
 		}
 
 		$iConfig['header'] = $request->header;
+		if (isset($request->header['authorization'])) {
+			$iConfig['header']['tokenHeader'] = $request->header['authorization'];
+		}
 		$iConfig['get'] = &$request->get;
 		$iConfig['post'] = $request->rawContent();
 		$iConfig['files'] = &$request->files;
