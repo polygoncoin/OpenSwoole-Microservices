@@ -65,14 +65,14 @@ class MySql implements SqlInterface
 	 *
 	 * @var null|string
 	 */
-	public $dbServerDB = null;
+	public $dbServerDb = null;
 
 	/**
 	 * Database Server Object
 	 *
 	 * @var null|\PDO
 	 */
-	private $dbServerObj = null;
+	private $mysqlServerObj = null;
 
 	/**
 	 * Executed query statement
@@ -102,20 +102,20 @@ class MySql implements SqlInterface
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
-	 * @param null|string $dbServerDB       Database Server Database
+	 * @param null|string $dbServerDb       Database Server Database
 	 */
 	public function __construct(
 		$dbServerHostname,
 		$dbServerPort,
 		$dbServerUsername,
 		$dbServerPassword,
-		$dbServerDB
+		$dbServerDb
 	) {
 		$this->dbServerHostname = $dbServerHostname;
 		$this->dbServerPort = $dbServerPort;
 		$this->dbServerUsername = $dbServerUsername;
 		$this->dbServerPassword = $dbServerPassword;
-		$this->dbServerDB = $dbServerDB;
+		$this->dbServerDb = $dbServerDb;
 	}
 
 	/**
@@ -125,12 +125,12 @@ class MySql implements SqlInterface
 	 */
 	public function connect(): void
 	{
-		if ($this->dbServerObj !== null) {
+		if ($this->mysqlServerObj !== null) {
 			return;
 		}
 
 		try {
-			$this->dbServerObj = new \PDO(
+			$this->mysqlServerObj = new \PDO(
 				dsn: "mysql:host={$this->dbServerHostname};port={$this->dbServerPort}",
 				username: $this->dbServerUsername,
 				password: $this->dbServerPassword,
@@ -140,11 +140,11 @@ class MySql implements SqlInterface
 				]
 			);
 
-			if ($this->dbServerDB !== null) {
+			if ($this->dbServerDb !== null) {
 				$this->useDatabase();
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->mysqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -160,11 +160,11 @@ class MySql implements SqlInterface
 		$this->connect();
 
 		try {
-			if ($this->dbServerDB !== null) {
-				$this->dbServerObj->exec(statement: "USE `{$this->dbServerDB}`");
+			if ($this->dbServerDb !== null) {
+				$this->mysqlServerObj->exec(statement: "USE `{$this->dbServerDb}`");
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->mysqlServerObj->errorCode()) {
 				$this->log(e: $e);
 				$this->rollBack();
 			}
@@ -182,9 +182,9 @@ class MySql implements SqlInterface
 
 		$this->beganTransaction = true;
 		try {
-			$this->dbServerObj->beginTransaction();
+			$this->mysqlServerObj->beginTransaction();
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->mysqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -200,10 +200,10 @@ class MySql implements SqlInterface
 		try {
 			if ($this->beganTransaction) {
 				$this->beganTransaction = false;
-				$this->dbServerObj->commit();
+				$this->mysqlServerObj->commit();
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->mysqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -219,10 +219,10 @@ class MySql implements SqlInterface
 		try {
 			if ($this->beganTransaction) {
 				$this->beganTransaction = false;
-				$this->dbServerObj->rollBack();
+				$this->mysqlServerObj->rollBack();
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->mysqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -243,7 +243,7 @@ class MySql implements SqlInterface
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->mysqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -258,14 +258,14 @@ class MySql implements SqlInterface
 	public function lastInsertId(): bool|int
 	{
 		try {
-			if (($lastInsertID = $this->dbServerObj->lastInsertId()) !== false) {
+			if (($lastInsertID = $this->mysqlServerObj->lastInsertId()) !== false) {
 				return $lastInsertID;
 			}
 		} catch (\PDOException $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->mysqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -292,7 +292,7 @@ class MySql implements SqlInterface
 			) {
 				array_push($this->stmtArr, $this->stmt);
 			}
-			$this->stmt = $this->dbServerObj->prepare(
+			$this->stmt = $this->mysqlServerObj->prepare(
 				query: $sql,
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
@@ -303,7 +303,7 @@ class MySql implements SqlInterface
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->mysqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -321,7 +321,7 @@ class MySql implements SqlInterface
 				return $this->stmt->fetch(mode: \PDO::FETCH_ASSOC);
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->mysqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -340,7 +340,7 @@ class MySql implements SqlInterface
 				return $this->stmt->fetchAll(mode: \PDO::FETCH_ASSOC);
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->mysqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -367,7 +367,7 @@ class MySql implements SqlInterface
 				}
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->mysqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}

@@ -58,7 +58,7 @@ class Validator
 	public function __construct(Http &$http)
 	{
 		$this->http = &$http;
-		if (DbCommonFunction::$masterDb[$this->http->req->cID]->dbServerDB === Env::$gDbServerDB) {
+		if ($this->http->req->clientDbObj->dbServerDb === Env::$gDbServerDb) {
 			$this->v = new GlobalValidator($this->http);
 		} else {
 			$this->v = new CustomerValidator($this->http);

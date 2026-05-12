@@ -66,7 +66,7 @@ class PostgreSqlQueryCache implements QueryCacheServerInterface
 	 *
 	 * @var null|string
 	 */
-	private $queryCacheServerDB = null;
+	private $queryCacheServerDb = null;
 
 	/**
 	 * Cache queryCacheServerTable
@@ -89,7 +89,7 @@ class PostgreSqlQueryCache implements QueryCacheServerInterface
 	 * @param int         $queryCacheServerPort     Query Cache Server Port
 	 * @param string      $queryCacheServerUsername Query Cache Server Username
 	 * @param string      $queryCacheServerPassword Query Cache Server Password
-	 * @param null|string $queryCacheServerDB       Query Cache Server Database
+	 * @param null|string $queryCacheServerDb       Query Cache Server Database
 	 * @param null|string $queryCacheServerTable    Query Cache Server Table
 	 */
 	public function __construct(
@@ -97,14 +97,14 @@ class PostgreSqlQueryCache implements QueryCacheServerInterface
 		$queryCacheServerPort,
 		$queryCacheServerUsername,
 		$queryCacheServerPassword,
-		$queryCacheServerDB,
+		$queryCacheServerDb,
 		$queryCacheServerTable
 	) {
 		$this->queryCacheServerHostname = $queryCacheServerHostname;
 		$this->queryCacheServerPort = $queryCacheServerPort;
 		$this->queryCacheServerUsername = $queryCacheServerUsername;
 		$this->queryCacheServerPassword = $queryCacheServerPassword;
-		$this->queryCacheServerDB = $queryCacheServerDB;
+		$this->queryCacheServerDb = $queryCacheServerDb;
 		$this->queryCacheServerTable = $queryCacheServerTable;
 	}
 
@@ -126,7 +126,7 @@ class PostgreSqlQueryCache implements QueryCacheServerInterface
 				dbServerPort: $this->queryCacheServerPort,
 				dbServerUsername: $this->queryCacheServerUsername,
 				dbServerPassword: $this->queryCacheServerPassword,
-				dbServerDB: $this->queryCacheServerDB
+				dbServerDb: $this->queryCacheServerDb
 			);
 		} catch (\Exception $e) {
 			throw new \Exception(

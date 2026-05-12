@@ -65,14 +65,14 @@ class PostgreSql implements SqlInterface
 	 *
 	 * @var null|string
 	 */
-	public $dbServerDB = null;
+	public $dbServerDb = null;
 
 	/**
 	 * Database Server Object
 	 *
 	 * @var null|\PDO
 	 */
-	private $dbServerObj = null;
+	private $pgsqlServerObj = null;
 
 	/**
 	 * Executed query statement
@@ -102,20 +102,20 @@ class PostgreSql implements SqlInterface
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
-	 * @param null|string $dbServerDB       Database Server Database
+	 * @param null|string $dbServerDb       Database Server Database
 	 */
 	public function __construct(
 		$dbServerHostname,
 		$dbServerPort,
 		$dbServerUsername,
 		$dbServerPassword,
-		$dbServerDB
+		$dbServerDb
 	) {
 		$this->dbServerHostname = $dbServerHostname;
 		$this->dbServerPort = $dbServerPort;
 		$this->dbServerUsername = $dbServerUsername;
 		$this->dbServerPassword = $dbServerPassword;
-		$this->dbServerDB = $dbServerDB;
+		$this->dbServerDb = $dbServerDb;
 	}
 
 	/**
@@ -125,20 +125,20 @@ class PostgreSql implements SqlInterface
 	 */
 	public function connect(): void
 	{
-		if ($this->dbServerObj !== null) {
+		if ($this->pgsqlServerObj !== null) {
 			return;
 		}
 
 		try {
-			$dbServerObj = new PDO($dsn, $user, $dbServerPassword);
-			$this->dbServerObj = new \PDO(
-				dsn: "pgsql:host={$this->dbServerHostname};port={$this->dbServerPort};dbname={$this->dbServerDB}",
+			$pgsqlServerObj = new PDO($dsn, $user, $dbServerPassword);
+			$this->pgsqlServerObj = new \PDO(
+				dsn: "pgsql:host={$this->dbServerHostname};port={$this->dbServerPort};dbname={$this->dbServerDb}",
 				username: $this->dbServerUsername,
 				password: $this->dbServerPassword,
 			);
-			$dbServerObj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$pgsqlServerObj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->pgsqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -165,9 +165,9 @@ class PostgreSql implements SqlInterface
 
 		$this->beganTransaction = true;
 		try {
-			$this->dbServerObj->beginTransaction();
+			$this->pgsqlServerObj->beginTransaction();
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->pgsqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -183,10 +183,10 @@ class PostgreSql implements SqlInterface
 		try {
 			if ($this->beganTransaction) {
 				$this->beganTransaction = false;
-				$this->dbServerObj->commit();
+				$this->pgsqlServerObj->commit();
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->pgsqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -202,10 +202,10 @@ class PostgreSql implements SqlInterface
 		try {
 			if ($this->beganTransaction) {
 				$this->beganTransaction = false;
-				$this->dbServerObj->rollBack();
+				$this->pgsqlServerObj->rollBack();
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->pgsqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -226,7 +226,7 @@ class PostgreSql implements SqlInterface
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->pgsqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -248,7 +248,7 @@ class PostgreSql implements SqlInterface
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->pgsqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -275,7 +275,7 @@ class PostgreSql implements SqlInterface
 			) {
 				array_push($this->stmtArr, $this->stmt);
 			}
-			$this->stmt = $this->dbServerObj->prepare(
+			$this->stmt = $this->pgsqlServerObj->prepare(
 				query: $sql,
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
@@ -286,7 +286,7 @@ class PostgreSql implements SqlInterface
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->pgsqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -304,7 +304,7 @@ class PostgreSql implements SqlInterface
 				return $this->stmt->fetch(mode: \PDO::FETCH_ASSOC);
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->pgsqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -323,7 +323,7 @@ class PostgreSql implements SqlInterface
 				return $this->stmt->fetchAll(mode: \PDO::FETCH_ASSOC);
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->pgsqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}
@@ -350,7 +350,7 @@ class PostgreSql implements SqlInterface
 				}
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->dbServerObj->errorCode()) {
+			if ((int)$this->pgsqlServerObj->errorCode()) {
 				$this->log(e: $e);
 			}
 		}

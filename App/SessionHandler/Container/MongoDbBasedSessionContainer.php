@@ -42,7 +42,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	public $mongoDbServerPort = null;
 	public $mongoDbServerUsername = null;
 	public $mongoDbServerPassword = null;
-	public $mongoDbServerDB = null;
+	public $mongoDbServerDb = null;
 	public $mongoDbServerCollection = null;
 
 	private $mongoDbServerObj = null;
@@ -230,7 +230,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 			$this->mongoDbServerObj = new \MongoDB\Customer($this->mongoDbServerUri);
 
 			// Select a database
-			$this->dbObj = $this->mongoDbServerObj->selectDatabase($this->mongoDbServerDB);
+			$this->dbObj = $this->mongoDbServerObj->selectDatabase($this->mongoDbServerDb);
 
 			// Select a collection
 			$this->collectionObj = $this->dbObj->selectCollection($this->mongoDbServerCollection);

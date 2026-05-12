@@ -50,7 +50,7 @@ class ExportDatabaseServer
 	 *
 	 * @var null|ExportDatabaseServerInterface
 	 */
-	public $dbServerObj = null;
+	public $exportDbServerObj = null;
 
 	/**
 	 * Constructor
@@ -61,7 +61,7 @@ class ExportDatabaseServer
 	{
 		$this->dbServerType = $dbServerType;
 		$class = "Microservices\\App\\Export\\Container\\" . $this->dbServerType;
-		$this->dbServerObj = new $class();
+		$this->exportDbServerObj = new $class();
 	}
 
 	/**
@@ -71,7 +71,7 @@ class ExportDatabaseServer
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
-	 * @param null|string $dbServerDB       Database Server Database
+	 * @param null|string $dbServerDb       Database Server Database
 	 *
 	 * @return void
 	 * @throws \Exception
@@ -81,14 +81,14 @@ class ExportDatabaseServer
 		$dbServerPort,
 		$dbServerUsername,
 		$dbServerPassword,
-		$dbServerDB
+		$dbServerDb
 	): void {
-		$this->dbServerObj->init(
+		$this->exportDbServerObj->init(
 			dbServerHostname: $dbServerHostname,
 			dbServerPort: $dbServerPort,
 			dbServerUsername: $dbServerUsername,
 			dbServerPassword: $dbServerPassword,
-			dbServerDB: $dbServerDB
+			dbServerDb: $dbServerDb
 		);
 	}
 
@@ -107,7 +107,7 @@ class ExportDatabaseServer
 			throw new \Exception(message: 'Empty SQL query');
 		}
 
-		return $this->dbServerObj->getShellCommand(
+		return $this->exportDbServerObj->getShellCommand(
 			sql: $sql,
 			paramArr: $paramArr
 		);

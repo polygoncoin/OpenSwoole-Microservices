@@ -66,7 +66,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 	 *
 	 * @var null|string
 	 */
-	private $queryCacheServerDB = null;
+	private $queryCacheServerDb = null;
 
 	/**
 	 * Query Cache Server Table
@@ -89,7 +89,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 	 * @param int         $queryCacheServerPort     Query Cache Server Port
 	 * @param string      $queryCacheServerUsername Query Cache Server Username
 	 * @param string      $queryCacheServerPassword Query Cache Server Password
-	 * @param null|string $queryCacheServerDB       Query Cache Server Database
+	 * @param null|string $queryCacheServerDb       Query Cache Server Database
 	 * @param null|string $queryCacheServerTable    Query Cache Server Table
 	 */
 	public function __construct(
@@ -97,14 +97,14 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 		$queryCacheServerPort,
 		$queryCacheServerUsername,
 		$queryCacheServerPassword,
-		$queryCacheServerDB,
+		$queryCacheServerDb,
 		$queryCacheServerTable
 	) {
 		$this->queryCacheServerHostname = $queryCacheServerHostname;
 		$this->queryCacheServerPort = $queryCacheServerPort;
 		$this->queryCacheServerUsername = $queryCacheServerUsername;
 		$this->queryCacheServerPassword = $queryCacheServerPassword;
-		$this->queryCacheServerDB = $queryCacheServerDB;
+		$this->queryCacheServerDb = $queryCacheServerDb;
 		$this->queryCacheServerTable = $queryCacheServerTable;
 	}
 
@@ -126,7 +126,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 				cacheServerPort: $this->queryCacheServerPort,
 				cacheServerUsername: $this->queryCacheServerUsername,
 				cacheServerPassword: $this->queryCacheServerPassword,
-				cacheServerDB: $this->queryCacheServerDB,
+				cacheServerDb: $this->queryCacheServerDb,
 				cacheServerTable: $this->queryCacheServerTable
 			);
 		} catch (\Exception $e) {

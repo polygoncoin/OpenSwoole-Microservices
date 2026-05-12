@@ -11,7 +11,7 @@ gCacheServerHostname='127.0.0.1'
 gCacheServerPort=6379
 gCacheServerUsername='ramesh'
 gCacheServerPassword='shames11'
-gCacheServerDB=0
+gCacheServerDb=0
 gCacheServerTable='global_cache' ; For MongoDb
 ```
 
@@ -25,7 +25,7 @@ gDbServerHostname='127.0.0.1'
 gDbServerPort=3306
 gDbServerUsername='root'
 gDbServerPassword='shames11'
-gDbServerDB='global'
+gDbServerDb='global'
 gDbServerQueryPlaceholder='Named' ; Named(:param) / Unnamed(?)
 ```
 
@@ -33,7 +33,7 @@ gDbServerQueryPlaceholder='Named' ; Named(:param) / Unnamed(?)
 
 ```ini
 ; Master database on global MySql server
-customerMasterDB='customer_master'             ; contains all entities necessary for a new customer
+customerMasterDb='customer_master'             ; contains all entities necessary for a new customer
 
 ; Tables
 customerTable='customer'

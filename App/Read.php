@@ -62,13 +62,6 @@ class Read
 	public $modeColumn = null;
 
 	/**
-	 * DB Object
-	 *
-	 * @var null|object
-	 */
-	public $dbServerObj = null;
-
-	/**
 	 * HTTP object
 	 *
 	 * @var null|Http
@@ -194,11 +187,8 @@ class Read
 
 		// Set Server mode to execute query on - Read / Write Server
 		$fetchFrom = $rSqlConfig['fetchFrom'] ?? 'Slave';
-		DbCommonFunction::connectClientDb($this->http->req, fetchFrom: $fetchFrom);
-		$fetchFrom = strtolower($fetchFrom);
-		$this->modeColumn = $fetchFrom . '_db_server_query_placeholder';
-		$dbServerObj = $fetchFrom . 'Db';
-		$this->dbServerObj = &(DbCommonFunction::$$dbServerObj)[$this->http->req->cID];
+		$this->modeColumn = strtolower($fetchFrom) . '_db_server_query_placeholder';
+		$this->http->req->clientDbObj = DbCommonFunction::connectClientDb($this->http->req, fetchFrom: $fetchFrom);
 
 		// Use result set recursively flag
 		$useResultSet = $this->getUseHierarchy(
@@ -428,8 +418,8 @@ class Read
 			return;
 		}
 
-		$this->dbServerObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
-		if ($row = $this->dbServerObj->fetch()) {
+		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
+		if ($row = $this->http->req->clientDbObj->fetch()) {
 			foreach ($row as $objectKey => $value) {
 				$this->dataEncode->addKeyData(objectKey: $objectKey, data: $value);
 			}
@@ -452,7 +442,7 @@ class Read
 				return;
 			}
 		}
-		$this->dbServerObj->closeCursor();
+		$this->http->req->clientDbObj->closeCursor();
 
 		if (isset($rSqlConfig['__SUB-QUERY__'])) {
 			$this->callReadDb(
@@ -517,9 +507,9 @@ class Read
 			return;
 		}
 
-		$this->dbServerObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
-		$row = $this->dbServerObj->fetch();
-		$this->dbServerObj->closeCursor();
+		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
+		$row = $this->http->req->clientDbObj->fetch();
+		$this->http->req->clientDbObj->closeCursor();
 
 		$totalRowsCount = $row['count'];
 		$totalPages = ceil(
@@ -610,8 +600,8 @@ class Read
 
 		$singleColumn = false;
 		$pushPop = true;
-		$this->dbServerObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr, pushPop: $pushPop);
-		for ($i = 0; $row = $this->dbServerObj->fetch();) {
+		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr, pushPop: $pushPop);
+		for ($i = 0; $row = $this->http->req->clientDbObj->fetch();) {
 			if ($i === 0) {
 				if (count(value: $row) === 1) {
 					$singleColumn = true;
@@ -638,7 +628,7 @@ class Read
 				$this->dataEncode->encode(data: $row);
 			}
 		}
-		$this->dbServerObj->closeCursor(pushPop: $pushPop);
+		$this->http->req->clientDbObj->closeCursor(pushPop: $pushPop);
 	}
 
 	/**
@@ -713,24 +703,24 @@ class Read
 		$serverMode = isset($rSqlConfig['fetchFrom'])
 			? $rSqlConfig['fetchFrom'] : 'Slave';
 
-		$dbDetail = [];
+		$exportDbDetail = [];
 		switch ($serverMode) {
 			case 'Master':
-				$dbDetail = DbCommonFunction::dbMasterDetail($this->http->req);
+				$exportDbDetail = DbCommonFunction::dbMasterDetail($this->http->req);
 				break;
 			case 'Slave':
-				$dbDetail = DbCommonFunction::dbSlaveDetail($this->http->req);
+				$exportDbDetail = DbCommonFunction::dbSlaveDetail($this->http->req);
 				break;
 		}
 
 		// Export
-		$export = new Export(http: $this->http, dbServerType: $dbDetail['dbServerType']);
+		$export = new Export(http: $this->http, dbServerType: $exportDbDetail['dbServerType']);
 		$export->init(
-			dbServerHostname: $dbDetail['dbServerHostname'],
-			dbServerPort: $dbDetail['dbServerPort'],
-			dbServerUsername: $dbDetail['dbServerUsername'],
-			dbServerPassword: $dbDetail['dbServerPassword'],
-			dbServerDB: $dbDetail['dbServerDB']
+			dbServerHostname: $exportDbDetail['dbServerHostname'],
+			dbServerPort: $exportDbDetail['dbServerPort'],
+			dbServerUsername: $exportDbDetail['dbServerUsername'],
+			dbServerPassword: $exportDbDetail['dbServerPassword'],
+			dbServerDb: $exportDbDetail['dbServerDb']
 		);
 
 		if (isset($rSqlConfig['downloadFile'])) {

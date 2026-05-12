@@ -48,13 +48,6 @@ class Write
 	private $hook = null;
 
 	/**
-	 * DB Object
-	 *
-	 * @var null|object
-	 */
-	public $dbServerObj = null;
-
-	/**
 	 * Operate DML As Transactions
 	 *
 	 * @var null|Web
@@ -175,8 +168,7 @@ class Write
 			? $wSqlConfig['isTransaction'] : false;
 
 		// Set Server mode to execute query on - Read / Write Server
-		DbCommonFunction::connectClientDb(req: $this->http->req, fetchFrom: 'Master');
-		$this->dbServerObj = &DbCommonFunction::$masterDb[$this->http->req->cID];
+		$this->http->req->clientDbObj = DbCommonFunction::connectClientDb(req: $this->http->req, fetchFrom: 'Master');
 
 		$this->processWrite(
 			wSqlConfig: $wSqlConfig,
@@ -302,7 +294,7 @@ class Write
 			// Begin DML operation
 			if ($hashJson === null) {
 				if ($this->operateAsTransaction) {
-					$this->dbServerObj->begin();
+					$this->http->req->clientDbObj->begin();
 				}
 				$response = [];
 				$this->writeDb(
@@ -317,9 +309,9 @@ class Write
 				if ($this->http->res->httpStatus === HttpStatus::$Ok) {
 					if (
 						$this->operateAsTransaction
-						&& ($this->dbServerObj->beganTransaction === true)
+						&& ($this->http->req->clientDbObj->beganTransaction === true)
 					) {
-						$this->dbServerObj->commit();
+						$this->http->req->clientDbObj->commit();
 					}
 
 					$arr = [];
@@ -436,7 +428,7 @@ class Write
 			$payloadIndexArr = $payloadIndexArr;
 			if (
 				$this->operateAsTransaction
-				&& !$this->dbServerObj->beganTransaction
+				&& !$this->http->req->clientDbObj->beganTransaction
 			) {
 				$_response['Error'] = 'Transaction rolled back';
 				return;
@@ -507,7 +499,7 @@ class Write
 
 			if (!empty($errorArr)) {
 				$_response['Error'] = $errorArr;
-				$this->dbServerObj->rollBack();
+				$this->http->req->clientDbObj->rollBack();
 				return;
 			}
 
@@ -516,10 +508,10 @@ class Write
 			}
 
 			// Execute Query
-			$this->dbServerObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
+			$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
 			if (
 				$this->operateAsTransaction
-				&& !$this->dbServerObj->beganTransaction
+				&& !$this->http->req->clientDbObj->beganTransaction
 			) {
 				$_response['Error'] = 'Something went wrong';
 				return;
@@ -532,15 +524,15 @@ class Write
 				) {
 					$id = $wSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'];
 				} else {
-					$id = $this->dbServerObj->lastInsertId();
+					$id = $this->http->req->clientDbObj->lastInsertId();
 				}
 				$_response[$wSqlConfig['__INSERT-IDs__']] = $id;
 				$this->http->req->s['__INSERT-IDs__'][$wSqlConfig['__INSERT-IDs__']] = $id;
 			} else {
-				$affectedRowCount = $this->dbServerObj->affectedRowCount();
+				$affectedRowCount = $this->http->req->clientDbObj->affectedRowCount();
 				$_response['affectedRowCount'] = $affectedRowCount;
 			}
-			$this->dbServerObj->closeCursor();
+			$this->http->req->clientDbObj->closeCursor();
 
 			// triggers
 			if (isset($wSqlConfig['__TRIGGERS__'])) {

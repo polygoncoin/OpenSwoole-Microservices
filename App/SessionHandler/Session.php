@@ -68,7 +68,7 @@ class Session
 	public static $mySqlServerPort = 3306;
 	public static $mySqlServerUsername = '';
 	public static $mySqlServerPassword = '';
-	public static $mySqlServerDB = '';
+	public static $mySqlServerDb = '';
 	public static $mySqlServerTable = '';
 
 	/* PostgreSql Session config */
@@ -76,7 +76,7 @@ class Session
 	public static $pgSqlServerPort = 5432;
 	public static $pgSqlServerUsername = null;
 	public static $pgSqlServerPassword = null;
-	public static $pgSqlServerDB = '';
+	public static $pgSqlServerDb = '';
 	public static $pgSqlServerTable = '';
 
 	/* MongoDb Session config */
@@ -84,7 +84,7 @@ class Session
 	public static $mongoDbServerPort = 27017;
 	public static $mongoDbServerUsername = null;
 	public static $mongoDbServerPassword = null;
-	public static $mongoDbServerDB = '';
+	public static $mongoDbServerDb = '';
 	public static $mongoDbServerCollection = '';
 
 	/* Redis Session config */
@@ -92,7 +92,7 @@ class Session
 	public static $redisServerPort = 6379;
 	public static $redisServerUsername = null;
 	public static $redisServerPassword = null;
-	public static $redisServerDB = 0;
+	public static $redisServerDb = 0;
 
 	/* Memcached Session config */
 	public static $memcachedServerHostname = '';
@@ -200,8 +200,8 @@ class Session
 				if (empty(self::$mySqlServerPassword)) {
 					die('Invalid "mySqlServerPassword"');
 				}
-				if (empty(self::$mySqlServerDB)) {
-					die('Invalid "mySqlServerDB"');
+				if (empty(self::$mySqlServerDb)) {
+					die('Invalid "mySqlServerDb"');
 				}
 				if (empty(self::$mySqlServerTable)) {
 					die('Invalid "mySqlServerTable"');
@@ -214,8 +214,8 @@ class Session
 				if (empty(self::$pgSqlServerPort)) {
 					die('Invalid "pgSqlServerPort"');
 				}
-				if (empty(self::$pgSqlServerDB)) {
-					die('Invalid "pgSqlServerDB"');
+				if (empty(self::$pgSqlServerDb)) {
+					die('Invalid "pgSqlServerDb"');
 				}
 				if (empty(self::$pgSqlServerTable)) {
 					die('Invalid "pgSqlServerTable"');
@@ -228,8 +228,8 @@ class Session
 				if (empty(self::$mongoDbServerPort)) {
 					die('Invalid "mongoDbServerPort"');
 				}
-				if (empty(self::$mongoDbServerDB)) {
-					die('Invalid "mongoDbServerDB"');
+				if (empty(self::$mongoDbServerDb)) {
+					die('Invalid "mongoDbServerDb"');
 				}
 				if (empty(self::$mongoDbServerCollection)) {
 					die('Invalid "mongoDbServerCollection"');
@@ -243,10 +243,10 @@ class Session
 					die('Invalid "redisServerPort"');
 				}
 				if (
-					empty(self::$redisServerDB)
-					&& self::$redisServerDB != 0
+					empty(self::$redisServerDb)
+					&& self::$redisServerDb != 0
 				) {
-					die('Invalid "redisServerDB"');
+					die('Invalid "redisServerDb"');
 				}
 				break;
 			case 'Memcached':
@@ -284,7 +284,7 @@ class Session
 				self::$sessionContainer->mySqlServerPort = (int)self::$mySqlServerPort;
 				self::$sessionContainer->mySqlServerUsername = self::$mySqlServerUsername;
 				self::$sessionContainer->mySqlServerPassword = self::$mySqlServerPassword;
-				self::$sessionContainer->mySqlServerDB = self::$mySqlServerDB;
+				self::$sessionContainer->mySqlServerDb = self::$mySqlServerDb;
 				self::$sessionContainer->mySqlServerTable = self::$mySqlServerTable;
 				break;
 			case 'PostgreSql':
@@ -292,7 +292,7 @@ class Session
 				self::$sessionContainer->pgSqlServerPort = (int)self::$pgSqlServerPort;
 				self::$sessionContainer->pgSqlServerUsername = self::$pgSqlServerUsername;
 				self::$sessionContainer->pgSqlServerPassword = self::$pgSqlServerPassword;
-				self::$sessionContainer->pgSqlServerDB = self::$pgSqlServerDB;
+				self::$sessionContainer->pgSqlServerDb = self::$pgSqlServerDb;
 				self::$sessionContainer->pgSqlServerTable = self::$pgSqlServerTable;
 				break;
 			case 'MongoDb':
@@ -300,7 +300,7 @@ class Session
 				self::$sessionContainer->mongoDbServerPort = (int)self::$mongoDbServerPort;
 				self::$sessionContainer->mongoDbServerUsername = self::$mongoDbServerUsername;
 				self::$sessionContainer->mongoDbServerPassword = self::$mongoDbServerPassword;
-				self::$sessionContainer->mongoDbServerDB = self::$mongoDbServerDB;
+				self::$sessionContainer->mongoDbServerDb = self::$mongoDbServerDb;
 				self::$sessionContainer->mongoDbServerCollection = self::$mongoDbServerCollection;
 				break;
 			case 'Redis':
@@ -308,7 +308,7 @@ class Session
 				self::$sessionContainer->redisServerPort = (int)self::$redisServerPort;
 				self::$sessionContainer->redisServerUsername = self::$redisServerUsername;
 				self::$sessionContainer->redisServerPassword = self::$redisServerPassword;
-				self::$sessionContainer->redisServerDB = self::$redisServerDB;
+				self::$sessionContainer->redisServerDb = self::$redisServerDb;
 				break;
 			case 'Memcached':
 				self::$sessionContainer->memcachedServerHostname = self::$memcachedServerHostname;

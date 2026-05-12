@@ -51,7 +51,6 @@ class Category implements DropboxInterface
 	public function __construct(Http &$http)
 	{
 		$this->http = &$http;
-		DbCommonFunction::connectClientDb($this->http->req, fetchFrom: 'Slave');
 	}
 
 	/**

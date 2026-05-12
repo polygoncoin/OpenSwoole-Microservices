@@ -52,7 +52,6 @@ class Module1 implements UploadInterface
 	public function __construct(Http &$http)
 	{
 		$this->http = &$http;
-		DbCommonFunction::connectClientDb($this->http->req, fetchFrom: 'Master');
 	}
 
 	/**

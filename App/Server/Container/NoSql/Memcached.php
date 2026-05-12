@@ -60,7 +60,7 @@ class Memcached implements NoSqlInterface
 	 * @param int         $cacheServerPort     Cache Server Port
 	 * @param string      $cacheServerUsername Cache Server Username
 	 * @param string      $cacheServerPassword Cache Server Password
-	 * @param null|string $cacheServerDB       Cache Server Database
+	 * @param null|string $cacheServerDb       Cache Server Database
 	 * @param null|string $cacheServerTable    Cache Server Table
 	 */
 	public function __construct(
@@ -68,7 +68,7 @@ class Memcached implements NoSqlInterface
 		$cacheServerPort,
 		$cacheServerUsername,
 		$cacheServerPassword,
-		$cacheServerDB,
+		$cacheServerDb,
 		$cacheServerTable
 	) {
 		$this->cacheServerHostname = $cacheServerHostname;

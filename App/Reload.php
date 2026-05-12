@@ -98,7 +98,7 @@ class Reload
 				dbServerPort: getenv(name: $cRow['master_db_server_port']),
 				dbServerUsername: getenv(name: $cRow['master_db_server_username']),
 				dbServerPassword: getenv(name: $cRow['master_db_server_password']),
-				dbServerDB: getenv(name: $cRow['master_db_server_db'])
+				dbServerDb: getenv(name: $cRow['master_db_server_db'])
 			);
 
 			// Groups

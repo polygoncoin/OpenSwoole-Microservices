@@ -36,11 +36,11 @@ interface ExportDatabaseServerInterface
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
-	 * @param null|string $dbServerDB       Database Server Database
+	 * @param null|string $dbServerDb       Database Server Database
 	 *
 	 * @return void
 	 */
-	public function init($dbServerHostname, $dbServerPort, $dbServerUsername, $dbServerPassword, $dbServerDB): void;
+	public function init($dbServerHostname, $dbServerPort, $dbServerUsername, $dbServerPassword, $dbServerDb): void;
 
 	/**
 	 * Returns Shell Command

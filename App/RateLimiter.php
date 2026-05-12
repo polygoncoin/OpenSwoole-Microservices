@@ -54,7 +54,7 @@ class RateLimiter
 			cacheServerPort: Env::$rateLimitServerPort,
 			cacheServerUsername: '',
 			cacheServerPassword: '',
-			cacheServerDB: '',
+			cacheServerDb: '',
 			cacheServerTable: ''
 		);
 	}

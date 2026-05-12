@@ -38,7 +38,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	public $mySqlServerPort = null;
 	public $mySqlServerUsername = null;
 	public $mySqlServerPassword = null;
-	public $mySqlServerDB = null;
+	public $mySqlServerDb = null;
 	public $mySqlServerTable = null;
 
 	private $mySqlServerObj = null;
@@ -67,7 +67,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	{
 		$sql = "
 			SELECT `sessionData`
-			FROM `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
+			FROM `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
 			WHERE `sessionID` = :sessionID AND lastAccessed > :lastAccessed
 		";
 		$paramArr = [
@@ -94,7 +94,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	public function setSession($sessionID, $sessionData): bool|int
 	{
 		$sql = "
-			INSERT INTO `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
+			INSERT INTO `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
 			SET
 				`sessionData` = :sessionData,
 				`lastAccessed` = :lastAccessed,
@@ -120,7 +120,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	public function updateSession($sessionID, $sessionData): bool|int
 	{
 		$sql = "
-			UPDATE `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
+			UPDATE `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
 			SET
 				`sessionData` = :sessionData,
 				`lastAccessed` = :lastAccessed
@@ -147,7 +147,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	public function touchSession($sessionID, $sessionData): bool
 	{
 		$sql = "
-			UPDATE `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
+			UPDATE `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
 			SET `lastAccessed` = :lastAccessed
 			WHERE `sessionID` = :sessionID
 		";
@@ -169,7 +169,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	{
 		$lastAccessed = Env::$timestamp - $sessionMaxLifetime;
 		$sql = "
-			DELETE FROM `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
+			DELETE FROM `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
 			WHERE `lastAccessed` < :lastAccessed
 		";
 		$paramArr = [
@@ -188,7 +188,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	public function deleteSession($sessionID): bool
 	{
 		$sql = "
-			DELETE FROM `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
+			DELETE FROM `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
 			WHERE `sessionID` = :sessionID
 		";
 		$paramArr = [

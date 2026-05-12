@@ -70,7 +70,7 @@ class MongoDb implements NoSqlInterface
 	 *
 	 * @var null|string
 	 */
-	private $cacheServerDB = null;
+	private $cacheServerDb = null;
 
 	/**
 	 * Cache collection
@@ -91,7 +91,7 @@ class MongoDb implements NoSqlInterface
 	 *
 	 * @var null|Object
 	 */
-	private $dbServerObj = null;
+	private $cacheServerDbObj = null;
 
 	/**
 	 * Collection Object
@@ -107,7 +107,7 @@ class MongoDb implements NoSqlInterface
 	 * @param int         $cacheServerPort     Cache Server Port
 	 * @param string      $cacheServerUsername Cache Server Username
 	 * @param string      $cacheServerPassword Cache Server Password
-	 * @param null|string $cacheServerDB       Cache Server Database
+	 * @param null|string $cacheServerDb       Cache Server Database
 	 * @param null|string $cacheServerTable    Cache Server Table
 	 */
 	public function __construct(
@@ -115,14 +115,14 @@ class MongoDb implements NoSqlInterface
 		$cacheServerPort,
 		$cacheServerUsername,
 		$cacheServerPassword,
-		$cacheServerDB,
+		$cacheServerDb,
 		$cacheServerTable
 	) {
 		$this->cacheServerHostname = $cacheServerHostname;
 		$this->cacheServerPort = $cacheServerPort;
 		$this->cacheServerUsername = $cacheServerUsername;
 		$this->cacheServerPassword = $cacheServerPassword;
-		$this->cacheServerDB = $cacheServerDB;
+		$this->cacheServerDb = $cacheServerDb;
 		$this->cacheServerTable = $cacheServerTable;
 	}
 
@@ -153,10 +153,10 @@ class MongoDb implements NoSqlInterface
 			$this->cacheServerObj = new \MongoDB\Customer($this->uri);
 
 			// Select a database
-			$this->dbServerObj = $this->cacheServerObj->selectDatabase($this->cacheServerDB);
+			$this->cacheServerDbObj = $this->cacheServerObj->selectDatabase($this->cacheServerDb);
 
 			// Select a collection
-			$this->collectionObj = $this->dbServerObj->selectCollection($this->cacheServerTable);
+			$this->collectionObj = $this->cacheServerDbObj->selectCollection($this->cacheServerTable);
 
 			// Create the TTL index
 			// Set the indexed field to 'expireOn' and expireAfterSeconds to 0

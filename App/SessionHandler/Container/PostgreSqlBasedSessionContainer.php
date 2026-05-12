@@ -38,7 +38,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public $pgSqlServerPort = null;
 	public $pgSqlServerUsername = null;
 	public $pgSqlServerPassword = null;
-	public $pgSqlServerDB = null;
+	public $pgSqlServerDb = null;
 	public $pgSqlServerTable = null;
 
 	private $pgSqlServerObj = null;
@@ -221,7 +221,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 			$this->pgSqlServerObj = pg_connect(
 				"host={$this->pgSqlServerHostname} "
 				. "port={$this->pgSqlServerPort} "
-				. "dbname={$this->pgSqlServerDB} {$UP}"
+				. "dbname={$this->pgSqlServerDb} {$UP}"
 			);
 		} catch (\Exception $e) {
 			$this->manageException(e: $e);

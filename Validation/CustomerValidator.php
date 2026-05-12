@@ -95,15 +95,15 @@ class CustomerValidator implements ValidatorInterface
 	 */
 	private function getPrimaryCount(&$table, $primary, &$id): int
 	{
-		$dbServerDB = DbCommonFunction::$masterDb[$this->http->req->cID]->dbServerDB;
+		$dbServerDb = $this->http->req->clientDbObj->dbServerDb;
 		$sql = "
 			SELECT count(1) as `count`
-			FROM `{$dbServerDB}`.`{$table}`
+			FROM `{$dbServerDb}`.`{$table}`
 			WHERE `{$primary}` = ?
 		";
 		$paramArr = [$id];
-		DbCommonFunction::$masterDb[$this->http->req->cID]->execDbQuery(sql: $sql, paramArr: $paramArr);
-		return (int)(DbCommonFunction::$masterDb[$this->http->req->cID]->fetch())['count'];
+		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr);
+		return (int)($this->http->req->clientDbObj->fetch())['count'];
 	}
 
 	/**
@@ -118,9 +118,9 @@ class CustomerValidator implements ValidatorInterface
 		extract(array: $argArr);
 		$sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
 		$paramArr = [$id];
-		DbCommonFunction::$masterDb[$this->http->req->cID]->execDbQuery(sql: $sql, paramArr: $paramArr);
-		$row = DbCommonFunction::$masterDb[$this->http->req->cID]->fetch();
-		DbCommonFunction::$masterDb[$this->http->req->cID]->closeCursor();
+		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr);
+		$row = $this->http->req->clientDbObj->fetch();
+		$this->http->req->clientDbObj->closeCursor();
 		return ($row['count'] === 0) ? false : true;
 	}
 }

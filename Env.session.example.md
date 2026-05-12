@@ -33,7 +33,7 @@ mySqlServerHostname='localhost'
 mySqlServerPort=3306
 mySqlServerUsername='root'
 mySqlServerPassword='shames11'
-mySqlServerDB='session_db'
+mySqlServerDb='session_db'
 mySqlServerTable='sessions'
 ```
 
@@ -45,7 +45,7 @@ pgSqlServerHostname='localhost'
 pgSqlServerPort=5432
 pgSqlServerUsername=''
 pgSqlServerPassword=''
-pgSqlServerDB='session_db'
+pgSqlServerDb='session_db'
 pgSqlServerTable='sessions'
 ```
 
@@ -57,7 +57,7 @@ mongoDbServerHostname='localhost'
 mongoDbServerPort=27017
 mongoDbServerUsername=''
 mongoDbServerPassword=''
-mongoDbServerDB='session_db'
+mongoDbServerDb='session_db'
 mongoDbServerCollection='sessions'
 ```
 
@@ -69,7 +69,7 @@ redisServerHostname='localhost'
 redisServerPort=6379
 redisServerUsername=''
 redisServerPassword=''
-redisServerDB=0;
+redisServerDb=0;
 ```
 
 ## Memcached based PHP Session related configs

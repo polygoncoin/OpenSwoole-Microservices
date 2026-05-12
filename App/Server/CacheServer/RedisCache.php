@@ -65,7 +65,7 @@ class RedisCache implements CacheServerInterface
 	 *
 	 * @var null|string
 	 */
-	private $cacheServerDB = null;
+	private $cacheServerDb = null;
 
 	/**
 	 * Cache collection
@@ -88,7 +88,7 @@ class RedisCache implements CacheServerInterface
 	 * @param int         $cacheServerPort     Cache Server Port
 	 * @param string      $cacheServerUsername Cache Server Username
 	 * @param string      $cacheServerPassword Cache Server Password
-	 * @param null|string $cacheServerDB       Cache Server Database
+	 * @param null|string $cacheServerDb       Cache Server Database
 	 * @param null|string $cacheServerTable    Cache Server Table
 	 */
 	public function __construct(
@@ -96,14 +96,14 @@ class RedisCache implements CacheServerInterface
 		$cacheServerPort,
 		$cacheServerUsername,
 		$cacheServerPassword,
-		$cacheServerDB,
+		$cacheServerDb,
 		$cacheServerTable
 	) {
 		$this->cacheServerHostname = $cacheServerHostname;
 		$this->cacheServerPort = $cacheServerPort;
 		$this->cacheServerUsername = $cacheServerUsername;
 		$this->cacheServerPassword = $cacheServerPassword;
-		$this->cacheServerDB = $cacheServerDB;
+		$this->cacheServerDb = $cacheServerDb;
 		$this->cacheServerTable = $cacheServerTable;
 	}
 
@@ -125,7 +125,7 @@ class RedisCache implements CacheServerInterface
 				cacheServerPort: $this->cacheServerPort,
 				cacheServerUsername: $this->cacheServerUsername,
 				cacheServerPassword: $this->cacheServerPassword,
-				cacheServerDB: $this->cacheServerDB,
+				cacheServerDb: $this->cacheServerDb,
 				cacheServerTable: $this->cacheServerTable
 			);
 		} catch (\Exception $e) {

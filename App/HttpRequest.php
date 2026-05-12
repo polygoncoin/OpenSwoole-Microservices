@@ -62,6 +62,13 @@ class HttpRequest
 	private $http = null;
 
 	/**
+	 * Client DB Object
+	 *
+	 * @var null|object
+	 */
+	public $clientDbObj = null;
+
+	/**
 	 * Session detail of a request
 	 *
 	 * @var null|array

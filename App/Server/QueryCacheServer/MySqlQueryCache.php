@@ -66,7 +66,7 @@ class MySqlQueryCache implements QueryCacheServerInterface
 	 *
 	 * @var null|string
 	 */
-	private $queryCacheServerDB = null;
+	private $queryCacheServerDb = null;
 
 	/**
 	 * Cache queryCacheServerTable
@@ -89,7 +89,7 @@ class MySqlQueryCache implements QueryCacheServerInterface
 	 * @param int    $queryCacheServerPort     Port
 	 * @param string $queryCacheServerUsername Username
 	 * @param string $queryCacheServerPassword Password
-	 * @param string $queryCacheServerDB       Database
+	 * @param string $queryCacheServerDb       Database
 	 * @param string $queryCacheServerTable    Table
 	 */
 	public function __construct(
@@ -97,14 +97,14 @@ class MySqlQueryCache implements QueryCacheServerInterface
 		$queryCacheServerPort,
 		$queryCacheServerUsername,
 		$queryCacheServerPassword,
-		$queryCacheServerDB,
+		$queryCacheServerDb,
 		$queryCacheServerTable
 	) {
 		$this->queryCacheServerHostname = $queryCacheServerHostname;
 		$this->queryCacheServerPort = $queryCacheServerPort;
 		$this->queryCacheServerUsername = $queryCacheServerUsername;
 		$this->queryCacheServerPassword = $queryCacheServerPassword;
-		$this->queryCacheServerDB = $queryCacheServerDB;
+		$this->queryCacheServerDb = $queryCacheServerDb;
 		$this->queryCacheServerTable = $queryCacheServerTable;
 	}
 
@@ -126,7 +126,7 @@ class MySqlQueryCache implements QueryCacheServerInterface
 				dbServerPort: $this->queryCacheServerPort,
 				dbServerUsername: $this->queryCacheServerUsername,
 				dbServerPassword: $this->queryCacheServerPassword,
-				dbServerDB: $this->queryCacheServerDB
+				dbServerDb: $this->queryCacheServerDb
 			);
 		} catch (\Exception $e) {
 			throw new \Exception(

@@ -67,7 +67,7 @@ class Export
 	 *
 	 * @var null|ExportDatabaseServer
 	 */
-	public $dbServerObj = null;
+	public $exportDbServerObj = null;
 
 	/**
 	 * HTTP object
@@ -88,7 +88,7 @@ class Export
 	{
 		$this->http = &$http;
 		$this->dbServerType = $dbServerType;
-		$this->dbServerObj = new ExportDatabaseServer(dbServerType: $this->dbServerType);
+		$this->exportDbServerObj = new ExportDatabaseServer(dbServerType: $this->dbServerType);
 	}
 
 	/**
@@ -98,7 +98,7 @@ class Export
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
-	 * @param null|string $dbServerDB       Database Server Database
+	 * @param null|string $dbServerDb       Database Server Database
 	 *
 	 * @return void
 	 */
@@ -107,15 +107,15 @@ class Export
 		$dbServerPort,
 		$dbServerUsername,
 		$dbServerPassword,
-		$dbServerDB
+		$dbServerDb
 	): void
 	{
-		$this->dbServerObj->init(
+		$this->exportDbServerObj->init(
 			dbServerHostname: $dbServerHostname,
 			dbServerPort: $dbServerPort,
 			dbServerUsername: $dbServerUsername,
 			dbServerPassword: $dbServerPassword,
-			dbServerDB: $dbServerDB
+			dbServerDb: $dbServerDb
 		);
 		$this->validateConnection();
 	}
@@ -200,7 +200,7 @@ class Export
 		$paramArr = [],
 		$exportFile = null
 	): array {
-		$shellCommand = $this->dbServerObj->getShellCommand(sql: $sql, paramArr: $paramArr);
+		$shellCommand = $this->exportDbServerObj->getShellCommand(sql: $sql, paramArr: $paramArr);
 		if ($this->exportMode === 'CSV') {
 			$shellCommand .= ' | sed -e \'s/"/""/g ; s/\t/","/g ; s/^/"/g ; s/$/"/g\'';
 		}

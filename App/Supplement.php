@@ -48,13 +48,6 @@ class Supplement
 	private $hook = null;
 
 	/**
-	 * DB Object
-	 *
-	 * @var null|object
-	 */
-	public $dbServerObj = null;
-
-	/**
 	 * Operate DML As Transactions
 	 *
 	 * @var null|Web
@@ -185,8 +178,7 @@ class Supplement
 			? $sSqlConfig['isTransaction'] : false;
 
 		// Set Server mode to execute query on - Read / Write Server
-		DbCommonFunction::connectClientDb($this->http->req, fetchFrom: 'Master');
-		$this->dbServerObj = &DbCommonFunction::$masterDb[$this->http->req->cID];
+		$this->http->req->clientDbObj = DbCommonFunction::connectClientDb($this->http->req, fetchFrom: 'Master');
 
 		$this->processSupplement(
 			sSqlConfig: $sSqlConfig,
@@ -310,7 +302,7 @@ class Supplement
 			// Begin DML operation
 			if ($hashJson === null) {
 				if ($this->operateAsTransaction) {
-					$this->dbServerObj->begin();
+					$this->http->req->clientDbObj->begin();
 				}
 				$response = [];
 				$this->execSupplement(
@@ -325,9 +317,9 @@ class Supplement
 				if ($this->http->res->httpStatus === HttpStatus::$Ok) {
 					if (
 						$this->operateAsTransaction
-						&& ($this->dbServerObj->beganTransaction === true)
+						&& ($this->http->req->clientDbObj->beganTransaction === true)
 					) {
-						$this->dbServerObj->commit();
+						$this->http->req->clientDbObj->commit();
 					}
 
 					$arr = [];
@@ -446,7 +438,7 @@ class Supplement
 			$payloadIndexArr = $payloadIndexArr;
 			if (
 				$this->operateAsTransaction
-				&& !$this->dbServerObj->beganTransaction
+				&& !$this->http->req->clientDbObj->beganTransaction
 			) {
 				$_response['Error'] = 'Transaction rolled back';
 				return;
@@ -513,13 +505,13 @@ class Supplement
 
 			if (
 				$this->operateAsTransaction
-				&& !$this->dbServerObj->beganTransaction
+				&& !$this->http->req->clientDbObj->beganTransaction
 			) {
 				$_response['Error'] = 'Something went wrong';
 				return;
 			}
 
-			$this->dbServerObj->closeCursor();
+			$this->http->req->clientDbObj->closeCursor();
 
 			// triggers
 			if (isset($sSqlConfig['__TRIGGERS__'])) {

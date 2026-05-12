@@ -72,7 +72,7 @@ class QueryCacheServer
 	 *
 	 * @var null|string
 	 */
-	private $queryCacheServerDB = null;
+	private $queryCacheServerDb = null;
 
 	/**
 	 * Cache collection
@@ -89,7 +89,7 @@ class QueryCacheServer
 	 * @param int         $queryCacheServerPort     Query Cache Server Port
 	 * @param string      $queryCacheServerUsername Query Cache Server Username
 	 * @param string      $queryCacheServerPassword Query Cache Server Password
-	 * @param null|string $queryCacheServerDB       Query Cache Server Database
+	 * @param null|string $queryCacheServerDb       Query Cache Server Database
 	 * @param null|string $queryCacheServerTable    Query Cache Server Table
 	 */
 	public function __construct(
@@ -98,7 +98,7 @@ class QueryCacheServer
 		$queryCacheServerPort,
 		$queryCacheServerUsername,
 		$queryCacheServerPassword,
-		$queryCacheServerDB,
+		$queryCacheServerDb,
 		$queryCacheServerTable
 	) {
 		$this->queryCacheServerType = $queryCacheServerType;
@@ -106,7 +106,7 @@ class QueryCacheServer
 		$this->queryCacheServerPort = $queryCacheServerPort;
 		$this->queryCacheServerUsername = $queryCacheServerUsername;
 		$this->queryCacheServerPassword = $queryCacheServerPassword;
-		$this->queryCacheServerDB = $queryCacheServerDB;
+		$this->queryCacheServerDb = $queryCacheServerDb;
 		$this->queryCacheServerTable = $queryCacheServerTable;
 	}
 
@@ -142,7 +142,7 @@ class QueryCacheServer
 			queryCacheServerPort: $this->queryCacheServerPort,
 			queryCacheServerUsername: $this->queryCacheServerUsername,
 			queryCacheServerPassword: $this->queryCacheServerPassword,
-			queryCacheServerDB: $this->queryCacheServerDB,
+			queryCacheServerDb: $this->queryCacheServerDb,
 			queryCacheServerTable: $this->queryCacheServerTable
 		);
 	}

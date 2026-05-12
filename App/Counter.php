@@ -55,7 +55,7 @@ class Counter
 			case 'Database':
 				DbCommonFunction::connectGlobalDb();
 
-				$table = Env::$gDbServerDB . '.' . Env::$gCounter;
+				$table = Env::$gDbServerDb . '.' . Env::$gCounter;
 				$sql = "INSERT INTO {$table}() VALUES()";
 				$sqlParamArr = [];
 

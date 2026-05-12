@@ -13,7 +13,7 @@ gCacheServerHostname='127.0.0.1'
 gCacheServerPort=6379
 gCacheServerUsername=''
 gCacheServerPassword=''
-gCacheServerDB=0
+gCacheServerDb=0
 ```
 
 ### Global Database Server configuration - global.sql
@@ -25,7 +25,7 @@ gDbServerHostname='127.0.0.1'
 gDbServerPort=3306
 gDbServerUsername='username'
 gDbServerPassword='password'
-gDbServerDB='<global>'
+gDbServerDb='<global>'
 
 ; Tables in <global> database on the server
 groupsTable='group'
@@ -80,7 +80,7 @@ If there is a requirement from customer X to have a dedicated database like <dat
 Make a new config variable as below and set this Key in the above table for customer X record in customer table.
 
 ```ini
-cDatabaseServerDB='<database-x>'
+cDatabaseServerDb='<database-x>'
 ```
 
 ### Dedicated DB server
@@ -98,7 +98,7 @@ cCacheServerHostname='127.0.0.1'
 cCacheServerPort=6379
 cCacheServerUsername='username'
 cCacheServerPassword='password'
-cCacheServerDB=0
+cCacheServerDb=0
 cCacheServerTable='customer_001'      ; For MongoDb
 ```
 
@@ -153,7 +153,7 @@ queryCacheServerHostname='127.0.0.1'
 queryCacheServerPort=6379
 queryCacheServerUsername='username'
 queryCacheServerPassword='password'
-queryCacheServerDB=0
+queryCacheServerDb=0
 queryCacheServerTable='api_cache' ; For MySql / PostgreSql / MongoDb
 ```
 

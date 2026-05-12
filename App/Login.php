@@ -40,13 +40,6 @@ use Microservices\App\SessionHandler\Session;
 class Login
 {
 	/**
-	 * DB Object
-	 *
-	 * @var null|object
-	 */
-	public $dbServerObj = null;
-
-	/**
 	 * Username for login
 	 *
 	 * @var null|string
@@ -494,10 +487,9 @@ class Login
 	 */
 	private function updateDb(&$userData): void
 	{
-		DbCommonFunction::connectClientDb($this->http->req, fetchFrom: 'Master');
-		$this->dbServerObj = &DbCommonFunction::$masterDb[$this->http->req->cID];
+		$this->http->req->clientDbObj = DbCommonFunction::connectClientDb($this->http->req, fetchFrom: 'Master');
 
-		$this->dbServerObj->execDbQuery(
+		$this->http->req->clientDbObj->execDbQuery(
 			sql: "
 				UPDATE
 					`{$this->http->req->s['cDetail']['usersTable']}`

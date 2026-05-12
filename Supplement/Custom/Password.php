@@ -103,8 +103,8 @@ class Password implements CustomInterface
 				':is_deleted' => 'No',
 			];
 
-			DbCommonFunction::$masterDb[$this->http->req->cID]->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
-			DbCommonFunction::$masterDb[$this->http->req->cID]->closeCursor();
+			$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
+			$this->http->req->clientDbObj->closeCursor();
 
 			$cID = $this->http->req->cID;
 			$cu_key = CacheServerKey::customerUsername(

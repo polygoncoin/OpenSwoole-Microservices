@@ -51,20 +51,6 @@ class DbCommonFunction
 	 */
 	public static $gDbServer = null;
 
-	/**
-	 * Customer Master
-	 *
-	 * @var Object[]
-	 */
-	public static $masterDb = [];
-
-	/**
-	 * Customer Slave
-	 *
-	 * @var Object[]
-	 */
-	public static $slaveDb = [];
-
 	/** Cache Connection */
 	/**
 	 * Global
@@ -74,20 +60,6 @@ class DbCommonFunction
 	public static $gCacheServer = null;
 
 	/**
-	 * Customer Master
-	 *
-	 * @var Object[]
-	 */
-	public static $masterCache = [];
-
-	/**
-	 * Customer Slave
-	 *
-	 * @var Object[]
-	 */
-	public static $slaveCache = [];
-
-	/**
 	 * Connect Cache
 	 *
 	 * @param string      $cacheServerType     Cache Server Type
@@ -95,7 +67,7 @@ class DbCommonFunction
 	 * @param int         $cacheServerPort     Cache Server Port
 	 * @param string      $cacheServerUsername Cache Server Username
 	 * @param string      $cacheServerPassword Cache Server Password
-	 * @param null|string $cacheServerDB       Cache Server Database
+	 * @param null|string $cacheServerDb       Cache Server Database
 	 * @param null|string $cacheServerTable    Cache Server Table
 	 *
 	 * @return object
@@ -106,7 +78,7 @@ class DbCommonFunction
 		$cacheServerPort,
 		$cacheServerUsername,
 		$cacheServerPassword,
-		$cacheServerDB,
+		$cacheServerDb,
 		$cacheServerTable
 	): object {
 		$cacheServer = new CacheServer(
@@ -115,7 +87,7 @@ class DbCommonFunction
 			cacheServerPort: $cacheServerPort,
 			cacheServerUsername: $cacheServerUsername,
 			cacheServerPassword: $cacheServerPassword,
-			cacheServerDB: $cacheServerDB,
+			cacheServerDb: $cacheServerDb,
 			cacheServerTable: $cacheServerTable
 		);
 
@@ -138,7 +110,7 @@ class DbCommonFunction
 			cacheServerPort: Env::$gCacheServerPort,
 			cacheServerUsername: Env::$gCacheServerUsername,
 			cacheServerPassword: Env::$gCacheServerPassword,
-			cacheServerDB: Env::$gCacheServerDB,
+			cacheServerDb: Env::$gCacheServerDb,
 			cacheServerTable: Env::$gCacheServerTable
 		);
 	}
@@ -149,10 +121,10 @@ class DbCommonFunction
 	 * @param HttpRequest $req
 	 * @param string      $fetchFrom Master/Slave
 	 *
-	 * @return void
+	 * @return object
 	 * @throws \Exception
 	 */
-	public static function connectClientCache(&$req, $fetchFrom): void
+	public static function connectClientCache(&$req, $fetchFrom): object
 	{
 		if ($req->s['cDetail'] === null) {
 			throw new \Exception(
@@ -164,37 +136,26 @@ class DbCommonFunction
 		// Set Database credentials
 		switch ($fetchFrom) {
 			case 'Master':
-				if (
-					isset(self::$masterCache[$req->cID])
-					&& self::$masterCache[$req->cID] !== null
-				) {
-					return;
-				}
-
 				$cacheMasterDetail = self::cacheMasterDetail(cDetail: $req->s['cDetail']);
-				self::$masterCache[$req->cID] = self::connectCache(
+				return self::connectCache(
 					cacheServerType: $cacheMasterDetail['cacheServerType'],
 					cacheServerHostname: $cacheMasterDetail['cacheServerHostname'],
 					cacheServerPort: $cacheMasterDetail['cacheServerPort'],
 					cacheServerUsername: $cacheMasterDetail['cacheServerUsername'],
 					cacheServerPassword: $cacheMasterDetail['cacheServerPassword'],
-					cacheServerDB: $cacheMasterDetail['cacheServerDB'],
+					cacheServerDb: $cacheMasterDetail['cacheServerDb'],
 					cacheServerTable: $cacheMasterDetail['cacheServerTable']
 				);
 				break;
 			case 'Slave':
-				if (self::$slaveCache !== null) {
-					return;
-				}
-
 				$cacheSlaveDetail = self::cacheSlaveDetail(cDetail: $req->s['cDetail']);
-				self::$slaveCache[$req->cID] = self::connectCache(
+				return self::connectCache(
 					cacheServerType: $cacheSlaveDetail['cacheServerType'],
 					cacheServerHostname: $cacheSlaveDetail['cacheServerHostname'],
 					cacheServerPort: $cacheSlaveDetail['cacheServerPort'],
 					cacheServerUsername: $cacheSlaveDetail['cacheServerUsername'],
 					cacheServerPassword: $cacheSlaveDetail['cacheServerPassword'],
-					cacheServerDB: $cacheSlaveDetail['cacheServerDB'],
+					cacheServerDb: $cacheSlaveDetail['cacheServerDb'],
 					cacheServerTable: $cacheSlaveDetail['cacheServerTable']
 				);
 				break;
@@ -204,8 +165,6 @@ class DbCommonFunction
 					code: HttpStatus::$InternalServerError
 				);
 		}
-
-		return;
 	}
 
 	/**
@@ -227,7 +186,7 @@ class DbCommonFunction
 			queryCacheServerPort: Env::$queryCacheServerPort,
 			queryCacheServerUsername: Env::$queryCacheServerUsername,
 			queryCacheServerPassword: Env::$queryCacheServerPassword,
-			queryCacheServerDB: Env::$queryCacheServerDB,
+			queryCacheServerDb: Env::$queryCacheServerDb,
 			queryCacheServerTable: Env::$queryCacheServerTable
 		);
 
@@ -242,7 +201,7 @@ class DbCommonFunction
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
-	 * @param null|string $dbServerDB       Database Server Database
+	 * @param null|string $dbServerDb       Database Server Database
 	 *
 	 * @return object
 	 */
@@ -252,7 +211,7 @@ class DbCommonFunction
 		$dbServerPort,
 		$dbServerUsername,
 		$dbServerPassword,
-		$dbServerDB
+		$dbServerDb
 	): object {
 		$dbServer = new DatabaseServer(
 			dbServerType: $dbServerType,
@@ -260,7 +219,7 @@ class DbCommonFunction
 			dbServerPort: $dbServerPort,
 			dbServerUsername: $dbServerUsername,
 			dbServerPassword: $dbServerPassword,
-			dbServerDB: $dbServerDB
+			dbServerDb: $dbServerDb
 		);
 
 		return $dbServer->connectDb();
@@ -282,7 +241,7 @@ class DbCommonFunction
 			dbServerPort: Env::$gDbServerPort,
 			dbServerUsername: Env::$gDbServerUsername,
 			dbServerPassword: Env::$gDbServerPassword,
-			dbServerDB: Env::$gDbServerDB
+			dbServerDb: Env::$gDbServerDb
 		);
 	}
 
@@ -292,10 +251,10 @@ class DbCommonFunction
 	 * @param HttpRequest $req
 	 * @param string      $fetchFrom Master/Slave
 	 *
-	 * @return void
+	 * @return object
 	 * @throws \Exception
 	 */
-	public static function connectClientDb(&$req, $fetchFrom): void
+	public static function connectClientDb(&$req, $fetchFrom): object
 	{
 		if ($req->s['cDetail'] === null) {
 			throw new \Exception(
@@ -307,39 +266,25 @@ class DbCommonFunction
 		// Set Database credentials
 		switch ($fetchFrom) {
 			case 'Master':
-				if (
-					isset(self::$masterDb[$req->cID])
-					&& self::$masterDb[$req->cID] !== null
-				) {
-					return;
-				}
-
 				$dbMasterDetail = self::dbMasterDetail(cDetail: $req->s['cDetail']);
-				self::$masterDb[$req->cID] = self::connectDb(
+				return self::connectDb(
 					dbServerType: $dbMasterDetail['dbServerType'],
 					dbServerHostname: $dbMasterDetail['dbServerHostname'],
 					dbServerPort: $dbMasterDetail['dbServerPort'],
 					dbServerUsername: $dbMasterDetail['dbServerUsername'],
 					dbServerPassword: $dbMasterDetail['dbServerPassword'],
-					dbServerDB: $dbMasterDetail['dbServerDB']
+					dbServerDb: $dbMasterDetail['dbServerDb']
 				);
 				break;
 			case 'Slave':
-				if (
-					isset(self::$slaveDb[$req->cID])
-					&& self::$slaveDb[$req->cID] !== null
-				) {
-					return;
-				}
-
 				$dbSlaveDetail = self::dbSlaveDetail(cDetail: $req->s['cDetail']);
-				self::$slaveDb[$req->cID] = self::connectDb(
+				return self::connectDb(
 					dbServerType: $dbSlaveDetail['dbServerType'],
 					dbServerHostname: $dbSlaveDetail['dbServerHostname'],
 					dbServerPort: $dbSlaveDetail['dbServerPort'],
 					dbServerUsername: $dbSlaveDetail['dbServerUsername'],
 					dbServerPassword: $dbSlaveDetail['dbServerPassword'],
-					dbServerDB: $dbSlaveDetail['dbServerDB']
+					dbServerDb: $dbSlaveDetail['dbServerDb']
 				);
 				break;
 			default:
@@ -348,8 +293,6 @@ class DbCommonFunction
 					code: HttpStatus::$InternalServerError
 				);
 		}
-
-		return;
 	}
 
 	/**
@@ -430,7 +373,7 @@ class DbCommonFunction
 			'cacheServerPort' => getenv(name: $cDetail['master_cache_server_port']),
 			'cacheServerUsername' => getenv(name: $cDetail['master_cache_server_username']),
 			'cacheServerPassword' => getenv(name: $cDetail['master_cache_server_password']),
-			'cacheServerDB' => getenv(name: $cDetail['master_cache_server_db']),
+			'cacheServerDb' => getenv(name: $cDetail['master_cache_server_db']),
 			'cacheServerTable' => getenv(name: $cDetail['master_cache_server_table'])
 		];
 	}
@@ -450,7 +393,7 @@ class DbCommonFunction
 			'cacheServerPort' => getenv(name: $cDetail['slave_cache_server_port']),
 			'cacheServerUsername' => getenv(name: $cDetail['slave_cache_server_username']),
 			'cacheServerPassword' => getenv(name: $cDetail['slave_cache_server_password']),
-			'cacheServerDB' => getenv(name: $cDetail['slave_cache_server_db']),
+			'cacheServerDb' => getenv(name: $cDetail['slave_cache_server_db']),
 			'cacheServerTable' => getenv(name: $cDetail['slave_cache_server_table'])
 		];
 	}
@@ -470,7 +413,7 @@ class DbCommonFunction
 			'dbServerPort' => getenv(name: $cDetail['master_db_server_port']),
 			'dbServerUsername' => getenv(name: $cDetail['master_db_server_username']),
 			'dbServerPassword' => getenv(name: $cDetail['master_db_server_password']),
-			'dbServerDB' => getenv(name: $cDetail['master_db_server_db']),
+			'dbServerDb' => getenv(name: $cDetail['master_db_server_db']),
 		];
 	}
 
@@ -489,7 +432,7 @@ class DbCommonFunction
 			'dbServerPort' => getenv(name: $cDetail['slave_db_server_port']),
 			'dbServerUsername' => getenv(name: $cDetail['slave_db_server_username']),
 			'dbServerPassword' => getenv(name: $cDetail['slave_db_server_password']),
-			'dbServerDB' => getenv(name: $cDetail['slave_db_server_db']),
+			'dbServerDb' => getenv(name: $cDetail['slave_db_server_db']),
 		];
 	}
 }
