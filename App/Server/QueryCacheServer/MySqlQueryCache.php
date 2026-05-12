@@ -17,7 +17,7 @@ namespace Microservices\App\Server\QueryCacheServer;
 
 use Microservices\App\HttpStatus;
 use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
-use Microservices\App\Server\Container\Sql\MySql as DB_MySql;
+use Microservices\App\Server\Container\Sql\MySql as QueryCache_MySql;
 
 /**
  * Query Caching via MySql
@@ -78,7 +78,7 @@ class MySqlQueryCache implements QueryCacheServerInterface
 	/**
 	 * Query Cache Server Object
 	 *
-	 * @var null|DB_MySql
+	 * @var null|QueryCache_MySql
 	 */
 	private $queryCacheServerObj = null;
 
@@ -109,7 +109,7 @@ class MySqlQueryCache implements QueryCacheServerInterface
 	}
 
 	/**
-	 * Query Cache Server Object
+	 * Connect Query Cache
 	 *
 	 * @return void
 	 * @throws \Exception
@@ -121,7 +121,7 @@ class MySqlQueryCache implements QueryCacheServerInterface
 		}
 
 		try {
-			$this->queryCacheServerObj = new DB_MySql(
+			$this->queryCacheServerObj = new QueryCache_MySql(
 				dbServerHostname: $this->queryCacheServerHostname,
 				dbServerPort: $this->queryCacheServerPort,
 				dbServerUsername: $this->queryCacheServerUsername,
@@ -137,13 +137,13 @@ class MySqlQueryCache implements QueryCacheServerInterface
 	}
 
 	/**
-	 * Checks if cache key exist
+	 * Query Cache key exist
 	 *
-	 * @param string $key Cache key
+	 * @param string $queryCacheKey Query Cache key
 	 *
 	 * @return mixed
 	 */
-	public function cacheExists($key): mixed
+	public function queryCacheExist($queryCacheKey): mixed
 	{
 		$this->connect();
 
@@ -152,9 +152,9 @@ class MySqlQueryCache implements QueryCacheServerInterface
 			FROM {$this->queryCacheServerTable}
 			WHERE `key` = :key
 		";
-		$params = [':key' => $key];
+		$paramArr = [':key' => $queryCacheKey];
 
-		$this->queryCacheServerObj->execDbQuery(sql: $sql, params: $params);
+		$this->queryCacheServerObj->execDbQuery(sql: $sql, paramArr: $paramArr);
 		$row = $this->queryCacheServerObj->fetch();
 		$this->queryCacheServerObj->closeCursor();
 
@@ -162,13 +162,13 @@ class MySqlQueryCache implements QueryCacheServerInterface
 	}
 
 	/**
-	 * Get cache on basis of key
+	 * Get Query Cache key
 	 *
-	 * @param string $key Cache key
+	 * @param string $queryCacheKey Query Cache key
 	 *
 	 * @return mixed
 	 */
-	public function getCache($key): mixed
+	public function queryCacheGet($queryCacheKey): mixed
 	{
 		$this->connect();
 
@@ -177,9 +177,9 @@ class MySqlQueryCache implements QueryCacheServerInterface
 			FROM {$this->queryCacheServerTable}
 			WHERE `key` = :key
 		";
-		$params = [':key' => $key];
+		$paramArr = [':key' => $queryCacheKey];
 
-		$this->queryCacheServerObj->execDbQuery(sql: $sql, params: $params);
+		$this->queryCacheServerObj->execDbQuery(sql: $sql, paramArr: $paramArr);
 		if ($row = $this->queryCacheServerObj->fetch()) {
 			$this->queryCacheServerObj->closeCursor();
 			return $row['value'];
@@ -189,45 +189,60 @@ class MySqlQueryCache implements QueryCacheServerInterface
 	}
 
 	/**
-	 * Set cache on basis of key
+	 * Set cache key
 	 *
-	 * @param string   $key    Cache key
-	 * @param string   $value  Cache value
+	 * @param string $queryCacheKey Query Cache key
+	 * @param string $value         Query Cache value
 	 *
 	 * @return mixed
 	 */
-	public function setCache($key, $value): mixed
+	public function queryCacheSet($queryCacheKey, $value): mixed
 	{
 		$this->connect();
-		$this->deleteCache($key);
+		$this->cacheDelete($queryCacheKey);
 
 		$sql = "
 			INSERT INTO {$this->queryCacheServerTable}
 			SET `key` = :key, value = :value
 		";
-		$params = [':key' => $key, ':value' => $value];
+		$paramArr = [':key' => $queryCacheKey, ':value' => $value];
 
-		$this->queryCacheServerObj->execDbQuery(sql: $sql, params: $params);
+		$this->queryCacheServerObj->execDbQuery(sql: $sql, paramArr: $paramArr);
 		$this->queryCacheServerObj->closeCursor();
 
 		return true;
 	}
 
 	/**
-	 * Delete basis of key
+	 * Increment Query Cache key as per offset
 	 *
-	 * @param string $key Cache key
+	 * @param string $queryCacheKey Query Cache key
+	 * @param int    $offset        Query Cache offset
 	 *
 	 * @return mixed
 	 */
-	public function deleteCache($key): mixed
+	public function queryCacheIncrement($queryCacheKey, $offset = 1): mixed
+	{
+		$this->connect();
+
+		return $this->queryCacheServerObj->cacheIncrement($queryCacheKey, $offset);
+	}
+
+	/**
+	 * Delete Query Cache key
+	 *
+	 * @param string $queryCacheKey Query Cache key
+	 *
+	 * @return mixed
+	 */
+	public function queryCacheDelete($queryCacheKey): mixed
 	{
 		$this->connect();
 
 		$sql = "DELETE FROM {$this->queryCacheServerTable} WHERE `key` = :key";
-		$params = [':key' => $key];
+		$paramArr = [':key' => $queryCacheKey];
 
-		$this->queryCacheServerObj->execDbQuery(sql: $sql, params: $params);
+		$this->queryCacheServerObj->execDbQuery(sql: $sql, paramArr: $paramArr);
 		$this->queryCacheServerObj->closeCursor();
 
 		return true;

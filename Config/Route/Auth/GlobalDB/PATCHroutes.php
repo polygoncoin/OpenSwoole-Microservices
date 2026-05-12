@@ -13,35 +13,32 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Route\Auth\GlobalDB;
-
-use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
 
 return [
 	'group' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => Constant::$AUTH_QUERIES_DIR
+			'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'GlobalDB'
 				. DIRECTORY_SEPARATOR . 'PATCH'
 				. DIRECTORY_SEPARATOR . 'groups.php',
 			'approve'  => [
-				'__FILE__' => Constant::$AUTH_QUERIES_DIR
+				'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . 'PATCH'
 					. DIRECTORY_SEPARATOR . 'approve'
 					. DIRECTORY_SEPARATOR . 'groups.php',
 			],
 			'disable'  => [
-				'__FILE__' => Constant::$AUTH_QUERIES_DIR
+				'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . 'PATCH'
 					. DIRECTORY_SEPARATOR . 'disable'
 					. DIRECTORY_SEPARATOR . 'groups.php',
 			],
 			'enable'  => [
-				'__FILE__' => Constant::$AUTH_QUERIES_DIR
+				'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . 'PATCH'
 					. DIRECTORY_SEPARATOR . 'enable'
@@ -52,26 +49,26 @@ return [
 	'customer' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => Constant::$AUTH_QUERIES_DIR
+			'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'GlobalDB'
 				. DIRECTORY_SEPARATOR . 'PATCH'
 				. DIRECTORY_SEPARATOR . 'customer.php',
 			'approve'  => [
-				'__FILE__' => Constant::$AUTH_QUERIES_DIR
+				'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . 'PATCH'
 					. DIRECTORY_SEPARATOR . 'approve'
 					. DIRECTORY_SEPARATOR . 'customer.php',
 			],
 			'disable'  => [
-				'__FILE__' => Constant::$AUTH_QUERIES_DIR
+				'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . 'PATCH'
 					. DIRECTORY_SEPARATOR . 'disable'
 					. DIRECTORY_SEPARATOR . 'customer.php',
 			],
 			'enable'  => [
-				'__FILE__' => Constant::$AUTH_QUERIES_DIR
+				'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . 'PATCH'
 					. DIRECTORY_SEPARATOR . 'enable'

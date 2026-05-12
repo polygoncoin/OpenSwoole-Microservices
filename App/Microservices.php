@@ -16,6 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\CommonFunction;
+use Microservices\App\Dropbox;
 use Microservices\App\Env;
 use Microservices\App\Gateway;
 use Microservices\App\Http;
@@ -50,14 +51,14 @@ class Microservices
 	private $tsEnd = null;
 
 	/**
-	 * Http Request Details
+	 * HTTP request detail
 	 *
 	 * @var null|array
 	 */
-	public $iConfig = null;
+	public $httpReqDetailArr = null;
 
 	/**
-	 * Http Object
+	 * HTTP object
 	 *
 	 * @var null|Http
 	 */
@@ -66,12 +67,11 @@ class Microservices
 	/**
 	 * Constructor
 	 *
-	 * @param array $iConfig Http Request Details
+	 * @param array $httpReqDetailArr HTTP request detail
 	 */
-	public function __construct(&$iConfig)
+	public function __construct(&$httpReqDetailArr)
 	{
-		$this->iConfig = &$iConfig;
-		$this->http = new Http($this->iConfig);
+		$this->httpReqDetailArr = &$httpReqDetailArr;
 	}
 
 	/**
@@ -82,9 +82,7 @@ class Microservices
 	 */
 	public function init(): bool
 	{
-		$this->http->init(iConfig: $this->iConfig);
-
-		if (!isset($this->iConfig['get'][ROUTE_URL_PARAM])) {
+		if (!isset($this->httpReqDetailArr['get'][ROUTE_URL_PARAM])) {
 			throw new \Exception(
 				message: 'Missing route',
 				code: HttpStatus::$NotFound
@@ -109,16 +107,6 @@ class Microservices
 	}
 
 	/**
-	 * Start Data Output
-	 *
-	 * @return void
-	 */
-	public function startData(): void
-	{
-		$this->http->res->dataEncode->startObject();
-	}
-
-	/**
 	 * Process API request
 	 *
 	 * @return mixed
@@ -132,11 +120,11 @@ class Microservices
 			case (
 					Env::$enableCronRequest
 					&& strpos(
-						haystack: $this->http->iConfig['get'][ROUTE_URL_PARAM],
+						haystack: $this->httpReqDetailArr['get'][ROUTE_URL_PARAM],
 						needle: '/' . Env::$cronRequestRoutePrefix
 					) === 0
 				):
-				if ($this->http->iConfig['server']['httpRequestIP'] !== Env::$cronRestrictedCidr) {
+				if ($this->httpReqDetailArr['server']['httpRequestIP'] !== Env::$cronRestrictedCidr) {
 					throw new \Exception(
 						message: 'Source IP is not supported',
 						code: HttpStatus::$NotFound
@@ -145,17 +133,17 @@ class Microservices
 				$class = __NAMESPACE__ . '\\Cron';
 				break;
 
-			case $this->http->iConfig['get'][ROUTE_URL_PARAM] === '/logout':
+			case $this->httpReqDetailArr['get'][ROUTE_URL_PARAM] === '/logout':
 				$class = __NAMESPACE__ . '\\Logout';
 				break;
 
 			// Requires HTTP auth username and password
 			case (
 					Env::$enableReloadRequest
-					&& $this->http->iConfig['get'][ROUTE_URL_PARAM] === '/' . Env::$reloadRequestRoutePrefix
+					&& $this->httpReqDetailArr['get'][ROUTE_URL_PARAM] === '/' . Env::$reloadRequestRoutePrefix
 				):
 				$isValidIp = CommonFunction::checkCidr(
-					IP: $this->http->iConfig['server']['httpRequestIP'],
+					IP: $this->httpReqDetailArr['server']['httpRequestIP'],
 					cidrString: Env::$reloadRestrictedCidr
 				);
 				if (!$isValidIp) {
@@ -168,14 +156,28 @@ class Microservices
 				break;
 
 			// Generates auth token
-			case $this->http->iConfig['get'][ROUTE_URL_PARAM] === '/login':
+			case $this->httpReqDetailArr['get'][ROUTE_URL_PARAM] === '/login':
+				$this->http = new Http($this->httpReqDetailArr);
+				$this->http->init();
 				$class = __NAMESPACE__ . '\\Login';
 				break;
 
 			// Requires auth token
 			default:
+				if ($this->httpReqDetailArr['server']['httpMethod'] === Constant::$GET) {
+					$dropboxCache = new Dropbox(httpReqDetailArr: $this->httpReqDetailArr);
+					if ($dropboxCache->init(mode: 'Open')) {
+						// File exists - Serve from Dropbox
+						return $dropboxCache->process();
+					}
+					$dropboxCache = null;
+				}
+
+				$this->http = new Http($this->httpReqDetailArr);
+				$this->http->init();
+
 				$gateway = new Gateway($this->http);
-				$gateway->initGateway();
+				$gateway->init();
 				$gateway = null;
 
 				$class = __NAMESPACE__ . '\\Api';
@@ -187,10 +189,15 @@ class Microservices
 			if ($class !== null) {
 				$api = new $class($this->http);
 				if ($api->init()) {
-					$this->http->initResponse();
+					if ($this->http !== null) {
+						$this->http->initResponse();
+					}
 					$this->startData();
 					$return = $api->process();
-					if (is_array($return) && count($return) === 3) {
+					if (
+						is_array($return)
+						&& count($return) === 3
+					) {
 						return $return;
 					}
 					$this->addStatus();
@@ -206,43 +213,62 @@ class Microservices
 	}
 
 	/**
-	 * Add Status
+	 * Start Data Output
+	 *
+	 * @return void
+	 */
+	public function startData(): void
+	{
+		if ($this->http === null) {
+			return;
+		}
+		$this->http->res->dataEncode->startObject();
+	}
+
+	/**
+	 * Add HTTP status in response
 	 *
 	 * @return void
 	 */
 	public function addStatus(): void
 	{
+		if ($this->http === null) {
+			return;
+		}
 		$this->http->res->dataEncode->addKeyData(
-			key: 'Status',
+			objectKey: 'Status',
 			data: $this->http->res->httpStatus
 		);
 	}
 
 	/**
-	 * Add Performance details
+	 * Add Performance detail in response
 	 *
 	 * @return void
 	 */
 	public function addPerformance(): void
 	{
+		if ($this->http === null) {
+			return;
+		}
 		if (Env::$OUTPUT_PERFORMANCE_STATS) {
 			$this->tsEnd = microtime(as_float: true);
 			$time = ceil(num: ($this->tsEnd - $this->tsStart) * 1000);
 			$memory = ceil(num: memory_get_peak_usage() / 1000);
 
-			$this->http->res->dataEncode->startObject(key: 'Stats');
-			$this->http->res->dataEncode->startObject(key: 'Performance');
+			$this->http->res->dataEncode->startObject(objectKey: 'Stats');
+			$this->http->res->dataEncode->startObject(objectKey: 'Performance');
 			$this->http->res->dataEncode->addKeyData(
-				key: 'total-time-taken',
+				objectKey: 'total-time-taken',
 				data: "{$time} ms"
 			);
 			$this->http->res->dataEncode->addKeyData(
-				key: 'peak-memory-usage',
+				objectKey: 'peak-memory-usage',
 				data: "{$memory} KB"
 			);
 			$this->http->res->dataEncode->endObject();
 			$this->http->res->dataEncode->addKeyData(
-				key: 'getrusage',
+				objectKey: 'getrusage',
 				data: getrusage()
 			);
 			$this->http->res->dataEncode->endObject();
@@ -250,34 +276,43 @@ class Microservices
 	}
 
 	/**
-	 * End Data Output
+	 * End response
 	 *
 	 * @return void
 	 */
 	public function endData(): void
 	{
+		if ($this->http === null) {
+			return;
+		}
 		$this->http->res->dataEncode->endObject();
 		$this->http->res->dataEncode->end();
 	}
 
 	/**
-	 * Output
+	 * Output response
 	 *
 	 * @return void
 	 */
 	public function outputResults(): void
 	{
+		if ($this->http === null) {
+			return;
+		}
 		http_response_code(response_code: $this->http->res->httpStatus);
 		$this->http->res->dataEncode->streamData();
 	}
 
 	/**
-	 * Output
+	 * Return encoded result
 	 *
 	 * @return bool|string
 	 */
 	public function returnResults(): bool|string
 	{
+		if ($this->http === null) {
+			return false;
+		}
 		return $this->http->res->dataEncode->getData();
 	}
 
@@ -288,43 +323,48 @@ class Microservices
 	 */
 	public function getHeaders(): array
 	{
-		$headers = [];
-		$headers['Access-Control-Allow-Origin'] = $this->iConfig['server']['domainName'];
-		$headers['Vary'] = 'Origin';
-		$headers['Access-Control-Allow-Headers'] = '*';
+		$headerArr = [];
+		$headerArr['Access-Control-Allow-Origin'] = $this->httpReqDetailArr['server']['domainName'];
+		$headerArr['Vary'] = 'Origin';
+		$headerArr['Access-Control-Allow-Headers'] = '*';
 
-		$headers['Referrer-Policy'] = 'origin';
-		$headers['X-Frame-Options'] = 'SAMEORIGIN';
-		$headers['X-Content-Type-Options'] = 'nosniff';
-		$headers['Cross-Origin-Resource-Policy'] = 'same-origin';
-		$headers['Cross-Origin-Embedder-Policy'] = 'unsafe-none';
-		$headers['Cross-Origin-Opener-Policy'] = 'unsafe-none';
+		$headerArr['Referrer-Policy'] = 'origin';
+		$headerArr['X-Frame-Options'] = 'SAMEORIGIN';
+		$headerArr['X-Content-Type-Options'] = 'nosniff';
+		$headerArr['Cross-Origin-Resource-Policy'] = 'same-origin';
+		$headerArr['Cross-Origin-Embedder-Policy'] = 'unsafe-none';
+		$headerArr['Cross-Origin-Opener-Policy'] = 'unsafe-none';
 
-		// Access-Control headers are received during OPTIONS request
-		if ($this->iConfig['server']['httpMethod'] == 'OPTIONS') {
+		// Access-Control header are received during OPTIONS request
+		if ($this->httpReqDetailArr['server']['httpMethod'] == 'OPTIONS') {
 			// may also be using PUT, PATCH, HEAD etc
 			$methods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
-			$headers['Access-Control-Allow-Methods'] = $methods;
+			$headerArr['Access-Control-Allow-Methods'] = $methods;
 		} else {
-			switch ($this->http->res->oRepresentation) {
+			if ($this->http === null) {
+				$oRepresentation = Env::$oRepresentation;
+			} else {
+				$oRepresentation = $this->http->res->oRepresentation;
+			}
+			switch ($oRepresentation) {
 				case 'XML':
 				case 'XSLT':
-					$headers['Content-Type'] = 'text/xml; charset=utf-8';
+					$headerArr['Content-Type'] = 'text/xml; charset=utf-8';
 					break;
 				case 'JSON':
-					$headers['Content-Type'] = 'application/json; charset=utf-8';
+					$headerArr['Content-Type'] = 'application/json; charset=utf-8';
 					break;
 				case 'HTML':
 				case 'PHP':
-					$headers['Content-Type'] = 'text/html; charset=utf-8';
+					$headerArr['Content-Type'] = 'text/html; charset=utf-8';
 					break;
 			}
 			$cacheControl = 'no-store, no-cache, must-revalidate, max-age=0';
-			$headers['Cache-Control'] = $cacheControl;
-			$headers['Pragma'] = 'no-cache';
+			$headerArr['Cache-Control'] = $cacheControl;
+			$headerArr['Pragma'] = 'no-cache';
 		}
 
-		return $headers;
+		return $headerArr;
 	}
 
 	/**

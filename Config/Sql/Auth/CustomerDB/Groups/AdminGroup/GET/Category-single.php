@@ -13,25 +13,23 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\AdminGroup\GET;
-
 return [
 	'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		],
 		[
 			'column' => 'parent_id',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 0
+			'fetchFromDetail' => 0
 		],
 		[
 			'column' => 'id',
-			'fetchFrom' => 'routeParams',
-			'fetchFromValue' => 'id'
+			'fetchFrom' => 'routeParamArr',
+			'fetchFromDetail' => 'id'
 		]
 	],
 	'__MODE__' => 'multipleRowFormat',
@@ -42,12 +40,12 @@ return [
 				[
 					'column' => 'is_deleted',
 					'fetchFrom' => 'custom',
-					'fetchFromValue' => 'No'
+					'fetchFromDetail' => 'No'
 				],
 				[
 					'column' => 'parent_id',
 					'fetchFrom' => 'sqlResults',
-					'fetchFromValue' => 'return:id'
+					'fetchFromDetail' => 'return:id'
 				],
 			],
 			'__MODE__' => 'multipleRowFormat',
@@ -58,12 +56,12 @@ return [
 						[
 							'column' => 'is_deleted',
 							'fetchFrom' => 'custom',
-							'fetchFromValue' => 'No'
+							'fetchFromDetail' => 'No'
 						],
 						[
 							'column' => 'parent_id',
 							'fetchFrom' => 'sqlResults',
-							'fetchFromValue' => 'return:sub:id'
+							'fetchFromDetail' => 'return:sub:id'
 						],
 					],
 					'__MODE__' => 'multipleRowFormat',
@@ -74,12 +72,12 @@ return [
 								[
 									'column' => 'is_deleted',
 									'fetchFrom' => 'custom',
-									'fetchFromValue' => 'No'
+									'fetchFromDetail' => 'No'
 								],
 								[
 									'column' => 'parent_id',
 									'fetchFrom' => 'sqlResults',
-									'fetchFromValue' => 'return:sub:subsub:id'
+									'fetchFromDetail' => 'return:sub:subsub:id'
 								],
 							],
 							'__MODE__' => 'multipleRowFormat',

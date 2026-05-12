@@ -44,9 +44,9 @@ class QueryCacheServerKey
 	public static $aApp = 'a:app';
 
 	/**
-	 * Customer Key
+	 * Query Cache Customer key
 	 *
-	 * @param int  $customerID         Customer ID
+	 * @param int  $customerID         Customer id
 	 * @param bool $isOpenToWebRequest
 	 *
 	 * @return string
@@ -63,10 +63,10 @@ class QueryCacheServerKey
 	}
 
 	/**
-	 * User Group Key
+	 * Query Cache Customer Group key
 	 *
-	 * @param int  $customerID         Customer ID
-	 * @param int  $groupID            Group ID
+	 * @param int  $customerID         Customer id
+	 * @param int  $groupID            Group id
 	 * @param bool $isOpenToWebRequest
 	 *
 	 * @return string
@@ -85,11 +85,11 @@ class QueryCacheServerKey
 	}
 
 	/**
-	 * Customer Group User Key
+	 * Query Cache Customer Group User key
 	 *
-	 * @param int  $customerID         Customer ID
-	 * @param int  $groupID            Group ID
-	 * @param int  $userID             User ID
+	 * @param int  $customerID         Customer id
+	 * @param int  $groupID            Group id
+	 * @param int  $userID             User id
 	 * @param bool $isOpenToWebRequest
 	 *
 	 * @return string
@@ -112,9 +112,9 @@ class QueryCacheServerKey
 	/**
 	 * Category
 	 *
-	 * @param int  $customerID         Customer ID
-	 * @param int  $groupID            Group ID
-	 * @param int  $userID             User ID
+	 * @param int  $customerID         Customer id
+	 * @param int  $groupID            Group id
+	 * @param int  $userID             User id
 	 * @param bool $isOpenToWebRequest
 	 *
 	 * @return string
@@ -135,8 +135,8 @@ class QueryCacheServerKey
 	/**
 	 * Category1
 	 *
-	 * @param int  $customerID         Customer ID
-	 * @param int  $groupID            Group ID
+	 * @param int  $customerID         Customer id
+	 * @param int  $groupID            Group id
 	 * @param bool $isOpenToWebRequest
 	 *
 	 * @return string
@@ -155,7 +155,7 @@ class QueryCacheServerKey
 	}
 
 	/**
-	 * App Key Details
+	 * Set application key
 	 *
 	 * @param bool $isOpenToWebRequest
 	 *
@@ -167,9 +167,9 @@ class QueryCacheServerKey
 	}
 
 	/**
-	 * Customer Key Details
+	 * Query Cache Customer key
 	 *
-	 * @param int $customerID Customer ID
+	 * @param int $customerID Customer id
 	 *
 	 * @return string
 	 */
@@ -179,9 +179,9 @@ class QueryCacheServerKey
 	}
 
 	/**
-	 * Group Key Details
+	 * Query Cache Group key
 	 *
-	 * @param int $groupID Group ID
+	 * @param int $groupID Group id
 	 *
 	 * @return string
 	 */
@@ -191,9 +191,9 @@ class QueryCacheServerKey
 	}
 
 	/**
-	 * User Key Details
+	 * Query Cache User key
 	 *
-	 * @param int $userID User ID
+	 * @param int $userID User id
 	 *
 	 * @return string
 	 */

@@ -13,15 +13,13 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Open\GET;
-
 return [
 	'__DOWNLOAD__' => 'SELECT * FROM `category` WHERE __WHERE__',
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		]
 	],
 	'fetchFrom' => 'Master',

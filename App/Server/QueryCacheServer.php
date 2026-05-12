@@ -111,11 +111,11 @@ class QueryCacheServer
 	}
 
 	/**
-	 * Connect Query Cache Server
+	 * Connect Query Cache
 	 *
 	 * @return QueryCacheServerInterface
 	 */
-	public function connectQueryCacheServer(): QueryCacheServerInterface
+	public function connectQueryCache(): QueryCacheServerInterface
 	{
 		if (
             !in_array(

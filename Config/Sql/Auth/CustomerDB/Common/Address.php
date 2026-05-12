@@ -13,18 +13,16 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\CustomerDB\Common;
-
 return [
 	'__SQL-COMMENT__' => '',
 	'__QUERY__' => 'UPDATE `address` SET __SET__ WHERE __WHERE__',
 	'__VALIDATE__' => [
 		[
-			'fn' => 'primaryKeyExist',
-			'fnArgs' => [
+			'function' => 'primaryKeyExist',
+			'functionArgs' => [
 				'table' => ['custom', 'address'],
 				'primary' => ['custom', 'id'],
-				'id' => ['routeParams', 'id']
+				'id' => ['routeParamArr', 'id']
 			],
 			'errorMessage' => 'Invalid address id'
 		],

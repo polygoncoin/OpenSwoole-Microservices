@@ -13,8 +13,6 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\UserGroup\GET;
-
 return [
 	'countQuery' => 'SELECT count(1) as `count` FROM `address` WHERE __WHERE__',
 	'__QUERY__' => 'SELECT * FROM `address` WHERE __WHERE__',
@@ -22,7 +20,7 @@ return [
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		]
 	],
 	'__MODE__' => 'multipleRowFormat'

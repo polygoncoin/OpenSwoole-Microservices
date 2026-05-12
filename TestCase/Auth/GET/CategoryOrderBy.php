@@ -17,15 +17,15 @@ namespace Microservices\TestCase;
 
 use Microservices\App\Web;
 
-$header = $defaultHeaders;
+$headerArr = $defaultHeaderArr;
 if (isset($token)) {
-	$header[] = "Authorization: Bearer {$token}";
+	$headerArr[] = "Authorization: Bearer {$token}";
 
 	return Web::trigger(
 		homeURL: $homeURL,
 		method: 'GET',
 		route: '/category&orderBy={"id":"DESC"}',
-		header: $header,
+		header: $headerArr,
 		payload: ''
 	);
 }

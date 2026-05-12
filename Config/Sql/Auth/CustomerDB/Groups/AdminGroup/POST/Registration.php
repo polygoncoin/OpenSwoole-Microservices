@@ -13,36 +13,34 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\AdminGroup\POST;
-
 return [
-	'__QUERY__' => "INSERT INTO `{$this->http->req->usersTable}` SET __SET__",
+	'__QUERY__' => "INSERT INTO `{$this->http->req->s['cDetail']['usersTable']}` SET __SET__",
 	'__SET__' => [
 		[
 			'column' => 'customer_id',
-			'fetchFrom' => 'cDetails',
-			'fetchFromValue' => 'id'
+			'fetchFrom' => 'cDetail',
+			'fetchFromDetail' => 'id'
 		],
 		[
 			'column' => 'firstname',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'firstname'],
+			'fetchFromDetail' => 'firstname'],
 		[
 			'column' => 'lastname',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'lastname'],
+			'fetchFromDetail' => 'lastname'],
 		[
 			'column' => 'email',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'email'],
+			'fetchFromDetail' => 'email'],
 		[
 			'column' => 'username',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'username'],
+			'fetchFromDetail' => 'username'],
 		[
 			'column' => 'password_hash',
 			'fetchFrom' => 'function',
-			'fetchFromValue' => function($session): string {
+			'fetchFromDetail' => function($session): string {
 				return password_hash(
 					password: $session['payload']['password'],
 					algo: PASSWORD_DEFAULT
@@ -51,11 +49,11 @@ return [
 		[
 			'column' => 'allowed_cidr',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => '0.0.0.0/0'],
+			'fetchFromDetail' => '0.0.0.0/0'],
 		[
 			'column' => 'group_id',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => '1'],
+			'fetchFromDetail' => '1'],
 	],
 	'__INSERT-IDs__' => 'registration:id',
 	'idempotentWindow' => 10

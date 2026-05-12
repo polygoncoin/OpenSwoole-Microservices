@@ -41,7 +41,7 @@ class Cron
 	private $cronApi = null;
 
 	/**
-	 * Http Object
+	 * HTTP object
 	 *
 	 * @var null|Http
 	 */
@@ -68,11 +68,11 @@ class Cron
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Common'
 			. DIRECTORY_SEPARATOR . 'Cron'
-			. DIRECTORY_SEPARATOR . $this->http->iConfig['server']['httpMethod'] . 'routes.php';
+			. DIRECTORY_SEPARATOR . $this->http->httpReqDetailArr['server']['httpMethod'] . 'routes.php';
 		$this->http->req->rParser->parseRoute(routeFileLocation: $routeFileLocation);
 
 		$class = 'Microservices\\Supplement\\Cron\\'
-			. ucfirst(string: $this->http->req->rParser->routeElements[1]);
+			. ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
 
 		$this->cronApi = new $class($this->http);
 

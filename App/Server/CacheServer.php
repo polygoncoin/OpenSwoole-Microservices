@@ -111,11 +111,11 @@ class CacheServer
 	}
 
 	/**
-	 * Init server connection based on $fetchFrom
+	 * Connect Cache
 	 *
 	 * @return CacheServerInterface
 	 */
-	public function connectCacheServer(): CacheServerInterface
+	public function connectCache(): CacheServerInterface
 	{
 		if (
             !in_array(

@@ -43,7 +43,7 @@ class DataEncode
 	private $tempStream = null;
 
 	/**
-	 * Http Object
+	 * HTTP object
 	 *
 	 * @var null|Http
 	 */
@@ -96,7 +96,7 @@ class DataEncode
 	 */
 	public function init($header = true): void
 	{
-		if ($this->http->iConfig['server']['httpMethod'] === Constant::$GET) {
+		if ($this->http->httpReqDetailArr['server']['httpMethod'] === Constant::$GET) {
 			if ($this->http->res->oRepresentation === 'PHP') {
 				$this->tempStream = [];
 			} else {
@@ -136,19 +136,19 @@ class DataEncode
 	}
 
 	/**
-	 * Start simple array
+	 * Start array
 	 *
-	 * @param null|string $key Used while creating simple array inside an object
+	 * @param null|string $objectKey Used while creating simple array inside an object
 	 *
 	 * @return void
 	 */
-	public function startArray($key = null): void
+	public function startArray($objectKey = null): void
 	{
-		$this->dataEncoder->startArray(key: $key);
+		$this->dataEncoder->startArray(objectKey: $objectKey);
 	}
 
 	/**
-	 * Add simple array/value as in the data format
+	 * Add array/value as in the data format
 	 *
 	 * @param string|array $data Representation Data
 	 *
@@ -161,7 +161,7 @@ class DataEncode
 	}
 
 	/**
-	 * End simple array
+	 * End array
 	 *
 	 * @return void
 	 */
@@ -171,34 +171,34 @@ class DataEncode
 	}
 
 	/**
-	 * Start simple array
+	 * Start object
 	 *
-	 * @param null|string $key Used while creating associative array inside an object
-	 *
-	 * @return void
-	 * @throws \Exception
-	 */
-	public function startObject($key = null): void
-	{
-		$this->dataEncoder->startObject(key: $key);
-	}
-
-	/**
-	 * Add simple array/value as in the data format
-	 *
-	 * @param string       $key  Key of associative array
-	 * @param string|array $data Representation Data
+	 * @param null|string $objectKey Used while creating associative array inside an object
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function addKeyData($key, $data): void
+	public function startObject($objectKey = null): void
 	{
-		$this->dataEncoder->addKeyData(key: $key, data: $data);
+		$this->dataEncoder->startObject(objectKey: $objectKey);
 	}
 
 	/**
-	 * End associative array
+	 * Add array/value as in the data format
+	 *
+	 * @param string       $objectKey Key of associative array
+	 * @param string|array $data      Representation Data
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
+	public function addKeyData($objectKey, $data): void
+	{
+		$this->dataEncoder->addKeyData(objectKey: $objectKey, data: $data);
+	}
+
+	/**
+	 * End object
 	 *
 	 * @return void
 	 */
@@ -208,7 +208,7 @@ class DataEncode
 	}
 
 	/**
-	 * Encodes both simple and associative array to json
+	 * Encode data
 	 *
 	 * @param string|array $data Representation Data
 	 *
@@ -232,20 +232,20 @@ class DataEncode
 	}
 
 	/**
-	 * Append raw data string
+	 * Append object data
 	 *
-	 * @param string $key  key of associative array
-	 * @param string $data Representation Data
+	 * @param string $objectKey Key of associative array
+	 * @param string $data      Representation Data
 	 *
 	 * @return void
 	 */
-	public function appendKeyData($key, &$data): void
+	public function appendKeyData($objectKey, &$data): void
 	{
-		$this->dataEncoder->appendKeyData(key: $key, data: $data);
+		$this->dataEncoder->appendKeyData(objectKey: $objectKey, data: $data);
 	}
 
 	/**
-	 * Checks data was properly closed
+	 * End encoding
 	 *
 	 * @return void
 	 */
@@ -255,7 +255,7 @@ class DataEncode
 	}
 
 	/**
-	 * Stream Data String
+	 * Stream encoded data
 	 *
 	 * @return void
 	 */
@@ -300,7 +300,7 @@ class DataEncode
 	}
 
 	/**
-	 * Return JSON String
+	 * Get encoded data
 	 *
 	 * @return bool|string
 	 */

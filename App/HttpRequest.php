@@ -1,10 +1,10 @@
 <?php
 
 /**
- * HTTP Request
+ * HTTP request
  * php version 8.3
  *
- * @category  HTTP_Request
+ * @category  HTTP request
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -27,10 +27,10 @@ use Microservices\App\Middleware\Auth;
 use Microservices\App\RouteParser;
 
 /**
- * HTTP Request
+ * HTTP request
  * php version 8.3
  *
- * @category  HTTP_Request
+ * @category  HTTP request
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -55,21 +55,21 @@ class HttpRequest
 	public $dataDecode = null;
 
 	/**
-	 * Http Object
+	 * HTTP object
 	 *
 	 * @var null|Http
 	 */
 	private $http = null;
 
 	/**
-	 * Session details of a request
+	 * Session detail of a request
 	 *
 	 * @var null|array
 	 */
 	public $s = null;
 
 	/**
-	 * Open To Web Request
+	 * Open To Web request
 	 *
 	 * @var null|bool
 	 */
@@ -88,18 +88,25 @@ class HttpRequest
 	public $rParser = null;
 
 	/**
-	 * Customer ID
+	 * Customer id
 	 *
 	 * @var null|int
 	 */
-	public $cId = null;
+	public $cID = null;
 
 	/**
-	 * Customer user table
+	 * Group id
 	 *
-	 * @var null|string
+	 * @var null|int
 	 */
-	public $usersTable = null;
+	public $gID = null;
+
+	/**
+	 * User id
+	 *
+	 * @var null|int
+	 */
+	public $uID = null;
 
 	/**
 	 * Constructor
@@ -110,24 +117,24 @@ class HttpRequest
 	{
 		$this->http = &$http;
 
-		if (isset($this->http->iConfig['get'][ROUTE_URL_PARAM])) {
-			$this->http->iConfig['get'][ROUTE_URL_PARAM] = '/' . trim(
-				string: $this->http->iConfig['get'][ROUTE_URL_PARAM],
+		if (isset($this->http->httpReqDetailArr['get'][ROUTE_URL_PARAM])) {
+			$this->http->httpReqDetailArr['get'][ROUTE_URL_PARAM] = '/' . trim(
+				string: $this->http->httpReqDetailArr['get'][ROUTE_URL_PARAM],
 				characters: '/'
 			);
 		} else {
-			$this->http->iConfig['get'][ROUTE_URL_PARAM] = '';
+			$this->http->httpReqDetailArr['get'][ROUTE_URL_PARAM] = '';
 		}
 
 		switch (Env::$authMode) {
 			case 'Token':
 				if (
-					isset($this->http->iConfig['header'])
-					&& isset($this->http->iConfig['header']['tokenHeader'])
-					&& $this->http->iConfig['header']['tokenHeader'] !== null
+					isset($this->http->httpReqDetailArr['header'])
+					&& isset($this->http->httpReqDetailArr['header']['tokenHeader'])
+					&& $this->http->httpReqDetailArr['header']['tokenHeader'] !== null
 				) {
 					$this->isOpenToWebRequest = false;
-				} elseif ($this->http->iConfig['get'][ROUTE_URL_PARAM] === '/login') {
+				} elseif ($this->http->httpReqDetailArr['get'][ROUTE_URL_PARAM] === '/login') {
 					$this->isOpenToWebRequest = false;
 				} elseif (Env::$enableOpenRequest) {
 					$this->isOpenToWebRequest = true;
@@ -144,16 +151,17 @@ class HttpRequest
 							code: HttpStatus::$InternalServerError
 						);
 					}
-					if (Env::$enableConcurrentLogins) {
-						$userConcurrencyKey = CacheServerKey::userConcurrency(
-							uID: $_SESSION['id']
+					if (Env::$enableConcurrentLogin) {
+						$userConcurrencyKey = CacheServerKey::customerUserConcurrency(
+							cID: $this->cID,
+							uID: $this->uID
 						);
-						$sessionId = session_id();
-						if (DbCommonFunction::$gCacheServer->cacheExists(key: $userConcurrencyKey)) {
-							$userConcurrencyKeyData = DbCommonFunction::$gCacheServer->getCache(
-								key: $userConcurrencyKey
+						$sessionID = session_id();
+						if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $userConcurrencyKey)) {
+							$userConcurrencyKeyData = DbCommonFunction::$gCacheServer->cacheGet(
+								cacheKey: $userConcurrencyKey
 							);
-							if ($userConcurrencyKeyData !== $sessionId) {
+							if ($userConcurrencyKeyData !== $sessionID) {
 								throw new \Exception(
 									message: 'Account already in use. '
 										. 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
@@ -161,14 +169,14 @@ class HttpRequest
 								);
 							}
 						} else {
-							$this->setCache(
-								key: $userConcurrencyKey,
-								value: $sessionId,
+							$this->cacheSet(
+								cacheKey: $userConcurrencyKey,
+								value: $sessionID,
 								expire: Env::$concurrentAccessInterval
 							);
 						}
 					} else {
-						if ($this->http->req->s['uDetails']['httpRequestHash'] !== $this->http->iConfig['httpRequestHash']) {
+						if ($this->http->req->s['uDetail']['httpRequestHash'] !== $this->http->httpReqDetailArr['httpRequestHash']) {
 							throw new \Exception(
 								message: 'Session not supported from this Browser/Device',
 								code: HttpStatus::$PreconditionFailed
@@ -176,7 +184,7 @@ class HttpRequest
 						}
 					}
 					$this->isOpenToWebRequest = false;
-				} elseif ($this->http->iConfig['get'][ROUTE_URL_PARAM] === '/login') {
+				} elseif ($this->http->httpReqDetailArr['get'][ROUTE_URL_PARAM] === '/login') {
 					$this->isOpenToWebRequest = false;
 				} else {
 					$this->isOpenToWebRequest = true;
@@ -190,6 +198,7 @@ class HttpRequest
 				code: HttpStatus::$InternalServerError
 			);
 		}
+
 		if (
 			$this->isOpenToWebRequest === true
 			&& !Env::$enableOpenRequest
@@ -199,6 +208,7 @@ class HttpRequest
 				code: HttpStatus::$InternalServerError
 			);
 		}
+
 		if (
 			$this->isOpenToWebRequest === false
 			&& !Env::$enableAuthRequest
@@ -223,11 +233,11 @@ class HttpRequest
 	 */
 	public function init(): bool
 	{
-		$this->loadCustomerDetails();
+		$this->loadCustomerDetail();
 
 		if (!$this->isOpenToWebRequest) {
-			$this->auth->loadUserDetails();
-			$this->auth->loadGroupDetails();
+			$this->auth->loadUserDetail();
+			$this->auth->loadGroupDetail();
 		}
 
 		$this->rParser->parseRoute();
@@ -236,43 +246,42 @@ class HttpRequest
 	}
 
 	/**
-	 * Load Customer Details
+	 * Load Customer detail
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function loadCustomerDetails(): void
+	public function loadCustomerDetail(): void
 	{
-		if (isset($this->s['cDetails'])) {
+		if (isset($this->s['cDetail'])) {
 			return;
 		}
 
-		DbCommonFunction::connectGlobalCacheServer();
+		DbCommonFunction::connectGlobalCache();
 
 		if ($this->isOpenToWebRequest) {
-			$cKey = CacheServerKey::customerOpenToWeb(domainName: $this->http->iConfig['server']['domainName']);
+			$cKey = CacheServerKey::openToWebDomain(domainName: $this->http->httpReqDetailArr['server']['domainName']);
 		} else {
-			$cKey = CacheServerKey::customer(domainName: $this->http->iConfig['server']['domainName']);
+			$cKey = CacheServerKey::closedToWebDomain(domainName: $this->http->httpReqDetailArr['server']['domainName']);
 		}
-		if (!DbCommonFunction::$gCacheServer->cacheExists(key: $cKey)) {
+		if (!DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $cKey)) {
 			throw new \Exception(
-				message: "Invalid Host '{$this->http->iConfig['server']['domainName']}'",
+				message: "Invalid Host '{$this->http->httpReqDetailArr['server']['domainName']}'",
 				code: HttpStatus::$InternalServerError
 			);
 		}
 
-		$this->s['cDetails'] = json_decode(
-			json: DbCommonFunction::$gCacheServer->getCache(
-				key: $cKey
+		$this->s['cDetail'] = json_decode(
+			json: DbCommonFunction::$gCacheServer->cacheGet(
+				cacheKey: $cKey
 			),
 			associative: true
 		);
-		$this->usersTable = getenv(name: $this->s['cDetails']['usersTable']);
-		$this->cId = $this->s['cDetails']['id'];
+		$this->cID = $this->s['cDetail']['id'];
 	}
 
 	/**
-	 * Loads request payload
+	 * Load payload
 	 *
 	 * @return void
 	 */
@@ -282,9 +291,9 @@ class HttpRequest
 			return;
 		}
 
-		$this->s['queryParams'] = &$this->http->iConfig['get'];
-		if ($this->http->iConfig['server']['httpMethod'] === Constant::$GET) {
-			$this->urlDecode(value: $this->http->iConfig['get']);
+		$this->s['queryParamArr'] = &$this->http->httpReqDetailArr['get'];
+		if ($this->http->httpReqDetailArr['server']['httpMethod'] === Constant::$GET) {
+			$this->urlDecode(value: $this->http->httpReqDetailArr['get']);
 			$this->s['payloadType'] = 'Object';
 		} else {
 			$this->setPayloadStream();
@@ -311,17 +320,17 @@ class HttpRequest
 			case (
 				$this->rParser->routeEndingWithReservedKeywordFlag
 				&& ($this->rParser->routeEndingReservedKeyword === Env::$importRequestRouteKeyword)
-				&& isset($this->http->iConfig['files']['file']['tmp_name'])
+				&& isset($this->http->httpReqDetailArr['files']['file']['tmp_name'])
 			):
 				$content = $this->formatCsvPayload(
-					csvFile: $this->http->iConfig['files']['file']['tmp_name']
+					csvFile: $this->http->httpReqDetailArr['files']['file']['tmp_name']
 				);
 				break;
 			case Env::$iRepresentation === 'XML':
-				$content = $this->convertXmlToJson(xmlString: $this->http->iConfig['post']);
+				$content = $this->convertXmlToJson(xmlString: $this->http->httpReqDetailArr['post']);
 				break;
 			default:
-				$content = $this->http->iConfig['post'];
+				$content = $this->http->httpReqDetailArr['post'];
 		}
 		$this->payloadStream = fopen(
 			filename: "php://memory",
@@ -345,14 +354,14 @@ class HttpRequest
 		$xml = simplexml_load_string(
 			data: $xmlString
 		);
-		$array = json_decode(
+		$arrayFromXml = json_decode(
 			json: json_encode(value: $xml),
 			associative: true
 		);
 		unset($xml);
 
 		$result = [];
-		$this->formatXmlArray(array: $array, result: $result);
+		$this->formatXmlArray(arrayFromXml: $arrayFromXml, result: $result);
 
 		return json_encode($result);
 	}
@@ -360,55 +369,63 @@ class HttpRequest
 	/**
 	 * Format Array generated by XML
 	 *
-	 * @param array $array  Array generated by XML
-	 * @param array $result Formatted array
+	 * @param array $arrayFromXml Array generated by XML
+	 * @param array $result       Formatted array
 	 *
 	 * @return void
 	 */
-	private function formatXmlArray(&$array, &$result): void
+	private function formatXmlArray(&$arrayFromXml, &$result): void
 	{
-		if (isset($array['Rows']) && is_array(value: $array['Rows'])) {
-			$array = &$array['Rows'];
-		}
-
-		if (isset($array['Row']) && is_array(value: $array['Row'])) {
-			$array = &$array['Row'];
+		if (
+			isset($arrayFromXml['Rows'])
+			&& is_array(value: $arrayFromXml['Rows'])
+		) {
+			$arrayFromXml = &$arrayFromXml['Rows'];
 		}
 
 		if (
-			isset($array[0])
-			&& is_array(value: $array[0]) && count(value: $array) === 1
+			isset($arrayFromXml['Row'])
+			&& is_array(value: $arrayFromXml['Row'])
 		) {
-			$array = &$array[0];
-			if (empty($array)) {
+			$arrayFromXml = &$arrayFromXml['Row'];
+		}
+
+		if (
+			isset($arrayFromXml[0])
+			&& is_array(value: $arrayFromXml[0])
+			&& count(value: $arrayFromXml) === 1
+		) {
+			$arrayFromXml = &$arrayFromXml[0];
+			if (empty($arrayFromXml)) {
 				return;
 			}
 		}
 
-		if (!is_array(value: $array)) {
+		if (!is_array(value: $arrayFromXml)) {
 			return;
 		}
 
-		foreach ($array as $key => &$value) {
-			if ($key === 'attribute') {
-				foreach ($value as $k => $v) {
-					$result[$k] = $v;
+		$xmlAttributeColumn = 'attribute';
+		foreach ($arrayFromXml as $column => &$columnValue) {
+			if ($column === $xmlAttributeColumn) {
+				foreach ($columnValue as $attributeKey => $attributeValue) {
+					$result[$attributeKey] = $attributeValue;
 				}
 				continue;
 			}
-			if (is_array(value: $value)) {
-				$result[$key] = [];
-				$this->formatXmlArray(array: $value, result: $result[$key]);
+			if (is_array(value: $columnValue)) {
+				$result[$column] = [];
+				$this->formatXmlArray(arrayFromXml: $columnValue, result: $result[$column]);
 				continue;
 			}
-			$result[$key] = $value;
+			$result[$column] = $columnValue;
 		}
 	}
 
 	/**
-	 * Function to find payload is an object/array
+	 * urldecode string or array
 	 *
-	 * @param array|string $value Array vales to be decoded. Basically $iConfig['get']
+	 * @param array|string $value Array vales to be decoded. Basically $httpReqDetailArr['get']
 	 *
 	 * @return void
 	 */
@@ -428,7 +445,7 @@ class HttpRequest
 	}
 
 	/**
-	 * Format Csv Payload
+	 * Format CSV Payload
 	 *
 	 * @param string $csvFile
 	 *
@@ -440,101 +457,100 @@ class HttpRequest
 		$dataEncode->init(header: false);
 		$dataEncode->startObject();
 
-		$header = false;
+		$csvHeaderDetail = false;
 		$counter = null;
-		$modeArr = [];
+		$currentModeArr = [];
 
 		$fp = fopen($csvFile, "r");
-		while (($line = fgets($fp)) !== false) {
-			if (empty($line)) {
+		while (($csvString = fgets($fp)) !== false) {
+			if (empty($csvString)) {
 				continue;
 			}
-			$data = str_getcsv($line, ",", "\"", "\\");
-			if (empty($data)) {
+			$csvRecordArr = str_getcsv($csvString, ",", "\"", "\\");
+			if (empty($csvRecordArr)) {
 				continue;
 			}
-			if ($header === false) {
-				$headerData = [];
-				foreach ($data as $key => $value) {
+			if ($csvHeaderDetail === false) {
+				$csvHeaderDetail = [];
+				foreach ($csvRecordArr as $columnPosition => $value) {
 					$v = explode(':', $value);
-					$_headerData = &$headerData;
+					$_csvHeaderDetail = &$csvHeaderDetail;
 					for (
 						$i = 0, $iCount = count($v);
 						$i < $iCount;
 						$i++
 					) {
 						if (($i+1) === $iCount) {
-							$_headerData['__column__'][$v[$i]] = $key;
+							$_csvHeaderDetail['__column__'][$v[$i]] = $columnPosition;
 						} else {
-							if (!isset($_headerData[$v[$i]])) {
-								$_headerData[$v[$i]] = [];
+							if (!isset($_csvHeaderDetail[$v[$i]])) {
+								$_csvHeaderDetail[$v[$i]] = [];
 							}
-							$_headerData = &$_headerData[$v[$i]];
+							$_csvHeaderDetail = &$_csvHeaderDetail[$v[$i]];
 						}
 					}
 				}
-				$header = $headerData;
 				$counter = 0;
 				continue;
 			}
 
-			[$_mode, $_data] = $this->formatCsvArray($header, $data);
+			[$currentModeArr, $csvFieldRecordArr] = $this->formatCsvArray($csvHeaderDetail, $csvRecordArr);
 
 			if ($counter === 0) {
-				$modeArr = $_mode;
-				$dataEncode->startArray(key: $_mode[0]);
+				$headerModeArr = $currentModeArr;
+				$dataEncode->startArray(objectKey: $currentModeArr[0]);
 				$dataEncode->startObject();
-				foreach ($_data as $k => $v) {
-					$dataEncode->addKeyData(key: $k, data: $v);
+				foreach ($csvFieldRecordArr as $objectKey => $objectValue) {
+					$dataEncode->addKeyData(objectKey: $objectKey, data: $objectValue);
 				}
 				$counter = 1;
 				continue;
 			}
 
-			if ($modeArr === $_mode) {
+			if ($headerModeArr === $currentModeArr) {
 				$dataEncode->endObject();
 				$dataEncode->startObject();
 			} else {
-				$_modeArr = [];
-				$modeCount = count($modeArr);
-				$_modeCount = count($_mode);
+				$_headerModeArr = [];
+				$headerModeCount = count($headerModeArr);
+				$currentModeCount = count($currentModeArr);
 
 				for (
 					$i = 0;
-					$i < $_modeCount;
+					$i < $currentModeCount;
 					$i++
 				) {
 					if (
-						!isset($modeArr[$i])
-						|| ($modeArr[$i] !== $_mode[$i])
+						!isset($headerModeArr[$i])
+						|| ($headerModeArr[$i] !== $currentModeArr[$i])
 					) {
 						break;
 					}
-					$_modeArr[$i] = $_mode[$i];
+					$_headerModeArr[$i] = $currentModeArr[$i];
 				}
-				if ($_modeCount < $modeCount) {
-					for ($_i = $_modeCount; $_i < $modeCount; $_i++) {
+				if ($currentModeCount < $headerModeCount) {
+					for ($_i = $currentModeCount; $_i < $headerModeCount; $_i++) {
 						$dataEncode->endObject();
 						$dataEncode->endArray();
 					}
 					$dataEncode->endObject();
 					$dataEncode->startObject();
 				}
-				if ($i < $_modeCount) {
-					for ($_i = $i; $_i < $modeCount; $_i++) {
+				if ($i < $currentModeCount) {
+					for ($_i = $i; $_i < $headerModeCount; $_i++) {
 						$dataEncode->endObject();
 						$dataEncode->endArray();
 					}
-					for ($_i = $i; $_i < $_modeCount; $_i++) {
-						$_modeArr[$_i] = $_mode[$_i];
-						$dataEncode->startArray(key: $_mode[$_i]);
+					for ($_i = $i; $_i < $currentModeCount; $_i++) {
+						$_headerModeArr[$_i] = $currentModeArr[$_i];
+						$dataEncode->startArray(objectKey: $currentModeArr[$_i]);
 						$dataEncode->startObject();
 					}
 				}
-				$modeArr = $_modeArr;
+				$headerModeArr = $_headerModeArr;
 			}
-			foreach ($_data as $k => $v) {
-				$dataEncode->addKeyData(key: $k, data: $v);
+			foreach ($csvFieldRecordArr as $objectKey => $objectValue) {
+				$dataEncode->addKeyData(objectKey: $objectKey, data: $objectValue);
 			}
 		}
 		$dataEncode->endObject();
@@ -546,31 +562,34 @@ class HttpRequest
 	}
 
 	/**
-	 * Format Csv Payload
+	 * Format CSV Payload
 	 *
 	 * @param string $csvContent CSV string
 	 *
 	 * @return array
 	 */
-	public function formatCsvArray($header, $data): array
+	public function formatCsvArray($csvHeaderDetail, $csvRecordArr): array
 	{
-		$_data = [];
-		$_mode = explode(':', $data[0]);
-		$_header = &$header;
+		$csvFieldRecordArr = [];
+		$currentModeArr = explode(':', $csvRecordArr[0]);
 
-		foreach ($_mode as $v) {
-			if (!isset($_header[$v])) {
+		foreach ($currentModeArr as $v) {
+			if (!isset($csvHeaderDetail[$v])) {
 				return [];
 			}
-			$_header = &$_header[$v];
+			$csvHeaderDetail = &$csvHeaderDetail[$v];
 		}
 
-		foreach ($_header['__column__'] as $field => $col) {
-			if (!isset($data[$col])) {
+		if (!isset($csvHeaderDetail['__column__'])) {
+			throw new \Exception(message: json_encode(value: [$currentModeArr,$csvHeaderDetail]), code: 400);
+		}
+
+		foreach ($csvHeaderDetail['__column__'] as $field => $column) {
+			if (!isset($csvRecordArr[$column])) {
 				return [];
 			}
-			$_data[$field] = $data[$col];
+			$csvFieldRecordArr[$field] = $csvRecordArr[$column];
 		}
-		return [$_mode, $_data];
+		return [$currentModeArr, $csvFieldRecordArr];
 	}
 }

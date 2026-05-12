@@ -13,11 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Route\Auth\CustomerDB\Groups\Customer001UserGroup1;
-
-use Microservices\App\Constant;
-
-return require Constant::$AUTH_ROUTES_DIR
+return require $Constant::$AUTH_ROUTES_DIR
 	. DIRECTORY_SEPARATOR . 'CustomerDB'
 	. DIRECTORY_SEPARATOR . 'Common'
 	. DIRECTORY_SEPARATOR . 'PATCHroutes.php';

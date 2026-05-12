@@ -17,14 +17,14 @@ namespace Microservices\TestCase;
 
 use Microservices\App\Web;
 
-$header = $defaultHeaders;
-$header[] = $contentType;
+$headerArr = $defaultHeaderArr;
+$headerArr[] = $contentType;
 
 $res = Web::trigger(
 	homeURL: $homeURL,
 	method: 'POST',
 	route: '/login',
-	header: $header,
+	header: $headerArr,
 	payload: json_encode(value: $payload)
 );
 

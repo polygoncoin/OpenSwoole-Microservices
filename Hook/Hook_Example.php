@@ -36,7 +36,7 @@ class Hook_Example implements HookInterface
 	use HookTrait;
 
 	/**
-	 * Http Object
+	 * HTTP object
 	 *
 	 * @var null|Http
 	 */
@@ -74,7 +74,7 @@ class Hook_Example implements HookInterface
 	}
 
 	/**
-	 * Exec Hook related code
+	 * Exec Hook
 	 *
 	 * @return void
 	 * @throws \Exception

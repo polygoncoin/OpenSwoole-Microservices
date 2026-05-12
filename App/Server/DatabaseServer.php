@@ -101,15 +101,15 @@ class DatabaseServer
 		$this->dbServerPassword = $dbServerPassword;
 		$this->dbServerDB = $dbServerDB;
 
-		return $this->connectDatabaseServer();
+		return $this->connectDb();
 	}
 
 	/**
-	 * Init server connection based on $fetchFrom
+	 * Connect Database
 	 *
 	 * @return DatabaseServerInterface
 	 */
-	public function connectDatabaseServer(): DatabaseServerInterface
+	public function connectDb(): DatabaseServerInterface
 	{
 		if (!in_array($this->dbServerType, ['MySql', 'PostgreSql'])) {
 			throw new \Exception(

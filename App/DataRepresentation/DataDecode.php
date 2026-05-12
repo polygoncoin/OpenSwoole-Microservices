@@ -98,76 +98,77 @@ class DataDecode
 	}
 
 	/**
-	 * Keys exist
+	 * Result exist as per $keyString
 	 *
-	 * @param null|string $keys Keys exist (values separated by colon)
+	 * @param null|string $keyString Key's exist (values separated by colon)
 	 *
 	 * @return bool
 	 */
-	public function isset($keys = null): bool
+	public function isset($keyString = null): bool
 	{
-		return $this->dataDecoder->isset(keys: $keys);
+		return $this->dataDecoder->isset(keyString: $keyString);
 	}
 
 	/**
-	 * Key exist
+	 * Datatype of result as per $keyString
 	 *
-	 * @param null|string $keys Keys exist (values separated by colon)
+	 * @param null|string $keyString Key's exist (values separated by colon)
 	 *
 	 * @return string Object/Array
 	 */
-	public function dataType($keys = null): string
+	public function dataType($keyString = null): string
 	{
-		return $this->dataDecoder->dataType(keys: $keys);
+		return $this->dataDecoder->dataType(keyString: $keyString);
 	}
 
 	/**
-	 * Count of array element
+	 * Count of result as per $keyString
 	 *
-	 * @param null|string $keys Key values separated by colon
+	 * @param null|string $keyString Key values separated by colon
 	 *
 	 * @return int
 	 */
-	public function count($keys = null): int
+	public function count($keyString = null): int
 	{
-		return $this->dataDecoder->count(keys: $keys);
+		return $this->dataDecoder->count(keyString: $keyString);
 	}
 
 	/**
-	 * Pass the keys and get whole raw data content belonging to keys
+	 * Get result as per $keyString
 	 *
-	 * @param string $keys Key values separated by colon
+	 * @param string $keyString Key values separated by colon
 	 *
 	 * @return mixed
 	 */
-	public function get($keys = ''): mixed
+	public function get($keyString = ''): mixed
 	{
-		return $this->dataDecoder->get(keys: $keys);
+		return $this->dataDecoder->get(keyString: $keyString);
 	}
 
 	/**
-	 * Get complete array for keys
+	 * Get complete result as per $keyString
 	 *
-	 * @param string $keys Key values separated by colon
+	 * @param string $keyString Key values separated by colon
 	 *
 	 * @return mixed
 	 */
-	public function getCompleteArray($keys = ''): mixed
+	public function getCompleteArray($keyString = ''): mixed
 	{
-		return $this->dataDecoder->getCompleteArray(keys: $keys);
+		return $this->dataDecoder->getCompleteArray(keyString: $keyString);
 	}
 
 	/**
-	 * Start processing the JSON string for a keys
-	 * Perform search inside keys of JSON like $json['data'][0]['data1']
+	 * Load result as per $keyString
+	 * Start processing the JSON string for a key's
+	 * Perform search inside key's of JSON like $json['data'][0]['data1']
 	 *
-	 * @param string $keys Key values separated by colon
+	 * @param string $keyString Key values separated by colon
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function load($keys): void
+	public function load($keyString): void
 	{
-		$this->dataDecoder->load(keys: $keys);
+		$this->dataDecoder->load(keyString: $keyString);
 	}
 }

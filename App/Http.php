@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Http Class
+ * HTTP Class
  * php version 8.3
  *
  * @category  Http
@@ -19,7 +19,7 @@ use Microservices\App\HttpRequest;
 use Microservices\App\HttpResponse;
 
 /**
- * Http Class
+ * HTTP Class
  * php version 8.3
  *
  * @category  Http
@@ -33,42 +33,49 @@ use Microservices\App\HttpResponse;
 class Http
 {
 	/**
-	 * Microservices HTTP Request
+	 * Microservices HTTP request
 	 *
 	 * @var null|HttpRequest
 	 */
 	public $req = null;
 
 	/**
-	 * Microservices HTTP Response
+	 * Microservices HTTP response
 	 *
 	 * @var null|HttpResponse
 	 */
 	public $res = null;
 
 	/**
-	 * Http Request Details
+	 * HTTP request detail
 	 *
 	 * @var null|array
 	 */
-	public $iConfig = null;
+	public $httpReqDetailArr = null;
+
+	/**
+	 * Constructor
+	 *
+	 * @param array $httpReqDetailArr
+	 */
+	public function __construct(&$httpReqDetailArr)
+	{
+		$this->httpReqDetailArr = &$httpReqDetailArr;
+	}
 
 	/**
 	 * Initialize
 	 *
-	 * @param array $iConfig Http Request Details
-	 *
 	 * @return void
 	 */
-	public function init(&$iConfig): void
+	public function init(): void
 	{
-		$this->iConfig = &$iConfig;
 		$this->req = new HttpRequest(http: $this);
 		$this->res = new HttpResponse(http: $this);
 	}
 
 	/**
-	 * Initialize Request
+	 * Initialize request
 	 *
 	 * @return bool
 	 */
@@ -78,7 +85,7 @@ class Http
 	}
 
 	/**
-	 * Initialize Response
+	 * Initialize response
 	 *
 	 * @return bool
 	 */

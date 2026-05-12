@@ -15,8 +15,8 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Constant;
 use Microservices\App\Dropbox;
+use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\Http;
@@ -44,7 +44,7 @@ class Api
 	private $hook = null;
 
 	/**
-	 * Http Object
+	 * HTTP object
 	 *
 	 * @var null|Http
 	 */
@@ -79,8 +79,11 @@ class Api
 	 */
 	public function process(): mixed
 	{
-		if ($this->http->iConfig['server']['httpMethod'] === Constant::$GET) {
-			$dropboxCache = new Dropbox(iConfig: $this->http->iConfig, http: $this->http);
+		if (
+			!$this->http->req->isOpenToWebRequest
+			&& $this->http->httpReqDetailArr['server']['httpMethod'] === Constant::$GET
+		) {
+			$dropboxCache = new Dropbox(httpReqDetailArr: $this->http->httpReqDetailArr, http: $this->http);
 			if ($dropboxCache->init(mode: 'Closed')) {
 				// File exists - Serve from Dropbox
 				return $dropboxCache->process();
@@ -103,7 +106,7 @@ class Api
 			!in_array(
 				$this->http->req->rParser->routeEndingReservedKeyword,
 				[
-					Env::$configRequestRouteKeyword,
+					Env::$explainRequestRouteKeyword,
 					Env::$importSampleRequestRouteKeyword
 				]
 			)
@@ -116,7 +119,7 @@ class Api
 		}
 
 		$class = null;
-		switch ($this->http->iConfig['server']['httpMethod']) {
+		switch ($this->http->httpReqDetailArr['server']['httpMethod']) {
 			case Constant::$GET:
 				$class = __NAMESPACE__ . '\\Read';
 				break;
@@ -132,12 +135,6 @@ class Api
 			$api = new $class($this->http);
 			if ($api->init()) {
 				$return = $api->process();
-				if (
-					is_array($return)
-					&& count($return) === 3
-				) {
-					return $return;
-				}
 			}
 		}
 
@@ -154,11 +151,18 @@ class Api
 			);
 		}
 
+		if (
+			is_array($return)
+			&& count($return) === 3
+		) {
+			return $return;
+		}
+
 		return true;
 	}
 
 	/**
-	 * Miscellaneous Functionality Before Collecting Payload
+	 * Process before collecting Payload
 	 *
 	 * @return bool
 	 */
@@ -168,7 +172,7 @@ class Api
 
 		if (
 			Env::$enableRoutesRequest
-			&& Env::$routesRequestRoute === $this->http->req->rParser->routeElements[0]
+			&& Env::$routesRequestRoute === $this->http->req->rParser->routeElementArr[0]
 		) {
 			$supplementApiClass = __NAMESPACE__ . '\\Route';
 			$supplementObj = new $supplementApiClass($this->http);
@@ -182,7 +186,7 @@ class Api
 				case (
 						Env::$enableCustomRequest
 						&& (Env::$customRequestRoutePrefix
-							=== $this->http->req->rParser->routeElements[0])
+							=== $this->http->req->rParser->routeElementArr[0])
 
 					):
 					$supplementApiClass = __NAMESPACE__ . '\\Custom';
@@ -190,21 +194,21 @@ class Api
 				case (
 						Env::$enableUploadRequest
 						&& (Env::$uploadRequestRoutePrefix
-							=== $this->http->req->rParser->routeElements[0])
+							=== $this->http->req->rParser->routeElementArr[0])
 					):
 					$supplementApiClass = __NAMESPACE__ . '\\Upload';
 					break;
 				case (
 						Env::$enableThirdPartyRequest
 						&& (Env::$thirdPartyRequestRoutePrefix
-							=== $this->http->req->rParser->routeElements[0])
+							=== $this->http->req->rParser->routeElementArr[0])
 					):
 					$supplementApiClass = __NAMESPACE__ . '\\ThirdParty';
 					break;
 				case (
 						Env::$enableDropboxRequest
 						&& (Env::$dropboxRequestRoutePrefix
-							=== $this->http->req->rParser->routeElements[0])
+							=== $this->http->req->rParser->routeElementArr[0])
 					):
 					$supplementApiClass = __NAMESPACE__ . '\\Dropbox';
 					break;
@@ -225,7 +229,7 @@ class Api
 	}
 
 	/**
-	 * Miscellaneous Functionality After Collecting Payload
+	 * Execute once done with api process function
 	 *
 	 * @return bool
 	 */

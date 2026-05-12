@@ -13,8 +13,6 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\UserGroup\POST;
-
 use Microservices\App\DatabaseServerDataType;
 
 return [
@@ -22,19 +20,19 @@ return [
 	'__SET__' => [
 		[
 			'column' => 'customer_id',
-			'fetchFrom' => 'cDetails',
-			'fetchFromValue' => 'id'
+			'fetchFrom' => 'cDetail',
+			'fetchFromDetail' => 'id'
 		],
 		[
 			'column' => 'user_id',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'user_id',
+			'fetchFromDetail' => 'user_id',
 			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'address',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'address'
+			'fetchFromDetail' => 'address'
 		],
 	],
 	'__INSERT-IDs__' => 'address:id',
@@ -43,23 +41,23 @@ return [
 	//         '__ROUTE__' => [
 	//             [
 	//                 'fetchFrom' => 'custom',
-	//                 'fetchFromValue' => 'address'
+	//                 'fetchFromDetail' => 'address'
 	//             ],
 	//             [
 	//                 'fetchFrom' => '__INSERT-IDs__',
-	//                 'fetchFromValue' => 'address:id'
+	//                 'fetchFromDetail' => 'address:id'
 	//             ]
 	//         ],
 	//         '__QUERY-STRING__' => [
 	//             [
 	//                 'column' => 'param-1',
 	//                 'fetchFrom' => 'custom',
-	//                 'fetchFromValue' => 'address'
+	//                 'fetchFromDetail' => 'address'
 	//             ],
 	//             [
 	//                 'column' => 'param-2',
 	//                 'fetchFrom' => '__INSERT-IDs__',
-	//                 'fetchFromValue' => 'address:id'
+	//                 'fetchFromDetail' => 'address:id'
 	//             ]
 	//         ],
 	//         '__METHOD__' => 'PATCH',
@@ -67,7 +65,7 @@ return [
 	//             [
 	//                 'column' => 'address',
 	//                 'fetchFrom' => 'custom',
-	//                 'fetchFromValue' => 'updated-address'
+	//                 'fetchFromDetail' => 'updated-address'
 	//             ]
 	//         ]
 	//     ]

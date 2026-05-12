@@ -13,29 +13,25 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\CustomerDB\Common;
-
-use Microservices\App\Constant;
-
 return [
-	// Details of data to perform task
+	// detail of data to perform task
 	'__PAYLOAD__' => [
 		// [
 		//     'column' => 'id',
-		//     'fetchFrom' => 'routeParams',
-		//     'fetchFromValue' => 'id',
+		//     'fetchFrom' => 'routeParamArr',
+		//     'fetchFromDetail' => 'id',
 		//     'dataType' => DatabaseServerDataType::$PrimaryKey,
-		//     'required' => Constant::$REQUIRED
+		//     'isRequired' => $Constant::$REQUIRED
 		// ],
 		[
 			'column' => 'id',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'payload-id-1',
+			'fetchFromDetail' => 'payload-id-1',
 		],
 		[
 			'column' => 'column-1',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'payload-param-1',
+			'fetchFromDetail' => 'payload-param-1',
 		],
 	],
 	'__FUNCTION__' => 'process',
@@ -45,12 +41,12 @@ return [
 				[
 					'column' => 'sub-id',
 					'fetchFrom' => 'payload',
-					'fetchFromValue' => 'sub-payload-id-1',
+					'fetchFromDetail' => 'sub-payload-id-1',
 				],
 				[
 					'column' => 'sub-column-1',
 					'fetchFrom' => 'payload',
-					'fetchFromValue' => 'sub-payload-param-1',
+					'fetchFromDetail' => 'sub-payload-param-1',
 				],
 			],
 			'__FUNCTION__' => 'processSub',

@@ -2,7 +2,7 @@
 
 ## Defining Custom DataTypes
 
-The custom data types keys are classified in two sections depending on keys - Required / Optional keys
+The custom data types key's are classified in two sections depending on key's - Required / Optional key's
 
 ## Required
 

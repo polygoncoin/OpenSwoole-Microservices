@@ -113,7 +113,7 @@ class Redis implements NoSqlInterface
 
 		try {
 			// https://github.com/phpredis/phpredis?tab=readme-ov-file#class-redis
-			$connParams = [
+			$connParamArr = [
 				'host' => $this->cacheServerHostname,
 				'port' => (int)$this->cacheServerPort,
 				'connectTimeout' => 2.5
@@ -123,12 +123,12 @@ class Redis implements NoSqlInterface
 				($this->cacheServerUsername !== '')
 				&& ($this->cacheServerPassword !== '')
 			) {
-				$connParams['auth'] = [
+				$connParamArr['auth'] = [
 					$this->cacheServerUsername,
 					$this->cacheServerPassword
 				];
 			}
-			$this->cacheServerObj = new \Redis($connParams);
+			$this->cacheServerObj = new \Redis($connParamArr);
 
 			if (!empty($this->cacheServerDB)) {
 				$this->cacheServerObj->select($this->cacheServerDB);
@@ -149,79 +149,79 @@ class Redis implements NoSqlInterface
 	}
 
 	/**
-	 * Checks if cache key exist
+	 * Cache key exist
 	 *
-	 * @param string $key Cache key
+	 * @param string $cacheKey Cache key
 	 *
 	 * @return mixed
 	 */
-	public function cacheExists($key): mixed
+	public function cacheExist($cacheKey): mixed
 	{
 		$this->connect();
 
-		return $this->cacheServerObj->exists($key);
+		return $this->cacheServerObj->exists($cacheKey);
 	}
 
 	/**
-	 * Get cache on basis of key
+	 * Get cache key
 	 *
-	 * @param string $key Cache key
+	 * @param string $cacheKey Cache key
 	 *
 	 * @return mixed
 	 */
-	public function getCache($key): mixed
+	public function cacheGet($cacheKey): mixed
 	{
 		$this->connect();
 
-		return $this->cacheServerObj->get($key);
+		return $this->cacheServerObj->get($cacheKey);
 	}
 
 	/**
-	 * Set cache on basis of key
+	 * Set cache key
 	 *
-	 * @param string $key    Cache key
-	 * @param string $value  Cache value
-	 * @param int    $expire Seconds to expire. Default 0 - doesn't expire
+	 * @param string $cacheKey Cache key
+	 * @param string $value    Cache value
+	 * @param int    $expire   Seconds to expire. Default 0 - doesn't expire
 	 *
 	 * @return mixed
 	 */
-	public function setCache($key, $value, $expire = null): mixed
+	public function cacheSet($cacheKey, $value, $expire = null): mixed
 	{
 		$this->connect();
 
 		if ($expire === null) {
-			return $this->cacheServerObj->set($key, $value);
+			return $this->cacheServerObj->set($cacheKey, $value);
 		} else {
-			return $this->cacheServerObj->set($key, $value, $expire);
+			return $this->cacheServerObj->set($cacheKey, $value, $expire);
 		}
 	}
 
 	/**
-	 * Increment Key value with offset
+	 * Increment cache key with offset
 	 *
-	 * @param string $key    Cache key
-	 * @param int    $offset Offset
+	 * @param string $cacheKey Cache key
+	 * @param int    $offset   Offset
 	 *
 	 * @return int
 	 */
-	public function incrementCache($key, $offset = 1): int
+	public function cacheIncrement($cacheKey, $offset = 1): int
 	{
 		$this->connect();
 
-		return $this->cacheServerObj->incrBy($key, $offset);
+		return $this->cacheServerObj->incrBy($cacheKey, $offset);
 	}
 
 	/**
-	 * Delete basis of key
+	 * Delete cache key
 	 *
-	 * @param string $key Cache key
+	 * @param string $cacheKey Cache key
 	 *
 	 * @return mixed
 	 */
-	public function deleteCache($key): mixed
+	public function cacheDelete($cacheKey): mixed
 	{
 		$this->connect();
 
-		return $this->cacheServerObj->del($key);
+		return $this->cacheServerObj->del($cacheKey);
 	}
 }

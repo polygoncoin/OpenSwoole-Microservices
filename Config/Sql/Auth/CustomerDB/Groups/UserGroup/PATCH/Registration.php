@@ -13,13 +13,10 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\UserGroup\PATCH;
-
-use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
 
 return array_merge(
-	require Constant::$AUTH_QUERIES_DIR
+	require $Constant::$AUTH_QUERIES_DIR
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'Registration.php',
@@ -28,24 +25,24 @@ return array_merge(
 			[
 				'column' => 'firstname',
 				'fetchFrom' => 'payload',
-				'fetchFromValue' => 'firstname'
+				'fetchFromDetail' => 'firstname'
 			],
 			[
 				'column' => 'lastname',
 				'fetchFrom' => 'payload',
-				'fetchFromValue' => 'lastname'
+				'fetchFromDetail' => 'lastname'
 			],
 			[
 				'column' => 'email',
 				'fetchFrom' => 'payload',
-				'fetchFromValue' => 'email'
+				'fetchFromDetail' => 'email'
 			],
 		],
 		'__WHERE__' => [
 			[
 				'column' => 'id',
-				'fetchFrom' => 'routeParams',
-				'fetchFromValue' => 'id',
+				'fetchFrom' => 'routeParamArr',
+				'fetchFromDetail' => 'id',
 				'dataType' => DatabaseServerDataType::$PrimaryKey
 			]
 		],

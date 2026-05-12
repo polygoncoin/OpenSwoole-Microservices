@@ -13,16 +13,13 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Route\Auth\CustomerDB\Common;
-
-use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
 
 return [
 	'registration' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => Constant::$AUTH_QUERIES_DIR
+			'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'UserGroup'
@@ -33,7 +30,7 @@ return [
 	'address' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => Constant::$AUTH_QUERIES_DIR
+			'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'UserGroup'

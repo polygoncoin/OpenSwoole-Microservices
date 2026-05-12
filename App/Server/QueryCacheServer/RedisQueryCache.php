@@ -17,7 +17,7 @@ namespace Microservices\App\Server\QueryCacheServer;
 
 use Microservices\App\HttpStatus;
 use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
-use Microservices\App\Server\Container\NoSql\Redis as Cache_Redis;
+use Microservices\App\Server\Container\NoSql\Redis as QueryCache_Redis;
 
 /**
  * Caching via Redis
@@ -78,7 +78,7 @@ class RedisQueryCache implements QueryCacheServerInterface
 	/**
 	 * Query Cache Server Object
 	 *
-	 * @var null|Cache_Redis
+	 * @var null|QueryCache_Redis
 	 */
 	private $queryCacheServerObj = null;
 
@@ -109,7 +109,7 @@ class RedisQueryCache implements QueryCacheServerInterface
 	}
 
 	/**
-	 * Query Cache Server Object
+	 * Connect Query Cache
 	 *
 	 * @return void
 	 * @throws \Exception
@@ -121,7 +121,7 @@ class RedisQueryCache implements QueryCacheServerInterface
 		}
 
 		try {
-			$this->queryCacheServerObj = new Cache_Redis(
+			$this->queryCacheServerObj = new QueryCache_Redis(
 				cacheServerHostname: $this->queryCacheServerHostname,
 				cacheServerPort: $this->queryCacheServerPort,
 				cacheServerUsername: $this->queryCacheServerUsername,
@@ -138,59 +138,74 @@ class RedisQueryCache implements QueryCacheServerInterface
 	}
 
 	/**
-	 * Checks if cache key exist
+	 * Query Cache key exist
 	 *
-	 * @param string $key Cache key
+	 * @param string $queryCacheKey Query Cache key
 	 *
 	 * @return mixed
 	 */
-	public function cacheExists($key): mixed
+	public function queryCacheExist($queryCacheKey): mixed
 	{
 		$this->connect();
 
-		return $this->queryCacheServerObj->cacheExists(key: $key);
+		return $this->queryCacheServerObj->cacheExist(cacheKey: $queryCacheKey);
 	}
 
 	/**
-	 * Get cache on basis of key
+	 * Get Query Cache key
 	 *
-	 * @param string $key Cache key
+	 * @param string $queryCacheKey Query Cache key
 	 *
 	 * @return mixed
 	 */
-	public function getCache($key): mixed
+	public function queryCacheGet($queryCacheKey): mixed
 	{
 		$this->connect();
 
-		return $this->queryCacheServerObj->getCache($key);
+		return $this->queryCacheServerObj->cacheGet($queryCacheKey);
 	}
 
 	/**
-	 * Set cache on basis of key
+	 * Set cache key
 	 *
-	 * @param string $key    Cache key
-	 * @param string $value  Cache value
+	 * @param string $queryCacheKey Query Cache key
+	 * @param string $value         Query Cache value
 	 *
 	 * @return mixed
 	 */
-	public function setCache($key, $value): mixed
+	public function queryCacheSet($queryCacheKey, $value): mixed
 	{
 		$this->connect();
 
-		return $this->queryCacheServerObj->setCache($key, $value);
+		return $this->queryCacheServerObj->cacheSet($queryCacheKey, $value);
 	}
 
 	/**
-	 * Delete basis of key
+	 * Increment Query Cache key as per offset
 	 *
-	 * @param string $key Cache key
+	 * @param string $queryCacheKey Query Cache key
+	 * @param int    $offset        Query Cache offset
 	 *
 	 * @return mixed
 	 */
-	public function deleteCache($key): mixed
+	public function queryCacheIncrement($queryCacheKey, $offset = 1): mixed
 	{
 		$this->connect();
 
-		return $this->queryCacheServerObj->deleteCache($key);
+		return $this->queryCacheServerObj->cacheIncrement($queryCacheKey, $offset);
+	}
+
+	/**
+	 * Delete Query Cache key
+	 *
+	 * @param string $queryCacheKey Query Cache key
+	 *
+	 * @return mixed
+	 */
+	public function queryCacheDelete($queryCacheKey): mixed
+	{
+		$this->connect();
+
+		return $this->queryCacheServerObj->cacheDelete($queryCacheKey);
 	}
 }

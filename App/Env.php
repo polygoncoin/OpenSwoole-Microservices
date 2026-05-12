@@ -43,8 +43,8 @@ class Env
 	public static $enableAuthRequest = null;
 	public static $authMode = null;
 	public static $sessionMode = null;
-	public static $enableConcurrentLogins = null;
-	public static $maxConcurrentLogins = null;
+	public static $enableConcurrentLogin = null;
+	public static $maxConcurrentLogin = null;
 	public static $concurrentAccessInterval = null;
 
 	public static $iRepresentation = null;
@@ -84,7 +84,7 @@ class Env
 	public static $idempotentSecret = null;
 ///////////////
 
-	public static $enableConfigRequest = null;
+	public static $enableExplainRequest = null;
 	public static $enableDownloadRequest = null;
 	public static $enableImportRequest = null;
 	public static $enableImportSampleRequest = null;
@@ -97,7 +97,7 @@ class Env
 	public static $enableThirdPartyRequest = null;
 	public static $enableUploadRequest = null;
 
-	public static $configRequestRouteKeyword = null;
+	public static $explainRequestRouteKeyword = null;
 	public static $mySqlBinaryLocationOnWebServer = null;
 	public static $importRequestRouteKeyword = null;
 	public static $importSampleRequestRouteKeyword = null;
@@ -112,7 +112,7 @@ class Env
 
 	public static $enableCidrCheck = null;
 
-	public static $configRestrictedCidr = null;
+	public static $explainRestrictedCidr = null;
 	public static $exportRestrictedCidr = null;
 	public static $importRestrictedCidr = null;
 	public static $importSampleRestrictedCidr = null;
@@ -126,13 +126,13 @@ class Env
 ///////////////
 
 	public static $enableRateLimiting = null;
-	public static $enableRateLimitAtIpLevel = null;
-	public static $enableRateLimitAtCustomerLevel = null;
-	public static $enableRateLimitAtGroupLevel = null;
-	public static $enableRateLimitAtUserLevel = null;
-	public static $enableRateLimitAtRouteLevel = null;
-	public static $enableRateLimitAtUsersPerIpLevel = null;
-	public static $enableRateLimitAtUsersRequestLevel = null;
+	public static $enableRateLimitForIp = null;
+	public static $enableRateLimitForCustomer = null;
+	public static $enableRateLimitForGroup = null;
+	public static $enableRateLimitForUser = null;
+	public static $enableRateLimitForRoute = null;
+	public static $enableRateLimitForUserPerIp = null;
+	public static $enableRateLimitForUserRequest = null;
 
 	public static $rateLimitServerType = null;
 	public static $rateLimitServerHostname = null;
@@ -143,18 +143,18 @@ class Env
 	public static $rateLimitGroupPrefix = null;
 	public static $rateLimitUserPrefix = null;
 	public static $rateLimitRoutePrefix = null;
-	public static $rateLimitUsersPerIpPrefix = null;
+	public static $rateLimitUserPerIpPrefix = null;
 	public static $rateLimitUserLoginPrefix = null;
-	public static $rateLimitUsersRequestPrefix = null;
+	public static $rateLimitUserRequestPrefix = null;
 
 	public static $rateLimitIPMaxRequest = null;
 	public static $rateLimitIPMaxRequestWindow = null;
 
-	public static $rateLimitUsersPerIpMaxUsers = null;
-	public static $rateLimitUsersPerIpMaxUsersWindow = null;
+	public static $rateLimitMaxUserPerIp = null;
+	public static $rateLimitMaxUserPerIpWindow = null;
 
-	public static $rateLimitUsersMaxRequest = null;
-	public static $rateLimitUsersMaxRequestWindow = null;
+	public static $rateLimitUserMaxRequest = null;
+	public static $rateLimitUserMaxRequestWindow = null;
 
 	public static $rateLimitMaxUserLoginRequest = null;
 	public static $rateLimitMaxUserLoginRequestWindow = null;
@@ -190,8 +190,8 @@ class Env
 		self::$enableAuthRequest = (bool)((int)getenv(name: 'enableAuthRequest'));
 		self::$authMode = getenv(name: 'authMode');
 		self::$sessionMode = getenv(name: 'sessionMode');
-		self::$enableConcurrentLogins = getenv(name: 'enableConcurrentLogins');
-		self::$maxConcurrentLogins = getenv(name: 'maxConcurrentLogins');
+		self::$enableConcurrentLogin = getenv(name: 'enableConcurrentLogin');
+		self::$maxConcurrentLogin = getenv(name: 'maxConcurrentLogin');
 		self::$concurrentAccessInterval = getenv(name: 'concurrentAccessInterval');
 
 		self::$iRepresentation = getenv(name: 'iRepresentation');
@@ -231,7 +231,7 @@ class Env
 		self::$idempotentSecret = getenv(name: 'idempotentSecret');
 		//////////////////
 
-		self::$enableConfigRequest = (bool)((int)getenv(name: 'enableConfigRequest'));
+		self::$enableExplainRequest = (bool)((int)getenv(name: 'enableExplainRequest'));
 		self::$enableDownloadRequest = (bool)((int)getenv(name: 'enableDownloadRequest'));
 		self::$enableImportRequest = (bool)((int)getenv(name: 'enableImportRequest'));
 		self::$enableImportSampleRequest = (bool)((int)getenv(name: 'enableImportSampleRequest'));
@@ -244,7 +244,7 @@ class Env
 		self::$enableThirdPartyRequest = (bool)((int)getenv(name: 'enableThirdPartyRequest'));
 		self::$enableUploadRequest = (bool)((int)getenv(name: 'enableUploadRequest'));
 
-		self::$configRequestRouteKeyword = getenv(name: 'configRequestRouteKeyword');
+		self::$explainRequestRouteKeyword = getenv(name: 'explainRequestRouteKeyword');
 		self::$mySqlBinaryLocationOnWebServer = getenv(name: 'mySqlBinaryLocationOnWebServer');
 		self::$importRequestRouteKeyword = getenv(name: 'importRequestRouteKeyword');
 		self::$importSampleRequestRouteKeyword = getenv(name: 'importSampleRequestRouteKeyword');
@@ -259,7 +259,7 @@ class Env
 
 		self::$enableCidrCheck = (bool)((int)getenv(name: 'enableCidrCheck'));
 
-		self::$configRestrictedCidr = getenv(name: 'configRestrictedCidr');
+		self::$explainRestrictedCidr = getenv(name: 'explainRestrictedCidr');
 		self::$exportRestrictedCidr = getenv(name: 'exportRestrictedCidr');
 		self::$importRestrictedCidr = getenv(name: 'importRestrictedCidr');
 		self::$importSampleRestrictedCidr = getenv(name: 'importSampleRestrictedCidr');
@@ -273,13 +273,13 @@ class Env
 		//////////////////
 
 		self::$enableRateLimiting = (bool)((int)getenv(name: 'enableRateLimiting'));
-		self::$enableRateLimitAtIpLevel = (bool)((int)getenv(name: 'enableRateLimitAtIpLevel'));
-		self::$enableRateLimitAtCustomerLevel = (bool)((int)getenv(name: 'enableRateLimitAtCustomerLevel'));
-		self::$enableRateLimitAtGroupLevel = (bool)((int)getenv(name: 'enableRateLimitAtGroupLevel'));
-		self::$enableRateLimitAtUserLevel = (bool)((int)getenv(name: 'enableRateLimitAtUserLevel'));
-		self::$enableRateLimitAtRouteLevel = (bool)((int)getenv(name: 'enableRateLimitAtRouteLevel'));
-		self::$enableRateLimitAtUsersPerIpLevel = (bool)((int)getenv(name: 'enableRateLimitAtUsersPerIpLevel'));
-		self::$enableRateLimitAtUsersRequestLevel = (bool)((int)getenv(name: 'enableRateLimitAtUsersRequestLevel'));
+		self::$enableRateLimitForIp = (bool)((int)getenv(name: 'enableRateLimitForIp'));
+		self::$enableRateLimitForCustomer = (bool)((int)getenv(name: 'enableRateLimitForCustomer'));
+		self::$enableRateLimitForGroup = (bool)((int)getenv(name: 'enableRateLimitForGroup'));
+		self::$enableRateLimitForUser = (bool)((int)getenv(name: 'enableRateLimitForUser'));
+		self::$enableRateLimitForRoute = (bool)((int)getenv(name: 'enableRateLimitForRoute'));
+		self::$enableRateLimitForUserPerIp = (bool)((int)getenv(name: 'enableRateLimitForUserPerIp'));
+		self::$enableRateLimitForUserRequest = (bool)((int)getenv(name: 'enableRateLimitForUserRequest'));
 
 		self::$rateLimitServerType = getenv(name: 'rateLimitServerType');
 		self::$rateLimitServerHostname = getenv(name: 'rateLimitServerHostname');
@@ -290,18 +290,18 @@ class Env
 		self::$rateLimitGroupPrefix = getenv(name: 'rateLimitGroupPrefix');
 		self::$rateLimitUserPrefix = getenv(name: 'rateLimitUserPrefix');
 		self::$rateLimitRoutePrefix = getenv(name: 'rateLimitRoutePrefix');
-		self::$rateLimitUsersPerIpPrefix = getenv(name: 'rateLimitUsersPerIpPrefix');
+		self::$rateLimitUserPerIpPrefix = getenv(name: 'rateLimitUserPerIpPrefix');
 		self::$rateLimitUserLoginPrefix = getenv(name: 'rateLimitUserLoginPrefix');
-		self::$rateLimitUsersRequestPrefix = getenv(name: 'rateLimitUsersRequestPrefix');
+		self::$rateLimitUserRequestPrefix = getenv(name: 'rateLimitUserRequestPrefix');
 
 		self::$rateLimitIPMaxRequest = (int)getenv(name: 'rateLimitIPMaxRequest');
 		self::$rateLimitIPMaxRequestWindow = (int)getenv(name: 'rateLimitIPMaxRequestWindow');
 
-		self::$rateLimitUsersPerIpMaxUsers = (int)getenv(name: 'rateLimitUsersPerIpMaxUsers');
-		self::$rateLimitUsersPerIpMaxUsersWindow = (int)getenv(name: 'rateLimitUsersPerIpMaxUsersWindow');
+		self::$rateLimitMaxUserPerIp = (int)getenv(name: 'rateLimitMaxUserPerIp');
+		self::$rateLimitMaxUserPerIpWindow = (int)getenv(name: 'rateLimitMaxUserPerIpWindow');
 
-		self::$rateLimitUsersMaxRequest = (int)getenv(name: 'rateLimitUsersMaxRequest');
-		self::$rateLimitUsersMaxRequestWindow = (int)getenv(name: 'rateLimitUsersMaxRequestWindow');
+		self::$rateLimitUserMaxRequest = (int)getenv(name: 'rateLimitUserMaxRequest');
+		self::$rateLimitUserMaxRequestWindow = (int)getenv(name: 'rateLimitUserMaxRequestWindow');
 
 		self::$rateLimitMaxUserLoginRequest = (int)getenv(name: 'rateLimitMaxUserLoginRequest');
 		self::$rateLimitMaxUserLoginRequestWindow = (int)getenv(name: 'rateLimitMaxUserLoginRequestWindow');

@@ -13,13 +13,10 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Route\Auth\CustomerDB\Common\Cron;
-
-use Microservices\App\Env;
 use Microservices\App\DatabaseServerDataType;
 
 return [
-	Env::$cronRequestRoutePrefix => [
+	$Env::$cronRequestRoutePrefix => [
 		'{cron:string}' => [
 			'dataType' => DatabaseServerDataType::$Default,
 			'{id:int}'  => [

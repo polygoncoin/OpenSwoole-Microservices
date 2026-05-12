@@ -69,7 +69,7 @@ class Read
 	public $dbServerObj = null;
 
 	/**
-	 * Http Object
+	 * HTTP object
 	 *
 	 * @var null|Http
 	 */
@@ -102,15 +102,16 @@ class Read
 	 */
 	public function process(): bool|array
 	{
-		$Env = __NAMESPACE__ . '\Env';
-
 		// Load Sql
-		$rSqlConfig = include $this->http->req->rParser->sqlConfigFile;
+		$rSqlConfig = &$this->http->req->rParser->sqlConfig;
 
 		// Rate Limiting request if configured for Route Sql.
 		$this->rateLimitRoute(sqlConfig: $rSqlConfig);
 
-		// Lag Response
+		// Check for configured referrer Lags
+		$this->checkReferrerLag(sqlConfig: $rSqlConfig);
+
+		// Lag response
 		$this->lagResponse(sqlConfig: $rSqlConfig);
 
 		if (isset($rSqlConfig['__DOWNLOAD__'])) {
@@ -122,21 +123,45 @@ class Read
 		if (
 			Env::$enableResponseCaching
 			&& isset($rSqlConfig['cacheKey'])
-			&& !isset($this->http->req->s['queryParams']['orderBy'])
+			&& !isset($this->http->req->s['queryParamArr']['orderBy'])
 		) {
-			$json = DbCommonFunction::getQueryCache(
-				cacheKey: $rSqlConfig['cacheKey']
-			);
-			if ($json !== null) {
-				$cacheHit = 'true';
-				$this->http->res->dataEncode->appendKeyData(
-					key: 'cacheHit',
-					data: $cacheHit
+			$cacheReqCount = 0;
+			$queryCacheReqFlag = false;
+			for ($i = 0;$i < 5; $i++) {
+				$json = DbCommonFunction::queryCacheGet(
+					queryCacheKey: $rSqlConfig['cacheKey']
 				);
-				$this->http->res->dataEncode->appendData(data: $json);
-				return true;
-			} else {
-				$toBeCached = true;
+				if ($json !== null) {
+					$cacheHit = 'true';
+					$this->http->res->dataEncode->appendKeyData(
+						objectKey: 'cacheHit',
+						data: $cacheHit
+					);
+					$this->http->res->dataEncode->appendData(data: $json);
+					return true;
+				} else {
+					if (!$queryCacheReqFlag) {
+						$cacheReqCount = DbCommonFunction::queryCacheIncrement(queryCacheKey: $rSqlConfig['cacheKey']);
+						if ($cacheReqCount === 1) {
+							$toBeCached = true;
+							break;
+						} else {
+							$queryCacheReqFlag = true;
+						}
+					}
+					if ($queryCacheReqFlag) {
+						sleep(1);
+					}
+				}
+			}
+			if (
+				$queryCacheReqFlag
+				&& $cacheReqCount > 1
+			) {
+				throw new \Exception(
+					message: 'Invalid query cache request flag',
+					code: HttpStatus::$InternalServerError
+				);
 			}
 		}
 
@@ -169,11 +194,11 @@ class Read
 
 		// Set Server mode to execute query on - Read / Write Server
 		$fetchFrom = $rSqlConfig['fetchFrom'] ?? 'Slave';
-		DbCommonFunction::setDbConnection($this->http->req, fetchFrom: $fetchFrom);
+		DbCommonFunction::connectClientDb($this->http->req, fetchFrom: $fetchFrom);
 		$fetchFrom = strtolower($fetchFrom);
 		$this->modeColumn = $fetchFrom . '_db_server_query_placeholder';
 		$dbServerObj = $fetchFrom . 'Db';
-		$this->dbServerObj = &(DbCommonFunction::$$dbServerObj)[$this->http->req->cId];
+		$this->dbServerObj = &(DbCommonFunction::$$dbServerObj)[$this->http->req->cID];
 
 		// Use result set recursively flag
 		$useResultSet = $this->getUseHierarchy(
@@ -182,11 +207,11 @@ class Read
 		);
 
 		if (
-			Env::$enableConfigRequest
+			Env::$enableExplainRequest
 			&& $this->http->req->rParser->routeEndingWithReservedKeywordFlag
-			&& ($this->http->req->rParser->routeEndingReservedKeyword === Env::$configRequestRouteKeyword)
+			&& ($this->http->req->rParser->routeEndingReservedKeyword === Env::$explainRequestRouteKeyword)
 		) {
-			$this->processReadConfig(
+			$this->explainRead(
 				rSqlConfig: $rSqlConfig,
 				useResultSet: $useResultSet
 			);
@@ -202,8 +227,8 @@ class Read
 			&& $toBeCached
 		) {
 			$json = $this->dataEncode->getData();
-			DbCommonFunction::setQueryCache(
-				cacheKey: $rSqlConfig['cacheKey'],
+			DbCommonFunction::queryCacheSet(
+				queryCacheKey: $rSqlConfig['cacheKey'],
 				json: $json
 			);
 			$this->http->res->dataEncode->appendData(data: $json);
@@ -213,23 +238,23 @@ class Read
 	}
 
 	/**
-	 * Process read function for configuration
+	 * Explain read configuration
 	 *
-	 * @param array $rSqlConfig   Config from file
+	 * @param array $rSqlConfig   Read SQL config
 	 * @param bool  $useResultSet Use result set recursively flag
 	 *
 	 * @return void
 	 */
-	private function processReadConfig(&$rSqlConfig, $useResultSet): void
+	private function explainRead(&$rSqlConfig, $useResultSet): void
 	{
-		$this->dataEncode->startObject(key: 'Config');
+		$this->dataEncode->startObject(objectKey: 'Config');
 		$this->dataEncode->addKeyData(
-			key: 'Route',
+			objectKey: 'Route',
 			data: $this->http->req->rParser->configuredRoute
 		);
 		$this->dataEncode->addKeyData(
-			key: 'Payload',
-			data: $this->getConfigParams(
+			objectKey: 'Payload',
+			data: $this->getExplainParam(
 				sqlConfig: $rSqlConfig,
 				isFirstCall: true,
 				flag: $useResultSet
@@ -239,56 +264,56 @@ class Read
 	}
 
 	/**
-	 * Process Function for read operation
+	 * Process read operation
 	 *
-	 * @param array $rSqlConfig   Config from file
+	 * @param array $rSqlConfig   Read SQL config
 	 * @param bool  $useResultSet Use result set recursively flag
 	 *
 	 * @return void
 	 */
 	private function processRead(&$rSqlConfig, $useResultSet): void
 	{
-		$this->http->req->s['necessaryArr'] = $this->getRequired(
+		$this->http->req->s['requiredFieldArrCollection'] = $this->getRequired(
 			sqlConfig: $rSqlConfig,
 			isFirstCall: true,
 			flag: $useResultSet
 		);
 
-		if (isset($this->http->req->s['necessaryArr'])) {
-			$this->http->req->s['necessary'] = $this->http->req->s['necessaryArr'];
+		if (isset($this->http->req->s['requiredFieldArrCollection'])) {
+			$this->http->req->s['requiredFieldArr'] = $this->http->req->s['requiredFieldArrCollection'];
 		} else {
-			$this->http->req->s['necessary'] = [];
+			$this->http->req->s['requiredFieldArr'] = [];
 		}
 
 		// Start Read operation
-		$configKeys = [];
-		$this->readDB(
+		$configKeyArr = [];
+		$this->readDb(
 			rSqlConfig: $rSqlConfig,
 			isFirstCall: true,
-			configKeys: $configKeys,
+			configKeyArr: $configKeyArr,
 			useResultSet: $useResultSet
 		);
 	}
 
 	/**
-	 * Function to select sub queries recursively
+	 * Process $rSqlConfig recursively
 	 *
-	 * @param array $rSqlConfig   Config from file
+	 * @param array $rSqlConfig   Read SQL config
 	 * @param bool  $isFirstCall  true to represent the first call in recursion
-	 * @param array $configKeys   Keys in recursion
+	 * @param array $configKeyArr Config key's in recursion
 	 * @param bool  $useResultSet Use result set recursively flag
 	 *
 	 * @return void
 	 */
-	private function readDB(
+	private function readDb(
 		&$rSqlConfig,
 		$isFirstCall,
-		&$configKeys,
+		&$configKeyArr,
 		$useResultSet
 	): void {
 		$isObject = $this->isObject(arr: $rSqlConfig);
 
-		// Execute Pre Sql Hook
+		// Execute Pre SQL Hook
 		if (isset($rSqlConfig['__PRE-SQL-HOOKS__'])) {
 			if ($this->hook === null) {
 				$this->hook = new Hook($this->http);
@@ -303,14 +328,14 @@ class Read
 				// Query will return single row
 				case 'singleRowFormat':
 					if ($isFirstCall) {
-						$this->dataEncode->startObject(key: 'Results');
+						$this->dataEncode->startObject(objectKey: 'Results');
 					} else {
 						$this->dataEncode->startObject();
 					}
 					$this->fetchSingleRow(
 						rSqlConfig: $rSqlConfig,
 						isFirstCall: $isFirstCall,
-						configKeys: $configKeys,
+						configKeyArr: $configKeyArr,
 						useResultSet: $useResultSet
 					);
 					$this->dataEncode->endObject();
@@ -319,25 +344,28 @@ class Read
 				case 'multipleRowFormat':
 					if ($isFirstCall) {
 						if (isset($rSqlConfig['countQuery'])) {
-							$this->dataEncode->startObject(key: 'Results');
+							$this->dataEncode->startObject(objectKey: 'Results');
 							$this->fetchRowsCount(rSqlConfig: $rSqlConfig);
-							$this->dataEncode->startArray(key: 'Data');
+							$this->dataEncode->startArray(objectKey: 'Data');
 						} else {
-							$this->dataEncode->startArray(key: 'Results');
+							$this->dataEncode->startArray(objectKey: 'Results');
 						}
 					} else {
 						$this->dataEncode->startArray(
-							key: $configKeys[count(value: $configKeys) - 1]
+							objectKey: $configKeyArr[count(value: $configKeyArr) - 1]
 						);
 					}
 					$this->fetchMultipleRows(
 						rSqlConfig: $rSqlConfig,
 						isFirstCall: $isFirstCall,
-						configKeys: $configKeys,
+						configKeyArr: $configKeyArr,
 						useResultSet: $useResultSet
 					);
 					$this->dataEncode->endArray();
-					if ($isFirstCall && isset($rSqlConfig['countQuery'])) {
+					if (
+						$isFirstCall
+						&& isset($rSqlConfig['countQuery'])
+					) {
 						$this->dataEncode->endObject();
 					}
 					break;
@@ -347,14 +375,14 @@ class Read
 		// triggers
 		if (isset($rSqlConfig['__TRIGGERS__'])) {
 			$this->dataEncode->addKeyData(
-				key: '__TRIGGERS__',
+				objectKey: '__TRIGGERS__',
 				data: $this->getTriggerData(
 					triggerConfig: $rSqlConfig['__TRIGGERS__']
 				)
 			);
 		}
 
-		// Execute Post Sql Hook
+		// Execute Post SQL Hook
 		if (isset($rSqlConfig['__POST-SQL-HOOKS__'])) {
 			if ($this->hook === null) {
 				$this->hook = new Hook($this->http);
@@ -366,11 +394,11 @@ class Read
 	}
 
 	/**
-	 * Function to fetch single record
+	 * Fetch single record
 	 *
-	 * @param array $rSqlConfig   Read SQL configuration
+	 * @param array $rSqlConfig   Read SQL config
 	 * @param bool  $isFirstCall  true to represent the first call in recursion
-	 * @param array $configKeys   Config Keys
+	 * @param array $configKeyArr Config key's
 	 * @param bool  $useResultSet Use result set recursively flag
 	 *
 	 * @return void
@@ -379,19 +407,19 @@ class Read
 	private function fetchSingleRow(
 		&$rSqlConfig,
 		$isFirstCall,
-		&$configKeys,
+		&$configKeyArr,
 		$useResultSet
 	): void {
-		$mode = getenv(name: $this->http->req->s['cDetails'][$this->modeColumn]);
-		$fn = "getSqlAndParams{$mode}Mode";
-		[$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
-			sqlDetails: $rSqlConfig,
-			configKeys: $configKeys
+		$mode = getenv(name: $this->http->req->s['cDetail'][$this->modeColumn]);
+		$function = "getSqlAndParam{$mode}Mode";
+		[$id, $sql, $sqlParamArr, $errorArr, $missExecution] = $this->$function(
+			sqlConfig: $rSqlConfig,
+			configKeyArr: $configKeyArr
 		);
 
-		if (!empty($errors)) {
+		if (!empty($errorArr)) {
 			throw new \Exception(
-				message: $errors,
+				message: $errorArr,
 				code: HttpStatus::$InternalServerError
 			);
 		}
@@ -400,17 +428,17 @@ class Read
 			return;
 		}
 
-		$this->dbServerObj->execDbQuery(sql: $sql, params: $sqlParams);
+		$this->dbServerObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
 		if ($row = $this->dbServerObj->fetch()) {
-			foreach ($row as $key => $value) {
-				$this->dataEncode->addKeyData(key: $key, data: $value);
+			foreach ($row as $objectKey => $value) {
+				$this->dataEncode->addKeyData(objectKey: $objectKey, data: $value);
 			}
 			// check if selected column-name mismatches or conflicts with
 			// configured module/submodule names
 			if (isset($rSqlConfig['__SUB-QUERY__'])) {
-				$subQueryKeys = array_keys(array: $rSqlConfig['__SUB-QUERY__']);
-				foreach ($row as $key => $value) {
-					if (in_array(needle: $key, haystack: $subQueryKeys)) {
+				$subQueryKeyArr = array_keys(array: $rSqlConfig['__SUB-QUERY__']);
+				foreach ($row as $objectKey => $value) {
+					if (in_array(needle: $objectKey, haystack: $subQueryKeyArr)) {
 						throw new \Exception(
 							message: 'Invalid config: Conflicting column names',
 							code: HttpStatus::$InternalServerError
@@ -427,9 +455,9 @@ class Read
 		$this->dbServerObj->closeCursor();
 
 		if (isset($rSqlConfig['__SUB-QUERY__'])) {
-			$this->callReadDB(
+			$this->callReadDb(
 				rSqlConfig: $rSqlConfig,
-				configKeys: $configKeys,
+				configKeyArr: $configKeyArr,
 				row: $row,
 				useResultSet: $useResultSet
 			);
@@ -437,9 +465,9 @@ class Read
 	}
 
 	/**
-	 * Function to fetch row count
+	 * Fetch row count
 	 *
-	 * @param array $rSqlConfig Read SQL configuration
+	 * @param array $rSqlConfig Read SQL config
 	 *
 	 * @return void
 	 * @throws \Exception
@@ -456,31 +484,31 @@ class Read
 		unset($rSqlConfig['__COUNT-SQL-COMMENT__']);
 		unset($rSqlConfig['countQuery']);
 
-		$this->http->req->s['queryParams']['page']  = $this->http->iConfig['get']['page'] ?? 1;
-		$this->http->req->s['queryParams']['perPage']  = $this->http->iConfig['get']['perPage'] ??
+		$this->http->req->s['queryParamArr']['page']  = $this->http->httpReqDetailArr['get']['page'] ?? 1;
+		$this->http->req->s['queryParamArr']['perPage']  = $this->http->httpReqDetailArr['get']['perPage'] ??
 			Env::$defaultPerPage;
 
-		if ($this->http->req->s['queryParams']['perPage'] > Env::$maxResultsPerPage) {
+		if ($this->http->req->s['queryParamArr']['perPage'] > Env::$maxResultsPerPage) {
 			throw new \Exception(
 				message: 'perPage exceeds max perPage value of ' . Env::$maxResultsPerPage,
 				code: HttpStatus::$Forbidden
 			);
 		}
 
-		$this->http->req->s['queryParams']['start'] = (
-			($this->http->req->s['queryParams']['page'] - 1) *
-			$this->http->req->s['queryParams']['perPage']
+		$this->http->req->s['queryParamArr']['start'] = (
+			($this->http->req->s['queryParamArr']['page'] - 1) *
+			$this->http->req->s['queryParamArr']['perPage']
 		);
 
-		$mode = getenv(name: $this->http->req->s['cDetails'][$this->modeColumn]);
-		$fn = "getSqlAndParams{$mode}Mode";
-		[$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
-			sqlDetails: $rSqlConfig
+		$mode = getenv(name: $this->http->req->s['cDetail'][$this->modeColumn]);
+		$function = "getSqlAndParam{$mode}Mode";
+		[$id, $sql, $sqlParamArr, $errorArr, $missExecution] = $this->$function(
+			sqlConfig: $rSqlConfig
 		);
 
-		if (!empty($errors)) {
+		if (!empty($errorArr)) {
 			throw new \Exception(
-				message: $errors,
+				message: $errorArr,
 				code: HttpStatus::$InternalServerError
 			);
 		}
@@ -489,39 +517,39 @@ class Read
 			return;
 		}
 
-		$this->dbServerObj->execDbQuery(sql: $sql, params: $sqlParams);
+		$this->dbServerObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
 		$row = $this->dbServerObj->fetch();
 		$this->dbServerObj->closeCursor();
 
 		$totalRowsCount = $row['count'];
 		$totalPages = ceil(
-			num: $totalRowsCount / $this->http->req->s['queryParams']['perPage']
+			num: $totalRowsCount / $this->http->req->s['queryParamArr']['perPage']
 		);
 
 		$this->dataEncode->addKeyData(
-			key: 'page',
-			data: $this->http->req->s['queryParams']['page']
+			objectKey: 'page',
+			data: $this->http->req->s['queryParamArr']['page']
 		);
 		$this->dataEncode->addKeyData(
-			key: 'perPage',
-			data: $this->http->req->s['queryParams']['perPage']
+			objectKey: 'perPage',
+			data: $this->http->req->s['queryParamArr']['perPage']
 		);
 		$this->dataEncode->addKeyData(
-			key: 'totalPages',
+			objectKey: 'totalPages',
 			data: $totalPages
 		);
 		$this->dataEncode->addKeyData(
-			key: 'totalRecords',
+			objectKey: 'totalRecords',
 			data: $totalRowsCount
 		);
 	}
 
 	/**
-	 * Function to fetch multiple record
+	 * Fetch multiple record
 	 *
-	 * @param array $rSqlConfig   Read SQL configuration
+	 * @param array $rSqlConfig   Read SQL config
 	 * @param bool  $isFirstCall  true to represent the first call in recursion
-	 * @param array $configKeys   Config Keys
+	 * @param array $configKeyArr Config key's
 	 * @param bool  $useResultSet Use result set recursively flag
 	 *
 	 * @return void
@@ -530,19 +558,19 @@ class Read
 	private function fetchMultipleRows(
 		&$rSqlConfig,
 		$isFirstCall,
-		&$configKeys,
+		&$configKeyArr,
 		$useResultSet
 	): void {
-		$mode = getenv(name: $this->http->req->s['cDetails'][$this->modeColumn]);
-		$fn = "getSqlAndParams{$mode}Mode";
-		[$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
-			sqlDetails: $rSqlConfig,
-			configKeys: $configKeys
+		$mode = getenv(name: $this->http->req->s['cDetail'][$this->modeColumn]);
+		$function = "getSqlAndParam{$mode}Mode";
+		[$id, $sql, $sqlParamArr, $errorArr, $missExecution] = $this->$function(
+			sqlConfig: $rSqlConfig,
+			configKeyArr: $configKeyArr
 		);
 
-		if (!empty($errors)) {
+		if (!empty($errorArr)) {
 			throw new \Exception(
-				message: $errors,
+				message: $errorArr,
 				code: HttpStatus::$InternalServerError
 			);
 		}
@@ -552,10 +580,10 @@ class Read
 		}
 
 		if ($isFirstCall) {
-			if (isset($this->http->req->s['queryParams']['orderBy'])) {
+			if (isset($this->http->req->s['queryParamArr']['orderBy'])) {
 				$orderByStrArr = [];
 				$orderByArr = json_decode(
-					json: $this->http->req->s['queryParams']['orderBy'],
+					json: $this->http->req->s['queryParamArr']['orderBy'],
 					associative: true
 				);
 				foreach ($orderByArr as $k => $v) {
@@ -575,14 +603,14 @@ class Read
 		}
 
 		if (isset($rSqlConfig['countQuery'])) {
-			$start = $this->http->req->s['queryParams']['start'];
-			$offset = $this->http->req->s['queryParams']['perPage'];
+			$start = $this->http->req->s['queryParamArr']['start'];
+			$offset = $this->http->req->s['queryParamArr']['perPage'];
 			$sql .= " LIMIT {$start}, {$offset}";
 		}
 
 		$singleColumn = false;
 		$pushPop = true;
-		$this->dbServerObj->execDbQuery(sql: $sql, params: $sqlParams, pushPop: $pushPop);
+		$this->dbServerObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr, pushPop: $pushPop);
 		for ($i = 0; $row = $this->dbServerObj->fetch();) {
 			if ($i === 0) {
 				if (count(value: $row) === 1) {
@@ -596,12 +624,12 @@ class Read
 				$this->dataEncode->encode(data: $row[key(array: $row)]);
 			} elseif (isset($rSqlConfig['__SUB-QUERY__'])) {
 				$this->dataEncode->startObject();
-				foreach ($row as $key => $value) {
-					$this->dataEncode->addKeyData(key: $key, data: $value);
+				foreach ($row as $objectKey => $value) {
+					$this->dataEncode->addKeyData(objectKey: $objectKey, data: $value);
 				}
-				$this->callReadDB(
+				$this->callReadDb(
 					rSqlConfig: $rSqlConfig,
-					configKeys: $configKeys,
+					configKeyArr: $configKeyArr,
 					row: $row,
 					useResultSet: $useResultSet
 				);
@@ -614,25 +642,28 @@ class Read
 	}
 
 	/**
-	 * Validate and call readDB
+	 * Function readDb recursive helper
 	 *
-	 * @param array $rSqlConfig   Read SQL configuration
-	 * @param array $configKeys   Config Keys
+	 * @param array $rSqlConfig   Read SQL config
+	 * @param array $configKeyArr Config key's
 	 * @param array $row          Row data fetched from DB
 	 * @param bool  $useResultSet Use result set recursively flag
 	 *
 	 * @return void
 	 */
-	private function callReadDB(
+	private function callReadDb(
 		&$rSqlConfig,
-		&$configKeys,
+		&$configKeyArr,
 		$row,
 		$useResultSet
 	): void {
-		if ($useResultSet && !empty($row)) {
+		if (
+			$useResultSet
+			&& !empty($row)
+		) {
 			$this->resetFetchData(
 				fetchFrom: 'sqlResults',
-				keys: $configKeys,
+				moduleKeyArr: $configKeyArr,
 				row: $row
 			);
 		}
@@ -641,18 +672,18 @@ class Read
 			isset($rSqlConfig['__SUB-QUERY__'])
 			&& $this->isObject(arr: $rSqlConfig['__SUB-QUERY__'])
 		) {
-			foreach ($rSqlConfig['__SUB-QUERY__'] as $key => &$rSqlConfig) {
-				$configKeys = $configKeys;
-				$configKeys[] = $key;
+			foreach ($rSqlConfig['__SUB-QUERY__'] as $module => &$rSqlConfig) {
+				$moduleConfigKeyArr = $configKeyArr;
+				$moduleConfigKeyArr[] = $module;
 				$useResultSet = $useResultSet ??
 					$this->getUseHierarchy(
 						sqlConfig: $rSqlConfig,
 						keyword: 'useResultSet'
 					);
-				$this->readDB(
+				$this->readDb(
 					rSqlConfig: $rSqlConfig,
 					isFirstCall: false,
-					configKeys: $configKeys,
+					configKeyArr: $moduleConfigKeyArr,
 					useResultSet: $useResultSet
 				);
 			}
@@ -660,9 +691,9 @@ class Read
 	}
 
 	/**
-	 * Validate and call readDB
+	 * Download data
 	 *
-	 * @param array $rSqlConfig   Read SQL configuration
+	 * @param array $rSqlConfig Read SQL config
 	 *
 	 * @return array
 	 */
@@ -674,32 +705,32 @@ class Read
 			return [[], '', HttpStatus::$NotFound];
 		}
 
-		$mode = getenv(name: $this->http->req->s['cDetails'][$this->modeColumn]);
-		$fn = "getSqlAndParams{$mode}Mode";
-		[$id, $sql, $sqlParams, $errors, $missExecution] = $this->$fn(
-			sqlDetails: $rSqlConfig
+		$mode = getenv(name: $this->http->req->s['cDetail'][$this->modeColumn]);
+		$function = "getSqlAndParam{$mode}Mode";
+		[$id, $sql, $sqlParamArr, $errorArr, $missExecution] = $this->$function(
+			sqlConfig: $rSqlConfig
 		);
 		$serverMode = isset($rSqlConfig['fetchFrom'])
 			? $rSqlConfig['fetchFrom'] : 'Slave';
 
-		$dbDetails = [];
+		$dbDetail = [];
 		switch ($serverMode) {
 			case 'Master':
-				$dbDetails = DbCommonFunction::getDbMasterDetails($this->http->req);
+				$dbDetail = DbCommonFunction::dbMasterDetail($this->http->req);
 				break;
 			case 'Slave':
-				$dbDetails = DbCommonFunction::getDbSlaveDetails($this->http->req);
+				$dbDetail = DbCommonFunction::dbSlaveDetail($this->http->req);
 				break;
 		}
 
 		// Export
-		$export = new Export(http: $this->http, dbServerType: $dbDetails['dbServerType']);
+		$export = new Export(http: $this->http, dbServerType: $dbDetail['dbServerType']);
 		$export->init(
-			dbServerHostname: $dbDetails['dbServerHostname'],
-			dbServerPort: $dbDetails['dbServerPort'],
-			dbServerUsername: $dbDetails['dbServerUsername'],
-			dbServerPassword: $dbDetails['dbServerPassword'],
-			dbServerDB: $dbDetails['dbServerDB']
+			dbServerHostname: $dbDetail['dbServerHostname'],
+			dbServerPort: $dbDetail['dbServerPort'],
+			dbServerUsername: $dbDetail['dbServerUsername'],
+			dbServerPassword: $dbDetail['dbServerPassword'],
+			dbServerDB: $dbDetail['dbServerDB']
 		);
 
 		if (isset($rSqlConfig['downloadFile'])) {
@@ -711,21 +742,21 @@ class Read
 				$return = $export->initDownload(
 					downloadFile: $downloadFile,
 					sql: $sql,
-					params: $sqlParams,
+					paramArr: $sqlParamArr,
 					exportFile: $rSqlConfig['exportFile']
 				);
 			} else {
 				$return = $export->initDownload(
 					downloadFile: $downloadFile,
 					sql: $sql,
-					params: $sqlParams
+					paramArr: $sqlParamArr
 				);
 			}
 		} else {
 			if (isset($rSqlConfig['exportFile'])) {
 				$return = $export->saveExport(
 					sql: $sql,
-					params: $sqlParams,
+					paramArr: $sqlParamArr,
 					exportFile: $rSqlConfig['exportFile']
 				);
 			}

@@ -13,8 +13,6 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\UserGroup\DELETE;
-
 return [
 	'__QUERY__' => 'TRUNCATE TABLE `category`;',
 ];

@@ -13,13 +13,9 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Route\Auth\CustomerDB\Groups\AdminGroup;
-
-use Microservices\App\Constant;
-
 return [
 	'category' => [
-		'__FILE__' => Constant::$AUTH_QUERIES_DIR
+		'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Groups'
 			. DIRECTORY_SEPARATOR . 'AdminGroup'
@@ -27,7 +23,7 @@ return [
 			. DIRECTORY_SEPARATOR . 'Category.php',
 	],
 	'registration' => [
-		'__FILE__' => Constant::$AUTH_QUERIES_DIR
+		'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Groups'
 			. DIRECTORY_SEPARATOR . 'AdminGroup'
@@ -35,7 +31,7 @@ return [
 			. DIRECTORY_SEPARATOR . 'Registration.php',
 	],
 	'address' => [
-		'__FILE__' => Constant::$AUTH_QUERIES_DIR
+		'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Groups'
 			. DIRECTORY_SEPARATOR . 'AdminGroup'
@@ -43,7 +39,7 @@ return [
 			. DIRECTORY_SEPARATOR . 'Address.php',
 	],
 	'registration-with-address' => [
-		'__FILE__' => Constant::$AUTH_QUERIES_DIR
+		'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Groups'
 			. DIRECTORY_SEPARATOR . 'AdminGroup'

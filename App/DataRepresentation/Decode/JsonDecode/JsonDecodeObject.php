@@ -44,18 +44,18 @@ class JsonDecodeObject
 	public $eIndex = null;
 
 	/**
-	 * Assoc / Array
+	 * Object / Array
 	 *
 	 * @var string
 	 */
 	public $mode = '';
 
 	/**
-	 * Assoc key for parant object
+	 * Object key for parant object
 	 *
 	 * @var null|string
 	 */
-	public $assocKey = null;
+	public $objectKey = null;
 
 	/**
 	 * Array key for parant object
@@ -69,26 +69,26 @@ class JsonDecodeObject
 	 *
 	 * @var array
 	 */
-	public $assocValues = [];
+	public $objectValueArr = [];
 
 	/**
 	 * Array values
 	 *
 	 * @var array
 	 */
-	public $arrayValues = [];
+	public $arrayValueArr = [];
 
 	/**
 	 * Constructor
 	 *
-	 * @param string $mode     Values can be one among Array
-	 * @param string $assocKey Key for object
+	 * @param string $mode      Values can be one among Array
+	 * @param string $objectKey Key for object
 	 */
-	public function __construct($mode, $assocKey = null)
+	public function __construct($mode, $objectKey = null)
 	{
 		$this->mode = $mode;
 
-		$assocKey = $assocKey !== null ? trim(string: $assocKey) : $assocKey;
-		$this->assocKey = !empty($assocKey) ? $assocKey : null;
+		$objectKey = $objectKey !== null ? trim(string: $objectKey) : $objectKey;
+		$this->objectKey = !empty($objectKey) ? $objectKey : null;
 	}
 }

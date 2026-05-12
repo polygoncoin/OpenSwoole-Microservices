@@ -95,21 +95,21 @@ class ExportDatabaseServer
 	/**
 	 * Returns Shell Command
 	 *
-	 * @param string $sql    query
-	 * @param array  $params query params
+	 * @param string $sql      SQL query
+	 * @param array  $paramArr SQL query params
 	 *
 	 * @return string
 	 */
-	public function getShellCommand($sql, $params = []): string
+	public function getShellCommand($sql, $paramArr = []): string
 	{
 		// Validation
 		if (empty($sql)) {
-			throw new \Exception(message: 'Empty Sql query');
+			throw new \Exception(message: 'Empty SQL query');
 		}
 
 		return $this->dbServerObj->getShellCommand(
 			sql: $sql,
-			params: $params
+			paramArr: $paramArr
 		);
 	}
 }

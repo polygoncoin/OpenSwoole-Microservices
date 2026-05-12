@@ -13,15 +13,13 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\AdminGroup\GET;
-
 return [
 	'__QUERY__' => 'SELECT * FROM `category` WHERE `name` like CONCAT ('%', :name, '%');',
 	'__WHERE__' => [
 		[
 			'column' => 'name',
-			'fetchFrom' => 'queryParams',
-			'fetchFromValue' => 'name'
+			'fetchFrom' => 'queryParamArr',
+			'fetchFromDetail' => 'name'
 		]
 	],
 	'__MODE__' => 'multipleRowFormat',

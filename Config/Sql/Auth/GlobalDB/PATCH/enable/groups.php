@@ -13,10 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\GlobalDB\PATCH\enable;
-
 use Microservices\App\DatabaseServerDataType;
-use Microservices\App\Env;
 
 return [
 	'__QUERY__' => "UPDATE `{$Env::$groupsTable}` SET __SET__ WHERE __WHERE__",
@@ -24,51 +21,51 @@ return [
 		[
 			'column' => 'is_disabled',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		],
 		[
 			'column' => 'updated_by',
-			'fetchFrom' => 'uDetails',
-			'fetchFromValue' => 'id'
+			'fetchFrom' => 'uDetail',
+			'fetchFromDetail' => 'id'
 		],
 		[
 			'column' => 'updated_on',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => date(format: 'Y-m-d H:i:s')
+			'fetchFromDetail' => date(format: 'Y-m-d H:i:s')
 		]
 	],
 	'__WHERE__' => [
 		[
 			'column' => 'is_disabled',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'Yes'
+			'fetchFromDetail' => 'Yes'
 		],
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		],
 		[
 			'column' => 'id',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'id',
+			'fetchFromDetail' => 'id',
 			'dataType' => DatabaseServerDataType::$INT
 		]
 	],
 	'__VALIDATE__' => [
 		[
-			'fn' => 'primaryKeyExist',
-			'fnArgs' => [
-				'table' => ['custom', Env::$groupsTable],
+			'function' => 'primaryKeyExist',
+			'functionArgs' => [
+				'table' => ['custom', $Env::$groupsTable],
 				'primary' => ['custom', 'id'],
 				'id' => ['payload', 'id', DatabaseServerDataType::$INT]
 			],
-			'errorMessage' => 'Invalid Group Id'
+			'errorMessage' => 'Invalid Group id'
 		],
 		[
-			'fn' => '_checkColumnValueExist',
-			'fnArgs' => [
-				'table' => ['custom', Env::$groupsTable],
+			'function' => '_checkColumnValueExist',
+			'functionArgs' => [
+				'table' => ['custom', $Env::$groupsTable],
 				'column' => ['custom', 'is_deleted'],
 				'columnValue' => ['custom', 'No'],
 				'primary' => ['custom', 'id'],
@@ -77,9 +74,9 @@ return [
 			'errorMessage' => 'Record is deleted'
 		],
 		[
-			'fn' => '_checkColumnValueExist',
-			'fnArgs' => [
-				'table' => ['custom', Env::$groupsTable],
+			'function' => '_checkColumnValueExist',
+			'functionArgs' => [
+				'table' => ['custom', $Env::$groupsTable],
 				'column' => ['custom', 'is_disabled'],
 				'columnValue' => ['custom', 'Yes'],
 				'primary' => ['custom', 'id'],

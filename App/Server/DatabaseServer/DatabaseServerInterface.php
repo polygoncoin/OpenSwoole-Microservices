@@ -69,10 +69,10 @@ interface DatabaseServerInterface
 	 *
 	 * @return bool|int
 	 */
-	public function affectedRows(): bool|int;
+	public function affectedRowCount(): bool|int;
 
 	/**
-	 * Last Insert Id by PDO
+	 * Last Insert id by PDO
 	 *
 	 * @return bool|int
 	 */
@@ -81,13 +81,13 @@ interface DatabaseServerInterface
 	/**
 	 * Execute Parameterized query
 	 *
-	 * @param string $sql     Parameterized query
-	 * @param array  $params  Parameterized query params
-	 * @param bool   $pushPop Push Pop result set stmt
+	 * @param string $sql      SQL query
+	 * @param array  $paramArr SQL query params
+	 * @param bool   $pushPop  Push Pop result set stmt
 	 *
 	 * @return void
 	 */
-	public function execDbQuery($sql, $params = [], $pushPop = false): void;
+	public function execDbQuery($sql, $paramArr = [], $pushPop = false): void;
 
 	/**
 	 * Fetch single row from statement

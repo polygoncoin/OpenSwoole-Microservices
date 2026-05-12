@@ -13,9 +13,6 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Open\GET;
-
-use Microservices\App\Constant;
 use Microservices\App\QueryCacheServerKey;
 
 return [
@@ -25,12 +22,12 @@ return [
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		],
 		[
 			'column' => 'parent_id',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 0
+			'fetchFromDetail' => 0
 		],
 	],
 	'__MODE__' => 'multipleRowFormat',
@@ -41,12 +38,12 @@ return [
 				[
 					'column' => 'is_deleted',
 					'fetchFrom' => 'custom',
-					'fetchFromValue' => 'No'
+					'fetchFromDetail' => 'No'
 				],
 				[
 					'column' => 'parent_id',
 					'fetchFrom' => 'sqlResults',
-					'fetchFromValue' => 'return:id'
+					'fetchFromDetail' => 'return:id'
 				],
 			],
 			'__MODE__' => 'multipleRowFormat',
@@ -57,12 +54,12 @@ return [
 						[
 							'column' => 'is_deleted',
 							'fetchFrom' => 'custom',
-							'fetchFromValue' => 'No'
+							'fetchFromDetail' => 'No'
 						],
 						[
 							'column' => 'parent_id',
 							'fetchFrom' => 'sqlResults',
-							'fetchFromValue' => 'return:sub:id'
+							'fetchFromDetail' => 'return:sub:id'
 						],
 					],
 					'__MODE__' => 'multipleRowFormat',
@@ -73,12 +70,12 @@ return [
 								[
 									'column' => 'is_deleted',
 									'fetchFrom' => 'custom',
-									'fetchFromValue' => 'No'
+									'fetchFromDetail' => 'No'
 								],
 								[
 									'column' => 'parent_id',
 									'fetchFrom' => 'sqlResults',
-									'fetchFromValue' => 'return:sub:subsub:id'
+									'fetchFromDetail' => 'return:sub:subsub:id'
 								],
 							],
 							'__MODE__' => 'multipleRowFormat',
@@ -91,15 +88,15 @@ return [
 	'useResultSet' => true,
 	'fetchFrom' => 'Master',
 	'cacheKey' => QueryCacheServerKey::category(
-		customerID: $this->http->req->s['cDetails']['id'],
+		customerID: $this->http->req->cID,
 		groupID: null,
 		isOpenToWebRequest: true
 	),
 	'responseLag' => [
-		// No of Request => Seconds Lag
+		// No of request => Seconds Lag
 		1 => 0,
 		// 2 => 10,
 	],
-	'xsltFile' => Constant::$XSLT_DIR
+	'xsltFile' => $Constant::$XSLT_DIR
 		. DIRECTORY_SEPARATOR . 'Category.xls'
 ];

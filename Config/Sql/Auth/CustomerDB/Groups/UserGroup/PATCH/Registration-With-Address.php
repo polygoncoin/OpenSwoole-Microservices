@@ -13,39 +13,37 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\UserGroup\PATCH;
-
 use Microservices\App\DatabaseServerDataType;
 
 return [
-	'__QUERY__' => "UPDATE `{$this->http->req->usersTable}` SET __SET__ WHERE __WHERE__",
+	'__QUERY__' => "UPDATE `{$this->http->req->s['cDetail']['usersTable']}` SET __SET__ WHERE __WHERE__",
 	'__SET__' => [
 		[
 			'column' => 'firstname',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'firstname'
+			'fetchFromDetail' => 'firstname'
 		],
 		[
 			'column' => 'lastname',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'lastname'
+			'fetchFromDetail' => 'lastname'
 		],
 		[
 			'column' => 'email',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'email'
+			'fetchFromDetail' => 'email'
 		],
 	],
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		],
 		[
 			'column' => 'id',
-			'fetchFrom' => 'routeParams',
-			'fetchFromValue' => 'id',
+			'fetchFrom' => 'routeParamArr',
+			'fetchFromDetail' => 'id',
 			'dataType' => DatabaseServerDataType::$PrimaryKey
 		]
 	],
@@ -56,19 +54,19 @@ return [
 				[
 					'column' => 'address',
 					'fetchFrom' => 'payload',
-					'fetchFromValue' => 'address'
+					'fetchFromDetail' => 'address'
 				]
 			],
 			'__WHERE__' => [
 				[
 					'column' => 'is_deleted',
 					'fetchFrom' => 'custom',
-					'fetchFromValue' => 'No'
+					'fetchFromDetail' => 'No'
 				],
 				[
 					'column' => 'id',
 					'fetchFrom' => 'payload',
-					'fetchFromValue' => 'id',
+					'fetchFromDetail' => 'id',
 					'dataType' => DatabaseServerDataType::$PrimaryKey
 				],
 			],
@@ -76,11 +74,11 @@ return [
 	],
 	'__VALIDATE__' => [
 		[
-			'fn' => 'primaryKeyExist',
-			'fnArgs' => [
-				'table' => ['custom', $this->http->req->usersTable],
+			'function' => 'primaryKeyExist',
+			'functionArgs' => [
+				'table' => ['custom', $this->http->req->s['cDetail']['usersTable']],
 				'primary' => ['custom', 'id'],
-				'id' => ['routeParams', 'id']
+				'id' => ['routeParamArr', 'id']
 			],
 			'errorMessage' => 'Invalid registration id'
 		],

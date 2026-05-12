@@ -29,7 +29,7 @@ uploadRestrictedCidr='0.0.0.0/0'        ; uploadRequestRoutePrefix in .env.enabl
 ### Route ending with configured params keyword for respective comment
 
 ```ini
-configRestrictedCidr='0.0.0.0/0'        ; configRequestRouteKeyword in .env.enable
+explainRestrictedCidr='0.0.0.0/0'        ; explainRequestRouteKeyword in .env.enable
 exportRestrictedCidr='0.0.0.0/0'        ;
 importRestrictedCidr='0.0.0.0/0'        ; importRequestRouteKeyword in .env.enable
 importSampleRestrictedCidr='0.0.0.0/0'  ; importSampleRequestRouteKeyword in .env.enable

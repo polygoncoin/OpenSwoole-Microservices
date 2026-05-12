@@ -1,6 +1,6 @@
-# HTTP Request Payload
+# HTTP request Payload
 
-## GET Request
+## GET request
 
 - [http://127.0.0.1:9501?route=/reload](http://127.0.0.1:9501?route=/reload)
 
@@ -8,7 +8,7 @@
 
 One can clean the URL by making the required changes in the web server .conf file.
 
-## Pagination in GET Request
+## Pagination in GET request
 
 Requires **countQuery** SQL in the configuration for GET request
 ```ini
@@ -22,7 +22,7 @@ maxResultsPerPage=1000
 
 >One need to urlencode orderBy value
 
-## POST, PUT, PATCH, and DELETE Request
+## POST, PUT, PATCH, and DELETE request
 
 - Single
 
@@ -54,17 +54,17 @@ var payload = [
 
 ## HttpRequest Variables
 
-- **$session\['uDetails'\]** Session Data.
-This remains same for every request and contains keys like id, group\_id, customer\_id
+- **$session\['uDetail'\]** Session Data.
+This remains same for every request and contains key's like id, group\_id, customer\_id
 
-- **$session\['routeParams'\]** Data passed in URI.
-Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $session\['routeParams'\] will hold these dynamic values as below.
+- **$session\['routeParamArr'\]** Data passed in URI.
+Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $session\['routeParamArr'\] will hold these dynamic values as below.
 
-- **$session\['payload'\]** Request data.
+- **$session\['payload'\]** request data.
 For **GET** method, the **$\_GET** is the payload.
 
-- **$session\['__INSERT-IDs__'\]** Insert ids Data as per configuration.
->For **POST/PUT/PATCH/DELETE** we perform both INSERT as well as UPDATE operation. The insertId contains the insert ids of the executed INSERT queries.
+- **$session\['__INSERT-IDs__'\]** Insert IDs Data as per configuration.
+>For **POST/PUT/PATCH/DELETE** we perform both INSERT as well as UPDATE operation. The insertID contains the insert IDs of the executed INSERT queries.
 
 - **$session\['sqlResults'\]** Hierarchy data.
 >For **GET** method, one can use previous query results if configured to use hierarchy.
@@ -78,7 +78,7 @@ For **GET** method, the **$\_GET** is the payload.
 [
 	'column' => 'parent_id',
 	'fetchFrom' => 'sqlResults',
-	'fetchFromValue' => 'return:id'
+	'fetchFromDetail' => 'return:id'
 ],
 ```
 
@@ -106,9 +106,9 @@ return [
 ];
 ```
 
-### Hierarchy Request
+### Hierarchy request
 
-- Request - 1: Single object.
+- request - 1: Single object.
 
 ```javascript
 var payload = {
@@ -119,7 +119,7 @@ var payload = {
 }
 ```
 
-- Request - 2: Array of module1
+- request - 2: Array of module1
 
 ```javascript
 var payload = {
@@ -137,7 +137,7 @@ var payload = {
 }
 ```
 
-- Request - 3: Array of payload and arrays of module1
+- request - 3: Array of payload and arrays of module1
 
 ```javascript
 var payload = [

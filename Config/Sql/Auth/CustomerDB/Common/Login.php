@@ -13,28 +13,26 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\CustomerDB\Common;
-
 return [
 	'__PAYLOAD__' => [
 		[
 			'column' => 'username',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'username'
+			'fetchFromDetail' => 'username'
 		],
 		[
 			'column' => 'password',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'password'
+			'fetchFromDetail' => 'password'
 		],
 	],
 	// '__VALIDATE__' => [
 	//     [
-	//         'fn' => 'primaryKeyExist',
-	//         'fnArgs' => [
+	//         'function' => 'primaryKeyExist',
+	//         'functionArgs' => [
 	//             'table' => ['custom', 'address'],
 	//             'primary' => ['custom', 'id'],
-	//             'id' => ['routeParams', 'id']
+	//             'id' => ['routeParamArr', 'id']
 	//         ],
 	//         'errorMessage' => 'Invalid address id'
 	//     ],

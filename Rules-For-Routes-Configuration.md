@@ -117,24 +117,25 @@ public static $PrimaryKey = [
 
 ## Special Route
 
-- Appending route with **/config** returns the payload information that should be supplied; both necessary and optional with desired format.
+- Appending route with **/explain** returns the payload information that should be supplied; both required and optional with desired format.
 
 Examples:
 
-- route=/registration/config (returns the payload information)
+- route=/registration/explain (returns the payload information)
 - route=/registration/import (import CSV)
 - route=/registration/import-sample (sample CSV download for respective HTTP Method)
 
 One need to enable same in .env file as below
 
 ```ini
-; Allow particular route config request (global flag)
-; Useful to get details of the  payload necessary by the API
-enableConfigRequest=1               ; 1 = true / 0 = false
+; Allow particular route explain request (global flag)
+; Useful to get detail of the payload by the API
+enableExplainRequest=1              ; 1 = true / 0 = false
 enableImportRequest=1               ; 1 = true / 0 = false
 
 ; Keyword to append with in route with slash.
-configRequestRouteKeyword='config'  ; to append "/config" at the end of route
+; Explain Route & its Payload
+explainRequestRouteKeyword='explain'    ; to append "/explain" at the end of route
 importRequestRouteKeyword='import'  ; to append "/import" at the end of route
 importSampleRequestRouteKeyword='import-sample'
 ```

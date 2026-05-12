@@ -13,18 +13,14 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Route\Open;
-
-use Microservices\App\Constant;
-
 return [
 	'registration' => [
-		'__FILE__' => Constant::$OPEN_QUERIES_DIR
+		'__FILE__' => $Constant::$OPEN_QUERIES_DIR
 			. DIRECTORY_SEPARATOR . 'POST'
 			. DIRECTORY_SEPARATOR . 'Registration.php',
 	],
 	'registration-with-address' => [
-		'__FILE__' => Constant::$OPEN_QUERIES_DIR
+		'__FILE__' => $Constant::$OPEN_QUERIES_DIR
 			. DIRECTORY_SEPARATOR . 'POST'
 			. DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
 	],

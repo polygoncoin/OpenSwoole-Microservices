@@ -1,10 +1,10 @@
 <?php
 
 /**
- * HTTP Response
+ * HTTP response
  * php version 8.3
  *
- * @category  HTTP_Response
+ * @category  HTTP response
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -21,10 +21,10 @@ use Microservices\App\Http;
 use Microservices\App\HttpStatus;
 
 /**
- * HTTP Response
+ * HTTP response
  * php version 8.3
  *
- * @category  HTTP_Response
+ * @category  HTTP response
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -56,7 +56,7 @@ class HttpResponse
 	public $dataEncode = null;
 
 	/**
-	 * Http Object
+	 * HTTP object
 	 *
 	 * @var null|Http
 	 */

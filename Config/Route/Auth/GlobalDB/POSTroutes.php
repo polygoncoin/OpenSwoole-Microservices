@@ -13,19 +13,15 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Route\Auth\GlobalDB;
-
-use Microservices\App\Constant;
-
 return [
 	'group' => [
-		'__FILE__' => Constant::$AUTH_QUERIES_DIR
+		'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 			. DIRECTORY_SEPARATOR . 'GlobalDB'
 			. DIRECTORY_SEPARATOR . 'POST'
 			. DIRECTORY_SEPARATOR . 'groups.php',
 	],
 	'customer' => [
-		'__FILE__' => Constant::$AUTH_QUERIES_DIR
+		'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 			. DIRECTORY_SEPARATOR . 'GlobalDB'
 			. DIRECTORY_SEPARATOR . 'POST'
 			. DIRECTORY_SEPARATOR . 'customer.php',

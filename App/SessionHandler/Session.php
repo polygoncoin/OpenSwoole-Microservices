@@ -99,7 +99,7 @@ class Session
 	public static $memcachedServerPort = 11211;
 
 	/**
-	 * Session Id Cookie name
+	 * Session id Cookie name
 	 *
 	 * @var string
 	 */
@@ -120,7 +120,7 @@ class Session
 	public static $sessionMaxLifetime = null;
 
 	/**
-	 * File Session options
+	 * File Session optionArr
 	 * Example: public static $sessionSavePath = '/tmp';
 	 *
 	 * @var null|string
@@ -139,7 +139,7 @@ class Session
 	 *
 	 * @var null|array
 	 */
-	public static $options = null;
+	public static $optionArr = null;
 
 	/**
 	 * Session handler Container
@@ -169,7 +169,10 @@ class Session
 		if (empty(self::$sessionName)) {
 			die('Invalid "sessionName"');
 		}
-		if (self::$sessionMode === 'Cookie' && empty(self::$sessionDataName)) {
+		if (
+			self::$sessionMode === 'Cookie'
+			&& empty(self::$sessionDataName)
+		) {
 			die('Invalid "sessionDataName"');
 		}
 
@@ -239,7 +242,10 @@ class Session
 				if (empty(self::$redisServerPort)) {
 					die('Invalid "redisServerPort"');
 				}
-				if (empty(self::$redisServerDB) && self::$redisServerDB != 0) {
+				if (
+					empty(self::$redisServerDB)
+					&& self::$redisServerDB != 0
+				) {
 					die('Invalid "redisServerDB"');
 				}
 				break;
@@ -267,7 +273,7 @@ class Session
 		self::$sessionContainer = new $containerClassName();
 
 		// Setting required common parameters
-		self::$sessionContainer->sessionOptions = self::$options;
+		self::$sessionContainer->sessionOption = self::$optionArr;
 		self::$sessionContainer->sessionName = self::$sessionName;
 		self::$sessionContainer->sessionMaxLifetime = (int)self::$sessionMaxLifetime;
 
@@ -348,25 +354,25 @@ class Session
 	}
 
 	/**
-	 * Generates session options argument
+	 * Generates session optionArr argument
 	 *
-	 * @param array $options Options
+	 * @param array $optionArr Options
 	 *
 	 * @return void
 	 */
-	private static function setOptions($options = []): void
+	private static function setOptions($optionArr = []): void
 	{
-		if (isset($options['name'])) {
-			self::$sessionName = $options['name'];
+		if (isset($optionArr['name'])) {
+			self::$sessionName = $optionArr['name'];
 		}
 
-		if (isset($options['gc_maxlifetime'])) {
-			self::$sessionMaxLifetime = (int)$options['gc_maxlifetime'];
+		if (isset($optionArr['gc_maxlifetime'])) {
+			self::$sessionMaxLifetime = (int)$optionArr['gc_maxlifetime'];
 		} else {
 			self::$sessionMaxLifetime = (int)Constant::$TOKEN_EXPIRY_TIME;
 		}
 
-		self::$options = [ // always required.
+		self::$optionArr = [ // always required.
 			'use_strict_mode' => true,
 			'name' => self::$sessionName,
 			'serialize_handler' => 'php_serialize',
@@ -386,11 +392,11 @@ class Session
 		];
 
 		if (self::$sessionMode === 'File') {
-			self::$options['save_path'] = self::$sessionSavePath;
+			self::$optionArr['save_path'] = self::$sessionSavePath;
 		}
 
-		if (!empty($options)) {
-			foreach ($options as $option => $value) {
+		if (!empty($optionArr)) {
+			foreach ($optionArr as $option => $value) {
 				if (
 					in_array(
 						needle: $option,
@@ -400,7 +406,7 @@ class Session
 					// Skip option
 					continue;
 				}
-				self::$options[$option] = $value;
+				self::$optionArr[$option] = $value;
 			}
 		}
 	}
@@ -409,11 +415,11 @@ class Session
 	 * Initialize session handler
 	 *
 	 * @param string $sessionMode File/MySql/Cookie
-	 * @param array  $options     Options
+	 * @param array  $optionArr   Options
 	 *
 	 * @return void
 	 */
-	public static function initSessionHandler($sessionMode, $options = []): void
+	public static function initSessionHandler($sessionMode, $optionArr = []): void
 	{
 		$env = parse_ini_file(filename: Constant::$ROOT
 			. DIRECTORY_SEPARATOR . '.env.session'
@@ -424,7 +430,7 @@ class Session
 
 		self::$sessionMode = $sessionMode;
 
-		// Set options from php.ini if not set in this class
+		// Set optionArr from php.ini if not set in this class
 		if (empty(self::$sessionName)) {
 			self::$sessionName = session_name();
 		}
@@ -443,7 +449,7 @@ class Session
 		self::validateSettings();
 
 		// Initialize
-		self::setOptions(options: $options);
+		self::setOptions(optionArr: $optionArr);
 		self::initProcess();
 	}
 
@@ -458,11 +464,11 @@ class Session
 			isset($_COOKIE[self::$sessionName])
 			&& !empty($_COOKIE[self::$sessionName])
 		) {
-			$options = self::$options;
-			$options['read_and_close'] = true;
+			$optionArr = self::$optionArr;
+			$optionArr['read_and_close'] = true;
 
-			self::$sessionContainer->sessionOptions = $options;
-			return session_start(options: $options);
+			self::$sessionContainer->sessionOption = $optionArr;
+			return session_start(optionArr: $optionArr);
 		}
 		return false;
 	}
@@ -474,33 +480,33 @@ class Session
 	 */
 	public static function sessionStartReadWrite(): bool
 	{
-		self::$sessionContainer->sessionOptions = self::$options;
-		return session_start(options: self::$options);
+		self::$sessionContainer->sessionOption = self::$optionArr;
+		return session_start(optionArr: self::$optionArr);
 	}
 
 	/**
 	 * For Custom Session Handler - Destroy a session
 	 *
-	 * @param string $sessionId Session ID
+	 * @param string $sessionID Session id
 	 *
 	 * @return bool
 	 */
-	public static function deleteSession($sessionId): bool
+	public static function deleteSession($sessionID): bool
 	{
-		return self::$sessionContainer->deleteSession($sessionId);
+		return self::$sessionContainer->deleteSession($sessionID);
 	}
 
 	/**
 	 * For Custom Session Handler - Destroy a session
 	 *
-	 * @param array $sessionIds Session IDs
+	 * @param array $sessionIDs Session IDs
 	 *
 	 * @return void
 	 */
-	public static function deleteSessions($sessionIds): void
+	public static function deleteSessions($sessionIDs): void
 	{
-		for ($i = 0, $iCount = count($sessionIds); $i < $iCount; $i++) {
-			self::deleteSession($sessionIds[$i]);
+		for ($i = 0, $iCount = count($sessionIDs); $i < $iCount; $i++) {
+			self::deleteSession($sessionIDs[$i]);
 		}
 	}
 }

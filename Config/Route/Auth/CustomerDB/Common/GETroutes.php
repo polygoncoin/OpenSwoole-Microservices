@@ -13,22 +13,18 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Route\Auth\CustomerDB\Common;
-
-use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
-use Microservices\App\Env;
 
 return [
 	'category' => [
-		'__FILE__' => Constant::$AUTH_QUERIES_DIR
+		'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Groups'
 			. DIRECTORY_SEPARATOR . 'UserGroup'
 			. DIRECTORY_SEPARATOR . 'GET'
 			. DIRECTORY_SEPARATOR . 'Category-all.php',
 		'search' => [
-			'__FILE__' => Constant::$AUTH_QUERIES_DIR
+			'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'UserGroup'
@@ -37,7 +33,7 @@ return [
 		],
 		'{id:int}' => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => Constant::$AUTH_QUERIES_DIR
+			'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'UserGroup'
@@ -48,7 +44,7 @@ return [
 	'registration' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => Constant::$AUTH_QUERIES_DIR
+			'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'UserGroup'
@@ -59,7 +55,7 @@ return [
 	'address' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => Constant::$AUTH_QUERIES_DIR
+			'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'UserGroup'
@@ -70,7 +66,7 @@ return [
 	'registration-with-address' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => Constant::$AUTH_QUERIES_DIR
+			'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'UserGroup'
@@ -78,10 +74,10 @@ return [
 				. DIRECTORY_SEPARATOR . 'Registration-With-Address-single.php',
 		],
 	],
-	Env::$routesRequestRoute => [
+	$Env::$routesRequestRoute => [
 		'__FILE__' => false,
 		'{method:string}' => [
-			'dataType' => DatabaseServerDataType::$HttpMethods,
+			'dataType' => DatabaseServerDataType::$HttpMethod,
 			'__FILE__' => false
 		]
 	]

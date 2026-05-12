@@ -29,7 +29,7 @@ xmlhttp . send( JSON.stringify(payload) );
 
 ## For other API's
 
-- GET Request
+- GET request
 
 ```javascript
 var handlerUrl = "http://127.0.0.1:9501?route=/routes";
@@ -50,7 +50,7 @@ xmlhttp . onreadystatechange = function() {
 xmlhttp . send();
 ```
 
-- POST Request
+- POST request
 
 ```javascript
 var handlerUrl = "http://127.0.0.1:9501?route=/ajax-handler-route";
@@ -76,7 +76,7 @@ var payload = {
 xmlhttp . send( JSON.stringify(payload) );
 ```
 
-- PUT Request
+- PUT request
 
 ```javascript
 var handlerUrl = "http://127.0.0.1:9501?route=/custom/password";
@@ -102,7 +102,7 @@ var payload = {
 xmlhttp . send( JSON.stringify(payload) );
 ```
 
-- XML Request example
+- XML request example
 
 ```javascript
 var handlerUrl = "http://127.0.0.1:9501?route=/registration-with-address&iRepresentation=XML&oRepresentation=XML";
@@ -111,24 +111,24 @@ var payload = '<?xml version="1.0" encoding="UTF-8" ?>' +
 '<Payload>' +
 	<Rows>' +
 		<Row>' +
-	<firstname>Ramesh-1</firstname>' +
-	<lastname>Jangid</lastname>' +
-	<email>ramesh@test.com</email>' +
-	<username>test</username>' +
-	<password>shames11</password>' +
-	<address>' +
-	<address>A-203</address>' +
-	</address>' +
+			<firstname>Ramesh-1</firstname>' +
+			<lastname>Jangid</lastname>' +
+			<email>ramesh@test.com</email>' +
+			<username>test</username>' +
+			<password>shames11</password>' +
+			<address>' +
+				<address>A-203</address>' +
+			</address>' +
 		</Row>' +
 		<Row>' +
-	<firstname>Ramesh-2</firstname>' +
-	<lastname>Jangid</lastname>' +
-	<email>ramesh@test.com</email>' +
-	<username>test</username>' +
-	<password>shames11</password>' +
-	<address>' +
-	<address>A-203</address>' +
-	</address>' +
+			<firstname>Ramesh-2</firstname>' +
+			<lastname>Jangid</lastname>' +
+			<email>ramesh@test.com</email>' +
+			<username>test</username>' +
+			<password>shames11</password>' +
+			<address>' +
+				<address>A-203</address>' +
+			</address>' +
 		</Row>' +
 	</Rows>' +
 '</Payload>';
@@ -150,7 +150,7 @@ xmlhttp . send( payload );
 ## Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/OpenSwoole-Microservices/issues)
 
 ## Author
 

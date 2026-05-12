@@ -13,8 +13,6 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\AdminGroup\GET;
-
 use Microservices\App\QueryCacheServerKey;
 
 return [
@@ -24,12 +22,12 @@ return [
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		],
 		[
 			'column' => 'parent_id',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 0
+			'fetchFromDetail' => 0
 		],
 	],
 	'__MODE__' => 'multipleRowFormat',
@@ -40,12 +38,12 @@ return [
 				[
 					'column' => 'is_deleted',
 					'fetchFrom' => 'custom',
-					'fetchFromValue' => 'No'
+					'fetchFromDetail' => 'No'
 				],
 				[
 					'column' => 'parent_id',
 					'fetchFrom' => 'sqlResults',
-					'fetchFromValue' => 'return:id'
+					'fetchFromDetail' => 'return:id'
 				],
 			],
 			'__MODE__' => 'multipleRowFormat',
@@ -56,12 +54,12 @@ return [
 						[
 							'column' => 'is_deleted',
 							'fetchFrom' => 'custom',
-							'fetchFromValue' => 'No'
+							'fetchFromDetail' => 'No'
 						],
 						[
 							'column' => 'parent_id',
 							'fetchFrom' => 'sqlResults',
-							'fetchFromValue' => 'return:sub:id'
+							'fetchFromDetail' => 'return:sub:id'
 						],
 					],
 					'__MODE__' => 'multipleRowFormat',
@@ -72,12 +70,12 @@ return [
 								[
 									'column' => 'is_deleted',
 									'fetchFrom' => 'custom',
-									'fetchFromValue' => 'No'
+									'fetchFromDetail' => 'No'
 								],
 								[
 									'column' => 'parent_id',
 									'fetchFrom' => 'sqlResults',
-									'fetchFromValue' => 'return:sub:subsub:id'
+									'fetchFromDetail' => 'return:sub:subsub:id'
 								],
 							],
 							'__MODE__' => 'multipleRowFormat',
@@ -90,8 +88,8 @@ return [
 	'useResultSet' => true,
 	'fetchFrom' => 'Master',
 	'cacheKey' => QueryCacheServerKey::category(
-		customerID: $this->http->req->s['cDetails']['id'],
-		groupID: $this->http->req->s['gDetails']['id'],
+		customerID: $this->http->req->cID,
+		groupID: $this->http->req->s['gDetail']['id'],
 		isOpenToWebRequest: false
 	)
 ];

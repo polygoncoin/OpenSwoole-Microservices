@@ -60,9 +60,9 @@ $server->on(
 			'.env.global.container',
 			'.env.rateLimiting'
 		] as $envFilename) {
-			$env = parse_ini_file(filename: ROOT . DIRECTORY_SEPARATOR . $envFilename);
-			foreach ($env as $key => $value) {
-				putenv(assignment: "{$key}={$value}");
+			$envDataArr = parse_ini_file(filename: ROOT . DIRECTORY_SEPARATOR . $envFilename);
+			foreach ($envDataArr as $envVarName => $envVarValue) {
+				putenv(assignment: "{$envVarName}={$envVarValue}");
 			}
 		}
 
@@ -70,10 +70,12 @@ $server->on(
 		Env::$timestamp = time();
 		Env::init();
 
-		$iConfig = [];
-		$iConfig['server']['domainName'] = 'api.customer001.localhost'; // Auth
-		// $iConfig['server']['domainName'] = 'localhost'; // Open
-		$iConfig['server']['httpMethod'] = $request->server['request_method'];
+		$httpReqDetailArr = [];
+
+		$httpReqDetailArr['streamData'] = true;
+		$httpReqDetailArr['server']['domainName'] = 'api.customer001.localhost'; // Auth
+		// $httpReqDetailArr['server']['domainName'] = 'localhost'; // Open
+		$httpReqDetailArr['server']['httpMethod'] = $request->server['request_method'];
 
 		if (
 			((int)getenv('DISABLE_REQUESTS_VIA_PROXIES')) === 1
@@ -84,23 +86,23 @@ $server->on(
 		}
 
 		if (isset($request->server['remote_addr'])) {
-			$iConfig['server']['httpRequestIP'] = $request->server['remote_addr'];
+			$httpReqDetailArr['server']['httpRequestIP'] = $request->server['remote_addr'];
 		} else {// check proxy headers
 			if (isset($request->header['x-forwarded-for'])) {
-				$iConfig['server']['httpRequestIP'] = $request->header['x-forwarded-for'];
+				$httpReqDetailArr['server']['httpRequestIP'] = $request->header['x-forwarded-for'];
 		} elseif (isset($request->header['x-real-ip'])) {
-				$iConfig['server']['httpRequestIP'] = $request->header['x-real-ip'];
+				$httpReqDetailArr['server']['httpRequestIP'] = $request->header['x-real-ip'];
 			}
 		}
 
-		$iConfig['header'] = $request->header;
+		$httpReqDetailArr['header'] = $request->header;
 		if (isset($request->header['authorization'])) {
-			$iConfig['header']['tokenHeader'] = $request->header['authorization'];
+			$httpReqDetailArr['header']['tokenHeader'] = $request->header['authorization'];
 		}
-		$iConfig['get'] = &$request->get;
-		$iConfig['post'] = $request->rawContent();
-		$iConfig['files'] = &$request->files;
-		$iConfig['httpRequestHash'] = CommonFunction::httpRequestHash(
+		$httpReqDetailArr['get'] = &$request->get;
+		$httpReqDetailArr['post'] = $request->rawContent();
+		$httpReqDetailArr['files'] = &$request->files;
+		$httpReqDetailArr['httpRequestHash'] = CommonFunction::httpRequestHash(
 			hashArray: [
 				// $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '',
 				// $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
@@ -110,11 +112,11 @@ $server->on(
 		);
 
 		if (
-			isset($iConfig['get'][ROUTE_URL_PARAM])
+			isset($httpReqDetailArr['get'][ROUTE_URL_PARAM])
 			&& in_array(
-				needle: $iConfig['get'][ROUTE_URL_PARAM],
+				needle: $httpReqDetailArr['get'][ROUTE_URL_PARAM],
 				haystack: [
-					'/tests',
+					'/all-test',
 					'/auth-test',
 					'/open-test',
 					'/open-test-xml',
@@ -122,32 +124,34 @@ $server->on(
 				]
 			)
 		) {
-			$tests = new Test();
-			switch ($iConfig['get'][ROUTE_URL_PARAM]) {
-				case '/tests':
-					$response->end('<pre>'.print_r(value: $tests->processTests(), return: true));
+			$testObj = new Test();
+			switch ($httpReqDetailArr['get'][ROUTE_URL_PARAM]) {
+				case '/all-test':
+					$response->end('<pre>'.print_r(value: $testObj->processTests(), return: true));
 					break;
 				case '/auth-test':
-					$response->end('<pre>'.print_r(value: $tests->processAuth(), return: true));
+					$response->end('<pre>'.print_r(value: $testObj->processAuth(), return: true));
 					break;
 				case '/open-test':
-					$response->end('<pre>'.print_r(value: $tests->processOpen(), return: true));
+					$response->end('<pre>'.print_r(value: $testObj->processOpen(), return: true));
 					break;
 				case '/open-test-xml':
-					$response->end('<pre>'.print_r(value: $tests->processXml(), return: true));
+					$response->end('<pre>'.print_r(value: $testObj->processXml(), return: true));
 					break;
 				case '/supp-test':
-					$response->end('<pre>'.print_r(value: $tests->processSupplement(), return: true));
+					$response->end('<pre>'.print_r(value: $testObj->processSupplement(), return: true));
 					break;
 			}
 		} else {
 			ob_start();
-			[$responseheaders, $responseContent, $responseCode] = Start::http(iConfig: $iConfig, streamData: true);
+			[$responseHeaderArr, $responseContent, $responseCode] = Start::http(httpReqDetailArr: $httpReqDetailArr);
 			@ob_clean();
 
+			$responseCode = $responseCode ?? 200;
 			$response->status($responseCode);
-			foreach ($responseheaders as $k => $v) {
-				$response->header($k, $v);
+
+			foreach ($responseHeaderArr as $headerName => $headerValue) {
+				$response->header($headerName, $headerValue);
 			}
 			$response->end($responseContent);
 		}

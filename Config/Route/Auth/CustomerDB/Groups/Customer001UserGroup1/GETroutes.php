@@ -13,21 +13,17 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Route\Auth\CustomerDB\Groups\Customer001UserGroup1;
-
-use Microservices\App\Constant;
-
 return array_merge(
-	require Constant::$AUTH_ROUTES_DIR
+	require $Constant::$AUTH_ROUTES_DIR
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'GETroutes.php',
-	require Constant::$AUTH_ROUTES_DIR
+	require $Constant::$AUTH_ROUTES_DIR
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'Custom'
 		. DIRECTORY_SEPARATOR . 'GETroutes.php',
-	require Constant::$AUTH_ROUTES_DIR
+	require $Constant::$AUTH_ROUTES_DIR
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'ThirdParty'

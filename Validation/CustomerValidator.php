@@ -38,7 +38,7 @@ class CustomerValidator implements ValidatorInterface
 	use ValidatorTrait;
 
 	/**
-	 * Http Object
+	 * HTTP object
 	 *
 	 * @var null|Http
 	 */
@@ -64,80 +64,63 @@ class CustomerValidator implements ValidatorInterface
 	public function validate(&$validationConfig): array
 	{
 		$isValidData = true;
-		$errors = [];
+		$errorArr = [];
 		foreach ($validationConfig as &$v) {
-			$args = [];
-			foreach ($v['fnArgs'] as $attr => [$mode, $key]) {
-				if ($mode === 'custom') {
-					$args[$attr] = $key;
+			$argArr = [];
+			foreach ($v['functionArgs'] as $argName => [$fetchFrom, $fetchFromDetail]) {
+				if ($fetchFrom === 'custom') {
+					$argArr[$argName] = $fetchFromDetail;
 				} else {
-					$args[$attr] = $this->http->req->s[$mode][$key];
+					$argArr[$argName] = $this->http->req->s[$fetchFrom][$fetchFromDetail];
 				}
 			}
-			$fn = $v['fn'];
-			if (!$this->$fn($args)) {
-				$errors[] = $v['errorMessage'];
+			$function = $v['function'];
+			if (!$this->$function($argArr)) {
+				$errorArr[] = $v['errorMessage'];
 				$isValidData = false;
 			}
 		}
 
-		return [$isValidData, $errors];
+		return [$isValidData, $errorArr];
 	}
 
 	/**
-	 * Customer Id Exist
-	 *
-	 * @param array $args Arguments
-	 *
-	 * @return int 0/1
-	 */
-	public function cIdExist(&$args): int
-	{
-		extract(array: $args);
-		return $this->getPrimaryCount(
-			table: Env::$customerTable,
-			primary: 'id',
-			id: $id
-		);
-	}
-
-	/**
-	 * Gets primary key count
+	 * Get primary key count
 	 *
 	 * @param string $table   Table Name
 	 * @param string $primary Primary Key
-	 * @param int    $id      Primary ID
+	 * @param int    $id      Primary id
 	 *
 	 * @return int 0/1
 	 */
 	private function getPrimaryCount(&$table, $primary, &$id): int
 	{
-		$dbServerDB = DbCommonFunction::$masterDb[$this->http->req->cId]->dbServerDB;
+		$dbServerDB = DbCommonFunction::$masterDb[$this->http->req->cID]->dbServerDB;
 		$sql = "
 			SELECT count(1) as `count`
 			FROM `{$dbServerDB}`.`{$table}`
 			WHERE `{$primary}` = ?
 		";
-		$params = [$id];
-		DbCommonFunction::$masterDb[$this->http->req->cId]->execDbQuery(sql: $sql, params: $params);
-		return (int)(DbCommonFunction::$masterDb[$this->http->req->cId]->fetch())['count'];
+		$paramArr = [$id];
+		DbCommonFunction::$masterDb[$this->http->req->cID]->execDbQuery(sql: $sql, paramArr: $paramArr);
+		return (int)(DbCommonFunction::$masterDb[$this->http->req->cID]->fetch())['count'];
 	}
 
 	/**
-	 * Checks primary key exist
+	 * Check primary key exist
 	 *
-	 * @param array $args Arguments
+	 * @param array $argArr Arguments
 	 *
 	 * @return bool
 	 */
-	private function primaryKeyExist(&$args): bool
+	private function primaryKeyExist(&$argArr): bool
 	{
-		extract(array: $args);
+		extract(array: $argArr);
 		$sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
-		$params = [$id];
-		DbCommonFunction::$masterDb[$this->http->req->cId]->execDbQuery(sql: $sql, params: $params);
-		$row = DbCommonFunction::$masterDb[$this->http->req->cId]->fetch();
-		DbCommonFunction::$masterDb[$this->http->req->cId]->closeCursor();
+		$paramArr = [$id];
+		DbCommonFunction::$masterDb[$this->http->req->cID]->execDbQuery(sql: $sql, paramArr: $paramArr);
+		$row = DbCommonFunction::$masterDb[$this->http->req->cID]->fetch();
+		DbCommonFunction::$masterDb[$this->http->req->cID]->closeCursor();
 		return ($row['count'] === 0) ? false : true;
 	}
 }

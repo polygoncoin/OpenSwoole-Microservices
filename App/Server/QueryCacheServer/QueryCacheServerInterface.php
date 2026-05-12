@@ -30,46 +30,56 @@ namespace Microservices\App\Server\QueryCacheServer;
 interface QueryCacheServerInterface
 {
 	/**
-	 * Query Cache Server Object
+	 * Connect Query Cache
 	 *
 	 * @return void
 	 */
 	public function connect(): void;
 
 	/**
-	 * Checks if cache key exist
+	 * Query Cache key exist
 	 *
-	 * @param string $key Cache key
+	 * @param string $queryCacheKey Query Cache key
 	 *
 	 * @return mixed
 	 */
-	public function cacheExists($key): mixed;
+	public function queryCacheExist($queryCacheKey): mixed;
 
 	/**
-	 * Get cache on basis of key
+	 * Get Query Cache key
 	 *
-	 * @param string $key Cache key
+	 * @param string $queryCacheKey Query Cache key
 	 *
 	 * @return mixed
 	 */
-	public function getCache($key): mixed;
+	public function queryCacheGet($queryCacheKey): mixed;
 
 	/**
-	 * Set cache on basis of key
+	 * Set cache key
 	 *
-	 * @param string $key    Cache key
-	 * @param string $value  Cache value
+	 * @param string $queryCacheKey Query Cache key
+	 * @param string $value         Query Cache value
 	 *
 	 * @return mixed
 	 */
-	public function setCache($key, $value): mixed;
+	public function queryCacheSet($queryCacheKey, $value): mixed;
+
+	/**
+	 * Increment Query Cache key as per offset
+	 *
+	 * @param string $queryCacheKey Query Cache key
+	 * @param int    $offset        Query Cache offset
+	 *
+	 * @return mixed
+	 */
+	public function queryCacheIncrement($queryCacheKey, $offset = 1): mixed;
 
 	/**
 	 * Delete cache on basis of key
 	 *
-	 * @param string $key Cache key
+	 * @param string $queryCacheKey Query Cache key
 	 *
 	 * @return mixed
 	 */
-	public function deleteCache($key): mixed;
+	public function queryCacheDelete($queryCacheKey): mixed;
 }

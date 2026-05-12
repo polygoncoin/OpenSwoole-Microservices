@@ -13,8 +13,6 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\GlobalDB\POST;
-
 use Microservices\App\DatabaseServerDataType;
 
 return [
@@ -23,54 +21,54 @@ return [
 		[
 			'column' => 'name',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'name'
+			'fetchFromDetail' => 'name'
 		],
 		[
 			'column' => 'customer_id',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'customer_id',
+			'fetchFromDetail' => 'customer_id',
 			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'connection_id',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'connection_id',
+			'fetchFromDetail' => 'connection_id',
 			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'allowed_cidr',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'allowed_cidr'
+			'fetchFromDetail' => 'allowed_cidr'
 		],
 		[
 			'column' => 'comments',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'comments'
+			'fetchFromDetail' => 'comments'
 		],
 		[
 			'column' => 'created_by',
-			'fetchFrom' => 'uDetails',
-			'fetchFromValue' => 'id'
+			'fetchFrom' => 'uDetail',
+			'fetchFromDetail' => 'id'
 		],
 		[
 			'column' => 'created_on',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => date(format: 'Y-m-d H:i:s')
+			'fetchFromDetail' => date(format: 'Y-m-d H:i:s')
 		],
 		[
 			'column' => 'is_approved',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		],
 		[
 			'column' => 'is_disabled',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		],
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		]
 	],
 	'__INSERT-IDs__' => 'group:id',

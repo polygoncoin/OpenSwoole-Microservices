@@ -40,7 +40,7 @@ class Upload
 	private $uploadApi = null;
 
 	/**
-	 * Http Object
+	 * HTTP object
 	 *
 	 * @var null|Http
 	 */
@@ -64,7 +64,7 @@ class Upload
 	public function init(): bool
 	{
 		$class = 'Microservices\\Supplement\\Upload\\'
-			. ucfirst(string: $this->http->req->rParser->routeElements[1]);
+			. ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
 
 		$this->uploadApi = new $class($this->http);
 

@@ -32,13 +32,13 @@ use Microservices\App\Constant;
 class Log
 {
 	/**
-	 * Validates password from its hash present in cache
+	 * Log details
 	 *
-	 * @param array $logDetails Details to be logged
+	 * @param array $logDetail detail to be logged
 	 *
 	 * @return void
 	 */
-	public function log(&$logDetails): void
+	public function log(&$logDetail): void
 	{
 		$logFile = Constant::$LOG_DIR
 			. DIRECTORY_SEPARATOR . 'log-' . date(format: 'YmdH');
@@ -48,7 +48,7 @@ class Log
 
 		file_put_contents(
 			filename: $logFile,
-			data: json_encode(value: $logDetails) . PHP_EOL,
+			data: json_encode(value: $logDetail) . PHP_EOL,
 			flags: FILE_APPEND
 		);
 	}

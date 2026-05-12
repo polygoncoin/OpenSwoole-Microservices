@@ -390,7 +390,7 @@ class DatabaseServerDataType
 		'dataType' => 'string'
 	];
 
-	public static $HttpMethods = [
+	public static $HttpMethod = [
 		'dataType' => 'string',
 		'enumValues' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
 	];
@@ -496,7 +496,7 @@ class DatabaseServerDataType
 
 		if (!$returnFlag) {
 			throw new \Exception(
-				message: 'Invalid data based on Data-type details',
+				message: 'Invalid data based on Data-type detail',
 				code: HttpStatus::$BadRequest
 			);
 		}

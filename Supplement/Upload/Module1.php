@@ -38,7 +38,7 @@ class Module1 implements UploadInterface
 	use UploadTrait;
 
 	/**
-	 * Http Object
+	 * HTTP object
 	 *
 	 * @var null|Http
 	 */
@@ -52,7 +52,7 @@ class Module1 implements UploadInterface
 	public function __construct(Http &$http)
 	{
 		$this->http = &$http;
-		DbCommonFunction::setDbConnection($this->http->req, fetchFrom: 'Master');
+		DbCommonFunction::connectClientDb($this->http->req, fetchFrom: 'Master');
 	}
 
 	/**
@@ -88,7 +88,7 @@ class Module1 implements UploadInterface
 	private function getLocation(): string
 	{
 		return Constant::$DROP_BOX_DIR
-			. DIRECTORY_SEPARATOR . $this->http->req->cId
+			. DIRECTORY_SEPARATOR . $this->http->req->cID
 			. DIRECTORY_SEPARATOR . 'test.png';
 	}
 }

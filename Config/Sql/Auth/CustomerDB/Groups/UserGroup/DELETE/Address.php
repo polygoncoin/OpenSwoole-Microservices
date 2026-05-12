@@ -13,13 +13,10 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\CustomerDB\Groups\UserGroup\DELETE;
-
-use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
 
 return array_merge(
-	require Constant::$AUTH_QUERIES_DIR
+	require $Constant::$AUTH_QUERIES_DIR
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'Address.php',
@@ -28,19 +25,19 @@ return array_merge(
 			[
 				'column' => 'is_deleted',
 				'fetchFrom' => 'custom',
-				'fetchFromValue' => 'Yes'
+				'fetchFromDetail' => 'Yes'
 			]
 		],
 		'__WHERE__' => [
 			[
 				'column' => 'is_deleted',
 				'fetchFrom' => 'custom',
-				'fetchFromValue' => 'No'
+				'fetchFromDetail' => 'No'
 			],
 			[
 				'column' => 'id',
-				'fetchFrom' => 'routeParams',
-				'fetchFromValue' => 'id',
+				'fetchFrom' => 'routeParamArr',
+				'fetchFromDetail' => 'id',
 				'dataType' => DatabaseServerDataType::$PrimaryKey
 			]
 		],

@@ -13,20 +13,18 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Open\GET;
-
 return [
 	'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		],
 		[
 			'column' => 'id',
-			'fetchFrom' => 'routeParams',
-			'fetchFromValue' => 'id'
+			'fetchFrom' => 'routeParamArr',
+			'fetchFromDetail' => 'id'
 		],
 	],
 	'__MODE__' => 'singleRowFormat'

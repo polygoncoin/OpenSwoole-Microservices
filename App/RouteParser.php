@@ -37,11 +37,18 @@ use Microservices\App\HttpStatus;
 class RouteParser
 {
 	/**
-	 * Array containing details of received route elements
+	 * Array containing detail of received route elements
 	 *
 	 * @var string[]
 	 */
-	public $routeElements = [];
+	public $routeElementArr = [];
+
+	/**
+	 * Route file location
+	 *
+	 * @var null|string
+	 */
+	public $routeFileLocation = null;
 
 	/**
 	 * Pre / Post hooks defined in respective Route file
@@ -86,14 +93,21 @@ class RouteParser
 	public $configuredRoute = '';
 
 	/**
-	 * Location of File containing code for route
+	 * SQL config file
 	 *
-	 * @var string
+	 * @var null|string
 	 */
 	public $sqlConfigFile = null;
 
 	/**
-	 * Http Object
+	 * SQL config
+	 *
+	 * @var null|string
+	 */
+	public $sqlConfig = null;
+
+	/**
+	 * HTTP object
 	 *
 	 * @var null|Http
 	 */
@@ -122,75 +136,79 @@ class RouteParser
 		$Constant = __NAMESPACE__ . '\Constant';
 		$Env = __NAMESPACE__ . '\Env';
 
-		$this->routeElements = explode(
+		$this->routeElementArr = explode(
 			separator: '/',
-			string: trim(string: $this->http->iConfig['get'][ROUTE_URL_PARAM], characters: '/')
+			string: trim(string: $this->http->httpReqDetailArr['get'][ROUTE_URL_PARAM], characters: '/')
 		);
-		$routeLastElementPos = count(value: $this->routeElements) - 1;
-		// if ($this->routeElements[$routeLastElementPos] === Env::$importSampleRequestRouteKeyword) {
-		//     if (isset($this->http->iConfig['server']['httpMethod'])) {
-		//         $this->http->iConfig['server']['httpMethod'] = $this->http->iConfig['server']['httpMethod'];
+		$routeLastElementPos = count(value: $this->routeElementArr) - 1;
+		// if ($this->routeElementArr[$routeLastElementPos] === Env::$importSampleRequestRouteKeyword) {
+		//     if (isset($this->http->httpReqDetailArr['server']['httpMethod'])) {
+		//         $this->http->httpReqDetailArr['server']['httpMethod'] = $this->http->httpReqDetailArr['server']['httpMethod'];
 		//     }
 		// }
 
 		if ($routeFileLocation === null) {
 			if ($this->http->req->isOpenToWebRequest) {
 				$routeFileLocation = Constant::$OPEN_ROUTES_DIR
-					. DIRECTORY_SEPARATOR . $this->http->iConfig['server']['httpMethod'] . 'routes.php';
+					. DIRECTORY_SEPARATOR . $this->http->httpReqDetailArr['server']['httpMethod'] . 'routes.php';
 			} else {
 				$routeFileLocation = Constant::$AUTH_ROUTES_DIR
 					. DIRECTORY_SEPARATOR . 'CustomerDB'
 					. DIRECTORY_SEPARATOR . 'Groups'
-					. DIRECTORY_SEPARATOR . $this->http->req->s['gDetails']['name']
-					. DIRECTORY_SEPARATOR . $this->http->iConfig['server']['httpMethod'] . 'routes.php';
+					. DIRECTORY_SEPARATOR . $this->http->req->s['gDetail']['name']
+					. DIRECTORY_SEPARATOR . $this->http->httpReqDetailArr['server']['httpMethod'] . 'routes.php';
 			}
 		}
 
 		if (file_exists(filename: $routeFileLocation)) {
+			$this->routeFileLocation = $routeFileLocation;
 			$routesConfig = include $routeFileLocation;
 		} else {
 			throw new \Exception(
-				message: 'Route file missing: ' . $this->http->iConfig['server']['httpMethod'] . ' method',
+				message: 'Route file missing: ' . $this->http->httpReqDetailArr['server']['httpMethod'] . ' method',
 				code: HttpStatus::$InternalServerError
 			);
 		}
 
 		$configuredRoute = [];
 
-		for ($key = 0, $keyCount = count($this->routeElements); $key < $keyCount; $key++) {
-			$element = $this->routeElements[$key];
+		for ($i = 0, $iCount = count($this->routeElementArr); $i < $iCount; $i++) {
+			$element = $this->routeElementArr[$i];
 			if ($element === '') {
-				continue;
-			}
-			if (
-				in_array(
-					needle: $key,
-					haystack: ['__PRE-ROUTE-HOOKS__', '__POST-ROUTE-HOOKS__']
-				)
-			) {
-				$this->routeHook[$key] = $element;
 				continue;
 			}
 
 			if (isset($routesConfig[$element])) { // Route element is configured
+				if (isset($routesConfig[$element]['__PRE-ROUTE-HOOKS__'])) {
+					$this->routeHook[$element]['__PRE-ROUTE-HOOKS__'] = $routesConfig[$element]['__PRE-ROUTE-HOOKS__'];
+				}
+				if (isset($routesConfig[$element]['__POST-ROUTE-HOOKS__'])) {
+					$this->routeHook[$element]['__POST-ROUTE-HOOKS__'] = $routesConfig[$element]['__POST-ROUTE-HOOKS__'];
+				}
 				$configuredRoute[] = $element;
 				$routesConfig = &$routesConfig[$element];
 				$this->checkPresenceOfDynamicString(element: $element);
 				continue;
 			} elseif ( // Route starting with reserved keyword
-				$key === 0
+				$i === 0
 				&& $this->isStartingWithReservedRouteKeyword(routeStartingKeyword: $element)
 			) {
 				continue;
 			} elseif ( // Route ending with reserved keyword
-				$key === $routeLastElementPos
+				$i === $routeLastElementPos
 				&& $this->isEndingWithReservedRouteKeyword(routeEndingKeyword: $element)
 			) {
 				break;
 			} else { // Route element is a variable/dynamic input
 				if (
-					(isset($routesConfig['__FILE__']) && count(value: $routesConfig) > 2)
-					|| (!isset($routesConfig['__FILE__']) && count(value: $routesConfig) > 0)
+					(
+						isset($routesConfig['__FILE__'])
+						&& count(value: $routesConfig) > 2
+					)
+					|| (
+						!isset($routesConfig['__FILE__'])
+						&& count(value: $routesConfig) > 0
+					)
 				) {
 					[
 						$foundIntRoute,
@@ -203,11 +221,11 @@ class RouteParser
 					);
 					if ($foundIntRoute) {
 						$configuredRoute[] = $foundIntRoute;
-						$this->http->req->s['routeParams'][$foundIntParamName] =
+						$this->http->req->s['routeParamArr'][$foundIntParamName] =
 							(int)$element;
 					} elseif ($foundStringRoute) {
 						$configuredRoute[] = $foundStringRoute;
-						$this->http->req->s['routeParams'][$foundStringParamName] =
+						$this->http->req->s['routeParamArr'][$foundStringParamName] =
 							urldecode(string: $element);
 					} else {
 						throw new \Exception(
@@ -215,9 +233,14 @@ class RouteParser
 							code: HttpStatus::$BadRequest
 						);
 					}
-					$routesConfig = &$routesConfig[
-						($foundIntRoute ? $foundIntRoute : $foundStringRoute)
-					];
+					$_element = $foundIntRoute ? $foundIntRoute : $foundStringRoute;
+					if (isset($routesConfig[$_element]['__PRE-ROUTE-HOOKS__'])) {
+						$this->routeHook[$_element]['__PRE-ROUTE-HOOKS__'] = $routesConfig[$_element]['__PRE-ROUTE-HOOKS__'];
+					}
+					if (isset($routesConfig[$_element]['__POST-ROUTE-HOOKS__'])) {
+						$this->routeHook[$_element]['__POST-ROUTE-HOOKS__'] = $routesConfig[$_element]['__POST-ROUTE-HOOKS__'];
+					}
+					$routesConfig = &$routesConfig[$_element];
 				} else {
 					throw new \Exception(
 						message: 'Route not supported',
@@ -240,13 +263,13 @@ class RouteParser
 		// Switch Input data representation if set in URL param
 		if (
 			Env::$enableInputRepresentationAsQueryParam
-			&& isset($this->http->iConfig['get']['iRepresentation'])
+			&& isset($this->http->httpReqDetailArr['get']['iRepresentation'])
 			&& Env::isValidDataRep(
-				dataRepresentation: $this->http->iConfig['get']['iRepresentation'],
+				dataRepresentation: $this->http->httpReqDetailArr['get']['iRepresentation'],
 				mode: 'input'
 			)
 		) {
-			Env::$iRepresentation = $this->http->iConfig['get']['iRepresentation'];
+			Env::$iRepresentation = $this->http->httpReqDetailArr['get']['iRepresentation'];
 		}
 
 		$this->configuredRoute = '/' . implode(separator: '/', array: $configuredRoute);
@@ -270,7 +293,7 @@ class RouteParser
 			$this->routeStartingWithReservedKeywordFlag = true;
 			$this->routeStartingReservedKeyword = $routeStartingKeyword;
 			$isValidIp = CommonFunction::checkCidr(
-				IP: $this->http->iConfig['server']['httpRequestIP'],
+				IP: $this->http->httpReqDetailArr['server']['httpRequestIP'],
 				cidrString: Env::$reservedRoutesCidrString[$routeStartingKeyword]
 			);
 			if (!$isValidIp) {
@@ -296,11 +319,11 @@ class RouteParser
 		$return = false;
 
 		if (
-			Env::$enableConfigRequest
-			&& Env::$configRequestRouteKeyword === $routeEndingKeyword
+			Env::$enableExplainRequest
+			&& Env::$explainRequestRouteKeyword === $routeEndingKeyword
 		) {
 			$this->routeEndingWithReservedKeywordFlag = true;
-			$this->routeEndingReservedKeyword = Env::$configRequestRouteKeyword;
+			$this->routeEndingReservedKeyword = Env::$explainRequestRouteKeyword;
 			$return = true;
 		} elseif (
 			Env::$enableImportRequest
@@ -361,7 +384,10 @@ class RouteParser
 			);
 		}
 
-		if ($paramDataType === 'int' && ctype_digit(text: $element)) {
+		if (
+			$paramDataType === 'int'
+			&& ctype_digit(text: $element)
+		) {
 			$foundIntRoute = $routeElement;
 			$foundIntParamName = $paramName;
 			DatabaseServerDataType::validateDataType(
@@ -382,7 +408,7 @@ class RouteParser
 	}
 
 	/**
-	 * Validate config file
+	 * Validate SQL config file
 	 *
 	 * @param array $routesConfig Route config
 	 *
@@ -406,7 +432,7 @@ class RouteParser
 				)
 			) {
 				throw new \Exception(
-					message: 'Missing config for ' . $this->http->iConfig['server']['httpMethod'] . ' method',
+					message: 'Missing config for ' . $this->http->httpReqDetailArr['server']['httpMethod'] . ' method',
 					code: HttpStatus::$InternalServerError
 				);
 			}
@@ -423,28 +449,28 @@ class RouteParser
 
 			// Output data representation over rides global
 			// Output data representation set in Query config file
-			$sqlConfig = include $this->sqlConfigFile;
+			$this->sqlConfig = include $this->sqlConfigFile;
 			if (
-				isset($sqlConfig['oRepresentation'])
+				isset($this->sqlConfig['oRepresentation'])
 				&& Env::isValidDataRep(
-					dataRepresentation: $sqlConfig['oRepresentation'],
+					dataRepresentation: $this->sqlConfig['oRepresentation'],
 					mode: 'output'
 				)
 			) {
-				$this->http->res->oRepresentation = $sqlConfig['oRepresentation'];
+				$this->http->res->oRepresentation = $this->sqlConfig['oRepresentation'];
 			}
 		}
 
 		// Switch Output data representation if set in URL param
 		if (
 			Env::$enableOutputRepresentationAsQueryParam
-			&& isset($this->http->iConfig['get']['oRepresentation'])
+			&& isset($this->http->httpReqDetailArr['get']['oRepresentation'])
 			&& Env::isValidDataRep(
-				dataRepresentation: $this->http->iConfig['get']['oRepresentation'],
+				dataRepresentation: $this->http->httpReqDetailArr['get']['oRepresentation'],
 				mode: 'output'
 			)
 		) {
-			$this->http->res->oRepresentation = $this->http->iConfig['get']['oRepresentation'];
+			$this->http->res->oRepresentation = $this->http->httpReqDetailArr['get']['oRepresentation'];
 		}
 	}
 
@@ -463,15 +489,15 @@ class RouteParser
 				offset: 1,
 				length: strpos(haystack: $element, needle: ':') - 1
 			);
-			$this->http->req->s['routeParams'][$param] = $element;
+			$this->http->req->s['routeParamArr'][$param] = $element;
 		}
 	}
 
 	/**
-	 * Find ROute and Param Name from Dynamic String configured in Route file.
+	 * Find Ruute and Param Name from Dynamic String configured in Route file.
 	 *
-	 * @param array  $routesConfig  Route config
-	 * @param string $element Route element
+	 * @param array  $routesConfig Route config
+	 * @param string $element      Route element
 	 *
 	 * @return array
 	 */

@@ -17,12 +17,12 @@ namespace Microservices\TestCase;
 
 use Microservices\App\Web;
 
-$header = $defaultHeaders;
+$headerArr = $defaultHeaderArr;
 
 return Web::trigger(
 	homeURL: $homeURL,
 	method: 'GET',
 	route: '/category/1',
-	header: $header,
+	header: $headerArr,
 	payload: ''
 );

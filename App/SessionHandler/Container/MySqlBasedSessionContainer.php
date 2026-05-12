@@ -57,25 +57,25 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	}
 
 	/**
-	 * For Custom Session Handler - Validate session ID
+	 * For Custom Session Handler - Validate session id
 	 *
-	 * @param string $sessionId Session ID
+	 * @param string $sessionID Session id
 	 *
 	 * @return bool|string
 	 */
-	public function getSession($sessionId): bool|string
+	public function getSession($sessionID): bool|string
 	{
 		$sql = "
 			SELECT `sessionData`
 			FROM `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
-			WHERE `sessionId` = :sessionId AND lastAccessed > :lastAccessed
+			WHERE `sessionID` = :sessionID AND lastAccessed > :lastAccessed
 		";
-		$params = [
-			':sessionId' => $sessionId,
+		$paramArr = [
+			':sessionID' => $sessionID,
 			':lastAccessed' => (Env::$timestamp - $this->sessionMaxLifetime)
 		];
 		if (
-			($row = $this->getSql(sql: $sql, params: $params))
+			($row = $this->getSql(sql: $sql, paramArr: $paramArr))
 			&& isset($row['sessionData'])
 		) {
 			return $this->decryptData(cipherText: $row['sessionData']);
@@ -86,38 +86,38 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Write session data
 	 *
-	 * @param string $sessionId   Session ID
+	 * @param string $sessionID   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionId, $sessionData): bool|int
+	public function setSession($sessionID, $sessionData): bool|int
 	{
 		$sql = "
 			INSERT INTO `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
 			SET
 				`sessionData` = :sessionData,
 				`lastAccessed` = :lastAccessed,
-				`sessionId` = :sessionId
+				`sessionID` = :sessionID
 		";
-		$params = [
-			':sessionId' => $sessionId,
+		$paramArr = [
+			':sessionID' => $sessionID,
 			':sessionData' => $this->encryptData(plainText: $sessionData),
 			':lastAccessed' => Env::$timestamp
 		];
 
-		return $this->execSql(sql: $sql, params: $params);
+		return $this->execSql(sql: $sql, paramArr: $paramArr);
 	}
 
 	/**
 	 * For Custom Session Handler - Update session data
 	 *
-	 * @param string $sessionId   Session ID
+	 * @param string $sessionID   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionId, $sessionData): bool|int
+	public function updateSession($sessionID, $sessionData): bool|int
 	{
 		$sql = "
 			UPDATE `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
@@ -125,37 +125,37 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 				`sessionData` = :sessionData,
 				`lastAccessed` = :lastAccessed
 			WHERE
-				`sessionId` = :sessionId
+				`sessionID` = :sessionID
 		";
-		$params = [
-			':sessionId' => $sessionId,
+		$paramArr = [
+			':sessionID' => $sessionID,
 			':sessionData' => $this->encryptData(plainText: $sessionData),
 			':lastAccessed' => Env::$timestamp
 		];
 
-		return $this->execSql(sql: $sql, params: $params);
+		return $this->execSql(sql: $sql, paramArr: $paramArr);
 	}
 
 	/**
 	 * For Custom Session Handler - Update session timestamp
 	 *
-	 * @param string $sessionId   Session ID
+	 * @param string $sessionID   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionId, $sessionData): bool
+	public function touchSession($sessionID, $sessionData): bool
 	{
 		$sql = "
 			UPDATE `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
 			SET `lastAccessed` = :lastAccessed
-			WHERE `sessionId` = :sessionId
+			WHERE `sessionID` = :sessionID
 		";
-		$params = [
-			':sessionId' => $sessionId,
+		$paramArr = [
+			':sessionID' => $sessionID,
 			':lastAccessed' => Env::$timestamp
 		];
-		return $this->execSql(sql: $sql, params: $params);
+		return $this->execSql(sql: $sql, paramArr: $paramArr);
 	}
 
 	/**
@@ -172,29 +172,29 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 			DELETE FROM `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
 			WHERE `lastAccessed` < :lastAccessed
 		";
-		$params = [
+		$paramArr = [
 			':lastAccessed' => $lastAccessed
 		];
-		return $this->execSql(sql: $sql, params: $params);
+		return $this->execSql(sql: $sql, paramArr: $paramArr);
 	}
 
 	/**
 	 * For Custom Session Handler - Destroy a session
 	 *
-	 * @param string $sessionId Session ID
+	 * @param string $sessionID Session id
 	 *
 	 * @return bool
 	 */
-	public function deleteSession($sessionId): bool
+	public function deleteSession($sessionID): bool
 	{
 		$sql = "
 			DELETE FROM `{$this->mySqlServerDB}`.`{$this->mySqlServerTable}`
-			WHERE `sessionId` = :sessionId
+			WHERE `sessionID` = :sessionID
 		";
-		$params = [
-			':sessionId' => $sessionId
+		$paramArr = [
+			':sessionID' => $sessionID
 		];
-		return $this->execSql(sql: $sql, params: $params);
+		return $this->execSql(sql: $sql, paramArr: $paramArr);
 	}
 
 	/**
@@ -231,12 +231,12 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * Get Session
 	 *
-	 * @param string $sql    SQL
-	 * @param array  $params Params
+	 * @param string $sql      SQL query
+	 * @param array  $paramArr SQL query params
 	 *
 	 * @return mixed
 	 */
-	private function getSql($sql, $params = []): mixed
+	private function getSql($sql, $paramArr = []): mixed
 	{
 		$row = [];
 		try {
@@ -244,7 +244,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 				query: $sql,
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
-			$stmt->execute(params: $params);
+			$stmt->execute(paramArr: $paramArr);
 			switch ($stmt->rowCount()) {
 				case 0:
 					$row = [];
@@ -266,19 +266,19 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * Execute SQL
 	 *
-	 * @param string $sql    SQL
-	 * @param array  $params Params
+	 * @param string $sql      SQL query
+	 * @param array  $paramArr SQL query params
 	 *
 	 * @return bool
 	 */
-	private function execSql($sql, $params = []): bool
+	private function execSql($sql, $paramArr = []): bool
 	{
 		try {
 			$stmt = $this->mySqlServerObj->prepare(
 				query: $sql,
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
-			$stmt->execute(params: $params);
+			$stmt->execute(paramArr: $paramArr);
 			$stmt->closeCursor();
 		} catch (\Exception $e) {
 			$this->manageException(e: $e);

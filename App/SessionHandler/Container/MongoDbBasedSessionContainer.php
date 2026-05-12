@@ -63,16 +63,16 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	}
 
 	/**
-	 * For Custom Session Handler - Validate session ID
+	 * For Custom Session Handler - Validate session id
 	 *
-	 * @param string $sessionId Session ID
+	 * @param string $sessionID Session id
 	 *
 	 * @return bool|string
 	 */
-	public function getSession($sessionId): bool|string
+	public function getSession($sessionID): bool|string
 	{
 		try {
-			$filter = ['sessionId' => $sessionId];
+			$filter = ['sessionID' => $sessionID];
 
 			if ($document = $this->collectionObj->findOne($filter)) {
 				$lastAccessed = Env::$timestamp - $this->sessionMaxLifetime;
@@ -89,16 +89,16 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Write session data
 	 *
-	 * @param string $sessionId   Session ID
+	 * @param string $sessionID   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionId, $sessionData): bool|int
+	public function setSession($sessionID, $sessionData): bool|int
 	{
 		try {
 			$document = [
-				"sessionId" => $sessionId,
+				"sessionID" => $sessionID,
 				"lastAccessed" => Env::$timestamp,
 				"sessionData" => $this->encryptData(plainText: $sessionData)
 			];
@@ -114,15 +114,15 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * Update Session
 	 *
-	 * @param string $sessionId   Session ID
+	 * @param string $sessionID   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionId, $sessionData): bool|int
+	public function updateSession($sessionID, $sessionData): bool|int
 	{
 		try {
-			$filter = ['sessionId' => $sessionId];
+			$filter = ['sessionID' => $sessionID];
 			$update = [
 				'$set' => [
 					'lastAccessed' => Env::$timestamp,
@@ -141,15 +141,15 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Update session timestamp
 	 *
-	 * @param string $sessionId   Session ID
+	 * @param string $sessionID   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionId, $sessionData): bool
+	public function touchSession($sessionID, $sessionData): bool
 	{
 		try {
-			$filter = ['sessionId' => $sessionId];
+			$filter = ['sessionID' => $sessionID];
 			$update = [
 				'$set' => [
 					'lastAccessed' => Env::$timestamp
@@ -180,14 +180,14 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Destroy a session
 	 *
-	 * @param string $sessionId Session ID
+	 * @param string $sessionID Session id
 	 *
 	 * @return bool
 	 */
-	public function deleteSession($sessionId): bool
+	public function deleteSession($sessionID): bool
 	{
 		try {
-			$filter = ['sessionId' => $sessionId];
+			$filter = ['sessionID' => $sessionID];
 
 			if ($this->collectionObj->deleteOne($filter)) {
 				return true;
@@ -218,7 +218,10 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 		try {
 			if ($this->mongoDbServerUri === null) {
 				$UP = '';
-				if ($this->mongoDbServerUsername !== null && $this->mongoDbServerPassword !== null) {
+				if (
+					$this->mongoDbServerUsername !== null
+					&& $this->mongoDbServerPassword !== null
+				) {
 					$UP = "{$this->mongoDbServerUsername}:{$this->mongoDbServerPassword}@";
 				}
 				$this->mongoDbServerUri = 'mongodb://' . $UP

@@ -32,18 +32,18 @@ namespace Microservices\App\DataRepresentation\Encode\PhpEncoder;
 class PhpEncoderObject
 {
 	public $mode = '';
-	public $key = '';
+	public $objectKey = '';
 	public $returnArray = [];
 
 	/**
 	 * Constructor
 	 *
-	 * @param string      $mode Values can be one among Array/object
-	 * @param null|string $key  Tag
+	 * @param string      $mode      Values can be one among Array/object
+	 * @param null|string $objectKey Tag
 	 */
-	public function __construct($mode, $key = '')
+	public function __construct($mode, $objectKey = '')
 	{
 		$this->mode = $mode;
-		$this->key = $key;
+		$this->objectKey = $objectKey;
 	}
 }

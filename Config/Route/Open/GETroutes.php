@@ -13,34 +13,31 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Route\Open;
-
-use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
 
 return [
 	'login' => [
-		'__FILE__' => Constant::$OPEN_QUERIES_DIR
+		'__FILE__' => $Constant::$OPEN_QUERIES_DIR
 			. DIRECTORY_SEPARATOR . 'GET'
 			. DIRECTORY_SEPARATOR . 'Login.php',
 	],
 	'category' => [
-		'__FILE__' => Constant::$OPEN_QUERIES_DIR
+		'__FILE__' => $Constant::$OPEN_QUERIES_DIR
 			. DIRECTORY_SEPARATOR . 'GET'
 			. DIRECTORY_SEPARATOR . 'Category-all.php',
 		'search' => [
-			'__FILE__' => Constant::$OPEN_QUERIES_DIR
+			'__FILE__' => $Constant::$OPEN_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'GET'
 				. DIRECTORY_SEPARATOR . 'Category-search.php',
 		],
 		'{id:int}' => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => Constant::$OPEN_QUERIES_DIR
+			'__FILE__' => $Constant::$OPEN_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'GET'
 				. DIRECTORY_SEPARATOR . 'Category-Single.php',
 		],
 		'download' => [
-			'__FILE__' => Constant::$OPEN_QUERIES_DIR
+			'__FILE__' => $Constant::$OPEN_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'GET'
 				. DIRECTORY_SEPARATOR . 'Download.php',
 		]

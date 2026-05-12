@@ -41,11 +41,11 @@ class JsonEncode implements DataEncodeInterface
 	private $tempStream = null;
 
 	/**
-	 * Array of JsonEncoderObject objects
+	 * Array of JsonEncoderObject object's
 	 *
 	 * @var JsonEncoderObject[]
 	 */
-	private $objects = [];
+	private $objectArr = [];
 
 	/**
 	 * Current JsonEncoderObject object
@@ -59,16 +59,16 @@ class JsonEncode implements DataEncodeInterface
 	 *
 	 * @var string[]
 	 */
-	private $escapers = [
+	private $escapeArr = [
 		"\\", "\"", "\n", "\r", "\t", "\x08", "\x0c", ' '
 	];
 
 	/**
-	 * Characters that are escaped with for $escapers while creating JSON
+	 * Characters that are escaped with for $escapeArr while creating JSON
 	 *
 	 * @var string[]
 	 */
-	private $replacements = [
+	private $replaceArr = [
 		"\\\\", "\\\"", "\\n", "\\r", "\\t", "\\f", "\\b", ' '
 	];
 
@@ -141,8 +141,8 @@ class JsonEncode implements DataEncodeInterface
 			return 'null';
 		}
 		$data = str_replace(
-			search: $this->escapers,
-			replace: $this->replacements,
+			search: $this->escapeArr,
+			replace: $this->replaceArr,
 			subject: $data
 		);
 		return "\"{$data}\"";
@@ -167,16 +167,19 @@ class JsonEncode implements DataEncodeInterface
 	/**
 	 * Append raw json string
 	 *
-	 * @param string $key  key of associative array
-	 * @param string $data Reference of Representation Data
+	 * @param string $objectKey Key of associative array
+	 * @param string $data      Reference of Representation Data
 	 *
 	 * @return void
 	 */
-	public function appendKeyData($key, &$data): void
+	public function appendKeyData($objectKey, &$data): void
 	{
-		if ($this->currentObject && $this->currentObject->mode === 'Object') {
+		if (
+			$this->currentObject
+			&& $this->currentObject->mode === 'Object'
+		) {
 			$this->write(data: $this->currentObject->comma);
-			$this->write(data: $this->escape(data: $key) . ':' . $data);
+			$this->write(data: $this->escape(data: $objectKey) . ':' . $data);
 			$this->currentObject->comma = ', ';
 		}
 	}
@@ -203,13 +206,13 @@ class JsonEncode implements DataEncodeInterface
 	/**
 	 * Add simple array/value as in the json format
 	 *
-	 * @param string       $key  Key of associative array
-	 * @param string|array $data Representation Data
+	 * @param string       $objectKey Key of associative array
+	 * @param string|array $data      Representation Data
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function addKeyData($key, $data): void
+	public function addKeyData($objectKey, $data): void
 	{
 		if ($this->currentObject->mode !== 'Object') {
 			throw new \Exception(
@@ -218,7 +221,7 @@ class JsonEncode implements DataEncodeInterface
 			);
 		}
 		$this->write(data: $this->currentObject->comma);
-		$this->write(data: $this->escape(data: $key) . ':');
+		$this->write(data: $this->escape(data: $objectKey) . ':');
 		$this->currentObject->comma = '';
 		$this->encode(data: $data);
 	}
@@ -226,19 +229,19 @@ class JsonEncode implements DataEncodeInterface
 	/**
 	 * Start simple array
 	 *
-	 * @param null|string $key Used while creating simple array inside an object
+	 * @param null|string $objectKey Used while creating simple array inside an object
 	 *
 	 * @return void
 	 */
-	public function startArray($key = null): void
+	public function startArray($objectKey = null): void
 	{
 		if ($this->currentObject) {
 			$this->write(data: $this->currentObject->comma);
-			array_push($this->objects, $this->currentObject);
+			array_push($this->objectArr, $this->currentObject);
 		}
 		$this->currentObject = new JsonEncoderObject(mode: 'Array');
-		if ($key !== null) {
-			$this->write(data: $this->escape(data: $key) . ':');
+		if ($objectKey !== null) {
+			$this->write(data: $this->escape(data: $objectKey) . ':');
 		}
 		$this->write(data: '[');
 	}
@@ -252,8 +255,8 @@ class JsonEncode implements DataEncodeInterface
 	{
 		$this->write(data: ']');
 		$this->currentObject = null;
-		if (count(value: $this->objects) > 0) {
-			$this->currentObject = array_pop(array: $this->objects);
+		if (count(value: $this->objectArr) > 0) {
+			$this->currentObject = array_pop(array: $this->objectArr);
 			$this->currentObject->comma = ', ';
 		}
 	}
@@ -261,26 +264,29 @@ class JsonEncode implements DataEncodeInterface
 	/**
 	 * Start simple array
 	 *
-	 * @param null|string $key Used while creating associative array inside an object
+	 * @param null|string $objectKey Used while creating associative array inside an object
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function startObject($key = null): void
+	public function startObject($objectKey = null): void
 	{
 		if ($this->currentObject) {
-			if ($this->currentObject->mode === 'Object' && ($key === null)) {
+			if (
+				$this->currentObject->mode === 'Object'
+				&& ($objectKey === null)
+			) {
 				throw new \Exception(
-					message: 'Object inside an Object should be supported with Key',
+					message: 'Object inside an Object should be supported with key',
 					code: HttpStatus::$InternalServerError
 				);
 			}
 			$this->write(data: $this->currentObject->comma);
-			array_push($this->objects, $this->currentObject);
+			array_push($this->objectArr, $this->currentObject);
 		}
 		$this->currentObject = new JsonEncoderObject(mode: 'Object');
-		if ($key !== null) {
-			$this->write(data: $this->escape(data: $key) . ':');
+		if ($objectKey !== null) {
+			$this->write(data: $this->escape(data: $objectKey) . ':');
 		}
 		$this->write(data: '{');
 	}
@@ -294,8 +300,8 @@ class JsonEncode implements DataEncodeInterface
 	{
 		$this->write(data: '}');
 		$this->currentObject = null;
-		if (count(value: $this->objects) > 0) {
-			$this->currentObject = array_pop(array: $this->objects);
+		if (count(value: $this->objectArr) > 0) {
+			$this->currentObject = array_pop(array: $this->objectArr);
 			$this->currentObject->comma = ', ';
 		}
 	}
@@ -307,7 +313,10 @@ class JsonEncode implements DataEncodeInterface
 	 */
 	public function end(): void
 	{
-		while ($this->currentObject && $this->currentObject->mode) {
+		while (
+			$this->currentObject
+			&& $this->currentObject->mode
+		) {
 			switch ($this->currentObject->mode) {
 				case 'Array':
 					$this->endArray();

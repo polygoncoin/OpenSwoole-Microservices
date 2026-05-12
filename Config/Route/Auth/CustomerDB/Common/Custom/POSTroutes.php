@@ -13,17 +13,13 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Route\Auth\CustomerDB\Common\Custom;
-
-use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
-use Microservices\App\Env;
 
 return [
-	Env::$customRequestRoutePrefix => [
+	$Env::$customRequestRoutePrefix => [
 		'{custom:string}' => [
 			'dataType' => DatabaseServerDataType::$Default,
-			'__FILE__' => Constant::$AUTH_QUERIES_DIR
+			'__FILE__' => $Constant::$AUTH_QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'UserGroup'

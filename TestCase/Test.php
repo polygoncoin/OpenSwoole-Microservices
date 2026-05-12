@@ -30,11 +30,11 @@ namespace Microservices\TestCase;
 class Test
 {
 	/**
-	 * Process Auth based request
+	 * Process all request
 	 *
 	 * @return array
 	 */
-	public function processTests(): array
+	public function processAllTest(): array
 	{
 		$response = [];
 		$response[] = $this->processAuth();
@@ -46,7 +46,7 @@ class Test
 	}
 
 	/**
-	 * Process Auth based request
+	 * Process auth based request
 	 *
 	 * @return array
 	 */
@@ -56,7 +56,7 @@ class Test
 	}
 
 	/**
-	 * Process Open to web api request
+	 * Process open to web request
 	 *
 	 * @return array
 	 */
@@ -66,7 +66,8 @@ class Test
 	}
 
 	/**
-	 * Process Open to web api request - Request/Response are in XML format
+	 * Process open to web xml request
+	 * Request/Response are in XML format
 	 *
 	 * @return array
 	 */
@@ -76,7 +77,7 @@ class Test
 	}
 
 	/**
-	 * Process Auth based request
+	 * Process supplement request
 	 *
 	 * @return array
 	 */

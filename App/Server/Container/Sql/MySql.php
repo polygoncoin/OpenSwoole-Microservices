@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sql Database
+ * SQL Database
  * php version 8.3
  *
  * @category  Sql
@@ -86,7 +86,7 @@ class MySql implements SqlInterface
 	 *
 	 * @var \PDOStatement[]
 	 */
-	private $stmts = [];
+	private $stmtArr = [];
 
 	/**
 	 * Transaction started flag
@@ -119,7 +119,7 @@ class MySql implements SqlInterface
 	}
 
 	/**
-	 * Database Server Object
+	 * Connect Database
 	 *
 	 * @return void
 	 */
@@ -229,11 +229,11 @@ class MySql implements SqlInterface
 	}
 
 	/**
-	 * Affected Rows by PDO
+	 * Affected row count
 	 *
 	 * @return bool|int
 	 */
-	public function affectedRows(): bool|int
+	public function affectedRowCount(): bool|int
 	{
 		try {
 			if ($this->stmt) {
@@ -251,15 +251,15 @@ class MySql implements SqlInterface
 	}
 
 	/**
-	 * Last Insert Id by PDO
+	 * Last insert id
 	 *
 	 * @return bool|int
 	 */
 	public function lastInsertId(): bool|int
 	{
 		try {
-			if (($lastInsertId = $this->dbServerObj->lastInsertId()) !== false) {
-				return $lastInsertId;
+			if (($lastInsertID = $this->dbServerObj->lastInsertId()) !== false) {
+				return $lastInsertID;
 			}
 		} catch (\PDOException $e) {
 			if ($this->beganTransaction) {
@@ -273,28 +273,31 @@ class MySql implements SqlInterface
 	}
 
 	/**
-	 * Execute Parameterized query
+	 * Execute query
 	 *
-	 * @param string $sql     Parameterized query
-	 * @param array  $params  Parameterized query params
-	 * @param bool   $pushPop Push Pop result set stmt
+	 * @param string $sql      SQL query
+	 * @param array  $paramArr SQL query params
+	 * @param bool   $pushPop  Push Pop result set stmt
 	 *
 	 * @return void
 	 */
-	public function execDbQuery($sql, $params = [], $pushPop = false): void
+	public function execDbQuery($sql, $paramArr = [], $pushPop = false): void
 	{
 		$this->connect();
 
 		try {
-			if ($pushPop && $this->stmt) {
-				array_push($this->stmts, $this->stmt);
+			if (
+				$pushPop
+				&& $this->stmt
+			) {
+				array_push($this->stmtArr, $this->stmt);
 			}
 			$this->stmt = $this->dbServerObj->prepare(
 				query: $sql,
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
 			if ($this->stmt) {
-				$this->stmt->execute(params: $params);
+				$this->stmt->execute($paramArr);
 			}
 		} catch (\PDOException $e) {
 			if ($this->beganTransaction) {
@@ -307,7 +310,7 @@ class MySql implements SqlInterface
 	}
 
 	/**
-	 * Fetch row from statement
+	 * Fetch row
 	 *
 	 * @return mixed
 	 */
@@ -326,7 +329,7 @@ class MySql implements SqlInterface
 	}
 
 	/**
-	 * Fetch all rows from statement
+	 * Fetch all rows
 	 *
 	 * @return array|bool
 	 */
@@ -356,8 +359,11 @@ class MySql implements SqlInterface
 		try {
 			if ($this->stmt) {
 				$this->stmt->closeCursor();
-				if ($pushPop && count(value: $this->stmts)) {
-					$this->stmt = array_pop(array: $this->stmts);
+				if (
+					$pushPop
+					&& count(value: $this->stmtArr)
+				) {
+					$this->stmt = array_pop(array: $this->stmtArr);
 				}
 			}
 		} catch (\PDOException $e) {

@@ -12,7 +12,7 @@ To enable Rate Limiting checks one can do this as below in .env.rateLimiting
 enableRateLimiting=0                    ; 1 = true / 0 = false in
 ```
 
-## Configure Rate Limiting Server Details (Memcached / Redis)
+## Configure Rate Limiting Server detail (Memcached / Redis)
 
 ```ini
 ; Supported Container - Memcached / Redis without AUTH
@@ -25,19 +25,19 @@ rateLimitServerPort=11211               ; Redis-6379 / Memcached-11211
 
 ```ini
 ; 1 = true / 0 = false
-enableRateLimitAtIpLevel=0              ; Function = IP
-enableRateLimitAtCustomerLevel=0        ; Function = Customer ID
-enableRateLimitAtGroupLevel=0           ; Function = Group ID
-enableRateLimitAtUserLevel=0            ; Function = User ID
-enableRateLimitAtRouteLevel=0           ; Function = Configured Route
-enableRateLimitAtUsersPerIpLevel=0      ; Function = IP & User ID
-enableRateLimitAtUsersRequestLevel=0    ; Function = Request & User ID
+enableRateLimitForIp=0              ; Function = IP
+enableRateLimitForCustomer=0          ; Function = Customer id
+enableRateLimitForGroup=0           ; Function = Group id
+enableRateLimitForUser=0            ; Function = User id
+enableRateLimitForRoute=0           ; Function = Configured Route
+enableRateLimitForUserPerIp=0      ; Function = IP & User id
+enableRateLimitForUserRequest=0    ; Function = request & User id
 ```
 
-## Setting Rate Limiting keys to be used as identifier with Function(s) combined
+## Setting Rate Limiting key's to be used as identifier with Function(s) combined
 
 ```ini
-; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limits to user)
+; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limit to user)
 rateLimitIPPrefix='IPRL:'
 ; Customer based Rate Limitng (GRL) Key prefix used in Redis
 rateLimitCustomerPrefix='CRL:'
@@ -48,29 +48,29 @@ rateLimitUserPrefix='URL:'
 ; Route based Rate Limiting (RRL) Key prefix used in Redis
 rateLimitRoutePrefix='RRL:'
 ; User Per IP based Rate Limiting (UIRL) Key prefix used in Redis
-rateLimitUsersPerIpPrefix='UIRL:'
+rateLimitUserPerIpPrefix='UIRL:'
 ; User Per IP based Rate Limiting (UIRL) Key prefix used in Redis
-rateLimitUsersRequestPrefix='URRL:'
+rateLimitUserRequestPrefix='URRL:'
 ```
 
-## Setting Rate Limiting keys Limits with window in seconds
+## Setting Rate Limiting key's Limit with window in seconds
 
 ```ini
-; Rate Limiting No. of Request per IP ('IPRL:')
+; Rate Limiting No. of request per IP ('IPRL:')
 rateLimitIPMaxRequest=600              ; Max request allowed per IP
 rateLimitIPMaxRequestWindow=300        ; Window in seconds of Max request allowed per IP
 
 ; Rate Limiting No. of User Per IP ('UIRL:')
-rateLimitUsersPerIpMaxUsers=10          ; Max Users allowed per IP
-rateLimitUsersPerIpMaxUsersWindow=300   ; Window in seconds of Max Users allowed per IP
+rateLimitMaxUserPerIp=10          ; Max User allowed per IP
+rateLimitMaxUserPerIpWindow=300   ; Window in seconds of Max User allowed per IP
 
-; Rate Limiting No. of Request per User ('URRL:')
-; Delay Between Consecutive Request (allow n request only for seconds configured for each user)
-rateLimitUsersMaxRequest=1             ; Max one request allowed for 10 seconds
-rateLimitUsersMaxRequestWindow=10      ; Max one request allowed for 10 seconds
+; Rate Limiting No. of request per User ('URRL:')
+; Delay Between Consecutive request (allow n request only for seconds configured for each user)
+rateLimitUserMaxRequest=1             ; Max one request allowed for 10 seconds
+rateLimitUserMaxRequestWindow=10      ; Max one request allowed for 10 seconds
 ```
 
-## Customer/Group/User based Rate Limiting details are set in respective DB Tables for records
+## Customer/Group/User based Rate Limiting detail are set in respective DB Tables for records
 
 ```SQL
 -- Customer level
@@ -88,7 +88,7 @@ rateLimitUsersMaxRequestWindow=10      ; Max one request allowed for 10 seconds
 
 ## Rate Limiting at route level
 
-If **enableRateLimitAtRouteLevel** is **enabled** the Rate Limiting settings indicates settings are present in SQL config file of the route. Each route can have different limits and windows or may also ignore (not compulsary for every route).
+If **enableRateLimitForRoute** is **enabled** the Rate Limiting settings indicates settings are present in SQL config file of the route. Each route can have different limits and windows or may also ignore (not compulsary for every route).
 
 ## Rate Limiting Key
 

@@ -13,8 +13,6 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\GlobalDB\GET;
-
 return [
 	'all' => [
 		'countQuery' => "SELECT count(1) as `count` FROM `{$Env::$customerTable}` WHERE __WHERE__",
@@ -23,17 +21,17 @@ return [
 			[
 				'column' => 'is_approved',
 				'fetchFrom' => 'custom',
-				'fetchFromValue' => 'Yes'
+				'fetchFromDetail' => 'Yes'
 			],
 			[
 				'column' => 'is_disabled',
 				'fetchFrom' => 'custom',
-				'fetchFromValue' => 'No'
+				'fetchFromDetail' => 'No'
 			],
 			[
 				'column' => 'is_deleted',
 				'fetchFrom' => 'custom',
-				'fetchFromValue' => 'No'
+				'fetchFromDetail' => 'No'
 			]
 		],
 		'__MODE__' => 'multipleRowFormat'
@@ -44,24 +42,24 @@ return [
 			[
 				'column' => 'is_approved',
 				'fetchFrom' => 'custom',
-				'fetchFromValue' => 'Yes'
+				'fetchFromDetail' => 'Yes'
 			],
 			[
 				'column' => 'is_disabled',
 				'fetchFrom' => 'custom',
-				'fetchFromValue' => 'No'
+				'fetchFromDetail' => 'No'
 			],
 			[
 				'column' => 'is_deleted',
 				'fetchFrom' => 'custom',
-				'fetchFromValue' => 'No'
+				'fetchFromDetail' => 'No'
 			],
 			[
 				'column' => 'id',
-				'fetchFrom' => 'routeParams',
-				'fetchFromValue' => 'id'
+				'fetchFrom' => 'routeParamArr',
+				'fetchFromDetail' => 'id'
 			]
 		],
 		'__MODE__' => 'singleRowFormat'
 	],
-][isset($this->http->req->s['routeParams']['id'])?'single':'all'];
+][isset($this->http->req->s['routeParamArr']['id'])?'single':'all'];

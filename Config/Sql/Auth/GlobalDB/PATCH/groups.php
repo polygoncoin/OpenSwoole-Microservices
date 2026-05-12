@@ -13,10 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\GlobalDB\PATCH;
-
 use Microservices\App\DatabaseServerDataType;
-use Microservices\App\Env;
 
 return [
 	'__QUERY__' => "UPDATE `{$Env::$groupsTable}` SET __SET__ WHERE __WHERE__",
@@ -24,51 +21,51 @@ return [
 		[
 			'column' => 'name',
 			'fetchFrom' => 'payload',
-			'fetchFromValue' => 'name'
+			'fetchFromDetail' => 'name'
 		],
 		[
 			'column' => 'updated_by',
-			'fetchFrom' => 'uDetails',
-			'fetchFromValue' => 'id'
+			'fetchFrom' => 'uDetail',
+			'fetchFromDetail' => 'id'
 		],
 		[
 			'column' => 'updated_on',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => date(format: 'Y-m-d H:i:s')
+			'fetchFromDetail' => date(format: 'Y-m-d H:i:s')
 		]
 	],
 	'__WHERE__' => [
 		[
 			'column' => 'is_approved',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'Yes'
+			'fetchFromDetail' => 'Yes'
 		],
 		[
 			'column' => 'is_disabled',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		],
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		],
 		[
 			'column' => 'id',
-			'fetchFrom' => 'routeParams',
-			'fetchFromValue' => 'id',
+			'fetchFrom' => 'routeParamArr',
+			'fetchFromDetail' => 'id',
 			'dataType' => DatabaseServerDataType::$INT
 		]
 	],
 	'__VALIDATE__' => [
 		[
-			'fn' => 'primaryKeyExist',
-			'fnArgs' => [
-				'table' => ['custom', Env::$groupsTable],
+			'function' => 'primaryKeyExist',
+			'functionArgs' => [
+				'table' => ['custom', $Env::$groupsTable],
 				'primary' => ['custom', 'id'],
 				'id' => ['payload', 'id', DatabaseServerDataType::$INT]
 			],
-			'errorMessage' => 'Invalid Group Id'
+			'errorMessage' => 'Invalid Group id'
 		],
 	]
 ];

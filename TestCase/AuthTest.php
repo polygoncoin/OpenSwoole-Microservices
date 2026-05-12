@@ -31,9 +31,9 @@ $contentType = 'Content-Type: text/plain; charset=utf-8';
 
 $curlFile = __DIR__ . '/category.csv';
 
-$defaultHeaders = [];
-// $defaultHeaders[] = $apiVersion;
-$defaultHeaders[] = $cacheControl;
+$defaultHeaderArr = [];
+// $defaultHeaderArr[] = $apiVersion;
+$defaultHeaderArr[] = $cacheControl;
 
 $response = [];
 
@@ -51,6 +51,7 @@ $response[] = include AUTH_GET . DIRECTORY_SEPARATOR . 'Route.php';
 
 $response[] = include AUTH_POST . DIRECTORY_SEPARATOR . 'Config.php';
 $response[] = include AUTH_POST . DIRECTORY_SEPARATOR . 'Category.php';
+
 $response[] = include AUTH_POST . DIRECTORY_SEPARATOR . 'Registration.php';
 $response[] = include AUTH_POST . DIRECTORY_SEPARATOR . 'Address.php';
 $response[] = include AUTH_POST . DIRECTORY_SEPARATOR . 'RegistrationWithAddress.php';

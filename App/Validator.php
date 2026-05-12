@@ -44,7 +44,7 @@ class Validator
 	private $v = null;
 
 	/**
-	 * Http Object
+	 * HTTP object
 	 *
 	 * @var null|Http
 	 */
@@ -58,7 +58,7 @@ class Validator
 	public function __construct(Http &$http)
 	{
 		$this->http = &$http;
-		if (DbCommonFunction::$masterDb[$this->http->req->cId]->dbServerDB === Env::$gDbServerDB) {
+		if (DbCommonFunction::$masterDb[$this->http->req->cID]->dbServerDB === Env::$gDbServerDB) {
 			$this->v = new GlobalValidator($this->http);
 		} else {
 			$this->v = new CustomerValidator($this->http);
@@ -75,14 +75,14 @@ class Validator
 	public function validate(&$validationConfig): array
 	{
 		if (
-			isset(($this->http->req->s['necessary']))
-			&& count(value: $this->http->req->s['necessary']) > 0
+			isset(($this->http->req->s['requiredFieldArr']))
+			&& count(value: $this->http->req->s['requiredFieldArr']) > 0
 		) {
 			if (
-				([$isValidData, $errors] = $this->validateRequired())
+				([$isValidData, $errorArr] = $this->validateRequired())
 				&& !$isValidData
 			) {
-				return [$isValidData, $errors];
+				return [$isValidData, $errorArr];
 			}
 		}
 
@@ -90,24 +90,24 @@ class Validator
 	}
 
 	/**
-	 * Validate necessary payload
+	 * Validate required payload
 	 *
 	 * @return array
 	 */
 	private function validateRequired(): array
 	{
 		$isValidData = true;
-		$errors = [];
+		$errorArr = [];
 		// Required fields payload validation
-		if (!empty($this->http->req->s['necessary']['payload'])) {
-			foreach ($this->http->req->s['necessary']['payload'] as $column => &$arr) {
-				if ($arr['necessary'] && !isset($this->http->req->s['payload'][$column])) {
-					$errors[] = 'Missing necessary payload: ' . $column;
+		if (!empty($this->http->req->s['requiredFieldArr']['payload'])) {
+			foreach ($this->http->req->s['requiredFieldArr']['payload'] as $fetchFromDetail) {
+				if (!in_array($fetchFromDetail, $this->http->req->s['payload'])) {
+					$errorArr[] = 'Missing required payload: ' . $fetchFromDetail;
 					$isValidData = false;
 				}
 			}
 		}
 
-		return [$isValidData, $errors];
+		return [$isValidData, $errorArr];
 	}
 }

@@ -41,11 +41,11 @@ interface DataEncodeInterface
 	/**
 	 * Start simple array
 	 *
-	 * @param null|string $key Used while creating simple array inside an object
+	 * @param null|string $objectKey Used while creating simple array inside an object
 	 *
 	 * @return void
 	 */
-	public function startArray($key = null): void;
+	public function startArray($objectKey = null): void;
 
 	/**
 	 * Add simple array/value as in the data format
@@ -67,23 +67,23 @@ interface DataEncodeInterface
 	/**
 	 * Start simple array
 	 *
-	 * @param null|string $key Used while creating associative array inside an object
+	 * @param null|string $objectKey Used while creating associative array inside an object
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function startObject($key = null): void;
+	public function startObject($objectKey = null): void;
 
 	/**
 	 * Add simple array/value as in the data format
 	 *
-	 * @param string       $key  Key of associative array
-	 * @param string|array $data Representation Data
+	 * @param string       $objectKey Key of associative array
+	 * @param string|array $data      Representation Data
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function addKeyData($key, $data): void;
+	public function addKeyData($objectKey, $data): void;
 
 	/**
 	 * End associative array
@@ -113,12 +113,12 @@ interface DataEncodeInterface
 	/**
 	 * Append raw data string
 	 *
-	 * @param string $key  key of associative array
-	 * @param string $data Reference of Representation Data
+	 * @param string $objectKey Key of associative array
+	 * @param string $data      Reference of Representation Data
 	 *
 	 * @return void
 	 */
-	public function appendKeyData($key, &$data): void;
+	public function appendKeyData($objectKey, &$data): void;
 
 	/**
 	 * Checks data was properly closed

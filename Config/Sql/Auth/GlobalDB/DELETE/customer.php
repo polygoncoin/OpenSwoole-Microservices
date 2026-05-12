@@ -13,52 +13,49 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\Config\Sql\Auth\GlobalDB\DELETE;
-
 use Microservices\App\DatabaseServerDataType;
-use Microservices\App\Env;
 
 return [
 	'__QUERY__' => "UPDATE `{$Env::$customerTable}` SET __SET__ WHERE __WHERE__",
 	'__SET__' => [
 		[
 			'column' => 'updated_by',
-			'fetchFrom' => 'uDetails',
-			'fetchFromValue' => 'id'
+			'fetchFrom' => 'uDetail',
+			'fetchFromDetail' => 'id'
 		],
 		[
 			'column' => 'updated_on',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => date('Y-m-d H:i:s')
+			'fetchFromDetail' => date('Y-m-d H:i:s')
 		],
 	],
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromValue' => 'No'
+			'fetchFromDetail' => 'No'
 		],
 		[
 			'column' => 'id',
-			'fetchFrom' => 'routeParams',
-			'fetchFromValue' => 'id',
+			'fetchFrom' => 'routeParamArr',
+			'fetchFromDetail' => 'id',
 			'dataType' => DatabaseServerDataType::$INT
 		]
 	],
 	'__VALIDATE__' => [
 		[
-			'fn' => 'primaryKeyExist',
-			'fnArgs' => [
-				'table' => ['custom', Env::$customerTable],
+			'function' => 'primaryKeyExist',
+			'functionArgs' => [
+				'table' => ['custom', $Env::$customerTable],
 				'primary' => ['custom', 'id'],
 				'id' => ['payload', 'id', DatabaseServerDataType::$INT]
 			],
-			'errorMessage' => 'Invalid Customer Id'
+			'errorMessage' => 'Invalid Customer id'
 		],
 		[
-			'fn' => '_checkColumnValueExist',
-			'fnArgs' => [
-				'table' => ['custom', Env::$customerTable],
+			'function' => '_checkColumnValueExist',
+			'functionArgs' => [
+				'table' => ['custom', $Env::$customerTable],
 				'column' => ['custom', 'is_deleted'],
 				'columnValue' => ['custom', 'No'],
 				'primary' => ['custom', 'id'],

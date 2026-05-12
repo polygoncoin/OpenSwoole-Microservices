@@ -14,8 +14,8 @@ enableOpenRequest=1        ; 1 = true / 0 = false
 enableAuthRequest=1        ; 1 = true / 0 = false
 authMode='Token'            ; Token / Session (Cookie based Sessions)
 sessionMode='File'          ; For Cookie based Session - 'File', 'MySql', 'PostgreSql', 'MongoDb', 'Redis', 'Memcached', 'Cookie'
-enableConcurrentLogins=1    ; 1 = true / 0 = false
-maxConcurrentLogins=2       ; simultaneous login limit
+enableConcurrentLogin=1    ; 1 = true / 0 = false
+maxConcurrentLogin=2       ; simultaneous login limit
 concurrentAccessInterval=60 ; Concurrent Access Interval in Seconds
 ```
 
@@ -43,36 +43,12 @@ maxResultsPerPage=1000
 
 As the heading describes below are the settings for global counter for the primary Key column of respective table. The setting when enable will generate a global auto-increment counter<br />
 
-This enables identify customer details easily while moving him from a common database for all to a dedicated customer X database.
+This enables identify customer detail easily while moving him from a common database for all to a dedicated customer X database.
 
 Enable below config for same.
 
 ```ini
-; Global Auto-Increment counter details
-enableGlobalCounter=0               ; 1 = true / 0 = false
-gCounter='global_counter'           ; Key or Table
-gCounterMode='Cache'                ; Globally configured Cache / Database
-```
-
-## Idempotent
-
-This helps managing cache for idempotent request.
-
-```ini
-; Settings to avoid Idempotent request
-idempotentSecret='changeme'         ; hash_hmac secret
-```
-
-## Global counter
-
-As the heading describes below are the settings for global counter for the primary Key column of respective table. The setting when enable will generate a global auto-increment counter<br />
-
-This enables identify customer details easily while moving him from a common database for all to a dedicated customer X database.
-
-Enable below config for same.
-
-```ini
-; Global Auto-Increment counter details
+; Global Auto-Increment counter detail
 enableGlobalCounter=0               ; 1 = true / 0 = false
 gCounter='global_counter'           ; Key or Table
 gCounterMode='Cache'                ; Globally configured Cache / Database

@@ -13,9 +13,9 @@ $contentType = 'Content-Type: text/plain; charset=utf-8';
 
 $curlFile = __DIR__ . '/category.csv';
 
-$defaultHeaders = [];
-// $defaultHeaders[] = $apiVersion;
-$defaultHeaders[] = $cacheControl;
+$defaultHeaderArr = [];
+// $defaultHeaderArr[] = $apiVersion;
+$defaultHeaderArr[] = $cacheControl;
 
 $response = [];
 
@@ -26,7 +26,7 @@ Add, Comment or Uncomment depending on the requirement.
 
 ## Adding Test Cases
 
-- GET Request
+- GET request
 
 ```PHP
 $response[] = include GET . DIRECTORY_SEPARATOR . '<get-route-file-1>.php';
@@ -45,7 +45,7 @@ $response[] = include DELETE . DIRECTORY_SEPARATOR . '<delete-route-file-1>.php'
 $response[] = include DELETE . DIRECTORY_SEPARATOR . '<delete-route-file-2>.php';
 ```
 
-- POST / PUT / PATCH / DELETE Request
+- POST / PUT / PATCH / DELETE request
 
 These contain payload
 
@@ -64,7 +64,7 @@ Depending on HTTP method create a file &lt;get-route-file&gt;.php / &lt;dml-rout
 - Sample of code a file may contain is as below
 
 ```PHP
-$header = $defaultHeaders;
+$header = $defaultHeaderArr;
 return Web::trigger(
 	homeURL: $homeURL,
 	method: 'GET',
@@ -77,7 +77,7 @@ return Web::trigger(
 If the code requires token; this can be done as below
 
 ```PHP
-$header = $defaultHeaders;
+$header = $defaultHeaderArr;
 if (isset($token)) {
 	$header[] = "Authorization: Bearer {$token}";
 
@@ -101,7 +101,7 @@ index.php/?route=/&lt;some&gt; Test (to be configured in index.php)
 
 If you have multiple test cases files for the project and want to check for all of them; one can configure same in Test.php and acceess via browser.
 
-index.php/?route=/tests (configured in index.php)
+index.php/?route=/all-test (configured in index.php)
 
 ## Contributing
 
