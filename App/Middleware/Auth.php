@@ -70,6 +70,8 @@ class Auth
 		if (isset($this->http->req->s['uDetail'])) {
 			return;
 		}
+		
+		$this->http->req->clientCacheObj = DbCommonFunction::connectClientCache($this->http->req, fetchFrom: 'Master');
 
 		if (
 			isset($_SESSION)
@@ -98,7 +100,7 @@ class Auth
 				token: $this->http->req->s['token']
 			);
 			if (
-				!DbCommonFunction::$gCacheServer->cacheExist(
+				!$this->http->req->clientCacheObj->cacheExist(
 					cacheKey: $tokenKey
 				)
 			) {
@@ -108,7 +110,7 @@ class Auth
 				);
 			}
 			$this->http->req->s['uDetail'] = json_decode(
-				json: DbCommonFunction::$gCacheServer->cacheGet(
+				json: $this->http->req->clientCacheObj->cacheGet(
 					cacheKey: $tokenKey
 				),
 				associative: true
@@ -121,8 +123,8 @@ class Auth
 					cID: $this->http->req->cID,
 					uID: $this->http->req->uID
 				);
-				if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $userConcurrencyKey)) {
-					$userConcurrencyKeyData = DbCommonFunction::$gCacheServer->cacheGet(
+				if ($this->http->req->clientCacheObj->cacheExist(cacheKey: $userConcurrencyKey)) {
+					$userConcurrencyKeyData = $this->http->req->clientCacheObj->cacheGet(
 						cacheKey: $userConcurrencyKey
 					);
 					if ($userConcurrencyKeyData !== $this->http->req->s['token']) {
@@ -177,7 +179,7 @@ class Auth
 			cID: $this->http->req->cID,
 			gID: $this->http->req->gID
 		);
-		if (!DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $gKey)) {
+		if (!$this->http->req->clientCacheObj->cacheExist(cacheKey: $gKey)) {
 			throw new \Exception(
 				message: "Cache '{$gKey}' missing",
 				code: HttpStatus::$InternalServerError
@@ -185,7 +187,7 @@ class Auth
 		}
 
 		$this->http->req->s['gDetail'] = json_decode(
-			json: DbCommonFunction::$gCacheServer->cacheGet(
+			json: $this->http->req->clientCacheObj->cacheGet(
 				cacheKey: $gKey
 			),
 			associative: true

@@ -93,13 +93,13 @@ Make a new config variables as below and set this Key in the above table for cus
 
 ```ini
 ; Supported Container - Redis / Memcached / MongoDb
-cCacheServerType='Redis'
-cCacheServerHostname='127.0.0.1'
-cCacheServerPort=6379
-cCacheServerUsername='username'
-cCacheServerPassword='password'
-cCacheServerDb=0
-cCacheServerTable='customer_001'      ; For MongoDb
+cCacheServerType001='Redis'
+cCacheServerHostname001='127.0.0.1'
+cCacheServerPort001=6379
+cCacheServerUsername001='kartik'
+cCacheServerPassword001='shames11'
+cCacheServerDb001=0
+cCacheServerTable001='customer_001'      ; For MongoDb
 ```
 
 - Dedicated database

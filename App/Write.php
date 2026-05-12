@@ -327,7 +327,7 @@ class Write
 					$arr['Response'] = $response;
 
 					if ($idempotentWindow) {
-						DbCommonFunction::$gCacheServer->cacheSet(
+						$this->http->req->clientCacheObj->cacheSet(
 							cacheKey: $hashKey,
 							value: json_encode(value: $arr),
 							expire: $idempotentWindow

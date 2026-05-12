@@ -136,15 +136,15 @@ class DbCommonFunction
 		// Set Database credentials
 		switch ($fetchFrom) {
 			case 'Master':
-				$cacheMasterDetail = self::cacheMasterDetail(cDetail: $req->s['cDetail']);
+				$clientCacheMasterDetail = self::clientCacheMasterDetail(cDetail: $req->s['cDetail']);
 				return self::connectCache(
-					cacheServerType: $cacheMasterDetail['cacheServerType'],
-					cacheServerHostname: $cacheMasterDetail['cacheServerHostname'],
-					cacheServerPort: $cacheMasterDetail['cacheServerPort'],
-					cacheServerUsername: $cacheMasterDetail['cacheServerUsername'],
-					cacheServerPassword: $cacheMasterDetail['cacheServerPassword'],
-					cacheServerDb: $cacheMasterDetail['cacheServerDb'],
-					cacheServerTable: $cacheMasterDetail['cacheServerTable']
+					cacheServerType: $clientCacheMasterDetail['cacheServerType'],
+					cacheServerHostname: $clientCacheMasterDetail['cacheServerHostname'],
+					cacheServerPort: $clientCacheMasterDetail['cacheServerPort'],
+					cacheServerUsername: $clientCacheMasterDetail['cacheServerUsername'],
+					cacheServerPassword: $clientCacheMasterDetail['cacheServerPassword'],
+					cacheServerDb: $clientCacheMasterDetail['cacheServerDb'],
+					cacheServerTable: $clientCacheMasterDetail['cacheServerTable']
 				);
 				break;
 			case 'Slave':
@@ -266,14 +266,14 @@ class DbCommonFunction
 		// Set Database credentials
 		switch ($fetchFrom) {
 			case 'Master':
-				$dbMasterDetail = self::dbMasterDetail(cDetail: $req->s['cDetail']);
+				$clientDbMasterDetail = self::clientDbMasterDetail(cDetail: $req->s['cDetail']);
 				return self::connectDb(
-					dbServerType: $dbMasterDetail['dbServerType'],
-					dbServerHostname: $dbMasterDetail['dbServerHostname'],
-					dbServerPort: $dbMasterDetail['dbServerPort'],
-					dbServerUsername: $dbMasterDetail['dbServerUsername'],
-					dbServerPassword: $dbMasterDetail['dbServerPassword'],
-					dbServerDb: $dbMasterDetail['dbServerDb']
+					dbServerType: $clientDbMasterDetail['dbServerType'],
+					dbServerHostname: $clientDbMasterDetail['dbServerHostname'],
+					dbServerPort: $clientDbMasterDetail['dbServerPort'],
+					dbServerUsername: $clientDbMasterDetail['dbServerUsername'],
+					dbServerPassword: $clientDbMasterDetail['dbServerPassword'],
+					dbServerDb: $clientDbMasterDetail['dbServerDb']
 				);
 				break;
 			case 'Slave':
@@ -365,7 +365,7 @@ class DbCommonFunction
 	 *
 	 * @return array
 	 */
-	public static function cacheMasterDetail(&$cDetail): array
+	public static function clientCacheMasterDetail(&$cDetail): array
 	{
 		return [
 			'cacheServerType' => getenv(name: $cDetail['master_cache_server_type']),
@@ -405,7 +405,7 @@ class DbCommonFunction
 	 *
 	 * @return array
 	 */
-	public static function dbMasterDetail(&$cDetail): array
+	public static function clientDbMasterDetail(&$cDetail): array
 	{
 		return [
 			'dbServerType' => getenv(name: $cDetail['master_db_server_type']),

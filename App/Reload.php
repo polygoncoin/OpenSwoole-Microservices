@@ -68,6 +68,22 @@ class Reload
 		$cRowArr = DbCommonFunction::$gDbServer->fetchAll();
 		DbCommonFunction::$gDbServer->closeCursor();
 		foreach ($cRowArr as $cRow) {
+			if (!empty($cRow['open_api_domain'])) {
+				$c_key = CacheServerKey::openToWebDomain(
+					domainName: $cRow['open_api_domain']
+				);
+				DbCommonFunction::$gCacheServer->cacheSet(
+					cacheKey: $c_key,
+					value: json_encode(value: $cRow)
+				);
+			}
+
+			$c_key = CacheServerKey::closedToWebDomain(domainName: $cRow['api_domain']);
+			DbCommonFunction::$gCacheServer->cacheSet(
+				cacheKey: $c_key,
+				value: json_encode(value: $cRow)
+			);
+
 			if ($cRow['allowed_cidr'] !== null) {
 				$cCidrIpNumberRangeArr = CommonFunction::cidrStringIpNumberRange(cidrString: $cRow['allowed_cidr']);
 				if (count(value: $cCidrIpNumberRangeArr) > 0) {
@@ -78,31 +94,30 @@ class Reload
 					);
 				}
 			}
-			if (!empty($cRow['open_api_domain'])) {
-				$c_key = CacheServerKey::openToWebDomain(
-					domainName: $cRow['open_api_domain']
-				);
-				DbCommonFunction::$gCacheServer->cacheSet(
-					cacheKey: $c_key,
-					value: json_encode(value: $cRow)
-				);
-			}
-			$c_key = CacheServerKey::closedToWebDomain(domainName: $cRow['api_domain']);
-			DbCommonFunction::$gCacheServer->cacheSet(
-				cacheKey: $c_key,
-				value: json_encode(value: $cRow)
+
+			$clientCacheMasterDetail = DbCommonFunction::clientCacheMasterDetail(cDetail: $cRow);
+			$clientCacheObj = DbCommonFunction::connectCache(
+				cacheServerType: $clientCacheMasterDetail['cacheServerType'],
+				cacheServerHostname: $clientCacheMasterDetail['cacheServerHostname'],
+				cacheServerPort: $clientCacheMasterDetail['cacheServerPort'],
+				cacheServerUsername: $clientCacheMasterDetail['cacheServerUsername'],
+				cacheServerPassword: $clientCacheMasterDetail['cacheServerPassword'],
+				cacheServerDb: $clientCacheMasterDetail['cacheServerDb'],
+				cacheServerTable: $clientCacheMasterDetail['cacheServerTable']
 			);
-			$dbServerObj = DbCommonFunction::connectDb(
-				dbServerType: getenv(name: $cRow['master_db_server_type']),
-				dbServerHostname: getenv(name: $cRow['master_db_server_hostname']),
-				dbServerPort: getenv(name: $cRow['master_db_server_port']),
-				dbServerUsername: getenv(name: $cRow['master_db_server_username']),
-				dbServerPassword: getenv(name: $cRow['master_db_server_password']),
-				dbServerDb: getenv(name: $cRow['master_db_server_db'])
+
+			$clientDbMasterDetail = DbCommonFunction::clientDbMasterDetail(cDetail: $cRow);
+			$clientDbObj = DbCommonFunction::connectDb(
+				dbServerType: $clientDbMasterDetail['dbServerType'],
+				dbServerHostname: $clientDbMasterDetail['dbServerHostname'],
+				dbServerPort: $clientDbMasterDetail['dbServerPort'],
+				dbServerUsername: $clientDbMasterDetail['dbServerUsername'],
+				dbServerPassword: $clientDbMasterDetail['dbServerPassword'],
+				dbServerDb: $clientDbMasterDetail['dbServerDb']
 			);
 
 			// Groups
-			$dbServerObj->execDbQuery(
+			$clientDbObj->execDbQuery(
 				sql: "
 					SELECT
 						 *
@@ -111,15 +126,15 @@ class Reload
 					",
 				paramArr: []
 			);
-			$gRowArr = $dbServerObj->fetchAll();
-			$dbServerObj->closeCursor();
+			$gRowArr = $clientDbObj->fetchAll();
+			$clientDbObj->closeCursor();
 
 			foreach ($gRowArr as $gRow) {
 				$g_key = CacheServerKey::customerGroup(
 					cID: $cRow['id'],
 					gID: $gRow['id']
 				);
-				DbCommonFunction::$gCacheServer->cacheSet(cacheKey: $g_key, value: json_encode(value: $gRow));
+				$clientCacheObj->cacheSet(cacheKey: $g_key, value: json_encode(value: $gRow));
 				if ($gRow['allowed_cidr'] !== null) {
 					$cidrIpNumberRangeArr = CommonFunction::cidrStringIpNumberRange(cidrString: $gRow['allowed_cidr']);
 					if (count(value: $cidrIpNumberRangeArr) > 0) {
@@ -127,7 +142,7 @@ class Reload
 							cID: $cRow['id'],
 							gID: $gRow['id']
 						);
-						DbCommonFunction::$gCacheServer->cacheSet(
+						$clientCacheObj->cacheSet(
 							cacheKey: $cidrKey,
 							value: json_encode(value: $cidrIpNumberRangeArr)
 						);
@@ -136,7 +151,7 @@ class Reload
 			}
 
 			// User
-			$dbServerObj->execDbQuery(
+			$clientDbObj->execDbQuery(
 				sql: "
 					SELECT
 						 *
@@ -145,8 +160,8 @@ class Reload
 					",
 				paramArr: []
 			);
-			$uRowArr = $dbServerObj->fetchAll();
-			$dbServerObj->closeCursor();
+			$uRowArr = $clientDbObj->fetchAll();
+			$clientDbObj->closeCursor();
 			foreach ($uRowArr as $uRow) {
 				if ($uRow['allowed_cidr'] !== null) {
 					$uCidrIpNumberRangeArr = CommonFunction::cidrStringIpNumberRange(cidrString: $uRow['allowed_cidr']);
@@ -155,7 +170,7 @@ class Reload
 							cID: $cRow['id'],
 							uID: $uRow['id']
 						);
-						DbCommonFunction::$gCacheServer->cacheSet(
+						$clientCacheObj->cacheSet(
 							cacheKey: $uCidrKey,
 							value: json_encode(value: $uCidrIpNumberRangeArr)
 						);
@@ -165,7 +180,7 @@ class Reload
 					cID: $cRow['id'],
 					username: $uRow['username']
 				);
-				DbCommonFunction::$gCacheServer->cacheSet(
+				$clientCacheObj->cacheSet(
 					cacheKey: $cu_key,
 					value: json_encode(value: $uRow)
 				);
@@ -173,17 +188,5 @@ class Reload
 		}
 
 		return true;
-	}
-
-	/**
-	 * Remove token from cache
-	 *
-	 * @param string $token Token to be delete from cache
-	 *
-	 * @return void
-	 */
-	private function processToken($token): void
-	{
-		DbCommonFunction::$gCacheServer->cacheDelete(cacheKey: CacheServerKey::token(token: $token));
 	}
 }

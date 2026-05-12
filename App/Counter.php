@@ -50,7 +50,7 @@ class Counter
 			case 'Cache':
 				$cacheKey = Env::$gCounter;
 				DbCommonFunction::connectGlobalCache();
-				$id = DbCommonFunction::$gCacheServer->cacheIncrement(cacheKey: $cacheKey);
+				$id = $this->http->req->clientCacheObj->cacheIncrement(cacheKey: $cacheKey);
 				break;
 			case 'Database':
 				DbCommonFunction::connectGlobalDb();

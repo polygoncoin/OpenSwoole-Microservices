@@ -111,19 +111,19 @@ class Password implements CustomInterface
 				cID: $cID,
 				username: $userName
 			);
-			if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $cu_key)) {
+			if ($this->http->req->clientCacheObj->cacheExist(cacheKey: $cu_key)) {
 				$uDetail = json_decode(
-					json: DbCommonFunction::$gCacheServer->cacheGet(
+					json: $this->http->req->clientCacheObj->cacheGet(
 						cacheKey: $cu_key
 					),
 					associative: true
 				);
 				$uDetail['password_hash'] = $newPasswordHash;
-				DbCommonFunction::$gCacheServer->cacheSet(
+				$this->http->req->clientCacheObj->cacheSet(
 					cacheKey: $cu_key,
 					value: json_encode(value: $uDetail)
 				);
-				DbCommonFunction::$gCacheServer->cacheDelete(
+				$this->http->req->clientCacheObj->cacheDelete(
 					cacheKey: CacheServerKey::token(token: $this->http->req->s['token'])
 				);
 			}

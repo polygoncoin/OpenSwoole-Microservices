@@ -12,15 +12,6 @@ To enable Rate Limiting checks one can do this as below in .env.rateLimiting
 enableRateLimiting=0                    ; 1 = true / 0 = false in
 ```
 
-## Configure Rate Limiting Server detail (Memcached / Redis)
-
-```ini
-; Supported Container - Memcached / Redis without AUTH
-rateLimitServerType='Memcached'         ; Redis/Memcached host dealing for Rate limit
-rateLimitServerHostname='127.0.0.1'     ; Redis host dealing with Rate limit
-rateLimitServerPort=11211               ; Redis-6379 / Memcached-11211
-```
-
 ## Enable Rate Limiting at respective function level
 
 ```ini

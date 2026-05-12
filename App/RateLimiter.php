@@ -17,6 +17,7 @@ namespace Microservices\App;
 
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
+use Microservices\App\Http;
 
 /**
  * Rate Limiter
@@ -33,29 +34,28 @@ use Microservices\App\Env;
 class RateLimiter
 {
 	/**
-	 * Caching object
+	 * HTTP object
 	 *
-	 * @var null|Object
+	 * @var null|Http
 	 */
-	public $cacheServerObj = null;
+	private $http = null;
 
 	/**
 	 * Constructor
+	 *
+	 * @param Http $http
 	 */
-	public function __construct()
+	public function __construct(Http &$http)
 	{
+		$this->http = &$http;
+
 		if (!Env::$enableRateLimiting) {
 			return;
 		}
 
-		$this->cacheServerObj = DbCommonFunction::connectCache(
-			cacheServerType: Env::$rateLimitServerType,
-			cacheServerHostname: Env::$rateLimitServerHostname,
-			cacheServerPort: Env::$rateLimitServerPort,
-			cacheServerUsername: '',
-			cacheServerPassword: '',
-			cacheServerDb: '',
-			cacheServerTable: ''
+		$this->http->req->clientCacheObj = DbCommonFunction::connectClientCache(
+			req: $this->http->req,
+			fetchFrom: 'Master'
 		);
 	}
 
@@ -76,7 +76,7 @@ class RateLimiter
 		$rateLimitKey
 	): array {
 		if (
-			$this->cacheServerObj === null
+			$this->http->req->clientCacheObj === null
 			&& (!Env::$enableRateLimiting)
 		) {
 			return [
@@ -94,13 +94,13 @@ class RateLimiter
 
 		$rateLimitKey = $prefix . $rateLimitKey;
 
-		if ($this->cacheServerObj->cacheExist($rateLimitKey)) {
-			$requestCount = (int)$this->cacheServerObj->cacheGet(
+		if ($this->http->req->clientCacheObj->cacheExist($rateLimitKey)) {
+			$requestCount = (int)$this->http->req->clientCacheObj->cacheGet(
 				cacheKey: $rateLimitKey
 			);
 		} else {
 			$requestCount = 0;
-			$this->cacheServerObj->cacheSet(
+			$this->http->req->clientCacheObj->cacheSet(
 				cacheKey: $rateLimitKey,
 				value: $requestCount,
 				expire: $remainder
@@ -113,7 +113,7 @@ class RateLimiter
 		$resetOn = Env::$timestamp + $remainder;
 
 		if ($allowed) {
-			$this->cacheServerObj->cacheIncrement(cacheKey: $rateLimitKey);
+			$this->http->req->clientCacheObj->cacheIncrement(cacheKey: $rateLimitKey);
 		}
 
 		return [

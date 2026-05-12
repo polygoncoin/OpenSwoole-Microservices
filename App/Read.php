@@ -706,7 +706,7 @@ class Read
 		$exportDbDetail = [];
 		switch ($serverMode) {
 			case 'Master':
-				$exportDbDetail = DbCommonFunction::dbMasterDetail($this->http->req);
+				$exportDbDetail = DbCommonFunction::clientDbMasterDetail($this->http->req);
 				break;
 			case 'Slave':
 				$exportDbDetail = DbCommonFunction::dbSlaveDetail($this->http->req);

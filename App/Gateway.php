@@ -16,6 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\CommonFunction;
+use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
@@ -35,13 +36,6 @@ use Microservices\App\RateLimiter;
  */
 class Gateway
 {
-	/**
-	 * CIDR checked boolean flag
-	 *
-	 * @var bool
-	 */
-	public $cidrChecked = false;
-
 	/**
 	 * Rate Limiter
 	 *
@@ -96,7 +90,7 @@ class Gateway
 	 */
 	private function rateLimitRequest(): void
 	{
-		$this->rateLimiter = new RateLimiter();
+		$this->rateLimiter = new RateLimiter($this->http);
 
 		// Customer Rate Limiting
 		$this->rateLimitCustomer();
@@ -114,10 +108,7 @@ class Gateway
 
 		// Rate limit open traffic (not limited by allowed IPs/CIDR and allowed
 		// Rate Limit to user)
-		if (
-			$this->cidrChecked === false
-			&& $this->rateLimitChecked === false
-		) {
+		if ($this->rateLimitChecked === false) {
 			// IP Rate Limiting
 			$this->rateLimitIp();
 		}
@@ -179,24 +170,32 @@ class Gateway
 			return;
 		}
 
-		$cCidrKey = CacheServerKey::customerCidr(
-			cID: $this->http->req->cID
+		CommonFunction::checkCacheCidr(
+			cacheObj: DbCommonFunction::$gCacheServer,
+			IP: $this->http->httpReqDetailArr['server']['httpRequestIP'],
+			cidrCacheKey: CacheServerKey::customerCidr(
+				cID: $this->http->req->cID
+			)
 		);
-		$gCidrKey = CacheServerKey::customerGroupCidr(
-			cID: $this->http->req->cID,
-			gID: $this->http->req->gID
-		);
-		$uCidrKey = CacheServerKey::customerUserCidr(
-			cID: $this->http->req->cID,
-			uID: $this->http->req->uID
-		);
-		foreach ([$cCidrKey, $gCidrKey, $uCidrKey] as $cacheKey) {
-			if (!$this->cidrChecked) {
-				$this->cidrChecked = CommonFunction::checkCacheCidr(
-					IP: $this->http->httpReqDetailArr['server']['httpRequestIP'],
-					cidrCacheKey: $cacheKey
-				);
-			}
+
+		if ($this->http !== null) {
+			CommonFunction::checkCacheCidr(
+				cacheObj: $this->http->req->clientCacheObj,
+				IP: $this->http->httpReqDetailArr['server']['httpRequestIP'],
+				cidrCacheKey: CacheServerKey::customerGroupCidr(
+					cID: $this->http->req->cID,
+					gID: $this->http->req->gID
+				)
+			);
+
+			CommonFunction::checkCacheCidr(
+				cacheObj: $this->http->req->clientCacheObj,
+				IP: $this->http->httpReqDetailArr['server']['httpRequestIP'],
+				cidrCacheKey: CacheServerKey::customerUserCidr(
+					cID: $this->http->req->cID,
+					uID: $this->http->req->uID
+				)
+			);
 		}
 	}
 

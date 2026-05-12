@@ -62,6 +62,13 @@ class HttpRequest
 	private $http = null;
 
 	/**
+	 * Client Cache Object
+	 *
+	 * @var null|object
+	 */
+	public $clientCacheObj = null;
+
+	/**
 	 * Client DB Object
 	 *
 	 * @var null|object
@@ -164,8 +171,8 @@ class HttpRequest
 							uID: $this->uID
 						);
 						$sessionID = session_id();
-						if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $userConcurrencyKey)) {
-							$userConcurrencyKeyData = DbCommonFunction::$gCacheServer->cacheGet(
+						if ($this->http->req->clientCacheObj->cacheExist(cacheKey: $userConcurrencyKey)) {
+							$userConcurrencyKeyData = $this->http->req->clientCacheObj->cacheGet(
 								cacheKey: $userConcurrencyKey
 							);
 							if ($userConcurrencyKeyData !== $sessionID) {

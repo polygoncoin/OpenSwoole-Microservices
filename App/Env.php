@@ -134,10 +134,6 @@ class Env
 	public static $enableRateLimitForUserPerIp = null;
 	public static $enableRateLimitForUserRequest = null;
 
-	public static $rateLimitServerType = null;
-	public static $rateLimitServerHostname = null;
-	public static $rateLimitServerPort = null;
-
 	public static $rateLimitIPPrefix = null;
 	public static $rateLimitCustomerPrefix = null;
 	public static $rateLimitGroupPrefix = null;
@@ -280,10 +276,6 @@ class Env
 		self::$enableRateLimitForRoute = (bool)((int)getenv(name: 'enableRateLimitForRoute'));
 		self::$enableRateLimitForUserPerIp = (bool)((int)getenv(name: 'enableRateLimitForUserPerIp'));
 		self::$enableRateLimitForUserRequest = (bool)((int)getenv(name: 'enableRateLimitForUserRequest'));
-
-		self::$rateLimitServerType = getenv(name: 'rateLimitServerType');
-		self::$rateLimitServerHostname = getenv(name: 'rateLimitServerHostname');
-		self::$rateLimitServerPort = (int)getenv(name: 'rateLimitServerPort');
 
 		self::$rateLimitIPPrefix = getenv(name: 'rateLimitIPPrefix');
 		self::$rateLimitCustomerPrefix = getenv(name: 'rateLimitCustomerPrefix');

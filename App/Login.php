@@ -111,7 +111,7 @@ class Login
 		$this->validatePassword();
 
 		if (Env::$enableRateLimitForUserPerIp) {
-			$rateLimiter = new RateLimiter();
+			$rateLimiter = new RateLimiter($this->http);
 			$result = $rateLimiter->check(
 				prefix: Env::$rateLimitUserPerIpPrefix,
 				maxRequest: Env::$rateLimitMaxUserPerIp,
@@ -184,6 +184,8 @@ class Login
 	 */
 	private function loadUserDetail(): void
 	{
+		$this->http->req->clientCacheObj = DbCommonFunction::connectClientCache($this->http->req, fetchFrom: 'Master');
+
 		$cID = $this->http->req->cID;
 		$customerUserKey = CacheServerKey::customerUsername(
 			cID: $cID,
@@ -226,25 +228,32 @@ class Login
 	{
 		$ipNumber = ip2long(ip: $this->http->httpReqDetailArr['server']['httpRequestIP']);
 
-		$cCidrKey = CacheServerKey::customerCidr(
-			cID: $this->http->req->cID
+		CommonFunction::checkCacheCidr(
+			cacheObj: DbCommonFunction::$gCacheServer,
+			IP: $this->http->httpReqDetailArr['server']['httpRequestIP'],
+			cidrCacheKey: CacheServerKey::customerCidr(
+				cID: $this->http->req->cID
+			)
 		);
-		$gCidrKey = CacheServerKey::customerGroupCidr(
-			cID: $this->http->req->cID,
-			gID: $this->http->req->gID
-		);
-		$uCidrKey = CacheServerKey::customerUserCidr(
-			cID: $this->http->req->cID,
-			uID: $this->http->req->uID
-		);
-		$cidrChecked = false;
-		foreach ([$cCidrKey, $gCidrKey, $uCidrKey] as $cacheKey) {
-			if (!$cidrChecked) {
-				$cidrChecked = CommonFunction::checkCacheCidr(
-					IP: $this->http->httpReqDetailArr['server']['httpRequestIP'],
-					cidrCacheKey: $cacheKey
-				);
-			}
+
+		if ($this->http !== null) {
+			CommonFunction::checkCacheCidr(
+				cacheObj: $this->http->req->clientCacheObj,
+				IP: $this->http->httpReqDetailArr['server']['httpRequestIP'],
+				cidrCacheKey: CacheServerKey::customerGroupCidr(
+					cID: $this->http->req->cID,
+					gID: $this->http->req->gID
+				)
+			);
+
+			CommonFunction::checkCacheCidr(
+				cacheObj: $this->http->req->clientCacheObj,
+				IP: $this->http->httpReqDetailArr['server']['httpRequestIP'],
+				cidrCacheKey: CacheServerKey::customerUserCidr(
+					cID: $this->http->req->cID,
+					uID: $this->http->req->uID
+				)
+			);
 		}
 	}
 
@@ -256,7 +265,7 @@ class Login
 	 */
 	private function validatePassword(): void
 	{
-		$rateLimiter = new RateLimiter();
+		$rateLimiter = new RateLimiter($this->http);
 		$result = $rateLimiter->check(
 			prefix: Env::$rateLimitUserLoginPrefix,
 			maxRequest: Env::$rateLimitMaxUserLoginRequest,
@@ -667,7 +676,7 @@ class Login
 	 * @return mixed
 	 */
 	private function cacheExist($cacheKey) {
-		return DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $cacheKey);
+		return $this->http->req->clientCacheObj->cacheExist(cacheKey: $cacheKey);
 	}
 
 	/**
@@ -678,7 +687,7 @@ class Login
 	 * @return mixed
 	 */
 	private function cacheGet($cacheKey) {
-		return DbCommonFunction::$gCacheServer->cacheGet(cacheKey: $cacheKey);
+		return $this->http->req->clientCacheObj->cacheGet(cacheKey: $cacheKey);
 	}
 
 	/**
@@ -691,7 +700,7 @@ class Login
 	 * @return mixed
 	 */
 	private function cacheSet($cacheKey, $value, $expire = 0) {
-		return DbCommonFunction::$gCacheServer->cacheSet(
+		return $this->http->req->clientCacheObj->cacheSet(
 			cacheKey: $cacheKey,
 			value: $value,
 			expire: $expire
@@ -706,6 +715,6 @@ class Login
 	 * @return mixed
 	 */
 	private function cacheDelete($cacheKey) {
-		return DbCommonFunction::$gCacheServer->cacheDelete(cacheKey: $cacheKey);
+		return $this->http->req->clientCacheObj->cacheDelete(cacheKey: $cacheKey);
 	}
 }

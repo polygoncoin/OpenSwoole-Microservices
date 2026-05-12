@@ -167,20 +167,21 @@ class CommonFunction
 	/**
 	 * Check IP with CIDR based on cache key containing start and end IP number
 	 *
+	 * @param object $cacheObj     Cache Server object
 	 * @param string $IP           $this->http->httpReqDetailArr['server']['httpRequestIP']
 	 * @param string $cidrCacheKey Cache Key(s)
 	 *
-	 * @return null|bool
+	 * @return void
 	 * @throws \Exception
 	 */
-	public static function checkCacheCidr($IP, $cidrCacheKey): null|bool
+	public static function checkCacheCidr($cacheObj, $IP, $cidrCacheKey): void
 	{
-		if (!DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $cidrCacheKey)) {
-			return false;
+		if (!$cacheObj->cacheExist(cacheKey: $cidrCacheKey)) {
+			return;
 		}
 
 		$cidrIpNumberRangeArr = json_decode(
-			json: DbCommonFunction::$gCacheServer->cacheGet(
+			json: $cacheObj->cacheGet(
 				cacheKey: $cidrCacheKey
 			),
 			associative: true
@@ -192,8 +193,6 @@ class CommonFunction
 				code: HttpStatus::$BadRequest
 			);
 		}
-
-		return true;
 	}
 
 	/**

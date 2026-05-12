@@ -73,8 +73,8 @@ $server->on(
 		$httpReqDetailArr = [];
 
 		$httpReqDetailArr['streamData'] = true;
-		$httpReqDetailArr['server']['domainName'] = 'api.customer001.localhost'; // Auth
-		// $httpReqDetailArr['server']['domainName'] = 'localhost'; // Open
+		// $httpReqDetailArr['server']['domainName'] = 'api.customer001.localhost'; // Auth
+		$httpReqDetailArr['server']['domainName'] = 'localhost'; // Open
 		$httpReqDetailArr['server']['httpMethod'] = $request->server['request_method'];
 
 		if (

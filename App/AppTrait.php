@@ -848,14 +848,14 @@ trait AppTrait
 			isset($sqlConfig['referrerLagWindow'])
 			&& count($sqlConfig['referrerLagWindow']) > 0
 		) {
-			if (!DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $customerUserReferrerLagKey)) {
+			if (!$this->http->req->clientCacheObj->cacheExist(cacheKey: $customerUserReferrerLagKey)) {
 				throw new \Exception(
 					message: 'Referrer lag not initiated',
 					code: HttpStatus::$BadRequest
 				);
 			}
 			$referrerLagDetail = json_decode(
-				json: DbCommonFunction::$gCacheServer->cacheGet(
+				json: $this->http->req->clientCacheObj->cacheGet(
 					cacheKey: $customerUserReferrerLagKey
 				),
 				associative: true
@@ -876,13 +876,13 @@ trait AppTrait
 								if ($tsDiff <= $referrerSqlConfig['maximumReferrerLagWindow']) {
 									$found = true;
 								} else {
-									DbCommonFunction::$gCacheServer->cacheDelete(cacheKey: $customerUserReferrerLagKey);
+									$this->http->req->clientCacheObj->cacheDelete(cacheKey: $customerUserReferrerLagKey);
 								}
 							} else {
 								$found = true;
 							}
 						} else {
-							DbCommonFunction::$gCacheServer->cacheDelete(cacheKey: $customerUserReferrerLagKey);
+							$this->http->req->clientCacheObj->cacheDelete(cacheKey: $customerUserReferrerLagKey);
 						}
 					}
 				}
@@ -899,8 +899,8 @@ trait AppTrait
 			isset($sqlConfig['enableReferrerLag'])
 			&& $sqlConfig['enableReferrerLag'] === true
 		) {
-			if (!DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $customerUserReferrerLagKey)) {
-				DbCommonFunction::$gCacheServer->cacheSet(
+			if (!$this->http->req->clientCacheObj->cacheExist(cacheKey: $customerUserReferrerLagKey)) {
+				$this->http->req->clientCacheObj->cacheSet(
 					cacheKey: $customerUserReferrerLagKey,
 					value: json_encode(value: [
 						'initRoute' => $this->http->req->rParser->configuredRoute,
@@ -956,10 +956,10 @@ trait AppTrait
 
 				$hash = json_encode(value: $payloadSignature);
 				$hashKey = md5(string: $hash);
-				if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $hashKey)) {
+				if ($this->http->req->clientCacheObj->cacheExist(cacheKey: $hashKey)) {
 					$hashJson = str_replace(
 						search: 'JSON',
-						replace: DbCommonFunction::$gCacheServer->cacheGet(cacheKey: $hashKey),
+						replace: $this->http->req->clientCacheObj->cacheGet(cacheKey: $hashKey),
 						subject: '{"Idempotent": JSON, "Status": 200}'
 					);
 				}
@@ -998,13 +998,13 @@ trait AppTrait
 			$hash = json_encode(value: $payloadSignature);
 			$hashKey = 'LAG:' . md5(string: $hash);
 
-			if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $hashKey)) {
-				$noOfRequest = DbCommonFunction::$gCacheServer->cacheGet(cacheKey: $hashKey);
+			if ($this->http->req->clientCacheObj->cacheExist(cacheKey: $hashKey)) {
+				$noOfRequest = $this->http->req->clientCacheObj->cacheGet(cacheKey: $hashKey);
 			} else {
 				$noOfRequest = 0;
 			}
 
-			DbCommonFunction::$gCacheServer->cacheSet(
+			$this->http->req->clientCacheObj->cacheSet(
 				cacheKey: $hashKey,
 				value: ++$noOfRequest,
 				expire: 3600
@@ -1044,7 +1044,7 @@ trait AppTrait
 		$rateLimitKey
 	): bool {
 		if ($this->rateLimiter === null) {
-			$this->rateLimiter = new RateLimiter($this->http->req);
+			$this->rateLimiter = new RateLimiter($this->http);
 		}
 
 		try {
