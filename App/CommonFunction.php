@@ -15,6 +15,8 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Server\CacheServer\CacheServerInterface;
+
 /**
  * Common Function File
  * php version 8.3
@@ -167,9 +169,9 @@ class CommonFunction
 	/**
 	 * Check IP with CIDR based on cache key containing start and end IP number
 	 *
-	 * @param object $cacheObj     Cache Server object
-	 * @param string $IP           $this->http->httpReqDetailArr['server']['httpRequestIP']
-	 * @param string $cidrCacheKey Cache Key(s)
+	 * @param CacheServerInterface $cacheObj     Cache Server object
+	 * @param string               $IP           $this->http->httpReqDetailArr['server']['httpRequestIP']
+	 * @param string               $cidrCacheKey Cache Key(s)
 	 *
 	 * @return void
 	 * @throws \Exception

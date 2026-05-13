@@ -147,14 +147,14 @@ INSERT INTO `user` SET `firstname` = ?;
 Below settings are not to be configured in any table. They are used as it is. Only need to make required config value changes in below.
 
 ```ini
-; Supported Container - Redis / Memcached / MySql / PostgreSql / MongoDb
+; Supported Container - Redis / Memcached / MongoDb
 queryCacheServerType='Redis'
 queryCacheServerHostname='127.0.0.1'
 queryCacheServerPort=6379
 queryCacheServerUsername='username'
 queryCacheServerPassword='password'
 queryCacheServerDb=0
-queryCacheServerTable='api_cache' ; For MySql / PostgreSql / MongoDb
+queryCacheServerTable='api_cache' ; For MongoDb
 ```
 
 ## Contributing

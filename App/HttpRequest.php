@@ -25,6 +25,8 @@ use Microservices\App\Http;
 use Microservices\App\HttpStatus;
 use Microservices\App\Middleware\Auth;
 use Microservices\App\RouteParser;
+use Microservices\App\Server\CacheServer\CacheServerInterface;
+use Microservices\App\Server\DatabaseServer\DatabaseServerInterface;
 
 /**
  * HTTP request
@@ -48,7 +50,7 @@ class HttpRequest
 	public $auth = null;
 
 	/**
-	 * JSON Decode object
+	 * Data Decode object
 	 *
 	 * @var null|DataDecode
 	 */
@@ -64,14 +66,14 @@ class HttpRequest
 	/**
 	 * Client Cache Object
 	 *
-	 * @var null|object
+	 * @var null|CacheServerInterface
 	 */
 	public $clientCacheObj = null;
 
 	/**
 	 * Client DB Object
 	 *
-	 * @var null|object
+	 * @var null|DatabaseServerInterface
 	 */
 	public $clientDbObj = null;
 

@@ -55,7 +55,7 @@ class Supplement
 	private $operateAsTransaction = null;
 
 	/**
-	 * JSON Encode object
+	 * Data Encode object
 	 *
 	 * @var null|DataEncode
 	 */

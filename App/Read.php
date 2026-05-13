@@ -48,7 +48,7 @@ class Read
 	private $hook = null;
 
 	/**
-	 * JSON Encode object
+	 * Data Encode object
 	 *
 	 * @var null|DataEncode
 	 */

@@ -18,6 +18,7 @@ namespace Microservices\App;
 use Microservices\App\Constant;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
+use Microservices\Hook\HookInterface;
 
 /**
  * Executes configured hooks
@@ -39,6 +40,13 @@ class Hook
 	 * @var null|Http
 	 */
 	private $http = null;
+
+	/**
+	 * Hook object
+	 *
+	 * @var null|HookInterface
+	 */
+	private $hookObj = null;
 
 	/**
 	 * Constructor
@@ -67,9 +75,9 @@ class Hook
 					. DIRECTORY_SEPARATOR . $hook . '.php';
 				if (file_exists(filename: $hookFile)) {
 					$hookClass = 'Microservices\\Hook\\' . $hook;
-					$hookObj = new $hookClass($this->http);
-					if ($hookObj->init()) {
-						$hookObj->process();
+					$this->hookObj = new $hookClass($this->http);
+					if ($this->hookObj->init()) {
+						$this->hookObj->process();
 					}
 				} else {
 					throw new \Exception(

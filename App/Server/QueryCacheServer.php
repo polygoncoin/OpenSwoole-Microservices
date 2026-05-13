@@ -122,14 +122,12 @@ class QueryCacheServer
                 $this->queryCacheServerType, [
                     'Redis',
                     'Memcached',
-                    'MongoDb',
-                    'MySql',
-                    'PostgreSql'
+                    'MongoDb'
                 ]
             )
         ) {
 			throw new \Exception(
-				message: 'Invalid query cache type',
+				message: 'Invalid Query Cache mode: ' . $this->queryCacheServerType,
 				code: HttpStatus::$InternalServerError
 			);
 		}

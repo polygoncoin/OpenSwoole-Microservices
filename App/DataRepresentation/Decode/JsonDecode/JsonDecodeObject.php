@@ -16,7 +16,7 @@
 namespace Microservices\App\DataRepresentation\Decode\JsonDecode;
 
 /**
- * JSON object
+ * JSON Decode Object
  * php version 8.3
  *
  * @category  JSON_Decode_Object

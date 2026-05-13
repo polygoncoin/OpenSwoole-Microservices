@@ -21,6 +21,9 @@ use Microservices\App\HttpStatus;
 use Microservices\App\Server\CacheServer;
 use Microservices\App\Server\DatabaseServer;
 use Microservices\App\Server\QueryCacheServer;
+use Microservices\App\Server\CacheServer\CacheServerInterface;
+use Microservices\App\Server\DatabaseServer\DatabaseServerInterface;
+use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
 
 /**
  * DB Common Function
@@ -39,7 +42,7 @@ class DbCommonFunction
 	/**
 	 * Query Cache Connection Object
 	 *
-	 * @var null|Object
+	 * @var null|QueryCacheServerInterface
 	 */
 	private static $queryCacheServer = null;
 
@@ -47,7 +50,7 @@ class DbCommonFunction
 	/**
 	 * Global
 	 *
-	 * @var null|Object
+	 * @var null|DatabaseServerInterface
 	 */
 	public static $gDbServer = null;
 
@@ -55,7 +58,7 @@ class DbCommonFunction
 	/**
 	 * Global
 	 *
-	 * @var null|Object
+	 * @var null|CacheServerInterface
 	 */
 	public static $gCacheServer = null;
 
@@ -70,7 +73,7 @@ class DbCommonFunction
 	 * @param null|string $cacheServerDb       Cache Server Database
 	 * @param null|string $cacheServerTable    Cache Server Table
 	 *
-	 * @return object
+	 * @return CacheServerInterface
 	 */
 	public static function connectCache(
 		$cacheServerType,
@@ -80,7 +83,7 @@ class DbCommonFunction
 		$cacheServerPassword,
 		$cacheServerDb,
 		$cacheServerTable
-	): object {
+	): CacheServerInterface {
 		$cacheServer = new CacheServer(
 			cacheServerType: $cacheServerType,
 			cacheServerHostname: $cacheServerHostname,
@@ -121,10 +124,10 @@ class DbCommonFunction
 	 * @param HttpRequest $req
 	 * @param string      $fetchFrom Master/Slave
 	 *
-	 * @return object
+	 * @return CacheServerInterface
 	 * @throws \Exception
 	 */
-	public static function connectClientCache(&$req, $fetchFrom): object
+	public static function connectClientCache(&$req, $fetchFrom): CacheServerInterface
 	{
 		if ($req->s['cDetail'] === null) {
 			throw new \Exception(
@@ -203,7 +206,7 @@ class DbCommonFunction
 	 * @param string      $dbServerPassword Database Server Password
 	 * @param null|string $dbServerDb       Database Server Database
 	 *
-	 * @return object
+	 * @return DatabaseServerInterface
 	 */
 	public static function connectDb(
 		$dbServerType,
@@ -212,7 +215,7 @@ class DbCommonFunction
 		$dbServerUsername,
 		$dbServerPassword,
 		$dbServerDb
-	): object {
+	): DatabaseServerInterface {
 		$dbServer = new DatabaseServer(
 			dbServerType: $dbServerType,
 			dbServerHostname: $dbServerHostname,
@@ -251,10 +254,10 @@ class DbCommonFunction
 	 * @param HttpRequest $req
 	 * @param string      $fetchFrom Master/Slave
 	 *
-	 * @return object
+	 * @return DatabaseServerInterface
 	 * @throws \Exception
 	 */
-	public static function connectClientDb(&$req, $fetchFrom): object
+	public static function connectClientDb(&$req, $fetchFrom): DatabaseServerInterface
 	{
 		if ($req->s['cDetail'] === null) {
 			throw new \Exception(
