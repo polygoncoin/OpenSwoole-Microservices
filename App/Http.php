@@ -51,16 +51,16 @@ class Http
 	 *
 	 * @var null|array
 	 */
-	public $httpReqDetailArr = null;
+	public $httpReqData = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param array $httpReqDetailArr
+	 * @param array $httpReqData
 	 */
-	public function __construct(&$httpReqDetailArr)
+	public function __construct(&$httpReqData)
 	{
-		$this->httpReqDetailArr = &$httpReqDetailArr;
+		$this->httpReqData = &$httpReqData;
 	}
 
 	/**

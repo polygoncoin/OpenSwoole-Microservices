@@ -56,14 +56,14 @@ class Export
 	public $unlink = true;
 
 	/**
-	 * DB Engine
+	 * Database Engine
 	 *
 	 * @var null|string
 	 */
 	public $dbServerType = null;
 
 	/**
-	 * DB Object
+	 * Database Object
 	 *
 	 * @var null|ExportDatabaseServer
 	 */
@@ -98,7 +98,7 @@ class Export
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
-	 * @param null|string $dbServerDb       Database Server Database
+	 * @param null|string $dbServerDatabase Database Server Database
 	 *
 	 * @return void
 	 */
@@ -107,7 +107,7 @@ class Export
 		$dbServerPort,
 		$dbServerUsername,
 		$dbServerPassword,
-		$dbServerDb
+		$dbServerDatabase
 	): void
 	{
 		$this->exportDbServerObj->init(
@@ -115,7 +115,7 @@ class Export
 			dbServerPort: $dbServerPort,
 			dbServerUsername: $dbServerUsername,
 			dbServerPassword: $dbServerPassword,
-			dbServerDb: $dbServerDb
+			dbServerDatabase: $dbServerDatabase
 		);
 		$this->validateConnection();
 	}

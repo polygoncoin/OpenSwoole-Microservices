@@ -36,7 +36,7 @@ class CacheServerKey
 	 *
 	 * @return string
 	 */
-	public static function openToWebDomain(&$domainName): string
+	public static function openDomain(&$domainName): string
 	{
 		return "otw:{$domainName}";
 	}
@@ -48,7 +48,7 @@ class CacheServerKey
 	 *
 	 * @return string
 	 */
-	public static function closedToWebDomain($domainName): string
+	public static function authDomain($domainName): string
 	{
 		return "ctw:{$domainName}";
 	}
@@ -56,65 +56,65 @@ class CacheServerKey
 	/**
 	 * Get Customer user username key
 	 *
-	 * @param int    $cID      Customer id
-	 * @param string $username Username
+	 * @param int    $customerId Customer Id
+	 * @param string $username   Username
 	 *
 	 * @return string
 	 */
-	public static function customerUsername($cID, $username): string
+	public static function customerUsername($customerId, $username): string
 	{
-		return "c:{$cID}:u:{$username}";
+		return "c:{$customerId}:u:{$username}";
 	}
 
 	/**
 	 * Get Group key
 	 *
-	 * @param int $cID Customer id
-	 * @param int $gID Group id
+	 * @param int $customerId Customer Id
+	 * @param int $groupId    Group Id
 	 *
 	 * @return string
 	 */
-	public static function customerGroup($cID, $gID): string
+	public static function customerGroup($customerId, $groupId): string
 	{
-		return "c:{$cID}:g:{$gID}";
+		return "c:{$customerId}:g:{$groupId}";
 	}
 
 	/**
 	 * Get Customer CIDR key
 	 *
-	 * @param int $cID Customer id
+	 * @param int $customerId Customer Id
 	 *
 	 * @return string
 	 */
-	public static function customerCidr($cID): string
+	public static function customerCidr($customerId): string
 	{
-		return "c:{$cID}:cidr";
+		return "c:{$customerId}:cidr";
 	}
 
 	/**
 	 * Get Customer group CIDR key
 	 *
-	 * @param int $cID Customer id
-	 * @param int $gID Group id
+	 * @param int $customerId Customer Id
+	 * @param int $groupId    Group Id
 	 *
 	 * @return string
 	 */
-	public static function customerGroupCidr($cID, $gID): string
+	public static function customerGroupCidr($customerId, $groupId): string
 	{
-		return "c:{$cID}:g:{$gID}:cidr";
+		return "c:{$customerId}:g:{$groupId}:cidr";
 	}
 
 	/**
 	 * Get Customer user CIDR key
 	 *
-	 * @param int $cID Customer id
-	 * @param int $uID User id
+	 * @param int $customerId Customer Id
+	 * @param int $userId     User Id
 	 *
 	 * @return string
 	 */
-	public static function customerUserCidr($cID, $uID): string
+	public static function customerUserCidr($customerId, $userId): string
 	{
-		return "c:{$cID}:u:{$uID}:cidr";
+		return "c:{$customerId}:u:{$userId}:cidr";
 	}
 
 	/**
@@ -132,52 +132,52 @@ class CacheServerKey
 	/**
 	 * Get Customer user Token key
 	 *
-	 * @param int $cID Customer id
-	 * @param int $uID User id
+	 * @param int $customerId Customer Id
+	 * @param int $userId     User Id
 	 *
 	 * @return string
 	 */
-	public static function customerUserToken($cID, $uID): string
+	public static function customerUserToken($customerId, $userId): string
 	{
-		return "c:{$cID}:u:{$uID}:token";
+		return "c:{$customerId}:u:{$userId}:token";
 	}
 
 	/**
 	 * Get Customer user Session id key
 	 *
-	 * @param int $cID Customer id
-	 * @param int $uID User id
+	 * @param int $customerId Customer Id
+	 * @param int $userId     User Id
 	 *
 	 * @return string
 	 */
-	public static function customerUserSessionId($cID, $uID): string
+	public static function customerUserSessionId($customerId, $userId): string
 	{
-		return "c:{$cID}:u:{$uID}:sID";
+		return "c:{$customerId}:u:{$userId}:sId";
 	}
 
 	/**
 	 * Get key maintaining concurrency interval(active session) for current user
 	 *
-	 * @param int $cID Customer id
-	 * @param int $uID User id
+	 * @param int $customerId Customer Id
+	 * @param int $userId     User Id
 	 *
 	 * @return string
 	 */
-	public static function customerUserConcurrency($cID, $uID): string
+	public static function customerUserConcurrency($customerId, $userId): string
 	{
-		return "c:{$cID}:u:{$uID}:con";
+		return "c:{$customerId}:u:{$userId}:con";
 	}
 
 	/**
 	 * Get Customer user Referrer lag key
 	 *
-	 * @param int $cID Customer id
-	 * @param int $uID User id
+	 * @param int $customerId Customer Id
+	 * @param int $userId     User Id
 	 *
 	 * @return string
 	 */
-	public static function customerUserReferrerLag($cID, $uID): string
+	public static function customerUserReferrerLag($customerId, $userId): string
 	{
-		return "c:{$cID}:u:{$uID}:rlag";
+		return "c:{$customerId}:u:{$userId}:rlag";
 	}
 }

@@ -145,7 +145,7 @@ class Supplement
 				$headerArr['Expires'] = '0';
 
 				$csv = $this->processImportSqlConfig(
-					wSqlConfig: $wSqlConfig,
+					writeSqlConfig: $writeSqlConfig,
 					useHierarchy: $useHierarchy
 				);
 
@@ -178,7 +178,10 @@ class Supplement
 			? $sSqlConfig['isTransaction'] : false;
 
 		// Set Server mode to execute query on - Read / Write Server
-		$this->http->req->clientDbObj = DbCommonFunction::connectClientDb($this->http->req, fetchFrom: 'Master');
+		$this->http->req->clientDbObj = DbCommonFunction::connectClientDb(
+			customerData: $this->http->req->s['customerData'],
+			fetchFrom: 'Master'
+		);
 
 		$this->processSupplement(
 			sSqlConfig: $sSqlConfig,
@@ -191,6 +194,7 @@ class Supplement
 				$i++
 			) {
 				DbCommonFunction::queryCacheDelete(
+					customerId: $this->http->req->customerId,
 					queryCacheKey: $sSqlConfig['affectedCacheKeyArr'][$i]
 				);
 			}
@@ -294,68 +298,70 @@ class Supplement
 			}
 
 			// Check for Idempotent Window
-			[$idempotentWindow, $hashKey, $hashJson] = $this->checkIdempotent(
-				sqlConfig: $sSqlConfig,
-				payloadIndexArr: $payloadIndexArr
-			);
-
-			// Begin DML operation
-			if ($hashJson === null) {
-				if ($this->operateAsTransaction) {
-					$this->http->req->clientDbObj->begin();
-				}
-				$response = [];
-				$this->execSupplement(
-					sSqlConfig: $sSqlConfig,
-					payloadIndexArr: $payloadIndexArr,
-					configKeyArr: $configKeyArr,
-					useHierarchy: $useHierarchy,
-					response: $response,
-					requiredFieldArr: $this->http->req->s['requiredFieldArrCollection']
+			if ($this->http->req->isAuthRequest) {
+				[$idempotentWindow, $hashKey, $hashJson] = $this->checkIdempotent(
+					sqlConfig: $sSqlConfig,
+					payloadIndexArr: $payloadIndexArr
 				);
 
-				if ($this->http->res->httpStatus === HttpStatus::$Ok) {
-					if (
-						$this->operateAsTransaction
-						&& ($this->http->req->clientDbObj->beganTransaction === true)
-					) {
-						$this->http->req->clientDbObj->commit();
+				// Begin DML operation
+				if ($hashJson === null) {
+					if ($this->operateAsTransaction) {
+						$this->http->req->clientDbObj->begin();
 					}
+					$response = [];
+					$this->execSupplement(
+						sSqlConfig: $sSqlConfig,
+						payloadIndexArr: $payloadIndexArr,
+						configKeyArr: $configKeyArr,
+						useHierarchy: $useHierarchy,
+						response: $response,
+						requiredFieldArr: $this->http->req->s['requiredFieldArrCollection']
+					);
 
-					$arr = [];
-					$arr['Status'] = HttpStatus::$Ok;
-					if (Env::$enablePayloadInResponse) {
-						$arr[Env::$payloadKeyInResponse] = $this->http->req->dataDecode->getCompleteArray(
-							keyString: implode(
-								separator: ':',
-								array: $payloadIndexArr
-							)
-						);
-					}
-					$arr['Response'] = $response;
+					if ($this->http->res->httpStatus === HttpStatus::$Ok) {
+						if (
+							$this->operateAsTransaction
+							&& ($this->http->req->clientDbObj->beganTransaction === true)
+						) {
+							$this->http->req->clientDbObj->commit();
+						}
 
-					if ($idempotentWindow) {
-						$this->http->req->clientCacheObj->cacheSet(
-							cacheKey: $hashKey,
-							value: json_encode(value: $arr),
-							expire: $idempotentWindow
-						);
+						$arr = [];
+						$arr['Status'] = HttpStatus::$Ok;
+						if (Env::$enablePayloadInResponse) {
+							$arr[Env::$payloadKeyInResponse] = $this->http->req->dataDecode->getCompleteArray(
+								keyString: implode(
+									separator: ':',
+									array: $payloadIndexArr
+								)
+							);
+						}
+						$arr['Response'] = $response;
+
+						if ($idempotentWindow) {
+							$this->http->req->clientCacheObj->cacheSet(
+								cacheKey: $hashKey,
+								cacheValue: json_encode(value: $arr),
+								cacheExpire: $idempotentWindow
+							);
+						}
+					} else { // Failure
+						$arr = [];
+						$arr['Status'] = $this->http->res->httpStatus;
+						if (Env::$enablePayloadInResponse) {
+							$arr[Env::$payloadKeyInResponse] = $this->http->req->dataDecode->getCompleteArray(
+								keyString: implode(
+									separator: ':',
+									array: $payloadIndexArr
+								)
+							);
+						}
+						$arr['Error'] = $response;
 					}
-				} else { // Failure
-					$arr = [];
-					$arr['Status'] = $this->http->res->httpStatus;
-					if (Env::$enablePayloadInResponse) {
-						$arr[Env::$payloadKeyInResponse] = $this->http->req->dataDecode->getCompleteArray(
-							keyString: implode(
-								separator: ':',
-								array: $payloadIndexArr
-							)
-						);
-					}
-					$arr['Error'] = $response;
+				} else {
+					$arr = json_decode(json: $hashJson, associative: true);
 				}
-			} else {
-				$arr = json_decode(json: $hashJson, associative: true);
 			}
 
 			if ($payloadIndexArr[0] === '') {
@@ -490,7 +496,7 @@ class Supplement
 			// Execute Pre SQL Hook
 			if (isset($sSqlConfig['__PRE-SQL-HOOKS__'])) {
 				if ($this->hook === null) {
-					$this->hook = new Hook($this->http);
+					$this->hook = new Hook(http: $this->http);
 				}
 				$this->hook->triggerHook(
 					hookConfig: $sSqlConfig['__PRE-SQL-HOOKS__']
@@ -526,7 +532,7 @@ class Supplement
 			// Execute Post SQL Hook
 			if (isset($sSqlConfig['__POST-SQL-HOOKS__'])) {
 				if ($this->hook === null) {
-					$this->hook = new Hook($this->http);
+					$this->hook = new Hook(http: $this->http);
 				}
 				$this->hook->triggerHook(
 					hookConfig: $sSqlConfig['__POST-SQL-HOOKS__']

@@ -40,48 +40,48 @@ interface NoSqlInterface
 	/**
 	 * Cache key exist
 	 *
-	 * @param string $cacheKey Cache key
+	 * @param string $key Key
 	 *
 	 * @return mixed
 	 */
-	public function cacheExist($cacheKey): mixed;
+	public function exist($key): mixed;
 
 	/**
 	 * Get cache key
 	 *
-	 * @param string $cacheKey Cache key
+	 * @param string $key Key
 	 *
 	 * @return mixed
 	 */
-	public function cacheGet($cacheKey): mixed;
+	public function get($key): mixed;
 
 	/**
 	 * Set cache key
 	 *
-	 * @param string $cacheKey Cache key
-	 * @param string $value    Cache value
-	 * @param int    $expire   Seconds to expire. Default 0 - doesn't expire
+	 * @param string $key    Key
+	 * @param string $value  Cache value
+	 * @param int    $expire Seconds to expire. Default 0 - doesn't expire
 	 *
 	 * @return mixed
 	 */
-	public function cacheSet($cacheKey, $value, $expire = null): mixed;
+	public function set($key, $value, $expire = null): mixed;
 
 	/**
 	 * Increment cache key with offset
 	 *
-	 * @param string $cacheKey Cache key
-	 * @param int    $offset   Offset
+	 * @param string $key    Key
+	 * @param int    $offset Offset
 	 *
 	 * @return int
 	 */
-	public function cacheIncrement($cacheKey, $offset = 1): int;
+	public function increment($key, $offset = 1): int;
 
 	/**
 	 * Delete cache key
 	 *
-	 * @param string $cacheKey Cache key
+	 * @param string $key Key
 	 *
 	 * @return mixed
 	 */
-	public function cacheDelete($cacheKey): mixed;
+	public function delete($key): mixed;
 }

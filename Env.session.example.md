@@ -33,7 +33,7 @@ mySqlServerHostname='localhost'
 mySqlServerPort=3306
 mySqlServerUsername='root'
 mySqlServerPassword='shames11'
-mySqlServerDb='session_db'
+mySqlServerDatabase='session_db'
 mySqlServerTable='sessions'
 ```
 
@@ -45,7 +45,7 @@ pgSqlServerHostname='localhost'
 pgSqlServerPort=5432
 pgSqlServerUsername=''
 pgSqlServerPassword=''
-pgSqlServerDb='session_db'
+pgSqlServerDatabase='session_db'
 pgSqlServerTable='sessions'
 ```
 
@@ -57,7 +57,7 @@ mongoDbServerHostname='localhost'
 mongoDbServerPort=27017
 mongoDbServerUsername=''
 mongoDbServerPassword=''
-mongoDbServerDb='session_db'
+mongoDbServerDatabase='session_db'
 mongoDbServerCollection='sessions'
 ```
 
@@ -69,7 +69,7 @@ redisServerHostname='localhost'
 redisServerPort=6379
 redisServerUsername=''
 redisServerPassword=''
-redisServerDb=0;
+redisServerDatabase=0;
 ```
 
 ## Memcached based PHP Session related configs
@@ -90,7 +90,7 @@ sessionDataName='PHPSESSDATA'   ; For sessionMode Cookie
 ## Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/OpenSwoole-Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
 
 ## Author
 

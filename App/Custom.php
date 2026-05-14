@@ -66,7 +66,7 @@ class Custom
 		$class = 'Microservices\\Supplement\\Custom\\'
 			. ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
 
-		$this->customApi = new $class($this->http);
+		$this->customApi = new $class(http: $this->http);
 
 		return $this->customApi->init();
 	}

@@ -54,6 +54,6 @@ if (isset($token)) {
 		route: '/category/import',
 		header: $headerArr,
 		payload: '',//json_encode(value: $paramArr),
-		file: $curlFile
+		fileLocation: $curlFile
 	);
 }

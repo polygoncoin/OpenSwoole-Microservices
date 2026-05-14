@@ -54,7 +54,7 @@ var payload = [
 
 ## HttpRequest Variables
 
-- **$session\['uDetail'\]** Session Data.
+- **$session\['userData'\]** Session Data.
 This remains same for every request and contains key's like id, group\_id, customer\_id
 
 - **$session\['routeParamArr'\]** Data passed in URI.
@@ -78,7 +78,7 @@ For **GET** method, the **$\_GET** is the payload.
 [
 	'column' => 'parent_id',
 	'fetchFrom' => 'sqlResults',
-	'fetchFromDetail' => 'return:id'
+	'fetchFromData' => 'return:id'
 ],
 ```
 
@@ -174,7 +174,7 @@ var payload = [
 ## Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/OpenSwoole-Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
 
 ## Author
 

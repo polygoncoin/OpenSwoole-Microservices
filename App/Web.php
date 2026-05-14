@@ -50,7 +50,7 @@ class Web
 		$queryString,
 		$header = [],
 		$payload = '',
-		$file = null
+		$fileLocation = null
 	): array {
 		$curlConfig[\CURLOPT_URL] = "{$homeURL}?route={$route}{$queryString}";
 		$curlConfig[\CURLOPT_HTTPHEADER] = $header;
@@ -61,7 +61,7 @@ class Web
 				break;
 			case 'POST':
 				$curlConfig[\CURLOPT_POST] = true;
-				if ($file === null) {
+				if ($fileLocation === null) {
 					$curlConfig[\CURLOPT_POSTFIELDS] = $payload;
 				}
 				break;
@@ -69,7 +69,7 @@ class Web
 			case 'PATCH':
 			case 'DELETE':
 				$curlConfig[\CURLOPT_CUSTOMREQUEST] = $method;
-				if ($file === null) {
+				if ($fileLocation === null) {
 					$curlConfig[\CURLOPT_POSTFIELDS] = $payload;
 				}
 				break;
@@ -92,7 +92,7 @@ class Web
 	 * @param string $route   Route
 	 * @param array  $header  Header
 	 * @param string $payload Payload
-	 * @param string $file    File path
+	 * @param string $fileLocation    File path
 	 *
 	 * @return mixed
 	 */
@@ -102,7 +102,7 @@ class Web
 		$route,
 		$header = [],
 		$payload = '',
-		$file = null
+		$fileLocation = null
 	): mixed {
 		$queryString = '';
 		$curl = curl_init();
@@ -113,24 +113,24 @@ class Web
 			queryString: $queryString,
 			header: $header,
 			payload: $payload,
-			file: $file
+			fileLocation: $fileLocation
 		);
-		if ($file !== null) {
+		if ($fileLocation !== null) {
 			switch ($method) {
 				case 'POST':
 					// // Create a CURLFile object
 					// if (function_exists('curl_file_create')) {
-					//     $cFile = curl_file_create($file, mime_content_type($file), basename($file));
+					//     $cFile = curl_file_create($fileLocation, mime_content_type($fileLocation), basename($fileLocation));
 					//} else {
 					//     // Fallback for very old PHP versions (deprecated)
-					//     $cFile = '@' . realpath($file);
+					//     $cFile = '@' . realpath($fileLocation);
 					// }
 					// $postData = array(
-					//     'description' => 'A file upload test', // Other form fields go here
+					//     'description' => 'A fileLocation upload test', // Other form fields go here
 					//     'file' => $cFile // This name must match what your server expects
 					// );
 					// $curlConfig[\CURLOPT_POSTFIELDS] = $postData;
-					$curlFile = new \CURLFile($file, 'text/plain', 'uploaded_file.txt');
+					$curlFile = new \CURLFile($fileLocation, 'text/plain', 'uploaded_file.txt');
 					$curlConfig[\CURLOPT_POSTFIELDS] = [
 						'file' => $curlFile
 					];
@@ -138,9 +138,9 @@ class Web
 				case 'PUT':
 				case 'PATCH':
 				case 'DELETE':
-					$fp = fopen($file, 'rb');
+					$fp = fopen($fileLocation, 'rb');
 					$curlConfig[\CURLOPT_INFILE] = $fp;
-					$curlConfig[\CURLOPT_INFILESIZE] = filesize($file);
+					$curlConfig[\CURLOPT_INFILESIZE] = filesize($fileLocation);
 					break;
 			}
 		}

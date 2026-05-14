@@ -26,20 +26,20 @@ class Start
 	/**
 	 * Process HTTP request data
 	 *
-	 * @param array $httpReqDetailArr HTTP request detail
+	 * @param array $httpReqData HTTP request detail
 	 *
 	 * @return array
 	 */
-	public static function http(&$httpReqDetailArr)
+	public static function http(&$httpReqData)
 	{
 		$headerArr = [];
 
 		try {
-			$Microservices = new Microservices(httpReqDetailArr: $httpReqDetailArr);
+			$Microservices = new Microservices(httpReqData: $httpReqData);
 
 			if (
-				$httpReqDetailArr['streamData']
-				&& $httpReqDetailArr['server']['httpMethod'] == 'OPTIONS'
+				$httpReqData['streamData']
+				&& $httpReqData['server']['httpMethod'] == 'OPTIONS'
 			) {
 				// Setting CORS
 				$headerArr = $Microservices->getHeaders();
@@ -51,7 +51,7 @@ class Start
 
 			if ($Microservices->init()) {
 				// Setting CORS
-				if ($httpReqDetailArr['streamData']) {
+				if ($httpReqData['streamData']) {
 					$headerArr = $Microservices->getHeaders();
 				}
 
@@ -64,8 +64,11 @@ class Start
 				}
 
 				$data = $Microservices->returnResults();
-				if ($Microservices->http === null) {
-					$status = 200;	
+				if (
+					$Microservices->http === null
+					|| $Microservices->http->res === null
+				) {
+					$status = 200;
 				} else {
 					$status = $Microservices->http->res->httpStatus;
 				}
@@ -81,17 +84,16 @@ class Start
 				) . substr(string: $usec, offset: 1);
 
 				// Log request detail
-				$logDetail = [
+				$logData = [
 					'LogType' => 'ERROR',
 					'DateTime' => $dateTime,
-					'httpReqDetailArr' => [
-						'HttpCode' => $e->getCode(),
-						'HttpMessage' => $e->getMessage()
-					],
-					'Detail' => $Microservices->http->req->s
+					'httpReqData' => $Microservices->http->httpReqData,
+					'HttpCode' => $e->getCode(),
+					'HttpMessage' => $e->getMessage(),
+					'sData' => $Microservices->http->req->s
 				];
 				$logsObj = new Log();
-				$logsObj->log(logDetail: $logDetail);
+				$logsObj->log(logData: $logData);
 			}
 
 			$headerArr = [];
@@ -109,13 +111,13 @@ class Start
 				];
 			}
 
-			// $dataEncode = new DataEncode(httpReqDetailArr: $httpReqDetailArr);
+			// $dataEncode = new DataEncode(httpReqData: $httpReqData);
 			// $dataEncode->init();
 			// $dataEncode->startObject();
 			// $dataEncode->addKeyData(objectKey: 'Error', data: $arr);
 
 			// $data = $dataEncode->getData();
-			$data = json_encode(['Error' => $arr]);
+			$data = json_encode(value: ['Error' => $arr]);
 			$status = $e->getCode();
 
 			return [$headerArr, $data, $status];

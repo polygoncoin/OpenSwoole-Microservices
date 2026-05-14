@@ -16,34 +16,34 @@
 use Microservices\App\DatabaseServerDataType;
 
 return [
-	'__QUERY__' => "UPDATE `{$this->http->req->s['cDetail']['usersTable']}` SET __SET__ WHERE __WHERE__",
+	'__QUERY__' => "UPDATE `{$this->http->req->s['customerData']['usersTable']}` SET __SET__ WHERE __WHERE__",
 	'__SET__' => [
 		[
 			'column' => 'firstname',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'firstname'
+			'fetchFromData' => 'firstname'
 		],
 		[
 			'column' => 'lastname',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'lastname'
+			'fetchFromData' => 'lastname'
 		],
 		[
 			'column' => 'email',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'email'
+			'fetchFromData' => 'email'
 		],
 	],
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'No'
+			'fetchFromData' => 'No'
 		],
 		[
 			'column' => 'id',
 			'fetchFrom' => 'routeParamArr',
-			'fetchFromDetail' => 'id',
+			'fetchFromData' => 'id',
 			'dataType' => DatabaseServerDataType::$PrimaryKey
 		]
 	],
@@ -54,19 +54,19 @@ return [
 				[
 					'column' => 'address',
 					'fetchFrom' => 'payload',
-					'fetchFromDetail' => 'address'
+					'fetchFromData' => 'address'
 				]
 			],
 			'__WHERE__' => [
 				[
 					'column' => 'is_deleted',
 					'fetchFrom' => 'custom',
-					'fetchFromDetail' => 'No'
+					'fetchFromData' => 'No'
 				],
 				[
 					'column' => 'id',
 					'fetchFrom' => 'payload',
-					'fetchFromDetail' => 'id',
+					'fetchFromData' => 'id',
 					'dataType' => DatabaseServerDataType::$PrimaryKey
 				],
 			],
@@ -76,7 +76,7 @@ return [
 		[
 			'function' => 'primaryKeyExist',
 			'functionArgs' => [
-				'table' => ['custom', $this->http->req->s['cDetail']['usersTable']],
+				'table' => ['custom', $this->http->req->s['customerData']['usersTable']],
 				'primary' => ['custom', 'id'],
 				'id' => ['routeParamArr', 'id']
 			],

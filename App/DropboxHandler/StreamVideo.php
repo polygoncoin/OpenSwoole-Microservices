@@ -37,7 +37,7 @@ class StreamVideo
 	 *
 	 * @var null|array
 	 */
-	private $httpReqDetailArr = null;
+	private $httpReqData = null;
 
 	/**
 	 * Streamed Video cache duration.
@@ -63,7 +63,7 @@ class StreamVideo
 	/**
 	 * File detail required in class.
 	 */
-	public $file = '';
+	public $fileLocation = '';
 	public $name = '';
 	public $mimeType = '';
 	public $modifiedTimeStamp = 0;
@@ -74,27 +74,27 @@ class StreamVideo
 	/**
 	 * Constructor
 	 *
-	 * @param array $httpReqDetailArr Http request detail
+	 * @param array $httpReqData Http request detail
 	 */
-	public function __construct(&$httpReqDetailArr)
+	public function __construct(&$httpReqData)
 	{
-		$this->httpReqDetailArr = &$httpReqDetailArr;
+		$this->httpReqData = &$httpReqData;
 	}
 
 	/**
 	 * Initialize
 	 *
-	 * @param string $file File path
+	 * @param string $fileLocation File Location
 	 *
 	 * @return bool|int
 	 */
-	public function init($file): bool|int
+	public function init($fileLocation): bool|int
 	{
 		// Check Range header
 		if (
-			!isset($this->httpReqDetailArr['header']['range'])
+			!isset($this->httpReqData['header']['range'])
 			&& strpos(
-				haystack: $this->httpReqDetailArr['header']['range'],
+				haystack: $this->httpReqData['header']['range'],
 				needle: 'bytes='
 				!== false
 			)
@@ -102,9 +102,9 @@ class StreamVideo
 			return HttpStatus::$BadRequest;
 		}
 
-		$this->file = $file;
+		$this->fileLocation = $fileLocation;
 		// Set buffer Range
-		$range = explode(separator: '=', string: $this->httpReqDetailArr['header']['range'])[1];
+		$range = explode(separator: '=', string: $this->httpReqData['header']['range'])[1];
 		list($this->streamFrom, $this->streamTill) = explode(
 			separator: '-',
 			string: $range
@@ -112,13 +112,13 @@ class StreamVideo
 
 		//Set detail of file to be served.
 		// Set file name
-		$this->name = basename(path: $this->file);
+		$this->name = basename(path: $this->fileLocation);
 		// Get file mime
-		$this->mimeType = mime_content_type($this->file);
+		$this->mimeType = mime_content_type($this->fileLocation);
 		// Get file modified time
-		$this->modifiedTimeStamp = filemtime(filename: $this->file);
+		$this->modifiedTimeStamp = filemtime(filename: $this->fileLocation);
 		// Get file size
-		$this->size = filesize(filename: $this->file);
+		$this->size = filesize(filename: $this->fileLocation);
 
 		return $this->validateFile();
 	}
@@ -177,7 +177,7 @@ class StreamVideo
 				. 'Version/(1[0-9]|[2-9][0-9]|\d{3,})(\.|$|\s)`i';
 			$safariBrowser = preg_match(
 				pattern: $safariBrowserPattern,
-				subject: $this->httpReqDetailArr['header']['userAgent']
+				subject: $this->httpReqData['header']['userAgent']
 			);
 			if ($safariBrowser) {
 				$this->streamTill = $this->size - 1;
@@ -216,7 +216,7 @@ class StreamVideo
 
 		$totalBytes = $this->streamTill - $this->streamFrom + 1;
 		$data = file_get_contents(
-			$this->file,
+			$this->fileLocation,
 			false,
 			null,
 			$this->streamFrom,

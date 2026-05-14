@@ -19,17 +19,17 @@ return [
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'No'
+			'fetchFromData' => 'No'
 		],
 		[
 			'column' => 'parent_id',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 0
+			'fetchFromData' => 0
 		],
 		[
 			'column' => 'id',
 			'fetchFrom' => 'routeParamArr',
-			'fetchFromDetail' => 'id'
+			'fetchFromData' => 'id'
 		]
 	],
 	'__MODE__' => 'singleRowFormat',
@@ -40,12 +40,12 @@ return [
 				[
 					'column' => 'is_deleted',
 					'fetchFrom' => 'custom',
-					'fetchFromDetail' => 'No'
+					'fetchFromData' => 'No'
 				],
 				[
 					'column' => 'parent_id',
 					'fetchFrom' => 'sqlResults',
-					'fetchFromDetail' => 'return:id'
+					'fetchFromData' => 'return:id'
 				],
 			],
 			'__MODE__' => 'multipleRowFormat',
@@ -56,12 +56,12 @@ return [
 						[
 							'column' => 'is_deleted',
 							'fetchFrom' => 'custom',
-							'fetchFromDetail' => 'No'
+							'fetchFromData' => 'No'
 						],
 						[
 							'column' => 'parent_id',
 							'fetchFrom' => 'sqlResults',
-							'fetchFromDetail' => 'return:sub:id'
+							'fetchFromData' => 'return:sub:id'
 						],
 					],
 					'__MODE__' => 'multipleRowFormat',
@@ -72,12 +72,12 @@ return [
 								[
 									'column' => 'is_deleted',
 									'fetchFrom' => 'custom',
-									'fetchFromDetail' => 'No'
+									'fetchFromData' => 'No'
 								],
 								[
 									'column' => 'parent_id',
 									'fetchFrom' => 'sqlResults',
-									'fetchFromDetail' => 'return:sub:subsub:id'
+									'fetchFromData' => 'return:sub:subsub:id'
 								],
 							],
 							'__MODE__' => 'multipleRowFormat',

@@ -42,41 +42,41 @@ interface SessionContainerInterface
 	/**
 	 * For Custom Session Handler - Validate session id
 	 *
-	 * @param string $sessionID Session id
+	 * @param string $sessionId Session id
 	 *
 	 * @return bool|string
 	 */
-	public function getSession($sessionID): bool|string;
+	public function getSession($sessionId): bool|string;
 
 	/**
 	 * For Custom Session Handler - Write session data
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionID, $sessionData): bool|int;
+	public function setSession($sessionId, $sessionData): bool|int;
 
 	/**
 	 * For Custom Session Handler - Update session data
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionID, $sessionData): bool|int;
+	public function updateSession($sessionId, $sessionData): bool|int;
 
 	/**
 	 * For Custom Session Handler - Update session timestamp
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionID, $sessionData): bool;
+	public function touchSession($sessionId, $sessionData): bool;
 
 	/**
 	 * For Custom Session Handler - Cleanup old sessions
@@ -90,11 +90,11 @@ interface SessionContainerInterface
 	/**
 	 * For Custom Session Handler - Destroy a session
 	 *
-	 * @param string $sessionID Session id
+	 * @param string $sessionId Session id
 	 *
 	 * @return bool
 	 */
-	public function deleteSession($sessionID): bool;
+	public function deleteSession($sessionId): bool;
 
 	/**
 	 * For Custom Session Handler - Close container connection

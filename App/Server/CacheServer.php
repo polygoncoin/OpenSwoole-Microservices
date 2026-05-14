@@ -72,7 +72,7 @@ class CacheServer
 	 *
 	 * @var null|string
 	 */
-	private $cacheServerDb = null;
+	private $cacheServerDatabase = null;
 
 	/**
 	 * Cache collection
@@ -89,7 +89,7 @@ class CacheServer
 	 * @param int         $cacheServerPort     Cache Server Port
 	 * @param string      $cacheServerUsername Cache Server Username
 	 * @param string      $cacheServerPassword Cache Server Password
-	 * @param null|string $cacheServerDb       Cache Server Database
+	 * @param null|string $cacheServerDatabase Cache Server Database
 	 * @param null|string $cacheServerTable    Cache Server Table
 	 */
 	public function __construct(
@@ -98,7 +98,7 @@ class CacheServer
 		$cacheServerPort,
 		$cacheServerUsername,
 		$cacheServerPassword,
-		$cacheServerDb,
+		$cacheServerDatabase,
 		$cacheServerTable
 	) {
 		$this->cacheServerType = $cacheServerType;
@@ -106,7 +106,7 @@ class CacheServer
 		$this->cacheServerPort = $cacheServerPort;
 		$this->cacheServerUsername = $cacheServerUsername;
 		$this->cacheServerPassword = $cacheServerPassword;
-		$this->cacheServerDb = $cacheServerDb;
+		$this->cacheServerDatabase = $cacheServerDatabase;
 		$this->cacheServerTable = $cacheServerTable;
 	}
 
@@ -140,7 +140,7 @@ class CacheServer
 			cacheServerPort: $this->cacheServerPort,
 			cacheServerUsername: $this->cacheServerUsername,
 			cacheServerPassword: $this->cacheServerPassword,
-			cacheServerDb: $this->cacheServerDb,
+			cacheServerDatabase: $this->cacheServerDatabase,
 			cacheServerTable: $this->cacheServerTable
 		);
 	}

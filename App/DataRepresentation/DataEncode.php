@@ -96,7 +96,7 @@ class DataEncode
 	 */
 	public function init($header = true): void
 	{
-		if ($this->http->httpReqDetailArr['server']['httpMethod'] === Constant::$GET) {
+		if ($this->http->httpReqData['server']['httpMethod'] === Constant::$GET) {
 			if ($this->http->res->oRepresentation === 'PHP') {
 				$this->tempStream = [];
 			} else {
@@ -269,7 +269,7 @@ class DataEncode
 					&& $this->xsltFile !== null
 					&& file_exists(filename: $this->xsltFile)
 				):
-				echo $this->processXml($this->xsltFile);
+				echo $this->processXml(xmlFile: $this->xsltFile);
 				fclose(stream: $this->tempStream);
 				break;
 			case (
@@ -277,7 +277,7 @@ class DataEncode
 					&& $this->htmlFile !== null
 					&& file_exists(filename: $this->htmlFile)
 				):
-				echo $this->processXml($this->htmlFile);
+				echo $this->processXml(xmlFile: $this->htmlFile);
 				fclose(stream: $this->tempStream);
 				break;
 			case (
@@ -314,7 +314,7 @@ class DataEncode
 					&& $this->xsltFile !== null
 					&& file_exists(filename: $this->xsltFile)
 				):
-				$streamContent = $this->processXml($this->xsltFile);
+				$streamContent = $this->processXml(xmlFile: $this->xsltFile);
 				fclose(stream: $this->tempStream);
 				break;
 			case (
@@ -322,7 +322,7 @@ class DataEncode
 					&& $this->htmlFile !== null
 					&& file_exists(filename: $this->htmlFile)
 				):
-				$streamContent = $this->processXml($this->htmlFile);
+				$streamContent = $this->processXml(xmlFile: $this->htmlFile);
 				fclose(stream: $this->tempStream);
 				break;
 			case (

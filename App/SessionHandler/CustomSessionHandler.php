@@ -67,12 +67,12 @@ class CustomSessionHandler implements
 	 *
 	 * @var string
 	 */
-	private $sessionID = '';
+	private $sessionId = '';
 
 	/**
 	 * Session id created flag to handle session_regenerate_id
 	 * In this case validateId is called after create_sid function
-	 * Also, we have used this to validate created sessionID
+	 * Also, we have used this to validate created sessionId
 	 *
 	 * @var null|bool
 	 */
@@ -131,13 +131,13 @@ class CustomSessionHandler implements
 	 *
 	 * A callable with the following signature
 	 *
-	 * @param string $sessionID Session id
+	 * @param string $sessionId Session id
 	 *
 	 * @return bool true if the session id is valid otherwise false
 	 */
-	public function validateId($sessionID): bool
+	public function validateId($sessionId): bool
 	{
-		if ($sessionData = $this->container->getSession(sessionID: $sessionID)) {
+		if ($sessionData = $this->container->getSession(sessionId: $sessionId)) {
 			if (is_null(value: $this->creatingSessionID)) {
 				$this->sessionData = &$sessionData;
 			}
@@ -165,21 +165,21 @@ class CustomSessionHandler implements
 	 */
 	public function create_sid(): string // phpcs:ignore
 	{
-		// Delete session if previous sessionID exist eg; used for
+		// Delete session if previous sessionId exist eg; used for
 		// session_regenerate_id()
-		if (!empty($this->sessionID)) {
-			$this->container->deleteSession(sessionID: $this->sessionID);
+		if (!empty($this->sessionId)) {
+			$this->container->deleteSession(sessionId: $this->sessionId);
 		}
 
 		$this->creatingSessionID = true;
 
 		do {
-			$sessionID = $this->getRandomString();
-		} while ($this->validateId(sessionID: $sessionID) === true);
+			$sessionId = $this->getRandomString();
+		} while ($this->validateId(sessionId: $sessionId) === true);
 
 		$this->creatingSessionID = null;
 
-		return $sessionID;
+		return $sessionId;
 	}
 
 	/**
@@ -187,13 +187,13 @@ class CustomSessionHandler implements
 	 *
 	 * A callable with the following signature
 	 *
-	 * @param string $sessionID Session id
+	 * @param string $sessionId Session id
 	 *
 	 * @return string|false the session data or an empty string
 	 */
-	public function read($sessionID): string|false
+	public function read($sessionId): string|false
 	{
-		$this->sessionID = $sessionID;
+		$this->sessionId = $sessionId;
 		return $this->sessionData;
 	}
 
@@ -205,12 +205,12 @@ class CustomSessionHandler implements
 	 *
 	 * A callable with the following signature
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool true for success or false for failure
 	 */
-	public function write($sessionID, $sessionData): bool
+	public function write($sessionId, $sessionData): bool
 	{
 		$this->sessionData = $sessionData;
 		// Won't allow creating empty entries
@@ -226,7 +226,7 @@ class CustomSessionHandler implements
 		$function = ($this->foundSession) ? 'updateSession' : 'setSession';
 		if (
 			$this->container->$function(
-				sessionID: $sessionID,
+				sessionId: $sessionId,
 				sessionData: $sessionData
 			)
 		) {
@@ -245,12 +245,12 @@ class CustomSessionHandler implements
 	 *
 	 * A callable with the following signature
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool true for success or false for failure
 	 */
-	public function updateTimestamp($sessionID, $sessionData): bool
+	public function updateTimestamp($sessionId, $sessionData): bool
 	{
 		$this->sessionData = $sessionData;
 		// Won't allow updating empty entries when session.lazy_write is enabled
@@ -265,7 +265,7 @@ class CustomSessionHandler implements
 
 		if (
 			$this->container->touchSession(
-				sessionID: $sessionID,
+				sessionId: $sessionId,
 				sessionData: $sessionData
 			)
 		) {
@@ -294,16 +294,16 @@ class CustomSessionHandler implements
 	 *
 	 * A callable with the following signature
 	 *
-	 * @param string $sessionID Session id
+	 * @param string $sessionId Session id
 	 *
 	 * @return bool true for success or false for failure
 	 */
-	public function destroy($sessionID): bool
+	public function destroy($sessionId): bool
 	{
 		// Deleting session cookies set on customer end
 		$this->unsetSessionCookie();
 
-		return $this->container->deleteSession(sessionID: $sessionID);
+		return $this->container->deleteSession(sessionId: $sessionId);
 	}
 
 	/**
@@ -321,7 +321,7 @@ class CustomSessionHandler implements
 			&& $this->foundSession === true
 		) {
 			$this->container->touchSession(
-				sessionID: $this->sessionID,
+				sessionId: $this->sessionId,
 				sessionData: $this->sessionData
 			);
 		}

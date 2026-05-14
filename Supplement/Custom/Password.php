@@ -82,10 +82,10 @@ class Password implements CustomInterface
 		$this->http->req->s['payload'] = $payload;
 
 		$oldPassword = $this->http->req->s['payload']['old_password'];
-		$oldPasswordHash = $this->http->req->s['uDetail']['password_hash'];
+		$oldPasswordHash = $this->http->req->s['userData']['password_hash'];
 
 		if (password_verify(password: $oldPassword, hash: $oldPasswordHash)) {
-			$userName = $this->http->req->s['uDetail']['username'];
+			$userName = $this->http->req->s['userData']['username'];
 			$newPassword = $this->http->req->s['payload']['new_password'];
 			$newPasswordHash = password_hash(
 				password: $newPassword,
@@ -93,7 +93,7 @@ class Password implements CustomInterface
 			);
 
 			$sql = "
-				UPDATE `{$this->http->req->s['cDetail']['usersTable']}`
+				UPDATE `{$this->http->req->s['customerData']['usersTable']}`
 				SET password_hash = :password_hash
 				WHERE username = :username AND is_deleted = :is_deleted
 			";
@@ -106,22 +106,22 @@ class Password implements CustomInterface
 			$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
 			$this->http->req->clientDbObj->closeCursor();
 
-			$cID = $this->http->req->cID;
+			$customerId = $this->http->req->customerId;
 			$cu_key = CacheServerKey::customerUsername(
-				cID: $cID,
+				customerId: $customerId,
 				username: $userName
 			);
 			if ($this->http->req->clientCacheObj->cacheExist(cacheKey: $cu_key)) {
-				$uDetail = json_decode(
+				$userData = json_decode(
 					json: $this->http->req->clientCacheObj->cacheGet(
 						cacheKey: $cu_key
 					),
 					associative: true
 				);
-				$uDetail['password_hash'] = $newPasswordHash;
+				$userData['password_hash'] = $newPasswordHash;
 				$this->http->req->clientCacheObj->cacheSet(
 					cacheKey: $cu_key,
-					value: json_encode(value: $uDetail)
+					cacheValue: json_encode(value: $userData)
 				);
 				$this->http->req->clientCacheObj->cacheDelete(
 					cacheKey: CacheServerKey::token(token: $this->http->req->s['token'])

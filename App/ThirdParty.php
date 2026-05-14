@@ -66,7 +66,7 @@ class ThirdParty
 		$class = 'Microservices\\Supplement\\ThirdParty\\'
 			. ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
 
-		$this->thirdPartyApi = new $class($this->http);
+		$this->thirdPartyApi = new $class(http: $this->http);
 
 		return $this->thirdPartyApi->init();
 	}

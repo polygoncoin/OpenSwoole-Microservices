@@ -38,7 +38,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public $pgSqlServerPort = null;
 	public $pgSqlServerUsername = null;
 	public $pgSqlServerPassword = null;
-	public $pgSqlServerDb = null;
+	public $pgSqlServerDatabase = null;
 	public $pgSqlServerTable = null;
 
 	private $pgSqlServerObj = null;
@@ -59,11 +59,11 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Validate session id
 	 *
-	 * @param string $sessionID Session id
+	 * @param string $sessionId Session id
 	 *
 	 * @return bool|string
 	 */
-	public function getSession($sessionID): bool|string
+	public function getSession($sessionId): bool|string
 	{
 		$sql = "
 			SELECT session_data
@@ -71,7 +71,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 			WHERE session_id = $1 AND last_accessed > $2
 		";
 		$paramArr = [
-			$sessionID,
+			$sessionId,
 			(Env::$timestamp - $this->sessionMaxLifetime)
 		];
 
@@ -85,19 +85,19 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Write session data
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionID, $sessionData): bool|int
+	public function setSession($sessionId, $sessionData): bool|int
 	{
 		$sql = "
 			INSERT INTO {$this->pgSqlServerTable} (session_id, last_accessed, session_data)
 			VALUES ($1, $2, $3)
 		";
 		$paramArr = [
-			$sessionID,
+			$sessionId,
 			Env::$timestamp,
 			$this->encryptData(plainText: $sessionData),
 		];
@@ -108,12 +108,12 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Update session data
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionID, $sessionData): bool|int
+	public function updateSession($sessionId, $sessionData): bool|int
 	{
 		$sql = "
 			UPDATE {$this->pgSqlServerTable}
@@ -126,7 +126,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$paramArr = [
 			Env::$timestamp,
 			$this->encryptData(plainText: $sessionData),
-			$sessionID
+			$sessionId
 		];
 
 		return $this->execSql(sql: $sql, paramArr: $paramArr);
@@ -135,12 +135,12 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Update session timestamp
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionID, $sessionData): bool
+	public function touchSession($sessionId, $sessionData): bool
 	{
 		$sql = "
 			UPDATE {$this->pgSqlServerTable}
@@ -149,7 +149,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		";
 		$paramArr = [
 			Env::$timestamp,
-			$sessionID
+			$sessionId
 		];
 		return $this->execSql(sql: $sql, paramArr: $paramArr);
 	}
@@ -176,18 +176,18 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Destroy a session
 	 *
-	 * @param string $sessionID Session id
+	 * @param string $sessionId Session id
 	 *
 	 * @return bool
 	 */
-	public function deleteSession($sessionID): bool
+	public function deleteSession($sessionId): bool
 	{
 		$sql = "
 			DELETE FROM {$this->pgSqlServerTable}
 			WHERE session_id = $1
 		";
 		$paramArr = [
-			$sessionID
+			$sessionId
 		];
 		return $this->execSql(sql: $sql, paramArr: $paramArr);
 	}
@@ -221,7 +221,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 			$this->pgSqlServerObj = pg_connect(
 				"host={$this->pgSqlServerHostname} "
 				. "port={$this->pgSqlServerPort} "
-				. "dbname={$this->pgSqlServerDb} {$UP}"
+				. "dbname={$this->pgSqlServerDatabase} {$UP}"
 			);
 		} catch (\Exception $e) {
 			$this->manageException(e: $e);

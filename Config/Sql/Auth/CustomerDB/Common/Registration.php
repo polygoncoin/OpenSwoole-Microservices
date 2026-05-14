@@ -14,12 +14,12 @@
  */
 
 return [
-	'__QUERY__' => "UPDATE `{$this->http->req->s['cDetail']['usersTable']}` SET __SET__ WHERE __WHERE__",
+	'__QUERY__' => "UPDATE `{$this->http->req->s['customerData']['usersTable']}` SET __SET__ WHERE __WHERE__",
 	'__VALIDATE__' => [
 		[
 			'function' => 'primaryKeyExist',
 			'functionArgs' => [
-				'table' => ['custom', $this->http->req->s['cDetail']['usersTable']],
+				'table' => ['custom', $this->http->req->s['customerData']['usersTable']],
 				'primary' => ['custom', 'id'],
 				'id' => ['routeParamArr', 'id']
 			],

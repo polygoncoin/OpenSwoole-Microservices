@@ -138,25 +138,25 @@ class RouteParser
 
 		$this->routeElementArr = explode(
 			separator: '/',
-			string: trim(string: $this->http->httpReqDetailArr['get'][ROUTE_URL_PARAM], characters: '/')
+			string: trim(string: $this->http->httpReqData['get'][ROUTE_URL_PARAM], characters: '/')
 		);
 		$routeLastElementPos = count(value: $this->routeElementArr) - 1;
 		// if ($this->routeElementArr[$routeLastElementPos] === Env::$importSampleRequestRouteKeyword) {
-		//     if (isset($this->http->httpReqDetailArr['server']['httpMethod'])) {
-		//         $this->http->httpReqDetailArr['server']['httpMethod'] = $this->http->httpReqDetailArr['server']['httpMethod'];
+		//     if (isset($this->http->httpReqData['server']['httpMethod'])) {
+		//         $this->http->httpReqData['server']['httpMethod'] = $this->http->httpReqData['server']['httpMethod'];
 		//     }
 		// }
 
 		if ($routeFileLocation === null) {
-			if ($this->http->req->isOpenToWebRequest) {
-				$routeFileLocation = Constant::$OPEN_ROUTES_DIR
-					. DIRECTORY_SEPARATOR . $this->http->httpReqDetailArr['server']['httpMethod'] . 'routes.php';
-			} else {
+			if ($this->http->req->isAuthRequest) {
 				$routeFileLocation = Constant::$AUTH_ROUTES_DIR
 					. DIRECTORY_SEPARATOR . 'CustomerDB'
 					. DIRECTORY_SEPARATOR . 'Groups'
-					. DIRECTORY_SEPARATOR . $this->http->req->s['gDetail']['name']
-					. DIRECTORY_SEPARATOR . $this->http->httpReqDetailArr['server']['httpMethod'] . 'routes.php';
+					. DIRECTORY_SEPARATOR . $this->http->req->s['groupData']['name']
+					. DIRECTORY_SEPARATOR . $this->http->httpReqData['server']['httpMethod'] . 'routes.php';
+			} else {
+				$routeFileLocation = Constant::$OPEN_ROUTES_DIR
+					. DIRECTORY_SEPARATOR . $this->http->httpReqData['server']['httpMethod'] . 'routes.php';
 			}
 		}
 
@@ -165,7 +165,7 @@ class RouteParser
 			$routesConfig = include $routeFileLocation;
 		} else {
 			throw new \Exception(
-				message: 'Route file missing: ' . $this->http->httpReqDetailArr['server']['httpMethod'] . ' method',
+				message: 'Route file missing: ' . $this->http->httpReqData['server']['httpMethod'] . ' method',
 				code: HttpStatus::$InternalServerError
 			);
 		}
@@ -263,13 +263,13 @@ class RouteParser
 		// Switch Input data representation if set in URL param
 		if (
 			Env::$enableInputRepresentationAsQueryParam
-			&& isset($this->http->httpReqDetailArr['get']['iRepresentation'])
+			&& isset($this->http->httpReqData['get']['iRepresentation'])
 			&& Env::isValidDataRep(
-				dataRepresentation: $this->http->httpReqDetailArr['get']['iRepresentation'],
+				dataRepresentation: $this->http->httpReqData['get']['iRepresentation'],
 				mode: 'input'
 			)
 		) {
-			Env::$iRepresentation = $this->http->httpReqDetailArr['get']['iRepresentation'];
+			Env::$iRepresentation = $this->http->httpReqData['get']['iRepresentation'];
 		}
 
 		$this->configuredRoute = '/' . implode(separator: '/', array: $configuredRoute);
@@ -293,7 +293,7 @@ class RouteParser
 			$this->routeStartingWithReservedKeywordFlag = true;
 			$this->routeStartingReservedKeyword = $routeStartingKeyword;
 			$isValidIp = CommonFunction::checkCidr(
-				IP: $this->http->httpReqDetailArr['server']['httpRequestIP'],
+				IP: $this->http->httpReqData['server']['httpRequestIP'],
 				cidrString: Env::$reservedRoutesCidrString[$routeStartingKeyword]
 			);
 			if (!$isValidIp) {
@@ -432,7 +432,7 @@ class RouteParser
 				)
 			) {
 				throw new \Exception(
-					message: 'Missing config for ' . $this->http->httpReqDetailArr['server']['httpMethod'] . ' method',
+					message: 'Missing config for ' . $this->http->httpReqData['server']['httpMethod'] . ' method',
 					code: HttpStatus::$InternalServerError
 				);
 			}
@@ -464,13 +464,13 @@ class RouteParser
 		// Switch Output data representation if set in URL param
 		if (
 			Env::$enableOutputRepresentationAsQueryParam
-			&& isset($this->http->httpReqDetailArr['get']['oRepresentation'])
+			&& isset($this->http->httpReqData['get']['oRepresentation'])
 			&& Env::isValidDataRep(
-				dataRepresentation: $this->http->httpReqDetailArr['get']['oRepresentation'],
+				dataRepresentation: $this->http->httpReqData['get']['oRepresentation'],
 				mode: 'output'
 			)
 		) {
-			$this->http->res->oRepresentation = $this->http->httpReqDetailArr['get']['oRepresentation'];
+			$this->http->res->oRepresentation = $this->http->httpReqData['get']['oRepresentation'];
 		}
 	}
 

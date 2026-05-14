@@ -55,11 +55,11 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Validate session id
 	 *
-	 * @param string $sessionID Session id
+	 * @param string $sessionId Session id
 	 *
 	 * @return bool|string
 	 */
-	public function getSession($sessionID): bool|string
+	public function getSession($sessionId): bool|string
 	{
 		if (
 			isset($_COOKIE[$this->sessionDataName])
@@ -83,12 +83,12 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Write session data
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionID, $sessionData): bool|int
+	public function setSession($sessionId, $sessionData): bool|int
 	{
 		$sessionDataArr = unserialize(data: $sessionData);
 		$sessionDataArr['_TS_'] = Env::$timestamp;
@@ -122,25 +122,25 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Update session data
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionID, $sessionData): bool|int
+	public function updateSession($sessionId, $sessionData): bool|int
 	{
-		return $this->setSession(sessionID: $sessionID, sessionData: $sessionData);
+		return $this->setSession(sessionId: $sessionId, sessionData: $sessionData);
 	}
 
 	/**
 	 * For Custom Session Handler - Update session timestamp
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionID, $sessionData): bool
+	public function touchSession($sessionId, $sessionData): bool
 	{
 		$sessionDataArr = unserialize(data: $sessionData);
 		$sessionDataArr['_TS_'] = Env::$timestamp;
@@ -186,11 +186,11 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Destroy a session
 	 *
-	 * @param string $sessionID Session id
+	 * @param string $sessionId Session id
 	 *
 	 * @return bool
 	 */
-	public function deleteSession($sessionID): bool
+	public function deleteSession($sessionId): bool
 	{
 		if (isset($_COOKIE[$this->sessionDataName])) {
 			unset($_COOKIE[$this->sessionDataName]);

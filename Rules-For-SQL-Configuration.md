@@ -29,25 +29,25 @@ return [
 			// 'fetchFrom' => 'queryParamArr', // Fetch value from query string
 			// 'fetchFrom' => 'payload', // Fetch value from payload
 			// 'fetchFrom' => 'function', // Fetch value from function
-			// 'fetchFrom' => 'cDetail', // Fetch value from customer detail
-			// 'fetchFrom' => 'uDetail', // Fetch value from user detail session
+			// 'fetchFrom' => 'customerData', // Fetch value from Customer Data
+			// 'fetchFrom' => 'userData', // Fetch value from User Data session
 			// 'fetchFrom' => 'custom', // Static values
 			// 'fetchFrom' => 'variables', // to fetch values as per __VARIABLES__ key's
-			'fetchFromDetail' => 'id',                       // key (id)
+			'fetchFromData' => 'id',                       // key (id)
 			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 			'isRequired' => Constant::$REQUIRED              // Represents required field
 		],
 			// Fetch value from function
 			'column' => 'password',
 			'fetchFrom' => 'function',                       // function
-			'fetchFromDetail' => function($session) {        // execute a function and return value
+			'fetchFromData' => function($session) {        // execute a function and return value
 				return 'value';
 			}
 		],
 			// Fetch value of last insert IDs
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',                        // custom
-			'fetchFromDetail' => 'No'                        // Static values
+			'fetchFromData' => 'No'                        // Static values
 		]
 	],
 
@@ -59,11 +59,11 @@ return [
 			// 'fetchFrom' => 'queryParamArr', // Fetch value from query string
 			// 'fetchFrom' => 'payload', // Fetch value from payload
 			// 'fetchFrom' => 'function', // Fetch value from function
-			// 'fetchFrom' => 'cDetail', // Fetch value from customer detail
-			// 'fetchFrom' => 'uDetail', // Fetch value from user detail session
+			// 'fetchFrom' => 'customerData', // Fetch value from Customer Data
+			// 'fetchFrom' => 'userData', // Fetch value from User Data session
 			// 'fetchFrom' => 'custom', // Static values
 			// 'fetchFrom' => 'variables', // to fetch values as per __VARIABLES__ key's
-			'fetchFromDetail' => 'id',                       // key (id)
+			'fetchFromData' => 'id',                       // key (id)
 			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 			'isRequired' => Constant::$REQUIRED              // Represents required field
 		],
@@ -110,11 +110,11 @@ return [
 					// 'fetchFrom' => 'queryParamArr', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetail', // Fetch value from customer detail
-					// 'fetchFrom' => 'uDetail', // Fetch value from user detail session
+					// 'fetchFrom' => 'customerData', // Fetch value from Customer Data
+					// 'fetchFrom' => 'userData', // Fetch value from User Data session
 					// 'fetchFrom' => 'custom', // Static values
 					// 'fetchFrom' => 'variables', // to fetch values as per current module/<sub-key> __VARIABLES__ key's
-					'fetchFromDetail' => 'id',                       // key (id)
+					'fetchFromData' => 'id',                       // key (id)
 					'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 					'isRequired' => Constant::$REQUIRED              // Represents required field
 				],
@@ -122,28 +122,28 @@ return [
 				// to validate each data set before procedding forward
 					// Fetch value of last insert IDs
 					'column' => 'id',
-					'fetchFrom' => '__INSERT-IDs__',                // uDetail from session
-					'fetchFromDetail' => '<saved-id-key>'            // previous Insert IDs
+					'fetchFrom' => '__INSERT-IDs__',                // userData from session
+					'fetchFromData' => '<saved-id-key>'            // previous Insert IDs
 				],
 					// Fetch values of params from previous queries
 					'column' => 'id',
 					'fetchFrom' => 'sqlParamArr',                     // sqlParamArr (with useHierarchy)
-					'fetchFromDetail' => '<return:keys-separated-by-colon>'
+					'fetchFromData' => '<return:keys-separated-by-colon>'
 				],
 					// Fetch values of SQL results from previous queries
 					'column' => 'id',
 					'fetchFrom' => 'sqlResults',                    // sqlResults for DQL operations (with useResultSet)
-					'fetchFromDetail' => '<return:keys-separated-by-colon>'
+					'fetchFromData' => '<return:keys-separated-by-colon>'
 				],
 					// Fetch values of SQL payload for previous queries
 					'column' => 'id',
 					'fetchFrom' => 'sqlPayload',                    // sqlPayload (with useHierarchy)
-					'fetchFromDetail' => '<return:keys-separated-by-colon>'
+					'fetchFromData' => '<return:keys-separated-by-colon>'
 				],
 				[
 					'column' => 'any-table- column',
 					'fetchFrom' => 'variables',      // custom
-					'fetchFromDetail' => 'sub-var1'   // returns static sub-var1 value set in __VARIABLES__ of current module/<sub-key>
+					'fetchFromData' => 'sub-var1'   // returns static sub-var1 value set in __VARIABLES__ of current module/<sub-key>
 				]
 			],
 			'__TRIGGERS__' => [...],
@@ -169,15 +169,15 @@ return [
 					// 'fetchFrom' => 'queryParamArr', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetail', // Fetch value from customer detail
-					// 'fetchFrom' => 'uDetail', // Fetch value from user detail session
+					// 'fetchFrom' => 'customerData', // Fetch value from Customer Data
+					// 'fetchFrom' => 'userData', // Fetch value from User Data session
 					// 'fetchFrom' => 'custom', // Static values
 					// 'fetchFrom' => '__INSERT-IDs__', // SQL Insert IDs
-					'fetchFromDetail' => 'address'
+					'fetchFromData' => 'address'
 				],
 					// SQL Insert IDs
 					'fetchFrom' => '__INSERT-IDs__',
-					'fetchFromDetail' => 'address:id'
+					'fetchFromData' => 'address:id'
 				]
 			],
 			'__QUERY-STRING__' => [
@@ -187,11 +187,11 @@ return [
 					// 'fetchFrom' => 'queryParamArr', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetail', // Fetch value from customer detail
-					// 'fetchFrom' => 'uDetail', // Fetch value from user detail session
+					// 'fetchFrom' => 'customerData', // Fetch value from Customer Data
+					// 'fetchFrom' => 'userData', // Fetch value from User Data session
 					// 'fetchFrom' => 'custom', // Static values
 					// 'fetchFrom' => '__INSERT-IDs__', // SQL Insert IDs
-					'fetchFromDetail' => 'address'
+					'fetchFromData' => 'address'
 				],
 				[...]
 			],
@@ -203,11 +203,11 @@ return [
 					// 'fetchFrom' => 'queryParamArr', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetail', // Fetch value from customer detail
-					// 'fetchFrom' => 'uDetail', // Fetch value from user detail session
+					// 'fetchFrom' => 'customerData', // Fetch value from Customer Data
+					// 'fetchFrom' => 'userData', // Fetch value from User Data session
 					// 'fetchFrom' => 'custom', // Static values
 					// 'fetchFrom' => '__INSERT-IDs__', // SQL Insert IDs
-					'fetchFromDetail' => 'address'
+					'fetchFromData' => 'address'
 				],
 				[...]
 			]
@@ -232,7 +232,7 @@ return [
 			'functionArgs' => [
 				'id' => ['payload', 'id']
 			],
-			'errorMessage' => 'Invalid Group id'
+			'errorMessage' => 'Invalid Group Id'
 		],
 		[...]
 	],
@@ -325,10 +325,10 @@ return [
 			// 'fetchFrom' => 'queryParamArr', // Fetch value from query string
 			// 'fetchFrom' => 'payload', // Fetch value from payload
 			// 'fetchFrom' => 'function', // Fetch value from function
-			// 'fetchFrom' => 'cDetail', // Fetch value from customer detail
-			// 'fetchFrom' => 'uDetail', // Fetch value from user detail session
+			// 'fetchFrom' => 'customerData', // Fetch value from Customer Data
+			// 'fetchFrom' => 'userData', // Fetch value from User Data session
 			// 'fetchFrom' => 'custom', // Static values
-			'fetchFromDetail' => 'id',                       // key (id)
+			'fetchFromData' => 'id',                       // key (id)
 			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 			'isRequired' => Constant::$REQUIRED              // Represents required field
 		],
@@ -339,7 +339,7 @@ return [
 
 ## Available configuration options for Supplement
 
-- Here one can configure and collect payload to perform customized operations (for Supplement folder in www)
+- Here one can configure and collect payload to perform customized operations (for Supplement folder)
 
 ```PHP
 //return represents root for sqlResults
@@ -352,10 +352,10 @@ return [
 			// 'fetchFrom' => 'queryParamArr', // Fetch value from query string
 			// 'fetchFrom' => 'payload', // Fetch value from payload
 			// 'fetchFrom' => 'function', // Fetch value from function
-			// 'fetchFrom' => 'cDetail', // Fetch value from customer detail
-			// 'fetchFrom' => 'uDetail', // Fetch value from user detail session
+			// 'fetchFrom' => 'customerData', // Fetch value from Customer Data
+			// 'fetchFrom' => 'userData', // Fetch value from User Data session
 			// 'fetchFrom' => 'custom', // Static values
-			'fetchFromDetail' => 'id',                       // key (id)
+			'fetchFromData' => 'id',                       // key (id)
 			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 			'isRequired' => Constant::$REQUIRED              // Represents required field
 		],
@@ -385,10 +385,10 @@ return [
 					// 'fetchFrom' => 'queryParamArr', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetail', // Fetch value from customer detail
-					// 'fetchFrom' => 'uDetail', // Fetch value from user detail session
+					// 'fetchFrom' => 'customerData', // Fetch value from Customer Data
+					// 'fetchFrom' => 'userData', // Fetch value from User Data session
 					// 'fetchFrom' => 'custom', // Static values
-					'fetchFromDetail' => 'id',                       // key (id)
+					'fetchFromData' => 'id',                       // key (id)
 					'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 					'isRequired' => Constant::$REQUIRED              // Represents required field
 				],
@@ -397,17 +397,17 @@ return [
 					// Fetch values of params from previous queries
 					'column' => 'id',
 					'fetchFrom' => 'sqlParamArr',                     // sqlParamArr (with useHierarchy)
-					'fetchFromDetail' => '<return:keys-separated-by-colon>'
+					'fetchFromData' => '<return:keys-separated-by-colon>'
 				],
 					// Fetch values of SQL results from previous queries
 					'column' => 'id',
 					'fetchFrom' => 'sqlResults',                    // sqlResults for DQL operations (with useResultSet)
-					'fetchFromDetail' => '<return:keys-separated-by-colon>'
+					'fetchFromData' => '<return:keys-separated-by-colon>'
 				],
 					// Fetch values of SQL payload for previous queries
 					'column' => 'id',
 					'fetchFrom' => 'sqlPayload',                    // sqlPayload (with useHierarchy)
-					'fetchFromDetail' => '<return:keys-separated-by-colon>'
+					'fetchFromData' => '<return:keys-separated-by-colon>'
 				],
 			],
 			'__FUNCTION__' => 'subProcess',
@@ -434,10 +434,10 @@ return [
 					// 'fetchFrom' => 'queryParamArr', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetail', // Fetch value from customer detail
-					// 'fetchFrom' => 'uDetail', // Fetch value from user detail session
+					// 'fetchFrom' => 'customerData', // Fetch value from Customer Data
+					// 'fetchFrom' => 'userData', // Fetch value from User Data session
 					// 'fetchFrom' => 'custom', // Static values
-					'fetchFromDetail' => 'address'
+					'fetchFromData' => 'address'
 				],
 				[...]
 			],
@@ -448,10 +448,10 @@ return [
 					// 'fetchFrom' => 'queryParamArr', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetail', // Fetch value from customer detail
-					// 'fetchFrom' => 'uDetail', // Fetch value from user detail session
+					// 'fetchFrom' => 'customerData', // Fetch value from Customer Data
+					// 'fetchFrom' => 'userData', // Fetch value from User Data session
 					// 'fetchFrom' => 'custom', // Static values
-					'fetchFromDetail' => 'address'
+					'fetchFromData' => 'address'
 				],
 				[...]
 			],
@@ -463,10 +463,10 @@ return [
 					// 'fetchFrom' => 'queryParamArr', // Fetch value from query string
 					// 'fetchFrom' => 'payload', // Fetch value from payload
 					// 'fetchFrom' => 'function', // Fetch value from function
-					// 'fetchFrom' => 'cDetail', // Fetch value from customer detail
-					// 'fetchFrom' => 'uDetail', // Fetch value from user detail session
+					// 'fetchFrom' => 'customerData', // Fetch value from Customer Data
+					// 'fetchFrom' => 'userData', // Fetch value from User Data session
 					// 'fetchFrom' => 'custom', // Static values
-					'fetchFromDetail' => 'address'
+					'fetchFromData' => 'address'
 				],
 				[...]
 			]
@@ -491,7 +491,7 @@ return [
 			'functionArgs' => [
 				'id' => ['payload', 'id']
 			],
-			'errorMessage' => 'Invalid Group id'
+			'errorMessage' => 'Invalid Group Id'
 		],
 		[...]
 	],
@@ -597,7 +597,7 @@ public static $PrimaryKey = [
 ## Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/OpenSwoole-Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
 
 ## Author
 

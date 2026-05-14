@@ -38,7 +38,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	public $mySqlServerPort = null;
 	public $mySqlServerUsername = null;
 	public $mySqlServerPassword = null;
-	public $mySqlServerDb = null;
+	public $mySqlServerDatabase = null;
 	public $mySqlServerTable = null;
 
 	private $mySqlServerObj = null;
@@ -59,19 +59,19 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Validate session id
 	 *
-	 * @param string $sessionID Session id
+	 * @param string $sessionId Session id
 	 *
 	 * @return bool|string
 	 */
-	public function getSession($sessionID): bool|string
+	public function getSession($sessionId): bool|string
 	{
 		$sql = "
 			SELECT `sessionData`
-			FROM `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
-			WHERE `sessionID` = :sessionID AND lastAccessed > :lastAccessed
+			FROM `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
+			WHERE `sessionId` = :sessionId AND lastAccessed > :lastAccessed
 		";
 		$paramArr = [
-			':sessionID' => $sessionID,
+			':sessionId' => $sessionId,
 			':lastAccessed' => (Env::$timestamp - $this->sessionMaxLifetime)
 		];
 		if (
@@ -86,22 +86,22 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Write session data
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionID, $sessionData): bool|int
+	public function setSession($sessionId, $sessionData): bool|int
 	{
 		$sql = "
-			INSERT INTO `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
+			INSERT INTO `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
 			SET
 				`sessionData` = :sessionData,
 				`lastAccessed` = :lastAccessed,
-				`sessionID` = :sessionID
+				`sessionId` = :sessionId
 		";
 		$paramArr = [
-			':sessionID' => $sessionID,
+			':sessionId' => $sessionId,
 			':sessionData' => $this->encryptData(plainText: $sessionData),
 			':lastAccessed' => Env::$timestamp
 		];
@@ -112,23 +112,23 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Update session data
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionID, $sessionData): bool|int
+	public function updateSession($sessionId, $sessionData): bool|int
 	{
 		$sql = "
-			UPDATE `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
+			UPDATE `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
 			SET
 				`sessionData` = :sessionData,
 				`lastAccessed` = :lastAccessed
 			WHERE
-				`sessionID` = :sessionID
+				`sessionId` = :sessionId
 		";
 		$paramArr = [
-			':sessionID' => $sessionID,
+			':sessionId' => $sessionId,
 			':sessionData' => $this->encryptData(plainText: $sessionData),
 			':lastAccessed' => Env::$timestamp
 		];
@@ -139,20 +139,20 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Update session timestamp
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionID, $sessionData): bool
+	public function touchSession($sessionId, $sessionData): bool
 	{
 		$sql = "
-			UPDATE `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
+			UPDATE `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
 			SET `lastAccessed` = :lastAccessed
-			WHERE `sessionID` = :sessionID
+			WHERE `sessionId` = :sessionId
 		";
 		$paramArr = [
-			':sessionID' => $sessionID,
+			':sessionId' => $sessionId,
 			':lastAccessed' => Env::$timestamp
 		];
 		return $this->execSql(sql: $sql, paramArr: $paramArr);
@@ -169,7 +169,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	{
 		$lastAccessed = Env::$timestamp - $sessionMaxLifetime;
 		$sql = "
-			DELETE FROM `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
+			DELETE FROM `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
 			WHERE `lastAccessed` < :lastAccessed
 		";
 		$paramArr = [
@@ -181,18 +181,18 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Destroy a session
 	 *
-	 * @param string $sessionID Session id
+	 * @param string $sessionId Session id
 	 *
 	 * @return bool
 	 */
-	public function deleteSession($sessionID): bool
+	public function deleteSession($sessionId): bool
 	{
 		$sql = "
-			DELETE FROM `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
-			WHERE `sessionID` = :sessionID
+			DELETE FROM `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
+			WHERE `sessionId` = :sessionId
 		";
 		$paramArr = [
-			':sessionID' => $sessionID
+			':sessionId' => $sessionId
 		];
 		return $this->execSql(sql: $sql, paramArr: $paramArr);
 	}

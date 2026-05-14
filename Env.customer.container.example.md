@@ -13,7 +13,7 @@ gCacheServerHostname='127.0.0.1'
 gCacheServerPort=6379
 gCacheServerUsername=''
 gCacheServerPassword=''
-gCacheServerDb=0
+gCacheServerDatabase=0
 ```
 
 ### Global Database Server configuration - global.sql
@@ -25,7 +25,7 @@ gDbServerHostname='127.0.0.1'
 gDbServerPort=3306
 gDbServerUsername='username'
 gDbServerPassword='password'
-gDbServerDb='<global>'
+gDbServerDatabase='<global>'
 
 ; Tables in <global> database on the server
 groupsTable='group'
@@ -51,20 +51,13 @@ These **Global Cache Server configuration (Redis)** and **Global Database Server
 `customer`.`slave_db_server_password` varchar(255) NOT NULL,
 `customer`.`slave_db_server_db` varchar(255) NOT NULL,
 `customer`.`slave_db_server_query_placeholder` varchar(255) NOT NULL,
-`customer`.`master_cache_server_type` varchar(255) NOT NULL,
-`customer`.`master_cache_server_hostname` varchar(255) NOT NULL,
-`customer`.`master_cache_server_port` varchar(255) NOT NULL,
-`customer`.`master_cache_server_username` varchar(255) NOT NULL,
-`customer`.`master_cache_server_password` varchar(255) NOT NULL,
-`customer`.`master_cache_server_db` varchar(255) NOT NULL,
-`customer`.`master_cache_server_table` varchar(255) NOT NULL,
-`customer`.`slave_cache_server_type` varchar(255) NOT NULL,
-`customer`.`slave_cache_server_hostname` varchar(255) NOT NULL,
-`customer`.`slave_cache_server_port` varchar(255) NOT NULL,
-`customer`.`slave_cache_server_username` varchar(255) NOT NULL,
-`customer`.`slave_cache_server_password` varchar(255) NOT NULL,
-`customer`.`slave_cache_server_db` varchar(255) NOT NULL,
-`customer`.`slave_cache_server_table` varchar(255) NOT NULL,
+`customer`.`cache_server_type` varchar(255) NOT NULL,
+`customer`.`cache_server_hostname` varchar(255) NOT NULL,
+`customer`.`cache_server_port` varchar(255) NOT NULL,
+`customer`.`cache_server_username` varchar(255) NOT NULL,
+`customer`.`cache_server_password` varchar(255) NOT NULL,
+`customer`.`cache_server_db` varchar(255) NOT NULL,
+`customer`.`cache_server_table` varchar(255) NOT NULL,
 ```
 
 - **Note**: Only the Key detail in the environment file are to be set in columns of respective record. Eg. for column master_db_server_hostname the value to be set is 'gDbServerType' and not '127.0.0.1'. The configured values for the Key are picked from the env files.
@@ -73,17 +66,17 @@ The slave detail can take same values as master if presently your system doesn't
 
 ## Setting Cache / Database Server configuration in customer table for working
 
-### Different database on DB server
+### Different database on Database server
 
-If there is a requirement from customer X to have a dedicated database like <database-x> on the DB server one can do this.<br /><br />
+If there is a requirement from customer X to have a dedicated database like <database-x> on the database server one can do this.<br /><br />
 
 Make a new config variable as below and set this Key in the above table for customer X record in customer table.
 
 ```ini
-cDatabaseServerDb='<database-x>'
+cDatabaseServerDatabase='<database-x>'
 ```
 
-### Dedicated DB server
+### Dedicated Database Server
 
 If the same customer X in future prefer to have a dedicated database server one can do this as well.<br />
 
@@ -98,11 +91,11 @@ cCacheServerHostname001='127.0.0.1'
 cCacheServerPort001=6379
 cCacheServerUsername001='kartik'
 cCacheServerPassword001='shames11'
-cCacheServerDb001=0
+cCacheServerDatabase001=0
 cCacheServerTable001='customer_001'      ; For MongoDb
 ```
 
-- Dedicated database
+- Dedicated Database
 
 ```ini
 ; Supported Container - MySql / PostgreSql
@@ -153,14 +146,14 @@ queryCacheServerHostname='127.0.0.1'
 queryCacheServerPort=6379
 queryCacheServerUsername='username'
 queryCacheServerPassword='password'
-queryCacheServerDb=0
+queryCacheServerDatabase=0
 queryCacheServerTable='api_cache' ; For MongoDb
 ```
 
 ## Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/OpenSwoole-Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
 
 ## Author
 

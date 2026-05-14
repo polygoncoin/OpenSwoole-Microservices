@@ -70,7 +70,7 @@ class MongoDb implements NoSqlInterface
 	 *
 	 * @var null|string
 	 */
-	private $cacheServerDb = null;
+	private $cacheServerDatabase = null;
 
 	/**
 	 * Cache collection
@@ -91,7 +91,7 @@ class MongoDb implements NoSqlInterface
 	 *
 	 * @var null|Object
 	 */
-	private $cacheServerDbObj = null;
+	private $cacheServerDatabaseObj = null;
 
 	/**
 	 * Collection Object
@@ -107,7 +107,7 @@ class MongoDb implements NoSqlInterface
 	 * @param int         $cacheServerPort     Cache Server Port
 	 * @param string      $cacheServerUsername Cache Server Username
 	 * @param string      $cacheServerPassword Cache Server Password
-	 * @param null|string $cacheServerDb       Cache Server Database
+	 * @param null|string $cacheServerDatabase Cache Server Database
 	 * @param null|string $cacheServerTable    Cache Server Table
 	 */
 	public function __construct(
@@ -115,14 +115,14 @@ class MongoDb implements NoSqlInterface
 		$cacheServerPort,
 		$cacheServerUsername,
 		$cacheServerPassword,
-		$cacheServerDb,
+		$cacheServerDatabase,
 		$cacheServerTable
 	) {
 		$this->cacheServerHostname = $cacheServerHostname;
 		$this->cacheServerPort = $cacheServerPort;
 		$this->cacheServerUsername = $cacheServerUsername;
 		$this->cacheServerPassword = $cacheServerPassword;
-		$this->cacheServerDb = $cacheServerDb;
+		$this->cacheServerDatabase = $cacheServerDatabase;
 		$this->cacheServerTable = $cacheServerTable;
 	}
 
@@ -153,10 +153,14 @@ class MongoDb implements NoSqlInterface
 			$this->cacheServerObj = new \MongoDB\Customer($this->uri);
 
 			// Select a database
-			$this->cacheServerDbObj = $this->cacheServerObj->selectDatabase($this->cacheServerDb);
+			$this->cacheServerDatabaseObj = $this->cacheServerObj->selectDatabase(
+				$this->cacheServerDatabase
+			);
 
 			// Select a collection
-			$this->collectionObj = $this->cacheServerDbObj->selectCollection($this->cacheServerTable);
+			$this->collectionObj = $this->cacheServerDatabaseObj->selectCollection(
+				$this->cacheServerTable
+			);
 
 			// Create the TTL index
 			// Set the indexed field to 'expireOn' and expireAfterSeconds to 0
@@ -175,15 +179,15 @@ class MongoDb implements NoSqlInterface
 	/**
 	 * Cache key exist
 	 *
-	 * @param string $cacheKey Cache key
+	 * @param string $key Key
 	 *
 	 * @return mixed
 	 */
-	public function cacheExist($cacheKey): mixed
+	public function exist($key): mixed
 	{
 		$this->connect();
 
-		$filter = ['key' => $cacheKey];
+		$filter = ['key' => $key];
 
 		if ($document = $this->collectionObj->findOne($filter)) {
 			return true;
@@ -194,33 +198,33 @@ class MongoDb implements NoSqlInterface
 	/**
 	 * Get cache key
 	 *
-	 * @param string $cacheKey Cache key
+	 * @param string $key Key
 	 *
 	 * @return mixed
 	 */
-	public function cacheGet($cacheKey): mixed
+	public function get($key): mixed
 	{
 		$this->connect();
 
-		$filter = ['key' => $cacheKey];
+		$filter = ['key' => $key];
 		return $this->collectionObj->findOne($filter);
 	}
 
 	/**
 	 * Set cache key
 	 *
-	 * @param string $cacheKey Cache key
-	 * @param string $value    Cache value
-	 * @param int    $expire   Seconds to expire. Default 0 - doesn't expire
+	 * @param string $key    Key
+	 * @param string $value  Cache value
+	 * @param int    $expire Seconds to expire. Default 0 - doesn't expire
 	 *
 	 * @return mixed
 	 */
-	public function cacheSet($cacheKey, $value, $expire = null): mixed
+	public function set($key, $value, $expire = null): mixed
 	{
 		$this->connect();
 
 		$document = [
-			'key' => $cacheKey,
+			'key' => $key,
 			'value' => $value
 		];
 
@@ -243,16 +247,16 @@ class MongoDb implements NoSqlInterface
 	/**
 	 * Increment cache key with offset
 	 *
-	 * @param string $cacheKey Cache key
-	 * @param int    $offset   Offset
+	 * @param string $key    Key
+	 * @param int    $offset Offset
 	 *
 	 * @return int
 	 */
-	public function cacheIncrement($cacheKey, $offset = 1): int
+	public function increment($key, $offset = 1): int
 	{
 		$this->connect();
 
-		$filter = ['key' => $cacheKey];
+		$filter = ['key' => $key];
 		$update = ['$inc' => ['value' => $offset]];
 		$result = $this->collectionObj->updateOne($filter, $update);
 
@@ -262,15 +266,15 @@ class MongoDb implements NoSqlInterface
 	/**
 	 * Delete cache key
 	 *
-	 * @param string $cacheKey Cache key
+	 * @param string $key Key
 	 *
 	 * @return mixed
 	 */
-	public function cacheDelete($cacheKey): mixed
+	public function delete($key): mixed
 	{
 		$this->connect();
 
-		$filter = ['key' => $cacheKey];
+		$filter = ['key' => $key];
 		if ($this->collectionObj->deleteOne($filter)) {
 			return true;
 		}

@@ -21,61 +21,61 @@ return [
 		[
 			'column' => 'name',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'name'
+			'fetchFromData' => 'name'
 		],
 		[
 			'column' => 'customer_id',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'customer_id',
+			'fetchFromData' => 'customer_id',
 			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'connection_id',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'connection_id',
+			'fetchFromData' => 'connection_id',
 			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'allowed_cidr',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'allowed_cidr'
+			'fetchFromData' => 'allowed_cidr'
 		],
 		[
 			'column' => 'comments',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'comments'
+			'fetchFromData' => 'comments'
 		],
 		[
 			'column' => 'updated_by',
-			'fetchFrom' => 'uDetail',
-			'fetchFromDetail' => 'id'
+			'fetchFrom' => 'userData',
+			'fetchFromData' => 'id'
 		],
 		[
 			'column' => 'updated_on',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => date(format: 'Y-m-d H:i:s')
+			'fetchFromData' => date(format: 'Y-m-d H:i:s')
 		]
 	],
 	'__WHERE__' => [
 		[
 			'column' => 'is_approved',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'Yes'
+			'fetchFromData' => 'Yes'
 		],
 		[
 			'column' => 'is_disabled',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'No'
+			'fetchFromData' => 'No'
 		],
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'No'
+			'fetchFromData' => 'No'
 		],
 		[
 			'column' => 'id',
 			'fetchFrom' => 'routeParamArr',
-			'fetchFromDetail' => 'id',
+			'fetchFromData' => 'id',
 			'dataType' => DatabaseServerDataType::$INT
 		]
 	],
@@ -87,7 +87,7 @@ return [
 				'primary' => ['custom', 'id'],
 				'id' => ['payload', 'id', DatabaseServerDataType::$INT]
 			],
-			'errorMessage' => 'Invalid Group id'
+			'errorMessage' => 'Invalid Group Id'
 		],
 	]
 ];

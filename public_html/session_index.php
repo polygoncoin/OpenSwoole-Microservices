@@ -61,12 +61,12 @@ $server->on(
 		Env::$timestamp = time();
 		Env::init();
 
-		$httpReqDetailArr = [];
+		$httpReqData = [];
 
-		$httpReqDetailArr['streamData'] = true;
-		$httpReqDetailArr['server']['domainName'] = 'api.customer001.localhost'; // Auth
-		// $httpReqDetailArr['server']['domainName'] = 'localhost'; // Open
-		$httpReqDetailArr['server']['httpMethod'] = $request->server['request_method'];
+		$httpReqData['streamData'] = true;
+		$httpReqData['server']['domainName'] = 'api.customer001.localhost'; // Auth
+		// $httpReqData['server']['domainName'] = 'localhost'; // Open
+		$httpReqData['server']['httpMethod'] = $request->server['request_method'];
 
 		if (
 			((int)getenv('DISABLE_REQUESTS_VIA_PROXIES')) === 1
@@ -77,23 +77,23 @@ $server->on(
 		}
 
 		if (isset($request->server['remote_addr'])) {
-			$httpReqDetailArr['server']['httpRequestIP'] = $request->server['remote_addr'];
+			$httpReqData['server']['httpRequestIP'] = $request->server['remote_addr'];
 		} else {// check proxy headers
 			if (isset($request->header['x-forwarded-for'])) {
-				$httpReqDetailArr['server']['httpRequestIP'] = $request->header['x-forwarded-for'];
+				$httpReqData['server']['httpRequestIP'] = $request->header['x-forwarded-for'];
 			} elseif (isset($request->header['x-real-ip'])) {
-				$httpReqDetailArr['server']['httpRequestIP'] = $request->header['x-real-ip'];
+				$httpReqData['server']['httpRequestIP'] = $request->header['x-real-ip'];
 			}
 		}
 
-		$httpReqDetailArr['header'] = $request->header;
+		$httpReqData['header'] = $request->header;
 		if (isset($request->header['authorization'])) {
-			$httpReqDetailArr['header']['tokenHeader'] = $request->header['authorization'];
+			$httpReqData['header']['tokenHeader'] = $request->header['authorization'];
 		}
-		$httpReqDetailArr['get'] = &$request->get;
-		$httpReqDetailArr['post'] = $request->rawContent();
-		$httpReqDetailArr['files'] = &$request->files;
-		$httpReqDetailArr['httpRequestHash'] = CommonFunction::httpRequestHash(
+		$httpReqData['get'] = &$request->get;
+		$httpReqData['post'] = $request->rawContent();
+		$httpReqData['files'] = &$request->files;
+		$httpReqData['httpRequestHash'] = CommonFunction::httpRequestHash(
 			hashArray: [
 				// $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '',
 				// $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
@@ -103,9 +103,9 @@ $server->on(
 		);
 
 		if (
-			isset($httpReqDetailArr['get'][ROUTE_URL_PARAM])
+			isset($httpReqData['get'][ROUTE_URL_PARAM])
 			&& in_array(
-				needle: $httpReqDetailArr['get'][ROUTE_URL_PARAM],
+				needle: $httpReqData['get'][ROUTE_URL_PARAM],
 				haystack: [
 					'/all-test',
 					'/auth-test',
@@ -116,7 +116,7 @@ $server->on(
 			)
 		) {
 			$testObj = new Test();
-			switch ($httpReqDetailArr['get'][ROUTE_URL_PARAM]) {
+			switch ($httpReqData['get'][ROUTE_URL_PARAM]) {
 				case '/all-test':
 					$response->end('<pre>'.print_r(value: $testObj->processTests(), return: true));
 					break;
@@ -135,7 +135,7 @@ $server->on(
 			}
 		} else {
 			ob_start();
-			[$responseHeaderArr, $responseContent, $responseCode] = Start::http(httpReqDetailArr: $httpReqDetailArr);
+			[$responseHeaderArr, $responseContent, $responseCode] = Start::http(httpReqData: $httpReqData);
 			@ob_clean();
 
 			$responseCode = $responseCode ?? 200;

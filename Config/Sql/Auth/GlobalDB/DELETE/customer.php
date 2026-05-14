@@ -20,25 +20,25 @@ return [
 	'__SET__' => [
 		[
 			'column' => 'updated_by',
-			'fetchFrom' => 'uDetail',
-			'fetchFromDetail' => 'id'
+			'fetchFrom' => 'userData',
+			'fetchFromData' => 'id'
 		],
 		[
 			'column' => 'updated_on',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => date('Y-m-d H:i:s')
+			'fetchFromData' => date('Y-m-d H:i:s')
 		],
 	],
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'No'
+			'fetchFromData' => 'No'
 		],
 		[
 			'column' => 'id',
 			'fetchFrom' => 'routeParamArr',
-			'fetchFromDetail' => 'id',
+			'fetchFromData' => 'id',
 			'dataType' => DatabaseServerDataType::$INT
 		]
 	],
@@ -50,7 +50,7 @@ return [
 				'primary' => ['custom', 'id'],
 				'id' => ['payload', 'id', DatabaseServerDataType::$INT]
 			],
-			'errorMessage' => 'Invalid Customer id'
+			'errorMessage' => 'Invalid Customer Id'
 		],
 		[
 			'function' => '_checkColumnValueExist',

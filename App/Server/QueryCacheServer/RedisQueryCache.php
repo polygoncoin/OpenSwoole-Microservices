@@ -16,8 +16,8 @@
 namespace Microservices\App\Server\QueryCacheServer;
 
 use Microservices\App\HttpStatus;
+use Microservices\App\Server\CacheServer\RedisCache as QueryCache_Redis;
 use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
-use Microservices\App\Server\Container\NoSql\Redis as QueryCache_Redis;
 
 /**
  * Caching via Redis
@@ -66,7 +66,7 @@ class RedisQueryCache implements QueryCacheServerInterface
 	 *
 	 * @var null|string
 	 */
-	private $queryCacheServerDb = null;
+	private $queryCacheServerDatabase = null;
 
 	/**
 	 * Cache collection
@@ -89,7 +89,7 @@ class RedisQueryCache implements QueryCacheServerInterface
 	 * @param int         $queryCacheServerPort     Query Cache Server Port
 	 * @param string      $queryCacheServerUsername Query Cache Server Username
 	 * @param string      $queryCacheServerPassword Query Cache Server Password
-	 * @param null|string $queryCacheServerDb       Query Cache Server Database
+	 * @param null|string $queryCacheServerDatabase Query Cache Server Database
 	 * @param null|string $queryCacheServerTable    Query Cache Server Table
 	 */
 	public function __construct(
@@ -97,14 +97,14 @@ class RedisQueryCache implements QueryCacheServerInterface
 		$queryCacheServerPort,
 		$queryCacheServerUsername,
 		$queryCacheServerPassword,
-		$queryCacheServerDb,
+		$queryCacheServerDatabase,
 		$queryCacheServerTable
 	) {
 		$this->queryCacheServerHostname = $queryCacheServerHostname;
 		$this->queryCacheServerPort = $queryCacheServerPort;
 		$this->queryCacheServerUsername = $queryCacheServerUsername;
 		$this->queryCacheServerPassword = $queryCacheServerPassword;
-		$this->queryCacheServerDb = $queryCacheServerDb;
+		$this->queryCacheServerDatabase = $queryCacheServerDatabase;
 		$this->queryCacheServerTable = $queryCacheServerTable;
 	}
 
@@ -126,7 +126,7 @@ class RedisQueryCache implements QueryCacheServerInterface
 				cacheServerPort: $this->queryCacheServerPort,
 				cacheServerUsername: $this->queryCacheServerUsername,
 				cacheServerPassword: $this->queryCacheServerPassword,
-				cacheServerDb: $this->queryCacheServerDb,
+				cacheServerDatabase: $this->queryCacheServerDatabase,
 				cacheServerTable: $this->queryCacheServerTable
 			);
 		} catch (\Exception $e) {
@@ -148,7 +148,9 @@ class RedisQueryCache implements QueryCacheServerInterface
 	{
 		$this->connect();
 
-		return $this->queryCacheServerObj->cacheExist(cacheKey: $queryCacheKey);
+		return $this->queryCacheServerObj->cacheExist(
+			cacheKey: $queryCacheKey
+		);
 	}
 
 	/**
@@ -162,37 +164,45 @@ class RedisQueryCache implements QueryCacheServerInterface
 	{
 		$this->connect();
 
-		return $this->queryCacheServerObj->cacheGet($queryCacheKey);
+		return $this->queryCacheServerObj->cacheGet(
+			cacheKey: $queryCacheKey
+		);
 	}
 
 	/**
 	 * Set cache key
 	 *
-	 * @param string $queryCacheKey Query Cache key
-	 * @param string $value         Query Cache value
+	 * @param string $queryCacheKey   Query Cache key
+	 * @param string $queryCacheValue Query Cache value
 	 *
 	 * @return mixed
 	 */
-	public function queryCacheSet($queryCacheKey, $value): mixed
+	public function queryCacheSet($queryCacheKey, $queryCacheValue): mixed
 	{
 		$this->connect();
 
-		return $this->queryCacheServerObj->cacheSet($queryCacheKey, $value);
+		return $this->queryCacheServerObj->cacheSet(
+			cacheKey: $queryCacheKey,
+			cacheValue:  $queryCacheValue
+		);
 	}
 
 	/**
 	 * Increment Query Cache key as per offset
 	 *
 	 * @param string $queryCacheKey Query Cache key
-	 * @param int    $offset        Query Cache offset
+	 * @param int    $queryCacheOffset        Query Cache offset
 	 *
 	 * @return mixed
 	 */
-	public function queryCacheIncrement($queryCacheKey, $offset = 1): mixed
+	public function queryCacheIncrement($queryCacheKey, $queryCacheOffset = 1): mixed
 	{
 		$this->connect();
 
-		return $this->queryCacheServerObj->cacheIncrement($queryCacheKey, $offset);
+		return $this->queryCacheServerObj->cacheIncrement(
+			cacheKey: $queryCacheKey,
+			cacheOffset: $queryCacheOffset
+		);
 	}
 
 	/**
@@ -206,6 +216,8 @@ class RedisQueryCache implements QueryCacheServerInterface
 	{
 		$this->connect();
 
-		return $this->queryCacheServerObj->cacheDelete($queryCacheKey);
+		return $this->queryCacheServerObj->cacheDelete(
+			cacheKey: $queryCacheKey
+		);
 	}
 }

@@ -20,19 +20,19 @@ return [
 	'__SET__' => [
 		[
 			'column' => 'customer_id',
-			'fetchFrom' => 'cDetail',
-			'fetchFromDetail' => 'id'
+			'fetchFrom' => 'customerData',
+			'fetchFromData' => 'id'
 		],
 		[
 			'column' => 'user_id',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'user_id',
+			'fetchFromData' => 'user_id',
 			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'address',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'address'
+			'fetchFromData' => 'address'
 		],
 	],
 	'__INSERT-IDs__' => 'address:id',
@@ -41,23 +41,23 @@ return [
 	//         '__ROUTE__' => [
 	//             [
 	//                 'fetchFrom' => 'custom',
-	//                 'fetchFromDetail' => 'address'
+	//                 'fetchFromData' => 'address'
 	//             ],
 	//             [
 	//                 'fetchFrom' => '__INSERT-IDs__',
-	//                 'fetchFromDetail' => 'address:id'
+	//                 'fetchFromData' => 'address:id'
 	//             ]
 	//         ],
 	//         '__QUERY-STRING__' => [
 	//             [
 	//                 'column' => 'param-1',
 	//                 'fetchFrom' => 'custom',
-	//                 'fetchFromDetail' => 'address'
+	//                 'fetchFromData' => 'address'
 	//             ],
 	//             [
 	//                 'column' => 'param-2',
 	//                 'fetchFrom' => '__INSERT-IDs__',
-	//                 'fetchFromDetail' => 'address:id'
+	//                 'fetchFromData' => 'address:id'
 	//             ]
 	//         ],
 	//         '__METHOD__' => 'PATCH',
@@ -65,7 +65,7 @@ return [
 	//             [
 	//                 'column' => 'address',
 	//                 'fetchFrom' => 'custom',
-	//                 'fetchFromDetail' => 'updated-address'
+	//                 'fetchFromData' => 'updated-address'
 	//             ]
 	//         ]
 	//     ]

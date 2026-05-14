@@ -21,12 +21,12 @@ return [
 		[
 			'column' => 'name',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'name'
+			'fetchFromData' => 'name'
 		],
 		[
 			'column' => 'parent_id',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 0
+			'fetchFromData' => 0
 		],
 	],
 	'__INSERT-IDs__' => 'category:id',
@@ -37,12 +37,12 @@ return [
 				[
 					'column' => 'name',
 					'fetchFrom' => 'payload',
-					'fetchFromDetail' => 'subname'
+					'fetchFromData' => 'subname'
 				],
 				[
 					'column' => 'parent_id',
 					'fetchFrom' => '__INSERT-IDs__',
-					'fetchFromDetail' => 'category:id'
+					'fetchFromData' => 'category:id'
 				],
 			],
 			'__INSERT-IDs__' => 'sub:id',
@@ -53,12 +53,12 @@ return [
 						[
 							'column' => 'name',
 							'fetchFrom' => 'payload',
-							'fetchFromDetail' => 'subsubname'
+							'fetchFromData' => 'subsubname'
 						],
 						[
 							'column' => 'parent_id',
 							'fetchFrom' => '__INSERT-IDs__',
-							'fetchFromDetail' => 'sub:id'
+							'fetchFromData' => 'sub:id'
 						],
 					],
 					'__INSERT-IDs__' => 'subsub:id',
@@ -69,14 +69,14 @@ return [
 	'useHierarchy' => true,
 	'affectedCacheKeyArr' => [
 		QueryCacheServerKey::category(
-			customerID: $this->http->req->cID,
-			groupID: $this->http->req->s['gDetail']['id'],
-			isOpenToWebRequest: false
+			customerId: $this->http->req->customerId,
+			groupId: $this->http->req->s['groupData']['id'],
+			isAuthRequest: false
 		),
 		QueryCacheServerKey::category1(
-			customerID: $this->http->req->cID,
-			groupID: $this->http->req->s['gDetail']['id'],
-			isOpenToWebRequest: false
+			customerId: $this->http->req->customerId,
+			groupId: $this->http->req->s['groupData']['id'],
+			isAuthRequest: false
 		)
 	]
 ];

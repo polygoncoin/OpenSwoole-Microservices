@@ -80,10 +80,10 @@ class Api
 	public function process(): mixed
 	{
 		if (
-			!$this->http->req->isOpenToWebRequest
-			&& $this->http->httpReqDetailArr['server']['httpMethod'] === Constant::$GET
+			$this->http->req->isAuthRequest
+			&& $this->http->httpReqData['server']['httpMethod'] === Constant::$GET
 		) {
-			$dropboxCache = new Dropbox(httpReqDetailArr: $this->http->httpReqDetailArr, http: $this->http);
+			$dropboxCache = new Dropbox(httpReqData: $this->http->httpReqData, http: $this->http);
 			if ($dropboxCache->init(mode: 'Closed')) {
 				// File exists - Serve from Dropbox
 				return $dropboxCache->process();
@@ -94,7 +94,7 @@ class Api
 		// Execute Pre Route Hook
 		if (isset($this->http->req->rParser->routeHook['__PRE-ROUTE-HOOKS__'])) {
 			if ($this->hook === null) {
-				$this->hook = new Hook($this->http);
+				$this->hook = new Hook(http: $this->http);
 			}
 			$this->hook->triggerHook(
 				hookConfig: $this->http->req->rParser->routeHook['__PRE-ROUTE-HOOKS__']
@@ -119,7 +119,7 @@ class Api
 		}
 
 		$class = null;
-		switch ($this->http->httpReqDetailArr['server']['httpMethod']) {
+		switch ($this->http->httpReqData['server']['httpMethod']) {
 			case Constant::$GET:
 				$class = __NAMESPACE__ . '\\Read';
 				break;
@@ -132,7 +132,7 @@ class Api
 		}
 
 		if ($class !== null) {
-			$api = new $class($this->http);
+			$api = new $class(http: $this->http);
 			if ($api->init()) {
 				$return = $api->process();
 			}
@@ -144,7 +144,7 @@ class Api
 		// Execute Post Route Hook
 		if (isset($this->http->req->rParser->routeHook['__POST-ROUTE-HOOKS__'])) {
 			if ($this->hook === null) {
-				$this->hook = new Hook($this->http);
+				$this->hook = new Hook(http: $this->http);
 			}
 			$this->hook->triggerHook(
 				hookConfig: $this->http->req->rParser->routeHook['__POST-ROUTE-HOOKS__']
@@ -175,7 +175,7 @@ class Api
 			&& Env::$routesRequestRoute === $this->http->req->rParser->routeElementArr[0]
 		) {
 			$supplementApiClass = __NAMESPACE__ . '\\Route';
-			$supplementObj = new $supplementApiClass($this->http);
+			$supplementObj = new $supplementApiClass(http: $this->http);
 			if ($supplementObj->init()) {
 				$supplementObj->process();
 				$supplementProcessed = true;
@@ -215,9 +215,9 @@ class Api
 			}
 
 			if (!empty($supplementApiClass)) {
-				$supplementObj = new $supplementApiClass($this->http);
+				$supplementObj = new $supplementApiClass(http: $this->http);
 				$supplementObj->init();
-				$supplement = new Supplement($this->http);
+				$supplement = new Supplement(http: $this->http);
 				if ($supplement->init(supplementObj: $supplementObj)) {
 					$supplement->process();
 					$supplementProcessed = true;

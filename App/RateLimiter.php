@@ -52,11 +52,6 @@ class RateLimiter
 		if (!Env::$enableRateLimiting) {
 			return;
 		}
-
-		$this->http->req->clientCacheObj = DbCommonFunction::connectClientCache(
-			req: $this->http->req,
-			fetchFrom: 'Master'
-		);
 	}
 
 	/**
@@ -94,7 +89,7 @@ class RateLimiter
 
 		$rateLimitKey = $prefix . $rateLimitKey;
 
-		if ($this->http->req->clientCacheObj->cacheExist($rateLimitKey)) {
+		if ($this->http->req->clientCacheObj->cacheExist(cacheKey: $rateLimitKey)) {
 			$requestCount = (int)$this->http->req->clientCacheObj->cacheGet(
 				cacheKey: $rateLimitKey
 			);
@@ -102,8 +97,8 @@ class RateLimiter
 			$requestCount = 0;
 			$this->http->req->clientCacheObj->cacheSet(
 				cacheKey: $rateLimitKey,
-				value: $requestCount,
-				expire: $remainder
+				cacheValue: $requestCount,
+				cacheExpire: $remainder
 			);
 		}
 		$requestCount++;
@@ -121,5 +116,49 @@ class RateLimiter
 			'remaining' => $remaining,
 			'resetOn' => $resetOn
 		];
+	}
+
+	/**
+	 * Check Rate limit
+	 *
+	 * @param string $rateLimitPrefix           Prefix
+	 * @param int    $rateLimitMaxRequest       Max request
+	 * @param int    $rateLimitMaxRequestWindow Window in seconds
+	 * @param string $rateLimitKey              Rate limit key
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
+	public function checkRateLimit(
+		$rateLimitPrefix,
+		$rateLimitMaxRequest,
+		$rateLimitMaxRequestWindow,
+		$rateLimitKey
+	): void {
+		try {
+			$result = $this->check(
+				prefix: $rateLimitPrefix,
+				maxRequest: $rateLimitMaxRequest,
+				secondsWindow: $rateLimitMaxRequestWindow,
+				rateLimitKey: $rateLimitKey
+			);
+
+			if ($result['allowed']) {
+				// Process the request
+				return;
+			} else {
+				// Return 429 Too Many request
+				throw new \Exception(
+					message: $result['resetOn'] - Env::$timestamp,
+					code: HttpStatus::$TooManyRequest
+				);
+			}
+		} catch (\Exception $e) {
+			// Handle connection errorArr
+			throw new \Exception(
+				message: $e->getMessage(),
+				code: $e->getCode()
+			);
+		}
 	}
 }

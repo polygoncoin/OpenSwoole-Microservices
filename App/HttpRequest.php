@@ -24,6 +24,7 @@ use Microservices\App\Env;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
 use Microservices\App\Middleware\Auth;
+use Microservices\App\RateLimiter;
 use Microservices\App\RouteParser;
 use Microservices\App\Server\CacheServer\CacheServerInterface;
 use Microservices\App\Server\DatabaseServer\DatabaseServerInterface;
@@ -42,6 +43,13 @@ use Microservices\App\Server\DatabaseServer\DatabaseServerInterface;
  */
 class HttpRequest
 {
+	/**
+	 * Rate Limiter
+	 *
+	 * @var null|RateLimiter
+	 */
+	public $rateLimiter = null;
+
 	/**
 	 * Auth middleware object
 	 *
@@ -71,7 +79,7 @@ class HttpRequest
 	public $clientCacheObj = null;
 
 	/**
-	 * Client DB Object
+	 * Client Database Object
 	 *
 	 * @var null|DatabaseServerInterface
 	 */
@@ -85,11 +93,11 @@ class HttpRequest
 	public $s = null;
 
 	/**
-	 * Open To Web request
+	 * Flag for Auth request
 	 *
 	 * @var null|bool
 	 */
-	public $isOpenToWebRequest = null;
+	public $isAuthRequest = null;
 
 	/**
 	 * Payload stream
@@ -104,25 +112,25 @@ class HttpRequest
 	public $rParser = null;
 
 	/**
-	 * Customer id
+	 * Customer Id
 	 *
 	 * @var null|int
 	 */
-	public $cID = null;
+	public $customerId = null;
 
 	/**
-	 * Group id
+	 * Group Id
 	 *
 	 * @var null|int
 	 */
-	public $gID = null;
+	public $groupId = null;
 
 	/**
-	 * User id
+	 * User Id
 	 *
 	 * @var null|int
 	 */
-	public $uID = null;
+	public $userId = null;
 
 	/**
 	 * Constructor
@@ -133,27 +141,27 @@ class HttpRequest
 	{
 		$this->http = &$http;
 
-		if (isset($this->http->httpReqDetailArr['get'][ROUTE_URL_PARAM])) {
-			$this->http->httpReqDetailArr['get'][ROUTE_URL_PARAM] = '/' . trim(
-				string: $this->http->httpReqDetailArr['get'][ROUTE_URL_PARAM],
+		if (isset($this->http->httpReqData['get'][ROUTE_URL_PARAM])) {
+			$this->http->httpReqData['get'][ROUTE_URL_PARAM] = '/' . trim(
+				string: $this->http->httpReqData['get'][ROUTE_URL_PARAM],
 				characters: '/'
 			);
 		} else {
-			$this->http->httpReqDetailArr['get'][ROUTE_URL_PARAM] = '';
+			$this->http->httpReqData['get'][ROUTE_URL_PARAM] = '';
 		}
 
 		switch (Env::$authMode) {
 			case 'Token':
 				if (
-					isset($this->http->httpReqDetailArr['header'])
-					&& isset($this->http->httpReqDetailArr['header']['tokenHeader'])
-					&& $this->http->httpReqDetailArr['header']['tokenHeader'] !== null
+					isset($this->http->httpReqData['header'])
+					&& isset($this->http->httpReqData['header']['tokenHeader'])
+					&& $this->http->httpReqData['header']['tokenHeader'] !== null
 				) {
-					$this->isOpenToWebRequest = false;
-				} elseif ($this->http->httpReqDetailArr['get'][ROUTE_URL_PARAM] === '/login') {
-					$this->isOpenToWebRequest = false;
+					$this->isAuthRequest = true;
+				} elseif ($this->http->httpReqData['get'][ROUTE_URL_PARAM] === '/login') {
+					$this->isAuthRequest = true;
 				} elseif (Env::$enableOpenRequest) {
-					$this->isOpenToWebRequest = true;
+					$this->isAuthRequest = false;
 				}
 				break;
 			case 'Session':
@@ -167,48 +175,16 @@ class HttpRequest
 							code: HttpStatus::$InternalServerError
 						);
 					}
-					if (Env::$enableConcurrentLogin) {
-						$userConcurrencyKey = CacheServerKey::customerUserConcurrency(
-							cID: $this->cID,
-							uID: $this->uID
-						);
-						$sessionID = session_id();
-						if ($this->http->req->clientCacheObj->cacheExist(cacheKey: $userConcurrencyKey)) {
-							$userConcurrencyKeyData = $this->http->req->clientCacheObj->cacheGet(
-								cacheKey: $userConcurrencyKey
-							);
-							if ($userConcurrencyKeyData !== $sessionID) {
-								throw new \Exception(
-									message: 'Account already in use. '
-										. 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
-									code: HttpStatus::$Conflict
-								);
-							}
-						} else {
-							$this->cacheSet(
-								cacheKey: $userConcurrencyKey,
-								value: $sessionID,
-								expire: Env::$concurrentAccessInterval
-							);
-						}
-					} else {
-						if ($this->http->req->s['uDetail']['httpRequestHash'] !== $this->http->httpReqDetailArr['httpRequestHash']) {
-							throw new \Exception(
-								message: 'Session not supported from this Browser/Device',
-								code: HttpStatus::$PreconditionFailed
-							);
-						}
-					}
-					$this->isOpenToWebRequest = false;
-				} elseif ($this->http->httpReqDetailArr['get'][ROUTE_URL_PARAM] === '/login') {
-					$this->isOpenToWebRequest = false;
+					$this->isAuthRequest = true;
+				} elseif ($this->http->httpReqData['get'][ROUTE_URL_PARAM] === '/login') {
+					$this->isAuthRequest = true;
 				} else {
-					$this->isOpenToWebRequest = true;
+					$this->isAuthRequest = false;
 				}
 				break;
 		}
 
-		if ($this->isOpenToWebRequest === null) {
+		if ($this->isAuthRequest === null) {
 			throw new \Exception(
 				message: "Open to web & Auth based request are disabled",
 				code: HttpStatus::$InternalServerError
@@ -216,7 +192,7 @@ class HttpRequest
 		}
 
 		if (
-			$this->isOpenToWebRequest === true
+			$this->isAuthRequest === false
 			&& !Env::$enableOpenRequest
 		) {
 			throw new \Exception(
@@ -226,7 +202,7 @@ class HttpRequest
 		}
 
 		if (
-			$this->isOpenToWebRequest === false
+			$this->isAuthRequest === true
 			&& !Env::$enableAuthRequest
 		) {
 			throw new \Exception(
@@ -235,7 +211,7 @@ class HttpRequest
 			);
 		}
 
-		if (!$this->isOpenToWebRequest) {
+		if ($this->isAuthRequest) {
 			$this->auth = new Auth(http: $this->http);
 		}
 
@@ -249,11 +225,11 @@ class HttpRequest
 	 */
 	public function init(): bool
 	{
-		$this->loadCustomerDetail();
+		$this->loadCustomerData();
 
-		if (!$this->isOpenToWebRequest) {
-			$this->auth->loadUserDetail();
-			$this->auth->loadGroupDetail();
+		if ($this->isAuthRequest) {
+			$this->auth->loadUserData();
+			$this->auth->loadGroupData();
 		}
 
 		$this->rParser->parseRoute();
@@ -262,38 +238,45 @@ class HttpRequest
 	}
 
 	/**
-	 * Load Customer detail
+	 * Load Customer Data
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function loadCustomerDetail(): void
+	public function loadCustomerData(): void
 	{
-		if (isset($this->s['cDetail'])) {
+		if (isset($this->s['customerData'])) {
 			return;
 		}
 
 		DbCommonFunction::connectGlobalCache();
 
-		if ($this->isOpenToWebRequest) {
-			$cKey = CacheServerKey::openToWebDomain(domainName: $this->http->httpReqDetailArr['server']['domainName']);
+		if ($this->isAuthRequest) {
+			$cKey = CacheServerKey::authDomain(domainName: $this->http->httpReqData['server']['domainName']);
 		} else {
-			$cKey = CacheServerKey::closedToWebDomain(domainName: $this->http->httpReqDetailArr['server']['domainName']);
+			$cKey = CacheServerKey::openDomain(domainName: $this->http->httpReqData['server']['domainName']);
 		}
 		if (!DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $cKey)) {
 			throw new \Exception(
-				message: "Invalid Host '{$this->http->httpReqDetailArr['server']['domainName']}'",
+				message: "Invalid Host '{$this->http->httpReqData['server']['domainName']}'",
 				code: HttpStatus::$InternalServerError
 			);
 		}
 
-		$this->s['cDetail'] = json_decode(
+		$this->s['customerData'] = json_decode(
 			json: DbCommonFunction::$gCacheServer->cacheGet(
 				cacheKey: $cKey
 			),
 			associative: true
 		);
-		$this->cID = $this->s['cDetail']['id'];
+		$this->customerId = $this->s['customerData']['id'];
+
+		if ($this->isAuthRequest) {
+			$this->clientCacheObj = DbCommonFunction::connectClientCache(
+				customerData: $this->http->req->s['customerData']
+			);
+			$this->rateLimiter = new RateLimiter(http: $this->http);
+		}
 	}
 
 	/**
@@ -307,9 +290,9 @@ class HttpRequest
 			return;
 		}
 
-		$this->s['queryParamArr'] = &$this->http->httpReqDetailArr['get'];
-		if ($this->http->httpReqDetailArr['server']['httpMethod'] === Constant::$GET) {
-			$this->urlDecode(value: $this->http->httpReqDetailArr['get']);
+		$this->s['queryParamArr'] = &$this->http->httpReqData['get'];
+		if ($this->http->httpReqData['server']['httpMethod'] === Constant::$GET) {
+			$this->urlDecode(value: $this->http->httpReqData['get']);
 			$this->s['payloadType'] = 'Object';
 		} else {
 			$this->setPayloadStream();
@@ -336,17 +319,17 @@ class HttpRequest
 			case (
 				$this->rParser->routeEndingWithReservedKeywordFlag
 				&& ($this->rParser->routeEndingReservedKeyword === Env::$importRequestRouteKeyword)
-				&& isset($this->http->httpReqDetailArr['files']['file']['tmp_name'])
+				&& isset($this->http->httpReqData['files']['file']['tmp_name'])
 			):
 				$content = $this->formatCsvPayload(
-					csvFile: $this->http->httpReqDetailArr['files']['file']['tmp_name']
+					csvFile: $this->http->httpReqData['files']['file']['tmp_name']
 				);
 				break;
 			case Env::$iRepresentation === 'XML':
-				$content = $this->convertXmlToJson(xmlString: $this->http->httpReqDetailArr['post']);
+				$content = $this->convertXmlToJson(xmlString: $this->http->httpReqData['post']);
 				break;
 			default:
-				$content = $this->http->httpReqDetailArr['post'];
+				$content = $this->http->httpReqData['post'];
 		}
 		$this->payloadStream = fopen(
 			filename: "php://memory",
@@ -379,7 +362,7 @@ class HttpRequest
 		$result = [];
 		$this->formatXmlArray(arrayFromXml: $arrayFromXml, result: $result);
 
-		return json_encode($result);
+		return json_encode(value: $result);
 	}
 
 	/**
@@ -441,7 +424,7 @@ class HttpRequest
 	/**
 	 * urldecode string or array
 	 *
-	 * @param array|string $value Array vales to be decoded. Basically $httpReqDetailArr['get']
+	 * @param array|string $value Array vales to be decoded. Basically $httpReqData['get']
 	 *
 	 * @return void
 	 */
@@ -473,7 +456,7 @@ class HttpRequest
 		$dataEncode->init(header: false);
 		$dataEncode->startObject();
 
-		$csvHeaderDetail = false;
+		$csvHeaderData = false;
 		$counter = null;
 		$currentModeArr = [];
 
@@ -486,23 +469,23 @@ class HttpRequest
 			if (empty($csvRecordArr)) {
 				continue;
 			}
-			if ($csvHeaderDetail === false) {
-				$csvHeaderDetail = [];
+			if ($csvHeaderData === false) {
+				$csvHeaderData = [];
 				foreach ($csvRecordArr as $columnPosition => $value) {
 					$v = explode(':', $value);
-					$_csvHeaderDetail = &$csvHeaderDetail;
+					$_csvHeaderData = &$csvHeaderData;
 					for (
 						$i = 0, $iCount = count($v);
 						$i < $iCount;
 						$i++
 					) {
 						if (($i+1) === $iCount) {
-							$_csvHeaderDetail['__column__'][$v[$i]] = $columnPosition;
+							$_csvHeaderData['__column__'][$v[$i]] = $columnPosition;
 						} else {
-							if (!isset($_csvHeaderDetail[$v[$i]])) {
-								$_csvHeaderDetail[$v[$i]] = [];
+							if (!isset($_csvHeaderData[$v[$i]])) {
+								$_csvHeaderData[$v[$i]] = [];
 							}
-							$_csvHeaderDetail = &$_csvHeaderDetail[$v[$i]];
+							$_csvHeaderData = &$_csvHeaderData[$v[$i]];
 						}
 					}
 				}
@@ -510,7 +493,10 @@ class HttpRequest
 				continue;
 			}
 
-			[$currentModeArr, $csvFieldRecordArr] = $this->formatCsvArray($csvHeaderDetail, $csvRecordArr);
+			[$currentModeArr, $csvFieldRecordArr] = $this->formatCsvArray(
+				csvHeaderData: $csvHeaderData,
+				csvRecordArr: $csvRecordArr
+			);
 
 			if ($counter === 0) {
 				$headerModeArr = $currentModeArr;
@@ -580,27 +566,28 @@ class HttpRequest
 	/**
 	 * Format CSV Payload
 	 *
-	 * @param string $csvContent CSV string
+	 * @param array $csvHeaderData
+	 * @param array $csvRecordArr
 	 *
 	 * @return array
 	 */
-	public function formatCsvArray($csvHeaderDetail, $csvRecordArr): array
+	public function formatCsvArray($csvHeaderData, $csvRecordArr): array
 	{
 		$csvFieldRecordArr = [];
 		$currentModeArr = explode(':', $csvRecordArr[0]);
 
 		foreach ($currentModeArr as $v) {
-			if (!isset($csvHeaderDetail[$v])) {
+			if (!isset($csvHeaderData[$v])) {
 				return [];
 			}
-			$csvHeaderDetail = &$csvHeaderDetail[$v];
+			$csvHeaderData = &$csvHeaderData[$v];
 		}
 
-		if (!isset($csvHeaderDetail['__column__'])) {
-			throw new \Exception(message: json_encode(value: [$currentModeArr,$csvHeaderDetail]), code: 400);
+		if (!isset($csvHeaderData['__column__'])) {
+			throw new \Exception(message: json_encode(value: [$currentModeArr,$csvHeaderData]), code: 400);
 		}
 
-		foreach ($csvHeaderDetail['__column__'] as $field => $column) {
+		foreach ($csvHeaderData['__column__'] as $field => $column) {
 			if (!isset($csvRecordArr[$column])) {
 				return [];
 			}

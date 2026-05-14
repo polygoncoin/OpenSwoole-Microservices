@@ -15,6 +15,9 @@
 
 namespace Microservices\App;
 
+use Microservices\App\CacheServerKey;
+use Microservices\App\DbCommonFunction;
+use Microservices\App\Http;
 use Microservices\App\Server\CacheServer\CacheServerInterface;
 
 /**
@@ -34,7 +37,7 @@ class CommonFunction
 	/**
 	 * Check Errors related to File Upload
 	 *
-	 * @param array $httpFileArr $this->http->httpReqDetailArr['files']
+	 * @param array $httpFileArr $this->http->httpReqData['files']
 	 *
 	 * @return void
 	 * @throws \Exception
@@ -170,7 +173,7 @@ class CommonFunction
 	 * Check IP with CIDR based on cache key containing start and end IP number
 	 *
 	 * @param CacheServerInterface $cacheObj     Cache Server object
-	 * @param string               $IP           $this->http->httpReqDetailArr['server']['httpRequestIP']
+	 * @param string               $IP           $this->http->httpReqData['server']['httpRequestIP']
 	 * @param string               $cidrCacheKey Cache Key(s)
 	 *
 	 * @return void
@@ -200,7 +203,7 @@ class CommonFunction
 	/**
 	 * Check IP with CIDR
 	 *
-	 * @param string $IP         $this->http->httpReqDetailArr['server']['httpRequestIP']
+	 * @param string $IP         $this->http->httpReqData['server']['httpRequestIP']
 	 * @param string $cidrString CIDRs
 	 *
 	 * @return null|bool
@@ -253,6 +256,50 @@ class CommonFunction
 		return $isValidIp;
 	}
 
+
+	/**
+	 * Validate remote IP
+	 *
+	 * @param Http $http
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
+	public static function checkClosedWebRequestCidr(&$http): void
+	{
+		if (!Env::$enableCidrCheck) {
+			return;
+		}
+
+		self::checkCacheCidr(
+			cacheObj: DbCommonFunction::$gCacheServer,
+			IP: $http->httpReqData['server']['httpRequestIP'],
+			cidrCacheKey: CacheServerKey::customerCidr(
+				customerId: $http->req->customerId
+			)
+		);
+
+		if ($http !== null) {
+			self::checkCacheCidr(
+				cacheObj: $http->req->clientCacheObj,
+				IP: $http->httpReqData['server']['httpRequestIP'],
+				cidrCacheKey: CacheServerKey::customerGroupCidr(
+					customerId: $http->req->customerId,
+					groupId: $http->req->groupId
+				)
+			);
+
+			self::checkCacheCidr(
+				cacheObj: $http->req->clientCacheObj,
+				IP: $http->httpReqData['server']['httpRequestIP'],
+				cidrCacheKey: CacheServerKey::customerUserCidr(
+					customerId: $http->req->customerId,
+					userId: $http->req->userId
+				)
+			);
+		}
+	}
+
 	/**
 	 * Unique HTTP request hash
 	 *
@@ -262,7 +309,7 @@ class CommonFunction
 	 */
 	public static function httpRequestHash($hashArray): string
 	{
-		return md5(json_encode($hashArray));
+		return md5(json_encode(value: $hashArray));
 	}
 
 	/**

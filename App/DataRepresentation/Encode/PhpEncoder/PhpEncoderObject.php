@@ -16,7 +16,7 @@
 namespace Microservices\App\DataRepresentation\Encode\PhpEncoder;
 
 /**
- * PHP object
+ * PHP Encoder Object
  *
  * This class is built to help maintain state of simple/associative array
  * php version 8.3

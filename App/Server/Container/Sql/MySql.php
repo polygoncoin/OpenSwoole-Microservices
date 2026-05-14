@@ -65,7 +65,7 @@ class MySql implements SqlInterface
 	 *
 	 * @var null|string
 	 */
-	public $dbServerDb = null;
+	public $dbServerDatabase = null;
 
 	/**
 	 * Database Server Object
@@ -102,20 +102,20 @@ class MySql implements SqlInterface
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
-	 * @param null|string $dbServerDb       Database Server Database
+	 * @param null|string $dbServerDatabase Database Server Database
 	 */
 	public function __construct(
 		$dbServerHostname,
 		$dbServerPort,
 		$dbServerUsername,
 		$dbServerPassword,
-		$dbServerDb
+		$dbServerDatabase
 	) {
 		$this->dbServerHostname = $dbServerHostname;
 		$this->dbServerPort = $dbServerPort;
 		$this->dbServerUsername = $dbServerUsername;
 		$this->dbServerPassword = $dbServerPassword;
-		$this->dbServerDb = $dbServerDb;
+		$this->dbServerDatabase = $dbServerDatabase;
 	}
 
 	/**
@@ -140,7 +140,7 @@ class MySql implements SqlInterface
 				]
 			);
 
-			if ($this->dbServerDb !== null) {
+			if ($this->dbServerDatabase !== null) {
 				$this->useDatabase();
 			}
 		} catch (\PDOException $e) {
@@ -160,8 +160,8 @@ class MySql implements SqlInterface
 		$this->connect();
 
 		try {
-			if ($this->dbServerDb !== null) {
-				$this->mysqlServerObj->exec(statement: "USE `{$this->dbServerDb}`");
+			if ($this->dbServerDatabase !== null) {
+				$this->mysqlServerObj->exec(statement: "USE `{$this->dbServerDatabase}`");
 			}
 		} catch (\PDOException $e) {
 			if ((int)$this->mysqlServerObj->errorCode()) {

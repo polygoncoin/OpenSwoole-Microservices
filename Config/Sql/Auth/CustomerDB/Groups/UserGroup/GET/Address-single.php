@@ -19,12 +19,12 @@ return [
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'No'
+			'fetchFromData' => 'No'
 		],
 		[
 			'column' => 'id',
 			'fetchFrom' => 'routeParamArr',
-			'fetchFromDetail' => 'id'
+			'fetchFromData' => 'id'
 		]
 	],
 	'__MODE__' => 'singleRowFormat'

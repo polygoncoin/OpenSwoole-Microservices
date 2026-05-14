@@ -65,7 +65,7 @@ class MySql implements ExportDatabaseServerInterface
 	 *
 	 * @var null|string
 	 */
-	public $dbServerDb = null;
+	public $dbServerDatabase = null;
 
 	/**
 	 * Mysql Customer binary location (One can find this by "which mysql" command)
@@ -102,7 +102,7 @@ class MySql implements ExportDatabaseServerInterface
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
-	 * @param null|string $dbServerDb       Database Server Database
+	 * @param null|string $dbServerDatabase Database Server Database
 	 *
 	 * @return void
 	 */
@@ -111,14 +111,14 @@ class MySql implements ExportDatabaseServerInterface
 		$dbServerPort,
 		$dbServerUsername,
 		$dbServerPassword,
-		$dbServerDb
+		$dbServerDatabase
 	): void
 	{
 		$this->dbServerHostname = $dbServerHostname;
 		$this->dbServerPort = $dbServerPort;
 		$this->dbServerUsername = $dbServerUsername;
 		$this->dbServerPassword = $dbServerPassword;
-		$this->dbServerDb = $dbServerDb;
+		$this->dbServerDatabase = $dbServerDatabase;
 	}
 
 	/**
@@ -202,7 +202,7 @@ class MySql implements ExportDatabaseServerInterface
 			hostname: $this->dbServerHostname,
 			username: $this->dbServerUsername,
 			password: $this->dbServerPassword,
-			db: $this->dbServerDb,
+			db: $this->dbServerDatabase,
 			port: $this->dbServerPort
 		);
 		if (!$mysqli) {
@@ -280,7 +280,7 @@ class MySql implements ExportDatabaseServerInterface
 			. '--port=' . escapeshellarg(arg: $this->dbServerPort) . ' '
 			. '--user=' . escapeshellarg(arg: $this->dbServerUsername) . ' '
 			. '--password=' . escapeshellarg(arg: $this->dbServerPassword) . ' '
-			. '--database=' . escapeshellarg(arg: $this->dbServerDb) . ' '
+			. '--database=' . escapeshellarg(arg: $this->dbServerDatabase) . ' '
 			. '--execute=' . escapeshellarg(arg: $sql);
 
 		return $shellCommand;

@@ -21,54 +21,54 @@ return [
 		[
 			'column' => 'name',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'name'
+			'fetchFromData' => 'name'
 		],
 		[
 			'column' => 'customer_id',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'customer_id',
+			'fetchFromData' => 'customer_id',
 			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'connection_id',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'connection_id',
+			'fetchFromData' => 'connection_id',
 			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'allowed_cidr',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'allowed_cidr'
+			'fetchFromData' => 'allowed_cidr'
 		],
 		[
 			'column' => 'comments',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'comments'
+			'fetchFromData' => 'comments'
 		],
 		[
 			'column' => 'created_by',
-			'fetchFrom' => 'uDetail',
-			'fetchFromDetail' => 'id'
+			'fetchFrom' => 'userData',
+			'fetchFromData' => 'id'
 		],
 		[
 			'column' => 'created_on',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => date(format: 'Y-m-d H:i:s')
+			'fetchFromData' => date(format: 'Y-m-d H:i:s')
 		],
 		[
 			'column' => 'is_approved',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'No'
+			'fetchFromData' => 'No'
 		],
 		[
 			'column' => 'is_disabled',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'No'
+			'fetchFromData' => 'No'
 		],
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'No'
+			'fetchFromData' => 'No'
 		]
 	],
 	'__INSERT-IDs__' => 'group:id',

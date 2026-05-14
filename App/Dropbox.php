@@ -39,7 +39,7 @@ class Dropbox
 	 *
 	 * @var null|array
 	 */
-	private $httpReqDetailArr = null;
+	private $httpReqData = null;
 
 	/**
 	 * HTTP object
@@ -84,12 +84,12 @@ class Dropbox
 	/**
 	 * Constructor
 	 *
-	 * @param array $httpReqDetailArr HTTP request detail
+	 * @param array $httpReqData HTTP request detail
 	 * @param Http  $http
 	 */
-	public function __construct(&$httpReqDetailArr, &$http = null)
+	public function __construct(&$httpReqData, &$http = null)
 	{
-		$this->httpReqDetailArr = &$httpReqDetailArr;
+		$this->httpReqData = &$httpReqData;
 		$this->http = &$http;
 	}
 
@@ -102,7 +102,7 @@ class Dropbox
 	 */
 	public function init($mode): bool
 	{
-		if (!isset($this->httpReqDetailArr['get'][ROUTE_URL_PARAM])) {
+		if (!isset($this->httpReqData['get'][ROUTE_URL_PARAM])) {
 			return false;
 		}
 
@@ -113,17 +113,18 @@ class Dropbox
 			string: str_replace(
 				search: ['../', '..\\', '/', '\\'],
 				replace: ['', '', DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR],
-				subject: urldecode(string: $this->httpReqDetailArr['get'][ROUTE_URL_PARAM])
+				subject: urldecode(string: $this->httpReqData['get'][ROUTE_URL_PARAM])
 			),
 			characters: './\\'
 		);
 
 		if (
 			$this->http !== null
-			&& !$this->http->req->isOpenToWebRequest
+			&& $this->http->req !== null
+			&& $this->http->req->isAuthRequest
 			&& $mode === 'Closed'
 		) {
-			$this->modeDropBox .= DIRECTORY_SEPARATOR . $this->http->req->cID;
+			$this->modeDropBox .= DIRECTORY_SEPARATOR . $this->http->req->customerId;
 			$this->validateFileRequest();
 		}
 		$this->fileLocation = $this->modeDropBox . $filePath;
@@ -162,10 +163,10 @@ class Dropbox
 		switch (true) {
 			case in_array($this->mimeType, $this->supportedVideoMimeArr):
 				// Serve Video
-				$videoStream = new StreamVideo(httpReqDetailArr: $this->httpReqDetailArr);
+				$videoStream = new StreamVideo(httpReqData: $this->httpReqData);
 				if (
 					(
-						$httpStatus = $videoStream->init($this->fileLocation)
+						$httpStatus = $videoStream->init(fileLocation: $this->fileLocation)
 					) !== HttpStatus::$Ok
 				) {
 					$return = [$headerArr, $data, $httpStatus];
@@ -196,15 +197,15 @@ class Dropbox
 		$eTag = "{$modifiedTime}";
 
 		if (
-			(isset($this->httpReqDetailArr['header']['HTTP_IF_NONE_MATCH'])
+			(isset($this->httpReqData['header']['HTTP_IF_NONE_MATCH'])
 				&& strpos(
-					haystack: $this->httpReqDetailArr['header']['HTTP_IF_NONE_MATCH'],
+					haystack: $this->httpReqData['header']['HTTP_IF_NONE_MATCH'],
 					needle: $eTag
 				) !== false
 			)
-			|| (isset($this->httpReqDetailArr['header']['HTTP_IF_MODIFIED_SINCE'])
+			|| (isset($this->httpReqData['header']['HTTP_IF_MODIFIED_SINCE'])
 				&& @strtotime(
-					datetime: $this->httpReqDetailArr['header']['HTTP_IF_MODIFIED_SINCE']
+					datetime: $this->httpReqData['header']['HTTP_IF_MODIFIED_SINCE']
 				) == $modifiedTime
 			)
 		) {

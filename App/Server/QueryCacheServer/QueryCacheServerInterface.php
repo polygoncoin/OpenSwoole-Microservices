@@ -57,22 +57,22 @@ interface QueryCacheServerInterface
 	/**
 	 * Set cache key
 	 *
-	 * @param string $queryCacheKey Query Cache key
-	 * @param string $value         Query Cache value
+	 * @param string $queryCacheKey   Query Cache key
+	 * @param string $queryCacheValue Query Cache value
 	 *
 	 * @return mixed
 	 */
-	public function queryCacheSet($queryCacheKey, $value): mixed;
+	public function queryCacheSet($queryCacheKey, $queryCacheValue): mixed;
 
 	/**
 	 * Increment Query Cache key as per offset
 	 *
 	 * @param string $queryCacheKey Query Cache key
-	 * @param int    $offset        Query Cache offset
+	 * @param int    $queryCacheOffset        Query Cache offset
 	 *
 	 * @return mixed
 	 */
-	public function queryCacheIncrement($queryCacheKey, $offset = 1): mixed;
+	public function queryCacheIncrement($queryCacheKey, $queryCacheOffset = 1): mixed;
 
 	/**
 	 * Delete cache on basis of key

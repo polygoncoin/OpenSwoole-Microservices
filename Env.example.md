@@ -43,7 +43,7 @@ maxResultsPerPage=1000
 
 As the heading describes below are the settings for global counter for the primary Key column of respective table. The setting when enable will generate a global auto-increment counter<br />
 
-This enables identify customer detail easily while moving him from a common database for all to a dedicated customer X database.
+This enables identify Customer Data easily while moving him from a common database for all to a dedicated customer X database.
 
 Enable below config for same.
 
@@ -66,7 +66,7 @@ idempotentSecret='changeme'         ; hash_hmac secret
 ## Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/OpenSwoole-Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
 
 ## Author
 

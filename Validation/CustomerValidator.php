@@ -67,11 +67,11 @@ class CustomerValidator implements ValidatorInterface
 		$errorArr = [];
 		foreach ($validationConfig as &$v) {
 			$argArr = [];
-			foreach ($v['functionArgs'] as $argName => [$fetchFrom, $fetchFromDetail]) {
+			foreach ($v['functionArgs'] as $argName => [$fetchFrom, $fetchFromData]) {
 				if ($fetchFrom === 'custom') {
-					$argArr[$argName] = $fetchFromDetail;
+					$argArr[$argName] = $fetchFromData;
 				} else {
-					$argArr[$argName] = $this->http->req->s[$fetchFrom][$fetchFromDetail];
+					$argArr[$argName] = $this->http->req->s[$fetchFrom][$fetchFromData];
 				}
 			}
 			$function = $v['function'];
@@ -95,10 +95,10 @@ class CustomerValidator implements ValidatorInterface
 	 */
 	private function getPrimaryCount(&$table, $primary, &$id): int
 	{
-		$dbServerDb = $this->http->req->clientDbObj->dbServerDb;
+		$dbServerDatabase = $this->http->req->clientDbObj->dbServerDatabase;
 		$sql = "
 			SELECT count(1) as `count`
-			FROM `{$dbServerDb}`.`{$table}`
+			FROM `{$dbServerDatabase}`.`{$table}`
 			WHERE `{$primary}` = ?
 		";
 		$paramArr = [$id];

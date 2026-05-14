@@ -37,7 +37,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	public $redisServerPort = null;
 	public $redisServerUsername = null;
 	public $redisServerPassword = null;
-	public $redisServerDb = null;
+	public $redisServerDatabase = null;
 
 	private $redisServerObj = null;
 
@@ -57,16 +57,16 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Validate session id
 	 *
-	 * @param string $sessionID Session id
+	 * @param string $sessionId Session id
 	 *
 	 * @return bool|string
 	 */
-	public function getSession($sessionID): bool|string
+	public function getSession($sessionId): bool|string
 	{
 		try {
 			if (
-				$this->redisServerObj->exists($sessionID)
-				&& ($data = $this->redisServerObj->get($sessionID))
+				$this->redisServerObj->exists($sessionId)
+				&& ($data = $this->redisServerObj->get($sessionId))
 			) {
 				return $this->decryptData(cipherText: $data);
 			}
@@ -79,17 +79,17 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Write session data
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionID, $sessionData): bool|int
+	public function setSession($sessionId, $sessionData): bool|int
 	{
 		try {
 			if (
 				$this->redisServerObj->set(
-					$sessionID,
+					$sessionId,
 					$this->encryptData(plainText: $sessionData),
 					$this->sessionMaxLifetime
 				)
@@ -105,15 +105,15 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * Update Session
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionID, $sessionData): bool|int
+	public function updateSession($sessionId, $sessionData): bool|int
 	{
 		return $this->setSession(
-			sessionID: $sessionID,
+			sessionId: $sessionId,
 			sessionData: $sessionData
 		);
 	}
@@ -121,15 +121,15 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Update session timestamp
 	 *
-	 * @param string $sessionID   Session id
+	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionID, $sessionData): bool
+	public function touchSession($sessionId, $sessionData): bool
 	{
 		try {
-			if ($this->redisServerObj->expire($sessionID, $this->sessionMaxLifetime)) {
+			if ($this->redisServerObj->expire($sessionId, $this->sessionMaxLifetime)) {
 				return true;
 			}
 		} catch (\Exception $e) {
@@ -153,14 +153,14 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	/**
 	 * For Custom Session Handler - Destroy a session
 	 *
-	 * @param string $sessionID Session id
+	 * @param string $sessionId Session id
 	 *
 	 * @return bool
 	 */
-	public function deleteSession($sessionID): bool
+	public function deleteSession($sessionId): bool
 	{
 		try {
-			if ($this->redisServerObj->del($sessionID)) {
+			if ($this->redisServerObj->del($sessionId)) {
 				return true;
 			}
 		} catch (\Exception $e) {
@@ -213,7 +213,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 			$this->redisServerObj = new \Redis( // phpcs:ignore
 				$connParamArr
 			);
-			$this->redisServerObj->select($this->redisServerDb);
+			$this->redisServerObj->select($this->redisServerDatabase);
 		} catch (\Exception $e) {
 			$this->manageException(e: $e);
 		}

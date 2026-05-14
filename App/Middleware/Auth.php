@@ -60,33 +60,31 @@ class Auth
 	}
 
 	/**
-	 * Load User detail
+	 * Load User Data
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function loadUserDetail(): void
+	public function loadUserData(): void
 	{
-		if (isset($this->http->req->s['uDetail'])) {
+		if (isset($this->http->req->s['userData'])) {
 			return;
 		}
-		
-		$this->http->req->clientCacheObj = DbCommonFunction::connectClientCache($this->http->req, fetchFrom: 'Master');
 
 		if (
 			isset($_SESSION)
 			&& isset($_SESSION['id'])
 		) {
-			$this->http->req->s['uDetail'] = $_SESSION;
-			$this->http->req->s['token'] = 'sessions';
-			$this->http->req->uID = $_SESSION['id'];
+			$this->http->req->s['userData'] = $_SESSION;
+			$this->http->req->s['token'] = session_id();
+			$this->http->req->userId = $_SESSION['id'];
 		} elseif (
-			($this->http->httpReqDetailArr['header']['tokenHeader'] !== null)
+			($this->http->httpReqData['header']['tokenHeader'] !== null)
 		) {
 			if (
 				!preg_match(
 					pattern: '/Bearer\s(\S+)/',
-					subject: $this->http->httpReqDetailArr['header']['tokenHeader'],
+					subject: $this->http->httpReqData['header']['tokenHeader'],
 					matches: $matches
 				)
 			) {
@@ -109,65 +107,65 @@ class Auth
 					code: HttpStatus::$BadRequest
 				);
 			}
-			$this->http->req->s['uDetail'] = json_decode(
+			$this->http->req->s['userData'] = json_decode(
 				json: $this->http->req->clientCacheObj->cacheGet(
 					cacheKey: $tokenKey
 				),
 				associative: true
 			);
-			$this->http->req->uID = $this->http->req->s['uDetail']['id'];
-			$this->http->req->gID = $this->http->req->s['uDetail']['group_id'];
+			$this->http->req->userId = $this->http->req->s['userData']['id'];
+			$this->http->req->groupId = $this->http->req->s['userData']['group_id'];
+		}
 
-			if (Env::$enableConcurrentLogin) {
-				$userConcurrencyKey = CacheServerKey::customerUserConcurrency(
-					cID: $this->http->req->cID,
-					uID: $this->http->req->uID
+		if (Env::$enableConcurrentLogin) {
+			$userConcurrencyKey = CacheServerKey::customerUserConcurrency(
+				customerId: $this->http->req->customerId,
+				userId: $this->http->req->userId
+			);
+			if ($this->http->req->clientCacheObj->cacheExist(cacheKey: $userConcurrencyKey)) {
+				$userConcurrencyKeyData = $this->http->req->clientCacheObj->cacheGet(
+					cacheKey: $userConcurrencyKey
 				);
-				if ($this->http->req->clientCacheObj->cacheExist(cacheKey: $userConcurrencyKey)) {
-					$userConcurrencyKeyData = $this->http->req->clientCacheObj->cacheGet(
-						cacheKey: $userConcurrencyKey
-					);
-					if ($userConcurrencyKeyData !== $this->http->req->s['token']) {
-						throw new \Exception(
-							message: 'Account already in use. '
-								. 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
-							code: HttpStatus::$Conflict
-						);
-					}
-				} else {
-					$this->cacheSet(
-						cacheKey: $userConcurrencyKey,
-						value: $this->http->req->s['token'],
-						expire: Env::$concurrentAccessInterval
+				if ($userConcurrencyKeyData !== $this->http->req->s['token']) {
+					throw new \Exception(
+						message: 'Account already in use. '
+							. 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
+						code: HttpStatus::$Conflict
 					);
 				}
 			} else {
-				if ($this->http->req->s['uDetail']['httpRequestHash'] !== $this->http->httpReqDetailArr['httpRequestHash']) {
-					throw new \Exception(
-						message: 'Token not supported from this Browser/Device',
-						code: HttpStatus::$PreconditionFailed
-					);
-				}
+				$this->http->req->clientCacheObj->cacheSet(
+					cacheKey: $userConcurrencyKey,
+					cacheValue: $this->http->req->s['token'],
+					cacheExpire: Env::$concurrentAccessInterval
+				);
+			}
+		} else {
+			if ($this->http->req->s['userData']['httpRequestHash'] !== $this->http->httpReqData['httpRequestHash']) {
+				throw new \Exception(
+					message: 'Token not supported from this Browser/Device',
+					code: HttpStatus::$PreconditionFailed
+				);
 			}
 		}
 	}
 
 	/**
-	 * Load Group detail
+	 * Load Group Data
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function loadGroupDetail(): void
+	public function loadGroupData(): void
 	{
-		if (isset($this->http->req->s['gDetail'])) {
+		if (isset($this->http->req->s['groupData'])) {
 			return;
 		}
 
-		// Load gDetail
+		// Load groupData
 		if (
-			empty($this->http->req->uID)
-			|| empty($this->http->req->uID)
+			empty($this->http->req->userId)
+			|| empty($this->http->req->userId)
 		) {
 			throw new \Exception(
 				message: 'Invalid session',
@@ -176,8 +174,8 @@ class Auth
 		}
 
 		$gKey = CacheServerKey::customerGroup(
-			cID: $this->http->req->cID,
-			gID: $this->http->req->gID
+			customerId: $this->http->req->customerId,
+			groupId: $this->http->req->groupId
 		);
 		if (!$this->http->req->clientCacheObj->cacheExist(cacheKey: $gKey)) {
 			throw new \Exception(
@@ -186,7 +184,7 @@ class Auth
 			);
 		}
 
-		$this->http->req->s['gDetail'] = json_decode(
+		$this->http->req->s['groupData'] = json_decode(
 			json: $this->http->req->clientCacheObj->cacheGet(
 				cacheKey: $gKey
 			),

@@ -22,12 +22,12 @@ return [
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'No'
+			'fetchFromData' => 'No'
 		],
 		[
 			'column' => 'parent_id',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 0
+			'fetchFromData' => 0
 		],
 	],
 	'__MODE__' => 'multipleRowFormat',
@@ -38,12 +38,12 @@ return [
 				[
 					'column' => 'is_deleted',
 					'fetchFrom' => 'custom',
-					'fetchFromDetail' => 'No'
+					'fetchFromData' => 'No'
 				],
 				[
 					'column' => 'parent_id',
 					'fetchFrom' => 'sqlResults',
-					'fetchFromDetail' => 'return:id'
+					'fetchFromData' => 'return:id'
 				],
 			],
 			'__MODE__' => 'multipleRowFormat',
@@ -54,12 +54,12 @@ return [
 						[
 							'column' => 'is_deleted',
 							'fetchFrom' => 'custom',
-							'fetchFromDetail' => 'No'
+							'fetchFromData' => 'No'
 						],
 						[
 							'column' => 'parent_id',
 							'fetchFrom' => 'sqlResults',
-							'fetchFromDetail' => 'return:sub:id'
+							'fetchFromData' => 'return:sub:id'
 						],
 					],
 					'__MODE__' => 'multipleRowFormat',
@@ -70,12 +70,12 @@ return [
 								[
 									'column' => 'is_deleted',
 									'fetchFrom' => 'custom',
-									'fetchFromDetail' => 'No'
+									'fetchFromData' => 'No'
 								],
 								[
 									'column' => 'parent_id',
 									'fetchFrom' => 'sqlResults',
-									'fetchFromDetail' => 'return:sub:subsub:id'
+									'fetchFromData' => 'return:sub:subsub:id'
 								],
 							],
 							'__MODE__' => 'multipleRowFormat',
@@ -88,9 +88,9 @@ return [
 	'useResultSet' => true,
 	'fetchFrom' => 'Master',
 	'cacheKey' => QueryCacheServerKey::category(
-		customerID: $this->http->req->cID,
-		groupID: null,
-		isOpenToWebRequest: true
+		customerId: $this->http->req->customerId,
+		groupId: null,
+		isAuthRequest: true
 	),
 	'responseLag' => [
 		// No of request => Seconds Lag

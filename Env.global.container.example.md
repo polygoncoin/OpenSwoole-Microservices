@@ -11,7 +11,7 @@ gCacheServerHostname='127.0.0.1'
 gCacheServerPort=6379
 gCacheServerUsername='ramesh'
 gCacheServerPassword='shames11'
-gCacheServerDb=0
+gCacheServerDatabase=0
 gCacheServerTable='global_cache' ; For MongoDb
 ```
 
@@ -25,7 +25,7 @@ gDbServerHostname='127.0.0.1'
 gDbServerPort=3306
 gDbServerUsername='root'
 gDbServerPassword='shames11'
-gDbServerDb='global'
+gDbServerDatabase='global'
 gDbServerQueryPlaceholder='Named' ; Named(:param) / Unnamed(?)
 ```
 
@@ -46,7 +46,7 @@ queryPlaceholder='Named'            ; Named(:param) / Unnamed(?)
 ## Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/OpenSwoole-Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
 
 ## Author
 

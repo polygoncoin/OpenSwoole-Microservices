@@ -65,7 +65,7 @@ class Redis implements NoSqlInterface
 	 *
 	 * @var null|string
 	 */
-	private $cacheServerDb = null;
+	private $cacheServerDatabase = null;
 
 	/**
 	 * Cache Server Object
@@ -81,7 +81,7 @@ class Redis implements NoSqlInterface
 	 * @param int         $cacheServerPort     Cache Server Port
 	 * @param string      $cacheServerUsername Cache Server Username
 	 * @param string      $cacheServerPassword Cache Server Password
-	 * @param null|string $cacheServerDb       Cache Server Database
+	 * @param null|string $cacheServerDatabase Cache Server Database
 	 * @param null|string $cacheServerTable    Cache Server Table
 	 */
 	public function __construct(
@@ -89,14 +89,14 @@ class Redis implements NoSqlInterface
 		$cacheServerPort,
 		$cacheServerUsername,
 		$cacheServerPassword,
-		$cacheServerDb,
+		$cacheServerDatabase,
 		$cacheServerTable
 	) {
 		$this->cacheServerHostname = $cacheServerHostname;
 		$this->cacheServerPort = $cacheServerPort;
 		$this->cacheServerUsername = $cacheServerUsername;
 		$this->cacheServerPassword = $cacheServerPassword;
-		$this->cacheServerDb = $cacheServerDb;
+		$this->cacheServerDatabase = $cacheServerDatabase;
 	}
 
 	/**
@@ -130,8 +130,10 @@ class Redis implements NoSqlInterface
 			}
 			$this->cacheServerObj = new \Redis($connParamArr);
 
-			if (!empty($this->cacheServerDb)) {
-				$this->cacheServerObj->select($this->cacheServerDb);
+			if (!empty($this->cacheServerDatabase)) {
+				$this->cacheServerObj->select(
+					$this->cacheServerDatabase
+				);
 			}
 
 			if (!$this->cacheServerObj->ping()) {
@@ -151,77 +153,77 @@ class Redis implements NoSqlInterface
 	/**
 	 * Cache key exist
 	 *
-	 * @param string $cacheKey Cache key
+	 * @param string $key Key
 	 *
 	 * @return mixed
 	 */
-	public function cacheExist($cacheKey): mixed
+	public function exist($key): mixed
 	{
 		$this->connect();
 
-		return $this->cacheServerObj->exists($cacheKey);
+		return $this->cacheServerObj->exists($key);
 	}
 
 	/**
 	 * Get cache key
 	 *
-	 * @param string $cacheKey Cache key
+	 * @param string $key Key
 	 *
 	 * @return mixed
 	 */
-	public function cacheGet($cacheKey): mixed
+	public function get($key): mixed
 	{
 		$this->connect();
 
-		return $this->cacheServerObj->get($cacheKey);
+		return $this->cacheServerObj->get($key);
 	}
 
 	/**
 	 * Set cache key
 	 *
-	 * @param string $cacheKey Cache key
-	 * @param string $value    Cache value
-	 * @param int    $expire   Seconds to expire. Default 0 - doesn't expire
+	 * @param string $key    Key
+	 * @param string $value  Cache value
+	 * @param int    $expire Seconds to expire. Default 0 - doesn't expire
 	 *
 	 * @return mixed
 	 */
-	public function cacheSet($cacheKey, $value, $expire = null): mixed
+	public function set($key, $value, $expire = null): mixed
 	{
 		$this->connect();
 
 		if ($expire === null) {
-			return $this->cacheServerObj->set($cacheKey, $value);
+			return $this->cacheServerObj->set($key, $value);
 		} else {
-			return $this->cacheServerObj->set($cacheKey, $value, $expire);
+			return $this->cacheServerObj->set($key, $value, $expire);
 		}
 	}
 
 	/**
 	 * Increment cache key with offset
 	 *
-	 * @param string $cacheKey Cache key
-	 * @param int    $offset   Offset
+	 * @param string $key    Key
+	 * @param int    $offset Offset
 	 *
 	 * @return int
 	 */
-	public function cacheIncrement($cacheKey, $offset = 1): int
+	public function increment($key, $offset = 1): int
 	{
 		$this->connect();
 
-		return $this->cacheServerObj->incrBy($cacheKey, $offset);
+		return $this->cacheServerObj->incrBy($key, $offset);
 	}
 
 	/**
 	 * Delete cache key
 	 *
-	 * @param string $cacheKey Cache key
+	 * @param string $key Key
 	 *
 	 * @return mixed
 	 */
-	public function cacheDelete($cacheKey): mixed
+	public function delete($key): mixed
 	{
 		$this->connect();
 
-		return $this->cacheServerObj->del($cacheKey);
+		return $this->cacheServerObj->del($key);
 	}
 }

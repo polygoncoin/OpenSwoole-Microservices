@@ -42,7 +42,7 @@ routesRestrictedCidr='0.0.0.0/0'        ; routesRequestRoute in .env.enable
 reloadRestrictedCidr='0.0.0.0/0'        ; reloadRequestRoutePrefix in .env.enable
 ```
 
-## Configuring in DB Tables
+## Configuring in Database Tables
 
 To enable CIDR settings at Customer / Group / User level one can set them in respective table and record
 
@@ -60,7 +60,7 @@ To enable CIDR settings at Customer / Group / User level one can set them in res
 ## Contributing
 
 Issues and feature request are welcome.<br />
-Feel free to share them on [issues page](https://github.com/polygoncoin/OpenSwoole-Microservices/issues)
+Feel free to share them on [issues page](https://github.com/polygoncoin/Openswoole-Microservices/issues)
 
 ## Author
 

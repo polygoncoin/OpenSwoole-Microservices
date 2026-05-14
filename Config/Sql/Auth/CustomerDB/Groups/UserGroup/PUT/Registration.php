@@ -25,27 +25,27 @@ return array_merge(
 			[
 				'column' => 'firstname',
 				'fetchFrom' => 'payload',
-				'fetchFromDetail' => 'firstname'
+				'fetchFromData' => 'firstname'
 			],
 			[
 				'column' => 'lastname',
 				'fetchFrom' => 'payload',
-				'fetchFromDetail' => 'lastname'
+				'fetchFromData' => 'lastname'
 			],
 			[
 				'column' => 'email',
 				'fetchFrom' => 'payload',
-				'fetchFromDetail' => 'email'
+				'fetchFromData' => 'email'
 			],
 			[
 				'column' => 'username',
 				'fetchFrom' => 'payload',
-				'fetchFromDetail' => 'username'
+				'fetchFromData' => 'username'
 			],
 			[
 				'column' => 'password_hash',
 				'fetchFrom' => 'function',
-				'fetchFromDetail' => function($session): string {
+				'fetchFromData' => function($session): string {
 					return password_hash(
 						password: $session['payload']['password'],
 						algo: PASSWORD_DEFAULT
@@ -57,12 +57,12 @@ return array_merge(
 			[
 				'column' => 'is_deleted',
 				'fetchFrom' => 'custom',
-				'fetchFromDetail' => 'No'
+				'fetchFromData' => 'No'
 			],
 			[
 				'column' => 'id',
 				'fetchFrom' => 'routeParamArr',
-				'fetchFromDetail' => 'id',
+				'fetchFromData' => 'id',
 				'dataType' => DatabaseServerDataType::$PrimaryKey
 			]
 		],

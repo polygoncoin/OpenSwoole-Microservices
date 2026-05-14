@@ -34,11 +34,11 @@ class Log
 	/**
 	 * Log details
 	 *
-	 * @param array $logDetail detail to be logged
+	 * @param array $logData detail to be logged
 	 *
 	 * @return void
 	 */
-	public function log(&$logDetail): void
+	public function log(&$logData): void
 	{
 		$logFile = Constant::$LOG_DIR
 			. DIRECTORY_SEPARATOR . 'log-' . date(format: 'YmdH');
@@ -48,7 +48,7 @@ class Log
 
 		file_put_contents(
 			filename: $logFile,
-			data: json_encode(value: $logDetail) . PHP_EOL,
+			data: json_encode(value: $logData) . PHP_EOL,
 			flags: FILE_APPEND
 		);
 	}

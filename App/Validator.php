@@ -58,10 +58,10 @@ class Validator
 	public function __construct(Http &$http)
 	{
 		$this->http = &$http;
-		if ($this->http->req->clientDbObj->dbServerDb === Env::$gDbServerDb) {
-			$this->v = new GlobalValidator($this->http);
+		if ($this->http->req->clientDbObj->dbServerDatabase === Env::$gDbServerDatabase) {
+			$this->v = new GlobalValidator(http: $this->http);
 		} else {
-			$this->v = new CustomerValidator($this->http);
+			$this->v = new CustomerValidator(http: $this->http);
 		}
 	}
 
@@ -100,9 +100,9 @@ class Validator
 		$errorArr = [];
 		// Required fields payload validation
 		if (!empty($this->http->req->s['requiredFieldArr']['payload'])) {
-			foreach ($this->http->req->s['requiredFieldArr']['payload'] as $fetchFromDetail) {
-				if (!in_array($fetchFromDetail, $this->http->req->s['payload'])) {
-					$errorArr[] = 'Missing required payload: ' . $fetchFromDetail;
+			foreach ($this->http->req->s['requiredFieldArr']['payload'] as $fetchFromData) {
+				if (!in_array($fetchFromData, $this->http->req->s['payload'])) {
+					$errorArr[] = 'Missing required payload: ' . $fetchFromData;
 					$isValidData = false;
 				}
 			}

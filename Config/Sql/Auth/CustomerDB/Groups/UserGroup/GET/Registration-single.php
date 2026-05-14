@@ -14,17 +14,17 @@
  */
 
 return [
-	'__QUERY__' => "SELECT * FROM `{$this->http->req->s['cDetail']['usersTable']}` WHERE __WHERE__",
+	'__QUERY__' => "SELECT * FROM `{$this->http->req->s['customerData']['usersTable']}` WHERE __WHERE__",
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'No'
+			'fetchFromData' => 'No'
 		],
 		[
 			'column' => 'id',
 			'fetchFrom' => 'routeParamArr',
-			'fetchFromDetail' => 'id'
+			'fetchFromData' => 'id'
 		]
 	],
 	'__MODE__' => 'singleRowFormat'

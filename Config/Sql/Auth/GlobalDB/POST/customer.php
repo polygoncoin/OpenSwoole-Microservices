@@ -19,37 +19,37 @@ return [
 		[
 			'column' => 'name',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'name'
+			'fetchFromData' => 'name'
 		],
 		[
 			'column' => 'comments',
 			'fetchFrom' => 'payload',
-			'fetchFromDetail' => 'comments'
+			'fetchFromData' => 'comments'
 		],
 		[
 			'column' => 'created_by',
-			'fetchFrom' => 'uDetail',
-			'fetchFromDetail' => 'id'
+			'fetchFrom' => 'userData',
+			'fetchFromData' => 'id'
 		],
 		[
 			'column' => 'created_on',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => date(format: 'Y-m-d H:i:s')
+			'fetchFromData' => date(format: 'Y-m-d H:i:s')
 		],
 		[
 			'column' => 'is_approved',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'No'
+			'fetchFromData' => 'No'
 		],
 		[
 			'column' => 'is_disabled',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'No'
+			'fetchFromData' => 'No'
 		],
 		[
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',
-			'fetchFromDetail' => 'No'
+			'fetchFromData' => 'No'
 		]
 	],
 	'__INSERT-IDs__' => 'customer:id',
