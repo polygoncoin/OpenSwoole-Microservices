@@ -795,7 +795,7 @@ trait AppTrait
 	private function rateLimitRoute(&$sqlConfig): void
 	{
 		if (
-			!$this->http->req->isAuthRequest
+			!$this->http->req->isPrivateRequest
 			|| !Env::$enableRateLimitForRoute
 			|| !isset($sqlConfig['rateLimitMaxRequest'])
 			|| !isset($sqlConfig['rateLimitMaxRequestWindow'])
@@ -954,7 +954,7 @@ trait AppTrait
 				$hash = json_encode(value: $payloadSignature);
 				$hashKey = md5(string: $hash);
 				if (
-					$this->http->req->isAuthRequest
+					$this->http->req->isPrivateRequest
 					&& $this->http->req->clientCacheObj->cacheExist(cacheKey: $hashKey)
 				) {
 					$hashJson = str_replace(
@@ -979,7 +979,7 @@ trait AppTrait
 	private function lagResponse($sqlConfig): void
 	{
 		if (
-			!$this->http->req->isAuthRequest
+			!$this->http->req->isPrivateRequest
 			|| !isset($sqlConfig['responseLag'])
 		) {
 			return;

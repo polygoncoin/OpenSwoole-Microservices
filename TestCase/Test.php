@@ -37,10 +37,10 @@ class Test
 	public function processAllTest(): array
 	{
 		$response = [];
-		$response[] = $this->processAuth();
-		$response[] = $this->processOpen();
-		$response[] = $this->processXml();
-		$response[] = $this->processSupplement();
+		$response[] = $this->processPrivate();
+		$response[] = $this->processPublic();
+		$response[] = $this->processPublicXml();
+		$response[] = $this->processPrivateSupplement();
 
 		return $response;
 	}
@@ -50,7 +50,7 @@ class Test
 	 *
 	 * @return array
 	 */
-	public function processAuth(): array
+	public function processPrivate(): array
 	{
 		return include __DIR__ . DIRECTORY_SEPARATOR . 'PrivateTest.php';
 	}
@@ -60,7 +60,7 @@ class Test
 	 *
 	 * @return array
 	 */
-	public function processOpen(): array
+	public function processPublic(): array
 	{
 		return include __DIR__ . DIRECTORY_SEPARATOR . 'PublicTest.php';
 	}
@@ -71,7 +71,7 @@ class Test
 	 *
 	 * @return array
 	 */
-	public function processXml(): array
+	public function processPublicXml(): array
 	{
 		return include __DIR__ . DIRECTORY_SEPARATOR . 'PublicTestXml.php';
 	}
@@ -81,7 +81,7 @@ class Test
 	 *
 	 * @return array
 	 */
-	public function processSupplement(): array
+	public function processPrivateSupplement(): array
 	{
 		return include __DIR__ . DIRECTORY_SEPARATOR . 'PrivateSupplementTest.php';
 	}

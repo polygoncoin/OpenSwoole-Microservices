@@ -34,7 +34,7 @@ interface CronInterface
 	 *
 	 * @return bool
 	 */
-	public function init();
+	public function init(): bool;
 
 	/**
 	 * Process

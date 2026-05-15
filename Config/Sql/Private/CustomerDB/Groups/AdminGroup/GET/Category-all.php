@@ -13,8 +13,6 @@
  * @since     Class available since Release 1.0.0
  */
 
-use Microservices\App\QueryCacheServerKey;
-
 return [
 	'countQuery' => 'SELECT count(1) as `count` FROM `category` WHERE __WHERE__',
 	'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
@@ -87,9 +85,5 @@ return [
 	],
 	'useResultSet' => true,
 	'fetchFrom' => 'Master',
-	'cacheKey' => QueryCacheServerKey::category(
-		customerId: $this->http->req->customerId,
-		groupId: $this->http->req->s['groupData']['id'],
-		isAuthRequest: false
-	)
+	'queryCacheKey' => $this->http->req->s['groupData']['id'] . ':category'
 ];

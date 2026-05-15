@@ -127,19 +127,19 @@ $server->on(
 			$testObj = new Test();
 			switch ($httpReqData['get'][ROUTE_URL_PARAM]) {
 				case '/all-test':
-					$response->end('<pre>'.print_r(value: $testObj->processTests(), return: true));
+					$response->end('<pre>'.print_r(value: $testObj->processAllTest(), return: true));
 					break;
 				case '/auth-test':
-					$response->end('<pre>'.print_r(value: $testObj->processAuth(), return: true));
+					$response->end('<pre>'.print_r(value: $testObj->processPrivate(), return: true));
 					break;
 				case '/open-test':
-					$response->end('<pre>'.print_r(value: $testObj->processOpen(), return: true));
+					$response->end('<pre>'.print_r(value: $testObj->processPublic(), return: true));
 					break;
 				case '/open-test-xml':
-					$response->end('<pre>'.print_r(value: $testObj->processXml(), return: true));
+					$response->end('<pre>'.print_r(value: $testObj->processPublicXml(), return: true));
 					break;
 				case '/supp-test':
-					$response->end('<pre>'.print_r(value: $testObj->processSupplement(), return: true));
+					$response->end('<pre>'.print_r(value: $testObj->processPrivateSupplement(), return: true));
 					break;
 			}
 		} else {

@@ -32,9 +32,9 @@ interface DataDecodeInterface
 	/**
 	 * Initialize
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function init(): void;
+	public function init(): bool;
 
 	/**
 	 * Validates data

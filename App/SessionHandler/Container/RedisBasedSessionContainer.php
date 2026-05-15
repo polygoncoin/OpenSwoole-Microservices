@@ -204,7 +204,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 				$this->redisServerUsername !== null
 				&& $this->redisServerPassword !== null
 			) {
-				$connParamArr['Private'] = [
+				$connParamArr['auth'] = [
 					$this->redisServerUsername,
 					$this->redisServerPassword
 				];

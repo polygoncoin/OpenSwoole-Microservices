@@ -70,11 +70,11 @@ class DataDecode
 	/**
 	 * Initialize
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function init(): void
+	public function init(): bool
 	{
-		$this->dataDecoder->init();
+		return $this->dataDecoder->init();
 	}
 
 	/**

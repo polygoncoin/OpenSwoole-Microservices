@@ -277,8 +277,8 @@ return [
 
 	// Any among below can be used for DML operations (These are Optional key's)
 	// Caching
-	'cacheKey' => '<unique-key-for-redis-to-cache-results>(e.g, key:1)', // Use cacheKey to cache and reuse results (Optional)
-	'affectedCacheKeyArr' => [ // List down key's which effects configured cacheKey on DML operation
+	'queryCacheKey' => '<unique-key-for-redis-to-cache-results>(e.g, key:1)', // Use cacheKey to cache and reuse results (Optional)
+	'affectedQueryCacheKeyArr' => [ // List down key's which effects configured cacheKey on DML operation
 		'<unique-key-for-redis-to-drop-cached-results>(key:1)',
 		'<unique-key-for-redis-to-drop-cached-results>(category etc.)',
 		'...'
@@ -535,8 +535,8 @@ return [
 
 	// Any among below can be used for DML operations (These are Optional key's)
 	// Caching
-	'cacheKey' => '<unique-key-for-redis-to-cache-results>(e.g, key:1)', // Use cacheKey to cache and reuse results (Optional)
-	'affectedCacheKeyArr' => [ // List down key's which effects configured cacheKey on DML operation
+	'queryCacheKey' => '<unique-key-for-redis-to-cache-results>(e.g, key:1)', // Use cacheKey to cache and reuse results (Optional)
+	'affectedQueryCacheKeyArr' => [ // List down key's which effects configured cacheKey on DML operation
 		'<unique-key-for-redis-to-drop-cached-results>(key:1)',
 		'<unique-key-for-redis-to-drop-cached-results>(category etc.)',
 		'...'

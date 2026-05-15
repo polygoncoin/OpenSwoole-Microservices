@@ -16,7 +16,6 @@
 namespace Microservices\App;
 
 use Microservices\App\HttpStatus;
-use Microservices\App\SessionHandler\Session;
 
 /**
  * Environment
@@ -39,8 +38,8 @@ class Env
 	public static $OUTPUT_PERFORMANCE_STATS = null;
 	public static $DISABLE_REQUESTS_VIA_PROXIES = null;
 
-	public static $enableOpenRequest = null;
-	public static $enableAuthRequest = null;
+	public static $enablePublicRequest = null;
+	public static $enablePrivateRequest = null;
 	public static $authMode = null;
 	public static $sessionMode = null;
 	public static $enableConcurrentLogin = null;
@@ -171,6 +170,8 @@ class Env
 	public static $iAllowedRepresentation = ['JSON', 'XML'];
 	public static $oAllowedRepresentation = ['JSON', 'XML', 'XSLT', 'HTML', 'PHP'];
 
+	public static $isInitiated = false;
+
 	/**
 	 * Initialize
 	 *
@@ -178,12 +179,18 @@ class Env
 	 */
 	public static function init(): void
 	{
+		if (self::$isInitiated) {
+			return;
+		}
+
+		self::$isInitiated = true;
+
 		self::$ENVIRONMENT = getenv(name: 'ENVIRONMENT');
 		self::$OUTPUT_PERFORMANCE_STATS = getenv(name: 'OUTPUT_PERFORMANCE_STATS');
 		self::$DISABLE_REQUESTS_VIA_PROXIES = getenv(name: 'DISABLE_REQUESTS_VIA_PROXIES');
 
-		self::$enableOpenRequest = (bool)((int)getenv(name: 'enableOpenRequest'));
-		self::$enableAuthRequest = (bool)((int)getenv(name: 'enableAuthRequest'));
+		self::$enablePublicRequest = (bool)((int)getenv(name: 'enablePublicRequest'));
+		self::$enablePrivateRequest = (bool)((int)getenv(name: 'enablePrivateRequest'));
 		self::$authMode = getenv(name: 'authMode');
 		self::$sessionMode = getenv(name: 'sessionMode');
 		self::$enableConcurrentLogin = getenv(name: 'enableConcurrentLogin');
@@ -307,33 +314,33 @@ class Env
 		self::$queryCacheServerDatabase = getenv(name: 'queryCacheServerDatabase');
 		self::$queryCacheServerTable = getenv(name: 'queryCacheServerTable');
 		//////////////////
-
 		self::$reservedRoutesPrefix = [
-			self::$routesRequestRoute,
-			self::$dropboxRequestRoutePrefix,
 			self::$cronRequestRoutePrefix,
-			self::$customRequestRoutePrefix,
 			self::$reloadRequestRoutePrefix,
-			self::$thirdPartyRequestRoutePrefix,
-			self::$uploadRequestRoutePrefix
+			self::$routesRequestRoute
 		];
 
 		self::$reservedRoutesCidrString = [
-			self::$routesRequestRoute => self::$routesRestrictedCidr,
-			self::$dropboxRequestRoutePrefix => self::$dropboxRestrictedCidr,
 			self::$cronRequestRoutePrefix => self::$cronRestrictedCidr,
-			self::$customRequestRoutePrefix => self::$customRestrictedCidr,
 			self::$reloadRequestRoutePrefix => self::$reloadRestrictedCidr,
-			self::$thirdPartyRequestRoutePrefix => self::$thirdPatyRestrictedCidr,
-			self::$uploadRequestRoutePrefix => self::$uploadRestrictedCidr
+			self::$routesRequestRoute => self::$routesRestrictedCidr
 		];
 
-		if (self::$authMode === 'Session') {
-			// Initialize Session Handler
-			Session::initSessionHandler(sessionMode: Env::$sessionMode, options: []);
-
-			// Start session in readonly mode
-			Session::sessionStartReadonly();
+		if (self::$enableCustomRequest) {
+			self::$reservedRoutesPrefix[] = self::$customRequestRoutePrefix;
+			self::$reservedRoutesCidrString[self::$customRequestRoutePrefix] = self::$customRestrictedCidr;
+		}
+		if (self::$enableDropboxRequest) {
+			self::$reservedRoutesPrefix[] = self::$dropboxRequestRoutePrefix;
+			self::$reservedRoutesCidrString[self::$dropboxRequestRoutePrefix] = self::$dropboxRestrictedCidr;
+		}
+		if (self::$enableThirdPartyRequest) {
+			self::$reservedRoutesPrefix[] = self::$thirdPartyRequestRoutePrefix;
+			self::$reservedRoutesCidrString[self::$thirdPartyRequestRoutePrefix] = self::$thirdPatyRestrictedCidr;
+		}
+		if (self::$enableUploadRequest) {
+			self::$reservedRoutesPrefix[] = self::$uploadRequestRoutePrefix;
+			self::$reservedRoutesCidrString[self::$uploadRequestRoutePrefix] = self::$uploadRestrictedCidr;
 		}
 	}
 

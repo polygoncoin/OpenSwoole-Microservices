@@ -269,7 +269,7 @@ class DataEncode
 					&& $this->xsltFile !== null
 					&& file_exists(filename: $this->xsltFile)
 				):
-				echo $this->processXml(xmlFile: $this->xsltFile);
+				echo $this->processPublicXml(xmlFile: $this->xsltFile);
 				fclose(stream: $this->tempStream);
 				break;
 			case (
@@ -277,7 +277,7 @@ class DataEncode
 					&& $this->htmlFile !== null
 					&& file_exists(filename: $this->htmlFile)
 				):
-				echo $this->processXml(xmlFile: $this->htmlFile);
+				echo $this->processPublicXml(xmlFile: $this->htmlFile);
 				fclose(stream: $this->tempStream);
 				break;
 			case (
@@ -314,7 +314,7 @@ class DataEncode
 					&& $this->xsltFile !== null
 					&& file_exists(filename: $this->xsltFile)
 				):
-				$streamContent = $this->processXml(xmlFile: $this->xsltFile);
+				$streamContent = $this->processPublicXml(xmlFile: $this->xsltFile);
 				fclose(stream: $this->tempStream);
 				break;
 			case (
@@ -322,7 +322,7 @@ class DataEncode
 					&& $this->htmlFile !== null
 					&& file_exists(filename: $this->htmlFile)
 				):
-				$streamContent = $this->processXml(xmlFile: $this->htmlFile);
+				$streamContent = $this->processPublicXml(xmlFile: $this->htmlFile);
 				fclose(stream: $this->tempStream);
 				break;
 			case (
@@ -353,7 +353,7 @@ class DataEncode
 	 *
 	 * @return string
 	 */
-	private function processXml($xmlFile)
+	private function processPublicXml($xmlFile)
 	{
 		rewind(stream: $this->tempStream);
 		$xml = new \DOMDocument();

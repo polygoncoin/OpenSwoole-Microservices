@@ -5,7 +5,7 @@
 .env.global.container
 .env.rateLimiting
 .env.session
-/App/SessionHandlers/sessions/*
+/App/SessionHandler/sessions/*
 /Log/*
 /vendor/
 /WebCookie/*

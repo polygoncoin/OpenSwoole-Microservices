@@ -16,6 +16,7 @@
 namespace Microservices\TestCase;
 
 use Microservices\App\Web;
+use Microservices\App\Env;
 
 $headerArr = $defaultHeaderArr;
 $headerArr[] = $contentType;
@@ -28,11 +29,27 @@ $res = Web::trigger(
 	payload: json_encode(value: $payload)
 );
 
-if (
-	!isset($res['response']['responseHeaders']['Set-Cookie'])
-	&& isset($res['response']['responseBody']['Results']['Token'])
-) {
-	$token = $res['response']['responseBody']['Results']['Token'];
+$token = null;
+$sessionCookie = null;
+
+switch (Env::$authMode) {
+	case 'Token':
+		if (isset($res['response']['responseBody']['Results']['Token'])) {
+			$token = $res['response']['responseBody']['Results']['Token'];
+		}
+		break;
+	case 'Session':
+		if (isset($res['response']['responseHeaderArr']['Set-Cookie'])) {
+			$sessionCookie = substr(
+				$res['response']['responseHeaderArr']['Set-Cookie'],
+				0,
+				strpos(
+					$res['response']['responseHeaderArr']['Set-Cookie'],
+					'; '
+				)
+			);
+		}
+		break;
 }
 
 return $res;

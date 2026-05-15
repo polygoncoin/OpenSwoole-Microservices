@@ -84,9 +84,9 @@ class Reload
 		$customerRowArr = DbCommonFunction::$gDbServer->fetchAll();
 		DbCommonFunction::$gDbServer->closeCursor();
 		foreach ($customerRowArr as $customerRow) {
-			if (!empty($customerRow['PUBLIC_api_domain'])) {
+			if (!empty($customerRow['open_api_domain'])) {
 				$c_key = CacheServerKey::openDomain(
-					domainName: $customerRow['PUBLIC_api_domain']
+					domainName: $customerRow['open_api_domain']
 				);
 				DbCommonFunction::$gCacheServer->cacheSet(
 					cacheKey: $c_key,

@@ -77,11 +77,13 @@ class HttpResponse
 	/**
 	 * Initialize
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function init(): void
+	public function init(): bool
 	{
 		$this->dataEncode = new DataEncode(http: $this->http);
 		$this->dataEncode->init();
+
+		return true;
 	}
 }

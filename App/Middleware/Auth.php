@@ -25,7 +25,7 @@ use Microservices\App\HttpStatus;
  * Class handling detail for Auth middleware
  * php version 8.3
  *
- * @category  PRIVATE_Middleware
+ * @category  Auth_Middleware
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -77,7 +77,6 @@ class Auth
 		) {
 			$this->http->req->s['userData'] = $_SESSION;
 			$this->http->req->s['token'] = session_id();
-			$this->http->req->userId = $_SESSION['id'];
 		} elseif (
 			($this->http->httpReqData['header']['tokenHeader'] !== null)
 		) {
@@ -113,9 +112,9 @@ class Auth
 				),
 				associative: true
 			);
-			$this->http->req->userId = $this->http->req->s['userData']['id'];
-			$this->http->req->groupId = $this->http->req->s['userData']['group_id'];
 		}
+		$this->http->req->userId = $this->http->req->s['userData']['id'];
+		$this->http->req->groupId = $this->http->req->s['userData']['group_id'];
 
 		if (Env::$enableConcurrentLogin) {
 			$userConcurrencyKey = CacheServerKey::customerUserConcurrency(

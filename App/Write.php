@@ -177,15 +177,15 @@ class Write
 			writeSqlConfig: $writeSqlConfig,
 			useHierarchy: $useHierarchy
 		);
-		if (isset($writeSqlConfig['affectedCacheKeyArr'])) {
+		if (isset($writeSqlConfig['affectedQueryCacheKeyArr'])) {
 			for (
-				$i = 0, $iCount = count(value: $writeSqlConfig['affectedCacheKeyArr']);
+				$i = 0, $iCount = count(value: $writeSqlConfig['affectedQueryCacheKeyArr']);
 				$i < $iCount;
 				$i++
 			) {
 				DbCommonFunction::queryCacheDelete(
 					customerId: $this->http->req->customerId,
-					queryCacheKey: $writeSqlConfig['affectedCacheKeyArr'][$i]
+					queryCacheKey: $writeSqlConfig['affectedQueryCacheKeyArr'][$i]
 				);
 			}
 		}
@@ -331,7 +331,7 @@ class Write
 					$arr['Response'] = $response;
 
 					if (
-						$this->http->req->isAuthRequest
+						$this->http->req->isPrivateRequest
 						&& $idempotentWindow
 					) {
 						$this->http->req->clientCacheObj->cacheSet(

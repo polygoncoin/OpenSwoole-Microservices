@@ -26,7 +26,7 @@ class Start
 	/**
 	 * Process HTTP request data
 	 *
-	 * @param array $httpReqData HTTP request detail
+	 * @param array $httpReqData HTTP request data
 	 *
 	 * @return array
 	 */

@@ -47,7 +47,7 @@ class Http
 	public $res = null;
 
 	/**
-	 * HTTP request detail
+	 * HTTP request data
 	 *
 	 * @var null|array
 	 */
@@ -66,12 +66,14 @@ class Http
 	/**
 	 * Initialize
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function init(): void
+	public function init(): bool
 	{
 		$this->req = new HttpRequest(http: $this);
 		$this->res = new HttpResponse(http: $this);
+
+		return true;
 	}
 
 	/**

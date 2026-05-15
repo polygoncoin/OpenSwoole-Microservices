@@ -123,7 +123,7 @@ class Redis implements NoSqlInterface
 				($this->cacheServerUsername !== '')
 				&& ($this->cacheServerPassword !== '')
 			) {
-				$connParamArr['Private'] = [
+				$connParamArr['auth'] = [
 					$this->cacheServerUsername,
 					$this->cacheServerPassword
 				];

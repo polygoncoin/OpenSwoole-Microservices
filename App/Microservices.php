@@ -51,7 +51,7 @@ class Microservices
 	private $tsEnd = null;
 
 	/**
-	 * HTTP request detail
+	 * HTTP request data
 	 *
 	 * @var null|array
 	 */
@@ -67,7 +67,7 @@ class Microservices
 	/**
 	 * Constructor
 	 *
-	 * @param array $httpReqData HTTP request detail
+	 * @param array $httpReqData HTTP request data
 	 */
 	public function __construct(&$httpReqData)
 	{
@@ -164,15 +164,6 @@ class Microservices
 
 			// Requires auth token
 			default:
-				if ($this->httpReqData['server']['httpMethod'] === Constant::$GET) {
-					$dropboxCache = new Dropbox(httpReqData: $this->httpReqData);
-					if ($dropboxCache->init(mode: 'Public')) {
-						// File exists - Serve from Dropbox
-						return $dropboxCache->process();
-					}
-					$dropboxCache = null;
-				}
-
 				$this->http->init();
 
 				$gateway = new Gateway(http: $this->http);

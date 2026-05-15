@@ -35,13 +35,6 @@ use Microservices\App\DropboxHandler\StreamVideo;
 class Dropbox
 {
 	/**
-	 * HTTP request detail
-	 *
-	 * @var null|array
-	 */
-	private $httpReqData = null;
-
-	/**
 	 * HTTP object
 	 *
 	 * @var null|Http
@@ -84,27 +77,22 @@ class Dropbox
 	/**
 	 * Constructor
 	 *
-	 * @param array $httpReqData HTTP request detail
-	 * @param Http  $http
+	 * @param Http $http
 	 */
-	public function __construct(&$httpReqData, &$http = null)
+	public function __construct(&$http = null)
 	{
-		$this->httpReqData = &$httpReqData;
 		$this->http = &$http;
 	}
 
 	/**
 	 * Initialize check and serve file
 	 *
-	 * @param string $mode Public (Public access) / Private (Requires Auth)
-	 *
 	 * @return bool
 	 */
-	public function init($mode): bool
+	public function init(): bool
 	{
-		if (!isset($this->httpReqData['get'][ROUTE_URL_PARAM])) {
-			return false;
-		}
+		// $mode = Public (Public access) / Private (Requires Auth)
+		$mode = $this->http->req->isPrivateRequest ? 'Private' : 'Public';
 
 		$this->modeDropBox = Constant::$DROP_BOX_DIR
 			. DIRECTORY_SEPARATOR . $mode;
@@ -113,7 +101,7 @@ class Dropbox
 			string: str_replace(
 				search: ['../', '..\\', '/', '\\'],
 				replace: ['', '', DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR],
-				subject: urldecode(string: $this->httpReqData['get'][ROUTE_URL_PARAM])
+				subject: urldecode(string: $this->http->req->rParser->configuredRoute)
 			),
 			characters: './\\'
 		);
@@ -121,8 +109,7 @@ class Dropbox
 		if (
 			$this->http !== null
 			&& $this->http->req !== null
-			&& $this->http->req->isAuthRequest
-			&& $mode === 'Closed'
+			&& $this->http->req->isPrivateRequest
 		) {
 			$this->modeDropBox .= DIRECTORY_SEPARATOR . $this->http->req->customerId;
 			$this->validateFileRequest();
@@ -149,9 +136,9 @@ class Dropbox
 	/**
 	 * Serve File content
 	 *
-	 * @return array
+	 * @return mixed
 	 */
-	public function process(): array
+	public function process(): mixed
 	{
 		$headerArr = [];
 		$status = HttpStatus::$Ok;
@@ -163,7 +150,7 @@ class Dropbox
 		switch (true) {
 			case in_array($this->mimeType, $this->supportedVideoMimeArr):
 				// Serve Video
-				$videoStream = new StreamVideo(httpReqData: $this->httpReqData);
+				$videoStream = new StreamVideo(httpReqData: $this->http->httpReqData);
 				if (
 					(
 						$httpStatus = $videoStream->init(fileLocation: $this->fileLocation)
@@ -197,15 +184,15 @@ class Dropbox
 		$eTag = "{$modifiedTime}";
 
 		if (
-			(isset($this->httpReqData['header']['HTTP_IF_NONE_MATCH'])
+			(isset($this->http->httpReqData['header']['HTTP_IF_NONE_MATCH'])
 				&& strpos(
-					haystack: $this->httpReqData['header']['HTTP_IF_NONE_MATCH'],
+					haystack: $this->http->httpReqData['header']['HTTP_IF_NONE_MATCH'],
 					needle: $eTag
 				) !== false
 			)
-			|| (isset($this->httpReqData['header']['HTTP_IF_MODIFIED_SINCE'])
+			|| (isset($this->http->httpReqData['header']['HTTP_IF_MODIFIED_SINCE'])
 				&& @strtotime(
-					datetime: $this->httpReqData['header']['HTTP_IF_MODIFIED_SINCE']
+					datetime: $this->http->httpReqData['header']['HTTP_IF_MODIFIED_SINCE']
 				) == $modifiedTime
 			)
 		) {

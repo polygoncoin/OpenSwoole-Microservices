@@ -62,6 +62,7 @@ class Password implements CustomInterface
 	public function init(): bool
 	{
 		$this->http->req->loadPayload();
+
 		return true;
 	}
 

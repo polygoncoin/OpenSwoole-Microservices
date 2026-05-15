@@ -96,7 +96,7 @@ class Supplement
 	public function init(&$supplementObj): bool
 	{
 		$this->supplementObj = &$supplementObj;
-		return true;
+		return $this->supplementObj->init();
 	}
 
 	/**
@@ -183,19 +183,19 @@ class Supplement
 			fetchFrom: 'Master'
 		);
 
-		$this->processSupplement(
+		$this->processPrivateSupplement(
 			sSqlConfig: $sSqlConfig,
 			useHierarchy: $useHierarchy
 		);
-		if (isset($sSqlConfig['affectedCacheKeyArr'])) {
+		if (isset($sSqlConfig['affectedQueryCacheKeyArr'])) {
 			for (
-				$i = 0, $iCount = count(value: $sSqlConfig['affectedCacheKeyArr']);
+				$i = 0, $iCount = count(value: $sSqlConfig['affectedQueryCacheKeyArr']);
 				$i < $iCount;
 				$i++
 			) {
 				DbCommonFunction::queryCacheDelete(
 					customerId: $this->http->req->customerId,
-					queryCacheKey: $sSqlConfig['affectedCacheKeyArr'][$i]
+					queryCacheKey: $sSqlConfig['affectedQueryCacheKeyArr'][$i]
 				);
 			}
 		}
@@ -238,7 +238,7 @@ class Supplement
 	 * @return void
 	 * @throws \Exception
 	 */
-	private function processSupplement(&$sSqlConfig, $useHierarchy): void
+	private function processPrivateSupplement(&$sSqlConfig, $useHierarchy): void
 	{
 		// Check for payloadType
 		if (isset($sSqlConfig['__PAYLOAD-TYPE__'])) {
@@ -298,7 +298,7 @@ class Supplement
 			}
 
 			// Check for Idempotent Window
-			if ($this->http->req->isAuthRequest) {
+			if ($this->http->req->isPrivateRequest) {
 				[$idempotentWindow, $hashKey, $hashJson] = $this->checkIdempotent(
 					sqlConfig: $sSqlConfig,
 					payloadIndexArr: $payloadIndexArr

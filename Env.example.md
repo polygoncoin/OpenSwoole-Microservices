@@ -10,8 +10,8 @@ DISABLE_REQUESTS_VIA_PROXIES=1          ; 1 = true / 0 = false
 
 ```ini
 ; API authentication modes - Token / Session (Cookie based Sessions)
-enableOpenRequest=1        ; 1 = true / 0 = false
-enableAuthRequest=1        ; 1 = true / 0 = false
+enablePublicRequest=1        ; 1 = true / 0 = false
+enablePrivateRequest=1        ; 1 = true / 0 = false
 authMode='Token'            ; Token / Session (Cookie based Sessions)
 sessionMode='File'          ; For Cookie based Session - 'File', 'MySql', 'PostgreSql', 'MongoDb', 'Redis', 'Memcached', 'Cookie'
 enableConcurrentLogin=1    ; 1 = true / 0 = false

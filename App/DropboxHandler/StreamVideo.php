@@ -33,7 +33,7 @@ use Microservices\App\HttpStatus;
 class StreamVideo
 {
 	/**
-	 * HTTP request detail
+	 * HTTP request data
 	 *
 	 * @var null|array
 	 */
@@ -74,7 +74,7 @@ class StreamVideo
 	/**
 	 * Constructor
 	 *
-	 * @param array $httpReqData Http request detail
+	 * @param array $httpReqData HTTP request data
 	 */
 	public function __construct(&$httpReqData)
 	{

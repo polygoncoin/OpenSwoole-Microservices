@@ -94,14 +94,16 @@ class JsonDecode implements DataDecodeInterface
 	/**
 	 * Initialize
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function init(): void
+	public function init(): bool
 	{
 		// Init JSON Decode Engine
 		$this->jsonDecodeEngine = new JsonDecodeEngine(
 			jsonFileHandle: $this->jsonFileHandle
 		);
+
+		return true;
 	}
 
 	/**

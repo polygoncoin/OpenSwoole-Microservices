@@ -12,7 +12,7 @@ CREATE TABLE `customer` (
     `usersTable` VARCHAR(255) NOT NULL,
     `allowed_cidr` TEXT,
     `api_domain` VARCHAR(255) DEFAULT NULL,
-    `PUBLIC_api_domain` VARCHAR(255) DEFAULT NULL,
+    `open_api_domain` VARCHAR(255) DEFAULT NULL,
     `master_db_server_type` VARCHAR(255) NOT NULL,
     `master_db_server_hostname` VARCHAR(255) NOT NULL,
     `master_db_server_port` VARCHAR(255) NOT NULL,

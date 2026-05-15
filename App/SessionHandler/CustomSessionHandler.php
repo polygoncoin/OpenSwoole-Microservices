@@ -358,7 +358,7 @@ class CustomSessionHandler implements
 				name: $this->sessionName,
 				value: '',
 				expires_or_options: 1,
-				path: $this->container->sessionOption['cookie_path']
+				path: $this->container->sessionOptionArr['cookie_path']
 			);
 		}
 		if (!empty($this->sessionDataName)) {
@@ -366,7 +366,7 @@ class CustomSessionHandler implements
 				name: $this->sessionDataName,
 				value: '',
 				expires_or_options: 1,
-				path: $this->container->sessionOption['cookie_path']
+				path: $this->container->sessionOptionArr['cookie_path']
 			);
 		}
 	}
@@ -385,8 +385,8 @@ class CustomSessionHandler implements
 
 		// Removed Session Cookie if read_and_close is enabled
 		if (
-			isset($this->container->sessionOption['read_and_close'])
-			&& $this->container->sessionOption['read_and_close'] === true
+			isset($this->container->sessionOptionArr['read_and_close'])
+			&& $this->container->sessionOptionArr['read_and_close'] === true
 			&& $this->creatingSessionID === true
 		) {
 			// Remove Session Set-Cookie header

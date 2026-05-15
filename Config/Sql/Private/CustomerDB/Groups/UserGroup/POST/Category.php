@@ -13,8 +13,6 @@
  * @since     Class available since Release 1.0.0
  */
 
-use Microservices\App\QueryCacheServerKey;
-
 return [
 	'__QUERY__' => 'INSERT INTO `category` SET __SET__',
 	'__SET__' => [
@@ -67,16 +65,8 @@ return [
 		]
 	],
 	'useHierarchy' => true,
-	'affectedCacheKeyArr' => [
-		QueryCacheServerKey::category(
-			customerId: $this->http->req->customerId,
-			groupId: $this->http->req->s['groupData']['id'],
-			isAuthRequest: false
-		),
-		QueryCacheServerKey::category1(
-			customerId: $this->http->req->customerId,
-			groupId: $this->http->req->s['groupData']['id'],
-			isAuthRequest: false
-		)
+	'affectedQueryCacheKeyArr' => [
+		$this->http->req->s['groupData']['id'] . ':category',
+		$this->http->req->s['groupData']['id'] . ':category1'
 	]
 ];

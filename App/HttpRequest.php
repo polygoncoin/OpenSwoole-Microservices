@@ -93,11 +93,11 @@ class HttpRequest
 	public $s = null;
 
 	/**
-	 * Flag for Auth request
+	 * Flag for Private request
 	 *
 	 * @var null|bool
 	 */
-	public $isAuthRequest = null;
+	public $isPrivateRequest = null;
 
 	/**
 	 * Payload stream
@@ -157,11 +157,11 @@ class HttpRequest
 					&& isset($this->http->httpReqData['header']['tokenHeader'])
 					&& $this->http->httpReqData['header']['tokenHeader'] !== null
 				) {
-					$this->isAuthRequest = true;
+					$this->isPrivateRequest = true;
 				} elseif ($this->http->httpReqData['get'][ROUTE_URL_PARAM] === '/login') {
-					$this->isAuthRequest = true;
-				} elseif (Env::$enableOpenRequest) {
-					$this->isAuthRequest = false;
+					$this->isPrivateRequest = true;
+				} elseif (Env::$enablePublicRequest) {
+					$this->isPrivateRequest = false;
 				}
 				break;
 			case 'Session':
@@ -175,43 +175,43 @@ class HttpRequest
 							code: HttpStatus::$InternalServerError
 						);
 					}
-					$this->isAuthRequest = true;
+					$this->isPrivateRequest = true;
 				} elseif ($this->http->httpReqData['get'][ROUTE_URL_PARAM] === '/login') {
-					$this->isAuthRequest = true;
+					$this->isPrivateRequest = true;
 				} else {
-					$this->isAuthRequest = false;
+					$this->isPrivateRequest = false;
 				}
 				break;
 		}
 
-		if ($this->isAuthRequest === null) {
+		if ($this->isPrivateRequest === null) {
 			throw new \Exception(
-				message: 'Private request are disabled',
+				message: "Private request are disabled",
 				code: HttpStatus::$InternalServerError
 			);
 		}
 
 		if (
-			$this->isAuthRequest === false
-			&& !Env::$enableOpenRequest
+			$this->isPrivateRequest === false
+			&& !Env::$enablePublicRequest
 		) {
 			throw new \Exception(
-				message: "Public request are disabled",
+				message: "Public to web request are disabled",
 				code: HttpStatus::$InternalServerError
 			);
 		}
 
 		if (
-			$this->isAuthRequest === true
-			&& !Env::$enableAuthRequest
+			$this->isPrivateRequest === true
+			&& !Env::$enablePrivateRequest
 		) {
 			throw new \Exception(
-				message: 'Private request are disabled',
+				message: "Private request are disabled",
 				code: HttpStatus::$InternalServerError
 			);
 		}
 
-		if ($this->isAuthRequest) {
+		if ($this->isPrivateRequest) {
 			$this->auth = new Auth(http: $this->http);
 		}
 
@@ -227,7 +227,7 @@ class HttpRequest
 	{
 		$this->loadCustomerData();
 
-		if ($this->isAuthRequest) {
+		if ($this->isPrivateRequest) {
 			$this->auth->loadUserData();
 			$this->auth->loadGroupData();
 		}
@@ -251,7 +251,7 @@ class HttpRequest
 
 		DbCommonFunction::connectGlobalCache();
 
-		if ($this->isAuthRequest) {
+		if ($this->isPrivateRequest) {
 			$cKey = CacheServerKey::authDomain(domainName: $this->http->httpReqData['server']['domainName']);
 		} else {
 			$cKey = CacheServerKey::openDomain(domainName: $this->http->httpReqData['server']['domainName']);
@@ -271,7 +271,7 @@ class HttpRequest
 		);
 		$this->customerId = $this->s['customerData']['id'];
 
-		if ($this->isAuthRequest) {
+		if ($this->isPrivateRequest) {
 			$this->clientCacheObj = DbCommonFunction::connectClientCache(
 				customerData: $this->http->req->s['customerData']
 			);

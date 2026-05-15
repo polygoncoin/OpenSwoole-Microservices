@@ -16,12 +16,33 @@
 namespace Microservices\TestCase;
 
 use Microservices\App\Web;
+use Microservices\App\Env;
 
 $headerArr = $defaultHeaderArr;
 $headerArr[] = $contentType;
-if (isset($token)) {
-	$headerArr[] = "Authorization: Bearer {$token}";
+$proceed = false;
+switch (Env::$authMode) {
+	case 'Token':
+		if (
+			isset($token)
+			&& $token !== null
+		) {
+			$headerArr[] = "Authorization: Bearer {$token}";
+			$proceed = true;
+		}
+		break;
+	case 'Session':
+		if (
+			isset($sessionCookie)
+			&& $sessionCookie !== null
+		) {
+			$headerArr[] = "Cookie: {$sessionCookie}";
+			$proceed = true;
+		}
+		break;
+}
 
+if (isset($proceed)) {
 	$paramArr = [
 		'firstname' => 'Ramesh',
 		'lastname' => 'Jangid',

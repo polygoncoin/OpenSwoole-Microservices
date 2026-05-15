@@ -268,12 +268,12 @@ class Session
 	private static function initContainer(): void
 	{
 		// Initialize Container
-		$containerClassName = 'Microservices\\App\\SessionHandlers\\Container\\'
+		$containerClassName = 'Microservices\\App\\SessionHandler\\Container\\'
 			. self::$sessionMode . 'BasedSessionContainer';
 		self::$sessionContainer = new $containerClassName();
 
 		// Setting required common parameters
-		self::$sessionContainer->sessionOption = self::$optionArr;
+		self::$sessionContainer->sessionOptionArr = self::$optionArr;
 		self::$sessionContainer->sessionName = self::$sessionName;
 		self::$sessionContainer->sessionMaxLifetime = (int)self::$sessionMaxLifetime;
 
@@ -415,11 +415,11 @@ class Session
 	 * Initialize session handler
 	 *
 	 * @param string $sessionMode File/MySql/Cookie
-	 * @param array  $optionArr   Options
+	 * @param array  $options     Options
 	 *
 	 * @return void
 	 */
-	public static function initSessionHandler($sessionMode, $optionArr = []): void
+	public static function initSessionHandler($sessionMode, $options = []): void
 	{
 		$env = parse_ini_file(filename: Constant::$ROOT
 			. DIRECTORY_SEPARATOR . '.env.session'
@@ -430,7 +430,7 @@ class Session
 
 		self::$sessionMode = $sessionMode;
 
-		// Set optionArr from php.ini if not set in this class
+		// Set optoptionsionArr from php.ini if not set in this class
 		if (empty(self::$sessionName)) {
 			self::$sessionName = session_name();
 		}
@@ -449,7 +449,7 @@ class Session
 		self::validateSettings();
 
 		// Initialize
-		self::setOptions(optionArr: $optionArr);
+		self::setOptions(optionArr: $options);
 		self::initProcess();
 	}
 
@@ -467,8 +467,8 @@ class Session
 			$optionArr = self::$optionArr;
 			$optionArr['read_and_close'] = true;
 
-			self::$sessionContainer->sessionOption = $optionArr;
-			return session_start(optionArr: $optionArr);
+			self::$sessionContainer->sessionOptionArr = $optionArr;
+			return session_start(options: $optionArr);
 		}
 		return false;
 	}
@@ -480,8 +480,8 @@ class Session
 	 */
 	public static function sessionStartReadWrite(): bool
 	{
-		self::$sessionContainer->sessionOption = self::$optionArr;
-		return session_start(optionArr: self::$optionArr);
+		self::$sessionContainer->sessionOptionArr = self::$optionArr;
+		return session_start(options: self::$optionArr);
 	}
 
 	/**

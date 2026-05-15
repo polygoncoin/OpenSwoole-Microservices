@@ -115,7 +115,7 @@ class Read
 		$toBeCached = false;
 		if (
 			Env::$enableResponseCaching
-			&& isset($readSqlConfig['cacheKey'])
+			&& isset($readSqlConfig['queryCacheKey'])
 			&& !isset($this->http->req->s['queryParamArr']['orderBy'])
 		) {
 			$cacheReqCount = 0;
@@ -123,7 +123,7 @@ class Read
 			for ($i = 0;$i < 5; $i++) {
 				$json = DbCommonFunction::queryCacheGet(
 					customerId: $this->http->req->customerId,
-					queryCacheKey: $readSqlConfig['cacheKey']
+					queryCacheKey: $readSqlConfig['queryCacheKey']
 				);
 				if ($json !== null) {
 					$cacheHit = 'true';
@@ -137,7 +137,7 @@ class Read
 					if (!$queryCacheReqFlag) {
 						$cacheReqCount = DbCommonFunction::queryCacheIncrement(
 							customerId: $this->http->req->customerId,
-							queryCacheKey: $readSqlConfig['cacheKey']
+							queryCacheKey: $readSqlConfig['queryCacheKey']
 						);
 						if ($cacheReqCount === 1) {
 							$toBeCached = true;
@@ -226,7 +226,7 @@ class Read
 			$json = $this->dataEncode->getData();
 			DbCommonFunction::queryCacheSet(
 				customerId: $this->http->req->customerId,
-				queryCacheKey: $readSqlConfig['cacheKey'],
+				queryCacheKey: $readSqlConfig['queryCacheKey'],
 				queryCacheValue: $json
 			);
 			$this->http->res->dataEncode->appendData(data: $json);

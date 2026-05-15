@@ -54,17 +54,19 @@ class Gateway
 	/**
 	 * Initialize
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function init(): void
+	public function init(): bool
 	{
 		$this->http->req->loadCustomerData();
 
-		if ($this->http->req->isAuthRequest) {
+		if ($this->http->req->isPrivateRequest) {
 			$this->http->req->auth->loadUserData();
 			CommonFunction::checkClosedWebRequestCidr(http: $this->http);
 		}
 		$this->rateLimitRequest();
+
+		return true;
 	}
 
 	/**
@@ -74,7 +76,7 @@ class Gateway
 	 */
 	private function rateLimitRequest(): void
 	{
-		if ($this->http->req->isAuthRequest) {
+		if ($this->http->req->isPrivateRequest) {
 			// IP Rate Limiting
 			$this->rateLimitIp();
 

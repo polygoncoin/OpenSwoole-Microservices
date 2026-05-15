@@ -88,6 +88,7 @@ class Route
 		if (Env::$enableRoutesRequest) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -104,7 +105,7 @@ class Route
 		$Env = __NAMESPACE__ . '\Env';
 
 		$httpRouteArr = [];
-		if (!$this->http->req->isAuthRequest) {
+		if (!$this->http->req->isPrivateRequest) {
 			$userRoutesFolder = Constant::$WWW . $this->routesFolder
 				. DIRECTORY_SEPARATOR . 'Public';
 		} else {

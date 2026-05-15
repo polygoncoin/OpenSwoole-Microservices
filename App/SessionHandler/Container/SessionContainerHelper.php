@@ -43,7 +43,7 @@ class SessionContainerHelper
 	public $iv = null;
 
 	// Session Start $options param
-	public $sessionOption = null;
+	public $sessionOptionArr = null;
 
 	// Session cookie name
 	public $sessionName = null;

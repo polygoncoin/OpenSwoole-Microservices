@@ -148,7 +148,7 @@ class RouteParser
 		// }
 
 		if ($routeFileLocation === null) {
-			if ($this->http->req->isAuthRequest) {
+			if ($this->http->req->isPrivateRequest) {
 				$routeFileLocation = Constant::$PRIVATE_ROUTES_DIR
 					. DIRECTORY_SEPARATOR . 'CustomerDB'
 					. DIRECTORY_SEPARATOR . 'Groups'
@@ -179,6 +179,9 @@ class RouteParser
 			}
 
 			if (isset($routesConfig[$element])) { // Route element is configured
+				if ($i === 0) {
+					$this->isStartingWithReservedRouteKeyword(routeStartingKeyword: $element);
+				}
 				if (isset($routesConfig[$element]['__PRE-ROUTE-HOOKS__'])) {
 					$this->routeHook[$element]['__PRE-ROUTE-HOOKS__'] = $routesConfig[$element]['__PRE-ROUTE-HOOKS__'];
 				}
@@ -193,6 +196,14 @@ class RouteParser
 				$i === 0
 				&& $this->isStartingWithReservedRouteKeyword(routeStartingKeyword: $element)
 			) {
+				if (
+					$this->routeStartingWithReservedKeywordFlag
+					&& $this->routeStartingReservedKeyword === Env::$dropboxRequestRoutePrefix
+				) {
+					unset($this->routeElementArr[0]);
+					$this->configuredRoute = '/' . implode(separator: '/', array: $this->routeElementArr);
+					return;
+				}
 				continue;
 			} elseif ( // Route ending with reserved keyword
 				$i === $routeLastElementPos
@@ -286,21 +297,23 @@ class RouteParser
 	 */
 	private function isStartingWithReservedRouteKeyword($routeStartingKeyword)
 	{
-		if (
-			Env::$enableCidrCheck
-			&& in_array($routeStartingKeyword, Env::$reservedRoutesPrefix)
-		) {
+		if (in_array($routeStartingKeyword, Env::$reservedRoutesPrefix)) {
 			$this->routeStartingWithReservedKeywordFlag = true;
 			$this->routeStartingReservedKeyword = $routeStartingKeyword;
-			$isValidIp = CommonFunction::checkCidr(
-				IP: $this->http->httpReqData['server']['httpRequestIP'],
-				cidrString: Env::$reservedRoutesCidrString[$routeStartingKeyword]
-			);
-			if (!$isValidIp) {
-				throw new \Exception(
-					message: 'Source IP is not supported',
-					code: HttpStatus::$NotFound
+			if (
+				Env::$enableCidrCheck
+				&& isset(Env::$reservedRoutesCidrString[$routeStartingKeyword])
+			) {
+				$isValidIp = CommonFunction::checkCidr(
+					IP: $this->http->httpReqData['server']['httpRequestIP'],
+					cidrString: Env::$reservedRoutesCidrString[$routeStartingKeyword]
 				);
+				if (!$isValidIp) {
+					throw new \Exception(
+						message: 'Source IP is not supported',
+						code: HttpStatus::$NotFound
+					);
+				}
 			}
 		}
 
