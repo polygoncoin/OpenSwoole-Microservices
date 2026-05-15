@@ -30,14 +30,14 @@ namespace Microservices\App;
 class QueryCacheServerKey
 {
 	/**
-	 * Open To Web App key
+	 * Public Web App key
 	 *
 	 * @var string
 	 */
 	public static $oApp = 'o:app';
 
 	/**
-	 * Auth Based App key
+	 * Private App key
 	 *
 	 * @var string
 	 */

@@ -186,7 +186,7 @@ class HttpRequest
 
 		if ($this->isAuthRequest === null) {
 			throw new \Exception(
-				message: "Open to web & Auth based request are disabled",
+				message: 'Private request are disabled',
 				code: HttpStatus::$InternalServerError
 			);
 		}
@@ -196,7 +196,7 @@ class HttpRequest
 			&& !Env::$enableOpenRequest
 		) {
 			throw new \Exception(
-				message: "Open to web request are disabled",
+				message: "Public request are disabled",
 				code: HttpStatus::$InternalServerError
 			);
 		}
@@ -206,7 +206,7 @@ class HttpRequest
 			&& !Env::$enableAuthRequest
 		) {
 			throw new \Exception(
-				message: "Auth based request are disabled",
+				message: 'Private request are disabled',
 				code: HttpStatus::$InternalServerError
 			);
 		}

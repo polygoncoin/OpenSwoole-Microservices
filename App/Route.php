@@ -106,10 +106,10 @@ class Route
 		$httpRouteArr = [];
 		if (!$this->http->req->isAuthRequest) {
 			$userRoutesFolder = Constant::$WWW . $this->routesFolder
-				. DIRECTORY_SEPARATOR . 'Open';
+				. DIRECTORY_SEPARATOR . 'Public';
 		} else {
 			$userRoutesFolder = Constant::$WWW . $this->routesFolder
-				. DIRECTORY_SEPARATOR . 'Auth'
+				. DIRECTORY_SEPARATOR . 'Private'
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . $this->http->req->s['groupData']['name'];

@@ -166,7 +166,7 @@ class Microservices
 			default:
 				if ($this->httpReqData['server']['httpMethod'] === Constant::$GET) {
 					$dropboxCache = new Dropbox(httpReqData: $this->httpReqData);
-					if ($dropboxCache->init(mode: 'Open')) {
+					if ($dropboxCache->init(mode: 'Public')) {
 						// File exists - Serve from Dropbox
 						return $dropboxCache->process();
 					}

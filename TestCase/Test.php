@@ -52,7 +52,7 @@ class Test
 	 */
 	public function processAuth(): array
 	{
-		return include __DIR__ . DIRECTORY_SEPARATOR . 'AuthTest.php';
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'PrivateTest.php';
 	}
 
 	/**
@@ -62,7 +62,7 @@ class Test
 	 */
 	public function processOpen(): array
 	{
-		return include __DIR__ . DIRECTORY_SEPARATOR . 'OpenTest.php';
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'PublicTest.php';
 	}
 
 	/**
@@ -73,7 +73,7 @@ class Test
 	 */
 	public function processXml(): array
 	{
-		return include __DIR__ . DIRECTORY_SEPARATOR . 'OpenTestXml.php';
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'PublicTestXml.php';
 	}
 
 	/**
@@ -83,6 +83,6 @@ class Test
 	 */
 	public function processSupplement(): array
 	{
-		return include __DIR__ . DIRECTORY_SEPARATOR . 'SupplementTest.php';
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'PrivateSupplementTest.php';
 	}
 }

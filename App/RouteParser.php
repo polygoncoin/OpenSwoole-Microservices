@@ -149,13 +149,13 @@ class RouteParser
 
 		if ($routeFileLocation === null) {
 			if ($this->http->req->isAuthRequest) {
-				$routeFileLocation = Constant::$AUTH_ROUTES_DIR
+				$routeFileLocation = Constant::$PRIVATE_ROUTES_DIR
 					. DIRECTORY_SEPARATOR . 'CustomerDB'
 					. DIRECTORY_SEPARATOR . 'Groups'
 					. DIRECTORY_SEPARATOR . $this->http->req->s['groupData']['name']
 					. DIRECTORY_SEPARATOR . $this->http->httpReqData['server']['httpMethod'] . 'routes.php';
 			} else {
-				$routeFileLocation = Constant::$OPEN_ROUTES_DIR
+				$routeFileLocation = Constant::$PUBLIC_ROUTES_DIR
 					. DIRECTORY_SEPARATOR . $this->http->httpReqData['server']['httpMethod'] . 'routes.php';
 			}
 		}

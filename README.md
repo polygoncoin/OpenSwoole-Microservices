@@ -45,7 +45,7 @@ This is a light & easy low code API generator using configuration arrays. It can
 
 #### /File Folder
 
-- **Dropbox/Open** Uploaded files for open to web
+- **Dropbox/Public** Uploaded files for open to web
 - **Dropbox/Closed** Uploaded files by authorised user
 - **ServingFile/HTML** HTML files to be served with dynamic response (XSLT)
 - **ServingFile/PHP** PHP view files to be served with dynamic response
@@ -62,8 +62,8 @@ This is a light & easy low code API generator using configuration arrays. It can
 
 #### /Config/Route
 
-- **/Config/Route/Auth/&lt;GroupName&gt;**
-- **/Config/Route/Open**
+- **/Config/Route/Private/&lt;GroupName&gt;**
+- **/Config/Route/Public**
 
 - **&lt;GroupName&gt;** is the group user belongs to for accessing the API's
 
@@ -81,9 +81,9 @@ These files locations are used in routes config to be used for generating respon
 
 #### /Config/Sql
 
-- **/Config/Sql/Auth/GlobalDB** for global database.
-- **/Config/Sql/Auth/CustomerDB** for customer (including all hosts and their databases).
-- **/Config/Sql/Open** for Open to Web API's (No Authentication).
+- **/Config/Sql/Private/GlobalDB** for global database.
+- **/Config/Sql/Private/CustomerDB** for customer (including all hosts and their databases).
+- **/Config/Sql/Public** for Public to Web API's (No Authentication).
 
 #### File
 

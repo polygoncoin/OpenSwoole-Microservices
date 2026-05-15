@@ -96,7 +96,7 @@ class Dropbox
 	/**
 	 * Initialize check and serve file
 	 *
-	 * @param string $mode Open (Public access) / Closed (Requires Auth)
+	 * @param string $mode Public (Public access) / Private (Requires Auth)
 	 *
 	 * @return bool
 	 */

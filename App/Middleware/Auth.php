@@ -25,7 +25,7 @@ use Microservices\App\HttpStatus;
  * Class handling detail for Auth middleware
  * php version 8.3
  *
- * @category  Auth_Middleware
+ * @category  PRIVATE_Middleware
  * @package   Openswoole_Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)

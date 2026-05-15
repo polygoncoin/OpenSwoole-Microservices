@@ -51,10 +51,10 @@ class Constant
 	public static $PHP_DIR = null;
 	public static $XSLT_DIR = null;
 
-	public static $AUTH_ROUTES_DIR = null;
-	public static $OPEN_ROUTES_DIR = null;
-	public static $AUTH_QUERIES_DIR = null;
-	public static $OPEN_QUERIES_DIR = null;
+	public static $PRIVATE_ROUTES_DIR = null;
+	public static $PUBLIC_ROUTES_DIR = null;
+	public static $PRIVATE_QUERIES_DIR = null;
+	public static $PUBLIC_QUERIES_DIR = null;
 
 	public static $WEB_COOKIES_DIR = null;
 	public static $LOG_DIR = null;
@@ -83,21 +83,21 @@ class Constant
 		self::$PHP_DIR = self::$OUTPUT_FORMAT_DIR . DIRECTORY_SEPARATOR . 'PHP';
 		self::$XSLT_DIR = self::$OUTPUT_FORMAT_DIR . DIRECTORY_SEPARATOR . 'XSLT';
 
-		self::$AUTH_ROUTES_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
+		self::$PRIVATE_ROUTES_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Route'
-			. DIRECTORY_SEPARATOR . 'Auth';
+			. DIRECTORY_SEPARATOR . 'Private';
 
-		self::$OPEN_ROUTES_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
+		self::$PUBLIC_ROUTES_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Route'
-			. DIRECTORY_SEPARATOR . 'Open';
+			. DIRECTORY_SEPARATOR . 'Public';
 
-		self::$AUTH_QUERIES_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
+		self::$PRIVATE_QUERIES_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Sql'
-			. DIRECTORY_SEPARATOR . 'Auth';
+			. DIRECTORY_SEPARATOR . 'Private';
 
-		self::$OPEN_QUERIES_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
+		self::$PUBLIC_QUERIES_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Sql'
-			. DIRECTORY_SEPARATOR . 'Open';
+			. DIRECTORY_SEPARATOR . 'Public';
 
 		self::$WEB_COOKIES_DIR = self::$ROOT . DIRECTORY_SEPARATOR . 'WebCookie';
 		if (!is_dir(filename: self::$WEB_COOKIES_DIR)) {
