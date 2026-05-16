@@ -15,13 +15,13 @@
 
 return [
 	'group' => [
-		'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+		'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 			. DIRECTORY_SEPARATOR . 'GlobalDB'
 			. DIRECTORY_SEPARATOR . 'POST'
 			. DIRECTORY_SEPARATOR . 'groups.php',
 	],
 	'customer' => [
-		'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+		'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 			. DIRECTORY_SEPARATOR . 'GlobalDB'
 			. DIRECTORY_SEPARATOR . 'POST'
 			. DIRECTORY_SEPARATOR . 'customer.php',

@@ -14,21 +14,21 @@
  */
 
 return array_merge(
-	require $Constant::$PRIVATE_ROUTES_DIR
+	require $Constant::$ROUTES_PRIVATE_DIR
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'POSTroutes.php',
-	require $Constant::$PRIVATE_ROUTES_DIR
+	require $Constant::$ROUTES_PRIVATE_DIR
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'Custom'
 		. DIRECTORY_SEPARATOR . 'POSTroutes.php',
-	require $Constant::$PRIVATE_ROUTES_DIR
+	require $Constant::$ROUTES_PRIVATE_DIR
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'ThirdParty'
 		. DIRECTORY_SEPARATOR . 'POSTroutes.php',
-	require $Constant::$PRIVATE_ROUTES_DIR
+	require $Constant::$ROUTES_PRIVATE_DIR
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'Upload'

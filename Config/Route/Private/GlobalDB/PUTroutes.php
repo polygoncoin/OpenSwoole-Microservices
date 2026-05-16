@@ -19,7 +19,7 @@ return [
 	'group' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+			'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 				. DIRECTORY_SEPARATOR . 'GlobalDB'
 				. DIRECTORY_SEPARATOR . 'PUT'
 				. DIRECTORY_SEPARATOR . 'groups.php',
@@ -28,7 +28,7 @@ return [
 	'customer' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+			'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 				. DIRECTORY_SEPARATOR . 'GlobalDB'
 				. DIRECTORY_SEPARATOR . 'PUT'
 				. DIRECTORY_SEPARATOR . 'customer.php',

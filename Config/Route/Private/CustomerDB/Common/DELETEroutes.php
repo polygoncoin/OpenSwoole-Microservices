@@ -19,7 +19,7 @@ return [
 	'registration' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+			'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'UserGroup'
@@ -30,7 +30,7 @@ return [
 	'address' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+			'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'UserGroup'
@@ -40,7 +40,7 @@ return [
 	],
 	'category' => [
 		'truncate' => [
-			'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+			'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'UserGroup'

@@ -19,26 +19,26 @@ return [
 	'group' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+			'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 				. DIRECTORY_SEPARATOR . 'GlobalDB'
 				. DIRECTORY_SEPARATOR . 'PATCH'
 				. DIRECTORY_SEPARATOR . 'groups.php',
 			'approve'  => [
-				'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+				'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . 'PATCH'
 					. DIRECTORY_SEPARATOR . 'approve'
 					. DIRECTORY_SEPARATOR . 'groups.php',
 			],
 			'disable'  => [
-				'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+				'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . 'PATCH'
 					. DIRECTORY_SEPARATOR . 'disable'
 					. DIRECTORY_SEPARATOR . 'groups.php',
 			],
 			'enable'  => [
-				'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+				'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . 'PATCH'
 					. DIRECTORY_SEPARATOR . 'enable'
@@ -49,26 +49,26 @@ return [
 	'customer' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+			'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 				. DIRECTORY_SEPARATOR . 'GlobalDB'
 				. DIRECTORY_SEPARATOR . 'PATCH'
 				. DIRECTORY_SEPARATOR . 'customer.php',
 			'approve'  => [
-				'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+				'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . 'PATCH'
 					. DIRECTORY_SEPARATOR . 'approve'
 					. DIRECTORY_SEPARATOR . 'customer.php',
 			],
 			'disable'  => [
-				'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+				'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . 'PATCH'
 					. DIRECTORY_SEPARATOR . 'disable'
 					. DIRECTORY_SEPARATOR . 'customer.php',
 			],
 			'enable'  => [
-				'__FILE__' => $Constant::$PRIVATE_QUERIES_DIR
+				'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . 'PATCH'
 					. DIRECTORY_SEPARATOR . 'enable'

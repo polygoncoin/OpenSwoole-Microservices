@@ -47,14 +47,21 @@ class Constant
 	public static $DROP_BOX_DIR = null;
 
 	public static $OUTPUT_FORMAT_DIR = null;
-	public static $HTML_DIR = null;
-	public static $PHP_DIR = null;
-	public static $XSLT_DIR = null;
+	public static $OUTPUT_FORMAT_PRIVATE_DIR = null;
+	public static $OUTPUT_FORMAT_PUBLIC_DIR = null;
 
-	public static $PRIVATE_ROUTES_DIR = null;
-	public static $PUBLIC_ROUTES_DIR = null;
-	public static $PRIVATE_QUERIES_DIR = null;
-	public static $PUBLIC_QUERIES_DIR = null;
+	public static $HTML_PRIVATE_DIR = null;
+	public static $PHP_PRIVATE_DIR = null;
+	public static $XSLT_PRIVATE_DIR = null;
+
+	public static $HTML_PUBLIC_DIR = null;
+	public static $PHP_PUBLIC_DIR = null;
+	public static $XSLT_PUBLIC_DIR = null;
+
+	public static $ROUTES_PRIVATE_DIR = null;
+	public static $ROUTES_PUBLIC_DIR = null;
+	public static $QUERIES_PRIVATE_DIR = null;
+	public static $QUERIES_PUBLIC_DIR = null;
 
 	public static $WEB_COOKIES_DIR = null;
 	public static $LOG_DIR = null;
@@ -79,23 +86,30 @@ class Constant
 		self::$DROP_BOX_DIR = self::$FILES_DIR . DIRECTORY_SEPARATOR . 'Dropbox';
 
 		self::$OUTPUT_FORMAT_DIR = self::$FILES_DIR . DIRECTORY_SEPARATOR . 'ServingFile';
-		self::$HTML_DIR = self::$OUTPUT_FORMAT_DIR . DIRECTORY_SEPARATOR . 'HTML';
-		self::$PHP_DIR = self::$OUTPUT_FORMAT_DIR . DIRECTORY_SEPARATOR . 'PHP';
-		self::$XSLT_DIR = self::$OUTPUT_FORMAT_DIR . DIRECTORY_SEPARATOR . 'XSLT';
+		self::$OUTPUT_FORMAT_PRIVATE_DIR = self::$OUTPUT_FORMAT_DIR . DIRECTORY_SEPARATOR . 'Private';
+		self::$OUTPUT_FORMAT_PUBLIC_DIR = self::$OUTPUT_FORMAT_DIR . DIRECTORY_SEPARATOR . 'Public';
 
-		self::$PRIVATE_ROUTES_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
+		self::$HTML_PRIVATE_DIR = self::$OUTPUT_FORMAT_PRIVATE_DIR . DIRECTORY_SEPARATOR . 'HTML';
+		self::$PHP_PRIVATE_DIR = self::$OUTPUT_FORMAT_PRIVATE_DIR . DIRECTORY_SEPARATOR . 'PHP';
+		self::$XSLT_PRIVATE_DIR = self::$OUTPUT_FORMAT_PRIVATE_DIR . DIRECTORY_SEPARATOR . 'XSLT';
+
+		self::$HTML_PUBLIC_DIR = self::$OUTPUT_FORMAT_PUBLIC_DIR . DIRECTORY_SEPARATOR . 'HTML';
+		self::$PHP_PUBLIC_DIR = self::$OUTPUT_FORMAT_PUBLIC_DIR . DIRECTORY_SEPARATOR . 'PHP';
+		self::$XSLT_PUBLIC_DIR = self::$OUTPUT_FORMAT_PUBLIC_DIR . DIRECTORY_SEPARATOR . 'XSLT';
+
+		self::$ROUTES_PRIVATE_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Route'
 			. DIRECTORY_SEPARATOR . 'Private';
 
-		self::$PUBLIC_ROUTES_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
+		self::$ROUTES_PUBLIC_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Route'
 			. DIRECTORY_SEPARATOR . 'Public';
 
-		self::$PRIVATE_QUERIES_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
+		self::$QUERIES_PRIVATE_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Sql'
 			. DIRECTORY_SEPARATOR . 'Private';
 
-		self::$PUBLIC_QUERIES_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
+		self::$QUERIES_PUBLIC_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Sql'
 			. DIRECTORY_SEPARATOR . 'Public';
 

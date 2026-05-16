@@ -64,7 +64,7 @@ class Cron
 	 */
 	public function init(): bool
 	{
-		$routeFileLocation = Constant::$PRIVATE_ROUTES_DIR
+		$routeFileLocation = Constant::$ROUTES_PRIVATE_DIR
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Common'
 			. DIRECTORY_SEPARATOR . 'Cron'

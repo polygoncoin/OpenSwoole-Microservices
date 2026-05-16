@@ -73,8 +73,8 @@ $server->on(
 		$httpReqData = [];
 
 		$httpReqData['streamData'] = true;
-		$httpReqData['server']['domainName'] = 'api.customer001.localhost'; // Private
-		// $httpReqData['server']['domainName'] = 'localhost'; // Public
+		// $httpReqData['server']['domainName'] = 'api.customer001.localhost'; // Private
+		$httpReqData['server']['domainName'] = 'localhost'; // Public
 		$httpReqData['server']['httpMethod'] = $request->server['request_method'];
 
 		if (

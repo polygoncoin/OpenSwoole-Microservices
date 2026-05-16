@@ -17,27 +17,27 @@ use Microservices\App\DatabaseServerDataType;
 
 return [
 	'login' => [
-		'__FILE__' => $Constant::$PUBLIC_QUERIES_DIR
+		'__FILE__' => $Constant::$QUERIES_PUBLIC_DIR
 			. DIRECTORY_SEPARATOR . 'GET'
 			. DIRECTORY_SEPARATOR . 'Login.php',
 	],
 	'category' => [
-		'__FILE__' => $Constant::$PUBLIC_QUERIES_DIR
+		'__FILE__' => $Constant::$QUERIES_PUBLIC_DIR
 			. DIRECTORY_SEPARATOR . 'GET'
 			. DIRECTORY_SEPARATOR . 'Category-all.php',
 		'search' => [
-			'__FILE__' => $Constant::$PUBLIC_QUERIES_DIR
+			'__FILE__' => $Constant::$QUERIES_PUBLIC_DIR
 				. DIRECTORY_SEPARATOR . 'GET'
 				. DIRECTORY_SEPARATOR . 'Category-search.php',
 		],
 		'{id:int}' => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $Constant::$PUBLIC_QUERIES_DIR
+			'__FILE__' => $Constant::$QUERIES_PUBLIC_DIR
 				. DIRECTORY_SEPARATOR . 'GET'
 				. DIRECTORY_SEPARATOR . 'Category-Single.php',
 		],
 		'download' => [
-			'__FILE__' => $Constant::$PUBLIC_QUERIES_DIR
+			'__FILE__' => $Constant::$QUERIES_PUBLIC_DIR
 				. DIRECTORY_SEPARATOR . 'GET'
 				. DIRECTORY_SEPARATOR . 'Download.php',
 		]

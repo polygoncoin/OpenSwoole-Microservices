@@ -16,7 +16,7 @@
 use Microservices\App\DatabaseServerDataType;
 
 return array_merge(
-	require $Constant::$PRIVATE_QUERIES_DIR
+	require $Constant::$QUERIES_PRIVATE_DIR
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'Registration.php',
