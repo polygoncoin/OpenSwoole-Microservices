@@ -17,6 +17,14 @@ namespace Microservices\TestCase;
 
 use Microservices\App\Web;
 
+if (!defined('PRIVATE_GET')) {
+	define('PRIVATE_GET', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'GET');
+	define('PRIVATE_POST', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'POST');
+	define('PRIVATE_PUT', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'PUT');
+	define('PRIVATE_PATCH', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'PATCH');
+	define('PRIVATE_DELETE', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'DELETE');
+}
+
 if (!defined('PUBLIC_GET')) {
 	define('PUBLIC_GET', __DIR__ . DIRECTORY_SEPARATOR . 'Public' . DIRECTORY_SEPARATOR . 'GET');
 	define('PUBLIC_POST', __DIR__ . DIRECTORY_SEPARATOR . 'Public' . DIRECTORY_SEPARATOR . 'POST');
@@ -39,6 +47,8 @@ $response = [];
 
 $homeURL = 'http://127.0.0.1:9501';
 
+$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Reload.php';
+
 $paramArr = [
 	'Payload' => [
 		'firstname' => 'Ramesh1',
@@ -55,7 +65,7 @@ $paramArr = [
 $payload = '<?xml version="1.0" encoding="UTF-8" ?>';
 Web::genXmlPayload(xmlParamArr: $paramArr, payload: $payload);
 
-$response = Web::trigger(
+$response[] = Web::trigger(
 	homeURL: $homeURL,
 	method: 'POST',
 	route: '/registration-with-address'
