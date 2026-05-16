@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  DataEncode_XML
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -22,7 +22,7 @@ namespace Microservices\App\DataRepresentation\Encode\XmlEncoder;
  * php version 8.3
  *
  * @category  Xml_Encoder_Object
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit

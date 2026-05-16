@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  Route
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\CommonFunction;
 use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Http;
@@ -24,7 +25,7 @@ use Microservices\App\Http;
  * php version 8.3
  *
  * @category  Route
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -85,7 +86,7 @@ class Route
 	 */
 	public function init(): bool
 	{
-		if (Env::$enableRoutesRequest) {
+		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableRoutesRequest')) {
 			return true;
 		}
 

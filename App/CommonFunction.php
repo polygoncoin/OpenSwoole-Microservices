@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  Common Function
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -25,7 +25,7 @@ use Microservices\App\Server\CacheServer\CacheServerInterface;
  * php version 8.3
  *
  * @category  Common Function
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -35,9 +35,22 @@ use Microservices\App\Server\CacheServer\CacheServerInterface;
 class CommonFunction
 {
 	/**
+	 * Validate remote IP
+	 *
+	 * @param Http   $http
+	 * @param string $feature
+	 *
+	 * @return bool
+	 */
+	public static function isEnabled(&$http, $feature): bool
+	{
+		return ($http->req->s['customerData'][$feature] === 'Yes') ? true : false;
+	}
+
+	/**
 	 * Check Errors related to File Upload
 	 *
-	 * @param array $httpFileArr $this->http->httpReqData['files']
+	 * @param array $httpFileArr $httpReqData['files']
 	 *
 	 * @return void
 	 * @throws \Exception
@@ -173,7 +186,7 @@ class CommonFunction
 	 * Check IP with CIDR based on cache key containing start and end IP number
 	 *
 	 * @param CacheServerInterface $cacheObj     Cache Server object
-	 * @param string               $IP           $this->http->httpReqData['server']['httpRequestIP']
+	 * @param string               $IP           Request Ip
 	 * @param string               $cidrCacheKey Cache Key(s)
 	 *
 	 * @return void
@@ -203,7 +216,7 @@ class CommonFunction
 	/**
 	 * Check IP with CIDR
 	 *
-	 * @param string $IP         $this->http->httpReqData['server']['httpRequestIP']
+	 * @param string $IP         Request Ip
 	 * @param string $cidrString CIDRs
 	 *
 	 * @return null|bool
@@ -230,7 +243,6 @@ class CommonFunction
 	 * @param array  $cidrIpNumberRangeArr Cidr IP number ranges
 	 *
 	 * @return bool
-	 * @throws \Exception
 	 */
 	public static function belongsToCidrIpNumberRange($IP, $cidrIpNumberRangeArr): bool
 	{
@@ -256,18 +268,16 @@ class CommonFunction
 		return $isValidIp;
 	}
 
-
 	/**
 	 * Validate remote IP
 	 *
 	 * @param Http $http
 	 *
 	 * @return void
-	 * @throws \Exception
 	 */
-	public static function checkClosedWebRequestCidr(&$http): void
+	public static function checkPrivateRequestCidr(&$http): void
 	{
-		if (!Env::$enableCidrCheck) {
+		if (!self::isEnabled(http: $http, feature: 'enableCidrCheck')) {
 			return;
 		}
 

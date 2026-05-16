@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  Cache
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -23,7 +23,7 @@ use Microservices\App\Server\Container\NoSql\MongoDb as Cache_MongoDb;
  * php version 8.3
  *
  * @category  Cache_MongoDb
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit

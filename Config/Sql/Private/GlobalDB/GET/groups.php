@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  API_Query_Config
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -15,7 +15,7 @@
 
 return [
 	'all' => [
-		'__QUERY__' => "SELECT * FROM `{$Env::$groupsTable}` WHERE __WHERE__ ORDER BY id ASC",
+		'__QUERY__' => "SELECT * FROM `{$Env::$groupTable}` WHERE __WHERE__ ORDER BY id ASC",
 		'__WHERE__' => [
 			[
 				'column' => 'is_approved',
@@ -36,7 +36,7 @@ return [
 		'__MODE__' => 'multipleRowFormat'
 	],
 	'single' => [
-		'__QUERY__' => "SELECT * FROM `{$Env::$groupsTable}` WHERE __WHERE__",
+		'__QUERY__' => "SELECT * FROM `{$Env::$groupTable}` WHERE __WHERE__",
 		'__WHERE__' => [
 			[
 				'column' => 'is_approved',

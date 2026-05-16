@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  Counter
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\CommonFunction;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 
@@ -23,7 +24,7 @@ use Microservices\App\Env;
  * php version 8.3
  *
  * @category  Counter
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -39,7 +40,7 @@ class Counter
 	 */
 	public static function getGlobalCounter(): int
 	{
-		if (!Env::$enableGlobalCounter) {
+		if (!CommonFunction::isEnabled(http: $this->http, feature: 'enableGlobalCounter')) {
 			throw new \Exception(
 				message: 'Enable use of Global Counter',
 				code: HttpStatus::$InternalServerError

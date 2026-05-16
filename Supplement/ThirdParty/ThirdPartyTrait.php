@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  ThirdPartyAPI_Interface
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -20,7 +20,7 @@ namespace Microservices\Supplement\ThirdParty;
  * php version 8.3
  *
  * @category  ThirdPartyAPI_Trait
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit

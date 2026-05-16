@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  Export
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -24,7 +24,7 @@ use Microservices\App\HttpStatus;
  * php version 8.3
  *
  * @category  Export
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -144,7 +144,7 @@ class Export
 			case 'TSV':
 				if ($outputLineArr[1] !== '1') {
 					throw new \Exception(
-						message: "Issue while connecting to {$this->dbServerType} TSV Host",
+						message: "Issue connecting to {$this->dbServerType} TSV Host",
 						code: HttpStatus::$InternalServerError
 					);
 				}
@@ -152,7 +152,7 @@ class Export
 			case 'CSV':
 				if ($outputLineArr[1] !== '"1"') {
 					throw new \Exception(
-						message: "Issue while connecting to {$this->dbServerType} CSV Host",
+						message: "Issue connecting to {$this->dbServerType} CSV Host",
 						code: HttpStatus::$InternalServerError
 					);
 				}

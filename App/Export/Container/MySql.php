@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  Export
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -23,7 +23,7 @@ use Microservices\App\Export\ExportDatabaseServerInterface;
  * php version 8.3
  *
  * @category  Export
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -220,13 +220,13 @@ class MySql implements ExportDatabaseServerInterface
 				foreach ($valueArr as $value) {
 					if (is_array(value: $value)) {
 						throw new \Exception(
-							message: "Invalid params for key '{$parameterisedColumn}'"
+							message: "Invalid param key '{$parameterisedColumn}'"
 						);
 					}
 					$newParameterisedColumn = $parameterisedColumn . $count++;
 					if (in_array(needle: $newParameterisedColumn, haystack: $tmpParamArr)) {
 						throw new \Exception(
-							message: "Invalid parameterized params '{$newParameterisedColumn}'"
+							message: "Invalid new param key '{$newParameterisedColumn}'"
 						);
 					}
 					$tmpParamArr[$newParameterisedColumn] = $value;

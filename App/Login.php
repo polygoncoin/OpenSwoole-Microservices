@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  Login
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -29,7 +29,7 @@ use Microservices\App\SessionHandler\Session;
  * php version 8.3
  *
  * @category  Login
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -83,8 +83,6 @@ class Login
 	 */
 	public function init(): bool
 	{
-		$this->http->req->loadCustomerData();
-
 		return true;
 	}
 
@@ -106,14 +104,14 @@ class Login
 
 		$this->loadPayload();
 		$this->loadUserData();
-		CommonFunction::checkClosedWebRequestCidr(http: $this->http);
+		CommonFunction::checkPrivateRequestCidr(http: $this->http);
 		$this->validatePassword();
 
-		if (Env::$enableRateLimitForUserPerIp) {
+		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimitForUserPerIp')) {
 			$this->http->req->rateLimiter->checkRateLimit(
 				rateLimitPrefix: Env::$rateLimitUserPerIpPrefix,
-				rateLimitMaxRequest: Env::$rateLimitMaxUserPerIp,
-				rateLimitMaxRequestWindow: Env::$rateLimitMaxUserPerIpWindow,
+				rateLimitMaxRequest: $this->http->req->s['customerData']['rateLimitMaxUserPerIp'],
+				rateLimitMaxRequestWindow: $this->http->req->s['customerData']['rateLimitMaxUserPerIpWindow'],
 				rateLimitKey: $this->http->httpReqData['server']['httpRequestIP']
 			);
 		}
@@ -216,8 +214,8 @@ class Login
 	{
 		$this->http->req->rateLimiter->checkRateLimit(
 			rateLimitPrefix: Env::$rateLimitUserLoginPrefix,
-			rateLimitMaxRequest: Env::$rateLimitMaxUserLoginRequest,
-			rateLimitMaxRequestWindow: Env::$rateLimitMaxUserLoginRequestWindow,
+			rateLimitMaxRequest: $this->http->req->s['customerData']['rateLimitMaxUserLoginRequest'],
+			rateLimitMaxRequestWindow: $this->http->req->s['customerData']['rateLimitMaxUserLoginRequestWindow'],
 			rateLimitKey: $this->http->httpReqData['server']['httpRequestIP'] . $this->username
 		);
 		// get hash from cache and compares with password
@@ -305,7 +303,7 @@ class Login
 		) {
 			$this->cacheDelete(cacheKey: $userTokenKey);
 		} else {
-			if (Env::$enableConcurrentLogin) {
+			if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
 				$userConcurrencyKey = CacheServerKey::customerUserConcurrency(
 					customerId: $this->http->req->customerId,
 					userId: $this->http->req->userId
@@ -394,7 +392,7 @@ class Login
 			$tokenFound = true;
 		}
 
-		if (Env::$enableConcurrentLogin) {
+		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
 			if (count($userTokenKeyData) >= Env::$maxConcurrentLogin) {
 				throw new \Exception(
 					message: 'Account already in use. '
@@ -449,7 +447,7 @@ class Login
 		$this->http->req->clientDbObj->execDbQuery(
 			sql: "
 				UPDATE
-					`{$this->http->req->s['customerData']['usersTable']}`
+					`{$this->http->req->s['customerData']['userTable']}`
 				SET
 					`token` = :token
 				WHERE
@@ -503,7 +501,7 @@ class Login
 		) {
 			$this->cacheDelete(cacheKey: $userSessionKey);
 		} else {
-			if (Env::$enableConcurrentLogin) {
+			if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
 				$userConcurrencyKey = CacheServerKey::customerUserConcurrency(
 					customerId: $this->http->req->customerId,
 					userId: $this->http->req->userId
@@ -570,8 +568,7 @@ class Login
 			$sessionFound = true;
 		}
 
-
-		if (Env::$enableConcurrentLogin) {
+		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
 			if (count($userSessionKeyData) >= Env::$maxConcurrentLogin) {
 				throw new \Exception(
 					message: 'Account already in use. '

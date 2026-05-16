@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  CustomAPI
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -25,7 +25,7 @@ use Microservices\Supplement\Custom\CustomTrait;
  * php version 8.3
  *
  * @category  CustomAPI_Category
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -81,11 +81,11 @@ class Category implements CustomInterface
 			FROM category
 			WHERE is_deleted = :is_deleted AND parent_id = :parent_id
 		';
-		$sqlParamArr = [
+		$paramArr = [
 			':is_deleted' => 'No',
 			':parent_id' => 0,
 		];
-		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
+		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr);
 		$rowArr = $this->http->req->clientDbObj->fetchAll();
 		$this->http->req->clientDbObj->closeCursor();
 		$this->http->res->dataEncode->addKeyData(objectKey: 'Results', data: $rowArr);

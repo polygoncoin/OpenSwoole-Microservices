@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  Cache Server Key
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -20,7 +20,7 @@ namespace Microservices\App;
  * php version 8.3
  *
  * @category  Cache Server Key
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -36,9 +36,9 @@ class CacheServerKey
 	 *
 	 * @return string
 	 */
-	public static function openDomain(&$domainName): string
+	public static function publicDomain(&$domainName): string
 	{
-		return "otw:{$domainName}";
+		return "pub:{$domainName}";
 	}
 
 	/**
@@ -48,9 +48,9 @@ class CacheServerKey
 	 *
 	 * @return string
 	 */
-	public static function authDomain($domainName): string
+	public static function privateDomain($domainName): string
 	{
-		return "ctw:{$domainName}";
+		return "pri:{$domainName}";
 	}
 
 	/**

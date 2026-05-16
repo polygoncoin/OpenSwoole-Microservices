@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  Microservices
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -27,7 +27,7 @@ use Microservices\App\HttpStatus;
  * php version 8.3
  *
  * @category  Microservices
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -68,6 +68,7 @@ class Microservices
 	 * Constructor
 	 *
 	 * @param array $httpReqData HTTP request data
+	 * @throws \Exception
 	 */
 	public function __construct(&$httpReqData)
 	{
@@ -79,58 +80,40 @@ class Microservices
 	 * Initialize
 	 *
 	 * @return bool
-	 * @throws \Exception
 	 */
 	public function init(): bool
 	{
-		if (!isset($this->httpReqData['get'][ROUTE_URL_PARAM])) {
-			throw new \Exception(
-				message: 'Missing route',
-				code: HttpStatus::$NotFound
-			);
-		}
-
 		if (Env::$OUTPUT_PERFORMANCE_STATS) {
 			$this->tsStart = microtime(as_float: true);
 		}
 
-		return true;
+		return $this->http->init();
 	}
 
 	/**
 	 * Process
 	 *
 	 * @return mixed
+	 * @throws \Exception
 	 */
 	public function process(): mixed
 	{
-		return $this->processApi();
-	}
+		$this->http->initRequest();
 
-	/**
-	 * Process API request
-	 *
-	 * @return mixed
-	 * @throws \Exception
-	 */
-	public function processApi(): mixed
-	{
 		$class = null;
 
 		switch (true) {
 			case (
-					Env::$enableCronRequest
+					CommonFunction::isEnabled(http: $this->http, feature: 'enableCronRequest')
 					&& strpos(
 						haystack: $this->httpReqData['get'][ROUTE_URL_PARAM],
 						needle: '/' . Env::$cronRequestRoutePrefix
 					) === 0
 				):
-				if ($this->httpReqData['server']['httpRequestIP'] !== Env::$cronRestrictedCidr) {
-					throw new \Exception(
-						message: 'Source IP is not supported',
-						code: HttpStatus::$NotFound
-					);
-				}
+				CommonFunction::checkCidr(
+					IP: $this->httpReqData['server']['httpRequestIP'],
+					cidrString: $this->http->req->s['customerData']['cronRestrictedCidr']
+				);
 				$class = __NAMESPACE__ . '\\Cron';
 				break;
 
@@ -138,34 +121,13 @@ class Microservices
 				$class = __NAMESPACE__ . '\\Logout';
 				break;
 
-			// Requires HTTP auth username and password
-			case (
-					Env::$enableReloadRequest
-					&& $this->httpReqData['get'][ROUTE_URL_PARAM] === '/' . Env::$reloadRequestRoutePrefix
-				):
-				$isValidIp = CommonFunction::checkCidr(
-					IP: $this->httpReqData['server']['httpRequestIP'],
-					cidrString: Env::$reloadRestrictedCidr
-				);
-				if (!$isValidIp) {
-					throw new \Exception(
-						message: 'Source IP is not supported',
-						code: HttpStatus::$NotFound
-					);
-				}
-				$class = __NAMESPACE__ . '\\Reload';
-				break;
-
 			// Generates auth token
 			case $this->httpReqData['get'][ROUTE_URL_PARAM] === '/login':
-				$this->http->init();
 				$class = __NAMESPACE__ . '\\Login';
 				break;
 
 			// Requires auth token
 			default:
-				$this->http->init();
-
 				$gateway = new Gateway(http: $this->http);
 				$gateway->init();
 				$gateway = null;

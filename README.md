@@ -5,11 +5,10 @@ This is a light & easy low code API generator using configuration arrays. It can
 ## .env File
 
 - **[.env.example](Env.example.md)**
-- **[.env.cidr.example](Env.cidr.example.md)**
 - **[.env.customer.container.example](Env.customer.container.example.md)**
-- **[.env.enable.example](Env.enable.example.md)**
 - **[.env.global.container.example](Env.global.container.example.md)**
 - **[.env.rateLimiting.example](Env.rateLimiting.example.md)**
+- **[.env.route.example](Env.route.example.md)**
 - **[.env.session.example](Env.session.example.md)**
 
 ## Configuration Rules
@@ -94,6 +93,24 @@ These files locations are used in routes config to be used for generating respon
 - **/DELETE/&lt;filenames&gt;.php** DELETE method SQL.
 
 One can replace **&lt;filenames&gt;** tag with desired name as per functionality.
+
+## Setting route CIDR
+
+Below are route level CIDR settings for a set of system routes (starting / ending with)
+
+```SQL
+`customer`.`cronRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`customRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`dropboxRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`explainRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`exportRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`importSampleRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`importRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`reloadRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`routesRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`thirdPatyRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`uploadRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+```
 
 ## Contributing
 

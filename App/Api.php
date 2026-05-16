@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  API
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\CommonFunction;
 use Microservices\App\Dropbox;
 use Microservices\App\Constant;
 use Microservices\App\Env;
@@ -27,7 +28,7 @@ use Microservices\App\Supplement;
  * php version 8.3
  *
  * @category  API
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -67,8 +68,6 @@ class Api
 	 */
 	public function init(): bool
 	{
-		$this->http->initRequest();
-
 		return true;
 	}
 
@@ -165,7 +164,7 @@ class Api
 		$supplementProcessed = false;
 
 		if (
-			Env::$enableRoutesRequest
+			CommonFunction::isEnabled(http: $this->http, feature: 'enableRoutesRequest')
 			&& Env::$routesRequestRoute === $this->http->req->rParser->routeElementArr[0]
 		) {
 			$supplementApiClass = __NAMESPACE__ . '\\Route';

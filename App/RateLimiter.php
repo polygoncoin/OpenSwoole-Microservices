@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  RateLimiter
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -24,7 +24,7 @@ use Microservices\App\Http;
  * php version 8.3
  *
  * @category  RateLimiter
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -34,24 +34,20 @@ use Microservices\App\Http;
 class RateLimiter
 {
 	/**
-	 * HTTP object
+	 * Cache object
 	 *
-	 * @var null|Http
+	 * @var null|object
 	 */
-	private $http = null;
+	private $cacheObj = null;
 
 	/**
 	 * Constructor
 	 *
-	 * @param Http $http
+	 * @param object $cacheObj
 	 */
-	public function __construct(Http &$http)
+	public function __construct(&$cacheObj)
 	{
-		$this->http = &$http;
-
-		if (!Env::$enableRateLimiting) {
-			return;
-		}
+		$this->cacheObj = &$cacheObj;
 	}
 
 	/**
@@ -70,15 +66,11 @@ class RateLimiter
 		$secondsWindow,
 		$rateLimitKey
 	): array {
-		if (
-			$this->http->req->clientCacheObj === null
-			&& (!Env::$enableRateLimiting)
-		) {
-			return [
-				'allowed' => true,
-				'remaining' => 1,
-				'resetOn' => 1
-			];
+		if ($this->cacheObj === null) {
+			throw new \Exception(
+				message: 'Invalid Rate Limiter Cache object',
+				code: HttpStatus::$TooManyRequest
+			);
 		}
 
 		$maxRequest = (int)$maxRequest;
@@ -89,13 +81,13 @@ class RateLimiter
 
 		$rateLimitKey = $prefix . $rateLimitKey;
 
-		if ($this->http->req->clientCacheObj->cacheExist(cacheKey: $rateLimitKey)) {
-			$requestCount = (int)$this->http->req->clientCacheObj->cacheGet(
+		if ($this->cacheObj->cacheExist(cacheKey: $rateLimitKey)) {
+			$requestCount = (int)$this->cacheObj->cacheGet(
 				cacheKey: $rateLimitKey
 			);
 		} else {
 			$requestCount = 0;
-			$this->http->req->clientCacheObj->cacheSet(
+			$this->cacheObj->cacheSet(
 				cacheKey: $rateLimitKey,
 				cacheValue: $requestCount,
 				cacheExpire: $remainder
@@ -108,7 +100,7 @@ class RateLimiter
 		$resetOn = Env::$timestamp + $remainder;
 
 		if ($allowed) {
-			$this->http->req->clientCacheObj->cacheIncrement(cacheKey: $rateLimitKey);
+			$this->cacheObj->cacheIncrement(cacheKey: $rateLimitKey);
 		}
 
 		return [

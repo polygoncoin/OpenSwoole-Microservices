@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  WriteAPI
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -16,6 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\AppTrait;
+use Microservices\App\CommonFunction;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
@@ -29,7 +30,7 @@ use Microservices\App\Web;
  * php version 8.3
  *
  * @category  WriteAPIs
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -111,7 +112,7 @@ class Write
 			keyword: 'useHierarchy'
 		);
 
-		if (Env::$enableExplainRequest) {
+		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableExplainRequest')) {
 			if (
 				$this->http->req->rParser->routeEndingWithReservedKeywordFlag
 				&& ($this->http->req->rParser->routeEndingReservedKeyword === Env::$explainRequestRouteKeyword)
@@ -208,7 +209,7 @@ class Write
 			objectKey: 'Route',
 			data: $this->http->req->rParser->configuredRoute
 		);
-		if (Env::$enablePayloadInResponse) {
+		if (CommonFunction::isEnabled(http: $this->http, feature: 'enablePayloadInResponse')) {
 			$this->dataEncode->addKeyData(
 				objectKey: Env::$payloadKeyInResponse,
 				data: $this->getExplainParam(
@@ -320,7 +321,7 @@ class Write
 
 					$arr = [];
 					$arr['Status'] = HttpStatus::$Ok;
-					if (Env::$enablePayloadInResponse) {
+					if (CommonFunction::isEnabled(http: $this->http, feature: 'enablePayloadInResponse')) {
 						$arr[Env::$payloadKeyInResponse] = $this->http->req->dataDecode->getCompleteArray(
 							keyString: implode(
 								separator: ':',
@@ -343,7 +344,7 @@ class Write
 				} else { // Failure
 					$arr = [];
 					$arr['Status'] = $this->http->res->httpStatus;
-					if (Env::$enablePayloadInResponse) {
+					if (CommonFunction::isEnabled(http: $this->http, feature: 'enablePayloadInResponse')) {
 						$arr[Env::$payloadKeyInResponse] = $this->http->req->dataDecode->getCompleteArray(
 							keyString: implode(
 								separator: ':',
@@ -475,7 +476,7 @@ class Write
 			}
 
 			if (
-				Env::$enableGlobalCounter
+				CommonFunction::isEnabled(http: $this->http, feature: 'enableGlobalCounter')
 				&& isset($writeSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'])
 			) {
 				$writeSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'] = Counter::getGlobalCounter();
@@ -526,7 +527,7 @@ class Write
 
 			if (isset($writeSqlConfig['__INSERT-IDs__'])) {
 				if (
-					Env::$enableGlobalCounter
+					CommonFunction::isEnabled(http: $this->http, feature: 'enableGlobalCounter')
 					&& isset($writeSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'])
 				) {
 					$id = $writeSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'];

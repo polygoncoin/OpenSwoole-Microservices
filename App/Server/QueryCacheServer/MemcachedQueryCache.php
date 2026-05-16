@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  QueryCache
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -24,7 +24,7 @@ use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
  * php version 8.3
  *
  * @category  QueryCache_Memcached
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit

@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  Start
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -20,6 +20,8 @@ use Openswoole\Http\Response;
 use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\CommonFunction;
+use Microservices\App\HttpStatus;
+use Microservices\App\Reload;
 use Microservices\App\SessionHandler\Session;
 use Microservices\App\Start;
 use Microservices\TestCase\Test;
@@ -46,11 +48,10 @@ $server->on(
 		// Load .env(s)
 		foreach ([
 			'.env',
-			'.env.cidr',
 			'.env.customer.container',
-			'.env.enable',
 			'.env.global.container',
-			'.env.rateLimiting'
+			'.env.rateLimiting',
+			'.env.route'
 		] as $envFilename) {
 			$envDataArr = parse_ini_file(filename: ROOT . DIRECTORY_SEPARATOR . $envFilename);
 			foreach ($envDataArr as $envVarName => $envVarValue) {
@@ -100,6 +101,18 @@ $server->on(
 			$httpReqData['header']['tokenHeader'] = $request->header['authorization'];
 		}
 		$httpReqData['get'] = &$request->get;
+		if (isset($httpReqData['get'][ROUTE_URL_PARAM])) {
+			$httpReqData['get'][ROUTE_URL_PARAM] = '/' . trim(
+				string: $httpReqData['get'][ROUTE_URL_PARAM],
+				characters: '/'
+			);
+		} else {
+			throw new \Exception(
+				message: 'Missing route',
+				code: HttpStatus::$NotFound
+			);
+		}
+
 		$httpReqData['post'] = $request->rawContent();
 		$httpReqData['files'] = &$request->files;
 		$httpReqData['httpRequestHash'] = CommonFunction::httpRequestHash(
@@ -143,17 +156,22 @@ $server->on(
 					break;
 			}
 		} else {
-			ob_start();
-			[$responseHeaderArr, $responseContent, $responseCode] = Start::http(httpReqData: $httpReqData);
-			@ob_clean();
+			if ($httpReqData['get'][ROUTE_URL_PARAM] === '/' . Env::$reloadRequestRoutePrefix) {
+				Reload::process();
+				$response->end();
+			} else {
+				ob_start();
+				[$responseHeaderArr, $responseContent, $responseCode] = Start::http(httpReqData: $httpReqData);
+				@ob_clean();
 
-			$responseCode = $responseCode ?? 200;
-			$response->status($responseCode);
+				$responseCode = $responseCode ?? 200;
+				$response->status($responseCode);
 
-			foreach ($responseHeaderArr as $headerName => $headerValue) {
-				$response->header($headerName, $headerValue);
+				foreach ($responseHeaderArr as $headerName => $headerValue) {
+					$response->header($headerName, $headerValue);
+				}
+				$response->end($responseContent);
 			}
-			$response->end($responseContent);
 		}
 	}
 );

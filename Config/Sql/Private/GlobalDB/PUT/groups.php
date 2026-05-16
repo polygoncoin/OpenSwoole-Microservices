@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  API_Query_Config
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -16,7 +16,7 @@
 use Microservices\App\DatabaseServerDataType;
 
 return [
-	'__QUERY__' => "UPDATE `{$Env::$groupsTable}` SET __SET__ WHERE __WHERE__",
+	'__QUERY__' => "UPDATE `{$Env::$groupTable}` SET __SET__ WHERE __WHERE__",
 	'__SET__' => [
 		[
 			'column' => 'name',
@@ -83,7 +83,7 @@ return [
 		[
 			'function' => 'primaryKeyExist',
 			'functionArgs' => [
-				'table' => ['custom', $Env::$groupsTable],
+				'table' => ['custom', $Env::$groupTable],
 				'primary' => ['custom', 'id'],
 				'id' => ['payload', 'id', DatabaseServerDataType::$INT]
 			],

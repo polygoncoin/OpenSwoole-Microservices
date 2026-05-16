@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  API
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -15,14 +15,15 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Start;
 use Microservices\App\CacheServerKey;
+use Microservices\App\CommonFunction;
 use Microservices\App\Counter;
 use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
+use Microservices\App\Start;
 use Microservices\App\Validator;
 
 /**
@@ -30,7 +31,7 @@ use Microservices\App\Validator;
  * php version 8.3
  *
  * @category  API_Trait
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -796,7 +797,7 @@ trait AppTrait
 	{
 		if (
 			!$this->http->req->isPrivateRequest
-			|| !Env::$enableRateLimitForRoute
+			|| !CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimitForRoute')
 			|| !isset($sqlConfig['rateLimitMaxRequest'])
 			|| !isset($sqlConfig['rateLimitMaxRequestWindow'])
 		) {
@@ -894,7 +895,7 @@ trait AppTrait
 
 		if (
 			isset($sqlConfig['enableReferrerLag'])
-			&& $sqlConfig['enableReferrerLag'] === true
+			&& $sqlConfig['enableReferrerLag'] === 'Yes'
 		) {
 			if (!$this->http->req->clientCacheObj->cacheExist(cacheKey: $customerUserReferrerLagKey)) {
 				$this->http->req->clientCacheObj->cacheSet(

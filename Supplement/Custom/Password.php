@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  CustomAPI_Interface
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -18,6 +18,7 @@ namespace Microservices\Supplement\Custom;
 use Microservices\App\CacheServerKey;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Http;
+use Microservices\App\Reload;
 use Microservices\Supplement\Custom\CustomInterface;
 use Microservices\Supplement\Custom\CustomTrait;
 
@@ -26,7 +27,7 @@ use Microservices\Supplement\Custom\CustomTrait;
  * php version 8.3
  *
  * @category  CustomAPI_Password
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -94,44 +95,35 @@ class Password implements CustomInterface
 			);
 
 			$sql = "
-				UPDATE `{$this->http->req->s['customerData']['usersTable']}`
+				UPDATE `{$this->http->req->s['customerData']['userTable']}`
 				SET password_hash = :password_hash
 				WHERE username = :username AND is_deleted = :is_deleted
 			";
-			$sqlParamArr = [
+			$paramArr = [
 				':password_hash' => $newPasswordHash,
 				':username' => $userName,
 				':is_deleted' => 'No',
 			];
 
-			$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
+			$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr);
 			$this->http->req->clientDbObj->closeCursor();
 
 			$customerId = $this->http->req->customerId;
-			$cu_key = CacheServerKey::customerUsername(
+			$cacheKey = CacheServerKey::customerUsername(
 				customerId: $customerId,
 				username: $userName
 			);
-			if ($this->http->req->clientCacheObj->cacheExist(cacheKey: $cu_key)) {
-				$userData = json_decode(
-					json: $this->http->req->clientCacheObj->cacheGet(
-						cacheKey: $cu_key
-					),
-					associative: true
-				);
-				$userData['password_hash'] = $newPasswordHash;
-				$this->http->req->clientCacheObj->cacheSet(
-					cacheKey: $cu_key,
-					cacheValue: json_encode(value: $userData)
-				);
-				$this->http->req->clientCacheObj->cacheDelete(
-					cacheKey: CacheServerKey::token(token: $this->http->req->s['token'])
-				);
-			}
+			Reload::processUser(
+				customerData: $this->http->req->s['customerData'],
+				userId: $this->http->req->userId
+			);
+			$this->http->req->clientCacheObj->cacheDelete(
+				cacheKey: CacheServerKey::token(token: $this->http->req->s['token'])
+			);
 
 			$this->http->res->dataEncode->addKeyData(
 				objectKey: 'Results',
-				data: 'Password changed successfully'
+				data: 'Password changed successfully. Please login'
 			);
 		}
 

@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  Environment
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -22,7 +22,7 @@ use Microservices\App\HttpStatus;
  * php version 8.3
  *
  * @category  Environment
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -32,25 +32,18 @@ use Microservices\App\HttpStatus;
 class Env
 {
 	public static $timestamp = null;
-///////////////
 
 	public static $ENVIRONMENT = null;
 	public static $OUTPUT_PERFORMANCE_STATS = null;
 	public static $DISABLE_REQUESTS_VIA_PROXIES = null;
 
-	public static $enablePublicRequest = null;
-	public static $enablePrivateRequest = null;
 	public static $authMode = null;
 	public static $sessionMode = null;
-	public static $enableConcurrentLogin = null;
 	public static $maxConcurrentLogin = null;
 	public static $concurrentAccessInterval = null;
 
 	public static $iRepresentation = null;
 	public static $oRepresentation = null;
-	public static $enableInputRepresentationAsQueryParam = null;
-	public static $enableOutputRepresentationAsQueryParam = null;
-	public static $enablePayloadInResponse = null;
 	public static $payloadKeyInResponse = null;
 
 	public static $gCacheServerType = null;
@@ -71,30 +64,15 @@ class Env
 
 	public static $customerMasterDb = null;
 	public static $customerTable = null;
-	public static $groupsTable = null;
+	public static $groupTable = null;
 	public static $queryPlaceholder = null;
 	public static $defaultPerPage = null;
 	public static $maxResultsPerPage = null;
 
-	public static $enableGlobalCounter = null;
 	public static $gCounter = null;
 	public static $gCounterMode = null;
 
 	public static $idempotentSecret = null;
-///////////////
-
-	public static $enableExplainRequest = null;
-	public static $enableDownloadRequest = null;
-	public static $enableImportRequest = null;
-	public static $enableImportSampleRequest = null;
-	public static $enableRoutesRequest = null;
-	public static $enableResponseCaching = null;
-	public static $enableDropboxRequest = null;
-	public static $enableCronRequest = null;
-	public static $enableCustomRequest = null;
-	public static $enableReloadRequest = null;
-	public static $enableThirdPartyRequest = null;
-	public static $enableUploadRequest = null;
 
 	public static $explainRequestRouteKeyword = null;
 	public static $mySqlBinaryLocationOnWebServer = null;
@@ -107,9 +85,6 @@ class Env
 	public static $reloadRequestRoutePrefix = null;
 	public static $thirdPartyRequestRoutePrefix = null;
 	public static $uploadRequestRoutePrefix = null;
-///////////////
-
-	public static $enableCidrCheck = null;
 
 	public static $explainRestrictedCidr = null;
 	public static $exportRestrictedCidr = null;
@@ -122,16 +97,6 @@ class Env
 	public static $reloadRestrictedCidr = null;
 	public static $thirdPatyRestrictedCidr = null;
 	public static $uploadRestrictedCidr = null;
-///////////////
-
-	public static $enableRateLimiting = null;
-	public static $enableRateLimitForIp = null;
-	public static $enableRateLimitForCustomer = null;
-	public static $enableRateLimitForGroup = null;
-	public static $enableRateLimitForUser = null;
-	public static $enableRateLimitForRoute = null;
-	public static $enableRateLimitForUserPerIp = null;
-	public static $enableRateLimitForUserRequest = null;
 
 	public static $rateLimitIPPrefix = null;
 	public static $rateLimitCustomerPrefix = null;
@@ -142,19 +107,6 @@ class Env
 	public static $rateLimitUserLoginPrefix = null;
 	public static $rateLimitUserRequestPrefix = null;
 
-	public static $rateLimitIPMaxRequest = null;
-	public static $rateLimitIPMaxRequestWindow = null;
-
-	public static $rateLimitMaxUserPerIp = null;
-	public static $rateLimitMaxUserPerIpWindow = null;
-
-	public static $rateLimitUserMaxRequest = null;
-	public static $rateLimitUserMaxRequestWindow = null;
-
-	public static $rateLimitMaxUserLoginRequest = null;
-	public static $rateLimitMaxUserLoginRequestWindow = null;
-///////////////
-
 	public static $queryCacheServerType = null;
 	public static $queryCacheServerHostname = null;
 	public static $queryCacheServerPort = null;
@@ -162,10 +114,6 @@ class Env
 	public static $queryCacheServerPassword = null;
 	public static $queryCacheServerDatabase = null;
 	public static $queryCacheServerTable = null;
-///////////////
-
-	public static $reservedRoutesPrefix = null;
-	public static $reservedRoutesCidrString = null;
 
 	public static $iAllowedRepresentation = ['JSON', 'XML'];
 	public static $oAllowedRepresentation = ['JSON', 'XML', 'XSLT', 'HTML', 'PHP'];
@@ -189,19 +137,13 @@ class Env
 		self::$OUTPUT_PERFORMANCE_STATS = getenv(name: 'OUTPUT_PERFORMANCE_STATS');
 		self::$DISABLE_REQUESTS_VIA_PROXIES = getenv(name: 'DISABLE_REQUESTS_VIA_PROXIES');
 
-		self::$enablePublicRequest = (bool)((int)getenv(name: 'enablePublicRequest'));
-		self::$enablePrivateRequest = (bool)((int)getenv(name: 'enablePrivateRequest'));
 		self::$authMode = getenv(name: 'authMode');
 		self::$sessionMode = getenv(name: 'sessionMode');
-		self::$enableConcurrentLogin = getenv(name: 'enableConcurrentLogin');
 		self::$maxConcurrentLogin = getenv(name: 'maxConcurrentLogin');
 		self::$concurrentAccessInterval = getenv(name: 'concurrentAccessInterval');
 
 		self::$iRepresentation = getenv(name: 'iRepresentation');
 		self::$oRepresentation = getenv(name: 'oRepresentation');
-		self::$enableInputRepresentationAsQueryParam = (bool)((int)getenv(name: 'enableInputRepresentationAsQueryParam'));
-		self::$enableOutputRepresentationAsQueryParam = (bool)((int)getenv(name: 'enableOutputRepresentationAsQueryParam'));
-		self::$enablePayloadInResponse = (bool)((int)getenv(name: 'enablePayloadInResponse'));
 		self::$payloadKeyInResponse = getenv(name: 'payloadKeyInResponse');
 
 		self::$gCacheServerType = getenv(name: 'gCacheServerType');
@@ -222,30 +164,15 @@ class Env
 
 		self::$customerMasterDb = getenv(name: 'customerMasterDb');
 		self::$customerTable = getenv(name: 'customerTable');
-		self::$groupsTable = getenv(name: 'groupsTable');
+		self::$groupTable = getenv(name: 'groupTable');
 		self::$queryPlaceholder = getenv(name: 'queryPlaceholder');
 		self::$defaultPerPage = (int)getenv(name: 'defaultPerPage');
 		self::$maxResultsPerPage = (int)getenv(name: 'maxResultsPerPage');
 
-		self::$enableGlobalCounter = (bool)((int)getenv(name: 'enableGlobalCounter'));
 		self::$gCounter = getenv(name: 'gCounter');
 		self::$gCounterMode = getenv(name: 'gCounterMode');
 
 		self::$idempotentSecret = getenv(name: 'idempotentSecret');
-		//////////////////
-
-		self::$enableExplainRequest = (bool)((int)getenv(name: 'enableExplainRequest'));
-		self::$enableDownloadRequest = (bool)((int)getenv(name: 'enableDownloadRequest'));
-		self::$enableImportRequest = (bool)((int)getenv(name: 'enableImportRequest'));
-		self::$enableImportSampleRequest = (bool)((int)getenv(name: 'enableImportSampleRequest'));
-		self::$enableRoutesRequest = (bool)((int)getenv(name: 'enableRoutesRequest'));
-		self::$enableResponseCaching = (bool)((int)getenv(name: 'enableResponseCaching'));
-		self::$enableDropboxRequest = (bool)((int)getenv(name: 'enableDropboxRequest'));
-		self::$enableCronRequest = (bool)((int)getenv(name: 'enableCronRequest'));
-		self::$enableCustomRequest = (bool)((int)getenv(name: 'enableCustomRequest'));
-		self::$enableReloadRequest = (bool)((int)getenv(name: 'enableReloadRequest'));
-		self::$enableThirdPartyRequest = (bool)((int)getenv(name: 'enableThirdPartyRequest'));
-		self::$enableUploadRequest = (bool)((int)getenv(name: 'enableUploadRequest'));
 
 		self::$explainRequestRouteKeyword = getenv(name: 'explainRequestRouteKeyword');
 		self::$mySqlBinaryLocationOnWebServer = getenv(name: 'mySqlBinaryLocationOnWebServer');
@@ -258,31 +185,6 @@ class Env
 		self::$reloadRequestRoutePrefix = getenv(name: 'reloadRequestRoutePrefix');
 		self::$thirdPartyRequestRoutePrefix = getenv(name: 'thirdPartyRequestRoutePrefix');
 		self::$uploadRequestRoutePrefix = getenv(name: 'uploadRequestRoutePrefix');
-		//////////////////
-
-		self::$enableCidrCheck = (bool)((int)getenv(name: 'enableCidrCheck'));
-
-		self::$explainRestrictedCidr = getenv(name: 'explainRestrictedCidr');
-		self::$exportRestrictedCidr = getenv(name: 'exportRestrictedCidr');
-		self::$importRestrictedCidr = getenv(name: 'importRestrictedCidr');
-		self::$importSampleRestrictedCidr = getenv(name: 'importSampleRestrictedCidr');
-		self::$routesRestrictedCidr = getenv(name: 'routesRestrictedCidr');
-		self::$dropboxRestrictedCidr = getenv(name: 'dropboxRestrictedCidr');
-		self::$cronRestrictedCidr = getenv(name: 'cronRestrictedCidr');
-		self::$customRestrictedCidr = getenv(name: 'customRestrictedCidr');
-		self::$reloadRestrictedCidr = getenv(name: 'reloadRestrictedCidr');
-		self::$thirdPatyRestrictedCidr = getenv(name: 'thirdPatyRestrictedCidr');
-		self::$uploadRestrictedCidr = getenv(name: 'uploadRestrictedCidr');
-		//////////////////
-
-		self::$enableRateLimiting = (bool)((int)getenv(name: 'enableRateLimiting'));
-		self::$enableRateLimitForIp = (bool)((int)getenv(name: 'enableRateLimitForIp'));
-		self::$enableRateLimitForCustomer = (bool)((int)getenv(name: 'enableRateLimitForCustomer'));
-		self::$enableRateLimitForGroup = (bool)((int)getenv(name: 'enableRateLimitForGroup'));
-		self::$enableRateLimitForUser = (bool)((int)getenv(name: 'enableRateLimitForUser'));
-		self::$enableRateLimitForRoute = (bool)((int)getenv(name: 'enableRateLimitForRoute'));
-		self::$enableRateLimitForUserPerIp = (bool)((int)getenv(name: 'enableRateLimitForUserPerIp'));
-		self::$enableRateLimitForUserRequest = (bool)((int)getenv(name: 'enableRateLimitForUserRequest'));
 
 		self::$rateLimitIPPrefix = getenv(name: 'rateLimitIPPrefix');
 		self::$rateLimitCustomerPrefix = getenv(name: 'rateLimitCustomerPrefix');
@@ -293,19 +195,6 @@ class Env
 		self::$rateLimitUserLoginPrefix = getenv(name: 'rateLimitUserLoginPrefix');
 		self::$rateLimitUserRequestPrefix = getenv(name: 'rateLimitUserRequestPrefix');
 
-		self::$rateLimitIPMaxRequest = (int)getenv(name: 'rateLimitIPMaxRequest');
-		self::$rateLimitIPMaxRequestWindow = (int)getenv(name: 'rateLimitIPMaxRequestWindow');
-
-		self::$rateLimitMaxUserPerIp = (int)getenv(name: 'rateLimitMaxUserPerIp');
-		self::$rateLimitMaxUserPerIpWindow = (int)getenv(name: 'rateLimitMaxUserPerIpWindow');
-
-		self::$rateLimitUserMaxRequest = (int)getenv(name: 'rateLimitUserMaxRequest');
-		self::$rateLimitUserMaxRequestWindow = (int)getenv(name: 'rateLimitUserMaxRequestWindow');
-
-		self::$rateLimitMaxUserLoginRequest = (int)getenv(name: 'rateLimitMaxUserLoginRequest');
-		self::$rateLimitMaxUserLoginRequestWindow = (int)getenv(name: 'rateLimitMaxUserLoginRequestWindow');
-		//////////////////
-
 		self::$queryCacheServerType = getenv(name: 'queryCacheServerType');
 		self::$queryCacheServerHostname = getenv(name: 'queryCacheServerHostname');
 		self::$queryCacheServerPort = getenv(name: 'queryCacheServerPort');
@@ -313,35 +202,6 @@ class Env
 		self::$queryCacheServerPassword = getenv(name: 'queryCacheServerPassword');
 		self::$queryCacheServerDatabase = getenv(name: 'queryCacheServerDatabase');
 		self::$queryCacheServerTable = getenv(name: 'queryCacheServerTable');
-		//////////////////
-		self::$reservedRoutesPrefix = [
-			self::$cronRequestRoutePrefix,
-			self::$reloadRequestRoutePrefix,
-			self::$routesRequestRoute
-		];
-
-		self::$reservedRoutesCidrString = [
-			self::$cronRequestRoutePrefix => self::$cronRestrictedCidr,
-			self::$reloadRequestRoutePrefix => self::$reloadRestrictedCidr,
-			self::$routesRequestRoute => self::$routesRestrictedCidr
-		];
-
-		if (self::$enableCustomRequest) {
-			self::$reservedRoutesPrefix[] = self::$customRequestRoutePrefix;
-			self::$reservedRoutesCidrString[self::$customRequestRoutePrefix] = self::$customRestrictedCidr;
-		}
-		if (self::$enableDropboxRequest) {
-			self::$reservedRoutesPrefix[] = self::$dropboxRequestRoutePrefix;
-			self::$reservedRoutesCidrString[self::$dropboxRequestRoutePrefix] = self::$dropboxRestrictedCidr;
-		}
-		if (self::$enableThirdPartyRequest) {
-			self::$reservedRoutesPrefix[] = self::$thirdPartyRequestRoutePrefix;
-			self::$reservedRoutesCidrString[self::$thirdPartyRequestRoutePrefix] = self::$thirdPatyRestrictedCidr;
-		}
-		if (self::$enableUploadRequest) {
-			self::$reservedRoutesPrefix[] = self::$uploadRequestRoutePrefix;
-			self::$reservedRoutesCidrString[self::$uploadRequestRoutePrefix] = self::$uploadRestrictedCidr;
-		}
 	}
 
 	/**

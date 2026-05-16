@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  Middleware
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -16,6 +16,7 @@
 namespace Microservices\App\Middleware;
 
 use Microservices\App\CacheServerKey;
+use Microservices\App\CommonFunction;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\Http;
@@ -26,7 +27,7 @@ use Microservices\App\HttpStatus;
  * php version 8.3
  *
  * @category  Auth_Middleware
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -116,7 +117,7 @@ class Auth
 		$this->http->req->userId = $this->http->req->s['userData']['id'];
 		$this->http->req->groupId = $this->http->req->s['userData']['group_id'];
 
-		if (Env::$enableConcurrentLogin) {
+		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
 			$userConcurrencyKey = CacheServerKey::customerUserConcurrency(
 				customerId: $this->http->req->customerId,
 				userId: $this->http->req->userId
