@@ -36,24 +36,27 @@ class Reload
 	/**
 	 * Process
 	 *
+	 * @param string $httpRequestIp Requst Ip
+	 *
 	 * @return bool
 	 */
-	public static function process(): bool
+	public static function process($httpRequestIp): bool
 	{
 		DbCommonFunction::connectGlobalCache();
 		DbCommonFunction::connectGlobalDb();
 
-		return self::processCustomer();
+		return self::processCustomer($httpRequestIp);
 	}
 
 	/**
 	 * Cache Customer Data
 	 *
-	 * @param null|int $customerId Customer Id
+	 * @param string   $httpRequestIp Requst Ip
+	 * @param null|int $customerId    Customer Id
 	 *
 	 * @return bool
 	 */
-	public static function processCustomer($customerId = null): bool
+	public static function processCustomer($httpRequestIp, $customerId = null): bool
 	{
 		DbCommonFunction::connectGlobalCache();
 		DbCommonFunction::connectGlobalDb();
@@ -80,7 +83,7 @@ class Reload
 			}
 
 			CommonFunction::checkCidr(
-				IP: CommonFunction::getHttpRequestIp(),
+				IP: $httpRequestIp,
 				cidrString: $customerData['reloadRestrictedCidr']
 			);
 
@@ -111,8 +114,8 @@ class Reload
 				}
 			}
 
-			self::processGroup($customerData);
-			self::processUser($customerData);
+			self::processGroup($httpRequestIp, $customerData);
+			self::processUser($httpRequestIp, $customerData);
 		}
 
 		return true;
@@ -121,12 +124,13 @@ class Reload
 	/**
 	 * Cache Group Data
 	 *
-	 * @param array    $customerData Customer Data
-	 * @param null|int $groupId      Group Id
+	 * @param string   $httpRequestIp Requst Ip
+	 * @param array    $customerData  Customer Data
+	 * @param null|int $groupId       Group Id
 	 *
 	 * @return bool
 	 */
-	public static function processGroup($customerData, $groupId = null): bool
+	public static function processGroup($httpRequestIp, $customerData, $groupId = null): bool
 	{
 		$clientCacheServerCred = DbCommonFunction::clientCacheServerCred(customerData: $customerData);
 		$clientCacheObj = DbCommonFunction::connectCache(
@@ -195,12 +199,13 @@ class Reload
 	/**
 	 * Cache User Data
 	 *
-	 * @param array    $customerData Customer Data
-	 * @param null|int $userId       User Id
+	 * @param string   $httpRequestIp Requst Ip
+	 * @param array    $customerData  Customer Data
+	 * @param null|int $userId        User Id
 	 *
 	 * @return bool
 	 */
-	public static function processUser($customerData, $userId = null): bool
+	public static function processUser($httpRequestIp, $customerData, $userId = null): bool
 	{
 		$clientCacheServerCred = DbCommonFunction::clientCacheServerCred(customerData: $customerData);
 		$clientCacheObj = DbCommonFunction::connectCache(

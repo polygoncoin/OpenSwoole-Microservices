@@ -157,7 +157,9 @@ $server->on(
 			}
 		} else {
 			if ($httpReqData['get'][ROUTE_URL_PARAM] === '/' . Env::$reloadRequestRoutePrefix) {
-				Reload::process();
+				Reload::process(
+					httpRequestIp: $httpReqData['server']['httpRequestIP']
+				);
 				$response->end();
 			} else {
 				ob_start();

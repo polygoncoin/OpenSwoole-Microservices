@@ -114,6 +114,7 @@ class Password implements CustomInterface
 				username: $userName
 			);
 			Reload::processUser(
+				httpRequestIp: $this->http->httpReqData['server']['httpRequestIP'],
 				customerData: $this->http->req->s['customerData'],
 				userId: $this->http->req->userId
 			);
