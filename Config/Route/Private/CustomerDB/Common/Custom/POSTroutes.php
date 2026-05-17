@@ -19,7 +19,7 @@ return [
 	$Env::$customRequestRoutePrefix => [
 		'{custom:string}' => [
 			'dataType' => DatabaseServerDataType::$Default,
-			'__FILE__' => $Constant::$QUERIES_PRIVATE_DIR
+			'__FILE__' => $this->http->req->QUERIES_DIR
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'UserGroup'

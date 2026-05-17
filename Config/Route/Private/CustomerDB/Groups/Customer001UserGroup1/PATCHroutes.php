@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-return require $Constant::$ROUTES_PRIVATE_DIR
+return require $this->http->req->ROUTES_DIR
 	. DIRECTORY_SEPARATOR . 'CustomerDB'
 	. DIRECTORY_SEPARATOR . 'Common'
 	. DIRECTORY_SEPARATOR . 'PATCHroutes.php';

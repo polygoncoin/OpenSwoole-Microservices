@@ -16,13 +16,6 @@
 return [
 	// detail of data to perform task
 	'__PAYLOAD__' => [
-		// [
-		//     'column' => 'id',
-		//     'fetchFrom' => 'routeParamArr',
-		//     'fetchFromData' => 'id',
-		//     'dataType' => DatabaseServerDataType::$PrimaryKey,
-		//     'isRequired' => $Constant::$REQUIRED
-		// ],
 		[
 			'column' => 'id',
 			'fetchFrom' => 'payload',

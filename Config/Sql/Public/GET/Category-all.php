@@ -91,6 +91,6 @@ return [
 		1 => 0,
 		// 2 => 10,
 	],
-	'xsltFile' => $Constant::$XSLT_PRIVATE_DIR
+	'xsltFile' => $this->http->req->XSLT_DIR
 		. DIRECTORY_SEPARATOR . 'Category.xls'
 ];

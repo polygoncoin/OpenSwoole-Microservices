@@ -14,16 +14,16 @@
  */
 
 return array_merge(
-	require $Constant::$ROUTES_PRIVATE_DIR
+	require $this->http->req->ROUTES_DIR
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'GETroutes.php',
-	require $Constant::$ROUTES_PRIVATE_DIR
+	require $this->http->req->ROUTES_DIR
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'Custom'
 		. DIRECTORY_SEPARATOR . 'GETroutes.php',
-	require $Constant::$ROUTES_PRIVATE_DIR
+	require $this->http->req->ROUTES_DIR
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'ThirdParty'

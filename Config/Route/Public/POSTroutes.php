@@ -15,12 +15,12 @@
 
 return [
 	'registration' => [
-		'__FILE__' => $Constant::$QUERIES_PUBLIC_DIR
+		'__FILE__' => $this->http->req->QUERIES_DIR
 			. DIRECTORY_SEPARATOR . 'POST'
 			. DIRECTORY_SEPARATOR . 'Registration.php',
 	],
 	'registration-with-address' => [
-		'__FILE__' => $Constant::$QUERIES_PUBLIC_DIR
+		'__FILE__' => $this->http->req->QUERIES_DIR
 			. DIRECTORY_SEPARATOR . 'POST'
 			. DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
 	],

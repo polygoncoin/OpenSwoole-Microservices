@@ -44,6 +44,12 @@ use Microservices\App\Server\DatabaseServer\DatabaseServerInterface;
  */
 class HttpRequest
 {
+	public $HTML_DIR = null;
+	public $PHP_DIR = null;
+	public $XSLT_DIR = null;
+	public $ROUTES_DIR = null;
+	public $QUERIES_DIR = null;
+
 	/**
 	 * Rate Limiter
 	 *
@@ -170,6 +176,20 @@ class HttpRequest
 
 		if ($this->http->httpReqData['get'][ROUTE_URL_PARAM] === '/login') {
 			$this->isPrivateRequest = true;
+		}
+
+		if ($this->isPrivateRequest) {
+			$this->HTML_DIR = Constant::$HTML_PRIVATE_DIR;
+			$this->PHP_DIR = Constant::$PHP_PRIVATE_DIR;
+			$this->XSLT_DIR = Constant::$XSLT_PRIVATE_DIR;
+			$this->ROUTES_DIR = Constant::$ROUTES_PRIVATE_DIR;
+			$this->QUERIES_DIR = Constant::$QUERIES_PRIVATE_DIR;
+		} else {
+			$this->HTML_DIR = Constant::$HTML_PUBLIC_DIR;
+			$this->PHP_DIR = Constant::$PHP_PUBLIC_DIR;
+			$this->XSLT_DIR = Constant::$XSLT_PUBLIC_DIR;
+			$this->ROUTES_DIR = Constant::$ROUTES_PUBLIC_DIR;
+			$this->QUERIES_DIR = Constant::$QUERIES_PUBLIC_DIR;
 		}
 	}
 

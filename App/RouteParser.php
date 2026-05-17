@@ -186,13 +186,13 @@ class RouteParser
 
 		if ($routeFileLocation === null) {
 			if ($this->http->req->isPrivateRequest) {
-				$routeFileLocation = Constant::$ROUTES_PRIVATE_DIR
+				$routeFileLocation = $this->http->req->ROUTES_DIR
 					. DIRECTORY_SEPARATOR . 'CustomerDB'
 					. DIRECTORY_SEPARATOR . 'Groups'
 					. DIRECTORY_SEPARATOR . $this->http->req->s['groupData']['name']
 					. DIRECTORY_SEPARATOR . $this->http->httpReqData['server']['httpMethod'] . 'routes.php';
 			} else {
-				$routeFileLocation = Constant::$ROUTES_PUBLIC_DIR
+				$routeFileLocation = $this->http->req->ROUTES_DIR
 					. DIRECTORY_SEPARATOR . $this->http->httpReqData['server']['httpMethod'] . 'routes.php';
 			}
 		}

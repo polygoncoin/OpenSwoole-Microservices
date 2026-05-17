@@ -60,6 +60,7 @@ class Constant
 
 	public static $ROUTES_PRIVATE_DIR = null;
 	public static $ROUTES_PUBLIC_DIR = null;
+
 	public static $QUERIES_PRIVATE_DIR = null;
 	public static $QUERIES_PUBLIC_DIR = null;
 
@@ -100,7 +101,6 @@ class Constant
 		self::$ROUTES_PRIVATE_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Route'
 			. DIRECTORY_SEPARATOR . 'Private';
-
 		self::$ROUTES_PUBLIC_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Route'
 			. DIRECTORY_SEPARATOR . 'Public';
@@ -108,7 +108,6 @@ class Constant
 		self::$QUERIES_PRIVATE_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Sql'
 			. DIRECTORY_SEPARATOR . 'Private';
-
 		self::$QUERIES_PUBLIC_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Sql'
 			. DIRECTORY_SEPARATOR . 'Public';

@@ -15,7 +15,6 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Constant;
 use Microservices\App\Log;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\HttpStatus;
