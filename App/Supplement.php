@@ -518,8 +518,6 @@ class Supplement
 				return;
 			}
 
-			$this->http->req->clientDbObj->closeCursor();
-
 			// triggers
 			if (isset($sSqlConfig['__TRIGGERS__'])) {
 				$this->dataEncode->addKeyData(
