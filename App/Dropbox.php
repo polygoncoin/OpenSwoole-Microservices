@@ -67,12 +67,9 @@ class Dropbox
 	/**
 	 * Dropbox Folder
 	 *
-	 * The folder location outside docroot
-	 * without a slash at the end
-	 *
 	 * @var string
 	 */
-	private $modeDropBox = null;
+	private $DROPBOX_DIR = null;
 
 	/**
 	 * Constructor
@@ -91,11 +88,11 @@ class Dropbox
 	 */
 	public function init(): bool
 	{
-		// $mode = Public (Public access) / Private (Requires Auth)
-		$mode = $this->http->req->isPrivateRequest ? 'Private' : 'Public';
-
-		$this->modeDropBox = Constant::$DROP_BOX_DIR
-			. DIRECTORY_SEPARATOR . $mode;
+		if ($this->http->req->isPrivateRequest) {
+			$this->DROPBOX_DIR = Constant::$DROPBOX_PRIVATE_DIR;
+		} else {
+			$this->DROPBOX_DIR = Constant::$DROPBOX_PUBLIC_DIR;
+		}
 
 		$filePath = DIRECTORY_SEPARATOR . trim(
 			string: str_replace(
@@ -111,10 +108,10 @@ class Dropbox
 			&& $this->http->req !== null
 			&& $this->http->req->isPrivateRequest
 		) {
-			$this->modeDropBox .= DIRECTORY_SEPARATOR . $this->http->req->customerId;
+			$this->DROPBOX_DIR .= DIRECTORY_SEPARATOR . $this->http->req->customerId;
 			$this->validateFileRequest();
 		}
-		$this->fileLocation = $this->modeDropBox . $filePath;
+		$this->fileLocation = $this->DROPBOX_DIR . $filePath;
 
 		return (
 			is_file(filename: $this->fileLocation)

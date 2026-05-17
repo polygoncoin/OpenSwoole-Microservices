@@ -86,7 +86,7 @@ class Module1 implements UploadInterface
 	 */
 	private function getLocation(): string
 	{
-		return Constant::$DROP_BOX_DIR
+		return Constant::$DROPBOX_PRIVATE_DIR
 			. DIRECTORY_SEPARATOR . $this->http->req->customerId
 			. DIRECTORY_SEPARATOR . 'test.png';
 	}
