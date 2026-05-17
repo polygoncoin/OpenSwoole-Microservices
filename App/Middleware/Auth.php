@@ -44,13 +44,6 @@ class Auth
 	private $http = null;
 
 	/**
-	 * Request id
-	 *
-	 * @var null|int
-	 */
-	private $requestID = null;
-
-	/**
 	 * Constructor
 	 *
 	 * @param Http $http

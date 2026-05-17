@@ -76,7 +76,7 @@ class CustomSessionHandler implements
 	 *
 	 * @var null|bool
 	 */
-	private $creatingSessionID = null;
+	private $creatingSessionId = null;
 
 	/**
 	 * Session Data
@@ -138,12 +138,12 @@ class CustomSessionHandler implements
 	public function validateId($sessionId): bool
 	{
 		if ($sessionData = $this->container->getSession(sessionId: $sessionId)) {
-			if (is_null(value: $this->creatingSessionID)) {
+			if (is_null(value: $this->creatingSessionId)) {
 				$this->sessionData = &$sessionData;
 			}
 			$this->foundSession = true;
 		} else {
-			if (is_null(value: $this->creatingSessionID)) {
+			if (is_null(value: $this->creatingSessionId)) {
 				$this->unsetSessionCookie();
 			}
 			$this->foundSession = false;
@@ -171,13 +171,13 @@ class CustomSessionHandler implements
 			$this->container->deleteSession(sessionId: $this->sessionId);
 		}
 
-		$this->creatingSessionID = true;
+		$this->creatingSessionId = true;
 
 		do {
 			$sessionId = $this->getRandomString();
 		} while ($this->validateId(sessionId: $sessionId) === true);
 
-		$this->creatingSessionID = null;
+		$this->creatingSessionId = null;
 
 		return $sessionId;
 	}
@@ -387,7 +387,7 @@ class CustomSessionHandler implements
 		if (
 			isset($this->container->sessionOptionArr['read_and_close'])
 			&& $this->container->sessionOptionArr['read_and_close'] === true
-			&& $this->creatingSessionID === true
+			&& $this->creatingSessionId === true
 		) {
 			// Remove Session Set-Cookie header
 			$headerArr = headers_list();

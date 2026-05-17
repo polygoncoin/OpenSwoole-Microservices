@@ -16,6 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\Constant;
+use Microservices\App\Http;
 
 /**
  * Logging
@@ -32,24 +33,45 @@ use Microservices\App\Constant;
 class Log
 {
 	/**
+	 * HTTP object
+	 *
+	 * @var null|Http
+	 */
+	private $http = null;
+
+	/**
+	 * Constructor
+	 *
+	 * @param Http $http
+	 */
+	public function __construct(Http &$http)
+	{
+		$this->http = &$http;
+	}
+
+	/**
 	 * Log details
 	 *
 	 * @param array $logData detail to be logged
 	 *
-	 * @return void
+	 * @return int
 	 */
-	public function log(&$logData): void
+	public function log(&$logData): int
 	{
-		$logFile = Constant::$LOG_DIR
-			. DIRECTORY_SEPARATOR . 'log-' . date(format: 'YmdH');
-		if (!file_exists(filename: $logFile)) {
-			touch(filename: $logFile);
-		}
-
-		file_put_contents(
-			filename: $logFile,
-			data: json_encode(value: $logData) . PHP_EOL,
-			flags: FILE_APPEND
+		$exceptionJson = json_encode($logData);
+		return $this->http->req->logErrorData(
+			exceptionJson: $exceptionJson
 		);
+		// $logFile = Constant::$LOG_DIR
+		// 	. DIRECTORY_SEPARATOR . 'log-' . date(format: 'YmdH');
+		// if (!file_exists(filename: $logFile)) {
+		// 	touch(filename: $logFile);
+		// }
+
+		// file_put_contents(
+		// 	filename: $logFile,
+		// 	data: json_encode(value: $logData) . PHP_EOL,
+		// 	flags: FILE_APPEND
+		// );
 	}
 }

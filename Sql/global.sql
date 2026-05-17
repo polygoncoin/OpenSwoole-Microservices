@@ -104,7 +104,6 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `request`;
 CREATE TABLE `request` (
     `request_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `request_by` ENUM('Admin', 'Customer', 'WebsiteAdmin') NOT NULL,
     `customer_id` INT NOT NULL,
     `user_id` INT NOT NULL,
     `request_route` VARCHAR(250),
@@ -117,9 +116,8 @@ CREATE TABLE `request` (
 
 DROP TABLE IF EXISTS `error_log`;
 CREATE TABLE `error_log` (
-    `error_log_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `error_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `request_id` BIGINT UNSIGNED NOT NULL,
-    `request_by` ENUM('Admin', 'Customer', 'WebsiteAdmin') NOT NULL,
     `customer_id` INT NOT NULL,
     `user_id` INT NOT NULL,
     `request_route` VARCHAR(250),
@@ -130,15 +128,14 @@ CREATE TABLE `error_log` (
     `request_exception_json` JSON NOT NULL,
     `request_datetime` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `request_ip` VARCHAR(25) NOT NULL,
-    PRIMARY KEY (`error_log_id`)
+    PRIMARY KEY (`error_id`)
 ) ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `debug_log`;
 CREATE TABLE `debug_log` (
-    `debug_log_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `debug_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `debug_mode` VARCHAR(250),
     `request_id` BIGINT UNSIGNED NOT NULL,
-    `request_by` ENUM('Admin', 'Customer', 'WebsiteAdmin') NOT NULL,
     `customer_id` INT NOT NULL,
     `user_id` INT NOT NULL,
     `request_route` VARCHAR(250),
@@ -146,8 +143,8 @@ CREATE TABLE `debug_log` (
     `request_config_json` JSON NOT NULL,
     `request_payload_json` JSON NOT NULL,
     `request_session_json` JSON NOT NULL,
-    `request_exception_json` JSON NOT NULL,
+    `request_debug_json` JSON NOT NULL,
     `request_datetime` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `request_ip` VARCHAR(25) NOT NULL,
-    PRIMARY KEY (`debug_log_id`)
+    PRIMARY KEY (`debug_id`)
 ) ENGINE = InnoDB;

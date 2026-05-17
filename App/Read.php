@@ -411,7 +411,7 @@ class Read
 	): void {
 		$mode = getenv(name: $this->http->req->s['customerData'][$this->modeColumn]);
 		$function = "getSqlAndParam{$mode}Mode";
-		[$id, $sql, $sqlParamArr, $errorArr, $missExecution] = $this->$function(
+		[$id, $sql, $paramArr, $errorArr, $missExecution] = $this->$function(
 			sqlConfig: $readSqlConfig,
 			configKeyArr: $configKeyArr
 		);
@@ -427,7 +427,7 @@ class Read
 			return;
 		}
 
-		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
+		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr);
 		if ($row = $this->http->req->clientDbObj->fetch()) {
 			foreach ($row as $objectKey => $value) {
 				$this->dataEncode->addKeyData(objectKey: $objectKey, data: $value);
@@ -501,7 +501,7 @@ class Read
 
 		$mode = getenv(name: $this->http->req->s['customerData'][$this->modeColumn]);
 		$function = "getSqlAndParam{$mode}Mode";
-		[$id, $sql, $sqlParamArr, $errorArr, $missExecution] = $this->$function(
+		[$id, $sql, $paramArr, $errorArr, $missExecution] = $this->$function(
 			sqlConfig: $readSqlConfig
 		);
 
@@ -516,7 +516,7 @@ class Read
 			return;
 		}
 
-		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
+		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr);
 		$row = $this->http->req->clientDbObj->fetch();
 		$this->http->req->clientDbObj->closeCursor();
 
@@ -562,7 +562,7 @@ class Read
 	): void {
 		$mode = getenv(name: $this->http->req->s['customerData'][$this->modeColumn]);
 		$function = "getSqlAndParam{$mode}Mode";
-		[$id, $sql, $sqlParamArr, $errorArr, $missExecution] = $this->$function(
+		[$id, $sql, $paramArr, $errorArr, $missExecution] = $this->$function(
 			sqlConfig: $readSqlConfig,
 			configKeyArr: $configKeyArr
 		);
@@ -609,7 +609,7 @@ class Read
 
 		$singleColumn = false;
 		$pushPop = true;
-		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr, pushPop: $pushPop);
+		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr, pushPop: $pushPop);
 		for ($i = 0; $row = $this->http->req->clientDbObj->fetch();) {
 			if ($i === 0) {
 				if (count(value: $row) === 1) {
@@ -706,7 +706,7 @@ class Read
 
 		$mode = getenv(name: $this->http->req->s['customerData'][$this->modeColumn]);
 		$function = "getSqlAndParam{$mode}Mode";
-		[$id, $sql, $sqlParamArr, $errorArr, $missExecution] = $this->$function(
+		[$id, $sql, $paramArr, $errorArr, $missExecution] = $this->$function(
 			sqlConfig: $readSqlConfig
 		);
 		$serverMode = isset($readSqlConfig['fetchFrom'])
@@ -741,21 +741,21 @@ class Read
 				$return = $export->initDownload(
 					downloadFile: $downloadFile,
 					sql: $sql,
-					paramArr: $sqlParamArr,
+					paramArr: $paramArr,
 					exportFile: $readSqlConfig['exportFile']
 				);
 			} else {
 				$return = $export->initDownload(
 					downloadFile: $downloadFile,
 					sql: $sql,
-					paramArr: $sqlParamArr
+					paramArr: $paramArr
 				);
 			}
 		} else {
 			if (isset($readSqlConfig['exportFile'])) {
 				$return = $export->saveExport(
 					sql: $sql,
-					paramArr: $sqlParamArr,
+					paramArr: $paramArr,
 					exportFile: $readSqlConfig['exportFile']
 				);
 			}

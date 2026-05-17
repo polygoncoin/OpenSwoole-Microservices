@@ -89,10 +89,10 @@ class Start
 					'httpReqData' => $Microservices->http->httpReqData,
 					'HttpCode' => $e->getCode(),
 					'HttpMessage' => $e->getMessage(),
-					'sData' => $Microservices->http->req->s
 				];
-				$logsObj = new Log();
-				$logsObj->log(logData: $logData);
+
+				$logObj = new Log(http: $Microservices->http);
+				$logId = $logObj->log(logData: $logData);
 			}
 
 			$headerArr = [];
@@ -106,7 +106,8 @@ class Start
 			} else {
 				$arr = [
 					'Status' => $e->getCode(),
-					'Message' => $e->getMessage()
+					'Message' => $e->getMessage(),
+					'errorLogId' => $logId
 				];
 			}
 

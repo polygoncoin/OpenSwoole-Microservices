@@ -65,6 +65,13 @@ class HttpRequest
 	public $auth = null;
 
 	/**
+	 * Request id
+	 *
+	 * @var null|int
+	 */
+	public $requestId = null;
+
+	/**
 	 * Data Decode object
 	 *
 	 * @var null|DataDecode
@@ -297,8 +304,9 @@ class HttpRequest
 		if ($this->http->httpReqData['server']['httpMethod'] === Constant::$GET) {
 			$this->urlDecode(value: $this->http->httpReqData['get']);
 			$this->s['payloadType'] = 'Object';
+			$payloadJson = json_encode($this->http->httpReqData['get']);
 		} else {
-			$this->setPayloadStream();
+			$payloadJson = $this->setPayloadStream();
 			rewind(stream: $this->payloadStream);
 
 			$this->dataDecode = new DataDecode(
@@ -309,15 +317,17 @@ class HttpRequest
 			$this->dataDecode->indexData();
 			$this->s['payloadType'] = $this->dataDecode->dataType();
 		}
+		$this->requestId = $this->getRequestId(payloadJson: $payloadJson);
 	}
 
 	/**
 	 * Set payload stream
 	 *
-	 * @return void
+	 * @return string
 	 */
-	private function setPayloadStream(): void
+	private function setPayloadStream(): string
 	{
+		$payloadJson = '{}';
 		switch (true) {
 			case (
 				$this->http->httpReqData['get'][ROUTE_URL_PARAM] !== '/login'
@@ -325,24 +335,148 @@ class HttpRequest
 				&& ($this->rParser->routeEndingReservedKeyword === Env::$importRequestRouteKeyword)
 				&& isset($this->http->httpReqData['files']['file']['tmp_name'])
 			):
-				$content = $this->formatCsvPayload(
+				$payloadJson = $this->formatCsvPayload(
 					csvFile: $this->http->httpReqData['files']['file']['tmp_name']
 				);
 				break;
 			case Env::$iRepresentation === 'XML':
-				$content = $this->convertXmlToJson(xmlString: $this->http->httpReqData['post']);
+				$payloadJson = $this->convertXmlToJson(xmlString: $this->http->httpReqData['post']);
 				break;
 			default:
-				$content = $this->http->httpReqData['post'];
+				$payloadJson = $this->http->httpReqData['post'];
 		}
+		
 		$this->payloadStream = fopen(
 			filename: "php://memory",
 			mode: "rw+b"
 		);
 		fwrite(
 			stream: $this->payloadStream,
-			data: $content
+			data: $payloadJson
 		);
+
+		return $payloadJson;
+	}
+
+	/**
+	 * Get Request Id
+	 *
+	 * @param string $payloadJson
+	 *
+	 * @return int
+	 */
+	private function getRequestId($payloadJson): int
+	{
+		$requestId = 0;
+		if ($this->isPrivateRequest) {
+			DbCommonFunction::connectGlobalDb();
+			$sql = 'INSERT INTO `request` SET 
+				customer_id = :customer_id,
+				user_id = :user_id,
+				request_route = :request_route,
+				request_method = :request_method,
+				request_payload_json = :request_payload_json,
+				request_ip = :request_ip
+			';
+			$paramArr[':customer_id'] = $this->customerId;
+			$paramArr[':user_id'] = $this->userId;
+			$paramArr[':request_route'] = $this->http->httpReqData['get'][ROUTE_URL_PARAM];
+			$paramArr[':request_method'] = $this->http->httpReqData['server']['httpMethod'];
+			$paramArr[':request_payload_json'] = $payloadJson;
+			$paramArr[':request_ip'] = $this->http->httpReqData['server']['httpRequestIP'];
+
+			DbCommonFunction::$gDbServer->execDbQuery(sql: $sql, paramArr: $paramArr);
+			$requestId = DbCommonFunction::$gDbServer->lastInsertId();
+		}
+
+		return $requestId;
+	}
+
+	/**
+	 * Log Debug Data
+	 *
+	 * @param string $debugMode
+	 * @param string $debugJson
+	 *
+	 * @return int
+	 */
+	private function logDebugData($debugMode, $debugJson): int
+	{
+		$logId = 0;
+		if ($this->isPrivateRequest) {
+			DbCommonFunction::connectGlobalDb();
+			$sql = 'INSERT INTO `debug_log` SET 
+				debug_mode = :debug_mode,
+				request_id = :request_id,
+				customer_id = :customer_id,
+				user_id = :user_id,
+				request_route = :request_route,
+				request_method = :request_method,
+				request_payload_json = :request_payload_json,
+				request_config_json = :request_config_json,
+				request_session_json = :request_session_json,
+				request_exception_json = :request_exception_json,
+				request_ip = :request_ip
+			';
+			$paramArr[':debug_mode'] = $debugMode;
+			$paramArr[':request_id'] = $this->requestId;
+			$paramArr[':customer_id'] = $this->customerId;
+			$paramArr[':user_id'] = $this->userId;
+			$paramArr[':request_route'] = $this->http->httpReqData['get'][ROUTE_URL_PARAM];
+			$paramArr[':request_method'] = $this->http->httpReqData['server']['httpMethod'];
+			$paramArr[':request_payload_json'] = $this->s['payload'];
+			$paramArr[':request_config_json'] = $this->rParser->sqlConfig;
+			$paramArr[':request_session_json'] = json_encode($this->s);
+			$paramArr[':request_debug_json'] = $debugJson;
+			$paramArr[':request_ip'] = $this->http->httpReqData['server']['httpRequestIP'];
+
+			DbCommonFunction::$gDbServer->execDbQuery(sql: $sql, paramArr: $paramArr);
+			$logId = DbCommonFunction::$gDbServer->lastInsertId();
+		}
+
+		return $logId;
+	}
+
+	/**
+	 * Log Error Data
+	 *
+	 * @param string $exceptionJson
+	 *
+	 * @return int
+	 */
+	private function logErrorData($exceptionJson): int
+	{
+		$logId = 0;
+		if ($this->isPrivateRequest) {
+			DbCommonFunction::connectGlobalDb();
+			$sql = 'INSERT INTO `error_log` SET 
+				request_id = :request_id,
+				customer_id = :customer_id,
+				user_id = :user_id,
+				request_route = :request_route,
+				request_method = :request_method,
+				request_payload_json = :request_payload_json,
+				request_config_json = :request_config_json,
+				request_session_json = :request_session_json,
+				request_exception_json = :request_exception_json,
+				request_ip = :request_ip
+			';
+			$paramArr[':request_id'] = $this->requestId;
+			$paramArr[':customer_id'] = $this->customerId;
+			$paramArr[':user_id'] = $this->userId;
+			$paramArr[':request_route'] = $this->http->httpReqData['get'][ROUTE_URL_PARAM];
+			$paramArr[':request_method'] = $this->http->httpReqData['server']['httpMethod'];
+			$paramArr[':request_payload_json'] = $this->s['payload'];
+			$paramArr[':request_config_json'] = $this->rParser->sqlConfig;
+			$paramArr[':request_session_json'] = json_encode($this->s);
+			$paramArr[':request_exception_json'] = $exceptionJson;
+			$paramArr[':request_ip'] = $this->http->httpReqData['server']['httpRequestIP'];
+
+			DbCommonFunction::$gDbServer->execDbQuery(sql: $sql, paramArr: $paramArr);
+			$logId = DbCommonFunction::$gDbServer->lastInsertId();
+		}
+
+		return $logId;
 	}
 
 	/**

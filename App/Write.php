@@ -501,7 +501,7 @@ class Write
 			}
 
 			// Get SQL and ParamArr
-			[$id, $sql, $sqlParamArr, $errorArr, $missExecution] = $this->$function(
+			[$id, $sql, $paramArr, $errorArr, $missExecution] = $this->$function(
 				sqlConfig: $writeSqlConfig
 			);
 
@@ -516,7 +516,7 @@ class Write
 			}
 
 			// Execute Query
-			$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
+			$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr);
 			if (
 				$this->operateAsTransaction
 				&& !$this->http->req->clientDbObj->beganTransaction

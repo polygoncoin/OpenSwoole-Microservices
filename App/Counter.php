@@ -58,9 +58,9 @@ class Counter
 
 				$table = Env::$gDbServerDatabase . '.' . Env::$gCounter;
 				$sql = "INSERT INTO {$table}() VALUES()";
-				$sqlParamArr = [];
+				$paramArr = [];
 
-				DbCommonFunction::$gDbServer->execDbQuery(sql: $sql, paramArr: $sqlParamArr);
+				DbCommonFunction::$gDbServer->execDbQuery(sql: $sql, paramArr: $paramArr);
 				$id = DbCommonFunction::$gDbServer->lastInsertId();
 				break;
 		}

@@ -238,7 +238,7 @@ trait AppTrait
 				$sql .= $sqlConfig['__DOWNLOAD__'];
 				break;
 		}
-		$sqlParamArr = [];
+		$paramArr = [];
 		$paramKeyArr = [];
 		$errorArr = [];
 		$row = [];
@@ -272,7 +272,7 @@ trait AppTrait
 						if ($found) {
 							$__SET__[] = "`{$paramKey}` = :{$paramKey}";
 						}
-						$sqlParamArr[":{$paramKey}"] = $paramValue;
+						$paramArr[":{$paramKey}"] = $paramValue;
 						$row[$paramKey] = $paramValue;
 					}
 				}
@@ -314,7 +314,7 @@ trait AppTrait
 							}
 							$paramKeyArr[] = $wparam;
 							$__WHERE__[] = "`{$param}` = :{$wparam}";
-							$sqlParamArr[":{$wparam}"] = $v;
+							$paramArr[":{$wparam}"] = $v;
 							$row[$wparam] = $v;
 						}
 						$sql = str_replace(
@@ -340,7 +340,7 @@ trait AppTrait
 			$this->resetFetchData('sqlParamArr', $configKeyArr, $row);
 		}
 
-		return [$id, $sql, $sqlParamArr, $errorArr, ($missExecution || $wMissExecution)];
+		return [$id, $sql, $paramArr, $errorArr, ($missExecution || $wMissExecution)];
 	}
 
 	/**
@@ -371,7 +371,7 @@ trait AppTrait
 				$sql .= $sqlConfig['__DOWNLOAD__'];
 				break;
 		}
-		$sqlParamArr = [];
+		$paramArr = [];
 		$paramKeyArr = [];
 		$errorArr = [];
 		$row = [];
@@ -400,7 +400,7 @@ trait AppTrait
 						if ($found) {
 							$__SET__[] = "{$paramKey} = ?";
 						}
-						$sqlParamArr[] = $paramValue;
+						$paramArr[] = $paramValue;
 						$row[$paramKey] = $paramValue;
 					}
 				}
@@ -438,7 +438,7 @@ trait AppTrait
 							}
 							$paramKeyArr[] = $wparam;
 							$__WHERE__[] = "{$param} = ?";
-							$sqlParamArr[] = $v;
+							$paramArr[] = $v;
 							$row[$wparam] = $v;
 						}
 						$sql = str_replace(
@@ -464,7 +464,7 @@ trait AppTrait
 			$this->resetFetchData('sqlParamArr', $configKeyArr, $row);
 		}
 
-		return [$id, $sql, $sqlParamArr, $errorArr, ($missExecution || $wMissExecution)];
+		return [$id, $sql, $paramArr, $errorArr, ($missExecution || $wMissExecution)];
 	}
 
 	/**
@@ -479,7 +479,7 @@ trait AppTrait
 	private function getSqlParam(&$sqlConfig, &$payloadVariableArr): array
 	{
 		$missExecution = false;
-		$sqlParamArr = [];
+		$paramArr = [];
 		$errorArr = [];
 
 		// Collect param values as per config respectively
@@ -490,7 +490,7 @@ trait AppTrait
 			if ($fetchFrom === 'function') {
 				$function = $fetchFromData;
 				$value = $function($this->http->req->s);
-				$sqlParamArr[$column] = $value;
+				$paramArr[$column] = $value;
 				continue;
 			} elseif (
 				in_array(
@@ -511,7 +511,7 @@ trait AppTrait
 					}
 					$value = &$value[$_fetchFromData];
 				}
-				$sqlParamArr[$column] = $value;
+				$paramArr[$column] = $value;
 				continue;
 			} elseif ($fetchFrom === 'sqlResults') {
 				if (!isset($this->http->req->s[$fetchFrom])) {
@@ -527,15 +527,15 @@ trait AppTrait
 					}
 					$value = &$value[$_fetchFromData];
 				}
-				$sqlParamArr[$column] = $value;
+				$paramArr[$column] = $value;
 				continue;
 			} elseif ($fetchFrom === 'custom') {
 				$value = $fetchFromData;
-				$sqlParamArr[$column] = $value;
+				$paramArr[$column] = $value;
 				continue;
 			} elseif ($fetchFrom === 'variables') {
 				if (isset($payloadVariableArr[$fetchFromData])) {
-					$sqlParamArr[$column] = $payloadVariableArr[$fetchFromData];
+					$paramArr[$column] = $payloadVariableArr[$fetchFromData];
 				} else {
 					$errorArr[] = "Missing '{$fetchFrom}' for '{$fetchFromData}'";
 				}
@@ -557,7 +557,7 @@ trait AppTrait
 						}
 					}
 				}
-				$sqlParamArr[$column] = $this->http->req->s[$fetchFrom][$fetchFromData];
+				$paramArr[$column] = $this->http->req->s[$fetchFrom][$fetchFromData];
 				continue;
 			} elseif (in_array($fetchFromData, $this->http->req->s['requiredFieldArr'][$fetchFrom])) {
 				$errorArr[] = "Missing required field '{$fetchFrom}' for '{$fetchFromData}'";
@@ -568,7 +568,7 @@ trait AppTrait
 			}
 		}
 
-		return [$sqlParamArr, $errorArr, $missExecution];
+		return [$paramArr, $errorArr, $missExecution];
 	}
 
 	/**
@@ -1142,7 +1142,7 @@ trait AppTrait
 	 */
 	private function getTriggerParam(&$payloadConfig): array
 	{
-		$sqlParamArr = [];
+		$paramArr = [];
 		$errorArr = [];
 
 		// Collect param values as per config respectively
@@ -1155,9 +1155,9 @@ trait AppTrait
 				$function = $fetchFromData;
 				$value = $function($this->http->req->s);
 				if ($column === null) {
-					$sqlParamArr[] = $value;
+					$paramArr[] = $value;
 				} else {
-					$sqlParamArr[$column] = $value;
+					$paramArr[$column] = $value;
 				}
 				continue;
 			} elseif (
@@ -1178,25 +1178,25 @@ trait AppTrait
 					$value = $value[$_fetchFromData];
 				}
 				if ($column === null) {
-					$sqlParamArr[] = $value;
+					$paramArr[] = $value;
 				} else {
-					$sqlParamArr[$column] = $value;
+					$paramArr[$column] = $value;
 				}
 				continue;
 			} elseif ($fetchFrom === 'custom') {
 				$value = $fetchFromData;
 				if ($column === null) {
-					$sqlParamArr[] = $value;
+					$paramArr[] = $value;
 				} else {
-					$sqlParamArr[$column] = $value;
+					$paramArr[$column] = $value;
 				}
 				continue;
 			} elseif (isset($this->http->req->s[$fetchFrom][$fetchFromData])) {
 				$value = $this->http->req->s[$fetchFrom][$fetchFromData];
 				if ($column === null) {
-					$sqlParamArr[] = $value;
+					$paramArr[] = $value;
 				} else {
-					$sqlParamArr[$column] = $value;
+					$paramArr[$column] = $value;
 				}
 				continue;
 			} else {
@@ -1205,7 +1205,7 @@ trait AppTrait
 			}
 		}
 
-		return [$sqlParamArr, $errorArr];
+		return [$paramArr, $errorArr];
 	}
 
 	/**

@@ -258,8 +258,8 @@ class MySql implements SqlInterface
 	public function lastInsertId(): bool|int
 	{
 		try {
-			if (($lastInsertID = $this->mysqlServerObj->lastInsertId()) !== false) {
-				return $lastInsertID;
+			if (($lastInsertId = $this->mysqlServerObj->lastInsertId()) !== false) {
+				return $lastInsertId;
 			}
 		} catch (\PDOException $e) {
 			if ($this->beganTransaction) {
