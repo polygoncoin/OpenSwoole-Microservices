@@ -309,40 +309,4 @@ class CommonFunction
 			);
 		}
 	}
-
-	/**
-	 * Unique HTTP request hash
-	 *
-	 * @param array $hashArray Hash array
-	 *
-	 * @return string
-	 */
-	public static function httpRequestHash($hashArray): string
-	{
-		return md5(json_encode(value: $hashArray));
-	}
-
-	/**
-	 * Get request IP
-	 *
-	 * @return string
-	 */
-	public static function getHttpRequestIp() {
-		// Check for shared internet connections (e.g., Cloudflare, proxy)
-		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-			$ip = $_SERVER['HTTP_CLIENT_IP'];
-		}
-		// Check if the user is behind a proxy and the IP is forwarded
-		elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-			// HTTP_X_FORWARDED_FOR can contain a comma-separated list of IPs
-			// The first one is typically the original customer IP
-			$ipList = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-			$ip = trim($ipList[0]);
-		}
-		// Default method: get the remote address directly
-		else {
-			$ip = $_SERVER['REMOTE_ADDR'];
-		}
-		return $ip;
-	}
 }

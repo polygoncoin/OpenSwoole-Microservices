@@ -115,7 +115,7 @@ $server->on(
 
 		$httpReqData['post'] = $request->rawContent();
 		$httpReqData['files'] = &$request->files;
-		$httpReqData['httpRequestHash'] = CommonFunction::httpRequestHash(
+		$httpReqData['httpRequestHash'] = httpRequestHash(
 			hashArray: [
 				// $_SERVER['HTTP_ACCEPT_ENCODING'] ?? '',
 				// $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
@@ -189,3 +189,15 @@ $server->set(
 );
 
 $server->start();
+
+/**
+ * Unique HTTP request hash
+ *
+ * @param array $hashArray Hash array
+ *
+ * @return string
+ */
+function httpRequestHash($hashArray): string
+{
+	return md5(json_encode(value: $hashArray));
+}
