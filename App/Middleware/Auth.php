@@ -72,7 +72,8 @@ class Auth
 			$this->http->req->s['userData'] = $_SESSION;
 			$this->http->req->s['token'] = session_id();
 		} elseif (
-			($this->http->httpReqData['header']['tokenHeader'] !== null)
+			isset($this->http->httpReqData['header']['tokenHeader'])
+			&& $this->http->httpReqData['header']['tokenHeader'] !== null
 		) {
 			if (
 				!preg_match(
@@ -105,6 +106,11 @@ class Auth
 					cacheKey: $tokenKey
 				),
 				associative: true
+			);
+		} else {
+			throw new \Exception(
+				message: 'Please login',
+				code: HttpStatus::$InternalServerError
 			);
 		}
 		$this->http->req->userId = $this->http->req->s['userData']['id'];
@@ -156,16 +162,6 @@ class Auth
 		}
 
 		// Load groupData
-		if (
-			empty($this->http->req->userId)
-			|| empty($this->http->req->userId)
-		) {
-			throw new \Exception(
-				message: 'Please login',
-				code: HttpStatus::$InternalServerError
-			);
-		}
-
 		$gKey = CacheServerKey::customerGroup(
 			customerId: $this->http->req->customerId,
 			groupId: $this->http->req->groupId

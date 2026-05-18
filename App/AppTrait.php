@@ -559,7 +559,10 @@ trait AppTrait
 				}
 				$paramArr[$column] = $this->http->req->s[$fetchFrom][$fetchFromData];
 				continue;
-			} elseif (in_array($fetchFromData, $this->http->req->s['requiredFieldArr'][$fetchFrom])) {
+			} elseif (
+				isset($this->http->req->s['requiredFieldArr'][$fetchFrom])
+				&& in_array($fetchFromData, $this->http->req->s['requiredFieldArr'][$fetchFrom])
+			) {
 				$errorArr[] = "Missing required field '{$fetchFrom}' for '{$fetchFromData}'";
 				continue;
 			} else {

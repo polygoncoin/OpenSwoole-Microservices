@@ -49,9 +49,11 @@ class Start
 		if ($httpReqData['server']['httpMethod'] == Constant::$POST) {
 			$startArrayPos = strpos($httpReqData['post'], '[');
 			$startObjectPos = strpos($httpReqData['post'], '{');
+			$startXmlPos = strpos($httpReqData['post'], '<');
 			if (
 				$startArrayPos !== 0
 				&& $startObjectPos !== 0
+				&& $startXmlPos !== 0
 			) {
 				parse_str($httpReqData['post'], $httpReqData['post']);
 				$httpReqData['post'] = json_encode($httpReqData['post']);
@@ -128,11 +130,19 @@ class Start
 					'Message' => 'Too Many request',
 					'RetryAfter' => $e->getMessage()
 				];
-			} else {
+			} elseif(
+				isset($logId)
+				&& $logId > 0
+			) {
 				$arr = [
 					'Status' => $e->getCode(),
 					'Message' => $e->getMessage(),
 					'errorLogId' => $logId
+				];
+			} else {
+				$arr = [
+					'Status' => $e->getCode(),
+					'Message' => $e->getMessage()
 				];
 			}
 

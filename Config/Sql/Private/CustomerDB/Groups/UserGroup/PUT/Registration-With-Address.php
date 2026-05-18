@@ -41,11 +41,16 @@ return [
 		[
 			'column' => 'password_hash',
 			'fetchFrom' => 'function',
-			'fetchFromData' => function($session): string {
-				return password_hash(
-					password: $session['payload']['password'],
-					algo: PASSWORD_DEFAULT
-				);
+			'fetchFromData' => function($session) {
+				if (
+					isset($session['payload'])
+					&& isset($session['payload']['password'])
+				) {
+					return password_hash(
+						password: $session['payload']['password'],
+						algo: PASSWORD_DEFAULT
+					);
+				}
 			}
 		]
 	],

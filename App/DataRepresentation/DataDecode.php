@@ -50,13 +50,14 @@ class DataDecode
 	/**
 	 * Constructor
 	 *
-	 * @param resource $dataFileHandle File handle
+	 * @param string   $iRepresentation Input Representation
+	 * @param resource $dataFileHandle  File handle
 	 */
-	public function __construct(&$dataFileHandle)
+	public function __construct($iRepresentation, &$dataFileHandle)
 	{
 		$this->dataFileHandle = &$dataFileHandle;
 
-		if (Env::$iRepresentation === 'JSON') {
+		if ($iRepresentation === 'JSON') {
 			$this->dataDecoder = new JsonDecode(
 				jsonFileHandle: $this->dataFileHandle
 			);

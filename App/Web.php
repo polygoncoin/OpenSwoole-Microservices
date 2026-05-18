@@ -313,7 +313,8 @@ class Web
 				$payload .= "<{$column}>";
 			}
 			if (is_array(value: $value)) {
-				self::genXmlPayload(xmlParamArr: $value, payload: $payload, rowTagStartFlag: $rowTagStartFlag);
+				$_xmlParamArr = $value;
+				self::genXmlPayload(xmlParamArr: $_xmlParamArr, payload: $payload, rowTagStartFlag: $rowTagStartFlag);
 			} else {
 				$payload .= htmlspecialchars(string: $value);
 			}

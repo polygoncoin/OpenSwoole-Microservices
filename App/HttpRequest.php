@@ -44,6 +44,13 @@ use Microservices\App\Server\DatabaseServer\DatabaseServerInterface;
  */
 class HttpRequest
 {
+	/**
+	 * Input Representation
+	 *
+	 * @var null|string
+	 */
+	public $iRepresentation = null;
+
 	public $HTML_DIR = null;
 	public $PHP_DIR = null;
 	public $XSLT_DIR = null;
@@ -154,6 +161,7 @@ class HttpRequest
 	public function __construct(Http &$http)
 	{
 		$this->http = &$http;
+		$this->iRepresentation = Env::$iRepresentation;
 
 		switch (Env::$authMode) {
 			case 'Token':
@@ -322,6 +330,7 @@ class HttpRequest
 			rewind(stream: $this->payloadStream);
 
 			$this->dataDecode = new DataDecode(
+				iRepresentation: $this->iRepresentation,
 				dataFileHandle: $this->payloadStream
 			);
 			$this->dataDecode->init();
@@ -351,7 +360,7 @@ class HttpRequest
 					csvFile: $this->http->httpReqData['files']['file']['tmp_name']
 				);
 				break;
-			case Env::$iRepresentation === 'XML':
+			case $this->iRepresentation === 'XML':
 				$payloadJson = $this->convertXmlToJson(xmlString: $this->http->httpReqData['post']);
 				break;
 			default:
@@ -436,9 +445,9 @@ class HttpRequest
 			$paramArr[':user_id'] = $this->userId;
 			$paramArr[':request_route'] = $this->http->httpReqData['get'][ROUTE_URL_PARAM];
 			$paramArr[':request_method'] = $this->http->httpReqData['server']['httpMethod'];
-			$paramArr[':request_payload_json'] = $this->s['payload'];
-			$paramArr[':request_config_json'] = $this->rParser->sqlConfig;
-			$paramArr[':request_session_json'] = json_encode($this->s);
+			$paramArr[':request_payload_json'] = isset($this->s['payload']) ? $this->s['payload'] : '{}';
+			$paramArr[':request_config_json'] = isset($this->rParser->sqlConfig) ? $this->rParser->sqlConfig : '{}';
+			$paramArr[':request_session_json'] = isset($this->s) ? json_encode($this->s) : '{}';
 			$paramArr[':request_debug_json'] = $debugJson;
 			$paramArr[':request_ip'] = $this->http->httpReqData['server']['httpRequestIP'];
 
@@ -478,9 +487,9 @@ class HttpRequest
 			$paramArr[':user_id'] = $this->userId;
 			$paramArr[':request_route'] = $this->http->httpReqData['get'][ROUTE_URL_PARAM];
 			$paramArr[':request_method'] = $this->http->httpReqData['server']['httpMethod'];
-			$paramArr[':request_payload_json'] = $this->s['payload'];
-			$paramArr[':request_config_json'] = $this->rParser->sqlConfig;
-			$paramArr[':request_session_json'] = json_encode($this->s);
+			$paramArr[':request_payload_json'] = isset($this->s['payload']) ? $this->s['payload'] : '{}';
+			$paramArr[':request_config_json'] = isset($this->rParser->sqlConfig) ? $this->rParser->sqlConfig : '{}';
+			$paramArr[':request_session_json'] = isset($this->s) ? json_encode($this->s) : '{}';
 			$paramArr[':request_exception_json'] = $exceptionJson;
 			$paramArr[':request_ip'] = $this->http->httpReqData['server']['httpRequestIP'];
 
@@ -492,6 +501,27 @@ class HttpRequest
 	}
 
 	/**
+	 * Srrip slashes
+	 *
+	 * @param string $string
+	 *
+	 * @return string
+	 */
+	private function stripslashes($string): string
+	{
+		for(;true;){
+			$newString = stripslashes(string: $string);
+			if ($string !== $newString) {
+				$string = $newString;
+			} else {
+				break;
+			}
+		}
+
+		return $string;
+	}
+
+	/**
 	 * Convert XML to JSON
 	 *
 	 * @param string $xmlString
@@ -500,6 +530,8 @@ class HttpRequest
 	 */
 	private function convertXmlToJson($xmlString): string
 	{
+		$xmlString = $this->stripslashes(string: $xmlString);
+
 		$xml = simplexml_load_string(
 			data: $xmlString
 		);

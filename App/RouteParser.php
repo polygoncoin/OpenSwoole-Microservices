@@ -289,7 +289,7 @@ class RouteParser
 						mode: 'input'
 					)
 				) {
-					Env::$iRepresentation = $routesConfig['iRepresentation'];
+					$this->http->req->iRepresentation = $routesConfig['iRepresentation'];
 				}
 			}
 		}
@@ -304,7 +304,7 @@ class RouteParser
 				mode: 'input'
 			)
 		) {
-			Env::$iRepresentation = $this->http->httpReqData['get']['iRepresentation'];
+			$this->http->req->iRepresentation = $this->http->httpReqData['get']['iRepresentation'];
 		}
 
 		$this->configuredRoute = '/' . implode(separator: '/', array: $configuredRoute);

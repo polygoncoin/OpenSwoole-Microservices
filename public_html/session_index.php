@@ -82,7 +82,7 @@ $server->on(
 			((int)getenv('DISABLE_REQUESTS_VIA_PROXIES')) === 1
 			&& !isset($request->server['remote_addr'])
 		) {
-			$response->end("Invalid request");
+			$response->end('Invalid request');
 			return;
 		}
 
@@ -107,10 +107,8 @@ $server->on(
 				characters: '/'
 			);
 		} else {
-			throw new \Exception(
-				message: 'Missing route',
-				code: HttpStatus::$NotFound
-			);
+			$response->end('Missing route');
+			return;
 		}
 
 		$httpReqData['post'] = $request->rawContent();
