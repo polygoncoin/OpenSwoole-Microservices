@@ -241,6 +241,16 @@ class HttpRequest
 			);
 		}
 
+		if (
+			!$this->isPrivateRequest
+			&& $this->http->httpReqData['get'][ROUTE_URL_PARAM] === '/login'
+		) {
+			throw new \Exception(
+				message: 'Login not allowed from Public domain',
+				code: HttpStatus::$InternalServerError
+			);
+		}
+	
 		if ($this->http->httpReqData['get'][ROUTE_URL_PARAM] !== '/login') {
 			$this->rParser = new RouteParser(http: $this->http);
 
