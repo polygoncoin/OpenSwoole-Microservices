@@ -16,7 +16,6 @@
 namespace Microservices\TestCase;
 
 use Microservices\App\Web;
-use Microservices\App\Env;
 
 $headerArr = $defaultHeaderArr;
 

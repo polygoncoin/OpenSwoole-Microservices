@@ -17,7 +17,6 @@ namespace Microservices\App\DataRepresentation;
 
 use Microservices\App\DataRepresentation\Decode\JsonDecode;
 use Microservices\App\DataRepresentation\Decode\XmlDecode;
-use Microservices\App\Env;
 
 /**
  * Creates Data Representation Output

@@ -58,20 +58,49 @@ class Log
 	 */
 	public function log(&$logData): int
 	{
+		// Uncomment to log in DB
+		return $this->logIntoDb($logData);
+
+		// Uncomment to log in Filesystem
+		// return $this->logInFilesystem($logData);
+	}
+
+	/**
+	 * Log data into Database
+	 *
+	 * @param array $logData detail to be logged
+	 *
+	 * @return int
+	 */
+	public function logIntoDb(&$logData): int
+	{
 		$exceptionJson = json_encode($logData);
 		return $this->http->req->logErrorData(
 			exceptionJson: $exceptionJson
 		);
-		// $logFile = Constant::$LOG_DIR
-		// 	. DIRECTORY_SEPARATOR . 'log-' . date(format: 'YmdH');
-		// if (!file_exists(filename: $logFile)) {
-		// 	touch(filename: $logFile);
-		// }
+	}
 
-		// file_put_contents(
-		// 	filename: $logFile,
-		// 	data: json_encode(value: $logData) . PHP_EOL,
-		// 	flags: FILE_APPEND
-		// );
+	/**
+	 * Log data in FIlesystem
+	 *
+	 * @param array $logData detail to be logged
+	 *
+	 * @return int
+	 */
+	public function logInFilesystem(&$logData): int
+	{
+		$logFile = Constant::$LOG_DIR
+			. DIRECTORY_SEPARATOR . 'log-' . date(format: 'YmdH');
+		if (!file_exists(filename: $logFile)) {
+			touch(filename: $logFile);
+		}
+
+		file_put_contents(
+			filename: $logFile,
+			data: json_encode(value: $logData) . PHP_EOL,
+			flags: FILE_APPEND
+		);
+
+		return 0;
 	}
 }

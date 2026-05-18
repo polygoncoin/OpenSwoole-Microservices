@@ -118,7 +118,7 @@ class Env
 	public static $iAllowedRepresentation = ['JSON', 'XML'];
 	public static $oAllowedRepresentation = ['JSON', 'XML', 'XSLT', 'HTML', 'PHP'];
 
-	public static $isInitiated = false;
+	public static $initialized = false;
 
 	/**
 	 * Initialize
@@ -127,11 +127,9 @@ class Env
 	 */
 	public static function init(): void
 	{
-		if (self::$isInitiated) {
+		if (self::$initialized) {
 			return;
 		}
-
-		self::$isInitiated = true;
 
 		self::$ENVIRONMENT = getenv(name: 'ENVIRONMENT');
 		self::$OUTPUT_PERFORMANCE_STATS = getenv(name: 'OUTPUT_PERFORMANCE_STATS');
@@ -202,6 +200,8 @@ class Env
 		self::$queryCacheServerPassword = getenv(name: 'queryCacheServerPassword');
 		self::$queryCacheServerDatabase = getenv(name: 'queryCacheServerDatabase');
 		self::$queryCacheServerTable = getenv(name: 'queryCacheServerTable');
+
+		self::$initialized = true;
 	}
 
 	/**

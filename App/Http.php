@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Constant;
 use Microservices\App\HttpRequest;
 use Microservices\App\HttpResponse;
 
