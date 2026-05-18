@@ -265,10 +265,12 @@ class HttpRequest
 		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $privateDomainCacheKey)) {
 			$privateDomainCacheKeyExist = true;
 			$cacheKey = $privateDomainCacheKey;
+			$this->isPrivateRequest = true;
 		}
 		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $publicDomainCacheKey)) {
 			$publicDomainCacheKeyExist = true;
 			$cacheKey = $publicDomainCacheKey;
+			$this->isPrivateRequest = false;
 		}
 
 		if (

@@ -161,7 +161,7 @@ class Auth
 			|| empty($this->http->req->userId)
 		) {
 			throw new \Exception(
-				message: 'Invalid session',
+				message: 'Please login',
 				code: HttpStatus::$InternalServerError
 			);
 		}

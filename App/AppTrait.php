@@ -384,7 +384,7 @@ trait AppTrait
 			&& count(value: $sqlConfig['__SET__']) !== 0
 		) {
 			$payloadVariableArr = $sqlConfig['__VARIABLES__'] ?? [];
-			[$paramArr, $errorArr, $missExecution] = $this->getSqlParam(
+			[$setParamArr, $errorArr, $missExecution] = $this->getSqlParam(
 				$sqlConfig['__SET__'],
 				$payloadVariableArr
 			);
@@ -392,10 +392,10 @@ trait AppTrait
 				empty($errorArr)
 				&& !$missExecution
 			) {
-				if (!empty($paramArr)) {
+				if (!empty($setParamArr)) {
 					// __SET__ not compulsory in query
 					$found = strpos(haystack: $sql, needle: '__SET__') !== false;
-					foreach ($paramArr as $paramKey => &$paramValue) {
+					foreach ($setParamArr as $paramKey => &$paramValue) {
 						$paramKeyArr[] = $paramKey;
 						if ($found) {
 							$__SET__[] = "{$paramKey} = ?";
@@ -416,7 +416,7 @@ trait AppTrait
 		) {
 			$wErrorArr = [];
 			$payloadVariableArr = $sqlConfig['__VARIABLES__'] ?? [];
-			[$sqlWhereParamArr, $wErrorArr, $wMissExecution] = $this->getSqlParam(
+			[$whereParamArr, $wErrorArr, $wMissExecution] = $this->getSqlParam(
 				$sqlConfig['__WHERE__'],
 				$payloadVariableArr
 			);
@@ -424,12 +424,12 @@ trait AppTrait
 				empty($wErrorArr)
 				&& !$wMissExecution
 			) {
-				if (!empty($sqlWhereParamArr)) {
+				if (!empty($whereParamArr)) {
 					// __WHERE__ not compulsory in query
 					$whereFound = strpos(haystack: $sql, needle: '__WHERE__') !== false;
 					if ($whereFound) {
 						$__WHERE__ = [];
-						foreach ($sqlWhereParamArr as $param => &$v) {
+						foreach ($whereParamArr as $param => &$v) {
 							$wparam = $param;
 							$i = 0;
 							while (in_array(needle: $wparam, haystack: $paramKeyArr)) {
