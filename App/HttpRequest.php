@@ -501,27 +501,6 @@ class HttpRequest
 	}
 
 	/**
-	 * Srrip slashes
-	 *
-	 * @param string $string
-	 *
-	 * @return string
-	 */
-	private function stripslashes($string): string
-	{
-		for(;true;){
-			$newString = stripslashes(string: $string);
-			if ($string !== $newString) {
-				$string = $newString;
-			} else {
-				break;
-			}
-		}
-
-		return $string;
-	}
-
-	/**
 	 * Convert XML to JSON
 	 *
 	 * @param string $xmlString
@@ -530,8 +509,6 @@ class HttpRequest
 	 */
 	private function convertXmlToJson($xmlString): string
 	{
-		$xmlString = $this->stripslashes(string: $xmlString);
-
 		$xml = simplexml_load_string(
 			data: $xmlString
 		);
