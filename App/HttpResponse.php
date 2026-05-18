@@ -42,6 +42,27 @@ class HttpResponse
 	public $oRepresentation = null;
 
 	/**
+	 * Directory for HTML output format
+	 *
+	 * @var null|string
+	 */
+	public $HTML_DIR = null;
+
+	/**
+	 * Directory for PHP output format
+	 *
+	 * @var null|string
+	 */
+	public $PHP_DIR = null;
+
+	/**
+	 * Directory for XML output format
+	 *
+	 * @var null|string
+	 */
+	public $XSLT_DIR = null;
+
+	/**
 	 * HTTP Status
 	 *
 	 * @var int

@@ -87,5 +87,5 @@ return [
 	'fetchFrom' => 'Master',
 	// 'queryCacheKey' => $this->http->req->s['customerData']['id'] . ':category',
 	'oRepresentation' => 'PHP',
-	'phpFile' => $this->http->req->PHP_DIR . DIRECTORY_SEPARATOR . 'index.php'
+	'phpFile' => $this->http->res->PHP_DIR . DIRECTORY_SEPARATOR . 'index.php'
 ];

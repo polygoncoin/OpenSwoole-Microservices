@@ -51,10 +51,19 @@ class HttpRequest
 	 */
 	public $iRepresentation = null;
 
-	public $HTML_DIR = null;
-	public $PHP_DIR = null;
-	public $XSLT_DIR = null;
+	/**
+	 * Routes Configuration Directory
+	 *
+	 * @var null|string
+	 */
 	public $ROUTES_DIR = null;
+
+	/**
+	 * SQL & Payload Configuration Directory
+	 * Payload Configuration Directory for Supplement
+	 *
+	 * @var null|string
+	 */
 	public $QUERIES_DIR = null;
 
 	/**
@@ -193,19 +202,7 @@ class HttpRequest
 			$this->isPrivateRequest = true;
 		}
 
-		if ($this->isPrivateRequest) {
-			$this->HTML_DIR = Constant::$HTML_PRIVATE_DIR;
-			$this->PHP_DIR = Constant::$PHP_PRIVATE_DIR;
-			$this->XSLT_DIR = Constant::$XSLT_PRIVATE_DIR;
-			$this->ROUTES_DIR = Constant::$ROUTES_PRIVATE_DIR;
-			$this->QUERIES_DIR = Constant::$QUERIES_PRIVATE_DIR;
-		} else {
-			$this->HTML_DIR = Constant::$HTML_PUBLIC_DIR;
-			$this->PHP_DIR = Constant::$PHP_PUBLIC_DIR;
-			$this->XSLT_DIR = Constant::$XSLT_PUBLIC_DIR;
-			$this->ROUTES_DIR = Constant::$ROUTES_PUBLIC_DIR;
-			$this->QUERIES_DIR = Constant::$QUERIES_PUBLIC_DIR;
-		}
+		$this->loadCustomerData();
 	}
 
 	/**
@@ -215,7 +212,14 @@ class HttpRequest
 	 */
 	public function init(): bool
 	{
-		$this->loadCustomerData();
+		if ($this->isPrivateRequest) {
+			$this->clientCacheObj = DbCommonFunction::connectClientCache(
+				customerData: $this->s['customerData']
+			);
+			if (CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimiting')) {
+				$this->rateLimiter = new RateLimiter(cacheObj: $this->clientCacheObj);
+			}
+		}
 
 		if (
 			!$this->isPrivateRequest
@@ -298,15 +302,6 @@ class HttpRequest
 			associative: true
 		);
 		$this->customerId = $this->s['customerData']['id'];
-
-		if ($this->isPrivateRequest) {
-			$this->clientCacheObj = DbCommonFunction::connectClientCache(
-				customerData: $this->s['customerData']
-			);
-			if (CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimiting')) {
-				$this->rateLimiter = new RateLimiter(cacheObj: $this->clientCacheObj);
-			}
-		}
 	}
 
 	/**

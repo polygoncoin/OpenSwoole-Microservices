@@ -222,6 +222,28 @@ class Web
 		}
 		curl_close(handle: $curl);
 
+		if (
+			isset($return['response']['responseBody'])
+			&& !is_array($return['response']['responseBody'])
+		) {
+			$startArrayPos = strpos($return['response']['responseBody'], '[');
+			$startObjectPos = strpos($return['response']['responseBody'], '{');
+			$startXmlPos = strpos($return['response']['responseBody'], '<');
+			if (
+				$startArrayPos === 0
+				|| $startObjectPos === 0
+			) {
+				$return['response']['responseBody'] = json_decode(
+					json: $return['response']['responseBody'],
+					associative: true
+				);
+			} elseif($startXmlPos === 0) {
+				$return['response']['responseBody'] = htmlspecialchars(
+					string: $return['response']['responseBody']
+				);
+			}
+		}
+
 		return $return;
 	}
 

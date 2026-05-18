@@ -126,7 +126,6 @@ class Start
 			if ($e->getCode() == 429) {
 				$headerArr['Retry-After'] = $e->getMessage();
 				$arr = [
-					'Status' => $e->getCode(),
 					'Message' => 'Too Many request',
 					'RetryAfter' => $e->getMessage()
 				];
@@ -135,13 +134,11 @@ class Start
 				&& $logId > 0
 			) {
 				$arr = [
-					'Status' => $e->getCode(),
 					'Message' => $e->getMessage(),
 					'errorLogId' => $logId
 				];
 			} else {
 				$arr = [
-					'Status' => $e->getCode(),
 					'Message' => $e->getMessage()
 				];
 			}
@@ -152,7 +149,18 @@ class Start
 			// $dataEncode->addKeyData(objectKey: 'Error', data: $arr);
 
 			// $data = $dataEncode->getData();
-			$data = json_encode(value: ['Error' => $arr]);
+
+			if (Env::$OUTPUT_PERFORMANCE_STATS) {
+				$performanceData = $Microservices->returnPerformance();
+				$errorArr = [
+					'Error' => $arr,
+					'Status' => $e->getCode(),
+					'Stats' => $performanceData['Stats']
+				];
+			} else {
+				$errorArr = ['Error' => $arr];
+			}
+			$data = json_encode(value: $errorArr);
 			$status = $e->getCode();
 
 			return [$headerArr, $data, $status];

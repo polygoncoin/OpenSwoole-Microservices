@@ -73,6 +73,22 @@ class Http
 		$this->req = new HttpRequest(http: $this);
 		$this->res = new HttpResponse(http: $this);
 
+		if ($this->req->isPrivateRequest) {
+			$this->req->ROUTES_DIR = Constant::$ROUTES_PRIVATE_DIR;
+			$this->req->QUERIES_DIR = Constant::$QUERIES_PRIVATE_DIR;
+
+			$this->res->HTML_DIR = Constant::$HTML_PRIVATE_DIR;
+			$this->res->PHP_DIR = Constant::$PHP_PRIVATE_DIR;
+			$this->res->XSLT_DIR = Constant::$XSLT_PRIVATE_DIR;
+		} else {
+			$this->req->ROUTES_DIR = Constant::$ROUTES_PUBLIC_DIR;
+			$this->req->QUERIES_DIR = Constant::$QUERIES_PUBLIC_DIR;
+
+			$this->res->HTML_DIR = Constant::$HTML_PUBLIC_DIR;
+			$this->res->PHP_DIR = Constant::$PHP_PUBLIC_DIR;
+			$this->res->XSLT_DIR = Constant::$XSLT_PUBLIC_DIR;
+		}
+
 		return true;
 	}
 

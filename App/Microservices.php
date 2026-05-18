@@ -229,6 +229,36 @@ class Microservices
 	}
 
 	/**
+	 * Add Performance detail in response
+	 *
+	 * @return array
+	 */
+	public function returnPerformance(): array
+	{
+		if ($this->http->res === null) {
+			return [];
+		}
+		$returnPerformance = [];
+		if (Env::$OUTPUT_PERFORMANCE_STATS) {
+			$this->tsEnd = microtime(as_float: true);
+			$time = ceil(num: ($this->tsEnd - $this->tsStart) * 1000);
+			$memory = ceil(num: memory_get_peak_usage() / 1000);
+
+			$returnPerformance = [
+				'Stats' => [
+					'Performance' => [
+						'total-time-taken' => "{$time} ms",
+						'peak-memory-usage' => "{$memory} KB"
+					],
+					'getrusage' => getrusage()
+				]
+			];
+		}
+		
+		return $returnPerformance;
+	}
+
+	/**
 	 * End response
 	 *
 	 * @return void
