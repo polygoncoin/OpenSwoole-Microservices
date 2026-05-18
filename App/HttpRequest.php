@@ -258,13 +258,23 @@ class HttpRequest
 
 		DbCommonFunction::connectGlobalCache();
 
-		if ($this->isPrivateRequest) {
-			$cacheKey = CacheServerKey::privateDomain(domainName: $this->http->httpReqData['server']['domainName']);
-		} else {
-			$cacheKey = CacheServerKey::publicDomain(domainName: $this->http->httpReqData['server']['domainName']);
+		$privateDomainCacheKeyExist = false;
+		$publicDomainCacheKeyExist = false;
+		$privateDomainCacheKey = CacheServerKey::privateDomain(domainName: $this->http->httpReqData['server']['domainName']);
+		$publicDomainCacheKey = CacheServerKey::publicDomain(domainName: $this->http->httpReqData['server']['domainName']);
+		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $privateDomainCacheKey)) {
+			$privateDomainCacheKeyExist = true;
+			$cacheKey = $privateDomainCacheKey;
+		}
+		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $publicDomainCacheKey)) {
+			$publicDomainCacheKeyExist = true;
+			$cacheKey = $publicDomainCacheKey;
 		}
 
-		if (!DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $cacheKey)) {
+		if (
+			!$privateDomainCacheKeyExist
+			&& !$publicDomainCacheKeyExist
+		) {
 			throw new \Exception(
 				message: "Invalid Host '{$this->http->httpReqData['server']['domainName']}'",
 				code: HttpStatus::$InternalServerError
@@ -365,7 +375,7 @@ class HttpRequest
 	 *
 	 * @return int
 	 */
-	private function getRequestId($payloadJson): int
+	public function getRequestId($payloadJson): int
 	{
 		$requestId = 0;
 		if ($this->isPrivateRequest) {
@@ -400,7 +410,7 @@ class HttpRequest
 	 *
 	 * @return int
 	 */
-	private function logDebugData($debugMode, $debugJson): int
+	public function logDebugData($debugMode, $debugJson): int
 	{
 		$logId = 0;
 		if ($this->isPrivateRequest) {
@@ -444,7 +454,7 @@ class HttpRequest
 	 *
 	 * @return int
 	 */
-	private function logErrorData($exceptionJson): int
+	public function logErrorData($exceptionJson): int
 	{
 		$logId = 0;
 		if ($this->isPrivateRequest) {

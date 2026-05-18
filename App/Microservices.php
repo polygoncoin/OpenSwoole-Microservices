@@ -16,6 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\CommonFunction;
+use Microservices\App\Constant;
 use Microservices\App\Dropbox;
 use Microservices\App\Env;
 use Microservices\App\Gateway;
@@ -288,7 +289,7 @@ class Microservices
 		$headerArr['Cross-Origin-Opener-Policy'] = 'unsafe-none';
 
 		// Access-Control header are received during OPTIONS request
-		if ($this->httpReqData['server']['httpMethod'] == 'OPTIONS') {
+		if ($this->httpReqData['server']['httpMethod'] === Constant::$OPTIONS) {
 			// may also be using PUT, PATCH, HEAD etc
 			$methods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
 			$headerArr['Access-Control-Allow-Methods'] = $methods;

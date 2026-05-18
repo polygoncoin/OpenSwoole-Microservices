@@ -216,7 +216,7 @@ class Login
 			rateLimitPrefix: Env::$rateLimitUserLoginPrefix,
 			rateLimitMaxRequest: $this->http->req->s['customerData']['rateLimitMaxUserLoginRequest'],
 			rateLimitMaxRequestWindow: $this->http->req->s['customerData']['rateLimitMaxUserLoginRequestWindow'],
-			rateLimitKey: $this->http->httpReqData['server']['httpRequestIP'] . $this->username
+			rateLimitKey: $this->http->httpReqData['server']['httpRequestIP'] . ':' . $this->username
 		);
 		// get hash from cache and compares with password
 		if (
@@ -637,7 +637,7 @@ class Login
 	 *
 	 * @return mixed
 	 */
-	private function cacheSet($cacheKey, $cacheValue, $cacheExpire = 0) {
+	private function cacheSet($cacheKey, $cacheValue, $cacheExpire = null) {
 		return $this->http->req->clientCacheObj->cacheSet(
 			cacheKey: $cacheKey,
 			cacheValue: $cacheValue,

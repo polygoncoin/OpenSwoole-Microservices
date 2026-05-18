@@ -34,6 +34,7 @@ class Constant
 	public static $PUT       = 'PUT';
 	public static $PATCH     = 'PATCH';
 	public static $DELETE    = 'DELETE';
+	public static $OPTIONS   = 'OPTIONS';
 
 	public static $PRODUCTION = 1;
 	public static $DEVELOPMENT = 0;

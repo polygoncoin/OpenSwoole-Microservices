@@ -15,11 +15,24 @@
 
 namespace Microservices\App;
 
-use Microservices\App\Log;
+use Microservices\App\Constant;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\HttpStatus;
 use Microservices\App\Microservices;
+use Microservices\App\Log;
 
+/**
+ * Start
+ * php version 8.3
+ *
+ * @category  Start
+ * @package   Openswoole-Microservices
+ * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
+ * @copyright © 2026 Ramesh N. Jangid (Sharma)
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
 class Start
 {
 	/**
@@ -33,12 +46,24 @@ class Start
 	{
 		$headerArr = [];
 
+		if ($httpReqData['server']['httpMethod'] == Constant::$POST) {
+			$startArrayPos = strpos($httpReqData['post'], '[');
+			$startObjectPos = strpos($httpReqData['post'], '{');
+			if (
+				$startArrayPos !== 0
+				&& $startObjectPos !== 0
+			) {
+				parse_str($httpReqData['post'], $httpReqData['post']);
+				$httpReqData['post'] = json_encode($httpReqData['post']);
+			}
+		}
+
 		try {
 			$Microservices = new Microservices(httpReqData: $httpReqData);
 
 			if (
 				$httpReqData['streamData']
-				&& $httpReqData['server']['httpMethod'] == 'OPTIONS'
+				&& $httpReqData['server']['httpMethod'] == Constant::$OPTIONS
 			) {
 				// Setting CORS
 				$headerArr = $Microservices->getHeaders();
