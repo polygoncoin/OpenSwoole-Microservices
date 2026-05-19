@@ -91,7 +91,9 @@ class MySql implements ExportDatabaseServerInterface
 		}
 		$this->binaryLoc = Env::$mySqlBinaryLocationOnWebServer;
 		if (!file_exists(filename: $this->binaryLoc)) {
-			throw new \Exception(message: 'Issue: missing MySql Customer locally');
+			throw new \Exception(
+				message: 'Issue: missing MySql Customer locally'
+			);
 		}
 	}
 
@@ -133,7 +135,9 @@ class MySql implements ExportDatabaseServerInterface
 	private function validate($sql, $paramArr): void
 	{
 		if (empty($sql)) {
-			throw new \Exception(message: 'Empty SQL query');
+			throw new \Exception(
+				message: 'Empty SQL query'
+			);
 		}
 
 		if (count(value: $paramArr) === 0) {
@@ -172,7 +176,9 @@ class MySql implements ExportDatabaseServerInterface
 					!== $parameterisedColumn
 				)
 			) {
-				throw new \Exception(message: "Invalid param key '{$parameterisedColumn}'");
+				throw new \Exception(
+					message: "Invalid param key '{$parameterisedColumn}'"
+				);
 			}
 		}
 	}

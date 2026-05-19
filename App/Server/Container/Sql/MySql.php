@@ -297,7 +297,11 @@ class MySql implements SqlInterface
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
 			if ($this->stmt) {
-				$this->stmt->execute($paramArr);
+				if (count($paramArr) > 0) {
+					$this->stmt->execute($paramArr);
+				} else {
+					$this->stmt->execute();
+				}
 			}
 		} catch (\PDOException $e) {
 			if ($this->beganTransaction) {

@@ -96,11 +96,9 @@ class Route
 	/**
 	 * Make allowed routeArr list of a logged-in user
 	 *
-	 * @param array $payload Payload
-	 *
-	 * @return bool
+	 * @return mixed
 	 */
-	public function process(array $payload = []): bool
+	public function process(): mixed
 	{
 		$Constant = __NAMESPACE__ . '\Constant';
 		$Env = __NAMESPACE__ . '\Env';
@@ -122,7 +120,10 @@ class Route
 			$routeFileLocation =  $userRoutesFolder
 				. DIRECTORY_SEPARATOR . $method . 'routes.php';
 			if (!file_exists(filename: $routeFileLocation)) {
-				throw new \Exception(message: json_encode(value: [$routeFileLocation]), code: 400);
+				throw new \Exception(
+					message: json_encode(value: [$routeFileLocation]),
+					code: 400
+				);
 				continue;
 			}
 			$routeArr = include $routeFileLocation;

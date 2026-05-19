@@ -499,7 +499,7 @@ class Session
 	/**
 	 * For Custom Session Handler - Destroy a session
 	 *
-	 * @param array $sessionIds Session Ids
+	 * @param array $sessionIds Session IDs
 	 *
 	 * @return void
 	 */

@@ -68,11 +68,9 @@ class Google implements ThirdPartyInterface
 	/**
 	 * Process
 	 *
-	 * @param array $payload Payload
-	 *
-	 * @return array
+	 * @return mixed
 	 */
-	public function process(array $payload = []): array
+	public function process(): mixed
 	{
 		// Create and call functions to manage third party cURL calls here
 
@@ -95,14 +93,14 @@ class Google implements ThirdPartyInterface
 		// End the calls with json response with dataEncode object
 		$this->endProcess(output: $output);
 
-		return [true];
+		return true;
 	}
 
 	/**
 	 * Function to end process which outputs the results
 	 *
 	 * @param string $output Output
-	 *
+	 *	
 	 * @return void
 	 */
 	private function endProcess($output): void

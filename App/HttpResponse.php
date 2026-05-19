@@ -93,6 +93,7 @@ class HttpResponse
 		$this->http = &$http;
 		$this->httpStatus = HttpStatus::$Ok;
 		$this->oRepresentation = Env::$oRepresentation;
+		$this->dataEncode = new DataEncode(http: $this->http);
 	}
 
 	/**
@@ -102,7 +103,6 @@ class HttpResponse
 	 */
 	public function init(): bool
 	{
-		$this->dataEncode = new DataEncode(http: $this->http);
 		$this->dataEncode->init();
 
 		return true;

@@ -104,7 +104,9 @@ class ExportDatabaseServer
 	{
 		// Validation
 		if (empty($sql)) {
-			throw new \Exception(message: 'Empty SQL query');
+			throw new \Exception(
+				message: 'Empty SQL query'
+			);
 		}
 
 		return $this->exportDbServerObj->getShellCommand(

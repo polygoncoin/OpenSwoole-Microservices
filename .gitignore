@@ -1,9 +1,8 @@
 .env
-.env.cidr
 .env.customer.container
-.env.enable
 .env.global.container
 .env.rateLimiting
+.env.route
 .env.session
 /App/SessionHandler/sessions/*
 /Log/*

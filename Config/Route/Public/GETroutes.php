@@ -16,6 +16,16 @@
 use Microservices\App\DatabaseServerDataType;
 
 return [
+	$Env::$cronRequestRoutePrefix => [
+		'{cron:string}' => [
+			'dataType' => DatabaseServerDataType::$Default,
+			'__FILE__' => false,
+			'{id:int}'  => [
+				'dataType' => DatabaseServerDataType::$PrimaryKey,
+				'__FILE__' => false
+			]
+		]
+	],
 	'login' => [
 		'__FILE__' => $this->http->req->QUERIES_DIR
 			. DIRECTORY_SEPARATOR . 'GET'

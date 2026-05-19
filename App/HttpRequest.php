@@ -24,7 +24,7 @@ use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
-use Microservices\App\Middleware\Auth;
+use Microservices\App\Auth;
 use Microservices\App\RateLimiter;
 use Microservices\App\RouteParser;
 use Microservices\App\Server\CacheServer\CacheServerInterface;
@@ -123,11 +123,32 @@ class HttpRequest
 	public $s = null;
 
 	/**
+	 * Private domain cache key exist flag
+	 *
+	 * @var null|bool
+	 */
+	public $privateDomainCacheKeyExist = null;
+
+	/**
+	 * Public domain cache key exist flag
+	 *
+	 * @var null|bool
+	 */
+	public $publicDomainCacheKeyExist = null;
+
+	/**
+	 * Domain cache key
+	 *
+	 * @var null|bool
+	 */
+	public $domainCacheKey = null;
+
+	/**
 	 * Flag for Private request
 	 *
-	 * @var bool
+	 * @var null|bool
 	 */
-	public $isPrivateRequest = false;
+	public $isPrivateRequest = null;
 
 	/**
 	 * Payload stream
@@ -172,37 +193,23 @@ class HttpRequest
 		$this->http = &$http;
 		$this->iRepresentation = Env::$iRepresentation;
 
-		switch (Env::$authMode) {
-			case 'Token':
-				if (
-					isset($this->http->httpReqData['header'])
-					&& isset($this->http->httpReqData['header']['tokenHeader'])
-					&& $this->http->httpReqData['header']['tokenHeader'] !== null
-				) {
-					$this->isPrivateRequest = true;
-				}
-				break;
-			case 'Session':
-				if (
-					isset($_SESSION)
-					&& isset($_SESSION['id'])
-				) {
-					if ($_SESSION['sessionExpiryTimestamp'] <= Env::$timestamp) {
-						throw new \Exception(
-							message: 'Current session has expired. Please login',
-							code: HttpStatus::$InternalServerError
-						);
-					}
-					$this->isPrivateRequest = true;
-				}
-				break;
-		}
+		DbCommonFunction::connectGlobalCache();
 
-		if ($this->http->httpReqData['get'][ROUTE_URL_PARAM] === '/login') {
+		$this->privateDomainCacheKeyExist = false;
+		$this->publicDomainCacheKeyExist = false;
+
+		$privateDomainCacheKey = CacheServerKey::privateDomain(domainName: $this->http->httpReqData['server']['domainName']);
+		$publicDomainCacheKey = CacheServerKey::publicDomain(domainName: $this->http->httpReqData['server']['domainName']);
+		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $privateDomainCacheKey)) {
+			$this->privateDomainCacheKeyExist = true;
+			$this->domainCacheKey = $privateDomainCacheKey;
 			$this->isPrivateRequest = true;
 		}
-
-		$this->loadCustomerData();
+		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $publicDomainCacheKey)) {
+			$this->publicDomainCacheKeyExist = true;
+			$this->domainCacheKey = $publicDomainCacheKey;
+			$this->isPrivateRequest = false;
+		}
 	}
 
 	/**
@@ -212,14 +219,24 @@ class HttpRequest
 	 */
 	public function init(): bool
 	{
-		if ($this->isPrivateRequest) {
-			$this->clientCacheObj = DbCommonFunction::connectClientCache(
-				customerData: $this->s['customerData']
+		if (
+			!$this->privateDomainCacheKeyExist
+			&& !$this->publicDomainCacheKeyExist
+		) {
+			throw new \Exception(
+				message: "Invalid Host '{$this->http->httpReqData['server']['domainName']}'",
+				code: HttpStatus::$BadRequest
 			);
-			if (CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimiting')) {
-				$this->rateLimiter = new RateLimiter(cacheObj: $this->clientCacheObj);
-			}
 		}
+
+		$this->s['customerData'] = json_decode(
+			json: DbCommonFunction::$gCacheServer->cacheGet(
+				cacheKey: $this->domainCacheKey
+			),
+			associative: true
+		);
+
+		$this->customerId = $this->s['customerData']['id'];
 
 		if (
 			!$this->isPrivateRequest
@@ -227,7 +244,7 @@ class HttpRequest
 		) {
 			throw new \Exception(
 				message: 'Public request are disabled',
-				code: HttpStatus::$InternalServerError
+				code: HttpStatus::$BadRequest
 			);
 		}
 
@@ -237,81 +254,35 @@ class HttpRequest
 		) {
 			throw new \Exception(
 				message: 'Private request are disabled',
-				code: HttpStatus::$InternalServerError
+				code: HttpStatus::$BadRequest
 			);
 		}
 
-		if (
-			!$this->isPrivateRequest
-			&& $this->http->httpReqData['get'][ROUTE_URL_PARAM] === '/login'
-		) {
-			throw new \Exception(
-				message: 'Login not allowed from Public domain',
-				code: HttpStatus::$InternalServerError
+		if ($this->isPrivateRequest) {
+			$this->clientCacheObj = DbCommonFunction::connectClientCache(
+				customerData: $this->s['customerData']
 			);
+			if (CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimiting')) {
+				$this->rateLimiter = new RateLimiter(cacheObj: $this->clientCacheObj);
+			}
 		}
-	
+
 		if ($this->http->httpReqData['get'][ROUTE_URL_PARAM] !== '/login') {
-			$this->rParser = new RouteParser(http: $this->http);
-
 			if ($this->isPrivateRequest) {
 				$this->auth = new Auth(http: $this->http);
 				$this->auth->loadUserData();
 				$this->auth->loadGroupData();
 			}
 
+			$this->rParser = new RouteParser(http: $this->http);
 			$this->rParser->parseRoute();
+
+			if ($this->http->res !== null) {
+				$this->http->initResponse();
+			}
 		}
 
 		return true;
-	}
-
-	/**
-	 * Load Customer Data
-	 *
-	 * @return void
-	 * @throws \Exception
-	 */
-	public function loadCustomerData(): void
-	{
-		if (isset($this->s['customerData'])) {
-			return;
-		}
-
-		DbCommonFunction::connectGlobalCache();
-
-		$privateDomainCacheKeyExist = false;
-		$publicDomainCacheKeyExist = false;
-		$privateDomainCacheKey = CacheServerKey::privateDomain(domainName: $this->http->httpReqData['server']['domainName']);
-		$publicDomainCacheKey = CacheServerKey::publicDomain(domainName: $this->http->httpReqData['server']['domainName']);
-		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $privateDomainCacheKey)) {
-			$privateDomainCacheKeyExist = true;
-			$cacheKey = $privateDomainCacheKey;
-			$this->isPrivateRequest = true;
-		}
-		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $publicDomainCacheKey)) {
-			$publicDomainCacheKeyExist = true;
-			$cacheKey = $publicDomainCacheKey;
-			$this->isPrivateRequest = false;
-		}
-
-		if (
-			!$privateDomainCacheKeyExist
-			&& !$publicDomainCacheKeyExist
-		) {
-			throw new \Exception(
-				message: "Invalid Host '{$this->http->httpReqData['server']['domainName']}'",
-				code: HttpStatus::$InternalServerError
-			);
-		}
-
-		$this->s['customerData'] = json_decode(
-			json: DbCommonFunction::$gCacheServer->cacheGet(
-				cacheKey: $cacheKey
-			),
-			associative: true
-		);
-		$this->customerId = $this->s['customerData']['id'];
 	}
 
 	/**
@@ -748,7 +719,10 @@ class HttpRequest
 		}
 
 		if (!isset($csvHeaderData['__column__'])) {
-			throw new \Exception(message: json_encode(value: [$currentModeArr,$csvHeaderData]), code: 400);
+			throw new \Exception(
+				message: json_encode(value: [$currentModeArr,$csvHeaderData]),
+				code: 400
+			);
 		}
 
 		foreach ($csvHeaderData['__column__'] as $field => $column) {

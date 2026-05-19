@@ -27,7 +27,6 @@ return [
 			'fetchFromData' => 'payload-param-1',
 		],
 	],
-	'__FUNCTION__' => 'process',
 	'__SUB-PAYLOAD__' => [
 		'sub' => [
 			'__PAYLOAD__' => [
@@ -42,7 +41,6 @@ return [
 					'fetchFromData' => 'sub-payload-param-1',
 				],
 			],
-			'__FUNCTION__' => 'processSub',
 		]
 	],
 	'__PRE-SQL-HOOKS__' => [

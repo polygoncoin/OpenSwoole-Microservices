@@ -66,24 +66,20 @@ class SupplementTest implements CustomInterface
 	/**
 	 * Process
 	 *
-	 * @param array $payload Payload
-	 *
-	 * @return array
+	 * @return mixed
 	 */
-	public function process(array $payload = []): array
+	public function process(): mixed
 	{
-		return $payload;
+		return $this->http->req->s['payload'];
 	}
 
 	/**
-	 * Process Sub
+	 * Process
 	 *
-	 * @param array $payload Payload
-	 *
-	 * @return array
+	 * @return mixed
 	 */
-	public function processSub(array $payload = []): array
+	public function subProcess(): mixed
 	{
-		return $payload;
+		return $this->http->req->s['payload'];
 	}
 }

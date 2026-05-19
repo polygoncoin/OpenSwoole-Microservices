@@ -39,9 +39,7 @@ interface CustomInterface
 	/**
 	 * Process
 	 *
-	 * @param array $payload Payload
-	 *
-	 * @return array
+	 * @return mixed
 	 */
-	public function process(array $payload = []): array;
+	public function process(): mixed;
 }

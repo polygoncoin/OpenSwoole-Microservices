@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Customer side Dropbox Caching
+ * DropboxCacheAPI
  * php version 8.3
  *
- * @category  CustomerDropboxCache
+ * @category  DropboxCacheAPI
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -13,18 +13,20 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App;
+namespace Microservices\Supplement\Dropbox;
 
 use Microservices\App\Constant;
+use Microservices\App\DbCommonFunction;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
-use Microservices\App\DropboxHandler\StreamVideo;
+use Microservices\Supplement\Dropbox\DropboxInterface;
+use Microservices\Supplement\Dropbox\CacheTrait;
 
 /**
- * Customer side Caching via E-tags
+ * DropboxCacheAPI Category
  * php version 8.3
  *
- * @category  CustomerDropboxCache_Etag
+ * @category  DropboxCacheAPI_Category
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -32,8 +34,10 @@ use Microservices\App\DropboxHandler\StreamVideo;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class Dropbox
+class Cdn implements DropboxInterface
 {
+	use CacheTrait;
+
 	/**
 	 * HTTP object
 	 *
@@ -94,11 +98,17 @@ class Dropbox
 			$this->DROPBOX_DIR = Constant::$DROPBOX_PUBLIC_DIR;
 		}
 
+		$configuredRoute = str_replace(
+			'/dropbox/cdn',
+			'',
+			$this->http->req->rParser->configuredRoute
+		);
+
 		$filePath = DIRECTORY_SEPARATOR . trim(
 			string: str_replace(
 				search: ['../', '..\\', '/', '\\'],
 				replace: ['', '', DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR],
-				subject: urldecode(string: $this->http->req->rParser->configuredRoute)
+				subject: urldecode(string: $configuredRoute)
 			),
 			characters: './\\'
 		);

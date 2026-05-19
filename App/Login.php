@@ -83,16 +83,20 @@ class Login
 	 */
 	public function init(): bool
 	{
+		if ($this->http->res !== null) {
+			$this->http->initResponse();
+		}
+
 		return true;
 	}
 
 	/**
 	 * Process
 	 *
-	 * @return bool
+	 * @return mixed
 	 * @throws \Exception
 	 */
-	public function process(): bool
+	public function process(): mixed
 	{
 		// Check request method is POST
 		if ($this->http->httpReqData['server']['httpMethod'] !== Constant::$POST) {
@@ -425,6 +429,18 @@ class Login
 			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constant::$TOKEN_EXPIRY_TIME - $time))
 		];
 
+		$this->outputDetail(output: $output);
+	}
+
+	/**
+	 * Output detail
+	 *
+	 * @param array $output
+	 *
+	 * @return void
+	 */
+	private function outputDetail(&$output): void
+	{
 		$this->http->initResponse();
 		$this->http->res->dataEncode->startObject();
 		$this->http->res->dataEncode->addKeyData(objectKey: 'Results', data: $output);
@@ -601,9 +617,7 @@ class Login
 			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constant::$TOKEN_EXPIRY_TIME - $time))
 		];
 
-		$this->http->initResponse();
-		$this->http->res->dataEncode->startObject();
-		$this->http->res->dataEncode->addKeyData(objectKey: 'Results', data: $output);
+		$this->outputDetail(output: $output);
 	}
 
 	/**
@@ -637,7 +651,7 @@ class Login
 	 *
 	 * @return mixed
 	 */
-	private function cacheSet($cacheKey, $cacheValue, $cacheExpire = null) {
+	private function cacheSet($cacheKey, $cacheValue, $cacheExpire = 0) {
 		return $this->http->req->clientCacheObj->cacheSet(
 			cacheKey: $cacheKey,
 			cacheValue: $cacheValue,

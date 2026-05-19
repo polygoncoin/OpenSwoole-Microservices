@@ -61,15 +61,15 @@ class Hook
 	/**
 	 * Trigger Hook
 	 *
-	 * @param array $hookConfig Hook configuration
+	 * @param array $hookArr Hook configuration
 	 *
 	 * @return bool
 	 */
-	public function triggerHook($hookConfig): bool
+	public function triggerHook($hookArr): bool
 	{
-		if (is_array(value: $hookConfig)) {
-			for ($i = 0, $iCount = count(value: $hookConfig); $i < $iCount; $i++) {
-				$hook = $hookConfig[$i];
+		if (is_array(value: $hookArr)) {
+			for ($i = 0, $iCount = count(value: $hookArr); $i < $iCount; $i++) {
+				$hook = $hookArr[$i];
 				$hookFile = Constant::$WWW
 					. DIRECTORY_SEPARATOR . 'Hook'
 					. DIRECTORY_SEPARATOR . $hook . '.php';

@@ -70,16 +70,17 @@ class Password implements CustomInterface
 	/**
 	 * Process
 	 *
-	 * @param array $payload Payload
-	 *
-	 * @return array
+	 * @return mixed
 	 */
-	public function process(array $payload = []): array
+	public function process(): mixed
 	{
-		if ($this->http->req->s['payloadType'] === 'Object') {
-			$payload = $this->http->req->dataDecode->get();
-		} else {
-			$payload = $this->http->req->dataDecode->get('0');
+		switch ($this->http->req->s['payloadType']) {
+			case 'Array':
+				$payload = $this->http->req->dataDecode->get('0');
+				break;
+			case 'Object':
+				$payload = $this->http->req->dataDecode->get();
+				break;
 		}
 		$this->http->req->s['payload'] = $payload;
 
@@ -128,6 +129,6 @@ class Password implements CustomInterface
 			);
 		}
 
-		return [true];
+		return true;
 	}
 }

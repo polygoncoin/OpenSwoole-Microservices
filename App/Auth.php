@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App\Middleware;
+namespace Microservices\App;
 
 use Microservices\App\CacheServerKey;
 use Microservices\App\CommonFunction;
@@ -69,6 +69,12 @@ class Auth
 			isset($_SESSION)
 			&& isset($_SESSION['id'])
 		) {
+			if ($_SESSION['sessionExpiryTimestamp'] <= Env::$timestamp) {
+				throw new \Exception(
+					message: 'Please login',
+					code: HttpStatus::$BadRequest
+				);
+			}
 			$this->http->req->s['userData'] = $_SESSION;
 			$this->http->req->s['token'] = session_id();
 		} elseif (
@@ -97,7 +103,7 @@ class Auth
 				)
 			) {
 				throw new \Exception(
-					message: 'Token expired',
+					message: 'Please login',
 					code: HttpStatus::$BadRequest
 				);
 			}
@@ -110,7 +116,7 @@ class Auth
 		} else {
 			throw new \Exception(
 				message: 'Please login',
-				code: HttpStatus::$InternalServerError
+				code: HttpStatus::$BadRequest
 			);
 		}
 		$this->http->req->userId = $this->http->req->s['userData']['id'];
@@ -162,20 +168,20 @@ class Auth
 		}
 
 		// Load groupData
-		$gKey = CacheServerKey::customerGroup(
+		$groupCacheKey = CacheServerKey::customerGroup(
 			customerId: $this->http->req->customerId,
 			groupId: $this->http->req->groupId
 		);
-		if (!$this->http->req->clientCacheObj->cacheExist(cacheKey: $gKey)) {
+		if (!$this->http->req->clientCacheObj->cacheExist(cacheKey: $groupCacheKey)) {
 			throw new \Exception(
-				message: "Cache '{$gKey}' missing",
+				message: "Cache '{$groupCacheKey}' missing",
 				code: HttpStatus::$InternalServerError
 			);
 		}
 
 		$this->http->req->s['groupData'] = json_decode(
 			json: $this->http->req->clientCacheObj->cacheGet(
-				cacheKey: $gKey
+				cacheKey: $groupCacheKey
 			),
 			associative: true
 		);

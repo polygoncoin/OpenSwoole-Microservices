@@ -67,30 +67,15 @@ class Category implements CronInterface
 	/**
 	 * Process
 	 *
-	 * @param array $payload Payload
-	 *
-	 * @return array
+	 * @return mixed
 	 */
-	public function process(array $payload = []): array
-	{
-		// Create and call functions to manage cron functionality here
-
-		// End the calls with json response with dataEncode object
-		$this->endProcess();
-		return [true];
-	}
-
-	/**
-	 * Function to end process which outputs the results
-	 *
-	 * @return never
-	 * @throws \Exception
-	 */
-	private function endProcess(): never
+	public function process(): mixed
 	{
 		throw new \Exception(
 			message: 'message as desired',
 			code: HttpStatus::$Ok
 		);
+
+		return true;
 	}
 }

@@ -82,13 +82,6 @@ CREATE TABLE `category` (
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `api_cache`;
-CREATE TABLE `api_cache` (
-    `key` CHAR(128) NOT NULL,
-    `value` BLOB,
-    UNIQUE INDEX api_cache_key (`key`)
-) ENGINE = InnoDB;
-
 LOCK TABLES `group` WRITE;
 INSERT INTO `group` VALUES
 (2,'Customer001UserGroup1',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes', 'No','No'),

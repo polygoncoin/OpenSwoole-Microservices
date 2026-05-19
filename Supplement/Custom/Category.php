@@ -70,11 +70,9 @@ class Category implements CustomInterface
 	/**
 	 * Process
 	 *
-	 * @param array $payload Payload
-	 *
-	 * @return array
+	 * @return mixed
 	 */
-	public function process(array $payload = []): array
+	public function process(): mixed
 	{
 		$sql = '
 			SELECT *
@@ -89,6 +87,7 @@ class Category implements CustomInterface
 		$rowArr = $this->http->req->clientDbObj->fetchAll();
 		$this->http->req->clientDbObj->closeCursor();
 		$this->http->res->dataEncode->addKeyData(objectKey: 'Results', data: $rowArr);
-		return [true];
+
+		return true;
 	}
 }
