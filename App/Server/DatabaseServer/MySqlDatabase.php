@@ -190,7 +190,7 @@ class MySqlDatabase implements DatabaseServerInterface
 			}
 		}
 		return false;
-        
+
 	}
 
 	/**

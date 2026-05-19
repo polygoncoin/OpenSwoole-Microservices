@@ -190,7 +190,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 			}
 		}
 		return false;
-        
+
 	}
 
 	/**

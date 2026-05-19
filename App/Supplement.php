@@ -127,31 +127,20 @@ class Supplement
 			&& $this->http->req->rParser->routeEndingReservedKeyword === Env::$explainRequestRouteKeyword
 			&& CommonFunction::isEnabled(http: $this->http, feature: 'enableExplainRequest')
 		) {
-			$this->explainSupplement(
+			return $this->explainSupplement(
 				sSqlConfig: $sSqlConfig,
 				useHierarchy: $useHierarchy
 			);
-			return true;
 		}
 
 		if (
 			$this->http->req->rParser->routeEndingWithReservedKeywordFlag
 			&& $this->http->req->rParser->routeEndingReservedKeyword === Env::$importSampleRequestRouteKeyword
 		) {
-			$filename = date('Ymd-His') . '-import-sample.csv';
-			$headerArr = [];
-			// Export header
-			$headerArr['Content-type'] = 'text/csv';
-			$headerArr['Content-Disposition'] = "attachment; filename={$filename}";
-			$headerArr['Pragma'] = 'no-cache';
-			$headerArr['Expires'] = '0';
-
-			$csv = $this->processImportSqlConfig(
-				writeSqlConfig: $writeSqlConfig,
+			return $this->processImportSqlConfig(
+				writeSqlConfig: $sSqlConfig,
 				useHierarchy: $useHierarchy
 			);
-
-			return [$headerArr, $csv, HttpStatus::$Ok];
 		}
 
 		// Lag response
@@ -193,9 +182,9 @@ class Supplement
 	 * @param array $sSqlConfig   SQL config
 	 * @param bool  $useHierarchy Use results in where clause of sub queries
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	private function explainSupplement(&$sSqlConfig, $useHierarchy): void
+	private function explainSupplement(&$sSqlConfig, $useHierarchy): bool
 	{
 		$this->dataEncode->startObject(objectKey: 'Config');
 		$this->dataEncode->addKeyData(
@@ -211,6 +200,8 @@ class Supplement
 			)
 		);
 		$this->dataEncode->endObject();
+
+		return true;
 	}
 
 	/**

@@ -117,30 +117,19 @@ class Write
 				$this->http->req->rParser->routeEndingWithReservedKeywordFlag
 				&& ($this->http->req->rParser->routeEndingReservedKeyword === Env::$explainRequestRouteKeyword)
 			) {
-				$this->explainWrite(
+				return $this->explainWrite(
 					writeSqlConfig: $writeSqlConfig,
 					useHierarchy: $useHierarchy
 				);
-				return true;
 			}
 			if (
 				$this->http->req->rParser->routeEndingWithReservedKeywordFlag
 				&& ($this->http->req->rParser->routeEndingReservedKeyword === Env::$importSampleRequestRouteKeyword)
 			) {
-				$filename = date('Ymd-His') . '-import-sample.csv';
-				$headerArr = [];
-				// Export header
-				$headerArr['Content-type'] = 'text/csv';
-				$headerArr['Content-Disposition'] = "attachment; filename={$filename}";
-				$headerArr['Pragma'] = 'no-cache';
-				$headerArr['Expires'] = '0';
-
-				$csv = $this->processImportSqlConfig(
+				return $this->processImportSqlConfig(
 					writeSqlConfig: $writeSqlConfig,
 					useHierarchy: $useHierarchy
 				);
-
-				return [$headerArr, $csv, HttpStatus::$Ok];
 			}
 		}
 
@@ -183,9 +172,9 @@ class Write
 	 * @param array $writeSqlConfig Write SQL config
 	 * @param bool  $useHierarchy   Use results in where clause of sub queries
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	private function explainWrite(&$writeSqlConfig, $useHierarchy): void
+	private function explainWrite(&$writeSqlConfig, $useHierarchy): bool
 	{
 		$this->dataEncode->startObject(objectKey: 'Config');
 		$this->dataEncode->addKeyData(
@@ -203,6 +192,8 @@ class Write
 			);
 		}
 		$this->dataEncode->endObject();
+
+		return true;
 	}
 
 	/**

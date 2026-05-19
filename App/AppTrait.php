@@ -1253,7 +1253,15 @@ trait AppTrait
 			$csv .= "{$r}{$blankStr}" . PHP_EOL;
 		}
 
-		return $csv;
+		$filename = date('Ymd-His') . '-import-sample.csv';
+		$headerArr = [];
+		// Export header
+		$headerArr['Content-type'] = 'text/csv';
+		$headerArr['Content-Disposition'] = "attachment; filename={$filename}";
+		$headerArr['Pragma'] = 'no-cache';
+		$headerArr['Expires'] = '0';
+
+		return [$headerArr, $csv, HttpStatus::$Ok];
 	}
 
 	/**

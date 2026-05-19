@@ -342,7 +342,7 @@ class HttpRequest
 			default:
 				$payloadJson = $this->http->httpReqData['post'];
 		}
-		
+
 		$this->payloadStream = fopen(
 			filename: "php://memory",
 			mode: "rw+b"
@@ -367,7 +367,7 @@ class HttpRequest
 		$requestId = 0;
 		if ($this->isPrivateRequest) {
 			DbCommonFunction::connectGlobalDb();
-			$sql = 'INSERT INTO `request` SET 
+			$sql = 'INSERT INTO `request` SET
 				customer_id = :customer_id,
 				user_id = :user_id,
 				request_route = :request_route,
@@ -402,7 +402,7 @@ class HttpRequest
 		$logId = 0;
 		if ($this->isPrivateRequest) {
 			DbCommonFunction::connectGlobalDb();
-			$sql = 'INSERT INTO `debug_log` SET 
+			$sql = 'INSERT INTO `debug_log` SET
 				debug_mode = :debug_mode,
 				request_id = :request_id,
 				customer_id = :customer_id,
@@ -446,7 +446,7 @@ class HttpRequest
 		$logId = 0;
 		if ($this->isPrivateRequest) {
 			DbCommonFunction::connectGlobalDb();
-			$sql = 'INSERT INTO `error_log` SET 
+			$sql = 'INSERT INTO `error_log` SET
 				request_id = :request_id,
 				customer_id = :customer_id,
 				user_id = :user_id,

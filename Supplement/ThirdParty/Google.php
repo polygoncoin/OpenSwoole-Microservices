@@ -100,7 +100,7 @@ class Google implements ThirdPartyInterface
 	 * Function to end process which outputs the results
 	 *
 	 * @param string $output Output
-	 *	
+	 *
 	 * @return void
 	 */
 	private function endProcess($output): void

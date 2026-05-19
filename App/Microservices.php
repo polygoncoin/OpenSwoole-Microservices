@@ -237,7 +237,7 @@ class Microservices
 				]
 			];
 		}
-		
+
 		return $returnPerformance;
 	}
 

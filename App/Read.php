@@ -192,7 +192,7 @@ class Read
 			&& $this->http->req->rParser->routeEndingWithReservedKeywordFlag
 			&& ($this->http->req->rParser->routeEndingReservedKeyword === Env::$explainRequestRouteKeyword)
 		) {
-			$this->explainRead(
+			return $this->explainRead(
 				readSqlConfig: $readSqlConfig,
 				useResultSet: $useResultSet
 			);
@@ -225,9 +225,9 @@ class Read
 	 * @param array $readSqlConfig Read SQL config
 	 * @param bool  $useResultSet  Use result set recursively flag
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	private function explainRead(&$readSqlConfig, $useResultSet): void
+	private function explainRead(&$readSqlConfig, $useResultSet): bool
 	{
 		$this->dataEncode->startObject(objectKey: 'Config');
 		$this->dataEncode->addKeyData(
@@ -243,6 +243,8 @@ class Read
 			)
 		);
 		$this->dataEncode->endObject();
+
+		return true;
 	}
 
 	/**
