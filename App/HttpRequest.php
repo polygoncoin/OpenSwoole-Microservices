@@ -123,25 +123,25 @@ class HttpRequest
 	public $s = null;
 
 	/**
-	 * Private token domain cache key exist flag
+	 * Public domain cache key exist flag
 	 *
 	 * @var null|bool
 	 */
-	public $privateTokenDomainCacheKeyExist = null;
+	public $isPublicDomain = null;
 
 	/**
 	 * Private session domain cache key exist flag
 	 *
 	 * @var null|bool
 	 */
-	public $privateSessionDomainCacheKeyExist = null;
+	public $isPrivateSessionDomain = null;
 
 	/**
-	 * Public domain cache key exist flag
+	 * Private token domain cache key exist flag
 	 *
 	 * @var null|bool
 	 */
-	public $publicDomainCacheKeyExist = null;
+	public $isPrivateTokenDomain = null;
 
 	/**
 	 * Public domain cache key exist flag
@@ -209,27 +209,34 @@ class HttpRequest
 
 		DbCommonFunction::connectGlobalCache();
 
-		$this->privateTokenDomainCacheKeyExist = false;
-		$this->privateSessionDomainCacheKeyExist = false;
-		$this->publicDomainCacheKeyExist = false;
+		$this->isPublicDomain = false;
+		$this->isPrivateSessionDomain = false;
+		$this->isPrivateTokenDomain = false;
 
-		$privateTokenDomainCacheKey = CacheServerKey::privateTokenDomain(domainName: $this->http->httpReqData['server']['domainName']);
-		$privateSessionDomainCacheKey = CacheServerKey::privateSessionDomain(domainName: $this->http->httpReqData['server']['domainName']);
 		$publicDomainCacheKey = CacheServerKey::publicDomain(domainName: $this->http->httpReqData['server']['domainName']);
-		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $privateTokenDomainCacheKey)) {
-			$this->privateTokenDomainCacheKeyExist = true;
-			$this->domainCacheKey = $privateTokenDomainCacheKey;
-			$this->isPrivateRequest = true;
-		}
-		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $privateSessionDomainCacheKey)) {
-			$this->privateSessionDomainCacheKeyExist = true;
-			$this->domainCacheKey = $privateSessionDomainCacheKey;
-			$this->isPrivateRequest = true;
-		}
 		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $publicDomainCacheKey)) {
-			$this->publicDomainCacheKeyExist = true;
+			$this->isPublicDomain = true;
 			$this->domainCacheKey = $publicDomainCacheKey;
 			$this->isPrivateRequest = false;
+		}
+		if (!$this->isPublicDomain) {
+			$privateSessionDomainCacheKey = CacheServerKey::privateSessionDomain(domainName: $this->http->httpReqData['server']['domainName']);
+			if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $privateSessionDomainCacheKey)) {
+				$this->isPrivateSessionDomain = true;
+				$this->domainCacheKey = $privateSessionDomainCacheKey;
+				$this->isPrivateRequest = true;
+			}
+		}
+		if (
+			!$this->isPublicDomain
+			&& !$this->isPrivateSessionDomain
+		) {
+			$privateTokenDomainCacheKey = CacheServerKey::privateTokenDomain(domainName: $this->http->httpReqData['server']['domainName']);
+			if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $privateTokenDomainCacheKey)) {
+				$this->isPrivateTokenDomain = true;
+				$this->domainCacheKey = $privateTokenDomainCacheKey;
+				$this->isPrivateRequest = true;
+			}
 		}
 	}
 
@@ -241,12 +248,12 @@ class HttpRequest
 	public function init(): bool
 	{
 		if (
-			!$this->privateTokenDomainCacheKeyExist
-			&& !$this->privateSessionDomainCacheKeyExist
-			&& !$this->publicDomainCacheKeyExist
+			!$this->isPublicDomain
+			&& !$this->isPrivateSessionDomain
+			&& !$this->isPrivateTokenDomain
 		) {
 			throw new \Exception(
-				message: "Invalid Host '{$this->http->httpReqData['server']['domainName']}'",
+				message: "Invalid domain: '{$this->http->httpReqData['server']['domainName']}'",
 				code: HttpStatus::$BadRequest
 			);
 		}
@@ -258,18 +265,12 @@ class HttpRequest
 			associative: true
 		);
 
-		if (
-			$this->privateTokenDomainCacheKeyExist
-			|| $this->privateSessionDomainCacheKeyExist
-		) {
-			$this->authMode = $this->s['customerData']['authMode'];
-			if ($this->authMode === 'Session') {
-				// Initialize Session Handler
-				Session::initSessionHandler(sessionMode: Env::$sessionMode, options: []);
+		if ($this->isPrivateSessionDomain) {
+			// Initialize Session Handler
+			Session::initSessionHandler(sessionMode: Env::$sessionMode, options: []);
 
-				// Start session in readonly mode
-				Session::sessionStartReadonly();
-			}
+			// Start session in readonly mode
+			Session::sessionStartReadonly();
 		}
 
 		$this->customerId = $this->s['customerData']['id'];

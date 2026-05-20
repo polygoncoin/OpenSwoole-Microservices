@@ -124,13 +124,15 @@ class Login
 			);
 		}
 
-		switch ($this->http->req->authMode) {
-			case 'Token':
-				$this->outputTokenData();
-				break;
-			case 'Session':
-				$this->startSession();
-				break;
+		if ($this->http->req->isPrivateSessionDomain) {
+			$this->startSession();
+		} elseif ($this->http->req->isPrivateTokenDomain) {
+			$this->outputTokenData();
+		} else {
+			throw new \Exception(
+				message: "Invalid domain: '{$this->http->httpReqData['server']['domainName']}' to login",
+				code: HttpStatus::$BadRequest
+			);
 		}
 
 		return true;
