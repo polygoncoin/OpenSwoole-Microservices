@@ -61,8 +61,9 @@ class Gateway
 		if ($this->http->req->isPrivateRequest) {
 			$this->http->req->auth->loadUserData();
 			CommonFunction::checkPrivateRequestCidr(http: $this->http);
+
+			$this->rateLimitRequest();
 		}
-		$this->rateLimitRequest();
 
 		return true;
 	}
@@ -192,7 +193,11 @@ class Gateway
 	 */
 	private function rateLimitUserRequest(): void
 	{
-		if (!CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimitForUserRequest')) {
+		if (
+			!CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimitForUserRequest')
+			|| empty($this->http->req->s['customerData']['rateLimitUserMaxRequest'])
+			|| empty($this->http->req->s['customerData']['rateLimitUserMaxRequestWindow'])
+		) {
 			return;
 		}
 

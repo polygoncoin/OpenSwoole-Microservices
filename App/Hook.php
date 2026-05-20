@@ -69,12 +69,14 @@ class Hook
 	{
 		if (is_array(value: $hookArr)) {
 			for ($i = 0, $iCount = count(value: $hookArr); $i < $iCount; $i++) {
-				$hook = $hookArr[$i];
+				$hookName = $hookArr[$i];
+
 				$hookFile = Constant::$WWW
 					. DIRECTORY_SEPARATOR . 'Hook'
-					. DIRECTORY_SEPARATOR . $hook . '.php';
+					. DIRECTORY_SEPARATOR . $hookName . '.php';
+
 				if (file_exists(filename: $hookFile)) {
-					$hookClass = 'Microservices\\Hook\\' . $hook;
+					$hookClass = 'Microservices\\www\\Hook\\' . $hookName;
 					$this->hookObj = new $hookClass(http: $this->http);
 					if ($this->hookObj->init()) {
 						$this->hookObj->process();

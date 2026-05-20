@@ -124,25 +124,61 @@ class Api
 			$this->http->req->loadPayload();
 		}
 
+		$class = null;
+		$supplementClass = null;
 		if ($this->checkSupplement(Env::$cronRequestRoutePrefix)) {
-			$supplementClass = 'Microservices\\Supplement\\Cron\\'
-				. ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
+			$supplementClassFileName = ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
+			$supplementClassFileLocation = Constant::$WWW
+					. DIRECTORY_SEPARATOR . 'Supplement'
+					. DIRECTORY_SEPARATOR . 'Cron'
+					. DIRECTORY_SEPARATOR . $supplementClassFileName . '.php';
+
+			if (file_exists(filename: $supplementClassFileLocation)) {
+				$supplementClass = 'Microservices\\www\\Supplement\\Cron\\' . $supplementClassFileName;
+			}
 		} elseif ($this->checkSupplement(Env::$customRequestRoutePrefix)) {
-			$supplementClass = 'Microservices\\Supplement\\Custom\\'
-				. ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
+			$supplementClassFileName = ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
+			$supplementClassFileLocation = Constant::$WWW
+					. DIRECTORY_SEPARATOR . 'Supplement'
+					. DIRECTORY_SEPARATOR . 'Custom'
+					. DIRECTORY_SEPARATOR . $supplementClassFileName . '.php';
+
+			if (file_exists(filename: $supplementClassFileLocation)) {
+				$supplementClass = 'Microservices\\www\\Supplement\\Custom\\' . $supplementClassFileName;
+			}
 		} elseif ($this->checkSupplement(Env::$uploadRequestRoutePrefix)) {
-			$supplementClass = 'Microservices\\Supplement\\Upload\\'
-				. ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
+			$supplementClassFileName = ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
+			$supplementClassFileLocation = Constant::$WWW
+					. DIRECTORY_SEPARATOR . 'Supplement'
+					. DIRECTORY_SEPARATOR . 'Upload'
+					. DIRECTORY_SEPARATOR . $supplementClassFileName . '.php';
+
+			if (file_exists(filename: $supplementClassFileLocation)) {
+				$supplementClass = 'Microservices\\www\\Supplement\\Upload\\' . $supplementClassFileName;
+			}
 		} elseif ($this->checkSupplement(Env::$thirdPartyRequestRoutePrefix)) {
-			$supplementClass = 'Microservices\\Supplement\\ThirdParty\\'
-				. ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
+			$supplementClassFileName = ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
+			$supplementClassFileLocation = Constant::$WWW
+					. DIRECTORY_SEPARATOR . 'Supplement'
+					. DIRECTORY_SEPARATOR . 'ThirdParty'
+					. DIRECTORY_SEPARATOR . $supplementClassFileName . '.php';
+
+			if (file_exists(filename: $supplementClassFileLocation)) {
+				$supplementClass = 'Microservices\\www\\Supplement\\ThirdParty\\' . $supplementClassFileName;
+			}
 		} else {
-			$class = null;
 			switch ($this->http->httpReqData['server']['httpMethod']) {
 				case Constant::$GET:
 					if ($this->checkSupplement(Env::$dropboxRequestRoutePrefix)) {
-						$class = 'Microservices\\Supplement\\Dropbox\\'
-							. ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
+						$classFileName = ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
+						$classFileLocation = Constant::$WWW
+								. DIRECTORY_SEPARATOR . 'Supplement'
+								. DIRECTORY_SEPARATOR . 'Dropbox'
+								. DIRECTORY_SEPARATOR . $classFileName . '.php';
+
+						if (file_exists(filename: $classFileLocation)) {
+							$class = 'Microservices\\www\\Supplement\\Dropbox\\' . $classFileName;
+						}
 					} elseif ($this->checkSupplement(Env::$routesRequestRoute)) {
 						$class = __NAMESPACE__ . '\\Route';
 					} else {
@@ -158,20 +194,21 @@ class Api
 			}
 		}
 
-		if (isset($supplementClass)) {
-			if (!empty($supplementClass)) {
-				$supplementObj = new Supplement(http: $this->http);
-				if ($supplementObj->init(supplementClass: $supplementClass)) {
-					$return = $supplementObj->process();
-				}
+		if ($supplementClass !== null) {
+			$supplementObj = new Supplement(http: $this->http);
+			if ($supplementObj->init(supplementClass: $supplementClass)) {
+				$return = $supplementObj->process();
+			}
+		} elseif ($class !== null) {
+			$api = new $class(http: $this->http);
+			if ($api->init()) {
+				$return = $api->process();
 			}
 		} else {
-			if ($class !== null) {
-				$api = new $class(http: $this->http);
-				if ($api->init()) {
-					$return = $api->process();
-				}
-			}
+			throw new \Exception(
+				message: 'API class file not found',
+				code: HttpStatus::$NotFound
+			);
 		}
 
 		// Execute Post Route Hook

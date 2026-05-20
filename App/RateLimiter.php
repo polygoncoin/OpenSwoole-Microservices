@@ -66,10 +66,23 @@ class RateLimiter
 		$secondsWindow,
 		$rateLimitKey
 	): array {
+
+		if (
+			empty($prefix)
+			|| empty($maxRequest)
+			|| empty($secondsWindow)
+			|| empty($rateLimitKey)
+		) {
+			throw new \Exception(
+				message: 'Invalid Rate Limiter Data',
+				code: HttpStatus::$InternalServerError
+			);
+		}
+
 		if ($this->cacheObj === null) {
 			throw new \Exception(
 				message: 'Invalid Rate Limiter Cache object',
-				code: HttpStatus::$TooManyRequest
+				code: HttpStatus::$InternalServerError
 			);
 		}
 
@@ -127,6 +140,19 @@ class RateLimiter
 		$rateLimitMaxRequestWindow,
 		$rateLimitKey
 	): void {
+
+		if (
+			empty($rateLimitPrefix)
+			|| empty($rateLimitMaxRequest)
+			|| empty($rateLimitMaxRequestWindow)
+			|| empty($rateLimitKey)
+		) {
+			throw new \Exception(
+				message: 'Invalid Rate Limiter Data',
+				code: HttpStatus::$InternalServerError
+			);
+		}
+
 		try {
 			$result = $this->check(
 				prefix: $rateLimitPrefix,

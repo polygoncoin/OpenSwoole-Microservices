@@ -111,7 +111,11 @@ class Login
 		CommonFunction::checkPrivateRequestCidr(http: $this->http);
 		$this->validatePassword();
 
-		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimitForUserPerIp')) {
+		if (
+			CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimitForUserPerIp')
+			&& !empty($this->http->req->s['customerData']['rateLimitMaxUserPerIp'])
+			&& !empty($this->http->req->s['customerData']['rateLimitMaxUserPerIpWindow'])
+		) {
 			$this->http->req->rateLimiter->checkRateLimit(
 				rateLimitPrefix: Env::$rateLimitUserPerIpPrefix,
 				rateLimitMaxRequest: $this->http->req->s['customerData']['rateLimitMaxUserPerIp'],
@@ -216,12 +220,18 @@ class Login
 	 */
 	private function validatePassword(): void
 	{
-		$this->http->req->rateLimiter->checkRateLimit(
-			rateLimitPrefix: Env::$rateLimitUserLoginPrefix,
-			rateLimitMaxRequest: $this->http->req->s['customerData']['rateLimitMaxUserLoginRequest'],
-			rateLimitMaxRequestWindow: $this->http->req->s['customerData']['rateLimitMaxUserLoginRequestWindow'],
-			rateLimitKey: $this->http->httpReqData['server']['httpRequestIP'] . ':' . $this->username
-		);
+		if (
+			!empty($this->http->req->s['customerData']['rateLimitMaxUserLoginRequest'])
+			&& !empty($this->http->req->s['customerData']['rateLimitMaxUserLoginRequestWindow'])
+		) {
+			$this->http->req->rateLimiter->checkRateLimit(
+				rateLimitPrefix: Env::$rateLimitUserLoginPrefix,
+				rateLimitMaxRequest: $this->http->req->s['customerData']['rateLimitMaxUserLoginRequest'],
+				rateLimitMaxRequestWindow: $this->http->req->s['customerData']['rateLimitMaxUserLoginRequestWindow'],
+				rateLimitKey: $this->http->httpReqData['server']['httpRequestIP'] . ':' . $this->username
+			);
+		}
+
 		// get hash from cache and compares with password
 		if (
 			!password_verify(
