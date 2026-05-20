@@ -32,17 +32,17 @@ $res = Web::trigger(
 $token = null;
 $sessionCookie = null;
 
-if (isset($res['response']['responseHeaderArr']['Set-Cookie'])) {
+if (isset($res['response']['Headers']['Set-Cookie'])) {
 	$sessionCookie = substr(
-		$res['response']['responseHeaderArr']['Set-Cookie'],
+		$res['response']['Headers']['Set-Cookie'],
 		0,
 		strpos(
-			$res['response']['responseHeaderArr']['Set-Cookie'],
+			$res['response']['Headers']['Set-Cookie'],
 			'; '
 		)
 	);
-} elseif (isset($res['response']['responseBody']['Results']['Token'])) {
-	$token = $res['response']['responseBody']['Results']['Token'];
+} elseif (isset($res['response']['ResponseBody']['Results']['Token'])) {
+	$token = $res['response']['ResponseBody']['Results']['Token'];
 }
 
 

@@ -170,18 +170,39 @@ class Web
 		$responseBody = substr(string: $curlResponse, offset: $headerSize);
 
 		$queryString = empty($queryString) ? '' : '&' . $queryString;
-		$return['request'] = [
-			'URI' => htmlspecialchars(string: "{$homeURL}?route={$route}{$queryString}"),
-			'httpMethod' => $method,
-			'requestHeaders' => $curlConfig[\CURLOPT_HTTPHEADER],
-			'requestPayload' => nl2br(htmlspecialchars(string: $payload)),
+
+		$requestPayload = $payload;
+		if (!empty($payload)) {
+			$startArrayPos = strpos($payload, '[');
+			$startObjectPos = strpos($payload, '{');
+			$startXmlPos = strpos($payload, '<');
+			if (
+				$startArrayPos === 0
+				|| $startObjectPos === 0
+			) {
+				$requestPayload = json_decode(
+					json: $payload,
+					associative: true
+				);
+			} elseif($startXmlPos === 0) {
+				$requestPayload = htmlspecialchars(
+					string: $payload
+				);
+			}
+		}
+		
+		$return['HttpRequest'] = [
+			'URL' => htmlspecialchars(string: "{$homeURL}?route={$route}{$queryString}"),
+			'Method' => $method,
+			'Headers' => $curlConfig[\CURLOPT_HTTPHEADER],
+			'Payload' => $requestPayload,
 		];
 
-		$return['response'] = [
-			'responseHttpCode' => $responseHttpCode,
-			'responseHeaderArr' => $responseHeaderArr,
-			'responseContentType' => $responseContentType,
-			'responseBody' => $responseBody
+		$return['HttpResponse'] = [
+			'HttpCode' => $responseHttpCode,
+			'Headers' => $responseHeaderArr,
+			'ContentType' => $responseContentType,
+			'ResponseBody' => $responseBody
 		];
 
 		if ($curlResponse === false) {
@@ -199,9 +220,9 @@ class Web
 				}
 			}
 
-			$return['response']['errorCode'] = $errorCode;
-			$return['response']['errorMessage'] = $errorMessage;
-			$return['response']['errorConstant'] = $errorConstant;
+			$return['HttpResponse']['errorCode'] = $errorCode;
+			$return['HttpResponse']['errorMessage'] = $errorMessage;
+			$return['HttpResponse']['errorConstant'] = $errorConstant;
 		} else {
 			if (
 				strpos(
@@ -218,28 +239,28 @@ class Web
 				$response = $responseBody;
 			}
 
-			$return['response']['responseBody'] = $response;
+			$return['HttpResponse']['ResponseBody'] = $response;
 		}
 		curl_close(handle: $curl);
 
 		if (
-			isset($return['response']['responseBody'])
-			&& !is_array($return['response']['responseBody'])
+			isset($return['HttpResponse']['ResponseBody'])
+			&& !is_array($return['HttpResponse']['ResponseBody'])
 		) {
-			$startArrayPos = strpos($return['response']['responseBody'], '[');
-			$startObjectPos = strpos($return['response']['responseBody'], '{');
-			$startXmlPos = strpos($return['response']['responseBody'], '<');
+			$startArrayPos = strpos($return['HttpResponse']['ResponseBody'], '[');
+			$startObjectPos = strpos($return['HttpResponse']['ResponseBody'], '{');
+			$startXmlPos = strpos($return['HttpResponse']['ResponseBody'], '<');
 			if (
 				$startArrayPos === 0
 				|| $startObjectPos === 0
 			) {
-				$return['response']['responseBody'] = json_decode(
-					json: $return['response']['responseBody'],
+				$return['HttpResponse']['ResponseBody'] = json_decode(
+					json: $return['HttpResponse']['ResponseBody'],
 					associative: true
 				);
 			} elseif($startXmlPos === 0) {
-				$return['response']['responseBody'] = htmlspecialchars(
-					string: $return['response']['responseBody']
+				$return['HttpResponse']['ResponseBody'] = htmlspecialchars(
+					string: $return['HttpResponse']['ResponseBody']
 				);
 			}
 		}

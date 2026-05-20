@@ -304,7 +304,7 @@ class Write
 							)
 						);
 					}
-					$arr['Response'] = $response;
+					$arr['PayloadResponse'] = $response;
 
 					if (
 						$this->http->req->isPrivateRequest

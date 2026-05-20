@@ -144,13 +144,6 @@ class HttpRequest
 	public $isPrivateTokenDomain = null;
 
 	/**
-	 * Public domain cache key exist flag
-	 *
-	 * @var null|bool
-	 */
-	public $authMode = null;
-
-	/**
 	 * Domain cache key
 	 *
 	 * @var null|bool

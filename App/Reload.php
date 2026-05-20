@@ -91,11 +91,9 @@ class Reload
 				$cacheKey = CacheServerKey::privateTokenDomain(
 					domainName: $customerData['private_token_domain']
 				);
-				$_customerData = $customerData;
-				$_customerData['authMode'] = 'Token';
 				DbCommonFunction::$gCacheServer->cacheSet(
 					cacheKey: $cacheKey,
-					cacheValue: json_encode(value: $_customerData)
+					cacheValue: json_encode(value: $customerData)
 				);
 			}
 
@@ -103,11 +101,9 @@ class Reload
 				$cacheKey = CacheServerKey::privateSessionDomain(
 					domainName: $customerData['private_session_domain']
 				);
-				$_customerData = $customerData;
-				$_customerData['authMode'] = 'Session';
 				DbCommonFunction::$gCacheServer->cacheSet(
 					cacheKey: $cacheKey,
-					cacheValue: json_encode(value: $_customerData)
+					cacheValue: json_encode(value: $customerData)
 				);
 			}
 
