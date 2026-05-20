@@ -6,11 +6,9 @@ OUTPUT_PERFORMANCE_STATS=1              ; Add Performance Stats in JSON output: 
 DISABLE_REQUESTS_VIA_PROXIES=1          ; 1 = true / 0 = false
 ```
 
-## API authentication modes
+## Auth
 
 ```ini
-; API authentication modes - Token / Session (Cookie based Sessions)
-authMode='Token'            ; Token / Session (Cookie based Sessions)
 sessionMode='File'          ; For Cookie based Session - 'File', 'MySql', 'PostgreSql', 'MongoDb', 'Redis', 'Memcached', 'Cookie'
 maxConcurrentLogin=2       ; simultaneous login limit
 concurrentAccessInterval=60 ; Concurrent Access Interval in Seconds

@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Auth;
 use Microservices\App\CacheServerKey;
 use Microservices\App\CommonFunction;
 use Microservices\App\Constant;
@@ -24,7 +25,6 @@ use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
-use Microservices\App\Auth;
 use Microservices\App\RateLimiter;
 use Microservices\App\RouteParser;
 use Microservices\App\Server\CacheServer\CacheServerInterface;
@@ -123,11 +123,18 @@ class HttpRequest
 	public $s = null;
 
 	/**
-	 * Private domain cache key exist flag
+	 * Private token domain cache key exist flag
 	 *
 	 * @var null|bool
 	 */
-	public $privateDomainCacheKeyExist = null;
+	public $privateTokenDomainCacheKeyExist = null;
+
+	/**
+	 * Private session domain cache key exist flag
+	 *
+	 * @var null|bool
+	 */
+	public $privateSessionDomainCacheKeyExist = null;
 
 	/**
 	 * Public domain cache key exist flag
@@ -135,6 +142,13 @@ class HttpRequest
 	 * @var null|bool
 	 */
 	public $publicDomainCacheKeyExist = null;
+
+	/**
+	 * Public domain cache key exist flag
+	 *
+	 * @var null|bool
+	 */
+	public $authMode = null;
 
 	/**
 	 * Domain cache key
@@ -195,14 +209,21 @@ class HttpRequest
 
 		DbCommonFunction::connectGlobalCache();
 
-		$this->privateDomainCacheKeyExist = false;
+		$this->privateTokenDomainCacheKeyExist = false;
+		$this->privateSessionDomainCacheKeyExist = false;
 		$this->publicDomainCacheKeyExist = false;
 
-		$privateDomainCacheKey = CacheServerKey::privateDomain(domainName: $this->http->httpReqData['server']['domainName']);
+		$privateTokenDomainCacheKey = CacheServerKey::privateTokenDomain(domainName: $this->http->httpReqData['server']['domainName']);
+		$privateSessionDomainCacheKey = CacheServerKey::privateSessionDomain(domainName: $this->http->httpReqData['server']['domainName']);
 		$publicDomainCacheKey = CacheServerKey::publicDomain(domainName: $this->http->httpReqData['server']['domainName']);
-		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $privateDomainCacheKey)) {
-			$this->privateDomainCacheKeyExist = true;
-			$this->domainCacheKey = $privateDomainCacheKey;
+		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $privateTokenDomainCacheKey)) {
+			$this->privateTokenDomainCacheKeyExist = true;
+			$this->domainCacheKey = $privateTokenDomainCacheKey;
+			$this->isPrivateRequest = true;
+		}
+		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $privateSessionDomainCacheKey)) {
+			$this->privateSessionDomainCacheKeyExist = true;
+			$this->domainCacheKey = $privateSessionDomainCacheKey;
 			$this->isPrivateRequest = true;
 		}
 		if (DbCommonFunction::$gCacheServer->cacheExist(cacheKey: $publicDomainCacheKey)) {
@@ -220,7 +241,8 @@ class HttpRequest
 	public function init(): bool
 	{
 		if (
-			!$this->privateDomainCacheKeyExist
+			!$this->privateTokenDomainCacheKeyExist
+			&& !$this->privateSessionDomainCacheKeyExist
 			&& !$this->publicDomainCacheKeyExist
 		) {
 			throw new \Exception(
@@ -235,6 +257,20 @@ class HttpRequest
 			),
 			associative: true
 		);
+
+		if (
+			$this->privateTokenDomainCacheKeyExist
+			|| $this->privateSessionDomainCacheKeyExist
+		) {
+			$this->authMode = $this->s['customerData']['authMode'];
+			if ($this->authMode === 'Session') {
+				// Initialize Session Handler
+				Session::initSessionHandler(sessionMode: Env::$sessionMode, options: []);
+
+				// Start session in readonly mode
+				Session::sessionStartReadonly();
+			}
+		}
 
 		$this->customerId = $this->s['customerData']['id'];
 

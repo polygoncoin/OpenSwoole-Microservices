@@ -32,24 +32,18 @@ $res = Web::trigger(
 $token = null;
 $sessionCookie = null;
 
-switch (Env::$authMode) {
-	case 'Token':
-		if (isset($res['response']['responseBody']['Results']['Token'])) {
-			$token = $res['response']['responseBody']['Results']['Token'];
-		}
-		break;
-	case 'Session':
-		if (isset($res['response']['responseHeaderArr']['Set-Cookie'])) {
-			$sessionCookie = substr(
-				$res['response']['responseHeaderArr']['Set-Cookie'],
-				0,
-				strpos(
-					$res['response']['responseHeaderArr']['Set-Cookie'],
-					'; '
-				)
-			);
-		}
-		break;
+if (isset($res['response']['responseHeaderArr']['Set-Cookie'])) {
+	$sessionCookie = substr(
+		$res['response']['responseHeaderArr']['Set-Cookie'],
+		0,
+		strpos(
+			$res['response']['responseHeaderArr']['Set-Cookie'],
+			'; '
+		)
+	);
+} elseif (isset($res['response']['responseBody']['Results']['Token'])) {
+	$token = $res['response']['responseBody']['Results']['Token'];
 }
+
 
 return $res;

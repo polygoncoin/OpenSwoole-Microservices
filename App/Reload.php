@@ -87,21 +87,39 @@ class Reload
 				cidrString: $customerData['reloadRestrictedCidr']
 			);
 
-			if (!empty($customerData['open_api_domain'])) {
+			if (!empty($customerData['private_token_domain'])) {
+				$cacheKey = CacheServerKey::privateTokenDomain(
+					domainName: $customerData['private_token_domain']
+				);
+				$_customerData = $customerData;
+				$_customerData['authMode'] = 'Token';
+				DbCommonFunction::$gCacheServer->cacheSet(
+					cacheKey: $cacheKey,
+					cacheValue: json_encode(value: $_customerData)
+				);
+			}
+
+			if (!empty($customerData['private_session_domain'])) {
+				$cacheKey = CacheServerKey::privateSessionDomain(
+					domainName: $customerData['private_session_domain']
+				);
+				$_customerData = $customerData;
+				$_customerData['authMode'] = 'Session';
+				DbCommonFunction::$gCacheServer->cacheSet(
+					cacheKey: $cacheKey,
+					cacheValue: json_encode(value: $_customerData)
+				);
+			}
+
+			if (!empty($customerData['public_domain'])) {
 				$cacheKey = CacheServerKey::publicDomain(
-					domainName: $customerData['open_api_domain']
+					domainName: $customerData['public_domain']
 				);
 				DbCommonFunction::$gCacheServer->cacheSet(
 					cacheKey: $cacheKey,
 					cacheValue: json_encode(value: $customerData)
 				);
 			}
-
-			$cacheKey = CacheServerKey::privateDomain(domainName: $customerData['api_domain']);
-			DbCommonFunction::$gCacheServer->cacheSet(
-				cacheKey: $cacheKey,
-				cacheValue: json_encode(value: $customerData)
-			);
 
 			if ($customerData['allowed_cidr'] !== null) {
 				$cCidrIpNumberRangeArr = CommonFunction::cidrStringIpNumberRange(cidrString: $customerData['allowed_cidr']);

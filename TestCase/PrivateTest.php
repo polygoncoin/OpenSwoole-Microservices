@@ -5,7 +5,7 @@
  * php version 8.3
  *
  * @category  Test Case
- * @package   Openswoole_Microservices
+ * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
@@ -45,7 +45,7 @@ $defaultHeaderArr[] = $cacheControl;
 
 $response = [];
 
-$homeURL = 'http://127.0.0.1:9501';
+$homeURL = 'http://api.customer001.localhost/Microservices/www/public_html/index.php';
 
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Reload.php';
 
@@ -82,6 +82,8 @@ $response[] = include PRIVATE_DELETE . DIRECTORY_SEPARATOR . 'Registration.php';
 $response[] = include PRIVATE_DELETE . DIRECTORY_SEPARATOR . 'Address.php';
 
 $response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'CategoryConfig.php';
+
+$homeURL = 'http://127.0.0.1:9501';
 
 // Admin login
 $payload = [

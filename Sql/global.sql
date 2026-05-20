@@ -13,8 +13,9 @@ CREATE TABLE `customer` (
     `allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
     `rateLimitMaxRequest` INT DEFAULT NULL,
     `rateLimitMaxRequestWindow` INT DEFAULT NULL,
-    `api_domain` VARCHAR(255) DEFAULT NULL,
-    `open_api_domain` VARCHAR(255) DEFAULT NULL,
+    `private_token_domain` VARCHAR(255) DEFAULT NULL,
+    `private_session_domain` VARCHAR(255) DEFAULT NULL,
+    `public_domain` VARCHAR(255) DEFAULT NULL,
     `enableCidrCheck` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
     `enableConcurrentLogin` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
     `enableCronRequest` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
@@ -98,7 +99,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 INSERT INTO `customer` VALUES
-(1,'Customer 001','group','user','0.0.0.0/0',NULL,NULL,'api.customer001.localhost','localhost','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0',600,300,600,300,600,300,600,300,'cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cCacheServerType001','cCacheServerHostname001','cCacheServerPort001','cCacheServerUsername001','cCacheServerPassword001','cCacheServerDatabase001','cCacheServerTable001','',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes', 'No','No');
+(1,'Customer 001','group','user','0.0.0.0/0',NULL,NULL,'api.customer001.localhost','customer001.localhost','localhost','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0',600,300,600,300,600,300,600,300,'cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cCacheServerType001','cCacheServerHostname001','cCacheServerPort001','cCacheServerUsername001','cCacheServerPassword001','cCacheServerDatabase001','cCacheServerTable001','',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes', 'No','No');
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `request`;

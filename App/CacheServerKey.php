@@ -48,9 +48,21 @@ class CacheServerKey
 	 *
 	 * @return string
 	 */
-	public static function privateDomain($domainName): string
+	public static function privateTokenDomain($domainName): string
 	{
-		return "pri:{$domainName}";
+		return "pri:t:{$domainName}";
+	}
+
+	/**
+	 * Get closed to web Domain key
+	 *
+	 * @param string $domainName Domain Name
+	 *
+	 * @return string
+	 */
+	public static function privateSessionDomain($domainName): string
+	{
+		return "pri:s:{$domainName}";
 	}
 
 	/**

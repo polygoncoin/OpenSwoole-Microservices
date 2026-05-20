@@ -37,7 +37,6 @@ class Env
 	public static $OUTPUT_PERFORMANCE_STATS = null;
 	public static $DISABLE_REQUESTS_VIA_PROXIES = null;
 
-	public static $authMode = null;
 	public static $sessionMode = null;
 	public static $maxConcurrentLogin = null;
 	public static $concurrentAccessInterval = null;
@@ -135,7 +134,6 @@ class Env
 		self::$OUTPUT_PERFORMANCE_STATS = getenv(name: 'OUTPUT_PERFORMANCE_STATS');
 		self::$DISABLE_REQUESTS_VIA_PROXIES = getenv(name: 'DISABLE_REQUESTS_VIA_PROXIES');
 
-		self::$authMode = getenv(name: 'authMode');
 		self::$sessionMode = getenv(name: 'sessionMode');
 		self::$maxConcurrentLogin = getenv(name: 'maxConcurrentLogin');
 		self::$concurrentAccessInterval = getenv(name: 'concurrentAccessInterval');

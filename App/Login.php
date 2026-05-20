@@ -124,7 +124,7 @@ class Login
 			);
 		}
 
-		switch (Env::$authMode) {
+		switch ($this->http->req->authMode) {
 			case 'Token':
 				$this->outputTokenData();
 				break;
@@ -602,7 +602,7 @@ class Login
 
 		$time = Env::$timestamp - $authFoundData['authTimestamp'];
 		$output = [
-			'Token' => $authFoundData['authId'],
+			'SessionId' => $authFoundData['authId'],
 			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constant::$TOKEN_EXPIRY_TIME - $time))
 		];
 
