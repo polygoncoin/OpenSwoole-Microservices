@@ -69,12 +69,6 @@ class Auth
 			isset($_SESSION)
 			&& isset($_SESSION['id'])
 		) {
-			if (($_SESSION['authTimestamp'] + Constant::$TOKEN_EXPIRY_TIME) <= Env::$timestamp) {
-				throw new \Exception(
-					message: 'Please login',
-					code: HttpStatus::$BadRequest
-				);
-			}
 			$this->http->req->s['userData'] = $_SESSION;
 			$this->http->req->s['authId'] = session_id();
 		} elseif (
@@ -116,6 +110,13 @@ class Auth
 		} else {
 			throw new \Exception(
 				message: 'Please login',
+				code: HttpStatus::$BadRequest
+			);
+		}
+
+		if (($this->http->req->s['userData']['authTimestamp'] + Constant::$TOKEN_EXPIRY_TIME) <= Env::$timestamp) {
+			throw new \Exception(
+				message: 'Login has timed out. Please login',
 				code: HttpStatus::$BadRequest
 			);
 		}

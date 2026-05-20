@@ -372,6 +372,7 @@ class Login
 					) {
 						$time = Env::$timestamp - $authFoundData['authTimestamp'];
 						if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
+							Session::deleteSession(sessionId: $authId);
 							unset($customerUserConcurrencyData[$authId]);
 							continue;
 						}
@@ -541,6 +542,7 @@ class Login
 					) {
 						$time = Env::$timestamp - $authFoundData['authTimestamp'];
 						if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
+							Session::deleteSession(sessionId: $authId);
 							unset($customerUserConcurrencyData[$authId]);
 							continue;
 						}
