@@ -255,26 +255,65 @@ class Login
 	{
 		//generates a crypto-secure 64 characters long
 		while (true) {
-			$token = bin2hex(string: random_bytes(length: 32));
+			$authId = bin2hex(string: random_bytes(length: 32));
 
 			if (
 				!$this->cacheExist(
-					cacheKey: CacheServerKey::token(token: $token)
+					cacheKey: CacheServerKey::token(token: $authId)
 				)
 			) {
 				$this->cacheSet(
-					cacheKey: CacheServerKey::token(token: $token),
+					cacheKey: CacheServerKey::token(token: $authId),
 					cacheValue: '{}',
 					cacheExpire: Constant::$TOKEN_EXPIRY_TIME
 				);
-				$userTokenKeyData = [
-					'token' => $token,
-					'timestamp' => Env::$timestamp
+				$userTokenData = [
+					'authId' => $authId,
+					'authMode' => 'Token',
+					'authTimestamp' => Env::$timestamp,
+					'httpRequestHash' => $this->http->httpReqData['httpRequestHash']
 				];
 				break;
 			}
 		}
-		return $userTokenKeyData;
+
+		foreach ($this->http->req->s['userData'] as $k => $v) {
+			$userTokenData[$k] = $v;
+		}
+
+		$this->cacheSet(
+			cacheKey: CacheServerKey::token(token: $userTokenData['authId']),
+			cacheValue: json_encode(
+				value: $userTokenData
+			),
+			cacheExpire: Constant::$TOKEN_EXPIRY_TIME
+		);
+
+		return $userTokenData;
+	}
+
+	/**
+	 * Generates session
+	 *
+	 * @return array
+	 */
+	private function generateSession(): array
+	{
+		Session::sessionStartReadWrite();
+		$userSessionData = [
+			'authId' => session_id(),
+			'authMode' => 'Session',
+			'authTimestamp' => Env::$timestamp,
+			'httpRequestHash' => $this->http->httpReqData['httpRequestHash']
+		];
+
+		foreach ($this->http->req->s['userData'] as $k => $v) {
+			$userSessionData[$k] = $v;
+		}
+
+		$_SESSION = $userSessionData;
+
+		return $userSessionData;
 	}
 
 	/**
@@ -286,156 +325,117 @@ class Login
 	{
 		$httpRequestHash = $this->http->httpReqData['httpRequestHash'];
 
-		$userTokenKey = null;
-		$userTokenKeyExist = false;
-		$userTokenKeyData = [];
+		$customerUserTokenKey = null;
+		$customerUserToken = null;
+	
+		$authFound = false;
+		$authFoundData = [];
 
-		$tokenFound = false;
-		$tokenFoundData = [];
+		$customerUserConcurrencyKey = null;
+		$customerUserConcurrencyData = null;
 
-		$userConcurrencyKey = null;
-		$userConcurrencyKeyData = null;
-
-		$userTokenKey = CacheServerKey::customerUserToken(
+		$customerUserTokenKey = CacheServerKey::customerUserToken(
 			customerId: $this->http->req->customerId,
 			userId: $this->http->req->userId
 		);
 
-		if ($this->cacheExist(cacheKey: $userTokenKey)) {
-			$userTokenKeyExist = true;
-			$userTokenKeyData = json_decode(
-				json: $this->cacheGet(
-					cacheKey: $userTokenKey
-				),
-				associative: true
+		if ($this->cacheExist(cacheKey: $customerUserTokenKey)) {
+			$customerUserToken = $this->cacheGet(
+				cacheKey: $customerUserTokenKey
 			);
-		}
-
-		if (
-			$userTokenKeyExist
-			&& count($userTokenKeyData) === 0
-		) {
-			$this->cacheDelete(cacheKey: $userTokenKey);
-		} else {
-			if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
-				$userConcurrencyKey = CacheServerKey::customerUserConcurrency(
-					customerId: $this->http->req->customerId,
-					userId: $this->http->req->userId
-				);
-
-				if ($this->cacheExist(cacheKey: $userConcurrencyKey)) {
-					$userConcurrencyKeyData = $this->cacheGet(
-						cacheKey: $userConcurrencyKey
-					);
-
-					foreach ($userTokenKeyData as $token => $tokenData) {
-						if (!$this->cacheExist(cacheKey: CacheServerKey::token(token: $token))) {
-							unset($userTokenKeyData[$token]);
-							continue;
-						}
-						$timeLeft = Env::$timestamp - $tokenData['timestamp'];
-						if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
-							$this->cacheDelete(
-								cacheKey: CacheServerKey::token(
-									token: $token
-								)
-							);
-							unset($userTokenKeyData[$token]);
-							continue;
-						}
-						if (
-							$tokenData['httpRequestHash'] === $httpRequestHash
-							&& (Constant::$TOKEN_EXPIRY_TIME - $timeLeft) > 0
-							&& $userConcurrencyKeyData === $token
-						) {
-							$tokenFoundData = $tokenData;
-							$tokenFound = true;
-						}
-					}
-				}
-			} else {
-				$token = key($userTokenKeyData);
-				$tokenData = $userTokenKeyData[$token];
-				if (!$this->cacheExist(cacheKey: CacheServerKey::token(token: $token))) {
-					unset($userTokenKeyData[$token]);
-				}
-				$timeLeft = Env::$timestamp - $tokenData['timestamp'];
-				if (
-					isset($userTokenKeyData[$token])
-					&& (Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0
-				) {
-					$this->cacheDelete(
-						cacheKey: CacheServerKey::token(
-							token: $token
-						)
-					);
-					unset($userTokenKeyData[$token]);
-				}
-				if (
-					isset($userTokenKeyData[$token])
-					&& (Constant::$TOKEN_EXPIRY_TIME - $timeLeft) > 0
-					&& $tokenData['httpRequestHash'] === $httpRequestHash
-				) {
-					$tokenFoundData = $tokenData;
-					$tokenFound = true;
-				} else {
-					$userTokenKeyData = [];
-				}
-			}
-		}
-
-		if (!$tokenFound) {
-			$newTokenData = $this->generateToken();
-			$newTokenData['httpRequestHash'] = $httpRequestHash;
-
-			unset($this->http->req->s['userData']['password_hash']);
-			foreach ($newTokenData as $k => $v) {
-				$this->http->req->s['userData'][$k] = $v;
-			}
-
-			$this->cacheSet(
-				cacheKey: CacheServerKey::token(token: $newTokenData['token']),
-				cacheValue: json_encode(
-					value: $this->http->req->s['userData']
-				),
-				cacheExpire: Constant::$TOKEN_EXPIRY_TIME
-			);
-
-			$userTokenKeyData[$newTokenData['token']] = $newTokenData;
-			$tokenFoundData = &$newTokenData;
-			$tokenFound = true;
 		}
 
 		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
-			if (count($userTokenKeyData) >= Env::$maxConcurrentLogin) {
+			$customerUserConcurrencyKey = CacheServerKey::customerUserConcurrency(
+				customerId: $this->http->req->customerId,
+				userId: $this->http->req->userId
+			);
+
+			if ($this->cacheExist(cacheKey: $customerUserConcurrencyKey)) {
+				$customerUserConcurrencyData = json_decode(
+					json: $this->cacheGet(
+						cacheKey: $customerUserConcurrencyKey
+					),
+					associative: true
+				);
+
+				foreach ($customerUserConcurrencyData as $authId => $authData) {
+					if (
+						$authData['authMode'] === 'Token'
+						&& !$this->cacheExist(cacheKey: CacheServerKey::token(token: $authId))
+					) {
+						unset($customerUserConcurrencyData[$authId]);
+						continue;
+					}
+					if (
+						$authData['authMode'] === 'Session'
+					) {
+						$time = Env::$timestamp - $authFoundData['authTimestamp'];
+						if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
+							unset($customerUserConcurrencyData[$authId]);
+							continue;
+						}
+					}
+					if (
+						$customerUserToken !== null
+						&& $customerUserToken === $authId
+						&& $authData['httpRequestHash'] === $httpRequestHash
+					) {
+						$authFoundData = $authData;
+						$authFound = true;
+					}
+				}
+			}
+		} else {
+			if (
+				$customerUserToken !== null
+				&& $this->cacheExist(cacheKey: CacheServerKey::token(token: $customerUserToken))
+			) {
+				$authId = $customerUserToken;
+				$authData = $this->cacheGet(cacheKey: CacheServerKey::token(token: $customerUserToken));
+				if ($authData['httpRequestHash'] === $httpRequestHash) {
+					$authFoundData = $authData;
+					$authFound = true;
+				}
+			}
+		}
+
+		if (!$authFound) {
+			$authFoundData = $this->generateToken();
+			$authFound = true;
+
+			$this->cacheSet(
+				cacheKey: $customerUserTokenKey,
+				cacheValue: $authFoundData['authId'],
+				cacheExpire: Constant::$TOKEN_EXPIRY_TIME
+			);
+
+			$customerUserConcurrencyData[$authFoundData['authId']] = $authFoundData;
+		}
+
+		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
+			if (count($customerUserConcurrencyData) >= Env::$maxConcurrentLogin) {
 				throw new \Exception(
 					message: 'Account already in use. '
 						. 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
 					code: HttpStatus::$Conflict
 				);
 			}
-			$userConcurrencyKey = $userConcurrencyKey ?? CacheServerKey::customerUserConcurrency(
+			$customerUserConcurrencyKey = $customerUserConcurrencyKey ?? CacheServerKey::customerUserConcurrency(
 				customerId: $this->http->req->customerId,
 				userId: $this->http->req->userId
 			);
 			$this->cacheSet(
-				cacheKey: $userConcurrencyKey,
-				cacheValue: $tokenFoundData['token'],
+				cacheKey: $customerUserConcurrencyKey,
+				cacheValue: json_encode($customerUserConcurrencyData),
 				cacheExpire: Env::$concurrentAccessInterval
 			);
 		}
-		$this->cacheSet(
-			cacheKey: $userTokenKey,
-			cacheValue: json_encode(
-				value: $userTokenKeyData
-			),
-			cacheExpire: Constant::$TOKEN_EXPIRY_TIME
-		);
-		$this->updateDb(userData: $userTokenKeyData);
+		$this->updateDb(userData: $authFoundData);
 
-		$time = Env::$timestamp - $tokenFoundData['timestamp'];
+		$time = Env::$timestamp - $authFoundData['authTimestamp'];
 		$output = [
-			'Token' => $tokenFoundData['token'],
+			'Token' => $authFoundData['authId'],
 			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constant::$TOKEN_EXPIRY_TIME - $time))
 		];
 
@@ -494,136 +494,113 @@ class Login
 	{
 		$httpRequestHash = $this->http->httpReqData['httpRequestHash'];
 
-		$currentSessionId = session_id();
+		$customerUserSessionIdKey = null;
+		$customerUserSessionId = null;
+	
+		$authFound = false;
+		$authFoundData = [];
 
-		$userSessionKey = null;
-		$userSessionKeyExist = false;
-		$userSessionKeyData = [];
+		$customerUserConcurrencyKey = null;
+		$customerUserConcurrencyData = null;
 
-		$sessionFound = false;
-		$sessionFoundData = [];
-
-		$userConcurrencyKey = null;
-		$userConcurrencyKeyData = null;
-
-		$userSessionKey = CacheServerKey::customerUserSessionId(
+		$customerUserSessionIdKey = CacheServerKey::customerUserSessionId(
 			customerId: $this->http->req->customerId,
 			userId: $this->http->req->userId
 		);
 
-		if ($this->cacheExist(cacheKey: $userSessionKey)) {
-			$userSessionKeyExist = true;
-			$userSessionKeyData = json_decode(
-				json: $this->cacheGet(
-					cacheKey: $userSessionKey
-				),
-				associative: true
+		if ($this->cacheExist(cacheKey: $customerUserSessionIdKey)) {
+			$customerUserSessionId = $this->cacheGet(
+				cacheKey: $customerUserSessionIdKey
 			);
 		}
 
-		if (
-			$userSessionKeyExist
-			&& count($userSessionKeyData) === 0
-		) {
-			$this->cacheDelete(cacheKey: $userSessionKey);
-		} else {
-			if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
-				$userConcurrencyKey = CacheServerKey::customerUserConcurrency(
-					customerId: $this->http->req->customerId,
-					userId: $this->http->req->userId
+		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
+			$customerUserConcurrencyKey = CacheServerKey::customerUserConcurrency(
+				customerId: $this->http->req->customerId,
+				userId: $this->http->req->userId
+			);
+
+			if ($this->cacheExist(cacheKey: $customerUserConcurrencyKey)) {
+				$customerUserConcurrencyData = json_decode(
+					json: $this->cacheGet(
+						cacheKey: $customerUserConcurrencyKey
+					),
+					associative: true
 				);
-
-				if ($this->cacheExist(cacheKey: $userConcurrencyKey)) {
-					$userConcurrencyKeyData = $this->cacheGet(
-						cacheKey: $userConcurrencyKey
-					);
-
-					foreach ($userSessionKeyData as $sessionId => $sessionData) {
-						$timeLeft = Env::$timestamp - $sessionData['sessionExpiryTimestamp'];
+				
+				foreach ($customerUserConcurrencyData as $authId => $authData) {
+					if (
+						$authData['authMode'] === 'Token'
+						&& !$this->cacheExist(cacheKey: CacheServerKey::token(token: $authId))
+					) {
+						unset($customerUserConcurrencyData[$authId]);
+						continue;
+					}
+					if (
+						$authData['authMode'] === 'Session'
+					) {
+						$time = Env::$timestamp - $authFoundData['authTimestamp'];
 						if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
-							Session::deleteSession(sessionId: $sessionId);
-							unset($userSessionKeyData[$sessionId]);
+							unset($customerUserConcurrencyData[$authId]);
 							continue;
 						}
-						if (
-							$sessionId === $currentSessionId
-							&& $userConcurrencyKeyData === $sessionId
-							&& (Constant::$TOKEN_EXPIRY_TIME - $timeLeft) > 0
-							&& $sessionData['httpRequestHash'] === $httpRequestHash
-						) {
-							$sessionFoundData = $sessionData;
-							$sessionFound = true;
-						}
+					}
+					if (
+						$customerUserSessionId !== null
+						&& $customerUserSessionId === $authId
+						&& $authData['httpRequestHash'] === $httpRequestHash
+					) {
+						$authFoundData = $authData;
+						$authFound = true;
 					}
 				}
-			} else {
-				$sessionId = key($userSessionKeyData);
-				$sessionData = $userSessionKeyData[$sessionId];
-				$timeLeft = Env::$timestamp - $sessionData['sessionExpiryTimestamp'];
-
-				if (
-					$sessionId === $currentSessionId
-					&& (Constant::$TOKEN_EXPIRY_TIME - $timeLeft) > 0
-					&& $sessionData['httpRequestHash'] === $httpRequestHash
-				) {
-					$sessionFoundData = $sessionData;
-					$sessionFound = true;
-				} else {
-					$userSessionKeyData = [];
+			}
+		} else {
+			Session::sessionStartReadonly();
+			if ($customerUserSessionId === session_id()) {
+				if ($_SESSION['httpRequestHash'] === $httpRequestHash) {
+					$authFoundData = $_SESSION;
+					$authFound = true;
 				}
 			}
 		}
 
-		if (!$sessionFound) {
-			Session::sessionStartReadWrite();
-			$newSessionData = [
-				'sessionId' => session_id(),
-				'timestamp' => Env::$timestamp,
-				'httpRequestHash' => $httpRequestHash,
-				'sessionExpiryTimestamp' => (Env::$timestamp + Constant::$TOKEN_EXPIRY_TIME)
-			];
+		if (!$authFound) {
+			$authFoundData = $this->generateSession();
+			$authFound = true;
 
-			unset($this->http->req->s['userData']['password_hash']);
-			foreach ($newSessionData as $k => $v) {
-				$this->http->req->s['userData'][$k] = $v;
-			}
-			$_SESSION = $this->http->req->s['userData'];
+			$this->cacheSet(
+				cacheKey: $customerUserSessionIdKey,
+				cacheValue: $authFoundData['authId'],
+				cacheExpire: Constant::$TOKEN_EXPIRY_TIME
+			);
 
-			$userSessionKeyData[$newSessionData['sessionId']] = $newSessionData;
-			$sessionFoundData = &$newSessionData;
-			$sessionFound = true;
+			$customerUserConcurrencyData[$authFoundData['authId']] = $authFoundData;
 		}
 
 		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
-			if (count($userSessionKeyData) >= Env::$maxConcurrentLogin) {
+			if (count($customerUserConcurrencyData) >= Env::$maxConcurrentLogin) {
 				throw new \Exception(
 					message: 'Account already in use. '
 						. 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
 					code: HttpStatus::$Conflict
 				);
 			}
-			$userConcurrencyKey = $userConcurrencyKey ?? CacheServerKey::customerUserConcurrency(
+			$customerUserConcurrencyKey = $customerUserConcurrencyKey ?? CacheServerKey::customerUserConcurrency(
 				customerId: $this->http->req->customerId,
 				userId: $this->http->req->userId
 			);
 			$this->cacheSet(
-				cacheKey: $userConcurrencyKey,
-				cacheValue: $sessionFoundData['sessionId'],
+				cacheKey: $customerUserConcurrencyKey,
+				cacheValue: json_encode($customerUserConcurrencyData),
 				cacheExpire: Env::$concurrentAccessInterval
 			);
 		}
-		$this->cacheSet(
-			cacheKey: $userSessionKey,
-			cacheValue: json_encode(
-				value: $userSessionKeyData
-			),
-			cacheExpire: Constant::$TOKEN_EXPIRY_TIME
-		);
-		$this->updateDb(userData: $userSessionKeyData);
+		$this->updateDb(userData: $authFoundData);
 
-		$time = Env::$timestamp - $sessionFoundData['sessionExpiryTimestamp'];
+		$time = Env::$timestamp - $authFoundData['authTimestamp'];
 		$output = [
-			'sessionId' => $sessionFoundData['sessionId'],
+			'Token' => $authFoundData['authId'],
 			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constant::$TOKEN_EXPIRY_TIME - $time))
 		];
 

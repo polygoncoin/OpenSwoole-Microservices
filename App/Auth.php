@@ -69,14 +69,14 @@ class Auth
 			isset($_SESSION)
 			&& isset($_SESSION['id'])
 		) {
-			if ($_SESSION['sessionExpiryTimestamp'] <= Env::$timestamp) {
+			if (($_SESSION['authTimestamp'] + Constant::$TOKEN_EXPIRY_TIME) <= Env::$timestamp) {
 				throw new \Exception(
 					message: 'Please login',
 					code: HttpStatus::$BadRequest
 				);
 			}
 			$this->http->req->s['userData'] = $_SESSION;
-			$this->http->req->s['token'] = session_id();
+			$this->http->req->s['authId'] = session_id();
 		} elseif (
 			isset($this->http->httpReqData['header']['tokenHeader'])
 			&& $this->http->httpReqData['header']['tokenHeader'] !== null
@@ -93,9 +93,9 @@ class Auth
 					code: HttpStatus::$BadRequest
 				);
 			}
-			$this->http->req->s['token'] = $matches[1];
+			$this->http->req->s['authId'] = $matches[1];
 			$tokenKey = CacheServerKey::token(
-				token: $this->http->req->s['token']
+				token: $this->http->req->s['authId']
 			);
 			if (
 				!$this->http->req->clientCacheObj->cacheExist(
@@ -119,40 +119,16 @@ class Auth
 				code: HttpStatus::$BadRequest
 			);
 		}
+
+		if ($this->http->req->s['userData']['httpRequestHash'] !== $this->http->httpReqData['httpRequestHash']) {
+			throw new \Exception(
+				message: 'Current Browser or the Device location not matching with Browser or the Device location during Login',
+				code: HttpStatus::$PreconditionFailed
+			);
+		}
+
 		$this->http->req->userId = $this->http->req->s['userData']['id'];
 		$this->http->req->groupId = $this->http->req->s['userData']['group_id'];
-
-		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
-			$userConcurrencyKey = CacheServerKey::customerUserConcurrency(
-				customerId: $this->http->req->customerId,
-				userId: $this->http->req->userId
-			);
-			if ($this->http->req->clientCacheObj->cacheExist(cacheKey: $userConcurrencyKey)) {
-				$userConcurrencyKeyData = $this->http->req->clientCacheObj->cacheGet(
-					cacheKey: $userConcurrencyKey
-				);
-				if ($userConcurrencyKeyData !== $this->http->req->s['token']) {
-					throw new \Exception(
-						message: 'Account already in use. '
-							. 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
-						code: HttpStatus::$Conflict
-					);
-				}
-			} else {
-				$this->http->req->clientCacheObj->cacheSet(
-					cacheKey: $userConcurrencyKey,
-					cacheValue: $this->http->req->s['token'],
-					cacheExpire: Env::$concurrentAccessInterval
-				);
-			}
-		} else {
-			if ($this->http->req->s['userData']['httpRequestHash'] !== $this->http->httpReqData['httpRequestHash']) {
-				throw new \Exception(
-					message: 'Token not supported from this Browser/Device',
-					code: HttpStatus::$PreconditionFailed
-				);
-			}
-		}
 	}
 
 	/**

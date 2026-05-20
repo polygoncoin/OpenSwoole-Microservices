@@ -1041,7 +1041,7 @@ trait AppTrait
 	 */
 	public function getTriggerData($triggerConfig): mixed
 	{
-		if (!isset($this->http->req->s['token'])) {
+		if (!isset($this->http->req->s['authId'])) {
 			throw new \Exception(
 				message: 'Missing token',
 				code: HttpStatus::$InternalServerError

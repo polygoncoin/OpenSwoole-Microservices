@@ -120,7 +120,7 @@ class Password implements CustomInterface
 				userId: $this->http->req->userId
 			);
 			$this->http->req->clientCacheObj->cacheDelete(
-				cacheKey: CacheServerKey::token(token: $this->http->req->s['token'])
+				cacheKey: CacheServerKey::token(token: $this->http->req->s['authId'])
 			);
 
 			$this->http->res->dataEncode->addKeyData(
