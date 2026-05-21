@@ -21,6 +21,7 @@ use Microservices\App\Env;
 $headerArr = $defaultHeaderArr;
 // $headerArr[] = 'Content-Type: multipart/form-data; charset=utf-8';
 $proceed = false;
+
 if (
 	isset($token)
 	&& $token !== null

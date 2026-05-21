@@ -20,6 +20,7 @@ use Microservices\App\Env;
 
 $headerArr = $defaultHeaderArr;
 $proceed = false;
+
 if (
 	isset($token)
 	&& $token !== null

@@ -65,8 +65,9 @@ $server->on(
 		$httpReqData = [];
 
 		$httpReqData['streamData'] = true;
-		$httpReqData['server']['domainName'] = 'api.customer001.localhost'; // Private
-		// $httpReqData['server']['domainName'] = 'localhost'; // Public
+		$httpReqData['server']['domainName'] = 'api.customer001.localhost'; // Private Token mode
+		// $httpReqData['server']['domainName'] = 'web.customer001.localhost'; // Private Session mode
+		// $httpReqData['server']['domainName'] = 'customer001.localhost'; // Public mode
 		$httpReqData['server']['httpMethod'] = $request->server['request_method'];
 
 		if (
@@ -126,7 +127,7 @@ $server->on(
 				]
 			)
 		) {
-			$testObj = new Test();
+			$testObj = new Test($httpReqData);
 			switch ($httpReqData['get'][ROUTE_URL_PARAM]) {
 				case '/all-test':
 					$response->end('<pre>'.print_r(value: $testObj->processAllTest(), return: true));

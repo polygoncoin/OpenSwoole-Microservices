@@ -38,226 +38,129 @@ class Session
 	 *
 	 * @var null|string
 	 */
-	public static $sessionDomain = null;
+	public $sessionDomain = null;
 
 	/**
 	 * SET THESE TO ENABLE ENCRYPTION
 	 * ENCRYPTION PASS PHRASE
 	 *
 	 * Value = base64_encode(openssl_random_pseudo_bytes(32))
-	 * Example: public static $ENCRYPTION_PASS_PHRASE =
+	 * Example: public $ENCRYPTION_PASS_PHRASE =
 	 * 'H7OO2m3qe9pHyAHFiERlYJKnlTMtCJs9ZbGphX9NO/c=';
 	 *
 	 * @var null|string
 	 */
-	public static $ENCRYPTION_PASS_PHRASE = null;
+	public $ENCRYPTION_PASS_PHRASE = null;
 
 	/**
 	 * SET THESE TO ENABLE ENCRYPTION
 	 * ENCRYPTION IV
 	 *
 	 * Value = base64_encode(openssl_random_pseudo_bytes(16))
-	 * Example: public static $ENCRYPTION_IV = 'HnPG5az9Xaxam9G9tMuRaw==';
+	 * Example: public $ENCRYPTION_IV = 'HnPG5az9Xaxam9G9tMuRaw==';
 	 *
 	 * @var null|string
 	 */
-	public static $ENCRYPTION_IV = null;
+	public $ENCRYPTION_IV = null;
 
 	/* MySql Session config */
-	public static $mySqlServerHostname = '';
-	public static $mySqlServerPort = 3306;
-	public static $mySqlServerUsername = '';
-	public static $mySqlServerPassword = '';
-	public static $mySqlServerDatabase = '';
-	public static $mySqlServerTable = '';
+	public $mySqlServerHostname = '';
+	public $mySqlServerPort = 3306;
+	public $mySqlServerUsername = '';
+	public $mySqlServerPassword = '';
+	public $mySqlServerDatabase = '';
+	public $mySqlServerTable = '';
 
 	/* PostgreSql Session config */
-	public static $pgSqlServerHostname = '';
-	public static $pgSqlServerPort = 5432;
-	public static $pgSqlServerUsername = null;
-	public static $pgSqlServerPassword = null;
-	public static $pgSqlServerDatabase = '';
-	public static $pgSqlServerTable = '';
+	public $pgSqlServerHostname = '';
+	public $pgSqlServerPort = 5432;
+	public $pgSqlServerUsername = null;
+	public $pgSqlServerPassword = null;
+	public $pgSqlServerDatabase = '';
+	public $pgSqlServerTable = '';
 
 	/* MongoDb Session config */
-	public static $mongoDbServerHostname = '';
-	public static $mongoDbServerPort = 27017;
-	public static $mongoDbServerUsername = null;
-	public static $mongoDbServerPassword = null;
-	public static $mongoDbServerDatabase = '';
-	public static $mongoDbServerCollection = '';
+	public $mongoDbServerHostname = '';
+	public $mongoDbServerPort = 27017;
+	public $mongoDbServerUsername = null;
+	public $mongoDbServerPassword = null;
+	public $mongoDbServerDatabase = '';
+	public $mongoDbServerCollection = '';
 
 	/* Redis Session config */
-	public static $redisServerHostname = '';
-	public static $redisServerPort = 6379;
-	public static $redisServerUsername = null;
-	public static $redisServerPassword = null;
-	public static $redisServerDatabase = 0;
+	public $redisServerHostname = '';
+	public $redisServerPort = 6379;
+	public $redisServerUsername = null;
+	public $redisServerPassword = null;
+	public $redisServerDatabase = 0;
 
 	/* Memcached Session config */
-	public static $memcachedServerHostname = '';
-	public static $memcachedServerPort = 11211;
+	public $memcachedServerHostname = '';
+	public $memcachedServerPort = 11211;
 
 	/**
 	 * Session id Cookie name
 	 *
 	 * @var string
 	 */
-	public static $sessionName = 'PHPSESSID'; // Default
+	public $sessionName = 'PHPSESSID'; // Default
 
 	/**
 	 * Session Data Cookie name; For cookie as container
 	 *
 	 * @var string
 	 */
-	public static $sessionDataName = 'PHPSESSDATA';
+	public $sessionDataName = 'PHPSESSDATA';
 
 	/**
 	 * Session Life
 	 *
 	 * @var integer
 	 */
-	public static $sessionMaxLifetime = null;
+	public $sessionMaxLifetime = null;
 
 	/**
 	 * File Session optionArr
-	 * Example: public static $sessionSavePath = '/tmp';
+	 * Example: public $sessionSavePath = '/tmp';
 	 *
 	 * @var null|string
 	 */
-	public static $sessionSavePath = null;
+	public $sessionSavePath = null;
 
 	/**
 	 * Session Handler mode
 	 *
 	 * @var null|string
 	 */
-	public static $sessionMode = null;
+	public $sessionMode = null;
 
 	/**
 	 * Session Start function argument
 	 *
 	 * @var null|array
 	 */
-	public static $optionArr = null;
+	public $optionArr = null;
 
 	/**
 	 * Session handler Container
 	 *
 	 * @var null|SessionContainerInterface
 	 */
-	public static $sessionContainer = null;
+	public $sessionContainer = null;
 
 	/**
-	 * Validate settings
+	 * Session initProcess function initialized
 	 *
-	 * @return void
+	 * @var bool
 	 */
-	private static function validateSettings(): void
+	public $initProcessInitialized = false;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct()
 	{
-		// sessionMode validation
-		if (
-			!in_array(
-				needle: self::$sessionMode,
-				haystack: ['File', 'MySql', 'PostgreSql', 'MongoDb', 'Redis', 'Memcached', 'Cookie']
-			)
-		) {
-			die('Invalid "sessionMode"');
-		}
 
-		// Required param validations
-		if (empty(self::$sessionName)) {
-			die('Invalid "sessionName"');
-		}
-		if (
-			self::$sessionMode === 'Cookie'
-			&& empty(self::$sessionDataName)
-		) {
-			die('Invalid "sessionDataName"');
-		}
-
-		// Required parameters as per sessionMode
-		switch (self::$sessionMode) {
-			case 'Cookie':
-				// Encryption compulsary for saving data as cookie
-				if (empty(self::$ENCRYPTION_PASS_PHRASE)) {
-					die('Invalid "ENCRYPTION_PASS_PHRASE"');
-				}
-				if (empty(self::$ENCRYPTION_IV)) {
-					die('Invalid "ENCRYPTION_IV"');
-				}
-				break;
-			case 'MySql':
-				if (empty(self::$mySqlServerHostname)) {
-					die('Invalid "mySqlServerHostname"');
-				}
-				if (empty(self::$mySqlServerPort)) {
-					die('Invalid "mySqlServerPort"');
-				}
-				if (empty(self::$mySqlServerUsername)) {
-					die('Invalid "mySqlServerUsername"');
-				}
-				if (empty(self::$mySqlServerPassword)) {
-					die('Invalid "mySqlServerPassword"');
-				}
-				if (empty(self::$mySqlServerDatabase)) {
-					die('Invalid "mySqlServerDatabase"');
-				}
-				if (empty(self::$mySqlServerTable)) {
-					die('Invalid "mySqlServerTable"');
-				}
-				break;
-			case 'PostgreSql':
-				if (empty(self::$pgSqlServerHostname)) {
-					die('Invalid "pgSqlServerHostname"');
-				}
-				if (empty(self::$pgSqlServerPort)) {
-					die('Invalid "pgSqlServerPort"');
-				}
-				if (empty(self::$pgSqlServerDatabase)) {
-					die('Invalid "pgSqlServerDatabase"');
-				}
-				if (empty(self::$pgSqlServerTable)) {
-					die('Invalid "pgSqlServerTable"');
-				}
-				break;
-			case 'MongoDb':
-				if (empty(self::$mongoDbServerHostname)) {
-					die('Invalid "mongoDbServerHostname"');
-				}
-				if (empty(self::$mongoDbServerPort)) {
-					die('Invalid "mongoDbServerPort"');
-				}
-				if (empty(self::$mongoDbServerDatabase)) {
-					die('Invalid "mongoDbServerDatabase"');
-				}
-				if (empty(self::$mongoDbServerCollection)) {
-					die('Invalid "mongoDbServerCollection"');
-				}
-				break;
-			case 'Redis':
-				if (empty(self::$redisServerHostname)) {
-					die('Invalid "redisServerHostname"');
-				}
-				if (empty(self::$redisServerPort)) {
-					die('Invalid "redisServerPort"');
-				}
-				if (
-					empty(self::$redisServerDatabase)
-					&& self::$redisServerDatabase != 0
-				) {
-					die('Invalid "redisServerDatabase"');
-				}
-				break;
-			case 'Memcached':
-				if (empty(self::$memcachedServerHostname)) {
-					die('Invalid "memcachedServerHostname"');
-				}
-				if (empty(self::$memcachedServerPort)) {
-					die('Invalid "memcachedServerPort"');
-				}
-				break;
-		}
 	}
 
 	/**
@@ -265,70 +168,70 @@ class Session
 	 *
 	 * @return void
 	 */
-	private static function initContainer(): void
+	private function initContainer(): void
 	{
 		// Initialize Container
 		$containerClassName = 'Microservices\\App\\SessionHandler\\Container\\'
-			. self::$sessionMode . 'BasedSessionContainer';
-		self::$sessionContainer = new $containerClassName();
+			. $this->sessionMode . 'BasedSessionContainer';
+		$this->sessionContainer = new $containerClassName();
 
 		// Setting required common parameters
-		self::$sessionContainer->sessionOptionArr = self::$optionArr;
-		self::$sessionContainer->sessionName = self::$sessionName;
-		self::$sessionContainer->sessionMaxLifetime = (int)self::$sessionMaxLifetime;
+		$this->sessionContainer->sessionOptionArr = $this->optionArr;
+		$this->sessionContainer->sessionName = $this->sessionName;
+		$this->sessionContainer->sessionMaxLifetime = (int)$this->sessionMaxLifetime;
 
 		// Setting required parameters as per sessionMode
-		switch (self::$sessionMode) {
+		switch ($this->sessionMode) {
 			case 'MySql':
-				self::$sessionContainer->mySqlServerHostname = self::$mySqlServerHostname;
-				self::$sessionContainer->mySqlServerPort = (int)self::$mySqlServerPort;
-				self::$sessionContainer->mySqlServerUsername = self::$mySqlServerUsername;
-				self::$sessionContainer->mySqlServerPassword = self::$mySqlServerPassword;
-				self::$sessionContainer->mySqlServerDatabase = self::$mySqlServerDatabase;
-				self::$sessionContainer->mySqlServerTable = self::$mySqlServerTable;
+				$this->sessionContainer->mySqlServerHostname = $this->mySqlServerHostname;
+				$this->sessionContainer->mySqlServerPort = (int)$this->mySqlServerPort;
+				$this->sessionContainer->mySqlServerUsername = $this->mySqlServerUsername;
+				$this->sessionContainer->mySqlServerPassword = $this->mySqlServerPassword;
+				$this->sessionContainer->mySqlServerDatabase = $this->mySqlServerDatabase;
+				$this->sessionContainer->mySqlServerTable = $this->mySqlServerTable;
 				break;
 			case 'PostgreSql':
-				self::$sessionContainer->pgSqlServerHostname = self::$pgSqlServerHostname;
-				self::$sessionContainer->pgSqlServerPort = (int)self::$pgSqlServerPort;
-				self::$sessionContainer->pgSqlServerUsername = self::$pgSqlServerUsername;
-				self::$sessionContainer->pgSqlServerPassword = self::$pgSqlServerPassword;
-				self::$sessionContainer->pgSqlServerDatabase = self::$pgSqlServerDatabase;
-				self::$sessionContainer->pgSqlServerTable = self::$pgSqlServerTable;
+				$this->sessionContainer->pgSqlServerHostname = $this->pgSqlServerHostname;
+				$this->sessionContainer->pgSqlServerPort = (int)$this->pgSqlServerPort;
+				$this->sessionContainer->pgSqlServerUsername = $this->pgSqlServerUsername;
+				$this->sessionContainer->pgSqlServerPassword = $this->pgSqlServerPassword;
+				$this->sessionContainer->pgSqlServerDatabase = $this->pgSqlServerDatabase;
+				$this->sessionContainer->pgSqlServerTable = $this->pgSqlServerTable;
 				break;
 			case 'MongoDb':
-				self::$sessionContainer->mongoDbServerHostname = self::$mongoDbServerHostname;
-				self::$sessionContainer->mongoDbServerPort = (int)self::$mongoDbServerPort;
-				self::$sessionContainer->mongoDbServerUsername = self::$mongoDbServerUsername;
-				self::$sessionContainer->mongoDbServerPassword = self::$mongoDbServerPassword;
-				self::$sessionContainer->mongoDbServerDatabase = self::$mongoDbServerDatabase;
-				self::$sessionContainer->mongoDbServerCollection = self::$mongoDbServerCollection;
+				$this->sessionContainer->mongoDbServerHostname = $this->mongoDbServerHostname;
+				$this->sessionContainer->mongoDbServerPort = (int)$this->mongoDbServerPort;
+				$this->sessionContainer->mongoDbServerUsername = $this->mongoDbServerUsername;
+				$this->sessionContainer->mongoDbServerPassword = $this->mongoDbServerPassword;
+				$this->sessionContainer->mongoDbServerDatabase = $this->mongoDbServerDatabase;
+				$this->sessionContainer->mongoDbServerCollection = $this->mongoDbServerCollection;
 				break;
 			case 'Redis':
-				self::$sessionContainer->redisServerHostname = self::$redisServerHostname;
-				self::$sessionContainer->redisServerPort = (int)self::$redisServerPort;
-				self::$sessionContainer->redisServerUsername = self::$redisServerUsername;
-				self::$sessionContainer->redisServerPassword = self::$redisServerPassword;
-				self::$sessionContainer->redisServerDatabase = self::$redisServerDatabase;
+				$this->sessionContainer->redisServerHostname = $this->redisServerHostname;
+				$this->sessionContainer->redisServerPort = (int)$this->redisServerPort;
+				$this->sessionContainer->redisServerUsername = $this->redisServerUsername;
+				$this->sessionContainer->redisServerPassword = $this->redisServerPassword;
+				$this->sessionContainer->redisServerDatabase = $this->redisServerDatabase;
 				break;
 			case 'Memcached':
-				self::$sessionContainer->memcachedServerHostname = self::$memcachedServerHostname;
-				self::$sessionContainer->memcachedServerPort = (int)self::$memcachedServerPort;
+				$this->sessionContainer->memcachedServerHostname = $this->memcachedServerHostname;
+				$this->sessionContainer->memcachedServerPort = (int)$this->memcachedServerPort;
 				break;
 			case 'Cookie':
-				self::$sessionContainer->sessionDataName = self::$sessionDataName;
+				$this->sessionContainer->sessionDataName = $this->sessionDataName;
 				break;
 		}
 
 		// Setting encryption parameters
 		if (
-			!empty(self::$ENCRYPTION_PASS_PHRASE)
-			&& !empty(self::$ENCRYPTION_IV)
+			!empty($this->ENCRYPTION_PASS_PHRASE)
+			&& !empty($this->ENCRYPTION_IV)
 		) {
-			self::$sessionContainer->passphrase = base64_decode(
-				string: self::$ENCRYPTION_PASS_PHRASE
+			$this->sessionContainer->passphrase = base64_decode(
+				string: $this->ENCRYPTION_PASS_PHRASE
 			);
-			self::$sessionContainer->iv = base64_decode(
-				string: self::$ENCRYPTION_IV
+			$this->sessionContainer->iv = base64_decode(
+				string: $this->ENCRYPTION_IV
 			);
 		}
 	}
@@ -338,19 +241,27 @@ class Session
 	 *
 	 * @return void
 	 */
-	private static function initProcess(): void
+	private function initProcess(): void
 	{
+		if ($this->initProcessInitialized) {
+			return;
+		}
+
+		$this->sessionStartCheck();
+
 		// Initialize container
-		self::initContainer();
+		$this->initContainer();
 
 		$customSessionHandler = new CustomSessionHandler(
-			container: self::$sessionContainer
+			container: $this->sessionContainer
 		);
-		$customSessionHandler->sessionName = self::$sessionName;
-		if (self::$sessionMode === 'Cookie') {
-			$customSessionHandler->sessionDataName = self::$sessionDataName;
+		$customSessionHandler->sessionName = $this->sessionName;
+		if ($this->sessionMode === 'Cookie') {
+			$customSessionHandler->sessionDataName = $this->sessionDataName;
 		}
 		session_set_save_handler($customSessionHandler, true);
+
+		$this->initProcessInitialized = true;
 	}
 
 	/**
@@ -360,39 +271,39 @@ class Session
 	 *
 	 * @return void
 	 */
-	private static function setOptions($optionArr = []): void
+	private function setOptions($optionArr = []): void
 	{
 		if (isset($optionArr['name'])) {
-			self::$sessionName = $optionArr['name'];
+			$this->sessionName = $optionArr['name'];
 		}
 
 		if (isset($optionArr['gc_maxlifetime'])) {
-			self::$sessionMaxLifetime = (int)$optionArr['gc_maxlifetime'];
+			$this->sessionMaxLifetime = (int)$optionArr['gc_maxlifetime'];
 		} else {
-			self::$sessionMaxLifetime = (int)Constant::$TOKEN_EXPIRY_TIME;
+			$this->sessionMaxLifetime = (int)Constant::$TOKEN_EXPIRY_TIME;
 		}
 
-		self::$optionArr = [ // always required.
+		$this->optionArr = [ // always required.
 			'use_strict_mode' => true,
-			'name' => self::$sessionName,
+			'name' => $this->sessionName,
 			'serialize_handler' => 'php_serialize',
 			'lazy_write' => true,
-			'gc_maxlifetime' => (int)self::$sessionMaxLifetime,
+			'gc_maxlifetime' => (int)$this->sessionMaxLifetime,
 			'cookie_lifetime' => 0,
 			'cookie_path' => '/',
 			'cookie_domain' => '',
 			'cookie_secure' => (
 				!in_array(
 					'localhost',
-					explode('.', self::$sessionDomain)
+					explode('.', $this->sessionDomain)
 				) ? true : false
 			),
 			'cookie_httponly' => true,
 			'cookie_samesite' => 'Strict'
 		];
 
-		if (self::$sessionMode === 'File') {
-			self::$optionArr['save_path'] = self::$sessionSavePath;
+		if ($this->sessionMode === 'File') {
+			$this->optionArr['save_path'] = $this->sessionSavePath;
 		}
 
 		if (!empty($optionArr)) {
@@ -406,7 +317,7 @@ class Session
 					// Skip option
 					continue;
 				}
-				self::$optionArr[$option] = $value;
+				$this->optionArr[$option] = $value;
 			}
 		}
 	}
@@ -419,56 +330,70 @@ class Session
 	 *
 	 * @return void
 	 */
-	public static function initSessionHandler($sessionMode, $options = []): void
+	public function initSessionHandler($sessionMode, $options = []): void
 	{
 		$env = parse_ini_file(filename: Constant::$ROOT
 			. DIRECTORY_SEPARATOR . '.env.session'
 		);
 		foreach ($env as $var => $value) {
-			self::$$var = $value;
+			$this->$var = $value;
 		}
 
-		self::$sessionMode = $sessionMode;
+		$this->sessionMode = $sessionMode;
 
 		// Set optoptionsionArr from php.ini if not set in this class
-		if (empty(self::$sessionName)) {
-			self::$sessionName = session_name();
+		if (empty($this->sessionName)) {
+			$this->sessionName = session_name();
 		}
-		if (self::$sessionMode === 'File') {
-			if (empty(self::$sessionSavePath)) {
-				self::$sessionSavePath = (session_save_path()
+		if ($this->sessionMode === 'File') {
+			if (empty($this->sessionSavePath)) {
+				$this->sessionSavePath = (session_save_path()
 					? session_save_path() : sys_get_temp_dir()) . '/session-files';
 			}
-			if (strpos(self::$sessionSavePath, '/') !== 0) {
-				self::$sessionSavePath =
-					__DIR__ . DIRECTORY_SEPARATOR . self::$sessionSavePath;
+			if (strpos($this->sessionSavePath, '/') !== 0) {
+				$this->sessionSavePath =
+					__DIR__ . DIRECTORY_SEPARATOR . $this->sessionSavePath;
 			}
 		}
 
-		// Comment this call once you are done with validating settings part
-		self::validateSettings();
-
 		// Initialize
-		self::setOptions(optionArr: $options);
-		self::initProcess();
+		$this->setOptions(optionArr: $options);
+		$this->initProcess();
+	}
+
+	/**
+	 * Close if Session is Active in write mode
+	 *
+	 * @return void
+	 */
+	public function sessionStartCheck(): void
+	{
+		if (isset($_SESSION)) {
+			if (
+				!isset($this->optionArr['read_and_close'])
+				|| $this->optionArr['read_and_close'] !== true
+			) {
+				session_write_close();
+			}
+		}
 	}
 
 	/**
 	 * Start session in read only mode
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public static function sessionStartReadonly(): bool
+	public function sessionStartReadonly(): bool
 	{
 		if (
-			isset($_COOKIE[self::$sessionName])
-			&& !empty($_COOKIE[self::$sessionName])
+			isset($_COOKIE[$this->sessionName])
+			&& !empty($_COOKIE[$this->sessionName])
 		) {
-			$optionArr = self::$optionArr;
-			$optionArr['read_and_close'] = true;
+			$this->sessionStartCheck();
+			$this->optionArr['read_and_close'] = true;
 
-			self::$sessionContainer->sessionOptionArr = $optionArr;
-			return session_start(options: $optionArr);
+			$this->sessionContainer->sessionOptionArr = $this->optionArr;
+			return session_start(options: $$this->optionArr);
 		}
 		return false;
 	}
@@ -478,10 +403,15 @@ class Session
 	 *
 	 * @return bool
 	 */
-	public static function sessionStartReadWrite(): bool
+	public function sessionStartReadWrite(): bool
 	{
-		self::$sessionContainer->sessionOptionArr = self::$optionArr;
-		return session_start(options: self::$optionArr);
+		$this->sessionContainer->sessionOptionArr = $this->optionArr;
+		$this->sessionStartCheck();
+		if (isset($this->optionArr['read_and_close'])) {
+			unset($this->optionArr['read_and_close']);
+		}
+
+		return session_start(options: $this->optionArr);
 	}
 
 	/**
@@ -491,9 +421,9 @@ class Session
 	 *
 	 * @return bool
 	 */
-	public static function deleteSession($sessionId): bool
+	public function deleteSession($sessionId): bool
 	{
-		return self::$sessionContainer->deleteSession($sessionId);
+		return $this->sessionContainer->deleteSession($sessionId);
 	}
 
 	/**
@@ -503,10 +433,10 @@ class Session
 	 *
 	 * @return void
 	 */
-	public static function deleteSessions($sessionIds): void
+	public function deleteSessions($sessionIds): void
 	{
 		for ($i = 0, $iCount = count($sessionIds); $i < $iCount; $i++) {
-			self::deleteSession($sessionIds[$i]);
+			$this->deleteSession($sessionIds[$i]);
 		}
 	}
 }

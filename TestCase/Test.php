@@ -30,6 +30,23 @@ namespace Microservices\TestCase;
 class Test
 {
 	/**
+	 * HTTP request data
+	 *
+	 * @var null|array
+	 */
+	public $httpReqData = null;
+
+	/**
+	 * Constructor
+	 *
+	 * @param array $httpReqData
+	 */
+	public function __construct(&$httpReqData)
+	{
+		$this->httpReqData = &$httpReqData;
+	}
+
+	/**
 	 * Process all request
 	 *
 	 * @return array
@@ -52,6 +69,7 @@ class Test
 	 */
 	public function processPrivate(): array
 	{
+		$httpReqData = &$this->httpReqData;
 		return include __DIR__ . DIRECTORY_SEPARATOR . 'PrivateTest.php';
 	}
 
@@ -62,6 +80,7 @@ class Test
 	 */
 	public function processPublic(): array
 	{
+		$httpReqData = &$this->httpReqData;
 		return include __DIR__ . DIRECTORY_SEPARATOR . 'PublicTest.php';
 	}
 
@@ -73,6 +92,7 @@ class Test
 	 */
 	public function processPublicXml(): array
 	{
+		$httpReqData = &$this->httpReqData;
 		return include __DIR__ . DIRECTORY_SEPARATOR . 'PublicTestXml.php';
 	}
 
@@ -83,6 +103,7 @@ class Test
 	 */
 	public function processPrivateSupplement(): array
 	{
+		$httpReqData = &$this->httpReqData;
 		return include __DIR__ . DIRECTORY_SEPARATOR . 'PrivateSupplementTest.php';
 	}
 }

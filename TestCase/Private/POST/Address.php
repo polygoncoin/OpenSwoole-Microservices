@@ -22,6 +22,7 @@ $headerArr = $defaultHeaderArr;
 $headerArr[] = $contentType;
 
 $proceed = false;
+
 if (
 	isset($token)
 	&& $token !== null

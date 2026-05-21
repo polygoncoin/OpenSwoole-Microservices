@@ -109,28 +109,28 @@ var handlerUrl = "http://127.0.0.1:9501?route=/registration-with-address&iRepres
 
 var payload = '<?xml version="1.0" encoding="UTF-8" ?>' +
 '<Payload>' +
-	<Rows>' +
-		<Row>' +
-			<firstname>Ramesh-1</firstname>' +
-			<lastname>Jangid</lastname>' +
-			<email>ramesh@test.com</email>' +
-			<username>test</username>' +
-			<password>shames11</password>' +
-			<address>' +
-				<address>A-203</address>' +
-			</address>' +
-		</Row>' +
-		<Row>' +
-			<firstname>Ramesh-2</firstname>' +
-			<lastname>Jangid</lastname>' +
-			<email>ramesh@test.com</email>' +
-			<username>test</username>' +
-			<password>shames11</password>' +
-			<address>' +
-				<address>A-203</address>' +
-			</address>' +
-		</Row>' +
-	</Rows>' +
+'	<Rows>' +
+'		<Row>' +
+'			<firstname>Ramesh-1</firstname>' +
+'			<lastname>Jangid</lastname>' +
+'			<email>ramesh@test.com</email>' +
+'			<username>test</username>' +
+'			<password>shames11</password>' +
+'			<address>' +
+'				<address>A-203</address>' +
+'			</address>' +
+'		</Row>' +
+'		<Row>' +
+'			<firstname>Ramesh-2</firstname>' +
+'			<lastname>Jangid</lastname>' +
+'			<email>ramesh@test.com</email>' +
+'			<username>test</username>' +
+'			<password>shames11</password>' +
+'			<address>' +
+'				<address>A-203</address>' +
+'			</address>' +
+'		</Row>' +
+'	</Rows>' +
 '</Payload>';
 
 var xmlhttp = new XMLHttpRequest();

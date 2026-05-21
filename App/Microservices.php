@@ -290,7 +290,8 @@ class Microservices
 	public function getHeaders(): array
 	{
 		$headerArr = [];
-		$headerArr['Access-Control-Allow-Origin'] = $this->httpReqData['server']['domainName'];
+
+		// $headerArr['Access-Control-Allow-Origin'] = $this->httpReqData['server']['domainName'];
 		$headerArr['Vary'] = 'Origin';
 		$headerArr['Access-Control-Allow-Headers'] = '*';
 

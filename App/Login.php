@@ -301,7 +301,11 @@ class Login
 	 */
 	private function generateSession(): array
 	{
-		Session::sessionStartReadWrite();
+		if ($this->http->req->session === null) {
+			$this->http->req->session = new Session();
+			$this->http->req->session->initSessionHandler(sessionMode: Env::$sessionMode, options: []);
+		}
+		$this->http->req->session->sessionStartReadWrite();
 		$userSessionData = [
 			'authId' => session_id(),
 			'authMode' => 'Session',
@@ -354,6 +358,10 @@ class Login
 			);
 
 			if ($this->cacheExist(cacheKey: $customerUserConcurrencyKey)) {
+				if ($this->http->req->session === null) {
+					$this->http->req->session = new Session();
+					$this->http->req->session->initSessionHandler(sessionMode: Env::$sessionMode, options: []);
+				}
 				$customerUserConcurrencyData = json_decode(
 					json: $this->cacheGet(
 						cacheKey: $customerUserConcurrencyKey
@@ -374,7 +382,7 @@ class Login
 					) {
 						$time = Env::$timestamp - $authFoundData['authTimestamp'];
 						if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
-							Session::deleteSession(sessionId: $authId);
+							$this->http->req->session->deleteSession(sessionId: $authId);
 							unset($customerUserConcurrencyData[$authId]);
 							continue;
 						}
@@ -524,6 +532,10 @@ class Login
 			);
 
 			if ($this->cacheExist(cacheKey: $customerUserConcurrencyKey)) {
+				if ($this->http->req->session === null) {
+					$this->http->req->session = new Session();
+					$this->http->req->session->initSessionHandler(sessionMode: Env::$sessionMode, options: []);
+				}
 				$customerUserConcurrencyData = json_decode(
 					json: $this->cacheGet(
 						cacheKey: $customerUserConcurrencyKey
@@ -544,7 +556,7 @@ class Login
 					) {
 						$time = Env::$timestamp - $authFoundData['authTimestamp'];
 						if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
-							Session::deleteSession(sessionId: $authId);
+							$this->http->req->session->deleteSession(sessionId: $authId);
 							unset($customerUserConcurrencyData[$authId]);
 							continue;
 						}
@@ -560,7 +572,11 @@ class Login
 				}
 			}
 		} else {
-			Session::sessionStartReadonly();
+			if ($this->http->req->session === null) {
+				$this->http->req->session = new Session();
+				$this->http->req->session->initSessionHandler(sessionMode: Env::$sessionMode, options: []);
+			}
+			$this->http->req->session->sessionStartReadonly();
 			if ($customerUserSessionId === session_id()) {
 				if ($_SESSION['httpRequestHash'] === $httpRequestHash) {
 					$authFoundData = $_SESSION;

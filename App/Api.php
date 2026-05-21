@@ -134,7 +134,7 @@ class Api
 					. DIRECTORY_SEPARATOR . $supplementClassFileName . '.php';
 
 			if (file_exists(filename: $supplementClassFileLocation)) {
-				$supplementClass = 'Microservices\\www\\Supplement\\Cron\\' . $supplementClassFileName;
+				$supplementClass = 'Microservices\\Supplement\\Cron\\' . $supplementClassFileName;
 			}
 		} elseif ($this->checkSupplement(Env::$customRequestRoutePrefix)) {
 			$supplementClassFileName = ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
@@ -144,7 +144,7 @@ class Api
 					. DIRECTORY_SEPARATOR . $supplementClassFileName . '.php';
 
 			if (file_exists(filename: $supplementClassFileLocation)) {
-				$supplementClass = 'Microservices\\www\\Supplement\\Custom\\' . $supplementClassFileName;
+				$supplementClass = 'Microservices\\Supplement\\Custom\\' . $supplementClassFileName;
 			}
 		} elseif ($this->checkSupplement(Env::$uploadRequestRoutePrefix)) {
 			$supplementClassFileName = ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
@@ -154,7 +154,7 @@ class Api
 					. DIRECTORY_SEPARATOR . $supplementClassFileName . '.php';
 
 			if (file_exists(filename: $supplementClassFileLocation)) {
-				$supplementClass = 'Microservices\\www\\Supplement\\Upload\\' . $supplementClassFileName;
+				$supplementClass = 'Microservices\\Supplement\\Upload\\' . $supplementClassFileName;
 			}
 		} elseif ($this->checkSupplement(Env::$thirdPartyRequestRoutePrefix)) {
 			$supplementClassFileName = ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
@@ -164,7 +164,7 @@ class Api
 					. DIRECTORY_SEPARATOR . $supplementClassFileName . '.php';
 
 			if (file_exists(filename: $supplementClassFileLocation)) {
-				$supplementClass = 'Microservices\\www\\Supplement\\ThirdParty\\' . $supplementClassFileName;
+				$supplementClass = 'Microservices\\Supplement\\ThirdParty\\' . $supplementClassFileName;
 			}
 		} else {
 			switch ($this->http->httpReqData['server']['httpMethod']) {
@@ -177,7 +177,7 @@ class Api
 								. DIRECTORY_SEPARATOR . $classFileName . '.php';
 
 						if (file_exists(filename: $classFileLocation)) {
-							$class = 'Microservices\\www\\Supplement\\Dropbox\\' . $classFileName;
+							$class = 'Microservices\\Supplement\\Dropbox\\' . $classFileName;
 						}
 					} elseif ($this->checkSupplement(Env::$routesRequestRoute)) {
 						$class = __NAMESPACE__ . '\\Route';

@@ -29,21 +29,23 @@ $res = Web::trigger(
 	payload: json_encode(value: $payload)
 );
 
+
 $token = null;
 $sessionCookie = null;
 
-if (isset($res['response']['Headers']['Set-Cookie'])) {
+if (isset($res['HttpResponse']['Headers']['Set-Cookie'])) {
 	$sessionCookie = substr(
-		$res['response']['Headers']['Set-Cookie'],
+		$res['HttpResponse']['Headers']['Set-Cookie'],
 		0,
 		strpos(
-			$res['response']['Headers']['Set-Cookie'],
+			$res['HttpResponse']['Headers']['Set-Cookie'],
 			'; '
 		)
 	);
-} elseif (isset($res['response']['ResponseBody']['Results']['Token'])) {
-	$token = $res['response']['ResponseBody']['Results']['Token'];
+} elseif (isset($res['HttpResponse']['ResponseBody']['Results']['Token'])) {
+	$token = $res['HttpResponse']['ResponseBody']['Results']['Token'];
+} elseif (isset($res['HttpResponse']['ResponseBody']['Results']['SessionId'])) {
+	$sessionCookie = "PHPSESSID={$res['HttpResponse']['ResponseBody']['Results']['SessionId']}";
 }
-
 
 return $res;
