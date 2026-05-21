@@ -303,7 +303,10 @@ class Login
 	{
 		if ($this->http->req->session === null) {
 			$this->http->req->session = new Session();
-			$this->http->req->session->initSessionHandler(sessionMode: Env::$sessionMode, options: []);
+			$this->http->req->session->initSessionHandler(
+				customerData: $this->http->req->s['customerData'],
+				options: []
+			);
 		}
 
 		$this->http->req->session->sessionStartReadWrite();
@@ -361,7 +364,10 @@ class Login
 			if ($this->cacheExist(cacheKey: $customerUserConcurrencyKey)) {
 				if ($this->http->req->session === null) {
 					$this->http->req->session = new Session();
-					$this->http->req->session->initSessionHandler(sessionMode: Env::$sessionMode, options: []);
+					$this->http->req->session->initSessionHandler(
+						customerData: $this->http->req->s['customerData'],
+						options: []
+					);
 				}
 				$customerUserConcurrencyData = json_decode(
 					json: $this->cacheGet(
@@ -503,7 +509,10 @@ class Login
 			if ($this->cacheExist(cacheKey: $customerUserConcurrencyKey)) {
 				if ($this->http->req->session === null) {
 					$this->http->req->session = new Session();
-					$this->http->req->session->initSessionHandler(sessionMode: Env::$sessionMode, options: []);
+					$this->http->req->session->initSessionHandler(
+						customerData: $this->http->req->s['customerData'],
+						options: []
+					);
 				}
 				$customerUserConcurrencyData = json_decode(
 					json: $this->cacheGet(
@@ -541,7 +550,10 @@ class Login
 		} else {
 			if ($this->http->req->session === null) {
 				$this->http->req->session = new Session();
-				$this->http->req->session->initSessionHandler(sessionMode: Env::$sessionMode, options: []);
+				$this->http->req->session->initSessionHandler(
+					customerData: $this->http->req->s['customerData'],
+					options: []
+				);
 			}
 			$this->http->req->session->sessionStartReadonly();
 			if ($customerUserSessionId === session_id()) {

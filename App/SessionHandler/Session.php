@@ -63,41 +63,6 @@ class Session
 	 */
 	public $ENCRYPTION_IV = null;
 
-	/* MySql Session config */
-	public $mySqlServerHostname = '';
-	public $mySqlServerPort = 3306;
-	public $mySqlServerUsername = '';
-	public $mySqlServerPassword = '';
-	public $mySqlServerDatabase = '';
-	public $mySqlServerTable = '';
-
-	/* PostgreSql Session config */
-	public $pgSqlServerHostname = '';
-	public $pgSqlServerPort = 5432;
-	public $pgSqlServerUsername = null;
-	public $pgSqlServerPassword = null;
-	public $pgSqlServerDatabase = '';
-	public $pgSqlServerTable = '';
-
-	/* MongoDb Session config */
-	public $mongoDbServerHostname = '';
-	public $mongoDbServerPort = 27017;
-	public $mongoDbServerUsername = null;
-	public $mongoDbServerPassword = null;
-	public $mongoDbServerDatabase = '';
-	public $mongoDbServerCollection = '';
-
-	/* Redis Session config */
-	public $redisServerHostname = '';
-	public $redisServerPort = 6379;
-	public $redisServerUsername = null;
-	public $redisServerPassword = null;
-	public $redisServerDatabase = 0;
-
-	/* Memcached Session config */
-	public $memcachedServerHostname = '';
-	public $memcachedServerPort = 11211;
-
 	/**
 	 * Session id Cookie name
 	 *
@@ -128,11 +93,18 @@ class Session
 	public $sessionSavePath = null;
 
 	/**
-	 * Session Handler mode
+	 * Session mode
 	 *
 	 * @var null|string
 	 */
 	public $sessionMode = null;
+
+	/**
+	 * Customer Data
+	 *
+	 * @var null|array
+	 */
+	public $customerData = null;
 
 	/**
 	 * Session Start function argument
@@ -180,42 +152,49 @@ class Session
 		$this->sessionContainer->sessionName = $this->sessionName;
 		$this->sessionContainer->sessionMaxLifetime = (int)$this->sessionMaxLifetime;
 
-		// Setting required parameters as per sessionMode
+		$sessionServerHostname = getenv(name: $this->customerData['session_server_hostname']);
+		$sessionServerPort = (int)getenv(name: $this->customerData['session_server_port']);
+		$sessionServerUsername = getenv(name: $this->customerData['session_server_username']);
+		$sessionServerPassword = getenv(name: $this->customerData['session_server_password']);
+		$sessionServerDatabase = getenv(name: $this->customerData['session_server_db']);
+		$sessionServerTable = getenv(name: $this->customerData['session_server_table']);
+
+		// Setting required parameters as per session Mode / Type
 		switch ($this->sessionMode) {
 			case 'MySql':
-				$this->sessionContainer->mySqlServerHostname = $this->mySqlServerHostname;
-				$this->sessionContainer->mySqlServerPort = (int)$this->mySqlServerPort;
-				$this->sessionContainer->mySqlServerUsername = $this->mySqlServerUsername;
-				$this->sessionContainer->mySqlServerPassword = $this->mySqlServerPassword;
-				$this->sessionContainer->mySqlServerDatabase = $this->mySqlServerDatabase;
-				$this->sessionContainer->mySqlServerTable = $this->mySqlServerTable;
+				$this->sessionContainer->mySqlServerHostname = $sessionServerHostname;
+				$this->sessionContainer->mySqlServerPort = $sessionServerPort;
+				$this->sessionContainer->mySqlServerUsername = $sessionServerUsername;
+				$this->sessionContainer->mySqlServerPassword = $sessionServerPassword;
+				$this->sessionContainer->mySqlServerDatabase = $sessionServerDatabase;
+				$this->sessionContainer->mySqlServerTable = $sessionServerTable;
 				break;
 			case 'PostgreSql':
-				$this->sessionContainer->pgSqlServerHostname = $this->pgSqlServerHostname;
-				$this->sessionContainer->pgSqlServerPort = (int)$this->pgSqlServerPort;
-				$this->sessionContainer->pgSqlServerUsername = $this->pgSqlServerUsername;
-				$this->sessionContainer->pgSqlServerPassword = $this->pgSqlServerPassword;
-				$this->sessionContainer->pgSqlServerDatabase = $this->pgSqlServerDatabase;
-				$this->sessionContainer->pgSqlServerTable = $this->pgSqlServerTable;
+				$this->sessionContainer->pgSqlServerHostname = $sessionServerHostname;
+				$this->sessionContainer->pgSqlServerPort = $sessionServerPort;
+				$this->sessionContainer->pgSqlServerUsername = $sessionServerUsername;
+				$this->sessionContainer->pgSqlServerPassword = $sessionServerPassword;
+				$this->sessionContainer->pgSqlServerDatabase = $sessionServerDatabase;
+				$this->sessionContainer->pgSqlServerTable = $sessionServerTable;
 				break;
 			case 'MongoDb':
-				$this->sessionContainer->mongoDbServerHostname = $this->mongoDbServerHostname;
-				$this->sessionContainer->mongoDbServerPort = (int)$this->mongoDbServerPort;
-				$this->sessionContainer->mongoDbServerUsername = $this->mongoDbServerUsername;
-				$this->sessionContainer->mongoDbServerPassword = $this->mongoDbServerPassword;
-				$this->sessionContainer->mongoDbServerDatabase = $this->mongoDbServerDatabase;
-				$this->sessionContainer->mongoDbServerCollection = $this->mongoDbServerCollection;
+				$this->sessionContainer->mongoDbServerHostname = $sessionServerHostname;
+				$this->sessionContainer->mongoDbServerPort = $sessionServerPort;
+				$this->sessionContainer->mongoDbServerUsername = $sessionServerUsername;
+				$this->sessionContainer->mongoDbServerPassword = $sessionServerPassword;
+				$this->sessionContainer->mongoDbServerDatabase = $sessionServerDatabase;
+				$this->sessionContainer->mongoDbServerCollection = $sessionServerTable;
 				break;
 			case 'Redis':
-				$this->sessionContainer->redisServerHostname = $this->redisServerHostname;
-				$this->sessionContainer->redisServerPort = (int)$this->redisServerPort;
-				$this->sessionContainer->redisServerUsername = $this->redisServerUsername;
-				$this->sessionContainer->redisServerPassword = $this->redisServerPassword;
-				$this->sessionContainer->redisServerDatabase = $this->redisServerDatabase;
+				$this->sessionContainer->redisServerHostname = $sessionServerHostname;
+				$this->sessionContainer->redisServerPort = $sessionServerPort;
+				$this->sessionContainer->redisServerUsername = $sessionServerUsername;
+				$this->sessionContainer->redisServerPassword = $sessionServerPassword;
+				$this->sessionContainer->redisServerDatabase = $sessionServerDatabase;
 				break;
 			case 'Memcached':
-				$this->sessionContainer->memcachedServerHostname = $this->memcachedServerHostname;
-				$this->sessionContainer->memcachedServerPort = (int)$this->memcachedServerPort;
+				$this->sessionContainer->memcachedServerHostname = $sessionServerHostname;
+				$this->sessionContainer->memcachedServerPort = $sessionServerPort;
 				break;
 			case 'Cookie':
 				$this->sessionContainer->sessionDataName = $this->sessionDataName;
@@ -293,11 +272,11 @@ class Session
 			'cookie_path' => '/',
 			'cookie_domain' => '',
 			'cookie_secure' => (
-				!in_array(
-					'localhost',
-					explode('.', $this->sessionDomain)
-				) ? true : false
-			),
+				strpos(
+					haystack: $this->sessionDomain,
+					needle: 'localhost'
+				) !== false
+			) ? true : false,
 			'cookie_httponly' => true,
 			'cookie_samesite' => 'Strict'
 		];
@@ -325,21 +304,21 @@ class Session
 	/**
 	 * Initialize session handler
 	 *
-	 * @param string $sessionMode File/MySql/Cookie
-	 * @param array  $options     Options
+	 * @param array $customerData 
+	 * @param array $options      Options
 	 *
 	 * @return void
 	 */
-	public function initSessionHandler($sessionMode, $options = []): void
+	public function initSessionHandler($customerData, $options = []): void
 	{
-		$env = parse_ini_file(filename: Constant::$ROOT
-			. DIRECTORY_SEPARATOR . '.env.session'
-		);
-		foreach ($env as $var => $value) {
-			$this->$var = $value;
+		$envFilename = '.env.session';
+		$envDataArr = parse_ini_file(filename: ROOT . DIRECTORY_SEPARATOR . $envFilename);
+		foreach ($envDataArr as $envVarName => $envVarValue) {
+			putenv(assignment: "{$envVarName}={$envVarValue}");
 		}
 
-		$this->sessionMode = $sessionMode;
+		$this->customerData = $customerData;
+		$this->sessionMode = getenv(name: $this->customerData['session_server_type']);
 
 		// Set optoptionsionArr from php.ini if not set in this class
 		if (empty($this->sessionName)) {
@@ -393,7 +372,7 @@ class Session
 			$this->optionArr['read_and_close'] = true;
 
 			$this->sessionContainer->sessionOptionArr = $this->optionArr;
-			return session_start(options: $$this->optionArr);
+			return session_start(options: $this->optionArr);
 		}
 		return false;
 	}

@@ -8,8 +8,6 @@ Collection of Mostly used Session Handlers
 ## PHP Session related configs
 
 ```ini
-; Domain name
-sessionDomain='localhost'
 sessionName='PHPSESSID' ; Default
 sessionMaxLifetime=3600
 sessionSavePath='sessions'

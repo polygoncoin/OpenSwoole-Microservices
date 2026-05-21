@@ -268,7 +268,11 @@ class HttpRequest
 
 		if ($this->isPrivateSessionDomain) {
 			$this->session = new Session();
-			$this->session->initSessionHandler(sessionMode: Env::$sessionMode, options: []);
+			$this->session->sessionDomain = $this->http->httpReqData['server']['domainName'];
+			$this->session->initSessionHandler(
+				customerData: $this->s['customerData'],
+				options: []
+			);
 			$this->session->sessionStartReadonly();
 		}
 
