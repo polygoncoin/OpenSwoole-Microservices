@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session Index
+ * Index
  * php version 8.3
  *
  * @category  Start
@@ -13,6 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Openswoole\Coroutine;
 use Openswoole\Http\Server;
 use Openswoole\Http\Request;
 use Openswoole\Http\Response;
@@ -30,6 +31,14 @@ define('ROUTE_URL_PARAM', 'route');
 
 require_once ROOT . DIRECTORY_SEPARATOR . 'Autoload.php';
 spl_autoload_register(callback:  'Microservices\Autoload::register');
+
+// Set coroutine options before you start a server...
+Coroutine::set(
+	[
+		'max_coroutine' => 100,
+		'max_concurrency' => 100,
+	]
+);
 
 $server = new Server('127.0.0.1', 9501);
 
@@ -173,8 +182,15 @@ $server->on(
  */
 $server->set(
 	[
-		// Disable Coroutines for Traditional PHP Sessions
-		'enable_coroutine' => false,
+		// HTTP Server max execution time, since v4.8.0
+		// 'max_request_execution_time' => 10, // 10s
+
+		// Compression
+		'http_compression' => true,
+		'http_compression_level' => 3, // 1 - 9
+		'compression_min_length' => 20,
+		'worker_num' =>   2,
+		'max_request' =>  1000,
 	]
 );
 

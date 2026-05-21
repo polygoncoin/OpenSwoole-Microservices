@@ -305,6 +305,7 @@ class Login
 			$this->http->req->session = new Session();
 			$this->http->req->session->initSessionHandler(sessionMode: Env::$sessionMode, options: []);
 		}
+
 		$this->http->req->session->sessionStartReadWrite();
 		$userSessionData = [
 			'authId' => session_id(),
@@ -377,10 +378,8 @@ class Login
 						unset($customerUserConcurrencyData[$authId]);
 						continue;
 					}
-					if (
-						$authData['authMode'] === 'Session'
-					) {
-						$time = Env::$timestamp - $authFoundData['authTimestamp'];
+					if ($authData['authMode'] === 'Session') {
+						$time = Env::$timestamp - $authData['authTimestamp'];
 						if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
 							$this->http->req->session->deleteSession(sessionId: $authId);
 							unset($customerUserConcurrencyData[$authId]);
@@ -442,7 +441,6 @@ class Login
 				cacheExpire: Env::$concurrentAccessInterval
 			);
 		}
-		$this->updateDb(userData: $authFoundData);
 
 		$time = Env::$timestamp - $authFoundData['authTimestamp'];
 		$output = [
@@ -465,35 +463,6 @@ class Login
 		$this->http->initResponse();
 		$this->http->res->dataEncode->startObject();
 		$this->http->res->dataEncode->addKeyData(objectKey: 'Results', data: $output);
-	}
-
-	/**
-	 * Update token detail in Database for respective account
-	 *
-	 * @param array $userData Token Data
-	 *
-	 * @return void
-	 */
-	private function updateDb(&$userData): void
-	{
-		$this->http->req->clientDbObj = DbCommonFunction::connectClientDb(
-			customerData: $this->http->req->s['customerData'],
-			fetchFrom: 'Master'
-		);
-
-		$this->http->req->clientDbObj->execDbQuery(
-			sql: "
-				UPDATE
-					`{$this->http->req->s['customerData']['userTable']}`
-				SET
-					`token` = :token
-				WHERE
-					id = :id",
-			paramArr: [
-				':token' => json_encode(value: $userData),
-				':id' => $this->http->req->s['userData']['id']
-			]
-		);
 	}
 
 	/**
@@ -551,10 +520,8 @@ class Login
 						unset($customerUserConcurrencyData[$authId]);
 						continue;
 					}
-					if (
-						$authData['authMode'] === 'Session'
-					) {
-						$time = Env::$timestamp - $authFoundData['authTimestamp'];
+					if ($authData['authMode'] === 'Session') {
+						$time = Env::$timestamp - $authData['authTimestamp'];
 						if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
 							$this->http->req->session->deleteSession(sessionId: $authId);
 							unset($customerUserConcurrencyData[$authId]);
@@ -616,7 +583,6 @@ class Login
 				cacheExpire: Env::$concurrentAccessInterval
 			);
 		}
-		$this->updateDb(userData: $authFoundData);
 
 		$time = Env::$timestamp - $authFoundData['authTimestamp'];
 		$output = [
