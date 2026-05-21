@@ -34,10 +34,13 @@ class CacheServerKey
 	 *
 	 * @param string $domainName Domain Name
 	 *
-	 * @return string
+	 * @return null|string
 	 */
-	public static function publicDomain(&$domainName): string
+	public static function publicDomain(&$domainName): null|string
 	{
+		if (strlen($domainName) === 0) {
+			return null;
+		}
 		return "pub:{$domainName}";
 	}
 
@@ -46,10 +49,13 @@ class CacheServerKey
 	 *
 	 * @param string $domainName Domain Name
 	 *
-	 * @return string
+	 * @return null|string
 	 */
-	public static function privateTokenDomain($domainName): string
+	public static function privateTokenDomain($domainName): null|string
 	{
+		if (strlen($domainName) === 0) {
+			return null;
+		}
 		return "pri:t:{$domainName}";
 	}
 
@@ -58,10 +64,13 @@ class CacheServerKey
 	 *
 	 * @param string $domainName Domain Name
 	 *
-	 * @return string
+	 * @return null|string
 	 */
-	public static function privateSessionDomain($domainName): string
+	public static function privateSessionDomain($domainName): null|string
 	{
+		if (strlen($domainName) === 0) {
+			return null;
+		}
 		return "pri:s:{$domainName}";
 	}
 
@@ -71,10 +80,16 @@ class CacheServerKey
 	 * @param int    $customerId Customer Id
 	 * @param string $username   Username
 	 *
-	 * @return string
+	 * @return null|string
 	 */
-	public static function customerUsername($customerId, $username): string
+	public static function customerUsername($customerId, $username): null|string
 	{
+		if (
+			strlen($customerId) === 0
+			|| strlen($username) === 0
+		) {
+			return null;
+		}
 		return "c:{$customerId}:u:{$username}";
 	}
 
@@ -84,10 +99,16 @@ class CacheServerKey
 	 * @param int $customerId Customer Id
 	 * @param int $groupId    Group Id
 	 *
-	 * @return string
+	 * @return null|string
 	 */
-	public static function customerGroup($customerId, $groupId): string
+	public static function customerGroup($customerId, $groupId): null|string
 	{
+		if (
+			strlen($customerId) === 0
+			|| strlen($groupId) === 0
+		) {
+			return null;
+		}
 		return "c:{$customerId}:g:{$groupId}";
 	}
 
@@ -96,10 +117,13 @@ class CacheServerKey
 	 *
 	 * @param int $customerId Customer Id
 	 *
-	 * @return string
+	 * @return null|string
 	 */
-	public static function customerCidr($customerId): string
+	public static function customerCidr($customerId): null|string
 	{
+		if (strlen($customerId) === 0) {
+			return null;
+		}
 		return "c:{$customerId}:cidr";
 	}
 
@@ -109,10 +133,16 @@ class CacheServerKey
 	 * @param int $customerId Customer Id
 	 * @param int $groupId    Group Id
 	 *
-	 * @return string
+	 * @return null|string
 	 */
-	public static function customerGroupCidr($customerId, $groupId): string
+	public static function customerGroupCidr($customerId, $groupId): null|string
 	{
+		if (
+			strlen($customerId) === 0
+			|| strlen($groupId) === 0
+		) {
+			return null;
+		}
 		return "c:{$customerId}:g:{$groupId}:cidr";
 	}
 
@@ -122,10 +152,16 @@ class CacheServerKey
 	 * @param int $customerId Customer Id
 	 * @param int $userId     User Id
 	 *
-	 * @return string
+	 * @return null|string
 	 */
-	public static function customerUserCidr($customerId, $userId): string
+	public static function customerUserCidr($customerId, $userId): null|string
 	{
+		if (
+			strlen($customerId) === 0
+			|| strlen($userId) === 0
+		) {
+			return null;
+		}
 		return "c:{$customerId}:u:{$userId}:cidr";
 	}
 
@@ -134,10 +170,13 @@ class CacheServerKey
 	 *
 	 * @param string $token Token
 	 *
-	 * @return string
+	 * @return null|string
 	 */
-	public static function token($token): string
+	public static function token($token): null|string
 	{
+		if (strlen($token) === 0) {
+			return null;
+		}
 		return "t:{$token}";
 	}
 
@@ -147,10 +186,16 @@ class CacheServerKey
 	 * @param int $customerId Customer Id
 	 * @param int $userId     User Id
 	 *
-	 * @return string
+	 * @return null|string
 	 */
-	public static function customerUserToken($customerId, $userId): string
+	public static function customerUserToken($customerId, $userId): null|string
 	{
+		if (
+			strlen($customerId) === 0
+			|| strlen($userId) === 0
+		) {
+			return null;
+		}
 		return "c:{$customerId}:u:{$userId}:token";
 	}
 
@@ -160,10 +205,16 @@ class CacheServerKey
 	 * @param int $customerId Customer Id
 	 * @param int $userId     User Id
 	 *
-	 * @return string
+	 * @return null|string
 	 */
-	public static function customerUserSessionId($customerId, $userId): string
+	public static function customerUserSessionId($customerId, $userId): null|string
 	{
+		if (
+			strlen($customerId) === 0
+			|| strlen($userId) === 0
+		) {
+			return null;
+		}
 		return "c:{$customerId}:u:{$userId}:sId";
 	}
 
@@ -173,10 +224,16 @@ class CacheServerKey
 	 * @param int $customerId Customer Id
 	 * @param int $userId     User Id
 	 *
-	 * @return string
+	 * @return null|string
 	 */
-	public static function customerUserConcurrency($customerId, $userId): string
+	public static function customerUserConcurrency($customerId, $userId): null|string
 	{
+		if (
+			strlen($customerId) === 0
+			|| strlen($userId) === 0
+		) {
+			return null;
+		}
 		return "c:{$customerId}:u:{$userId}:con";
 	}
 
@@ -186,10 +243,16 @@ class CacheServerKey
 	 * @param int $customerId Customer Id
 	 * @param int $userId     User Id
 	 *
-	 * @return string
+	 * @return null|string
 	 */
-	public static function customerUserReferrerLag($customerId, $userId): string
+	public static function customerUserReferrerLag($customerId, $userId): null|string
 	{
+		if (
+			strlen($customerId) === 0
+			|| strlen($userId) === 0
+		) {
+			return null;
+		}
 		return "c:{$customerId}:u:{$userId}:rlag";
 	}
 }

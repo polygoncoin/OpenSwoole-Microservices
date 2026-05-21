@@ -119,6 +119,10 @@ class Memcached implements NoSqlInterface
 	{
 		$this->connect();
 
+		if (strlen($key) === 0) {
+			return false;
+		}
+
 		return $this->get($key) !== false;
 	}
 
@@ -132,6 +136,10 @@ class Memcached implements NoSqlInterface
 	public function get($key): mixed
 	{
 		$this->connect();
+
+		if (strlen($key) === 0) {
+			return false;
+		}
 
 		return $this->cacheServerObj->get($key);
 	}
@@ -149,6 +157,10 @@ class Memcached implements NoSqlInterface
 	{
 		$this->connect();
 
+		if (strlen($key) === 0) {
+			return false;
+		}
+
 		if ($expire === null) {
 			return $this->cacheServerObj->set($key, $value);
 		} else {
@@ -162,11 +174,15 @@ class Memcached implements NoSqlInterface
 	 * @param string $key    Key
 	 * @param int    $offset Offset
 	 *
-	 * @return int
+	 * @return mixed
 	 */
-	public function increment($key, $offset = 1): int
+	public function increment($key, $offset = 1): mixed
 	{
 		$this->connect();
+
+		if (strlen($key) === 0) {
+			return false;
+		}
 
 		return $this->cacheServerObj->increment($key, $offset);
 	}
@@ -181,6 +197,10 @@ class Memcached implements NoSqlInterface
 	public function delete($key): mixed
 	{
 		$this->connect();
+
+		if (strlen($key) === 0) {
+			return false;
+		}
 
 		return $this->cacheServerObj->delete($key);
 	}

@@ -34,7 +34,7 @@ interface DatabaseServerInterface
 	 *
 	 * @return void
 	 */
-	public function connect(): void;
+	public function connectDb(): void;
 
 	/**
 	 * Use Database
@@ -87,7 +87,7 @@ interface DatabaseServerInterface
 	 *
 	 * @return void
 	 */
-	public function execDbQuery($sql, $paramArr = [], $pushPop = false): void;
+	public function execQuery($sql, $paramArr = [], $pushPop = false): void;
 
 	/**
 	 * Fetch single row from statement

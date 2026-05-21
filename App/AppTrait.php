@@ -841,9 +841,13 @@ trait AppTrait
 	 */
 	private function checkReferrerLag(&$sqlConfig): void
 	{
+		$userId = 0;
+		if (isset($this->http->req->userId)) {
+			$userId = $this->http->req->userId;
+		}
 		$customerUserReferrerLagKey = CacheServerKey::customerUserReferrerLag(
 			customerId: $this->http->req->customerId,
-			userId: $this->http->req->userId
+			userId: $userId
 		);
 		if (
 			isset($sqlConfig['referrerLagWindow'])

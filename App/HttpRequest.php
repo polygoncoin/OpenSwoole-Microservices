@@ -105,14 +105,14 @@ class HttpRequest
 	/**
 	 * Client Cache Object
 	 *
-	 * @var null|CacheServerInterface
+	 * @var null|CacheServer
 	 */
 	public $clientCacheObj = null;
 
 	/**
 	 * Client Database Object
 	 *
-	 * @var null|DatabaseServerInterface
+	 * @var null|DatabaseServer
 	 */
 	public $clientDbObj = null;
 
@@ -422,7 +422,7 @@ class HttpRequest
 			$paramArr[':request_payload_json'] = $payloadJson;
 			$paramArr[':request_ip'] = $this->http->httpReqData['server']['httpRequestIP'];
 
-			DbCommonFunction::$gDbServer->execDbQuery(sql: $sql, paramArr: $paramArr);
+			DbCommonFunction::$gDbServer->execQuery(sql: $sql, paramArr: $paramArr);
 			$requestId = DbCommonFunction::$gDbServer->lastInsertId();
 		}
 
@@ -467,7 +467,7 @@ class HttpRequest
 			$paramArr[':request_debug_json'] = $debugJson;
 			$paramArr[':request_ip'] = $this->http->httpReqData['server']['httpRequestIP'];
 
-			DbCommonFunction::$gDbServer->execDbQuery(sql: $sql, paramArr: $paramArr);
+			DbCommonFunction::$gDbServer->execQuery(sql: $sql, paramArr: $paramArr);
 			$logId = DbCommonFunction::$gDbServer->lastInsertId();
 		}
 
@@ -509,7 +509,7 @@ class HttpRequest
 			$paramArr[':request_exception_json'] = $exceptionJson;
 			$paramArr[':request_ip'] = $this->http->httpReqData['server']['httpRequestIP'];
 
-			DbCommonFunction::$gDbServer->execDbQuery(sql: $sql, paramArr: $paramArr);
+			DbCommonFunction::$gDbServer->execQuery(sql: $sql, paramArr: $paramArr);
 			$logId = DbCommonFunction::$gDbServer->lastInsertId();
 		}
 

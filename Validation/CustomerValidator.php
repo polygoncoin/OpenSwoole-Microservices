@@ -101,7 +101,7 @@ class CustomerValidator implements ValidatorInterface
 			WHERE `{$primary}` = ?
 		";
 		$paramArr = [$id];
-		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr);
+		$this->http->req->clientDbObj->execQuery(sql: $sql, paramArr: $paramArr);
 		return (int)($this->http->req->clientDbObj->fetch())['count'];
 	}
 
@@ -117,7 +117,7 @@ class CustomerValidator implements ValidatorInterface
 		extract(array: $argArr);
 		$sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
 		$paramArr = [$id];
-		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr);
+		$this->http->req->clientDbObj->execQuery(sql: $sql, paramArr: $paramArr);
 		$row = $this->http->req->clientDbObj->fetch();
 		$this->http->req->clientDbObj->closeCursor();
 		return ($row['count'] === 0) ? false : true;

@@ -412,7 +412,7 @@ class Read
 			return;
 		}
 
-		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr);
+		$this->http->req->clientDbObj->execQuery(sql: $sql, paramArr: $paramArr);
 		if ($row = $this->http->req->clientDbObj->fetch()) {
 			foreach ($row as $objectKey => $value) {
 				$this->dataEncode->addKeyData(objectKey: $objectKey, data: $value);
@@ -501,7 +501,7 @@ class Read
 			return;
 		}
 
-		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr);
+		$this->http->req->clientDbObj->execQuery(sql: $sql, paramArr: $paramArr);
 		$row = $this->http->req->clientDbObj->fetch();
 		$this->http->req->clientDbObj->closeCursor();
 
@@ -594,7 +594,7 @@ class Read
 
 		$singleColumn = false;
 		$pushPop = true;
-		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr, pushPop: $pushPop);
+		$this->http->req->clientDbObj->execQuery(sql: $sql, paramArr: $paramArr, pushPop: $pushPop);
 		for ($i = 0; $row = $this->http->req->clientDbObj->fetch();) {
 			if ($i === 0) {
 				if (count(value: $row) === 1) {

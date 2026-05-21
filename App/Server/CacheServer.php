@@ -82,6 +82,13 @@ class CacheServer
 	public $cacheServerTable = null;
 
 	/**
+	 * Cache Server Object
+	 *
+	 * @var null|CacheServerInterface
+	 */
+	private $cacheServerObj = null;
+
+	/**
 	 * Constructor
 	 *
 	 * @param string      $cacheServerType     Cache Server Type
@@ -113,10 +120,14 @@ class CacheServer
 	/**
 	 * Connect Cache
 	 *
-	 * @return CacheServerInterface
+	 * @return void
 	 */
-	public function connectCache(): CacheServerInterface
+	public function connectCache(): void
 	{
+		if ($this->cacheServerObj !== null) {
+			return;
+		}
+
 		if (
             !in_array(
                 $this->cacheServerType, [
@@ -135,7 +146,7 @@ class CacheServer
 		$cacheServerNS = 'Microservices\\App\\Server\\CacheServer\\'
             . $this->cacheServerType . 'Cache';
 
-		return new $cacheServerNS(
+		$this->cacheServerObj = new $cacheServerNS(
 			cacheServerHostname: $this->cacheServerHostname,
 			cacheServerPort: $this->cacheServerPort,
 			cacheServerUsername: $this->cacheServerUsername,
@@ -143,5 +154,105 @@ class CacheServer
 			cacheServerDatabase: $this->cacheServerDatabase,
 			cacheServerTable: $this->cacheServerTable
 		);
+	}
+
+	/**
+	 * Cache key exist
+	 *
+	 * @param string $cacheKey Cache key
+	 *
+	 * @return mixed
+	 */
+	public function cacheExist($cacheKey): mixed
+	{
+		$this->connectCache();
+
+		if (strlen($cacheKey) === 0) {
+			return false;
+		}
+
+		return $this->cacheServerObj->cacheExist(cacheKey: $cacheKey);
+	}
+
+	/**
+	 * Get cache key
+	 *
+	 * @param string $cacheKey Cache key
+	 *
+	 * @return mixed
+	 */
+	public function cacheGet($cacheKey): mixed
+	{
+		$this->connectCache();
+		
+		if (strlen($cacheKey) === 0) {
+			return false;
+		}
+
+		return $this->cacheServerObj->cacheGet(cacheKey: $cacheKey);
+	}
+
+	/**
+	 * Set cache key
+	 *
+	 * @param string $cacheKey    Cache key
+	 * @param string $cacheValue  Cache value
+	 * @param int    $cacheExpire Seconds to expire. Default 0 - doesn't expire
+	 *
+	 * @return mixed
+	 */
+	public function cacheSet($cacheKey, $cacheValue, $cacheExpire = null): mixed
+	{
+		$this->connectCache();
+		
+		if (strlen($cacheKey) === 0) {
+			return false;
+		}
+
+		return $this->cacheServerObj->cacheSet(
+			cacheKey: $cacheKey,
+			cacheValue: $cacheValue,
+			cacheExpire: $cacheExpire
+		);
+	}
+
+	/**
+	 * Increment cache key with offset
+	 *
+	 * @param string $cacheKey    Cache key
+	 * @param int    $cacheOffset Offset
+	 *
+	 * @return mixed
+	 */
+	public function cacheIncrement($cacheKey, $cacheOffset = 1): mixed
+	{
+		$this->connectCache();
+		
+		if (strlen($cacheKey) === 0) {
+			return false;
+		}
+
+		return $this->cacheServerObj->cacheIncrement(
+			cacheKey: $cacheKey,
+			cacheOffset: $cacheOffset
+		);
+	}
+
+	/**
+	 * Delete cache key
+	 *
+	 * @param string $cacheKey Cache key
+	 *
+	 * @return mixed
+	 */
+	public function cacheDelete($cacheKey): mixed
+	{
+		$this->connectCache();
+		
+		if (strlen($cacheKey) === 0) {
+			return false;
+		}
+
+		return $this->cacheServerObj->cacheDelete(cacheKey: $cacheKey);
 	}
 }

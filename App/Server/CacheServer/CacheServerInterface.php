@@ -35,7 +35,7 @@ interface CacheServerInterface
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function connect(): void;
+	public function connectCache(): void;
 
 	/**
 	 * Cache key exist
@@ -72,9 +72,9 @@ interface CacheServerInterface
 	 * @param string $cacheKey    Cache key
 	 * @param int    $cacheOffset Offset
 	 *
-	 * @return int
+	 * @return mixed
 	 */
-	public function cacheIncrement($cacheKey, $cacheOffset = 1): int;
+	public function cacheIncrement($cacheKey, $cacheOffset = 1): mixed;
 
 	/**
 	 * Delete cache key

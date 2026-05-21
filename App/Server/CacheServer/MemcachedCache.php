@@ -79,7 +79,7 @@ class MemcachedCache implements CacheServerInterface
 	 *
 	 * @var null|Cache_Memcached
 	 */
-	private $cacheServerObj = null;
+	private $noSqlServerObj = null;
 
 	/**
 	 * Constructor
@@ -113,14 +113,14 @@ class MemcachedCache implements CacheServerInterface
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function connect(): void
+	public function connectCache(): void
 	{
-		if ($this->cacheServerObj !== null) {
+		if ($this->noSqlServerObj !== null) {
 			return;
 		}
 
 		try {
-			$this->cacheServerObj = new Cache_Memcached(
+			$this->noSqlServerObj = new Cache_Memcached(
 				cacheServerHostname: $this->cacheServerHostname,
 				cacheServerPort: $this->cacheServerPort,
 				cacheServerUsername: $this->cacheServerUsername,
@@ -145,9 +145,13 @@ class MemcachedCache implements CacheServerInterface
 	 */
 	public function cacheExist($cacheKey): mixed
 	{
-		$this->connect();
+		$this->connectCache();
 
-		return $this->cacheServerObj->exist(key: $cacheKey);
+		if (strlen($cacheKey) === 0) {
+			return false;
+		}
+
+		return $this->noSqlServerObj->exist(key: $cacheKey);
 	}
 
 	/**
@@ -159,9 +163,13 @@ class MemcachedCache implements CacheServerInterface
 	 */
 	public function cacheGet($cacheKey): mixed
 	{
-		$this->connect();
+		$this->connectCache();
 
-		return $this->cacheServerObj->get(key: $cacheKey);
+		if (strlen($cacheKey) === 0) {
+			return false;
+		}
+
+		return $this->noSqlServerObj->get(key: $cacheKey);
 	}
 
 	/**
@@ -175,9 +183,13 @@ class MemcachedCache implements CacheServerInterface
 	 */
 	public function cacheSet($cacheKey, $cacheValue, $cacheExpire = null): mixed
 	{
-		$this->connect();
+		$this->connectCache();
 
-		return $this->cacheServerObj->set(
+		if (strlen($cacheKey) === 0) {
+			return false;
+		}
+
+		return $this->noSqlServerObj->set(
 			key: $cacheKey,
 			value: $cacheValue,
 			expire: $cacheExpire
@@ -190,13 +202,17 @@ class MemcachedCache implements CacheServerInterface
 	 * @param string $cacheKey    Cache key
 	 * @param int    $cacheOffset Offset
 	 *
-	 * @return int
+	 * @return mixed
 	 */
-	public function cacheIncrement($cacheKey, $cacheOffset = 1): int
+	public function cacheIncrement($cacheKey, $cacheOffset = 1): mixed
 	{
-		$this->connect();
+		$this->connectCache();
 
-		return $this->cacheServerObj->increment(
+		if (strlen($cacheKey) === 0) {
+			return false;
+		}
+
+		return $this->noSqlServerObj->increment(
 			key: $cacheKey,
 			offset: $cacheOffset
 		);
@@ -211,8 +227,12 @@ class MemcachedCache implements CacheServerInterface
 	 */
 	public function cacheDelete($cacheKey): mixed
 	{
-		$this->connect();
+		$this->connectCache();
 
-		return $this->cacheServerObj->delete(key: $cacheKey);
+		if (strlen($cacheKey) === 0) {
+			return false;
+		}
+
+		return $this->noSqlServerObj->delete(key: $cacheKey);
 	}
 }

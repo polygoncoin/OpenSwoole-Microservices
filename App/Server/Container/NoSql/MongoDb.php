@@ -187,6 +187,10 @@ class MongoDb implements NoSqlInterface
 	{
 		$this->connect();
 
+		if (strlen($key) === 0) {
+			return false;
+		}
+
 		$filter = ['key' => $key];
 
 		if ($document = $this->collectionObj->findOne($filter)) {
@@ -206,6 +210,10 @@ class MongoDb implements NoSqlInterface
 	{
 		$this->connect();
 
+		if (strlen($key) === 0) {
+			return false;
+		}
+
 		$filter = ['key' => $key];
 		return $this->collectionObj->findOne($filter);
 	}
@@ -222,6 +230,10 @@ class MongoDb implements NoSqlInterface
 	public function set($key, $value, $expire = null): mixed
 	{
 		$this->connect();
+
+		if (strlen($key) === 0) {
+			return false;
+		}
 
 		$document = [
 			'key' => $key,
@@ -250,11 +262,15 @@ class MongoDb implements NoSqlInterface
 	 * @param string $key    Key
 	 * @param int    $offset Offset
 	 *
-	 * @return int
+	 * @return mixed
 	 */
-	public function increment($key, $offset = 1): int
+	public function increment($key, $offset = 1): mixed
 	{
 		$this->connect();
+
+		if (strlen($key) === 0) {
+			return false;
+		}
 
 		$filter = ['key' => $key];
 		$update = ['$inc' => ['value' => $offset]];
@@ -273,6 +289,10 @@ class MongoDb implements NoSqlInterface
 	public function delete($key): mixed
 	{
 		$this->connect();
+
+		if (strlen($key) === 0) {
+			return false;
+		}
 
 		$filter = ['key' => $key];
 		if ($this->collectionObj->deleteOne($filter)) {

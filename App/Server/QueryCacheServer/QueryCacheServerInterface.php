@@ -34,7 +34,7 @@ interface QueryCacheServerInterface
 	 *
 	 * @return void
 	 */
-	public function connect(): void;
+	public function connectQueryCache(): void;
 
 	/**
 	 * Query Cache key exist

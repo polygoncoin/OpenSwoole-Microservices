@@ -264,7 +264,7 @@ class PostgreSql implements SqlInterface
 	 *
 	 * @return void
 	 */
-	public function execDbQuery($sql, $paramArr = [], $pushPop = false): void
+	public function execQuery($sql, $paramArr = [], $pushPop = false): void
 	{
 		$this->connect();
 

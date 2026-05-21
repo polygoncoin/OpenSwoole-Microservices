@@ -44,7 +44,17 @@ class CommonFunction
 	 */
 	public static function isEnabled(&$http, $feature): bool
 	{
-		return ($http->req->s['customerData'][$feature] === 'Yes') ? true : false;
+		if (!isset($http->req->s['customerData'][$feature])) {
+			throw new \Exception(
+				message: "Provided feature '{$feature}' not found",
+				code: HttpStatus::$InternalServerError
+			);
+		}
+		if (empty($http->req->s['customerData'][$feature])) {
+			return false;
+		} else {
+			return ($http->req->s['customerData'][$feature] === 'Yes') ? true : false;
+		}
 	}
 
 	/**
@@ -141,6 +151,13 @@ class CommonFunction
 				)
 			) as $cidr
 		) {
+			$cidr = trim($cidr);
+			if (
+				empty($cidr)
+				|| $cidr === '0.0.0.0/0'
+			) {
+				continue;
+			}
 			if (strpos(haystack: $cidr, needle: '/')) {
 				[$cidrIp, $bits] = explode(
 					separator: '/',
@@ -224,13 +241,16 @@ class CommonFunction
 	 */
 	public static function checkCidr($IP, $cidrString): null|bool
 	{
+		$isValidIp = true;
 		$cidrIpNumberRangeArr = self::cidrStringIpNumberRange(cidrString: $cidrString);
-		$isValidIp = self::belongsToCidrIpNumberRange(IP: $IP, cidrIpNumberRangeArr: $cidrIpNumberRangeArr);
-		if (!$isValidIp) {
-			throw new \Exception(
-				message: 'IP not supported',
-				code: HttpStatus::$BadRequest
-			);
+		if (count($cidrIpNumberRangeArr) > 0) {
+			$isValidIp = self::belongsToCidrIpNumberRange(IP: $IP, cidrIpNumberRangeArr: $cidrIpNumberRangeArr);
+			if (!$isValidIp) {
+				throw new \Exception(
+					message: 'IP not supported',
+					code: HttpStatus::$BadRequest
+				);
+			}
 		}
 
 		return $isValidIp;
@@ -246,9 +266,13 @@ class CommonFunction
 	 */
 	public static function belongsToCidrIpNumberRange($IP, $cidrIpNumberRangeArr): bool
 	{
+		$isValidIp = false;
+		if (count($cidrIpNumberRangeArr) === 0) {
+			return $isValidIp;
+		}
+
 		$ipNumber = ip2long(ip: $IP);
 
-		$isValidIp = false;
 		foreach ($cidrIpNumberRangeArr as $cidrIpNumber) {
 			if (
 				$cidrIpNumber['start'] === 0

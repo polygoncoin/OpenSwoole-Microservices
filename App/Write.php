@@ -495,7 +495,7 @@ class Write
 			}
 
 			// Execute Query
-			$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr);
+			$this->http->req->clientDbObj->execQuery(sql: $sql, paramArr: $paramArr);
 			if (
 				$this->operateAsTransaction
 				&& !$this->http->req->clientDbObj->beganTransaction

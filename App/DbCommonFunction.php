@@ -41,7 +41,7 @@ class DbCommonFunction
 	/**
 	 * Query Cache Connection Object
 	 *
-	 * @var null|QueryCacheServerInterface
+	 * @var null|QueryCacheServer
 	 */
 	private static $queryCacheServer = null;
 
@@ -49,7 +49,7 @@ class DbCommonFunction
 	/**
 	 * Global
 	 *
-	 * @var null|DatabaseServerInterface
+	 * @var null|DatabaseServer
 	 */
 	public static $gDbServer = null;
 
@@ -57,7 +57,7 @@ class DbCommonFunction
 	/**
 	 * Global
 	 *
-	 * @var null|CacheServerInterface
+	 * @var null|CacheServer
 	 */
 	public static $gCacheServer = null;
 
@@ -72,7 +72,7 @@ class DbCommonFunction
 	 * @param null|string $cacheServerDatabase Cache Server Database
 	 * @param null|string $cacheServerTable    Cache Server Table
 	 *
-	 * @return CacheServerInterface
+	 * @return CacheServer
 	 */
 	public static function connectCache(
 		$cacheServerType,
@@ -82,7 +82,7 @@ class DbCommonFunction
 		$cacheServerPassword,
 		$cacheServerDatabase,
 		$cacheServerTable
-	): CacheServerInterface {
+	): CacheServer {
 		$cacheServer = new CacheServer(
 			cacheServerType: $cacheServerType,
 			cacheServerHostname: $cacheServerHostname,
@@ -93,7 +93,7 @@ class DbCommonFunction
 			cacheServerTable: $cacheServerTable
 		);
 
-		return $cacheServer->connectCache();
+		return $cacheServer;
 	}
 
 	/**
@@ -122,10 +122,10 @@ class DbCommonFunction
 	 *
 	 * @param array $customerData Customer Data
 	 *
-	 * @return CacheServerInterface
+	 * @return CacheServer
 	 * @throws \Exception
 	 */
-	public static function connectClientCache(&$customerData): CacheServerInterface
+	public static function connectClientCache(&$customerData): CacheServer
 	{
 		$clientCacheServerCred = self::clientCacheServerCred(customerData: $customerData);
 		return self::connectCache(
@@ -152,7 +152,7 @@ class DbCommonFunction
 			return;
 		}
 
-		$queryCacheServer = new QueryCacheServer(
+		self::$queryCacheServer = new QueryCacheServer(
 			queryCacheServerType: Env::$queryCacheServerType,
 			queryCacheServerHostname: Env::$queryCacheServerHostname,
 			queryCacheServerPort: Env::$queryCacheServerPort,
@@ -161,8 +161,6 @@ class DbCommonFunction
 			queryCacheServerDatabase: Env::$queryCacheServerDatabase,
 			queryCacheServerTable: Env::$queryCacheServerTable
 		);
-
-		self::$queryCacheServer = $queryCacheServer->connectQueryCache();
 	}
 
 	/**
@@ -175,7 +173,7 @@ class DbCommonFunction
 	 * @param string      $dbServerPassword Database Server Password
 	 * @param null|string $dbServerDatabase Database Server Database
 	 *
-	 * @return DatabaseServerInterface
+	 * @return DatabaseServer
 	 */
 	public static function connectDb(
 		$dbServerType,
@@ -184,7 +182,7 @@ class DbCommonFunction
 		$dbServerUsername,
 		$dbServerPassword,
 		$dbServerDatabase
-	): DatabaseServerInterface {
+	): DatabaseServer {
 		$dbServer = new DatabaseServer(
 			dbServerType: $dbServerType,
 			dbServerHostname: $dbServerHostname,
@@ -194,7 +192,7 @@ class DbCommonFunction
 			dbServerDatabase: $dbServerDatabase
 		);
 
-		return $dbServer->connectDb();
+		return $dbServer;
 	}
 
 	/**
@@ -223,10 +221,10 @@ class DbCommonFunction
 	 * @param array  $customerData Customer Data
 	 * @param string $fetchFrom Master/Slave
 	 *
-	 * @return DatabaseServerInterface
+	 * @return DatabaseServer
 	 * @throws \Exception
 	 */
-	public static function connectClientDb(&$customerData, $fetchFrom): DatabaseServerInterface
+	public static function connectClientDb(&$customerData, $fetchFrom): DatabaseServer
 	{
 		// Set Database credentials
 		switch ($fetchFrom) {
@@ -266,10 +264,17 @@ class DbCommonFunction
 	 * @param int    $customerId    Customer Id
 	 * @param string $queryCacheKey Query Cache key
 	 *
-	 * @return string
+	 * @return mixed
 	 */
-	public static function queryCachePrepend($customerId, $queryCacheKey): string
+	public static function queryCachePrepend($customerId, $queryCacheKey): mixed
 	{
+		if (
+			strlen($customerId) === 0
+			|| strlen($queryCacheKey) === 0
+		) {
+			return false;
+		}
+
 		return "qc:{$customerId}:{$queryCacheKey}";
 	}
 
@@ -284,6 +289,10 @@ class DbCommonFunction
 	public static function queryCacheGet($customerId, $queryCacheKey): mixed
 	{
 		self::connectQueryCache();
+
+		if (strlen($queryCacheKey) === 0) {
+			return false;
+		}
 
 		$queryCacheKey = self::queryCachePrepend(
 			customerId: $customerId,
@@ -304,11 +313,15 @@ class DbCommonFunction
 	 * @param int    $customerId    Customer Id
 	 * @param string $queryCacheKey Query Cache key
 	 *
-	 * @return int
+	 * @return mixed
 	 */
-	public static function queryCacheIncrement($customerId, $queryCacheKey): int
+	public static function queryCacheIncrement($customerId, $queryCacheKey): mixed
 	{
 		self::connectQueryCache();
+
+		if (strlen($queryCacheKey) === 0) {
+			return false;
+		}
 
 		$queryCacheKey = 'i:' . $queryCacheKey;
 		$queryCacheKey = self::queryCachePrepend(
@@ -326,11 +339,15 @@ class DbCommonFunction
 	 * @param string $queryCacheKey   Query Cache key
 	 * @param string $queryCacheValue Query Cache value
 	 *
-	 * @return void
+	 * @return mixed
 	 */
-	public static function queryCacheSet($customerId, $queryCacheKey, &$queryCacheValue): void
+	public static function queryCacheSet($customerId, $queryCacheKey, &$queryCacheValue): mixed
 	{
 		self::connectQueryCache();
+
+		if (strlen($queryCacheKey) === 0) {
+			return false;
+		}
 
 		$delQueryCacheKey = 'i:' . $queryCacheKey;
 
@@ -344,8 +361,8 @@ class DbCommonFunction
 			queryCacheKey: $delQueryCacheKey
 		);
 
-		self::$queryCacheServer->queryCacheSet(queryCacheKey: $queryCacheKey, queryCacheValue: $queryCacheValue);
 		self::$queryCacheServer->queryCacheDelete(queryCacheKey: $delQueryCacheKey);
+		return self::$queryCacheServer->queryCacheSet(queryCacheKey: $queryCacheKey, queryCacheValue: $queryCacheValue);
 	}
 
 	/**
@@ -354,18 +371,22 @@ class DbCommonFunction
 	 * @param int    $customerId    Customer Id
 	 * @param string $queryCacheKey Query Cache key
 	 *
-	 * @return void
+	 * @return mixed
 	 */
-	public static function queryCacheDelete($customerId, $queryCacheKey): void
+	public static function queryCacheDelete($customerId, $queryCacheKey): mixed
 	{
 		self::connectQueryCache();
+
+		if (strlen($queryCacheKey) === 0) {
+			return false;
+		}
 
 		$queryCacheKey = self::queryCachePrepend(
 			customerId: $customerId,
 			queryCacheKey: $queryCacheKey
 		);
 
-		self::$queryCacheServer->queryCacheDelete(queryCacheKey: $queryCacheKey);
+		return self::$queryCacheServer->queryCacheDelete(queryCacheKey: $queryCacheKey);
 	}
 
 	/**

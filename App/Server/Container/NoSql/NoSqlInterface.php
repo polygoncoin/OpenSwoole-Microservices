@@ -72,9 +72,9 @@ interface NoSqlInterface
 	 * @param string $key    Key
 	 * @param int    $offset Offset
 	 *
-	 * @return int
+	 * @return mixed
 	 */
-	public function increment($key, $offset = 1): int;
+	public function increment($key, $offset = 1): mixed;
 
 	/**
 	 * Delete cache key

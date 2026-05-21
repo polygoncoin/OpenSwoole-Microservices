@@ -106,7 +106,7 @@ class Password implements CustomInterface
 				':is_deleted' => 'No',
 			];
 
-			$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr);
+			$this->http->req->clientDbObj->execQuery(sql: $sql, paramArr: $paramArr);
 			$this->http->req->clientDbObj->closeCursor();
 
 			$customerId = $this->http->req->customerId;

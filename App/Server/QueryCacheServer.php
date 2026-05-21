@@ -82,6 +82,13 @@ class QueryCacheServer
 	public $queryCacheServerTable = null;
 
 	/**
+	 * Query Cache Server Object
+	 *
+	 * @var null|QueryCacheServerInterface
+	 */
+	private $queryCacheServerObj = null;
+
+	/**
 	 * Constructor
 	 *
 	 * @param string      $queryCacheServerType     Query Cache Server Type
@@ -113,10 +120,14 @@ class QueryCacheServer
 	/**
 	 * Connect Query Cache
 	 *
-	 * @return QueryCacheServerInterface
+	 * @return void
 	 */
-	public function connectQueryCache(): QueryCacheServerInterface
+	public function connectQueryCache(): void
 	{
+		if ($this->queryCacheServerObj !== null) {
+			return;
+		}
+
 		if (
             !in_array(
                 $this->queryCacheServerType, [
@@ -135,13 +146,117 @@ class QueryCacheServer
 		$queryCacheServerNS = 'Microservices\\App\\Server\\QueryCacheServer\\'
             . $this->queryCacheServerType . 'QueryCache';
 
-		return new $queryCacheServerNS(
+		$this->queryCacheServerObj = new $queryCacheServerNS(
 			queryCacheServerHostname: $this->queryCacheServerHostname,
 			queryCacheServerPort: $this->queryCacheServerPort,
 			queryCacheServerUsername: $this->queryCacheServerUsername,
 			queryCacheServerPassword: $this->queryCacheServerPassword,
 			queryCacheServerDatabase: $this->queryCacheServerDatabase,
 			queryCacheServerTable: $this->queryCacheServerTable
+		);
+	}
+
+	/**
+	 * Query Cache key exist
+	 *
+	 * @param string $queryCacheKey Query Cache key
+	 *
+	 * @return mixed
+	 */
+	public function queryCacheExist($queryCacheKey): mixed
+	{
+		$this->connectQueryCache();
+
+		if (strlen($queryCacheKey) === 0) {
+			return false;
+		}
+
+		return $this->queryCacheServerObj->queryCacheExist(
+			queryCacheKey: $queryCacheKey
+		);
+	}
+
+	/**
+	 * Get Query Cache key
+	 *
+	 * @param string $queryCacheKey Query Cache key
+	 *
+	 * @return mixed
+	 */
+	public function queryCacheGet($queryCacheKey): mixed
+	{
+		$this->connectQueryCache();
+
+		if (strlen($queryCacheKey) === 0) {
+			return false;
+		}
+
+		return $this->queryCacheServerObj->queryCacheGet(
+			queryCacheKey: $queryCacheKey
+		);
+	}
+
+	/**
+	 * Set cache key
+	 *
+	 * @param string $queryCacheKey   Query Cache key
+	 * @param string $queryCacheValue Query Cache value
+	 *
+	 * @return mixed
+	 */
+	public function queryCacheSet($queryCacheKey, $queryCacheValue): mixed
+	{
+		$this->connectQueryCache();
+
+		if (strlen($queryCacheKey) === 0) {
+			return false;
+		}
+
+		return $this->queryCacheServerObj->queryCacheSet(
+			queryCacheKey: $queryCacheKey,
+			queryCacheValue:  $queryCacheValue
+		);
+	}
+
+	/**
+	 * Increment Query Cache key as per offset
+	 *
+	 * @param string $queryCacheKey Query Cache key
+	 * @param int    $queryCacheOffset        Query Cache offset
+	 *
+	 * @return mixed
+	 */
+	public function queryCacheIncrement($queryCacheKey, $queryCacheOffset = 1): mixed
+	{
+		$this->connectQueryCache();
+
+		if (strlen($queryCacheKey) === 0) {
+			return false;
+		}
+
+		return $this->queryCacheServerObj->queryCacheIncrement(
+			queryCacheKey: $queryCacheKey,
+			queryCacheOffset: $queryCacheOffset
+		);
+	}
+
+	/**
+	 * Delete Query Cache key
+	 *
+	 * @param string $queryCacheKey Query Cache key
+	 *
+	 * @return mixed
+	 */
+	public function queryCacheDelete($queryCacheKey): mixed
+	{
+		$this->connectQueryCache();
+
+		if (strlen($queryCacheKey) === 0) {
+			return false;
+		}
+
+		return $this->queryCacheServerObj->queryCacheDelete(
+			queryCacheKey: $queryCacheKey
 		);
 	}
 }

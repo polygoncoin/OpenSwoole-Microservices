@@ -161,6 +161,10 @@ class Redis implements NoSqlInterface
 	{
 		$this->connect();
 
+		if (strlen($key) === 0) {
+			return false;
+		}
+
 		return $this->cacheServerObj->exists($key);
 	}
 
@@ -174,6 +178,10 @@ class Redis implements NoSqlInterface
 	public function get($key): mixed
 	{
 		$this->connect();
+
+		if (strlen($key) === 0) {
+			return false;
+		}
 
 		return $this->cacheServerObj->get($key);
 	}
@@ -191,6 +199,10 @@ class Redis implements NoSqlInterface
 	{
 		$this->connect();
 
+		if (strlen($key) === 0) {
+			return false;
+		}
+
 		if ($expire === null) {
 			return $this->cacheServerObj->set($key, $value);
 		} else {
@@ -204,11 +216,15 @@ class Redis implements NoSqlInterface
 	 * @param string $key    Key
 	 * @param int    $offset Offset
 	 *
-	 * @return int
+	 * @return mixed
 	 */
-	public function increment($key, $offset = 1): int
+	public function increment($key, $offset = 1): mixed
 	{
 		$this->connect();
+
+		if (strlen($key) === 0) {
+			return false;
+		}
 
 		return $this->cacheServerObj->incrBy($key, $offset);
 	}
@@ -223,6 +239,10 @@ class Redis implements NoSqlInterface
 	public function delete($key): mixed
 	{
 		$this->connect();
+
+		if (strlen($key) === 0) {
+			return false;
+		}
 
 		return $this->cacheServerObj->del($key);
 	}

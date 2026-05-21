@@ -83,7 +83,7 @@ class Category implements CustomInterface
 			':is_deleted' => 'No',
 			':parent_id' => 0,
 		];
-		$this->http->req->clientDbObj->execDbQuery(sql: $sql, paramArr: $paramArr);
+		$this->http->req->clientDbObj->execQuery(sql: $sql, paramArr: $paramArr);
 		$rowArr = $this->http->req->clientDbObj->fetchAll();
 		$this->http->req->clientDbObj->closeCursor();
 		$this->http->res->dataEncode->addKeyData(objectKey: 'Results', data: $rowArr);

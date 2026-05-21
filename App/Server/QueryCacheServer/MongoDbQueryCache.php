@@ -125,7 +125,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function connect(): void
+	public function connectQueryCache(): void
 	{
 		if ($this->queryCacheServerObj !== null) {
 			return;
@@ -157,7 +157,11 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 	 */
 	public function queryCacheExist($queryCacheKey): mixed
 	{
-		$this->connect();
+		$this->connectQueryCache();
+
+		if (strlen($queryCacheKey) === 0) {
+			return false;
+		}
 
 		return $this->queryCacheServerObj->cacheExist(
 			cacheKey: $queryCacheKey
@@ -173,7 +177,11 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 	 */
 	public function queryCacheGet($queryCacheKey): mixed
 	{
-		$this->connect();
+		$this->connectQueryCache();
+
+		if (strlen($queryCacheKey) === 0) {
+			return false;
+		}
 
 		return $this->queryCacheServerObj->cacheGet(
 			cacheKey: $queryCacheKey
@@ -190,7 +198,11 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 	 */
 	public function queryCacheSet($queryCacheKey, $queryCacheValue): mixed
 	{
-		$this->connect();
+		$this->connectQueryCache();
+
+		if (strlen($queryCacheKey) === 0) {
+			return false;
+		}
 
 		return $this->queryCacheServerObj->cacheSet(
 			cacheKey: $queryCacheKey,
@@ -208,7 +220,11 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 	 */
 	public function queryCacheIncrement($queryCacheKey, $queryCacheOffset = 1): mixed
 	{
-		$this->connect();
+		$this->connectQueryCache();
+
+		if (strlen($queryCacheKey) === 0) {
+			return false;
+		}
 
 		return $this->queryCacheServerObj->cacheIncrement(
 			cacheKey: $queryCacheKey,
@@ -225,7 +241,11 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 	 */
 	public function queryCacheDelete($queryCacheKey): mixed
 	{
-		$this->connect();
+		$this->connectQueryCache();
+
+		if (strlen($queryCacheKey) === 0) {
+			return false;
+		}
 
 		return $this->queryCacheServerObj->cacheDelete(
 			cacheKey: $queryCacheKey

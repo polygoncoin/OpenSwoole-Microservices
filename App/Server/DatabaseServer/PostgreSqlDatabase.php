@@ -65,14 +65,14 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 	 *
 	 * @var null|string
 	 */
-	public $dbServerDatabase = null;
+	private $dbServerDatabase = null;
 
 	/**
 	 * Database Server Object
 	 *
 	 * @var null|DB_PostgreSql
 	 */
-	private $dbServerObj = null;
+	private $sqlServerObj = null;
 
 	/**
 	 * Transaction started flag
@@ -109,13 +109,13 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 	 *
 	 * @return void
 	 */
-	public function connect(): void
+	public function connectDb(): void
 	{
-		if ($this->dbServerObj !== null) {
+		if ($this->sqlServerObj !== null) {
 			return;
 		}
 
-        $this->dbServerObj = new DB_PostgreSql(
+        $this->sqlServerObj = new DB_PostgreSql(
             $this->dbServerHostname,
             $this->dbServerPort,
             $this->dbServerUsername,
@@ -131,9 +131,9 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 	 */
 	public function useDatabase(): void
 	{
-		$this->connect();
+		$this->connectDb();
 
-        $this->dbServerObj->useDatabase();
+        $this->sqlServerObj->useDatabase();
 	}
 
 	/**
@@ -143,10 +143,10 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 	 */
 	public function begin(): void
 	{
-		$this->connect();
+		$this->connectDb();
 
 		$this->beganTransaction = true;
-        $this->dbServerObj->begin();
+        $this->sqlServerObj->begin();
 	}
 
 	/**
@@ -158,7 +158,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 	{
 		if ($this->beganTransaction) {
 			$this->beganTransaction = false;
-	        $this->dbServerObj->commit();
+	        $this->sqlServerObj->commit();
 		}
 	}
 
@@ -171,7 +171,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 	{
 		if ($this->beganTransaction) {
 			$this->beganTransaction = false;
-	        $this->dbServerObj->rollBack();
+	        $this->sqlServerObj->rollBack();
 		}
 	}
 
@@ -183,7 +183,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 	public function affectedRowCount(): bool|int
 	{
 		try {
-			return $this->dbServerObj->affectedRowCount();
+			return $this->sqlServerObj->affectedRowCount();
 		} catch (\Exception $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
@@ -201,7 +201,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 	public function lastInsertId(): bool|int
 	{
 		try {
-	        return $this->dbServerObj->lastInsertId();
+	        return $this->sqlServerObj->lastInsertId();
 		} catch (\Exception $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
@@ -219,12 +219,12 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 	 *
 	 * @return void
 	 */
-	public function execDbQuery($sql, $paramArr = [], $pushPop = false): void
+	public function execQuery($sql, $paramArr = [], $pushPop = false): void
 	{
-		$this->connect();
+		$this->connectDb();
 
 		try {
-			$this->dbServerObj->execDbQuery(
+			$this->sqlServerObj->execQuery(
 				sql: $sql,
 				paramArr: $paramArr,
 				pushPop: $pushPop
@@ -243,7 +243,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 	 */
 	public function fetch(): mixed
 	{
-        return $this->dbServerObj->fetch();
+        return $this->sqlServerObj->fetch();
 	}
 
 	/**
@@ -253,7 +253,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 	 */
 	public function fetchAll(): array|bool
 	{
-        return $this->dbServerObj->fetchAll();
+        return $this->sqlServerObj->fetchAll();
 	}
 
 	/**
@@ -265,6 +265,6 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 	 */
 	public function closeCursor($pushPop = false): void
 	{
-        $this->dbServerObj->closeCursor(pushPop: $pushPop);
+        $this->sqlServerObj->closeCursor(pushPop: $pushPop);
 	}
 }
