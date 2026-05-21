@@ -45,7 +45,11 @@ $defaultHeaderArr[] = $cacheControl;
 
 $response = [];
 
-$homeURL = 'http://127.0.0.1:9501';
+if (defined('__MODE__')) {
+	$homeURL = 'http://127.0.0.1:9501';
+} else {
+	$homeURL = 'http://customer001.localhost/Microservices/www/public_html/index.php';
+}
 
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Reload.php';
 
