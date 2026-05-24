@@ -37,6 +37,7 @@ return [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 			'isRequired' => Constant::$REQUIRED              // Represents required field
 		],
+		[
 			// Fetch value from function
 			'column' => 'password',
 			'fetchFrom' => 'function',                       // function
@@ -44,6 +45,7 @@ return [
 				return 'value';
 			}
 		],
+		[
 			// Fetch value of last insert IDs
 			'column' => 'is_deleted',
 			'fetchFrom' => 'custom',                        // custom
@@ -120,21 +122,25 @@ return [
 				],
 				// Database DataTypes settings required when useHierarchy is true
 				// to validate each data set before procedding forward
+				[
 					// Fetch value of last insert IDs
 					'column' => 'id',
 					'fetchFrom' => '__INSERT-IDs__',                // userData from session
 					'fetchFromData' => '<saved-id-key>'            // previous Insert IDs
 				],
+				[
 					// Fetch values of params from previous queries
 					'column' => 'id',
 					'fetchFrom' => 'sqlParamArr',                     // sqlParamArr (with useHierarchy)
 					'fetchFromData' => '<return:keys-separated-by-colon>'
 				],
+				[
 					// Fetch values of SQL results from previous queries
 					'column' => 'id',
 					'fetchFrom' => 'sqlResults',                    // sqlResults for DQL operations (with useResultSet)
 					'fetchFromData' => '<return:keys-separated-by-colon>'
 				],
+				[
 					// Fetch values of SQL payload for previous queries
 					'column' => 'id',
 					'fetchFrom' => 'sqlPayload',                    // sqlPayload (with useHierarchy)
@@ -175,6 +181,7 @@ return [
 					// 'fetchFrom' => '__INSERT-IDs__', // SQL Insert IDs
 					'fetchFromData' => 'address'
 				],
+				[
 					// SQL Insert IDs
 					'fetchFrom' => '__INSERT-IDs__',
 					'fetchFromData' => 'address:id'
@@ -293,7 +300,10 @@ return [
 	'xsltFile' => 'file-path',
 
 	// Limiting duplicates
-	'idempotentWindow' => 3 // Idempotent Window for DML operation (seconds)
+	'idempotentWindow' => 3, // Idempotent Window for DML operation (seconds)
+
+	// Optional custom configuration to connect to master / slave Database
+	'fetchFrom' => 'Slave' // values - Master / Slave
 ];
 ```
 
@@ -333,13 +343,16 @@ return [
 			'isRequired' => Constant::$REQUIRED              // Represents required field
 		],
 		[...]
-	]
+	],
+
+	// Optional custom configuration to connect to master / slave Database
+	'fetchFrom' => 'Slave' // values - Master / Slave
 ];
 ```
 
 ## Available configuration options for Supplement
 
-- Here one can configure and collect payload to perform customized operations (for Supplement folder)
+- Here one can configure and collect payload to perform customized operations (for Supplement folder in www)
 
 ```PHP
 //return represents root for sqlResults
@@ -392,16 +405,18 @@ return [
 				],
 				// Database DataTypes settings required when useHierarchy is true
 				// to validate each data set before procedding forward
-					// Fetch values of params from previous queries
+				[	// Fetch values of params from previous queries
 					'column' => 'id',
 					'fetchFrom' => 'sqlParamArr',                     // sqlParamArr (with useHierarchy)
 					'fetchFromData' => '<return:keys-separated-by-colon>'
 				],
+				[
 					// Fetch values of SQL results from previous queries
 					'column' => 'id',
 					'fetchFrom' => 'sqlResults',                    // sqlResults for DQL operations (with useResultSet)
 					'fetchFromData' => '<return:keys-separated-by-colon>'
 				],
+				[
 					// Fetch values of SQL payload for previous queries
 					'column' => 'id',
 					'fetchFrom' => 'sqlPayload',                    // sqlPayload (with useHierarchy)
@@ -548,7 +563,10 @@ return [
 	'xsltFile' => 'file-path',
 
 	// Limiting duplicates
-	'idempotentWindow' => 3 // Idempotent Window for DML operation (seconds)
+	'idempotentWindow' => 3, // Idempotent Window for DML operation (seconds)
+
+	// Optional custom configuration to connect to master / slave Database
+	'fetchFrom' => 'Slave' // values - Master / Slave
 ];
 ```
 

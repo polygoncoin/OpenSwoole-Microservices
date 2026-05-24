@@ -151,10 +151,12 @@ class Supplement
 			? $sSqlConfig['isTransaction'] : false;
 
 		// Set Server mode to execute query on - Read / Write Server
+		$fetchFrom = isset($sSqlConfig['fetchFrom']) ?? 'Master';
+		// Set Server mode to execute query on - Read / Write Server
 		if ($this->http->req->customerDbObj === null) {
 			$this->http->req->customerDbObj = DbCommonFunction::connectCustomerDb(
 				customerData: $this->http->req->s['customerData'],
-				fetchFrom: 'Master'
+				fetchFrom: $fetchFrom
 			);
 		}
 
