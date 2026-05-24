@@ -798,7 +798,7 @@ trait AppTrait
 	private function rateLimitRoute(&$sqlConfig): void
 	{
 		if (
-			!$this->http->req->isPrivateRequest
+			$this->http->req->isPublicRequest
 			|| !CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimitForRoute')
 			|| !isset($sqlConfig['rateLimitMaxRequest'])
 			|| !isset($sqlConfig['rateLimitMaxRequestWindow'])
@@ -986,7 +986,7 @@ trait AppTrait
 	private function lagResponse($sqlConfig): void
 	{
 		if (
-			!$this->http->req->isPrivateRequest
+			$this->http->req->isPublicRequest
 			|| !isset($sqlConfig['responseLag'])
 		) {
 			return;

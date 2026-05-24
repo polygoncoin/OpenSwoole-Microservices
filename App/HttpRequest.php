@@ -167,6 +167,13 @@ class HttpRequest
 	public $isPrivateRequest = null;
 
 	/**
+	 * Flag for Public request
+	 *
+	 * @var null|bool
+	 */
+	public $isPublicRequest = null;
+
+	/**
 	 * Payload stream
 	 */
 	public $payloadStream = null;
@@ -227,6 +234,7 @@ class HttpRequest
 			$this->isPublicDomain = true;
 			$this->domainCacheKey = $publicDomainCacheKey;
 			$this->isPrivateRequest = false;
+			$this->isPublicRequest = true;
 		}
 		if (!$this->isPublicDomain) {
 			$privateSessionDomainCacheKey = CacheServerKey::privateSessionDomain(domainName: $this->http->httpReqData['server']['domainName']);
@@ -234,6 +242,7 @@ class HttpRequest
 				$this->isPrivateSessionDomain = true;
 				$this->domainCacheKey = $privateSessionDomainCacheKey;
 				$this->isPrivateRequest = true;
+				$this->isPublicRequest = false;
 			}
 		}
 		if (
@@ -245,6 +254,7 @@ class HttpRequest
 				$this->isPrivateTokenDomain = true;
 				$this->domainCacheKey = $privateTokenDomainCacheKey;
 				$this->isPrivateRequest = true;
+				$this->isPublicRequest = false;
 			}
 		}
 	}
@@ -287,7 +297,7 @@ class HttpRequest
 		$this->customerId = $this->s['customerData']['id'];
 
 		if (
-			!$this->isPrivateRequest
+			$this->isPublicRequest
 			&& !CommonFunction::isEnabled(http: $this->http, feature: 'enablePublicRequest')
 		) {
 			throw new \Exception(
@@ -307,8 +317,14 @@ class HttpRequest
 		}
 
 		if (
-			CommonFunction::isEnabled(http: $this->http, feature: 'enableQueryCacheForPublic')
-			|| CommonFunction::isEnabled(http: $this->http, feature: 'enableQueryCacheForPrivate')
+			(
+				$this->isPublicRequest
+				&& CommonFunction::isEnabled(http: $this->http, feature: 'enableQueryCacheForPublic')
+			)
+			|| (
+				$this->isPrivateRequest
+				&& CommonFunction::isEnabled(http: $this->http, feature: 'enableQueryCacheForPrivate')
+			)
 		) {
 			$this->customerQueryCacheObj = new QueryCache($this->http);
 		}
