@@ -141,10 +141,12 @@ class Write
 			? $writeSqlConfig['isTransaction'] : false;
 
 		// Set Server mode to execute query on - Read / Write Server
-		$this->http->req->customerDbObj = DbCommonFunction::connectCustomerDb(
-			customerData: $this->http->req->s['customerData'],
-			fetchFrom: 'Master'
-		);
+		if ($this->http->req->customerDbObj === null) {
+			$this->http->req->customerDbObj = DbCommonFunction::connectCustomerDb(
+				customerData: $this->http->req->s['customerData'],
+				fetchFrom: 'Master'
+			);
+		}
 
 		$this->processWrite(
 			writeSqlConfig: $writeSqlConfig,
