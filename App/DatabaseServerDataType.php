@@ -15,6 +15,8 @@
 
 namespace Microservices\App;
 
+use Microservices\App\HttpStatus;
+
 /* String Data Types */
 /*
 		FIXED length string (can contain letters, numbers, and special characters).

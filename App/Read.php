@@ -122,7 +122,7 @@ class Read
 			$cacheReqCount = 0;
 			$queryCacheReqFlag = false;
 			for ($i = 0;$i < 5; $i++) {
-				$json = DbCommonFunction::queryCacheGet(
+				$json = $this->http->req->customerQueryCacheObj->queryCacheGet(
 					customerId: $this->http->req->customerId,
 					queryCacheKey: $readSqlConfig['queryCacheKey']
 				);
@@ -136,7 +136,7 @@ class Read
 					return true;
 				} else {
 					if (!$queryCacheReqFlag) {
-						$cacheReqCount = DbCommonFunction::queryCacheIncrement(
+						$cacheReqCount = $this->http->req->customerQueryCacheObj->queryCacheIncrement(
 							customerId: $this->http->req->customerId,
 							queryCacheKey: $readSqlConfig['queryCacheKey']
 						);
@@ -176,7 +176,7 @@ class Read
 		// Set Server mode to execute query on - Read / Write Server
 		$fetchFrom = $readSqlConfig['fetchFrom'] ?? 'Slave';
 		$this->modeColumn = strtolower($fetchFrom) . '_db_server_query_placeholder';
-		$this->http->req->clientDbObj = DbCommonFunction::connectClientDb(
+		$this->http->req->customerDbObj = DbCommonFunction::connectCustomerDb(
 			customerData: $this->http->req->s['customerData'],
 			fetchFrom: $fetchFrom
 		);
@@ -208,7 +208,7 @@ class Read
 			&& $toBeCached
 		) {
 			$json = $this->dataEncode->getData();
-			DbCommonFunction::queryCacheSet(
+			$this->http->req->customerQueryCacheObj->queryCacheSet(
 				customerId: $this->http->req->customerId,
 				queryCacheKey: $readSqlConfig['queryCacheKey'],
 				queryCacheValue: $json
@@ -412,8 +412,8 @@ class Read
 			return;
 		}
 
-		$this->http->req->clientDbObj->execQuery(sql: $sql, paramArr: $paramArr);
-		if ($row = $this->http->req->clientDbObj->fetch()) {
+		$this->http->req->customerDbObj->execQuery(sql: $sql, paramArr: $paramArr);
+		if ($row = $this->http->req->customerDbObj->fetch()) {
 			foreach ($row as $objectKey => $value) {
 				$this->dataEncode->addKeyData(objectKey: $objectKey, data: $value);
 			}
@@ -436,7 +436,7 @@ class Read
 				return;
 			}
 		}
-		$this->http->req->clientDbObj->closeCursor();
+		$this->http->req->customerDbObj->closeCursor();
 
 		if (isset($readSqlConfig['__SUB-QUERY__'])) {
 			$this->callReadDb(
@@ -501,9 +501,9 @@ class Read
 			return;
 		}
 
-		$this->http->req->clientDbObj->execQuery(sql: $sql, paramArr: $paramArr);
-		$row = $this->http->req->clientDbObj->fetch();
-		$this->http->req->clientDbObj->closeCursor();
+		$this->http->req->customerDbObj->execQuery(sql: $sql, paramArr: $paramArr);
+		$row = $this->http->req->customerDbObj->fetch();
+		$this->http->req->customerDbObj->closeCursor();
 
 		$totalRowsCount = $row['count'];
 		$totalPages = ceil(
@@ -594,8 +594,8 @@ class Read
 
 		$singleColumn = false;
 		$pushPop = true;
-		$this->http->req->clientDbObj->execQuery(sql: $sql, paramArr: $paramArr, pushPop: $pushPop);
-		for ($i = 0; $row = $this->http->req->clientDbObj->fetch();) {
+		$this->http->req->customerDbObj->execQuery(sql: $sql, paramArr: $paramArr, pushPop: $pushPop);
+		for ($i = 0; $row = $this->http->req->customerDbObj->fetch();) {
 			if ($i === 0) {
 				if (count(value: $row) === 1) {
 					$singleColumn = true;
@@ -622,7 +622,7 @@ class Read
 				$this->dataEncode->encode(data: $row);
 			}
 		}
-		$this->http->req->clientDbObj->closeCursor(pushPop: $pushPop);
+		$this->http->req->customerDbObj->closeCursor(pushPop: $pushPop);
 	}
 
 	/**
@@ -700,10 +700,10 @@ class Read
 		$exportDbData = [];
 		switch ($serverMode) {
 			case 'Master':
-				$exportDbData = DbCommonFunction::clientMasterDatabaseServerCred(customerData: $this->http->req->s['customerData']);
+				$exportDbData = DbCommonFunction::customerMasterDatabaseServerCred(customerData: $this->http->req->s['customerData']);
 				break;
 			case 'Slave':
-				$exportDbData = DbCommonFunction::clientSlaveDatabaseServerCred(customerData: $this->http->req->s['customerData']);
+				$exportDbData = DbCommonFunction::customerSlaveDatabaseServerCred(customerData: $this->http->req->s['customerData']);
 				break;
 		}
 

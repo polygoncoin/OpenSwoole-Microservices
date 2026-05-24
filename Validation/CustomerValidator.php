@@ -15,7 +15,6 @@
 
 namespace Microservices\Validation;
 
-use Microservices\App\DbCommonFunction;
 use Microservices\App\Http;
 use Microservices\Validation\ValidatorInterface;
 use Microservices\Validation\ValidatorTrait;
@@ -94,15 +93,15 @@ class CustomerValidator implements ValidatorInterface
 	 */
 	private function getPrimaryCount(&$table, $primary, &$id): int
 	{
-		$dbServerDatabase = $this->http->req->clientDbObj->dbServerDatabase;
+		$dbServerDatabase = $this->http->req->customerDbObj->dbServerDatabase;
 		$sql = "
 			SELECT count(1) as `count`
 			FROM `{$dbServerDatabase}`.`{$table}`
 			WHERE `{$primary}` = ?
 		";
 		$paramArr = [$id];
-		$this->http->req->clientDbObj->execQuery(sql: $sql, paramArr: $paramArr);
-		return (int)($this->http->req->clientDbObj->fetch())['count'];
+		$this->http->req->customerDbObj->execQuery(sql: $sql, paramArr: $paramArr);
+		return (int)($this->http->req->customerDbObj->fetch())['count'];
 	}
 
 	/**
@@ -117,9 +116,9 @@ class CustomerValidator implements ValidatorInterface
 		extract(array: $argArr);
 		$sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
 		$paramArr = [$id];
-		$this->http->req->clientDbObj->execQuery(sql: $sql, paramArr: $paramArr);
-		$row = $this->http->req->clientDbObj->fetch();
-		$this->http->req->clientDbObj->closeCursor();
+		$this->http->req->customerDbObj->execQuery(sql: $sql, paramArr: $paramArr);
+		$row = $this->http->req->customerDbObj->fetch();
+		$this->http->req->customerDbObj->closeCursor();
 		return ($row['count'] === 0) ? false : true;
 	}
 }

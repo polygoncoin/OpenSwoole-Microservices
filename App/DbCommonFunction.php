@@ -20,9 +20,6 @@ use Microservices\App\HttpStatus;
 use Microservices\App\Server\CacheServer;
 use Microservices\App\Server\DatabaseServer;
 use Microservices\App\Server\QueryCacheServer;
-use Microservices\App\Server\CacheServer\CacheServerInterface;
-use Microservices\App\Server\DatabaseServer\DatabaseServerInterface;
-use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
 
 /**
  * Database Common Function
@@ -38,13 +35,6 @@ use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
  */
 class DbCommonFunction
 {
-	/**
-	 * Query Cache Connection Object
-	 *
-	 * @var null|QueryCacheServer
-	 */
-	private static $queryCacheServer = null;
-
 	/** Database Connection */
 	/**
 	 * Global
@@ -118,24 +108,24 @@ class DbCommonFunction
 	}
 
 	/**
-	 * Connect client Cache based on $fetchFrom
+	 * Connect customer Cache based on $fetchFrom
 	 *
 	 * @param array $customerData Customer Data
 	 *
 	 * @return CacheServer
 	 * @throws \Exception
 	 */
-	public static function connectClientCache(&$customerData): CacheServer
+	public static function connectCustomerCache(&$customerData): CacheServer
 	{
-		$clientCacheServerCred = self::clientCacheServerCred(customerData: $customerData);
+		$customerCacheServerCred = self::customerCacheServerCred(customerData: $customerData);
 		return self::connectCache(
-			cacheServerType: $clientCacheServerCred['cacheServerType'],
-			cacheServerHostname: $clientCacheServerCred['cacheServerHostname'],
-			cacheServerPort: $clientCacheServerCred['cacheServerPort'],
-			cacheServerUsername: $clientCacheServerCred['cacheServerUsername'],
-			cacheServerPassword: $clientCacheServerCred['cacheServerPassword'],
-			cacheServerDatabase: $clientCacheServerCred['cacheServerDatabase'],
-			cacheServerTable: $clientCacheServerCred['cacheServerTable']
+			cacheServerType: $customerCacheServerCred['cacheServerType'],
+			cacheServerHostname: $customerCacheServerCred['cacheServerHostname'],
+			cacheServerPort: $customerCacheServerCred['cacheServerPort'],
+			cacheServerUsername: $customerCacheServerCred['cacheServerUsername'],
+			cacheServerPassword: $customerCacheServerCred['cacheServerPassword'],
+			cacheServerDatabase: $customerCacheServerCred['cacheServerDatabase'],
+			cacheServerTable: $customerCacheServerCred['cacheServerTable']
 		);
 	}
 
@@ -144,22 +134,19 @@ class DbCommonFunction
 	 *
 	 * @param string $fetchFrom Master/Slave
 	 *
-	 * @return void
+	 * @return QueryCacheServer
 	 */
-	public static function connectQueryCache(): void
+	public static function connectCustomerQueryCache(): QueryCacheServer
 	{
-		if (self::$queryCacheServer !== null) {
-			return;
-		}
-
-		self::$queryCacheServer = new QueryCacheServer(
-			queryCacheServerType: Env::$queryCacheServerType,
-			queryCacheServerHostname: Env::$queryCacheServerHostname,
-			queryCacheServerPort: Env::$queryCacheServerPort,
-			queryCacheServerUsername: Env::$queryCacheServerUsername,
-			queryCacheServerPassword: Env::$queryCacheServerPassword,
-			queryCacheServerDatabase: Env::$queryCacheServerDatabase,
-			queryCacheServerTable: Env::$queryCacheServerTable
+		$customerQueryCacheServerCred = self::customerQueryCacheServerCred(customerData: $customerData);
+		return new QueryCacheServer(
+			queryCacheServerType: $customerQueryCacheServerCred['cacheServerType'],
+			queryCacheServerHostname: $customerQueryCacheServerCred['cacheServerHostname'],
+			queryCacheServerPort: $customerQueryCacheServerCred['cacheServerPort'],
+			queryCacheServerUsername: $customerQueryCacheServerCred['cacheServerUsername'],
+			queryCacheServerPassword: $customerQueryCacheServerCred['cacheServerPassword'],
+			queryCacheServerDatabase: $customerQueryCacheServerCred['cacheServerDatabase'],
+			queryCacheServerTable: $customerQueryCacheServerCred['cacheServerTable']
 		);
 	}
 
@@ -216,7 +203,7 @@ class DbCommonFunction
 	}
 
 	/**
-	 * Connect client Database based on $fetchFrom
+	 * Connect customer Database based on $fetchFrom
 	 *
 	 * @param array  $customerData Customer Data
 	 * @param string $fetchFrom Master/Slave
@@ -224,30 +211,30 @@ class DbCommonFunction
 	 * @return DatabaseServer
 	 * @throws \Exception
 	 */
-	public static function connectClientDb(&$customerData, $fetchFrom): DatabaseServer
+	public static function connectCustomerDb(&$customerData, $fetchFrom): DatabaseServer
 	{
 		// Set Database credentials
 		switch ($fetchFrom) {
 			case 'Master':
-				$clientMasterDatabaseServerCred = self::clientMasterDatabaseServerCred(customerData: $customerData);
+				$customerMasterDatabaseServerCred = self::customerMasterDatabaseServerCred(customerData: $customerData);
 				return self::connectDb(
-					dbServerType: $clientMasterDatabaseServerCred['dbServerType'],
-					dbServerHostname: $clientMasterDatabaseServerCred['dbServerHostname'],
-					dbServerPort: $clientMasterDatabaseServerCred['dbServerPort'],
-					dbServerUsername: $clientMasterDatabaseServerCred['dbServerUsername'],
-					dbServerPassword: $clientMasterDatabaseServerCred['dbServerPassword'],
-					dbServerDatabase: $clientMasterDatabaseServerCred['dbServerDatabase']
+					dbServerType: $customerMasterDatabaseServerCred['dbServerType'],
+					dbServerHostname: $customerMasterDatabaseServerCred['dbServerHostname'],
+					dbServerPort: $customerMasterDatabaseServerCred['dbServerPort'],
+					dbServerUsername: $customerMasterDatabaseServerCred['dbServerUsername'],
+					dbServerPassword: $customerMasterDatabaseServerCred['dbServerPassword'],
+					dbServerDatabase: $customerMasterDatabaseServerCred['dbServerDatabase']
 				);
 				break;
 			case 'Slave':
-				$clientSlaveDatabaseServerCred = self::clientSlaveDatabaseServerCred(customerData: $customerData);
+				$customerSlaveDatabaseServerCred = self::customerSlaveDatabaseServerCred(customerData: $customerData);
 				return self::connectDb(
-					dbServerType: $clientSlaveDatabaseServerCred['dbServerType'],
-					dbServerHostname: $clientSlaveDatabaseServerCred['dbServerHostname'],
-					dbServerPort: $clientSlaveDatabaseServerCred['dbServerPort'],
-					dbServerUsername: $clientSlaveDatabaseServerCred['dbServerUsername'],
-					dbServerPassword: $clientSlaveDatabaseServerCred['dbServerPassword'],
-					dbServerDatabase: $clientSlaveDatabaseServerCred['dbServerDatabase']
+					dbServerType: $customerSlaveDatabaseServerCred['dbServerType'],
+					dbServerHostname: $customerSlaveDatabaseServerCred['dbServerHostname'],
+					dbServerPort: $customerSlaveDatabaseServerCred['dbServerPort'],
+					dbServerUsername: $customerSlaveDatabaseServerCred['dbServerUsername'],
+					dbServerPassword: $customerSlaveDatabaseServerCred['dbServerPassword'],
+					dbServerDatabase: $customerSlaveDatabaseServerCred['dbServerDatabase']
 				);
 				break;
 			default:
@@ -259,144 +246,13 @@ class DbCommonFunction
 	}
 
 	/**
-	 * Prepend Query Cache key
-	 *
-	 * @param int    $customerId    Customer Id
-	 * @param string $queryCacheKey Query Cache key
-	 *
-	 * @return mixed
-	 */
-	public static function queryCachePrepend($customerId, $queryCacheKey): mixed
-	{
-		if (
-			strlen($customerId) === 0
-			|| strlen($queryCacheKey) === 0
-		) {
-			return false;
-		}
-
-		return "qc:{$customerId}:{$queryCacheKey}";
-	}
-
-	/**
-	 * Get Query Cache key
-	 *
-	 * @param int    $customerId    Customer Id
-	 * @param string $queryCacheKey Query Cache key
-	 *
-	 * @return mixed
-	 */
-	public static function queryCacheGet($customerId, $queryCacheKey): mixed
-	{
-		self::connectQueryCache();
-
-		if (strlen($queryCacheKey) === 0) {
-			return false;
-		}
-
-		$queryCacheKey = self::queryCachePrepend(
-			customerId: $customerId,
-			queryCacheKey: $queryCacheKey
-		);
-
-		$json = null;
-		if (self::$queryCacheServer->queryCacheExist(queryCacheKey: $queryCacheKey)) {
-			$json = self::$queryCacheServer->queryCacheGet(queryCacheKey: $queryCacheKey);
-		}
-
-		return $json;
-	}
-
-	/**
-	 * Increment Query Cache key counter
-	 *
-	 * @param int    $customerId    Customer Id
-	 * @param string $queryCacheKey Query Cache key
-	 *
-	 * @return mixed
-	 */
-	public static function queryCacheIncrement($customerId, $queryCacheKey): mixed
-	{
-		self::connectQueryCache();
-
-		if (strlen($queryCacheKey) === 0) {
-			return false;
-		}
-
-		$queryCacheKey = 'i:' . $queryCacheKey;
-		$queryCacheKey = self::queryCachePrepend(
-			customerId: $customerId,
-			queryCacheKey: $queryCacheKey
-		);
-
-		return self::$queryCacheServer->queryCacheIncrement(queryCacheKey: $queryCacheKey);
-	}
-
-	/**
-	 * Set Query Cache key
-	 *
-	 * @param int    $customerId      Customer Id
-	 * @param string $queryCacheKey   Query Cache key
-	 * @param string $queryCacheValue Query Cache value
-	 *
-	 * @return mixed
-	 */
-	public static function queryCacheSet($customerId, $queryCacheKey, &$queryCacheValue): mixed
-	{
-		self::connectQueryCache();
-
-		if (strlen($queryCacheKey) === 0) {
-			return false;
-		}
-
-		$delQueryCacheKey = 'i:' . $queryCacheKey;
-
-		$queryCacheKey = self::queryCachePrepend(
-			customerId: $customerId,
-			queryCacheKey: $queryCacheKey
-		);
-
-		$delQueryCacheKey = self::queryCachePrepend(
-			customerId: $customerId,
-			queryCacheKey: $delQueryCacheKey
-		);
-
-		self::$queryCacheServer->queryCacheDelete(queryCacheKey: $delQueryCacheKey);
-		return self::$queryCacheServer->queryCacheSet(queryCacheKey: $queryCacheKey, queryCacheValue: $queryCacheValue);
-	}
-
-	/**
-	 * Delete Query Cache key
-	 *
-	 * @param int    $customerId    Customer Id
-	 * @param string $queryCacheKey Query Cache key
-	 *
-	 * @return mixed
-	 */
-	public static function queryCacheDelete($customerId, $queryCacheKey): mixed
-	{
-		self::connectQueryCache();
-
-		if (strlen($queryCacheKey) === 0) {
-			return false;
-		}
-
-		$queryCacheKey = self::queryCachePrepend(
-			customerId: $customerId,
-			queryCacheKey: $queryCacheKey
-		);
-
-		return self::$queryCacheServer->queryCacheDelete(queryCacheKey: $queryCacheKey);
-	}
-
-	/**
 	 * Returns Cache Master Server detail
 	 *
 	 * @param array $customerData Customer Data
 	 *
 	 * @return array
 	 */
-	public static function clientCacheServerCred(&$customerData): array
+	public static function customerCacheServerCred(&$customerData): array
 	{
 		return [
 			'cacheServerType' => getenv(name: $customerData['cache_server_type']),
@@ -410,13 +266,33 @@ class DbCommonFunction
 	}
 
 	/**
+	 * Returns Query Cache Server detail
+	 *
+	 * @param array $customerData Customer Data
+	 *
+	 * @return array
+	 */
+	public static function customerQueryCacheServerCred(&$customerData): array
+	{
+		return [
+			'cacheServerType' => getenv(name: $customerData['query_cache_server_type']),
+			'cacheServerHostname' => getenv(name: $customerData['query_cache_server_hostname']),
+			'cacheServerPort' => getenv(name: $customerData['query_cache_server_port']),
+			'cacheServerUsername' => getenv(name: $customerData['query_cache_server_username']),
+			'cacheServerPassword' => getenv(name: $customerData['query_cache_server_password']),
+			'cacheServerDatabase' => getenv(name: $customerData['query_cache_server_db']),
+			'cacheServerTable' => getenv(name: $customerData['query_cache_server_table'])
+		];
+	}
+
+	/**
 	 * Returns Database Master Server detail
 	 *
 	 * @param array $customerData Customer Data
 	 *
 	 * @return array
 	 */
-	public static function clientMasterDatabaseServerCred(&$customerData): array
+	public static function customerMasterDatabaseServerCred(&$customerData): array
 	{
 		return [
 			'dbServerType' => getenv(name: $customerData['master_db_server_type']),
@@ -435,7 +311,7 @@ class DbCommonFunction
 	 *
 	 * @return array
 	 */
-	public static function clientSlaveDatabaseServerCred(&$customerData): array
+	public static function customerSlaveDatabaseServerCred(&$customerData): array
 	{
 		return [
 			'dbServerType' => getenv(name: $customerData['slave_db_server_type']),

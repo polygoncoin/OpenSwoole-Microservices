@@ -16,7 +16,6 @@
 namespace Microservices\Supplement\Dropbox;
 
 use Microservices\App\Constant;
-use Microservices\App\DbCommonFunction;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
 use Microservices\Supplement\Dropbox\DropboxInterface;

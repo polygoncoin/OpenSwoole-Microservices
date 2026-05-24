@@ -21,7 +21,6 @@ use Microservices\App\Dropbox;
 use Microservices\App\Env;
 use Microservices\App\Gateway;
 use Microservices\App\Http;
-use Microservices\App\HttpStatus;
 
 /**
  * Service

@@ -10,7 +10,7 @@ CREATE TABLE `customer` (
     `name` VARCHAR(255) DEFAULT NULL,
     `groupTable` VARCHAR(255) NOT NULL,
     `userTable` VARCHAR(255) NOT NULL,
-    `allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
+    `allowed_cidr` VARCHAR(250) DEFAULT NULL,
     `rateLimitMaxRequest` INT DEFAULT NULL,
     `rateLimitMaxRequestWindow` INT DEFAULT NULL,
     `private_token_domain` VARCHAR(255) DEFAULT NULL,
@@ -44,6 +44,8 @@ CREATE TABLE `customer` (
     `enableRoutesRequest` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
     `enableThirdPartyRequest` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
     `enableUploadRequest` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
+    `enableQueryCacheForPublic` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
+    `enableQueryCacheForPrivate` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
     `cronRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
     `customRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
     `dropboxRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
@@ -91,6 +93,13 @@ CREATE TABLE `customer` (
     `session_server_password` VARCHAR(255) DEFAULT NULL,
     `session_server_db` VARCHAR(255) DEFAULT NULL,
     `session_server_table` VARCHAR(255) DEFAULT NULL,
+    `query_cache_server_type` VARCHAR(255) DEFAULT NULL,
+    `query_cache_server_hostname` VARCHAR(255) DEFAULT NULL,
+    `query_cache_server_port` VARCHAR(255) DEFAULT NULL,
+    `query_cache_server_username` VARCHAR(255) DEFAULT NULL,
+    `query_cache_server_password` VARCHAR(255) DEFAULT NULL,
+    `query_cache_server_db` VARCHAR(255) DEFAULT NULL,
+    `query_cache_server_table` VARCHAR(255) DEFAULT NULL, -- ; For MongoDb
     `comments` VARCHAR(255) DEFAULT NULL,
     `created_by` INT DEFAULT NULL,
     `created_on` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -106,13 +115,14 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 INSERT INTO `customer` VALUES
-(1,'Customer 001','group','user','0.0.0.0/0',NULL,NULL,'api.customer001.localhost','web.customer001.localhost','customer001.localhost','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0',600,300,600,300,600,300,600,300,'cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cCacheServerType001','cCacheServerHostname001','cCacheServerPort001','cCacheServerUsername001','cCacheServerPassword001','cCacheServerDatabase001','cCacheServerTable001','fileSessionMode',NULL,NULL,NULL,NULL,NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes', 'No','No');
+(1,'Customer 001','group','user','0.0.0.0/0',NULL,NULL,'api.customer001.localhost','web.customer001.localhost','customer001.localhost','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0',600,300,600,300,600,300,600,300,'cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cCacheServerType001','cCacheServerHostname001','cCacheServerPort001','cCacheServerUsername001','cCacheServerPassword001','cCacheServerDatabase001','cCacheServerTable001','fileSessionMode',NULL,NULL,NULL,NULL,NULL,NULL,'queryCacheServerType','queryCacheServerHostname','queryCacheServerPort','queryCacheServerUsername','queryCacheServerPassword','queryCacheServerDatabase','queryCacheServerTable','',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes', 'No','No');
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `request`;
 CREATE TABLE `request` (
     `request_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `customer_id` INT NOT NULL,
+    `group_id` INT NOT NULL,
     `user_id` INT NOT NULL,
     `request_route` VARCHAR(250),
     `request_method` ENUM('GET', 'POST', 'PUT', 'PATCH', 'DELETE') NOT NULL,
@@ -127,6 +137,7 @@ CREATE TABLE `error_log` (
     `error_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `request_id` BIGINT UNSIGNED NOT NULL,
     `customer_id` INT NOT NULL,
+    `group_id` INT NOT NULL,
     `user_id` INT NOT NULL,
     `request_route` VARCHAR(250),
     `request_method` ENUM('GET', 'POST', 'PUT', 'PATCH', 'DELETE') NOT NULL,
@@ -145,6 +156,7 @@ CREATE TABLE `debug_log` (
     `debug_mode` VARCHAR(250),
     `request_id` BIGINT UNSIGNED NOT NULL,
     `customer_id` INT NOT NULL,
+    `group_id` INT NOT NULL,
     `user_id` INT NOT NULL,
     `request_route` VARCHAR(250),
     `request_method` ENUM('GET', 'POST', 'PUT', 'PATCH', 'DELETE') NOT NULL,

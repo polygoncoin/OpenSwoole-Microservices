@@ -112,25 +112,25 @@ class Write
 			keyword: 'useHierarchy'
 		);
 
-		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableExplainRequest')) {
-			if (
-				$this->http->req->rParser->routeEndingWithReservedKeywordFlag
-				&& ($this->http->req->rParser->routeEndingReservedKeyword === Env::$explainRequestRouteKeyword)
-			) {
-				return $this->explainWrite(
-					writeSqlConfig: $writeSqlConfig,
-					useHierarchy: $useHierarchy
-				);
-			}
-			if (
-				$this->http->req->rParser->routeEndingWithReservedKeywordFlag
-				&& ($this->http->req->rParser->routeEndingReservedKeyword === Env::$importSampleRequestRouteKeyword)
-			) {
-				return $this->processImportSqlConfig(
-					writeSqlConfig: $writeSqlConfig,
-					useHierarchy: $useHierarchy
-				);
-			}
+		if (
+			$this->http->req->rParser->routeEndingWithReservedKeywordFlag
+			&& $this->http->req->rParser->routeEndingReservedKeyword === Env::$explainRequestRouteKeyword
+			&& CommonFunction::isEnabled(http: $this->http, feature: 'enableExplainRequest')
+		) {
+			return $this->explainWrite(
+				writeSqlConfig: $writeSqlConfig,
+				useHierarchy: $useHierarchy
+			);
+		}
+
+		if (
+			$this->http->req->rParser->routeEndingWithReservedKeywordFlag
+			&& ($this->http->req->rParser->routeEndingReservedKeyword === Env::$importSampleRequestRouteKeyword)
+		) {
+			return $this->generateImportSampleCsv(
+				writeSqlConfig: $writeSqlConfig,
+				useHierarchy: $useHierarchy
+			);
 		}
 
 		// Lag Response
@@ -141,7 +141,7 @@ class Write
 			? $writeSqlConfig['isTransaction'] : false;
 
 		// Set Server mode to execute query on - Read / Write Server
-		$this->http->req->clientDbObj = DbCommonFunction::connectClientDb(
+		$this->http->req->customerDbObj = DbCommonFunction::connectCustomerDb(
 			customerData: $this->http->req->s['customerData'],
 			fetchFrom: 'Master'
 		);
@@ -156,7 +156,7 @@ class Write
 				$i < $iCount;
 				$i++
 			) {
-				DbCommonFunction::queryCacheDelete(
+				$this->http->req->customerQueryCacheObj->queryCacheDelete(
 					customerId: $this->http->req->customerId,
 					queryCacheKey: $writeSqlConfig['affectedQueryCacheKeyArr'][$i]
 				);
@@ -274,7 +274,7 @@ class Write
 			// Begin DML operation
 			if ($hashJson === null) {
 				if ($this->operateAsTransaction) {
-					$this->http->req->clientDbObj->begin();
+					$this->http->req->customerDbObj->begin();
 				}
 				$response = [];
 				$this->writeDb(
@@ -289,9 +289,9 @@ class Write
 				if ($this->http->res->httpStatus === HttpStatus::$Ok) {
 					if (
 						$this->operateAsTransaction
-						&& ($this->http->req->clientDbObj->beganTransaction === true)
+						&& ($this->http->req->customerDbObj->beganTransaction === true)
 					) {
-						$this->http->req->clientDbObj->commit();
+						$this->http->req->customerDbObj->commit();
 					}
 
 					$arr = [];
@@ -310,7 +310,7 @@ class Write
 						$this->http->req->isPrivateRequest
 						&& $idempotentWindow
 					) {
-						$this->http->req->clientCacheObj->cacheSet(
+						$this->http->req->customerCacheObj->cacheSet(
 							cacheKey: $hashKey,
 							cacheValue: json_encode(value: $arr),
 							cacheExpire: $idempotentWindow
@@ -415,7 +415,7 @@ class Write
 			$payloadIndexArr = $payloadIndexArr;
 			if (
 				$this->operateAsTransaction
-				&& !$this->http->req->clientDbObj->beganTransaction
+				&& !$this->http->req->customerDbObj->beganTransaction
 			) {
 				$_response['Error'] = 'Transaction rolled back';
 				return;
@@ -486,7 +486,7 @@ class Write
 
 			if (!empty($errorArr)) {
 				$_response['Error'] = $errorArr;
-				$this->http->req->clientDbObj->rollBack();
+				$this->http->req->customerDbObj->rollBack();
 				return;
 			}
 
@@ -495,10 +495,10 @@ class Write
 			}
 
 			// Execute Query
-			$this->http->req->clientDbObj->execQuery(sql: $sql, paramArr: $paramArr);
+			$this->http->req->customerDbObj->execQuery(sql: $sql, paramArr: $paramArr);
 			if (
 				$this->operateAsTransaction
-				&& !$this->http->req->clientDbObj->beganTransaction
+				&& !$this->http->req->customerDbObj->beganTransaction
 			) {
 				$_response['Error'] = 'Something went wrong';
 				return;
@@ -511,15 +511,15 @@ class Write
 				) {
 					$id = $writeSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'];
 				} else {
-					$id = $this->http->req->clientDbObj->lastInsertId();
+					$id = $this->http->req->customerDbObj->lastInsertId();
 				}
 				$_response[$writeSqlConfig['__INSERT-IDs__']] = $id;
 				$this->http->req->s['__INSERT-IDs__'][$writeSqlConfig['__INSERT-IDs__']] = $id;
 			} else {
-				$affectedRowCount = $this->http->req->clientDbObj->affectedRowCount();
+				$affectedRowCount = $this->http->req->customerDbObj->affectedRowCount();
 				$_response['affectedRowCount'] = $affectedRowCount;
 			}
-			$this->http->req->clientDbObj->closeCursor();
+			$this->http->req->customerDbObj->closeCursor();
 
 			// triggers
 			if (isset($writeSqlConfig['__TRIGGERS__'])) {

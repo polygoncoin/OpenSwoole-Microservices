@@ -18,7 +18,6 @@ namespace Microservices\App;
 use Microservices\App\CommonFunction;
 use Microservices\App\Env;
 use Microservices\App\Http;
-use Microservices\App\HttpStatus;
 
 /**
  * Gateway - contains checks like IP and Rate Limiting functions

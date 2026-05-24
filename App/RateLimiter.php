@@ -15,9 +15,9 @@
 
 namespace Microservices\App;
 
-use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\Http;
+use Microservices\App\HttpStatus;
 
 /**
  * Rate Limiter
@@ -165,7 +165,7 @@ class RateLimiter
 				// Process the request
 				return;
 			} else {
-				// Return 429 Too Many request
+				// Return Too Many request
 				throw new \Exception(
 					message: $result['resetOn'] - Env::$timestamp,
 					code: HttpStatus::$TooManyRequest

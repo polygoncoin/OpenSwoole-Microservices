@@ -15,6 +15,7 @@
 
 namespace Microservices\App\SessionHandler\Container;
 
+use Microservices\App\HttpStatus;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 
@@ -184,7 +185,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 			if (!extension_loaded(extension: 'memcached')) {
 				throw new \Exception(
 					message: "Unable to find Memcached extension",
-					code: 500
+					code: HttpStatus::$InternalServerError
 				);
 			}
 

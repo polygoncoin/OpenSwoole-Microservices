@@ -15,6 +15,7 @@
 
 namespace Microservices\App\Server\CacheServer;
 
+use Microservices\App\HttpStatus;
 use Microservices\App\Server\CacheServer\CacheServerInterface;
 use Microservices\App\Server\Container\NoSql\Memcached as Cache_Memcached;
 

@@ -1,9 +1,10 @@
+-- Required Table
 DROP TABLE IF EXISTS `group`;
 CREATE TABLE `group` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(100) NOT NULL,
     `customer_id` INT DEFAULT NULL,
-    `allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
+    `allowed_cidr` VARCHAR(250) DEFAULT NULL,
     `rateLimitMaxRequest` INT DEFAULT NULL,
     `rateLimitMaxRequestWindow` INT DEFAULT NULL,
     `comments` VARCHAR(255) DEFAULT NULL,
@@ -19,6 +20,7 @@ CREATE TABLE `group` (
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
+-- Required Table
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -29,7 +31,7 @@ CREATE TABLE `user` (
     `email` VARCHAR(255) NOT NULL,
     `username` VARCHAR(255) NOT NULL,
     `password_hash` VARCHAR(255) NOT NULL,
-    `allowed_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
+    `allowed_cidr` VARCHAR(250) DEFAULT NULL,
     `rateLimitMaxRequest` INT DEFAULT NULL,
     `rateLimitMaxRequestWindow` INT DEFAULT NULL,
     `comments` VARCHAR(255) DEFAULT NULL,
@@ -45,6 +47,35 @@ CREATE TABLE `user` (
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
+-- Required Table
+DROP TABLE IF EXISTS `import_file_detail`;
+CREATE TABLE `import_file_detail` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `customer_id` INT NOT NULL,
+    `group_id` INT NOT NULL,
+    `user_id` INT NOT NULL,
+    `uploaded_file_name` VARCHAR(255) NOT NULL,
+    `uploaded_file_md5` VARCHAR(255) NOT NULL,
+    `uploaded_on` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `request_ip` VARCHAR(25) NOT NULL,
+    `is_disabled` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
+    `is_deleted` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB;
+
+LOCK TABLES `group` WRITE;
+INSERT INTO `group` VALUES
+(2,'Customer001UserGroup1',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes', 'No','No'),
+(3,'AdminGroup',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes', 'No','No');
+UNLOCK TABLES;
+
+LOCK TABLES `user` WRITE;
+INSERT INTO `user` VALUES
+(4,1,2,'test1','test1','test1@test.com','customer_1_group_1_user_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','0.0.0.0/0',NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes', 'No','No'),
+(5,1,3,'admin1','admin1','admin1@test.com','customer_1_admin_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','0.0.0.0/0',NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes', 'No','No');
+UNLOCK TABLES;
+
+-- Product Tables definition goes below
 DROP TABLE IF EXISTS `address`;
 CREATE TABLE `address` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -79,15 +110,3 @@ CREATE TABLE `category` (
     `is_deleted` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
-
-LOCK TABLES `group` WRITE;
-INSERT INTO `group` VALUES
-(2,'Customer001UserGroup1',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes', 'No','No'),
-(3,'AdminGroup',1,'0.0.0.0/0',NULL,NULL,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-21 06:38:22','Yes', 'No','No');
-UNLOCK TABLES;
-
-LOCK TABLES `user` WRITE;
-INSERT INTO `user` VALUES
-(4,1,2,'test1','test1','test1@test.com','customer_1_group_1_user_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','0.0.0.0/0',NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes', 'No','No'),
-(5,1,3,'admin1','admin1','admin1@test.com','customer_1_admin_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','0.0.0.0/0',NULL,NULL,NULL,0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes', 'No','No');
-UNLOCK TABLES;

@@ -137,7 +137,7 @@ class Supplement
 			$this->http->req->rParser->routeEndingWithReservedKeywordFlag
 			&& $this->http->req->rParser->routeEndingReservedKeyword === Env::$importSampleRequestRouteKeyword
 		) {
-			return $this->processImportSqlConfig(
+			return $this->generateImportSampleCsv(
 				writeSqlConfig: $sSqlConfig,
 				useHierarchy: $useHierarchy
 			);
@@ -151,7 +151,7 @@ class Supplement
 			? $sSqlConfig['isTransaction'] : false;
 
 		// Set Server mode to execute query on - Read / Write Server
-		$this->http->req->clientDbObj = DbCommonFunction::connectClientDb(
+		$this->http->req->customerDbObj = DbCommonFunction::connectCustomerDb(
 			customerData: $this->http->req->s['customerData'],
 			fetchFrom: 'Master'
 		);
@@ -166,7 +166,7 @@ class Supplement
 				$i < $iCount;
 				$i++
 			) {
-				DbCommonFunction::queryCacheDelete(
+				$this->http->req->customerQueryCacheObj->queryCacheDelete(
 					customerId: $this->http->req->customerId,
 					queryCacheKey: $sSqlConfig['affectedQueryCacheKeyArr'][$i]
 				);
@@ -285,7 +285,7 @@ class Supplement
 			// Begin DML operation
 			if ($hashJson === null) {
 				if ($this->operateAsTransaction) {
-					$this->http->req->clientDbObj->begin();
+					$this->http->req->customerDbObj->begin();
 				}
 				$response = [];
 				$this->execSupplement(
@@ -300,9 +300,9 @@ class Supplement
 				if ($this->http->res->httpStatus === HttpStatus::$Ok) {
 					if (
 						$this->operateAsTransaction
-						&& ($this->http->req->clientDbObj->beganTransaction === true)
+						&& ($this->http->req->customerDbObj->beganTransaction === true)
 					) {
-						$this->http->req->clientDbObj->commit();
+						$this->http->req->customerDbObj->commit();
 					}
 
 					$arr = [];
@@ -318,7 +318,7 @@ class Supplement
 					$arr['PayloadResponse'] = $response;
 
 					if ($idempotentWindow) {
-						$this->http->req->clientCacheObj->cacheSet(
+						$this->http->req->customerCacheObj->cacheSet(
 							cacheKey: $hashKey,
 							cacheValue: json_encode(value: $arr),
 							cacheExpire: $idempotentWindow
@@ -421,7 +421,7 @@ class Supplement
 			$payloadIndexArr = $payloadIndexArr;
 			if (
 				$this->operateAsTransaction
-				&& !$this->http->req->clientDbObj->beganTransaction
+				&& !$this->http->req->customerDbObj->beganTransaction
 			) {
 				$_response['Error'] = 'Transaction rolled back';
 				return;
@@ -488,7 +488,7 @@ class Supplement
 
 			if (
 				$this->operateAsTransaction
-				&& !$this->http->req->clientDbObj->beganTransaction
+				&& !$this->http->req->customerDbObj->beganTransaction
 			) {
 				$_response['Error'] = 'Something went wrong';
 				return;

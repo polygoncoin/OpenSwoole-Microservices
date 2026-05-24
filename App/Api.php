@@ -21,6 +21,7 @@ use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\Http;
+use Microservices\App\HttpStatus;
 use Microservices\App\Supplement;
 
 /**

@@ -95,7 +95,7 @@ class Start
 					$Microservices->http === null
 					|| $Microservices->http->res === null
 				) {
-					$status = 200;
+					$status = HttpStatus::$Ok;
 				} else {
 					$status = $Microservices->http->res->httpStatus;
 				}
@@ -103,7 +103,7 @@ class Start
 				return [$headerArr, $data, $status];
 			}
 		} catch (\Exception $e) {
-			if (!in_array(needle: $e->getCode(), haystack: [400, 429])) {
+			if (!in_array(needle: $e->getCode(), haystack: [HttpStatus::$BadRequest, HttpStatus::$TooManyRequest])) {
 				list($usec, $sec) = explode(separator: ' ', string: microtime());
 				$dateTime = date(
 					format: 'Y-m-d H:i:s',
@@ -124,7 +124,7 @@ class Start
 			}
 
 			$headerArr = [];
-			if ($e->getCode() == 429) {
+			if ($e->getCode() == HttpStatus::$TooManyRequest) {
 				$headerArr['Retry-After'] = $e->getMessage();
 				$arr = [
 					'Message' => 'Too Many request',

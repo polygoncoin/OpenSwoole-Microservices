@@ -15,6 +15,7 @@
 
 namespace Microservices\App\SessionHandler\Container;
 
+use Microservices\App\HttpStatus;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 
@@ -190,7 +191,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 			if (!extension_loaded(extension: 'redis')) {
 				throw new \Exception(
 					message: "Unable to find Redis extension",
-					code: 500
+					code: HttpStatus::$InternalServerError
 				);
 			}
 

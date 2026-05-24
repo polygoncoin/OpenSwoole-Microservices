@@ -146,25 +146,25 @@ class Reload
 	 */
 	public static function processGroup($httpRequestIp, $customerData, $groupId = null): bool
 	{
-		$clientCacheServerCred = DbCommonFunction::clientCacheServerCred(customerData: $customerData);
-		$clientCacheObj = DbCommonFunction::connectCache(
-			cacheServerType: $clientCacheServerCred['cacheServerType'],
-			cacheServerHostname: $clientCacheServerCred['cacheServerHostname'],
-			cacheServerPort: $clientCacheServerCred['cacheServerPort'],
-			cacheServerUsername: $clientCacheServerCred['cacheServerUsername'],
-			cacheServerPassword: $clientCacheServerCred['cacheServerPassword'],
-			cacheServerDatabase: $clientCacheServerCred['cacheServerDatabase'],
-			cacheServerTable: $clientCacheServerCred['cacheServerTable']
+		$customerCacheServerCred = DbCommonFunction::customerCacheServerCred(customerData: $customerData);
+		$customerCacheObj = DbCommonFunction::connectCache(
+			cacheServerType: $customerCacheServerCred['cacheServerType'],
+			cacheServerHostname: $customerCacheServerCred['cacheServerHostname'],
+			cacheServerPort: $customerCacheServerCred['cacheServerPort'],
+			cacheServerUsername: $customerCacheServerCred['cacheServerUsername'],
+			cacheServerPassword: $customerCacheServerCred['cacheServerPassword'],
+			cacheServerDatabase: $customerCacheServerCred['cacheServerDatabase'],
+			cacheServerTable: $customerCacheServerCred['cacheServerTable']
 		);
 
-		$clientMasterDatabaseServerCred = DbCommonFunction::clientMasterDatabaseServerCred(customerData: $customerData);
-		$clientDbObj = DbCommonFunction::connectDb(
-			dbServerType: $clientMasterDatabaseServerCred['dbServerType'],
-			dbServerHostname: $clientMasterDatabaseServerCred['dbServerHostname'],
-			dbServerPort: $clientMasterDatabaseServerCred['dbServerPort'],
-			dbServerUsername: $clientMasterDatabaseServerCred['dbServerUsername'],
-			dbServerPassword: $clientMasterDatabaseServerCred['dbServerPassword'],
-			dbServerDatabase: $clientMasterDatabaseServerCred['dbServerDatabase']
+		$customerMasterDatabaseServerCred = DbCommonFunction::customerMasterDatabaseServerCred(customerData: $customerData);
+		$customerDbObj = DbCommonFunction::connectDb(
+			dbServerType: $customerMasterDatabaseServerCred['dbServerType'],
+			dbServerHostname: $customerMasterDatabaseServerCred['dbServerHostname'],
+			dbServerPort: $customerMasterDatabaseServerCred['dbServerPort'],
+			dbServerUsername: $customerMasterDatabaseServerCred['dbServerUsername'],
+			dbServerPassword: $customerMasterDatabaseServerCred['dbServerPassword'],
+			dbServerDatabase: $customerMasterDatabaseServerCred['dbServerDatabase']
 		);
 
 		$sql = "SELECT * FROM `{$customerData['groupTable']}` G";
@@ -176,19 +176,19 @@ class Reload
 		}
 
 		// Groups
-		$clientDbObj->execQuery(
+		$customerDbObj->execQuery(
 			sql: $sql,
 			paramArr: $paramArr
 		);
-		$groupDataArr = $clientDbObj->fetchAll();
-		$clientDbObj->closeCursor();
+		$groupDataArr = $customerDbObj->fetchAll();
+		$customerDbObj->closeCursor();
 
 		foreach ($groupDataArr as $groupData) {
 			$g_key = CacheServerKey::customerGroup(
 				customerId: $customerData['id'],
 				groupId: $groupData['id']
 			);
-			$clientCacheObj->cacheSet(
+			$customerCacheObj->cacheSet(
 				cacheKey: $g_key,
 				cacheValue: json_encode(value: $groupData)
 			);
@@ -199,7 +199,7 @@ class Reload
 						customerId: $customerData['id'],
 						groupId: $groupData['id']
 					);
-					$clientCacheObj->cacheSet(
+					$customerCacheObj->cacheSet(
 						cacheKey: $groupCidrCacheKey,
 						cacheValue: json_encode(value: $groupCidrIpNumberRangeArr)
 					);
@@ -221,25 +221,25 @@ class Reload
 	 */
 	public static function processUser($httpRequestIp, $customerData, $userId = null): bool
 	{
-		$clientCacheServerCred = DbCommonFunction::clientCacheServerCred(customerData: $customerData);
-		$clientCacheObj = DbCommonFunction::connectCache(
-			cacheServerType: $clientCacheServerCred['cacheServerType'],
-			cacheServerHostname: $clientCacheServerCred['cacheServerHostname'],
-			cacheServerPort: $clientCacheServerCred['cacheServerPort'],
-			cacheServerUsername: $clientCacheServerCred['cacheServerUsername'],
-			cacheServerPassword: $clientCacheServerCred['cacheServerPassword'],
-			cacheServerDatabase: $clientCacheServerCred['cacheServerDatabase'],
-			cacheServerTable: $clientCacheServerCred['cacheServerTable']
+		$customerCacheServerCred = DbCommonFunction::customerCacheServerCred(customerData: $customerData);
+		$customerCacheObj = DbCommonFunction::connectCache(
+			cacheServerType: $customerCacheServerCred['cacheServerType'],
+			cacheServerHostname: $customerCacheServerCred['cacheServerHostname'],
+			cacheServerPort: $customerCacheServerCred['cacheServerPort'],
+			cacheServerUsername: $customerCacheServerCred['cacheServerUsername'],
+			cacheServerPassword: $customerCacheServerCred['cacheServerPassword'],
+			cacheServerDatabase: $customerCacheServerCred['cacheServerDatabase'],
+			cacheServerTable: $customerCacheServerCred['cacheServerTable']
 		);
 
-		$clientMasterDatabaseServerCred = DbCommonFunction::clientMasterDatabaseServerCred(customerData: $customerData);
-		$clientDbObj = DbCommonFunction::connectDb(
-			dbServerType: $clientMasterDatabaseServerCred['dbServerType'],
-			dbServerHostname: $clientMasterDatabaseServerCred['dbServerHostname'],
-			dbServerPort: $clientMasterDatabaseServerCred['dbServerPort'],
-			dbServerUsername: $clientMasterDatabaseServerCred['dbServerUsername'],
-			dbServerPassword: $clientMasterDatabaseServerCred['dbServerPassword'],
-			dbServerDatabase: $clientMasterDatabaseServerCred['dbServerDatabase']
+		$customerMasterDatabaseServerCred = DbCommonFunction::customerMasterDatabaseServerCred(customerData: $customerData);
+		$customerDbObj = DbCommonFunction::connectDb(
+			dbServerType: $customerMasterDatabaseServerCred['dbServerType'],
+			dbServerHostname: $customerMasterDatabaseServerCred['dbServerHostname'],
+			dbServerPort: $customerMasterDatabaseServerCred['dbServerPort'],
+			dbServerUsername: $customerMasterDatabaseServerCred['dbServerUsername'],
+			dbServerPassword: $customerMasterDatabaseServerCred['dbServerPassword'],
+			dbServerDatabase: $customerMasterDatabaseServerCred['dbServerDatabase']
 		);
 
 		$sql = "SELECT * FROM `{$customerData['userTable']}` U";
@@ -251,12 +251,12 @@ class Reload
 		}
 
 		// Groups
-		$clientDbObj->execQuery(
+		$customerDbObj->execQuery(
 			sql: $sql,
 			paramArr: $paramArr
 		);
-		$userDataArr = $clientDbObj->fetchAll();
-		$clientDbObj->closeCursor();
+		$userDataArr = $customerDbObj->fetchAll();
+		$customerDbObj->closeCursor();
 		foreach ($userDataArr as $userData) {
 			if ($userData['allowed_cidr'] !== null) {
 				$userCidrIpNumberRangeArr = CommonFunction::cidrStringIpNumberRange(cidrString: $userData['allowed_cidr']);
@@ -265,7 +265,7 @@ class Reload
 						customerId: $customerData['id'],
 						userId: $userData['id']
 					);
-					$clientCacheObj->cacheSet(
+					$customerCacheObj->cacheSet(
 						cacheKey: $userCidrCacheKey,
 						cacheValue: json_encode(value: $userCidrIpNumberRangeArr)
 					);
@@ -275,7 +275,7 @@ class Reload
 				customerId: $customerData['id'],
 				username: $userData['username']
 			);
-			$clientCacheObj->cacheSet(
+			$customerCacheObj->cacheSet(
 				cacheKey: $cu_key,
 				cacheValue: json_encode(value: $userData)
 			);

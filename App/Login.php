@@ -18,7 +18,6 @@ namespace Microservices\App;
 use Microservices\App\CacheServerKey;
 use Microservices\App\CommonFunction;
 use Microservices\App\Constant;
-use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
@@ -617,7 +616,7 @@ class Login
 	 */
 	private function cacheExist($cacheKey): mixed
 	{
-		return $this->http->req->clientCacheObj->cacheExist(cacheKey: $cacheKey);
+		return $this->http->req->customerCacheObj->cacheExist(cacheKey: $cacheKey);
 	}
 
 	/**
@@ -629,7 +628,7 @@ class Login
 	 */
 	private function cacheGet($cacheKey): mixed
 	{
-		return $this->http->req->clientCacheObj->cacheGet(cacheKey: $cacheKey);
+		return $this->http->req->customerCacheObj->cacheGet(cacheKey: $cacheKey);
 	}
 
 	/**
@@ -643,7 +642,7 @@ class Login
 	 */
 	private function cacheSet($cacheKey, $cacheValue, $cacheExpire = 0): mixed
 	{
-		return $this->http->req->clientCacheObj->cacheSet(
+		return $this->http->req->customerCacheObj->cacheSet(
 			cacheKey: $cacheKey,
 			cacheValue: $cacheValue,
 			cacheExpire: $cacheExpire
@@ -659,6 +658,6 @@ class Login
 	 */
 	private function cacheDelete($cacheKey): mixed
 	{
-		return $this->http->req->clientCacheObj->cacheDelete(cacheKey: $cacheKey);
+		return $this->http->req->customerCacheObj->cacheDelete(cacheKey: $cacheKey);
 	}
 }

@@ -20,7 +20,6 @@ use Microservices\App\CommonFunction;
 use Microservices\App\Counter;
 use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
-use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\Start;
@@ -853,14 +852,14 @@ trait AppTrait
 			isset($sqlConfig['referrerLagWindow'])
 			&& count($sqlConfig['referrerLagWindow']) > 0
 		) {
-			if (!$this->http->req->clientCacheObj->cacheExist(cacheKey: $customerUserReferrerLagKey)) {
+			if (!$this->http->req->customerCacheObj->cacheExist(cacheKey: $customerUserReferrerLagKey)) {
 				throw new \Exception(
 					message: 'Referrer lag not initiated',
 					code: HttpStatus::$BadRequest
 				);
 			}
 			$referrerLagData = json_decode(
-				json: $this->http->req->clientCacheObj->cacheGet(
+				json: $this->http->req->customerCacheObj->cacheGet(
 					cacheKey: $customerUserReferrerLagKey
 				),
 				associative: true
@@ -881,13 +880,13 @@ trait AppTrait
 								if ($tsDiff <= $referrerSqlConfig['maximumReferrerLagWindow']) {
 									$found = true;
 								} else {
-									$this->http->req->clientCacheObj->cacheDelete(cacheKey: $customerUserReferrerLagKey);
+									$this->http->req->customerCacheObj->cacheDelete(cacheKey: $customerUserReferrerLagKey);
 								}
 							} else {
 								$found = true;
 							}
 						} else {
-							$this->http->req->clientCacheObj->cacheDelete(cacheKey: $customerUserReferrerLagKey);
+							$this->http->req->customerCacheObj->cacheDelete(cacheKey: $customerUserReferrerLagKey);
 						}
 					}
 				}
@@ -904,8 +903,8 @@ trait AppTrait
 			isset($sqlConfig['enableReferrerLag'])
 			&& $sqlConfig['enableReferrerLag'] === 'Yes'
 		) {
-			if (!$this->http->req->clientCacheObj->cacheExist(cacheKey: $customerUserReferrerLagKey)) {
-				$this->http->req->clientCacheObj->cacheSet(
+			if (!$this->http->req->customerCacheObj->cacheExist(cacheKey: $customerUserReferrerLagKey)) {
+				$this->http->req->customerCacheObj->cacheSet(
 					cacheKey: $customerUserReferrerLagKey,
 					cacheValue: json_encode(value: [
 						'initRoute' => $this->http->req->rParser->configuredRoute,
@@ -963,11 +962,11 @@ trait AppTrait
 				$hashKey = md5(string: $hash);
 				if (
 					$this->http->req->isPrivateRequest
-					&& $this->http->req->clientCacheObj->cacheExist(cacheKey: $hashKey)
+					&& $this->http->req->customerCacheObj->cacheExist(cacheKey: $hashKey)
 				) {
 					$hashJson = str_replace(
 						search: 'JSON',
-						replace: $this->http->req->clientCacheObj->cacheGet(cacheKey: $hashKey),
+						replace: $this->http->req->customerCacheObj->cacheGet(cacheKey: $hashKey),
 						subject: '{"Idempotent": JSON, "Status": 200}'
 					);
 				}
@@ -1009,13 +1008,13 @@ trait AppTrait
 		$hash = json_encode(value: $payloadSignature);
 		$hashKey = 'LAG:' . md5(string: $hash);
 
-		if ($this->http->req->clientCacheObj->cacheExist(cacheKey: $hashKey)) {
-			$noOfRequest = $this->http->req->clientCacheObj->cacheGet(cacheKey: $hashKey);
+		if ($this->http->req->customerCacheObj->cacheExist(cacheKey: $hashKey)) {
+			$noOfRequest = $this->http->req->customerCacheObj->cacheGet(cacheKey: $hashKey);
 		} else {
 			$noOfRequest = 0;
 		}
 
-		$this->http->req->clientCacheObj->cacheSet(
+		$this->http->req->customerCacheObj->cacheSet(
 			cacheKey: $hashKey,
 			cacheValue: ++$noOfRequest,
 			cacheExpire: 3600
@@ -1223,7 +1222,7 @@ trait AppTrait
 	 *
 	 * @return string
 	 */
-	private function processImportSqlConfig(&$writeSqlConfig, $useHierarchy): string
+	private function generateImportSampleCsv(&$writeSqlConfig, $useHierarchy): string
 	{
 		$explainParamArr = $this->getExplainParam(
 			sqlConfig: $writeSqlConfig,

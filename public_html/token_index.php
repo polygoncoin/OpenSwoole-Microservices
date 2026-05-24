@@ -165,7 +165,7 @@ $server->on(
 				[$responseHeaderArr, $responseContent, $responseCode] = Start::http(httpReqData: $httpReqData);
 				@ob_clean();
 
-				$responseCode = $responseCode ?? 200;
+				$responseCode = $responseCode ?? HttpStatus::$Ok;
 				$response->status($responseCode);
 
 				foreach ($responseHeaderArr as $headerName => $headerValue) {

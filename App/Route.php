@@ -19,6 +19,7 @@ use Microservices\App\CommonFunction;
 use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Http;
+use Microservices\App\HttpStatus;
 
 /**
  * Route - Available routeArr
@@ -122,7 +123,7 @@ class Route
 			if (!file_exists(filename: $routeFileLocation)) {
 				throw new \Exception(
 					message: json_encode(value: [$routeFileLocation]),
-					code: 400
+					code: HttpStatus::$BadRequest
 				);
 				continue;
 			}

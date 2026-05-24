@@ -18,6 +18,7 @@ namespace Microservices\App;
 use Microservices\App\CacheServerKey;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Http;
+use Microservices\App\HttpStatus;
 use Microservices\App\Server\CacheServer\CacheServerInterface;
 
 /**
@@ -315,7 +316,7 @@ class CommonFunction
 
 		if ($http !== null) {
 			self::checkCacheCidr(
-				cacheObj: $http->req->clientCacheObj,
+				cacheObj: $http->req->customerCacheObj,
 				IP: $http->httpReqData['server']['httpRequestIP'],
 				cidrCacheKey: CacheServerKey::customerGroupCidr(
 					customerId: $http->req->customerId,
@@ -324,7 +325,7 @@ class CommonFunction
 			);
 
 			self::checkCacheCidr(
-				cacheObj: $http->req->clientCacheObj,
+				cacheObj: $http->req->customerCacheObj,
 				IP: $http->httpReqData['server']['httpRequestIP'],
 				cidrCacheKey: CacheServerKey::customerUserCidr(
 					customerId: $http->req->customerId,

@@ -15,7 +15,6 @@
 
 namespace Microservices\Supplement\ThirdParty;
 
-use Microservices\App\DbCommonFunction;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
 use Microservices\Supplement\ThirdParty\ThirdPartyInterface;

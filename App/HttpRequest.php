@@ -25,10 +25,11 @@ use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
+use Microservices\App\QueryCache;
 use Microservices\App\RateLimiter;
 use Microservices\App\RouteParser;
-use Microservices\App\Server\CacheServer\CacheServerInterface;
-use Microservices\App\Server\DatabaseServer\DatabaseServerInterface;
+use Microservices\App\Server\CacheServer;
+use Microservices\App\Server\DatabaseServer;
 use Microservices\App\SessionHandler\Session;
 
 /**
@@ -103,18 +104,25 @@ class HttpRequest
 	private $http = null;
 
 	/**
-	 * Client Cache Object
+	 * Customer Cache Object
 	 *
 	 * @var null|CacheServer
 	 */
-	public $clientCacheObj = null;
+	public $customerCacheObj = null;
 
 	/**
-	 * Client Database Object
+	 * Customer Query Cache Object
+	 *
+	 * @var null|CacheServer
+	 */
+	public $customerQueryCacheObj = null;
+
+	/**
+	 * Customer Database Object
 	 *
 	 * @var null|DatabaseServer
 	 */
-	public $clientDbObj = null;
+	public $customerDbObj = null;
 
 	/**
 	 * Session detail of a request
@@ -298,12 +306,19 @@ class HttpRequest
 			);
 		}
 
+		if (
+			CommonFunction::isEnabled(http: $this->http, feature: 'enableQueryCacheForPublic')
+			|| CommonFunction::isEnabled(http: $this->http, feature: 'enableQueryCacheForPrivate')
+		) {
+			$this->customerQueryCacheObj = new QueryCache($this->http);
+		}
+
 		if ($this->isPrivateRequest) {
-			$this->clientCacheObj = DbCommonFunction::connectClientCache(
+			$this->customerCacheObj = DbCommonFunction::connectCustomerCache(
 				customerData: $this->s['customerData']
 			);
 			if (CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimiting')) {
-				$this->rateLimiter = new RateLimiter(cacheObj: $this->clientCacheObj);
+				$this->rateLimiter = new RateLimiter(cacheObj: $this->customerCacheObj);
 			}
 		}
 
@@ -372,6 +387,40 @@ class HttpRequest
 				&& ($this->rParser->routeEndingReservedKeyword === Env::$importRequestRouteKeyword)
 				&& isset($this->http->httpReqData['files']['file']['tmp_name'])
 			):
+				$uploadedFileName = $this->http->httpReqData['files']['file']['tmp_name'];
+				$uploadedFileMd5 = md5_file($this->http->httpReqData['files']['file']['tmp_name']);
+
+				$this->customerDbObj = DbCommonFunction::connectCustomerDb(
+					customerData: $this->http->req->s['customerData'],
+					fetchFrom: 'Master'
+				);
+				$uploadedFileMd5Data = $this->getUploadedFileMd5Data(uploadedFileMd5: $uploadedFileMd5);
+
+				if ($uploadedFileMd5Data !== false) {
+					throw new \Exception(
+						message: "Same file was already uploaded on '{$uploadedFileMd5Data['uploaded_on']}'",
+						code: HttpStatus::$BadRequest
+					);
+				}
+
+				$sql = 'INSERT INTO `import_file_detail` SET
+					customer_id = :customer_id,
+					group_id = :group_id,
+					user_id = :user_id,
+					uploaded_file_name = :uploaded_file_name,
+					uploaded_file_md5 = :uploaded_file_md5,
+					request_ip = :request_ip
+				';
+				$paramArr[':customer_id'] = $this->customerId;
+				$paramArr[':group_id'] = $this->groupId;
+				$paramArr[':user_id'] = $this->userId;
+				$paramArr[':uploaded_file_name'] = $uploadedFileName;
+				$paramArr[':uploaded_file_md5'] = $uploadedFileMd5;
+				$paramArr[':request_ip'] = $this->http->httpReqData['server']['httpRequestIP'];
+
+				$this->customerDbObj->execQuery(sql: $sql, paramArr: $paramArr);
+				$importFileMd5Id = $this->customerDbObj->lastInsertId();
+
 				$payloadJson = $this->formatCsvPayload(
 					csvFile: $this->http->httpReqData['files']['file']['tmp_name']
 				);
@@ -398,6 +447,36 @@ class HttpRequest
 	/**
 	 * Get Request Id
 	 *
+	 * @param string $uploadedFileMd5
+	 *
+	 * @return mixed
+	 */
+	public function getUploadedFileMd5Data($uploadedFileMd5): mixed
+	{
+		$uploadedFileMd5Data = false;
+
+		$sql = "SELECT
+				*
+			FROM
+				`import_file_detail`
+			WHERE
+				`uploaded_file_md5` = :uploaded_file_md5
+				AND `is_disabled` = 'No'
+				AND `is_deleted` = 'No'
+		";
+		$paramArr[':uploaded_file_md5'] = $uploadedFileMd5;
+
+		$this->customerDbObj->execQuery(sql: $sql, paramArr: $paramArr);
+		if ($row = $this->customerDbObj->fetch()) {
+			$uploadedFileMd5Data = &$row;
+		}
+
+		return $uploadedFileMd5Data;
+	}
+
+	/**
+	 * Get Request Id
+	 *
 	 * @param string $payloadJson
 	 *
 	 * @return int
@@ -409,6 +488,7 @@ class HttpRequest
 			DbCommonFunction::connectGlobalDb();
 			$sql = 'INSERT INTO `request` SET
 				customer_id = :customer_id,
+				group_id = :group_id,
 				user_id = :user_id,
 				request_route = :request_route,
 				request_method = :request_method,
@@ -416,6 +496,7 @@ class HttpRequest
 				request_ip = :request_ip
 			';
 			$paramArr[':customer_id'] = $this->customerId;
+			$paramArr[':group_id'] = $this->groupId;
 			$paramArr[':user_id'] = $this->userId;
 			$paramArr[':request_route'] = $this->http->httpReqData['get'][ROUTE_URL_PARAM];
 			$paramArr[':request_method'] = $this->http->httpReqData['server']['httpMethod'];
@@ -446,6 +527,7 @@ class HttpRequest
 				debug_mode = :debug_mode,
 				request_id = :request_id,
 				customer_id = :customer_id,
+				group_id = :group_id,
 				user_id = :user_id,
 				request_route = :request_route,
 				request_method = :request_method,
@@ -458,6 +540,7 @@ class HttpRequest
 			$paramArr[':debug_mode'] = $debugMode;
 			$paramArr[':request_id'] = $this->requestId;
 			$paramArr[':customer_id'] = $this->customerId;
+			$paramArr[':group_id'] = $this->groupId;
 			$paramArr[':user_id'] = $this->userId;
 			$paramArr[':request_route'] = $this->http->httpReqData['get'][ROUTE_URL_PARAM];
 			$paramArr[':request_method'] = $this->http->httpReqData['server']['httpMethod'];
@@ -489,6 +572,7 @@ class HttpRequest
 			$sql = 'INSERT INTO `error_log` SET
 				request_id = :request_id,
 				customer_id = :customer_id,
+				group_id = :group_id,
 				user_id = :user_id,
 				request_route = :request_route,
 				request_method = :request_method,
@@ -500,6 +584,7 @@ class HttpRequest
 			';
 			$paramArr[':request_id'] = $this->requestId;
 			$paramArr[':customer_id'] = $this->customerId;
+			$paramArr[':group_id'] = $this->groupId;
 			$paramArr[':user_id'] = $this->userId;
 			$paramArr[':request_route'] = $this->http->httpReqData['get'][ROUTE_URL_PARAM];
 			$paramArr[':request_method'] = $this->http->httpReqData['server']['httpMethod'];
@@ -761,7 +846,7 @@ class HttpRequest
 		if (!isset($csvHeaderData['__column__'])) {
 			throw new \Exception(
 				message: json_encode(value: [$currentModeArr,$csvHeaderData]),
-				code: 400
+				code: HttpStatus::$BadRequest
 			);
 		}
 
