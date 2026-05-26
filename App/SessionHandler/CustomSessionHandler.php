@@ -114,8 +114,10 @@ class CustomSessionHandler implements
 	 *
 	 * @return bool true for success or false for failure
 	 */
-	public function open($sessionSavePath, $sessionName): bool
-	{
+	public function open(
+		$sessionSavePath,
+		$sessionName
+	): bool {
 		$this->container->init(
 			sessionSavePath: $sessionSavePath,
 			sessionName: $sessionName
@@ -210,8 +212,10 @@ class CustomSessionHandler implements
 	 *
 	 * @return bool true for success or false for failure
 	 */
-	public function write($sessionId, $sessionData): bool
-	{
+	public function write(
+		$sessionId,
+		$sessionData
+	): bool {
 		$this->sessionData = $sessionData;
 		// Won't allow creating empty entries
 		// unless previous data is not empty
@@ -250,8 +254,10 @@ class CustomSessionHandler implements
 	 *
 	 * @return bool true for success or false for failure
 	 */
-	public function updateTimestamp($sessionId, $sessionData): bool
-	{
+	public function updateTimestamp(
+		$sessionId,
+		$sessionData
+	): bool {
 		$this->sessionData = $sessionData;
 		// Won't allow updating empty entries when session.lazy_write is enabled
 		// unless previous data is not empty
@@ -393,7 +399,12 @@ class CustomSessionHandler implements
 			$headerArr = headers_list();
 			$headerFound = false;
 			foreach ($headerArr as $index => $header) {
-				if (strpos($header, $this->sessionName) !== false) {
+				if (
+					strpos(
+						haystack: $header,
+						needle: $this->sessionName
+					) !== false
+				) {
 					unset($headerArr[$index]);
 					$headerFound = true;
 					break;

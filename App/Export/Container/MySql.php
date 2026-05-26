@@ -132,8 +132,10 @@ class MySql implements ExportDatabaseServerInterface
 	 * @return void
 	 * @throws \Exception
 	 */
-	private function validate($sql, $paramArr): void
-	{
+	private function validate(
+		$sql,
+		$paramArr
+	): void {
 		if (empty($sql)) {
 			throw new \Exception(
 				message: 'Empty SQL query'
@@ -149,8 +151,7 @@ class MySql implements ExportDatabaseServerInterface
 			substr_count(
 				haystack: $sql,
 				needle: ':'
-				!== count(value: $paramArr)
-			)
+			) !== count(value: $paramArr)
 		) {
 			throw new \Exception(
 				message: 'Parameterized query has mismatch in number of params'
@@ -159,13 +160,21 @@ class MySql implements ExportDatabaseServerInterface
 
 		$paramPos = [];
 		foreach (array_keys(array: $paramArr) as $parameterisedColumn) {
-			if (substr_count(haystack: $sql, needle: $parameterisedColumn) > 1) {
+			if (
+				substr_count(
+					haystack: $sql,
+					needle: $parameterisedColumn
+				) > 1
+			) {
 				throw new \Exception(
 					message: 'Parameterized query has more than one '
 						. "occurrence of param '{$parameterisedColumn}'"
 				);
 			}
-			$paramPos[$parameterisedColumn] = strpos(haystack: $sql, needle: $parameterisedColumn);
+			$paramPos[$parameterisedColumn] = strpos(
+				haystack: $sql,
+				needle: $parameterisedColumn
+			);
 		}
 		foreach ($paramPos as $parameterisedColumn => $value) {
 			if (
@@ -173,8 +182,7 @@ class MySql implements ExportDatabaseServerInterface
 					string: $sql,
 					offset: $value,
 					length: strlen(string: $parameterisedColumn)
-					!== $parameterisedColumn
-				)
+				) !== $parameterisedColumn
 			) {
 				throw new \Exception(
 					message: "Invalid param key '{$parameterisedColumn}'"
@@ -192,8 +200,10 @@ class MySql implements ExportDatabaseServerInterface
 	 * @return string
 	 * @throws \Exception
 	 */
-	private function generateRawSqlQuery($sql, $paramArr): string
-	{
+	private function generateRawSqlQuery(
+		$sql,
+		$paramArr
+	): string {
 		if (
 			empty($paramArr)
 			|| count(value: $paramArr) === 0
@@ -230,7 +240,13 @@ class MySql implements ExportDatabaseServerInterface
 						);
 					}
 					$newParameterisedColumn = $parameterisedColumn . $count++;
-					if (in_array(needle: $newParameterisedColumn, haystack: $tmpParamArr)) {
+					if (
+						in_array(
+							needle: $newParameterisedColumn,
+							haystack: $tmpParamArr,
+							strict: true
+						)
+					) {
 						throw new \Exception(
 							message: "Invalid new param key '{$newParameterisedColumn}'"
 						);
@@ -245,7 +261,10 @@ class MySql implements ExportDatabaseServerInterface
 					),
 					subject: $sql
 				);
-				$bindParamArr = array_merge($bindParamArr, $tmpParamArr);
+				$bindParamArr = array_merge(
+					$bindParamArr,
+					$tmpParamArr
+				);
 			} else {
 				$bindParamArr[$parameterisedColumn] = $valueArr;
 			}
@@ -276,8 +295,10 @@ class MySql implements ExportDatabaseServerInterface
 	 *
 	 * @return string
 	 */
-	public function getShellCommand($sql, $paramArr = null): string
-	{
+	public function getShellCommand(
+		$sql,
+		$paramArr = null
+	): string {
 		$sql = $this->generateRawSqlQuery(sql: $sql, paramArr: $paramArr);
 
 		// Shell command.

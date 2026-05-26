@@ -84,8 +84,10 @@ class Export
 	 *
 	 * @throws \Exception
 	 */
-	public function __construct(&$http, $dbServerType)
-	{
+	public function __construct(
+		&$http,
+		$dbServerType
+	) {
 		$this->http = &$http;
 		$this->dbServerType = $dbServerType;
 		$this->exportDbServerObj = new ExportDatabaseServer(dbServerType: $this->dbServerType);
@@ -322,8 +324,10 @@ class Export
 	 *
 	 * @return array
 	 */
-	private function getCsvFileData($exportFile, $downloadFile): array
-	{
+	private function getCsvFileData(
+		$exportFile,
+		$downloadFile
+	): array {
 		// Validation
 		$this->vFileLocation(filename: $exportFile);
 

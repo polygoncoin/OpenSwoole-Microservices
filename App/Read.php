@@ -115,7 +115,10 @@ class Read
 		// Check for cache
 		$toBeCached = false;
 		if (
-			CommonFunction::isEnabled(http: $this->http, feature: 'enableResponseCaching')
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableResponseCaching'
+			)
 			&& isset($readSqlConfig['queryCacheKey'])
 			&& !isset($this->http->req->s['queryParamArr']['orderBy'])
 		) {
@@ -164,7 +167,10 @@ class Read
 		}
 
 		if (
-			CommonFunction::isEnabled(http: $this->http, feature: 'enableResponseCaching')
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableResponseCaching'
+			)
 			&& $toBeCached
 		) {
 			$this->dataEncode = new DataEncode(http: $this->http);
@@ -188,7 +194,10 @@ class Read
 		);
 
 		if (
-			CommonFunction::isEnabled(http: $this->http, feature: 'enableExplainRequest')
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableExplainRequest'
+			)
 			&& $this->http->req->rParser->routeEndingWithReservedKeywordFlag
 			&& ($this->http->req->rParser->routeEndingReservedKeyword === Env::$explainRequestRouteKeyword)
 		) {
@@ -204,7 +213,10 @@ class Read
 		}
 
 		if (
-			CommonFunction::isEnabled(http: $this->http, feature: 'enableResponseCaching')
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableResponseCaching'
+			)
 			&& $toBeCached
 		) {
 			$json = $this->dataEncode->getData();
@@ -227,8 +239,10 @@ class Read
 	 *
 	 * @return bool
 	 */
-	private function explainRead(&$readSqlConfig, $useResultSet): bool
-	{
+	private function explainRead(
+		&$readSqlConfig,
+		$useResultSet
+	): bool {
 		$this->dataEncode->startObject(objectKey: 'Config');
 		$this->dataEncode->addKeyData(
 			objectKey: 'Route',
@@ -255,8 +269,10 @@ class Read
 	 *
 	 * @return void
 	 */
-	private function processRead(&$readSqlConfig, $useResultSet): void
-	{
+	private function processRead(
+		&$readSqlConfig,
+		$useResultSet
+	): void {
 		$this->http->req->s['requiredFieldArrCollection'] = $this->getRequired(
 			sqlConfig: $readSqlConfig,
 			isFirstCall: true,
@@ -422,7 +438,13 @@ class Read
 			if (isset($readSqlConfig['__SUB-QUERY__'])) {
 				$subQueryKeyArr = array_keys(array: $readSqlConfig['__SUB-QUERY__']);
 				foreach ($row as $objectKey => $value) {
-					if (in_array(needle: $objectKey, haystack: $subQueryKeyArr)) {
+					if (
+						in_array(
+							needle: $objectKey,
+							haystack: $subQueryKeyArr,
+							strict: true
+						)
+					) {
 						throw new \Exception(
 							message: 'Invalid config: Conflicting column names',
 							code: HttpStatus::$InternalServerError
@@ -573,7 +595,13 @@ class Read
 				foreach ($orderByArr as $k => $v) {
 					$k = str_replace(search: ['`', ' '], replace: '', subject: $k);
 					$v = strtoupper(string: $v);
-					if (in_array(needle: $v, haystack: ['ASC', 'DESC'])) {
+					if (
+						in_array(
+							needle: $v,
+							haystack: ['ASC', 'DESC'],
+							strict: true
+						)
+					) {
 						$orderByStrArr[] = "`{$k}` {$v}";
 					}
 				}
@@ -685,7 +713,12 @@ class Read
 	{
 		$return = [[], '', HttpStatus::$Ok];
 
-		if (!CommonFunction::isEnabled(http: $this->http, feature: 'enableDownloadRequest')) {
+		if (
+			!CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableDownloadRequest'
+			)
+		) {
 			return [[], '', HttpStatus::$NotFound];
 		}
 

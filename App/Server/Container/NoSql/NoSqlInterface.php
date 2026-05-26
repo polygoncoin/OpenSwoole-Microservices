@@ -64,7 +64,11 @@ interface NoSqlInterface
 	 *
 	 * @return mixed
 	 */
-	public function set($key, $value, $expire = null): mixed;
+	public function set(
+		$key,
+		$value,
+		$expire = null
+	): mixed;
 
 	/**
 	 * Increment cache key with offset
@@ -74,7 +78,10 @@ interface NoSqlInterface
 	 *
 	 * @return mixed
 	 */
-	public function increment($key, $offset = 1): mixed;
+	public function increment(
+		$key,
+		$offset = 1
+	): mixed;
 
 	/**
 	 * Delete cache key

@@ -78,8 +78,10 @@ class JsonEncode implements DataEncodeInterface
 	 * @param resource $tempStream Temp stream Temporary stream
 	 * @param bool     $header     Append XML header flag
 	 */
-	public function __construct(&$tempStream, $header = true)
-	{
+	public function __construct(
+		&$tempStream,
+		$header = true
+	) {
 		$this->tempStream = &$tempStream;
 	}
 
@@ -212,8 +214,10 @@ class JsonEncode implements DataEncodeInterface
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function addKeyData($objectKey, $data): void
-	{
+	public function addKeyData(
+		$objectKey,
+		$data
+	): void {
 		if ($this->currentObject->mode !== 'Object') {
 			throw new \Exception(
 				message: 'Mode should be Object',
@@ -237,7 +241,10 @@ class JsonEncode implements DataEncodeInterface
 	{
 		if ($this->currentObject) {
 			$this->write(data: $this->currentObject->comma);
-			array_push($this->objectArr, $this->currentObject);
+			array_push(
+				$this->objectArr,
+				$this->currentObject
+			);
 		}
 		$this->currentObject = new JsonEncoderObject(mode: 'Array');
 		if ($objectKey !== null) {
@@ -282,7 +289,10 @@ class JsonEncode implements DataEncodeInterface
 				);
 			}
 			$this->write(data: $this->currentObject->comma);
-			array_push($this->objectArr, $this->currentObject);
+			array_push(
+				$this->objectArr,
+				$this->currentObject
+			);
 		}
 		$this->currentObject = new JsonEncoderObject(mode: 'Object');
 		if ($objectKey !== null) {

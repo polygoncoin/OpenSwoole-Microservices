@@ -227,8 +227,11 @@ class MongoDb implements NoSqlInterface
 	 *
 	 * @return mixed
 	 */
-	public function set($key, $value, $expire = null): mixed
-	{
+	public function set(
+		$key,
+		$value,
+		$expire = null
+	): mixed {
 		$this->connect();
 
 		if (strlen($key) === 0) {
@@ -264,8 +267,10 @@ class MongoDb implements NoSqlInterface
 	 *
 	 * @return mixed
 	 */
-	public function increment($key, $offset = 1): mixed
-	{
+	public function increment(
+		$key,
+		$offset = 1
+	): mixed {
 		$this->connect();
 
 		if (strlen($key) === 0) {
@@ -274,7 +279,10 @@ class MongoDb implements NoSqlInterface
 
 		$filter = ['key' => $key];
 		$update = ['$inc' => ['value' => $offset]];
-		$result = $this->collectionObj->updateOne($filter, $update);
+		$result = $this->collectionObj->updateOne(
+			$filter,
+			$update
+		);
 
 		return $result->getModifiedCount();
 	}

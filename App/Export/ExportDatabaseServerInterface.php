@@ -40,7 +40,13 @@ interface ExportDatabaseServerInterface
 	 *
 	 * @return void
 	 */
-	public function init($dbServerHostname, $dbServerPort, $dbServerUsername, $dbServerPassword, $dbServerDatabase): void;
+	public function init(
+		$dbServerHostname,
+		$dbServerPort,
+		$dbServerUsername,
+		$dbServerPassword,
+		$dbServerDatabase
+	): void;
 
 	/**
 	 * Returns Shell Command
@@ -50,5 +56,8 @@ interface ExportDatabaseServerInterface
 	 *
 	 * @return string
 	 */
-	public function getShellCommand($sql, $paramArr = null): string;
+	public function getShellCommand(
+		$sql,
+		$paramArr = null
+	): string;
 }

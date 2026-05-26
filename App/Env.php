@@ -211,14 +211,17 @@ class Env
 	 * @return bool
 	 * @throws \Exception
 	 */
-	public static function isValidDataRep($dataRepresentation, $mode): bool
-	{
+	public static function isValidDataRep(
+		$dataRepresentation,
+		$mode
+	): bool {
 		switch ($mode) {
 			case 'input':
 				if (
 					in_array(
 						needle: $dataRepresentation,
-						haystack: self::$iAllowedRepresentation
+						haystack: self::$iAllowedRepresentation,
+						strict: true
 					)
 				) {
 					return true;
@@ -233,7 +236,8 @@ class Env
 				if (
 					in_array(
 						needle: $dataRepresentation,
-						haystack: self::$oAllowedRepresentation
+						haystack: self::$oAllowedRepresentation,
+						strict: true
 					)
 				) {
 					return true;

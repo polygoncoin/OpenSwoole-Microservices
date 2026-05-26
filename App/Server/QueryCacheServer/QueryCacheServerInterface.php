@@ -62,7 +62,10 @@ interface QueryCacheServerInterface
 	 *
 	 * @return mixed
 	 */
-	public function queryCacheSet($queryCacheKey, $queryCacheValue): mixed;
+	public function queryCacheSet(
+		$queryCacheKey,
+		$queryCacheValue
+	): mixed;
 
 	/**
 	 * Increment Query Cache key as per offset
@@ -72,7 +75,10 @@ interface QueryCacheServerInterface
 	 *
 	 * @return mixed
 	 */
-	public function queryCacheIncrement($queryCacheKey, $queryCacheOffset = 1): mixed;
+	public function queryCacheIncrement(
+		$queryCacheKey,
+		$queryCacheOffset = 1
+	): mixed;
 
 	/**
 	 * Delete cache on basis of key

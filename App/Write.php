@@ -115,7 +115,10 @@ class Write
 		if (
 			$this->http->req->rParser->routeEndingWithReservedKeywordFlag
 			&& $this->http->req->rParser->routeEndingReservedKeyword === Env::$explainRequestRouteKeyword
-			&& CommonFunction::isEnabled(http: $this->http, feature: 'enableExplainRequest')
+			&& CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableExplainRequest'
+			)
 		) {
 			return $this->explainWrite(
 				writeSqlConfig: $writeSqlConfig,
@@ -176,14 +179,21 @@ class Write
 	 *
 	 * @return bool
 	 */
-	private function explainWrite(&$writeSqlConfig, $useHierarchy): bool
-	{
+	private function explainWrite(
+		&$writeSqlConfig,
+		$useHierarchy
+	): bool {
 		$this->dataEncode->startObject(objectKey: 'Config');
 		$this->dataEncode->addKeyData(
 			objectKey: 'Route',
 			data: $this->http->req->rParser->configuredRoute
 		);
-		if (CommonFunction::isEnabled(http: $this->http, feature: 'enablePayloadInResponse')) {
+		if (
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enablePayloadInResponse'
+			)
+		) {
 			$this->dataEncode->addKeyData(
 				objectKey: Env::$payloadKeyInResponse,
 				data: $this->getExplainParam(
@@ -207,8 +217,10 @@ class Write
 	 * @return void
 	 * @throws \Exception
 	 */
-	private function processWrite(&$writeSqlConfig, $useHierarchy): void
-	{
+	private function processWrite(
+		&$writeSqlConfig,
+		$useHierarchy
+	): void {
 		// Check for payloadType
 		if (isset($writeSqlConfig['__PAYLOAD-TYPE__'])) {
 			$payloadType = $this->http->req->s['payloadType'];
@@ -245,7 +257,13 @@ class Write
 			isset($this->http->req->s['payloadType'])
 			&& $this->http->req->s['payloadType'] === 'Array'
 		) {
-			if (in_array($this->http->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
+			if (
+				in_array(
+					needle: $this->http->res->oRepresentation,
+					haystack: ['XML', 'XSLT', 'HTML'],
+					strict: true
+				)
+			) {
 				$this->dataEncode->startArray(objectKey: 'Rows');
 			}
 		}
@@ -298,7 +316,12 @@ class Write
 
 					$arr = [];
 					$arr['Status'] = HttpStatus::$Ok;
-					if (CommonFunction::isEnabled(http: $this->http, feature: 'enablePayloadInResponse')) {
+					if (
+						CommonFunction::isEnabled(
+							http: $this->http,
+							feature: 'enablePayloadInResponse'
+						)
+					) {
 						$arr[Env::$payloadKeyInResponse] = $this->http->req->dataDecode->getCompleteArray(
 							keyString: implode(
 								separator: ':',
@@ -321,7 +344,12 @@ class Write
 				} else { // Failure
 					$arr = [];
 					$arr['Status'] = $this->http->res->httpStatus;
-					if (CommonFunction::isEnabled(http: $this->http, feature: 'enablePayloadInResponse')) {
+					if (
+						CommonFunction::isEnabled(
+							http: $this->http,
+							feature: 'enablePayloadInResponse'
+						)
+					) {
 						$arr[Env::$payloadKeyInResponse] = $this->http->req->dataDecode->getCompleteArray(
 							keyString: implode(
 								separator: ':',
@@ -332,7 +360,10 @@ class Write
 					$arr['Error'] = $response;
 				}
 			} else {
-				$arr = json_decode(json: $hashJson, associative: true);
+				$arr = json_decode(
+					json: $hashJson,
+					associative: true
+				);
 			}
 
 			if ($payloadIndexArr[0] === '') {
@@ -340,7 +371,13 @@ class Write
 					$this->dataEncode->addKeyData(objectKey: $k, data: $v);
 				}
 			} else {
-				if (in_array($this->http->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
+				if (
+					in_array(
+						needle: $this->http->res->oRepresentation,
+						haystack: ['XML', 'XSLT', 'HTML'],
+						strict: true
+					)
+				) {
 					$this->dataEncode->startObject(objectKey: 'Row');
 					foreach ($arr as $k => $v) {
 						$this->dataEncode->addKeyData(objectKey: $k, data: $v);
@@ -353,7 +390,13 @@ class Write
 		}
 
 		if ($this->http->req->s['payloadType'] === 'Array') {
-			if (in_array($this->http->res->oRepresentation, ['XML', 'XSLT', 'HTML'])) {
+			if (
+				in_array(
+					needle: $this->http->res->oRepresentation,
+					haystack: ['XML', 'XSLT', 'HTML'],
+					strict: true
+				)
+			) {
 				$this->dataEncode->endArray();
 			}
 		}
@@ -434,7 +477,10 @@ class Write
 				!$isObject
 				&& !$useHierarchy
 			) {
-				array_push($payloadIndexArr, $i);
+				array_push(
+					$payloadIndexArr,
+					$i
+				);
 			}
 			$payloadIndex = is_array(value: $payloadIndexArr)
 				? implode(separator: ':', array: $payloadIndexArr) : '';
@@ -457,7 +503,10 @@ class Write
 			}
 
 			if (
-				CommonFunction::isEnabled(http: $this->http, feature: 'enableGlobalCounter')
+				CommonFunction::isEnabled(
+					http: $this->http,
+					feature: 'enableGlobalCounter'
+				)
 				&& isset($writeSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'])
 			) {
 				$writeSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'] = Counter::getGlobalCounter();
@@ -508,7 +557,10 @@ class Write
 
 			if (isset($writeSqlConfig['__INSERT-IDs__'])) {
 				if (
-					CommonFunction::isEnabled(http: $this->http, feature: 'enableGlobalCounter')
+					CommonFunction::isEnabled(
+						http: $this->http,
+						feature: 'enableGlobalCounter'
+					)
 					&& isset($writeSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'])
 				) {
 					$id = $writeSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'];
@@ -604,8 +656,14 @@ class Write
 				$dataExist = false;
 				$modulePayloadIndexArr = $payloadIndexArr;
 				$moduleConfigKeyArr = $configKeyArr;
-				array_push($modulePayloadIndexArr, $module);
-				array_push($moduleConfigKeyArr, $module);
+				array_push(
+					$modulePayloadIndexArr,
+					$module
+				);
+				array_push(
+					$moduleConfigKeyArr,
+					$module
+				);
 
 				$modulePayloadIndexKey = is_array(value: $modulePayloadIndexArr)
 					? implode(separator: ':', array: $modulePayloadIndexArr) : null;
@@ -629,7 +687,10 @@ class Write
 						$modulePayloadIndexIttKey = $modulePayloadIndexKey;
 					} else {
 						$modulePayloadIndexIttKey = "{$modulePayloadIndexKey}:{$i}";
-						array_push($modulePayloadIndexItt, $i);
+						array_push(
+							$modulePayloadIndexItt,
+							$i
+						);
 					}
 
 					$dataExist = $this->http->req->dataDecode->isset(

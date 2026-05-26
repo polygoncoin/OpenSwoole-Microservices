@@ -182,8 +182,11 @@ class MemcachedCache implements CacheServerInterface
 	 *
 	 * @return mixed
 	 */
-	public function cacheSet($cacheKey, $cacheValue, $cacheExpire = null): mixed
-	{
+	public function cacheSet(
+		$cacheKey,
+		$cacheValue,
+		$cacheExpire = null
+	): mixed {
 		$this->connectCache();
 
 		if (strlen($cacheKey) === 0) {
@@ -205,8 +208,10 @@ class MemcachedCache implements CacheServerInterface
 	 *
 	 * @return mixed
 	 */
-	public function cacheIncrement($cacheKey, $cacheOffset = 1): mixed
-	{
+	public function cacheIncrement(
+		$cacheKey,
+		$cacheOffset = 1
+	): mixed {
 		$this->connectCache();
 
 		if (strlen($cacheKey) === 0) {

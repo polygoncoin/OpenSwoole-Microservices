@@ -100,7 +100,13 @@ class Validator
 		// Required fields payload validation
 		if (!empty($this->http->req->s['requiredFieldArr']['payload'])) {
 			foreach ($this->http->req->s['requiredFieldArr']['payload'] as $fetchFromData) {
-				if (!in_array($fetchFromData, $this->http->req->s['payload'])) {
+				if (
+					!in_array(
+						needle: $fetchFromData,
+						haystack: $this->http->req->s['payload'],
+						strict: true
+					)
+				) {
 					$errorArr[] = 'Missing required payload: ' . $fetchFromData;
 					$isValidData = false;
 				}

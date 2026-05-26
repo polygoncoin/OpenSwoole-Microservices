@@ -153,8 +153,11 @@ class Memcached implements NoSqlInterface
 	 *
 	 * @return mixed
 	 */
-	public function set($key, $value, $expire = null): mixed
-	{
+	public function set(
+		$key,
+		$value,
+		$expire = null
+	): mixed {
 		$this->connect();
 
 		if (strlen($key) === 0) {
@@ -162,9 +165,16 @@ class Memcached implements NoSqlInterface
 		}
 
 		if ($expire === null) {
-			return $this->cacheServerObj->set($key, $value);
+			return $this->cacheServerObj->set(
+				$key,
+				$value
+			);
 		} else {
-			return $this->cacheServerObj->set($key, $value, $expire);
+			return $this->cacheServerObj->set(
+				$key,
+				$value,
+				$expire
+			);
 		}
 	}
 
@@ -176,15 +186,20 @@ class Memcached implements NoSqlInterface
 	 *
 	 * @return mixed
 	 */
-	public function increment($key, $offset = 1): mixed
-	{
+	public function increment(
+		$key,
+		$offset = 1
+	): mixed {
 		$this->connect();
 
 		if (strlen($key) === 0) {
 			return false;
 		}
 
-		return $this->cacheServerObj->increment($key, $offset);
+		return $this->cacheServerObj->increment(
+			$key,
+			$offset
+		);
 	}
 
 	/**

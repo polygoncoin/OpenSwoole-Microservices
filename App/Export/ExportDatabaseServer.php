@@ -100,8 +100,10 @@ class ExportDatabaseServer
 	 *
 	 * @return string
 	 */
-	public function getShellCommand($sql, $paramArr = []): string
-	{
+	public function getShellCommand(
+		$sql,
+		$paramArr = []
+	): string {
 		// Validation
 		if (empty($sql)) {
 			throw new \Exception(

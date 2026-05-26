@@ -212,7 +212,7 @@ class HttpRequest
 	 * @var null|Session
 	 */
 	public $session = null;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -298,7 +298,10 @@ class HttpRequest
 
 		if (
 			$this->isPublicRequest
-			&& !CommonFunction::isEnabled(http: $this->http, feature: 'enablePublicRequest')
+			&& !CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enablePublicRequest'
+			)
 		) {
 			throw new \Exception(
 				message: 'Public request are disabled',
@@ -308,7 +311,10 @@ class HttpRequest
 
 		if (
 			$this->isPrivateRequest
-			&& !CommonFunction::isEnabled(http: $this->http, feature: 'enablePrivateRequest')
+			&& !CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enablePrivateRequest'
+			)
 		) {
 			throw new \Exception(
 				message: 'Private request are disabled',
@@ -319,11 +325,17 @@ class HttpRequest
 		if (
 			(
 				$this->isPublicRequest
-				&& CommonFunction::isEnabled(http: $this->http, feature: 'enableQueryCacheForPublic')
+				&& CommonFunction::isEnabled(
+					http: $this->http,
+					feature: 'enableQueryCacheForPublic'
+				)
 			)
 			|| (
 				$this->isPrivateRequest
-				&& CommonFunction::isEnabled(http: $this->http, feature: 'enableQueryCacheForPrivate')
+				&& CommonFunction::isEnabled(
+					http: $this->http,
+					feature: 'enableQueryCacheForPrivate'
+				)
 			)
 		) {
 			$this->customerQueryCacheObj = new QueryCache($this->http);
@@ -333,7 +345,12 @@ class HttpRequest
 			$this->customerCacheObj = DbCommonFunction::connectCustomerCache(
 				customerData: $this->s['customerData']
 			);
-			if (CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimiting')) {
+			if (
+				CommonFunction::isEnabled(
+					http: $this->http,
+					feature: 'enableRateLimiting'
+				)
+			) {
 				$this->rateLimiter = new RateLimiter(cacheObj: $this->customerCacheObj);
 			}
 		}
@@ -371,7 +388,7 @@ class HttpRequest
 		if ($this->http->httpReqData['server']['httpMethod'] === Constant::$GET) {
 			$this->urlDecode(value: $this->http->httpReqData['get']);
 			$this->s['payloadType'] = 'Object';
-			$payloadJson = json_encode($this->http->httpReqData['get']);
+			$payloadJson = json_encode(value: $this->http->httpReqData['get']);
 		} else {
 			$payloadJson = $this->setPayloadStream();
 			rewind(stream: $this->payloadStream);
@@ -534,8 +551,10 @@ class HttpRequest
 	 *
 	 * @return int
 	 */
-	public function logDebugData($debugMode, $debugJson): int
-	{
+	public function logDebugData(
+		$debugMode,
+		$debugJson
+	): int {
 		$logId = 0;
 		if ($this->isPrivateRequest) {
 			DbCommonFunction::connectGlobalDb();
@@ -560,9 +579,9 @@ class HttpRequest
 			$paramArr[':user_id'] = $this->userId;
 			$paramArr[':request_route'] = $this->http->httpReqData['get'][ROUTE_URL_PARAM];
 			$paramArr[':request_method'] = $this->http->httpReqData['server']['httpMethod'];
-			$paramArr[':request_payload_json'] = isset($this->s['payload']) ? $this->s['payload'] : '{}';
-			$paramArr[':request_config_json'] = isset($this->rParser->sqlConfig) ? $this->rParser->sqlConfig : '{}';
-			$paramArr[':request_session_json'] = isset($this->s) ? json_encode($this->s) : '{}';
+			$paramArr[':request_payload_json'] = isset($this->s['payload']) ? json_encode(value: $this->s['payload']) : '{}';
+			$paramArr[':request_config_json'] = isset($this->rParser->sqlConfig) ? json_encode(value: $this->rParser->sqlConfig) : '{}';
+			$paramArr[':request_session_json'] = isset($this->s) ? json_encode(value: $this->s) : '{}';
 			$paramArr[':request_debug_json'] = $debugJson;
 			$paramArr[':request_ip'] = $this->http->httpReqData['server']['httpRequestIP'];
 
@@ -604,9 +623,9 @@ class HttpRequest
 			$paramArr[':user_id'] = $this->userId;
 			$paramArr[':request_route'] = $this->http->httpReqData['get'][ROUTE_URL_PARAM];
 			$paramArr[':request_method'] = $this->http->httpReqData['server']['httpMethod'];
-			$paramArr[':request_payload_json'] = isset($this->s['payload']) ? $this->s['payload'] : '{}';
-			$paramArr[':request_config_json'] = isset($this->rParser->sqlConfig) ? $this->rParser->sqlConfig : '{}';
-			$paramArr[':request_session_json'] = isset($this->s) ? json_encode($this->s) : '{}';
+			$paramArr[':request_payload_json'] = isset($this->s['payload']) ? json_encode(value: $this->s['payload']) : '{}';
+			$paramArr[':request_config_json'] = isset($this->rParser->sqlConfig) ? json_encode(value: $this->rParser->sqlConfig) : '{}';
+			$paramArr[':request_session_json'] = isset($this->s) ? json_encode(value: $this->s) : '{}';
 			$paramArr[':request_exception_json'] = $exceptionJson;
 			$paramArr[':request_ip'] = $this->http->httpReqData['server']['httpRequestIP'];
 
@@ -748,10 +767,13 @@ class HttpRequest
 			if ($csvHeaderData === false) {
 				$csvHeaderData = [];
 				foreach ($csvRecordArr as $columnPosition => $value) {
-					$v = explode(':', $value);
+					$v = explode(
+						':',
+						$value
+					);
 					$_csvHeaderData = &$csvHeaderData;
 					for (
-						$i = 0, $iCount = count($v);
+						$i = 0, $iCount = count(value: $v);
 						$i < $iCount;
 						$i++
 					) {
@@ -790,8 +812,8 @@ class HttpRequest
 				$dataEncode->startObject();
 			} else {
 				$_headerModeArr = [];
-				$headerModeCount = count($headerModeArr);
-				$currentModeCount = count($currentModeArr);
+				$headerModeCount = count(value: $headerModeArr);
+				$currentModeCount = count(value: $currentModeArr);
 
 				for (
 					$i = 0;
@@ -834,7 +856,11 @@ class HttpRequest
 		$dataEncode->endObject();
 		$json = $dataEncode->getData();
 		$dataEncode = null;
-		$json = substr($json, 7, (strlen($json)-8));
+		$json = substr(
+			string: $json,
+			offset: 7,
+			length: (strlen($json)-8)
+		);
 
 		return $json;
 	}
@@ -847,10 +873,15 @@ class HttpRequest
 	 *
 	 * @return array
 	 */
-	public function formatCsvArray($csvHeaderData, $csvRecordArr): array
-	{
+	public function formatCsvArray(
+		$csvHeaderData,
+		$csvRecordArr
+	): array {
 		$csvFieldRecordArr = [];
-		$currentModeArr = explode(':', $csvRecordArr[0]);
+		$currentModeArr = explode(
+			':',
+			$csvRecordArr[0]
+		);
 
 		foreach ($currentModeArr as $v) {
 			if (!isset($csvHeaderData[$v])) {

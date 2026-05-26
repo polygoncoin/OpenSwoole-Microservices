@@ -42,8 +42,10 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return void
 	 */
-	public function init($sessionSavePath, $sessionName): void
-	{
+	public function init(
+		$sessionSavePath,
+		$sessionName
+	): void {
 		if (
 			empty($this->passphrase)
 			|| empty($this->iv)
@@ -88,8 +90,10 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionId, $sessionData): bool|int
-	{
+	public function setSession(
+		$sessionId,
+		$sessionData
+	): bool|int {
 		$sessionDataArr = unserialize(data: $sessionData);
 		$sessionDataArr['_TS_'] = Env::$timestamp;
 		$sessionData = serialize(value: $sessionDataArr);
@@ -127,8 +131,10 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionId, $sessionData): bool|int
-	{
+	public function updateSession(
+		$sessionId,
+		$sessionData
+	): bool|int {
 		return $this->setSession(sessionId: $sessionId, sessionData: $sessionData);
 	}
 
@@ -140,8 +146,10 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionId, $sessionData): bool
-	{
+	public function touchSession(
+		$sessionId,
+		$sessionData
+	): bool {
 		$sessionDataArr = unserialize(data: $sessionData);
 		$sessionDataArr['_TS_'] = Env::$timestamp;
 		$sessionData = serialize(value: $sessionDataArr);

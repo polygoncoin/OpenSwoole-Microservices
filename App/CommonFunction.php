@@ -43,8 +43,10 @@ class CommonFunction
 	 *
 	 * @return bool
 	 */
-	public static function isEnabled(&$http, $feature): bool
-	{
+	public static function isEnabled(
+		&$http,
+		$feature
+	): bool {
 		if (!isset($http->req->s['customerData'][$feature])) {
 			throw new \Exception(
 				message: "Provided feature '{$feature}' not found",
@@ -68,7 +70,7 @@ class CommonFunction
 	 */
 	public static function validateFileUpload($httpFileArr): void
 	{
-		if (count($httpFileArr) > 1) {
+		if (count(value: $httpFileArr) > 1) {
 			throw new \Exception(
 				message: 'Supports only one file with each request',
 				code: HttpStatus::$BadRequest
@@ -142,9 +144,13 @@ class CommonFunction
 	{
 		$response = [];
 
+		if (empty($cidrString)) {
+			return $response;
+		}
+
 		foreach (
 			explode(
-				separator: ', ',
+				separator: ',',
 				string: str_replace(
 					search: ' ',
 					replace: '',
@@ -159,7 +165,12 @@ class CommonFunction
 			) {
 				continue;
 			}
-			if (strpos(haystack: $cidr, needle: '/')) {
+			if (
+				strpos(
+					haystack: $cidr,
+					needle: '/'
+				)
+			) {
 				[$cidrIp, $bits] = explode(
 					separator: '/',
 					string: str_replace(search: ' ', replace: '', subject: $cidr)
@@ -204,14 +215,17 @@ class CommonFunction
 	 * Check IP with CIDR based on cache key containing start and end IP number
 	 *
 	 * @param CacheServerInterface $cacheObj     Cache Server object
-	 * @param string               $IP           Request Ip
+	 * @param string               $ip           Request Ip
 	 * @param string               $cidrCacheKey Cache Key(s)
 	 *
 	 * @return void
 	 * @throws \Exception
 	 */
-	public static function checkCacheCidr($cacheObj, $IP, $cidrCacheKey): void
-	{
+	public static function checkCacheCidr(
+		$cacheObj,
+		$ip,
+		$cidrCacheKey
+	): void {
 		if (!$cacheObj->cacheExist(cacheKey: $cidrCacheKey)) {
 			return;
 		}
@@ -222,7 +236,7 @@ class CommonFunction
 			),
 			associative: true
 		);
-		$isValidIp = self::belongsToCidrIpNumberRange(IP: $IP, cidrIpNumberRangeArr: $cidrIpNumberRangeArr);
+		$isValidIp = self::belongsToCidrIpNumberRange(ip: $ip, cidrIpNumberRangeArr: $cidrIpNumberRangeArr);
 		if (!$isValidIp) {
 			throw new \Exception(
 				message: 'IP not supported',
@@ -234,18 +248,20 @@ class CommonFunction
 	/**
 	 * Check IP with CIDR
 	 *
-	 * @param string $IP         Request Ip
+	 * @param string $ip         Request Ip
 	 * @param string $cidrString CIDRs
 	 *
 	 * @return null|bool
 	 * @throws \Exception
 	 */
-	public static function checkCidr($IP, $cidrString): null|bool
-	{
+	public static function checkCidr(
+		$ip,
+		$cidrString
+	): null|bool {
 		$isValidIp = true;
 		$cidrIpNumberRangeArr = self::cidrStringIpNumberRange(cidrString: $cidrString);
-		if (count($cidrIpNumberRangeArr) > 0) {
-			$isValidIp = self::belongsToCidrIpNumberRange(IP: $IP, cidrIpNumberRangeArr: $cidrIpNumberRangeArr);
+		if (count(value: $cidrIpNumberRangeArr) > 0) {
+			$isValidIp = self::belongsToCidrIpNumberRange(ip: $ip, cidrIpNumberRangeArr: $cidrIpNumberRangeArr);
 			if (!$isValidIp) {
 				throw new \Exception(
 					message: 'IP not supported',
@@ -260,19 +276,21 @@ class CommonFunction
 	/**
 	 * Belongs to Cidr IP number range
 	 *
-	 * @param string $IP                   IP
+	 * @param string $ip                   IP
 	 * @param array  $cidrIpNumberRangeArr Cidr IP number ranges
 	 *
 	 * @return bool
 	 */
-	public static function belongsToCidrIpNumberRange($IP, $cidrIpNumberRangeArr): bool
-	{
+	public static function belongsToCidrIpNumberRange(
+		$ip,
+		$cidrIpNumberRangeArr
+	): bool {
 		$isValidIp = false;
-		if (count($cidrIpNumberRangeArr) === 0) {
+		if (count(value: $cidrIpNumberRangeArr) === 0) {
 			return $isValidIp;
 		}
 
-		$ipNumber = ip2long(ip: $IP);
+		$ipNumber = ip2long(ip: $ip);
 
 		foreach ($cidrIpNumberRangeArr as $cidrIpNumber) {
 			if (
@@ -302,13 +320,18 @@ class CommonFunction
 	 */
 	public static function checkPrivateRequestCidr(&$http): void
 	{
-		if (!self::isEnabled(http: $http, feature: 'enableCidrCheck')) {
+		if (
+			!self::isEnabled(
+				http: $http,
+				feature: 'enableCidrCheck'
+			)
+		) {
 			return;
 		}
 
 		self::checkCacheCidr(
 			cacheObj: DbCommonFunction::$gCacheServer,
-			IP: $http->httpReqData['server']['httpRequestIP'],
+			ip: $http->httpReqData['server']['httpRequestIP'],
 			cidrCacheKey: CacheServerKey::customerCidr(
 				customerId: $http->req->customerId
 			)
@@ -317,7 +340,7 @@ class CommonFunction
 		if ($http !== null) {
 			self::checkCacheCidr(
 				cacheObj: $http->req->customerCacheObj,
-				IP: $http->httpReqData['server']['httpRequestIP'],
+				ip: $http->httpReqData['server']['httpRequestIP'],
 				cidrCacheKey: CacheServerKey::customerGroupCidr(
 					customerId: $http->req->customerId,
 					groupId: $http->req->groupId
@@ -326,7 +349,7 @@ class CommonFunction
 
 			self::checkCacheCidr(
 				cacheObj: $http->req->customerCacheObj,
-				IP: $http->httpReqData['server']['httpRequestIP'],
+				ip: $http->httpReqData['server']['httpRequestIP'],
 				cidrCacheKey: CacheServerKey::customerUserCidr(
 					customerId: $http->req->customerId,
 					userId: $http->req->userId

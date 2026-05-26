@@ -56,8 +56,10 @@ class Reload
 	 *
 	 * @return bool
 	 */
-	public static function processCustomer($httpRequestIp, $customerId = null): bool
-	{
+	public static function processCustomer(
+		$httpRequestIp,
+		$customerId = null
+	): bool {
 		DbCommonFunction::connectGlobalCache();
 		DbCommonFunction::connectGlobalDb();
 
@@ -83,7 +85,7 @@ class Reload
 			}
 
 			CommonFunction::checkCidr(
-				IP: $httpRequestIp,
+				ip: $httpRequestIp,
 				cidrString: $customerData['reloadRestrictedCidr']
 			);
 
@@ -128,8 +130,14 @@ class Reload
 				}
 			}
 
-			self::processGroup($httpRequestIp, $customerData);
-			self::processUser($httpRequestIp, $customerData);
+			self::processGroup(
+				httpRequestIp: $httpRequestIp,
+				customerData: $customerData
+			);
+			self::processUser(
+				httpRequestIp: $httpRequestIp,
+				customerData: $customerData
+			);
 		}
 
 		return true;
@@ -144,8 +152,11 @@ class Reload
 	 *
 	 * @return bool
 	 */
-	public static function processGroup($httpRequestIp, $customerData, $groupId = null): bool
-	{
+	public static function processGroup(
+		$httpRequestIp,
+		$customerData,
+		$groupId = null
+	): bool {
 		$customerCacheServerCred = DbCommonFunction::customerCacheServerCred(customerData: $customerData);
 		$customerCacheObj = DbCommonFunction::connectCache(
 			cacheServerType: $customerCacheServerCred['cacheServerType'],
@@ -219,8 +230,11 @@ class Reload
 	 *
 	 * @return bool
 	 */
-	public static function processUser($httpRequestIp, $customerData, $userId = null): bool
-	{
+	public static function processUser(
+		$httpRequestIp,
+		$customerData,
+		$userId = null
+	): bool {
 		$customerCacheServerCred = DbCommonFunction::customerCacheServerCred(customerData: $customerData);
 		$customerCacheObj = DbCommonFunction::connectCache(
 			cacheServerType: $customerCacheServerCred['cacheServerType'],

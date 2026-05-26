@@ -100,7 +100,10 @@ class Gateway
 	private function rateLimitCustomer(): void
 	{
 		if (
-			!CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimitForCustomer')
+			!CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableRateLimitForCustomer'
+			)
 			|| empty($this->http->req->s['customerData']['rateLimitMaxRequest'])
 			|| empty($this->http->req->s['customerData']['rateLimitMaxRequestWindow'])
 		) {
@@ -130,7 +133,10 @@ class Gateway
 	private function rateLimitGroup(): void
 	{
 		if (
-			!CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimitForGroup')
+			!CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableRateLimitForGroup'
+			)
 			|| empty($this->http->req->s['groupData']['rateLimitMaxRequest'])
 			|| empty($this->http->req->s['groupData']['rateLimitMaxRequestWindow'])
 		) {
@@ -162,7 +168,10 @@ class Gateway
 	private function rateLimitUser(): void
 	{
 		if (
-			!CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimitForUser')
+			!CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableRateLimitForUser'
+			)
 			|| empty($this->http->req->s['userData']['rateLimitMaxRequest'])
 			|| empty($this->http->req->s['userData']['rateLimitMaxRequestWindow'])
 		) {
@@ -193,7 +202,10 @@ class Gateway
 	private function rateLimitUserRequest(): void
 	{
 		if (
-			!CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimitForUserRequest')
+			!CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableRateLimitForUserRequest'
+			)
 			|| empty($this->http->req->s['customerData']['rateLimitUserMaxRequest'])
 			|| empty($this->http->req->s['customerData']['rateLimitUserMaxRequestWindow'])
 		) {
@@ -221,7 +233,12 @@ class Gateway
 	 */
 	private function rateLimitIp(): void
 	{
-		if (!CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimitForIp')) {
+		if (
+			!CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableRateLimitForIp'
+			)
+		) {
 			return;
 		}
 

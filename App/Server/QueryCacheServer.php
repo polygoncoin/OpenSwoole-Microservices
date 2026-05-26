@@ -130,11 +130,13 @@ class QueryCacheServer
 
 		if (
             !in_array(
-                $this->queryCacheServerType, [
+                needle: $this->queryCacheServerType,
+				haystack: [
                     'Redis',
                     'Memcached',
                     'MongoDb'
-                ]
+                ],
+				strict: true
             )
         ) {
 			throw new \Exception(
@@ -204,8 +206,10 @@ class QueryCacheServer
 	 *
 	 * @return mixed
 	 */
-	public function queryCacheSet($queryCacheKey, $queryCacheValue): mixed
-	{
+	public function queryCacheSet(
+		$queryCacheKey,
+		$queryCacheValue
+	): mixed {
 		$this->connectQueryCache();
 
 		if (strlen($queryCacheKey) === 0) {
@@ -226,8 +230,10 @@ class QueryCacheServer
 	 *
 	 * @return mixed
 	 */
-	public function queryCacheIncrement($queryCacheKey, $queryCacheOffset = 1): mixed
-	{
+	public function queryCacheIncrement(
+		$queryCacheKey,
+		$queryCacheOffset = 1
+	): mixed {
 		$this->connectQueryCache();
 
 		if (strlen($queryCacheKey) === 0) {

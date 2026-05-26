@@ -96,8 +96,7 @@ class StreamVideo
 			&& strpos(
 				haystack: $this->httpReqData['header']['range'],
 				needle: 'bytes='
-				!== false
-			)
+			) !== false
 		) {
 			return HttpStatus::$BadRequest;
 		}
@@ -167,7 +166,8 @@ class StreamVideo
 			$this->streamFrom == 0
 			&& in_array(
 				needle: $this->streamTill,
-				haystack: ['', '1']
+				haystack: ['', '1'],
+				strict: true
 			)
 		) {
 			// Mac Safari does not support HTTP/1.1 206 response for first
@@ -216,11 +216,11 @@ class StreamVideo
 
 		$totalBytes = $this->streamTill - $this->streamFrom + 1;
 		$data = file_get_contents(
-			$this->fileLocation,
-			false,
-			null,
-			$this->streamFrom,
-			$totalBytes
+			filename: $this->fileLocation,
+			use_include_path: false,
+			context: null,
+			offset: $this->streamFrom,
+			length: $totalBytes
 		);
 
 		return [$headerArr, $data, $status];

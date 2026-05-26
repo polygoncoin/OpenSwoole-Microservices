@@ -74,7 +74,7 @@ class Log
 	 */
 	public function logIntoDb(&$logData): int
 	{
-		$exceptionJson = json_encode($logData);
+		$exceptionJson = json_encode(value: $logData);
 		if (isset($this->http->req)) {
 			$exceptionJson = json_encode(value: $logData);
 			return $this->http->req->logErrorData(

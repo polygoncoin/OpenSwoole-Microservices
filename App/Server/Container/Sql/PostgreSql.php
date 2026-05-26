@@ -130,7 +130,11 @@ class PostgreSql implements SqlInterface
 		}
 
 		try {
-			$pgsqlServerObj = new PDO($dsn, $user, $dbServerPassword);
+			$pgsqlServerObj = new PDO(
+				$dsn,
+				$user,
+				$dbServerPassword
+			);
 			$this->pgsqlServerObj = new \PDO(
 				dsn: "pgsql:host={$this->dbServerHostname};port={$this->dbServerPort};dbname={$this->dbServerDatabase}",
 				username: $this->dbServerUsername,
@@ -264,8 +268,11 @@ class PostgreSql implements SqlInterface
 	 *
 	 * @return void
 	 */
-	public function execQuery($sql, $paramArr = [], $pushPop = false): void
-	{
+	public function execQuery(
+		$sql,
+		$paramArr = [],
+		$pushPop = false
+	): void {
 		$this->connect();
 
 		try {
@@ -273,7 +280,10 @@ class PostgreSql implements SqlInterface
 				$pushPop
 				&& $this->stmt
 			) {
-				array_push($this->stmtArr, $this->stmt);
+				array_push(
+					$this->stmtArr,
+					$this->stmt
+				);
 			}
 			$this->stmt = $this->pgsqlServerObj->prepare(
 				query: $sql,

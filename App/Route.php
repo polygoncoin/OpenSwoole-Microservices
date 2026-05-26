@@ -87,7 +87,12 @@ class Route
 	 */
 	public function init(): bool
 	{
-		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableRoutesRequest')) {
+		if (
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableRoutesRequest'
+			)
+		) {
 			return true;
 		}
 
@@ -152,10 +157,19 @@ class Route
 	 *
 	 * @return void
 	 */
-	private function getRoutes(&$routeArr, $route, &$httpRouteArr): void
-	{
+	private function getRoutes(
+		&$routeArr,
+		$route,
+		&$httpRouteArr
+	): void {
 		foreach ($routeArr as $routeElement => &$_routeArr) {
-			if (in_array(needle: $routeElement, haystack: $this->reservedKeyArr)) {
+			if (
+				in_array(
+					needle: $routeElement,
+					haystack: $this->reservedKeyArr,
+					strict: true
+				)
+			) {
 				continue;
 			}
 			if ($routeElement === '__FILE__') {

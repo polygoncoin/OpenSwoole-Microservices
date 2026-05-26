@@ -170,7 +170,11 @@ class JsonDecodeEngine
 							break;
 
 						// Start or End of Array
-						case in_array(needle: $char, haystack: ['[', ']', '{', '}']):
+						case in_array(
+							needle: $char,
+							haystack: ['[', ']', '{', '}'],
+							strict: true
+						):
 							$arr = $this->handleOpenClose(
 								char: $char,
 								keyValue: $keyValue,
@@ -206,11 +210,19 @@ class JsonDecodeEngine
 							break;
 
 						//Switch mode to value collection after colon
-						case in_array(needle: $char, haystack: $this->escapeArr):
+						case in_array(
+							needle: $char,
+							haystack: $this->escapeArr,
+							strict: true
+						):
 							break;
 
 						// Append char to null string
-						case !in_array(needle: $char, haystack: $this->escapeArr):
+						case !in_array(
+							needle: $char,
+							haystack: $this->escapeArr,
+							strict: true
+						):
 							$nullStr .= $char;
 							break;
 					}
@@ -224,7 +236,8 @@ class JsonDecodeEngine
 								|| ($prevIsEscape
 									&& in_array(
 										needle: $strToEscape . $char,
-										haystack: $this->replaceArr
+										haystack: $this->replaceArr,
+										strict: true
 									)
 								)
 							):
@@ -237,7 +250,8 @@ class JsonDecodeEngine
 							&& $prevIsEscape === true
 							&& in_array(
 								needle: $strToEscape . $char,
-								haystack: $this->replaceArr
+								haystack: $this->replaceArr,
+								strict: true
 							):
 							$$varMode .= str_replace(
 								search: $this->replaceArr,
@@ -253,7 +267,8 @@ class JsonDecodeEngine
 							&& $prevIsEscape === true
 							&& in_array(
 								needle: $strToEscape,
-								haystack: $this->replaceArr
+								haystack: $this->replaceArr,
+								strict: true
 							):
 							$$varMode .= str_replace(
 								search: $this->replaceArr,
@@ -330,8 +345,12 @@ class JsonDecodeEngine
 	 *
 	 * @return array|bool
 	 */
-	private function handleOpenClose($char, $keyValue, $nullStr, $index): array|bool
-	{
+	private function handleOpenClose(
+		$char,
+		$keyValue,
+		$nullStr,
+		$index
+	): array|bool {
 		$arr = false;
 		switch ($char) {
 			case '[':
@@ -499,7 +518,10 @@ class JsonDecodeEngine
 			) {
 				$this->isBadJson(str: $objectKey);
 			}
-			array_push($this->objectArr, $this->currentObject);
+			array_push(
+				$this->objectArr,
+				$this->currentObject
+			);
 		}
 	}
 

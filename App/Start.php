@@ -48,16 +48,28 @@ class Start
 		$headerArr = [];
 
 		if ($httpReqData['server']['httpMethod'] == Constant::$POST) {
-			$startArrayPos = strpos($httpReqData['post'], '[');
-			$startObjectPos = strpos($httpReqData['post'], '{');
-			$startXmlPos = strpos($httpReqData['post'], '<');
+			$startArrayPos = strpos(
+				haystack: $httpReqData['post'],
+				needle: '['
+			);
+			$startObjectPos = strpos(
+				haystack: $httpReqData['post'],
+				needle: '{'
+			);
+			$startXmlPos = strpos(
+				haystack: $httpReqData['post'],
+				needle: '<'
+			);
 			if (
 				$startArrayPos !== 0
 				&& $startObjectPos !== 0
 				&& $startXmlPos !== 0
 			) {
-				parse_str($httpReqData['post'], $httpReqData['post']);
-				$httpReqData['post'] = json_encode($httpReqData['post']);
+				parse_str(
+					$httpReqData['post'],
+					$httpReqData['post']
+				);
+				$httpReqData['post'] = json_encode(value: $httpReqData['post']);
 			}
 		}
 
@@ -84,8 +96,8 @@ class Start
 
 				$return = $Microservices->process();
 				if (
-					is_array($return)
-					&& count($return) === 3
+					is_array(value: $return)
+					&& count(value: $return) === 3
 				) {
 					return $return;
 				}
@@ -103,12 +115,21 @@ class Start
 				return [$headerArr, $data, $status];
 			}
 		} catch (\Exception $e) {
-			if (!in_array(needle: $e->getCode(), haystack: [HttpStatus::$BadRequest, HttpStatus::$TooManyRequest])) {
+			if (
+				!in_array(
+					needle: $e->getCode(),
+					haystack: [HttpStatus::$BadRequest, HttpStatus::$TooManyRequest],
+					strict: true
+				)
+			) {
 				list($usec, $sec) = explode(separator: ' ', string: microtime());
 				$dateTime = date(
 					format: 'Y-m-d H:i:s',
 					timestamp: $sec
-				) . substr(string: $usec, offset: 1);
+				) . substr(
+					string: $usec,
+					offset: 1
+				);
 
 				// Log request detail
 				$logData = [

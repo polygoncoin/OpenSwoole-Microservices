@@ -51,8 +51,10 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return void
 	 */
-	public function init($sessionSavePath, $sessionName): void
-	{
+	public function init(
+		$sessionSavePath,
+		$sessionName
+	): void {
 		$this->connect();
 	}
 
@@ -90,8 +92,10 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionId, $sessionData): bool|int
-	{
+	public function setSession(
+		$sessionId,
+		$sessionData
+	): bool|int {
 		$sql = "
 			INSERT INTO {$this->pgSqlServerTable} (session_id, last_accessed, session_data)
 			VALUES ($1, $2, $3)
@@ -113,8 +117,10 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionId, $sessionData): bool|int
-	{
+	public function updateSession(
+		$sessionId,
+		$sessionData
+	): bool|int {
 		$sql = "
 			UPDATE {$this->pgSqlServerTable}
 			SET
@@ -140,8 +146,10 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionId, $sessionData): bool
-	{
+	public function touchSession(
+		$sessionId,
+		$sessionData
+	): bool {
 		$sql = "
 			UPDATE {$this->pgSqlServerTable}
 			SET last_accessed = $1
@@ -236,11 +244,17 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return mixed
 	 */
-	private function getSql($sql, $paramArr): mixed
-	{
+	private function getSql(
+		$sql,
+		$paramArr
+	): mixed {
 		try {
 			// Execute the query with parameters
-			$result = pg_query_params($this->pgSqlServerObj, $sql, $paramArr);
+			$result = pg_query_params(
+				$this->pgSqlServerObj,
+				$sql,
+				$paramArr
+			);
 			if ($result) {
 				$row = [];
 				$rowsCount = pg_num_rows($result);
@@ -264,10 +278,16 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool
 	 */
-	private function execSql($sql, $paramArr): bool
-	{
+	private function execSql(
+		$sql,
+		$paramArr
+	): bool {
 		try {
-			$result = pg_query_params($this->pgSqlServerObj, $sql, $paramArr);
+			$result = pg_query_params(
+				$this->pgSqlServerObj,
+				$sql,
+				$paramArr
+			);
 			if ($result) {
 				return true;
 			}

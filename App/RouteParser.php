@@ -160,14 +160,19 @@ class RouteParser
 			&& $this->routeElementArr[1] === Env::$dropboxRequestRoutePrefix
 		) {
 			if ($this->http->req->isPrivateRequest) {
-				if (!CommonFunction::isEnabled(http: $this->http, feature: 'enableDropboxRequest')) {
+				if (
+					!CommonFunction::isEnabled(
+						http: $this->http,
+						feature: 'enableDropboxRequest'
+					)
+				) {
 					throw new \Exception(
 						message: 'Route not supported',
 						code: HttpStatus::$BadRequest
 					);
 				}
 				CommonFunction::checkCidr(
-					IP: $this->http->httpReqData['server']['httpRequestIP'],
+					ip: $this->http->httpReqData['server']['httpRequestIP'],
 					cidrString: $this->http->req->s['customerData']['dropboxRestrictedCidr']
 				);
 			}
@@ -179,14 +184,19 @@ class RouteParser
 			return;
 		}
 		if ($this->routeElementArr[0] === Env::$routesRequestRoute) {
-			if (!CommonFunction::isEnabled(http: $this->http, feature: 'enableRoutesRequest')) {
+			if (
+				!CommonFunction::isEnabled(
+					http: $this->http,
+					feature: 'enableRoutesRequest'
+				)
+			) {
 				throw new \Exception(
 					message: 'Route not supported',
 					code: HttpStatus::$BadRequest
 				);
 			}
 			CommonFunction::checkCidr(
-				IP: $this->http->httpReqData['server']['httpRequestIP'],
+				ip: $this->http->httpReqData['server']['httpRequestIP'],
 				cidrString: $this->http->req->s['customerData']['routesRestrictedCidr']
 			);
 
@@ -230,7 +240,7 @@ class RouteParser
 
 		$configuredRoute = [];
 
-		for ($i = 0, $iCount = count($this->routeElementArr); $i < $iCount; $i++) {
+		for ($i = 0, $iCount = count(value: $this->routeElementArr); $i < $iCount; $i++) {
 			$element = $this->routeElementArr[$i];
 			if ($element === '') {
 				continue;
@@ -318,7 +328,10 @@ class RouteParser
 		// Input data representation over rides global and routes settings
 		// Switch Input data representation if set in URL param
 		if (
-			CommonFunction::isEnabled(http: $this->http, feature: 'enableInputRepresentationAsQueryParam')
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableInputRepresentationAsQueryParam'
+			)
 			&& isset($this->http->httpReqData['get']['iRepresentation'])
 			&& Env::isValidDataRep(
 				dataRepresentation: $this->http->httpReqData['get']['iRepresentation'],
@@ -343,13 +356,24 @@ class RouteParser
 	private function isStartingWithReservedRouteKeyword($routeStartingKeyword)
 	{
 		$this->setReservedRouteArray();
-		if (in_array($routeStartingKeyword, $this->reservedRoutesPrefix)) {
+		if (
+			in_array(
+				needle: $routeStartingKeyword,
+				haystack: $this->reservedRoutesPrefix,
+				strict: true
+			)
+		) {
 			$this->routeStartingWithReservedKeywordFlag = true;
 			$this->routeStartingReservedKeyword = $routeStartingKeyword;
-			if (CommonFunction::isEnabled(http: $this->http, feature: 'enableCidrCheck')) {
+			if (
+				CommonFunction::isEnabled(
+					http: $this->http,
+					feature: 'enableCidrCheck'
+				)
+			) {
 				if (isset($this->reservedRoutesCidrString[$routeStartingKeyword])) {
 					CommonFunction::checkCidr(
-						IP: $this->http->httpReqData['server']['httpRequestIP'],
+						ip: $this->http->httpReqData['server']['httpRequestIP'],
 						cidrString: $this->reservedRoutesCidrString[$routeStartingKeyword]
 					);
 				}
@@ -371,21 +395,30 @@ class RouteParser
 		$return = false;
 
 		if (
-			CommonFunction::isEnabled(http: $this->http, feature: 'enableExplainRequest')
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableExplainRequest'
+			)
 			&& Env::$explainRequestRouteKeyword === $routeEndingKeyword
 		) {
 			$this->routeEndingWithReservedKeywordFlag = true;
 			$this->routeEndingReservedKeyword = Env::$explainRequestRouteKeyword;
 			$return = true;
 		} elseif (
-			CommonFunction::isEnabled(http: $this->http, feature: 'enableImportRequest')
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableImportRequest'
+			)
 			&& Env::$importRequestRouteKeyword === $routeEndingKeyword
 		) {
 			$this->routeEndingWithReservedKeywordFlag = true;
 			$this->routeEndingReservedKeyword = Env::$importRequestRouteKeyword;
 			$return = true;
 		} elseif (
-			CommonFunction::isEnabled(http: $this->http, feature: 'enableImportSampleRequest')
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableImportSampleRequest'
+			)
 			&& Env::$importSampleRequestRouteKeyword === $routeEndingKeyword
 		) {
 			$this->routeEndingWithReservedKeywordFlag = true;
@@ -419,7 +452,12 @@ class RouteParser
 		&$foundStringParamName
 	): bool {
 		// Is a dynamic URI element
-		if (strpos(haystack: $routeElement, needle: '{') !== 0) {
+		if (
+			strpos(
+				haystack: $routeElement,
+				needle: '{'
+			) !== 0
+		) {
 			return false;
 		}
 
@@ -429,7 +467,13 @@ class RouteParser
 			string: $dynamicRoute
 		);
 
-		if (!in_array(needle: $paramDataType, haystack: ['int', 'string'])) {
+		if (
+			!in_array(
+				needle: $paramDataType,
+				haystack: ['int', 'string'],
+				strict: true
+			)
+		) {
 			throw new \Exception(
 				message: 'Invalid datatype set for Route',
 				code: HttpStatus::$InternalServerError
@@ -471,7 +515,7 @@ class RouteParser
 	{
 		// Set route code file
 		if (!isset($routeConfig['__FILE__'])) {
-			if (count($routeConfig) > 0) {
+			if (count(value: $routeConfig) > 0) {
 				throw new \Exception(
 					message: 'Route not supported',
 					code: HttpStatus::$BadRequest
@@ -529,8 +573,9 @@ class RouteParser
 					$this->http->res->dataEncode->xsltFile = $this->sqlConfig['xsltFile'];
 				} elseif (
 					!in_array(
-						$this->sqlConfig['oRepresentation'],
-						['HTML', 'PHP', 'XSLT']
+						needle: $this->sqlConfig['oRepresentation'],
+						haystack: ['HTML', 'PHP', 'XSLT'],
+						strict: true
 					)
 				) {
 					$this->http->res->oRepresentation = $this->http->httpReqData['get']['oRepresentation'];
@@ -540,7 +585,10 @@ class RouteParser
 
 		// Switch Output data representation if set in URL param
 		if (
-			CommonFunction::isEnabled(http: $this->http, feature: 'enableOutputRepresentationAsQueryParam')
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableOutputRepresentationAsQueryParam'
+			)
 			&& isset($this->http->httpReqData['get']['oRepresentation'])
 			&& Env::isValidDataRep(
 				dataRepresentation: $this->http->httpReqData['get']['oRepresentation'],
@@ -567,8 +615,9 @@ class RouteParser
 				$this->http->res->dataEncode->xsltFile = $this->sqlConfig['xsltFile'];
 			} elseif (
 				!in_array(
-					$this->http->httpReqData['get']['oRepresentation'],
-					['HTML', 'PHP', 'XSLT']
+					needle: $this->http->httpReqData['get']['oRepresentation'],
+					haystack: ['HTML', 'PHP', 'XSLT'],
+					strict: true
 				)
 			) {
 				$this->http->res->oRepresentation = $this->http->httpReqData['get']['oRepresentation'];
@@ -585,11 +634,19 @@ class RouteParser
 	 */
 	private function checkPresenceOfDynamicString($element): void
 	{
-		if (strpos(haystack: $element, needle: '{') === 0) {
+		if (
+			strpos(
+				haystack: $element,
+				needle: '{'
+			) === 0
+		) {
 			$param = substr(
 				string: $element,
 				offset: 1,
-				length: strpos(haystack: $element, needle: ':') - 1
+				length: strpos(
+					haystack: $element,
+					needle: ':'
+				) - 1
 			);
 			$this->http->req->s['routeParamArr'][$param] = $element;
 		}
@@ -610,11 +667,20 @@ class RouteParser
 		$foundStringRoute = false;
 		$foundStringParamName = false;
 		foreach (array_keys(array: $routeConfig) as $routeElement) {
-			if (in_array($routeElement, ['dataType'])) {
+			if (
+				in_array(
+					needle: $routeElement,
+					haystack: ['dataType'],
+					strict: true
+				)
+			) {
 				continue;
 			}
 			if (
-				strpos(haystack: $routeElement, needle: '{') === 0
+				strpos(
+					haystack: $routeElement,
+					needle: '{'
+				) === 0
 				&& isset($routeConfig[$routeElement]['dataType'])
 			) {
 				$dataType = $routeConfig[$routeElement]['dataType'];

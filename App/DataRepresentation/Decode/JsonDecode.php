@@ -303,7 +303,13 @@ class JsonDecode implements DataDecodeInterface
 	 */
 	public function load($keyString): void
 	{
-		if (in_array(needle: $keyString, haystack: [null, ''])) {
+		if (
+			in_array(
+				needle: $keyString,
+				haystack: [null, ''],
+				strict: true
+			)
+		) {
 			$this->jsonDecodeEngine->sIndex = null;
 			$this->jsonDecodeEngine->eIndex = null;
 			return;

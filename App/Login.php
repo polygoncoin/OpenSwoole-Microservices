@@ -111,7 +111,10 @@ class Login
 		$this->validatePassword();
 
 		if (
-			CommonFunction::isEnabled(http: $this->http, feature: 'enableRateLimitForUserPerIp')
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableRateLimitForUserPerIp'
+			)
 			&& !empty($this->http->req->s['customerData']['rateLimitMaxUserPerIp'])
 			&& !empty($this->http->req->s['customerData']['rateLimitMaxUserPerIpWindow'])
 		) {
@@ -336,7 +339,7 @@ class Login
 
 		$customerUserTokenKey = null;
 		$customerUserToken = null;
-	
+
 		$authFound = false;
 		$authFoundData = [];
 
@@ -354,7 +357,12 @@ class Login
 			);
 		}
 
-		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
+		if (
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableConcurrentLogin'
+			)
+		) {
 			$customerUserConcurrencyKey = CacheServerKey::customerUserConcurrency(
 				customerId: $this->http->req->customerId,
 				userId: $this->http->req->userId
@@ -385,7 +393,7 @@ class Login
 						continue;
 					}
 					if ($authData['authMode'] === 'Session') {
-						$time = Env::$timestamp - $authData['authTimestamp'];
+						$timeLeft = Env::$timestamp - $authData['authTimestamp'];
 						if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
 							$this->http->req->session->deleteSession(sessionId: $authId);
 							unset($customerUserConcurrencyData[$authId]);
@@ -429,8 +437,13 @@ class Login
 			$customerUserConcurrencyData[$authFoundData['authId']] = $authFoundData;
 		}
 
-		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
-			if (count($customerUserConcurrencyData) >= Env::$maxConcurrentLogin) {
+		if (
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableConcurrentLogin'
+			)
+		) {
+			if (count(value: $customerUserConcurrencyData) >= Env::$maxConcurrentLogin) {
 				throw new \Exception(
 					message: 'Account already in use. '
 						. 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
@@ -443,15 +456,15 @@ class Login
 			);
 			$this->cacheSet(
 				cacheKey: $customerUserConcurrencyKey,
-				cacheValue: json_encode($customerUserConcurrencyData),
+				cacheValue: json_encode(value: $customerUserConcurrencyData),
 				cacheExpire: Env::$concurrentAccessInterval
 			);
 		}
 
-		$time = Env::$timestamp - $authFoundData['authTimestamp'];
+		$timeLeft = Env::$timestamp - $authFoundData['authTimestamp'];
 		$output = [
 			'Token' => $authFoundData['authId'],
-			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constant::$TOKEN_EXPIRY_TIME - $time))
+			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constant::$TOKEN_EXPIRY_TIME - $timeLeft))
 		];
 
 		$this->outputDetail(output: $output);
@@ -482,7 +495,7 @@ class Login
 
 		$customerUserSessionIdKey = null;
 		$customerUserSessionId = null;
-	
+
 		$authFound = false;
 		$authFoundData = [];
 
@@ -500,7 +513,12 @@ class Login
 			);
 		}
 
-		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
+		if (
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableConcurrentLogin'
+			)
+		) {
 			$customerUserConcurrencyKey = CacheServerKey::customerUserConcurrency(
 				customerId: $this->http->req->customerId,
 				userId: $this->http->req->userId
@@ -521,7 +539,7 @@ class Login
 					),
 					associative: true
 				);
-				
+
 				foreach ($customerUserConcurrencyData as $authId => $authData) {
 					if (
 						$authData['authMode'] === 'Token'
@@ -531,7 +549,7 @@ class Login
 						continue;
 					}
 					if ($authData['authMode'] === 'Session') {
-						$time = Env::$timestamp - $authData['authTimestamp'];
+						$timeLeft = Env::$timestamp - $authData['authTimestamp'];
 						if ((Constant::$TOKEN_EXPIRY_TIME - $timeLeft) <= 0) {
 							$this->http->req->session->deleteSession(sessionId: $authId);
 							unset($customerUserConcurrencyData[$authId]);
@@ -579,8 +597,13 @@ class Login
 			$customerUserConcurrencyData[$authFoundData['authId']] = $authFoundData;
 		}
 
-		if (CommonFunction::isEnabled(http: $this->http, feature: 'enableConcurrentLogin')) {
-			if (count($customerUserConcurrencyData) >= Env::$maxConcurrentLogin) {
+		if (
+			CommonFunction::isEnabled(
+				http: $this->http,
+				feature: 'enableConcurrentLogin'
+			)
+		) {
+			if (count(value: $customerUserConcurrencyData) >= Env::$maxConcurrentLogin) {
 				throw new \Exception(
 					message: 'Account already in use. '
 						. 'Please try after ' . Env::$concurrentAccessInterval . ' second(s)',
@@ -593,15 +616,15 @@ class Login
 			);
 			$this->cacheSet(
 				cacheKey: $customerUserConcurrencyKey,
-				cacheValue: json_encode($customerUserConcurrencyData),
+				cacheValue: json_encode(value: $customerUserConcurrencyData),
 				cacheExpire: Env::$concurrentAccessInterval
 			);
 		}
 
-		$time = Env::$timestamp - $authFoundData['authTimestamp'];
+		$timeLeft = Env::$timestamp - $authFoundData['authTimestamp'];
 		$output = [
 			'SessionId' => $authFoundData['authId'],
-			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constant::$TOKEN_EXPIRY_TIME - $time))
+			'Expires' => date('d\ \d\a\y H\ \h\o\u\r i\ \m\i\n s\ \s\e\c', (Constant::$TOKEN_EXPIRY_TIME - $timeLeft))
 		];
 
 		$this->outputDetail(output: $output);
@@ -640,8 +663,11 @@ class Login
 	 *
 	 * @return mixed
 	 */
-	private function cacheSet($cacheKey, $cacheValue, $cacheExpire = 0): mixed
-	{
+	private function cacheSet(
+		$cacheKey,
+		$cacheValue,
+		$cacheExpire = 0
+	): mixed {
 		return $this->http->req->customerCacheObj->cacheSet(
 			cacheKey: $cacheKey,
 			cacheValue: $cacheValue,

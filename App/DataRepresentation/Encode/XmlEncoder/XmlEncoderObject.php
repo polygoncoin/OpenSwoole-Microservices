@@ -40,8 +40,10 @@ class XmlEncoderObject
 	 * @param string      $mode      Values can be one among Array/object
 	 * @param null|string $objectKey Tag
 	 */
-	public function __construct($mode, $objectKey)
-	{
+	public function __construct(
+		$mode,
+		$objectKey
+	) {
 		$this->mode = $mode;
 		if ($objectKey !== null) {
 			$this->objectKey = str_replace(search: ':', replace: '-', subject: $objectKey);

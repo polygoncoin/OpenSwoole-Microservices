@@ -57,8 +57,10 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return void
 	 */
-	public function init($sessionSavePath, $sessionName): void
-	{
+	public function init(
+		$sessionSavePath,
+		$sessionName
+	): void {
 		$this->connect();
 	}
 
@@ -94,8 +96,10 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionId, $sessionData): bool|int
-	{
+	public function setSession(
+		$sessionId,
+		$sessionData
+	): bool|int {
 		try {
 			$document = [
 				"sessionId" => $sessionId,
@@ -119,8 +123,10 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionId, $sessionData): bool|int
-	{
+	public function updateSession(
+		$sessionId,
+		$sessionData
+	): bool|int {
 		try {
 			$filter = ['sessionId' => $sessionId];
 			$update = [
@@ -129,7 +135,12 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 					"sessionData" => $this->encryptData(plainText: $sessionData)
 				]
 			];
-			if ($this->collectionObj->updateOne($filter, $update)) {
+			if (
+				$this->collectionObj->updateOne(
+					$filter,
+					$update
+				)
+			) {
 				return true;
 			}
 		} catch (\Exception $e) {
@@ -146,8 +157,10 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionId, $sessionData): bool
-	{
+	public function touchSession(
+		$sessionId,
+		$sessionData
+	): bool {
 		try {
 			$filter = ['sessionId' => $sessionId];
 			$update = [
@@ -156,7 +169,12 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 				]
 			];
 
-			if ($this->collectionObj->updateOne($filter, $update)) {
+			if (
+				$this->collectionObj->updateOne(
+					$filter,
+					$update
+				)
+			) {
 				return true;
 			}
 		} catch (\Exception $e) {

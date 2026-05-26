@@ -83,7 +83,10 @@ interface DataEncodeInterface
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function addKeyData($objectKey, $data): void;
+	public function addKeyData(
+		$objectKey,
+		$data
+	): void;
 
 	/**
 	 * End associative array
@@ -118,7 +121,10 @@ interface DataEncodeInterface
 	 *
 	 * @return void
 	 */
-	public function appendKeyData($objectKey, &$data): void;
+	public function appendKeyData(
+		$objectKey,
+		&$data
+	): void;
 
 	/**
 	 * Checks data was properly closed

@@ -53,24 +53,24 @@ class RateLimiter
 	/**
 	 * Check rate limit is valid
 	 *
-	 * @param string $prefix        Prefix
-	 * @param int    $maxRequest    Max request
-	 * @param int    $secondsWindow Window in seconds
-	 * @param string $rateLimitKey  Rate Limit Key
+	 * @param string $rateLimitPrefix           Prefix
+	 * @param int    $rateLimitMaxRequest       Max request
+	 * @param int    $rateLimitMaxRequestWindow Window in seconds
+	 * @param string $rateLimitKey              Rate Limit Key
 	 *
 	 * @return array
 	 */
 	public function check(
-		$prefix,
-		$maxRequest,
-		$secondsWindow,
+		$rateLimitPrefix,
+		$rateLimitMaxRequest,
+		$rateLimitMaxRequestWindow,
 		$rateLimitKey
 	): array {
 
 		if (
-			empty($prefix)
-			|| empty($maxRequest)
-			|| empty($secondsWindow)
+			empty($rateLimitPrefix)
+			|| empty($rateLimitMaxRequest)
+			|| empty($rateLimitMaxRequestWindow)
 			|| empty($rateLimitKey)
 		) {
 			throw new \Exception(
@@ -86,17 +86,17 @@ class RateLimiter
 			);
 		}
 
-		$maxRequest = (int)$maxRequest;
-		$secondsWindow = (int)$secondsWindow;
+		$rateLimitMaxRequest = (int)$rateLimitMaxRequest;
+		$rateLimitMaxRequestWindow = (int)$rateLimitMaxRequestWindow;
 
-		$remainder = Env::$timestamp % $secondsWindow;
-		$remainder = $remainder !== 0 ? $remainder : $secondsWindow;
+		$remainder = Env::$timestamp % $rateLimitMaxRequestWindow;
+		$remainder = $remainder !== 0 ? $remainder : $rateLimitMaxRequestWindow;
 
-		$rateLimitKey = $prefix . $rateLimitKey;
+		$rateLimitCacheKey = $rateLimitPrefix . $rateLimitKey;
 
 		if ($this->cacheObj->cacheExist(cacheKey: $rateLimitKey)) {
 			$requestCount = (int)$this->cacheObj->cacheGet(
-				cacheKey: $rateLimitKey
+				cacheKey: $rateLimitCacheKey
 			);
 		} else {
 			$requestCount = 0;
@@ -108,8 +108,11 @@ class RateLimiter
 		}
 		$requestCount++;
 
-		$allowed = $requestCount <= $maxRequest;
-		$remaining = max(0, $maxRequest - $requestCount);
+		$allowed = $requestCount <= $rateLimitMaxRequest;
+		$remaining = max(
+			0,
+			$rateLimitMaxRequest - $requestCount
+		);
 		$resetOn = Env::$timestamp + $remainder;
 
 		if ($allowed) {
@@ -155,9 +158,9 @@ class RateLimiter
 
 		try {
 			$result = $this->check(
-				prefix: $rateLimitPrefix,
-				maxRequest: $rateLimitMaxRequest,
-				secondsWindow: $rateLimitMaxRequestWindow,
+				rateLimitPrefix: $rateLimitPrefix,
+				rateLimitMaxRequest: $rateLimitMaxRequest,
+				rateLimitMaxRequestWindow: $rateLimitMaxRequestWindow,
 				rateLimitKey: $rateLimitKey
 			);
 

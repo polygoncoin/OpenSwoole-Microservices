@@ -290,7 +290,8 @@ class Session
 				if (
 					in_array(
 						needle: $option,
-						haystack: ['name', 'serialize_handler', 'gc_maxlifetime']
+						haystack: ['name', 'serialize_handler', 'gc_maxlifetime'],
+						strict: true
 					)
 				) {
 					// Skip option
@@ -304,13 +305,15 @@ class Session
 	/**
 	 * Initialize session handler
 	 *
-	 * @param array $customerData 
+	 * @param array $customerData
 	 * @param array $options      Options
 	 *
 	 * @return void
 	 */
-	public function initSessionHandler($customerData, $options = []): void
-	{
+	public function initSessionHandler(
+		$customerData,
+		$options = []
+	): void {
 		$envFilename = '.env.session';
 		$envDataArr = parse_ini_file(filename: ROOT . DIRECTORY_SEPARATOR . $envFilename);
 		foreach ($envDataArr as $envVarName => $envVarValue) {
@@ -414,7 +417,7 @@ class Session
 	 */
 	public function deleteSessions($sessionIds): void
 	{
-		for ($i = 0, $iCount = count($sessionIds); $i < $iCount; $i++) {
+		for ($i = 0, $iCount = count(value: $sessionIds); $i < $iCount; $i++) {
 			$this->deleteSession($sessionIds[$i]);
 		}
 	}

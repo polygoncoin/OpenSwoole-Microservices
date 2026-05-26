@@ -86,23 +86,29 @@ class Api
 			&& isset($this->http->req->rParser)
 			&& isset($this->http->req->rParser->routeHook)
 			&& $this->http->req->rParser->routeHook !== null
-			&& is_array($this->http->req->rParser->routeHook)
+			&& is_array(value: $this->http->req->rParser->routeHook)
 		) {
 			$preRouteHookArr = [];
 			foreach ($this->http->req->rParser->routeHook as $element => &$hookArr) {
 				if (isset($hookArr['__PRE-ROUTE-HOOKS__'])) {
 					$preRouteHookConfig = $hookArr['__PRE-ROUTE-HOOKS__'];
-					if (count($preRouteHookConfig) === 0) {
+					if (count(value: $preRouteHookConfig) === 0) {
 						continue;
 					}
-					for ($i = 0, $iCount = count($preRouteHookConfig); $i < $iCount; $i++) {
-						if (!in_array($preRouteHookConfig[$i], $preRouteHookArr)) {
+					for ($i = 0, $iCount = count(value: $preRouteHookConfig); $i < $iCount; $i++) {
+						if (
+							!in_array(
+								needle: $preRouteHookConfig[$i],
+								haystack: $preRouteHookArr,
+								strict: true
+							)
+						) {
 							$preRouteHookArr[] = $preRouteHookConfig[$i];
 						}
 					}
 				}
 			}
-			if (count($preRouteHookArr) > 0) {
+			if (count(value: $preRouteHookArr) > 0) {
 				if ($this->hook === null) {
 					$this->hook = new Hook(http: $this->http);
 				}
@@ -115,11 +121,12 @@ class Api
 		// Load Payloads
 		if (
 			!in_array(
-				$this->http->req->rParser->routeEndingReservedKeyword,
-				[
+				needle: $this->http->req->rParser->routeEndingReservedKeyword,
+				haystack: [
 					Env::$explainRequestRouteKeyword,
 					Env::$importSampleRequestRouteKeyword
-				]
+				],
+				strict: true
 			)
 		) {
 			$this->http->req->loadPayload();
@@ -219,23 +226,29 @@ class Api
 			&& isset($this->http->req->rParser)
 			&& isset($this->http->req->rParser->routeHook)
 			&& $this->http->req->rParser->routeHook !== null
-			&& is_array($this->http->req->rParser->routeHook)
+			&& is_array(value: $this->http->req->rParser->routeHook)
 		) {
 			$postRouteHookArr = [];
 			foreach ($this->http->req->rParser->routeHook as $element => &$hookArr) {
 				if (isset($hookArr['__POST-ROUTE-HOOKS__'])) {
 					$postRouteHookConfig = $hookArr['__POST-ROUTE-HOOKS__'];
-					if (count($postRouteHookConfig) === 0) {
+					if (count(value: $postRouteHookConfig) === 0) {
 						continue;
 					}
-					for ($i = 0, $iCount = count($postRouteHookConfig); $i < $iCount; $i++) {
-						if (!in_array($postRouteHookConfig[$i], $postRouteHookArr)) {
+					for ($i = 0, $iCount = count(value: $postRouteHookConfig); $i < $iCount; $i++) {
+						if (
+							!in_array(
+								needle: $postRouteHookConfig[$i],
+								haystack: $postRouteHookArr,
+								strict: true
+							)
+						) {
 							$postRouteHookArr[] = $postRouteHookConfig[$i];
 						}
 					}
 				}
 			}
-			if (count($postRouteHookArr) > 0) {
+			if (count(value: $postRouteHookArr) > 0) {
 				if ($this->hook === null) {
 					$this->hook = new Hook(http: $this->http);
 				}
@@ -246,8 +259,8 @@ class Api
 		}
 
 		if (
-			is_array($return)
-			&& count($return) === 3
+			is_array(value: $return)
+			&& count(value: $return) === 3
 		) {
 			return $return;
 		}

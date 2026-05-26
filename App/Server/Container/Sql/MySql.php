@@ -281,8 +281,11 @@ class MySql implements SqlInterface
 	 *
 	 * @return void
 	 */
-	public function execQuery($sql, $paramArr = [], $pushPop = false): void
-	{
+	public function execQuery(
+		$sql,
+		$paramArr = [],
+		$pushPop = false
+	): void {
 		$this->connect();
 
 		try {
@@ -290,7 +293,10 @@ class MySql implements SqlInterface
 				$pushPop
 				&& $this->stmt
 			) {
-				array_push($this->stmtArr, $this->stmt);
+				array_push(
+					$this->stmtArr,
+					$this->stmt
+				);
 			}
 			$this->stmt = $this->mysqlServerObj->prepare(
 				query: $sql,
@@ -298,8 +304,8 @@ class MySql implements SqlInterface
 			);
 			if ($this->stmt) {
 				if (
-					is_array($paramArr)
-					&& count($paramArr) > 0
+					is_array(value: $paramArr)
+					&& count(value: $paramArr) > 0
 				) {
 					$this->stmt->execute($paramArr);
 				} else {

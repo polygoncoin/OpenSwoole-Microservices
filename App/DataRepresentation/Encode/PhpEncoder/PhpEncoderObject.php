@@ -41,8 +41,10 @@ class PhpEncoderObject
 	 * @param string      $mode      Values can be one among Array/object
 	 * @param null|string $objectKey Tag
 	 */
-	public function __construct($mode, $objectKey = '')
-	{
+	public function __construct(
+		$mode,
+		$objectKey = ''
+	) {
 		$this->mode = $mode;
 		$this->objectKey = $objectKey;
 	}

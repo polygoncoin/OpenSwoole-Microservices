@@ -64,7 +64,11 @@ interface CacheServerInterface
 	 *
 	 * @return mixed
 	 */
-	public function cacheSet($cacheKey, $cacheValue, $cacheExpire = null): mixed;
+	public function cacheSet(
+		$cacheKey,
+		$cacheValue,
+		$cacheExpire = null
+	): mixed;
 
 	/**
 	 * Increment cache key with offset
@@ -74,7 +78,10 @@ interface CacheServerInterface
 	 *
 	 * @return mixed
 	 */
-	public function cacheIncrement($cacheKey, $cacheOffset = 1): mixed;
+	public function cacheIncrement(
+		$cacheKey,
+		$cacheOffset = 1
+	): mixed;
 
 	/**
 	 * Delete cache key

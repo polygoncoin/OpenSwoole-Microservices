@@ -46,17 +46,17 @@ CREATE TABLE `customer` (
     `enableUploadRequest` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
     `enableQueryCacheForPublic` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
     `enableQueryCacheForPrivate` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `cronRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
-    `customRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
-    `dropboxRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
-    `explainRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
-    `exportRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
-    `importSampleRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
-    `importRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
-    `reloadRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
-    `routesRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
-    `thirdPatyRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
-    `uploadRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
+    `cronRestrictedCidr` VARCHAR(250) DEFAULT NULL,
+    `customRestrictedCidr` VARCHAR(250) DEFAULT NULL,
+    `dropboxRestrictedCidr` VARCHAR(250) DEFAULT NULL,
+    `explainRestrictedCidr` VARCHAR(250) DEFAULT NULL,
+    `exportRestrictedCidr` VARCHAR(250) DEFAULT NULL,
+    `importSampleRestrictedCidr` VARCHAR(250) DEFAULT NULL,
+    `importRestrictedCidr` VARCHAR(250) DEFAULT NULL,
+    `reloadRestrictedCidr` VARCHAR(250) DEFAULT NULL,
+    `routesRestrictedCidr` VARCHAR(250) DEFAULT NULL,
+    `thirdPatyRestrictedCidr` VARCHAR(250) DEFAULT NULL,
+    `uploadRestrictedCidr` VARCHAR(250) DEFAULT NULL,
     `rateLimitIPMaxRequest` INT DEFAULT NULL, -- ; Max request allowed per IP
     `rateLimitIPMaxRequestWindow` INT DEFAULT NULL, -- ; Window for Max request allowed per IP
     `rateLimitMaxUserPerIp` INT DEFAULT NULL, -- ; Max User allowed per IP
@@ -115,7 +115,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 INSERT INTO `customer` VALUES
-(1,'Customer 001','group','user','0.0.0.0/0',NULL,NULL,'api.customer001.localhost','web.customer001.localhost','customer001.localhost','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0','0.0.0.0/0',600,300,600,300,600,300,600,300,'cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cCacheServerType001','cCacheServerHostname001','cCacheServerPort001','cCacheServerUsername001','cCacheServerPassword001','cCacheServerDatabase001','cCacheServerTable001','fileSessionMode',NULL,NULL,NULL,NULL,NULL,NULL,'queryCacheServerType','queryCacheServerHostname','queryCacheServerPort','queryCacheServerUsername','queryCacheServerPassword','queryCacheServerDatabase','queryCacheServerTable','',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes', 'No','No');
+(1,'Customer 001','group','user',NULL,NULL,NULL,'api.customer001.localhost','web.customer001.localhost','customer001.localhost','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,600,300,600,300,600,300,600,300,'cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cCacheServerType001','cCacheServerHostname001','cCacheServerPort001','cCacheServerUsername001','cCacheServerPassword001','cCacheServerDatabase001','cCacheServerTable001','fileSessionMode',NULL,NULL,NULL,NULL,NULL,NULL,'queryCacheServerType','queryCacheServerHostname','queryCacheServerPort','queryCacheServerUsername','queryCacheServerPassword','queryCacheServerDatabase','queryCacheServerTable','',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes', 'No','No');
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `request`;

@@ -47,8 +47,10 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return void
 	 */
-	public function init($sessionSavePath, $sessionName): void
-	{
+	public function init(
+		$sessionSavePath,
+		$sessionName
+	): void {
 		$this->connect();
 	}
 
@@ -79,8 +81,10 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionId, $sessionData): bool|int
-	{
+	public function setSession(
+		$sessionId,
+		$sessionData
+	): bool|int {
 		try {
 			if (
 				$this->memcachedServerObj->set(
@@ -105,8 +109,10 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionId, $sessionData): bool|int
-	{
+	public function updateSession(
+		$sessionId,
+		$sessionData
+	): bool|int {
 		return $this->setSession(
 			sessionId: $sessionId,
 			sessionData: $sessionData
@@ -121,10 +127,17 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionId, $sessionData): bool
-	{
+	public function touchSession(
+		$sessionId,
+		$sessionData
+	): bool {
 		try {
-			if ($this->memcachedServerObj->touch($sessionId, $this->sessionMaxLifetime)) {
+			if (
+				$this->memcachedServerObj->touch(
+					$sessionId,
+					$this->sessionMaxLifetime
+				)
+			) {
 				return true;
 			}
 		} catch (\Exception $e) {

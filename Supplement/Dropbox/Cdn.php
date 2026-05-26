@@ -154,7 +154,11 @@ class Cdn implements DropboxInterface
 		$this->mimeType = mime_content_type($this->fileLocation);
 
 		switch (true) {
-			case in_array($this->mimeType, $this->supportedVideoMimeArr):
+			case in_array(
+				needle: $this->mimeType,
+				haystack: $this->supportedVideoMimeArr,
+				strict: true
+			):
 				// Serve Video
 				$videoStream = new StreamVideo(httpReqData: $this->http->httpReqData);
 				if (

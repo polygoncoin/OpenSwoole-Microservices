@@ -125,7 +125,13 @@ class DatabaseServer
 			return;
 		}
 
-		if (!in_array($this->dbServerType, ['MySql', 'PostgreSql'])) {
+		if (
+			!in_array(
+				needle: $this->dbServerType,
+				haystack: ['MySql', 'PostgreSql'],
+				strict: true
+			)
+		) {
 			throw new \Exception(
 				message: "Invalid Database type '{$this->dbServerType}'",
 				code: HttpStatus::$InternalServerError
@@ -239,8 +245,11 @@ class DatabaseServer
 	 *
 	 * @return void
 	 */
-	public function execQuery($sql, $paramArr = [], $pushPop = false): void
-	{
+	public function execQuery(
+		$sql,
+		$paramArr = [],
+		$pushPop = false
+	): void {
 		$this->connectDb();
 
 		try {

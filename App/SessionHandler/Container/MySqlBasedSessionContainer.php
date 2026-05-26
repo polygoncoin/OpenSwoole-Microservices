@@ -51,8 +51,10 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return void
 	 */
-	public function init($sessionSavePath, $sessionName): void
-	{
+	public function init(
+		$sessionSavePath,
+		$sessionName
+	): void {
 		$this->connect();
 	}
 
@@ -91,8 +93,10 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionId, $sessionData): bool|int
-	{
+	public function setSession(
+		$sessionId,
+		$sessionData
+	): bool|int {
 		$sql = "
 			INSERT INTO `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
 			SET
@@ -117,8 +121,10 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionId, $sessionData): bool|int
-	{
+	public function updateSession(
+		$sessionId,
+		$sessionData
+	): bool|int {
 		$sql = "
 			UPDATE `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
 			SET
@@ -144,8 +150,10 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionId, $sessionData): bool
-	{
+	public function touchSession(
+		$sessionId,
+		$sessionData
+	): bool {
 		$sql = "
 			UPDATE `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
 			SET `lastAccessed` = :lastAccessed
@@ -236,8 +244,10 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return mixed
 	 */
-	private function getSql($sql, $paramArr = []): mixed
-	{
+	private function getSql(
+		$sql,
+		$paramArr = []
+	): mixed {
 		$row = [];
 		try {
 			$stmt = $this->mySqlServerObj->prepare(
@@ -271,8 +281,10 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool
 	 */
-	private function execSql($sql, $paramArr = []): bool
-	{
+	private function execSql(
+		$sql,
+		$paramArr = []
+	): bool {
 		try {
 			$stmt = $this->mySqlServerObj->prepare(
 				query: $sql,

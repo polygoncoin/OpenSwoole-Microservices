@@ -167,15 +167,27 @@ class Web
 				length: $headerSize
 			)
 		);
-		$responseBody = substr(string: $curlResponse, offset: $headerSize);
+		$responseBody = substr(
+			string: $curlResponse,
+			offset: $headerSize
+		);
 
 		$queryString = empty($queryString) ? '' : '&' . $queryString;
 
 		$requestPayload = $payload;
 		if (!empty($payload)) {
-			$startArrayPos = strpos($payload, '[');
-			$startObjectPos = strpos($payload, '{');
-			$startXmlPos = strpos($payload, '<');
+			$startArrayPos = strpos(
+				haystack: $payload,
+				needle: '['
+			);
+			$startObjectPos = strpos(
+				haystack: $payload,
+				needle: '{'
+			);
+			$startXmlPos = strpos(
+				haystack: $payload,
+				needle: '<'
+			);
 			if (
 				$startArrayPos === 0
 				|| $startObjectPos === 0
@@ -190,7 +202,7 @@ class Web
 				);
 			}
 		}
-		
+
 		$return['HttpRequest'] = [
 			'URL' => htmlspecialchars(string: "{$homeURL}?route={$route}{$queryString}"),
 			'Method' => $method,
@@ -230,11 +242,20 @@ class Web
 					needle: 'application/json;'
 				) !== false
 				&& (
-					(strpos(haystack: $responseBody, needle: '[') === 0)
-					|| (strpos(haystack: $responseBody, needle: '{') === 0)
+					strpos(
+						haystack: $responseBody,
+						needle: '['
+					) === 0
+					|| strpos(
+						haystack: $responseBody,
+						needle: '{'
+					) === 0
 				)
 			) {
-				$response = json_decode(json: $responseBody, associative: true);
+				$response = json_decode(
+					json: $responseBody,
+					associative: true
+				);
 			} else {
 				$response = $responseBody;
 			}
@@ -245,11 +266,20 @@ class Web
 
 		if (
 			isset($return['HttpResponse']['ResponseBody'])
-			&& !is_array($return['HttpResponse']['ResponseBody'])
+			&& !is_array(value: $return['HttpResponse']['ResponseBody'])
 		) {
-			$startArrayPos = strpos($return['HttpResponse']['ResponseBody'], '[');
-			$startObjectPos = strpos($return['HttpResponse']['ResponseBody'], '{');
-			$startXmlPos = strpos($return['HttpResponse']['ResponseBody'], '<');
+			$startArrayPos = strpos(
+				haystack: $return['HttpResponse']['ResponseBody'],
+				needle: '['
+			);
+			$startObjectPos = strpos(
+				haystack: $return['HttpResponse']['ResponseBody'],
+				needle: '{'
+			);
+			$startXmlPos = strpos(
+				haystack: $return['HttpResponse']['ResponseBody'],
+				needle: '<'
+			);
 			if (
 				$startArrayPos === 0
 				|| $startObjectPos === 0
@@ -287,7 +317,10 @@ class Web
 			if (isset($h[1])) {
 				if (!isset($headerArr[$h[0]])) {
 					$headerArr[$h[0]] = trim(string: $h[1]);
-				} elseif (is_array(value: $headerArr[$h[0]])) {
+				} elseif (
+					isset($headerArr[$h[0]])
+					&& is_array(value: $headerArr[$h[0]])
+				) {
 					$headerArr[$h[0]] = array_merge(
 						$headerArr[$h[0]],
 						[trim(string: $h[1])]
@@ -301,7 +334,13 @@ class Web
 
 				$headerName = $h[0];
 			} else {
-				if (substr(string: $h[0], offset: 0, length: 1) == "\t") {
+				if (
+					substr(
+						string: $h[0],
+						offset: 0,
+						length: 1
+					) == "\t"
+				) {
 					$headerArr[$headerName] .= "\r\n\t" . trim(string: $h[0]);
 				} elseif (!$headerName) {
 					$headerArr[0] = trim(string: $h[0]);
@@ -322,8 +361,11 @@ class Web
 	 * @return array
 	 * @throws \Exception
 	 */
-	public static function genXmlPayload(&$xmlParamArr, &$payload, $rowTagStartFlag = false): void
-	{
+	public static function genXmlPayload(
+		&$xmlParamArr,
+		&$payload,
+		$rowTagStartFlag = false
+	): void {
 		if (empty($xmlParamArr)) {
 			return;
 		}

@@ -84,8 +84,10 @@ class JsonDecodeObject
 	 * @param string $mode      Values can be one among Array
 	 * @param string $objectKey Key for object
 	 */
-	public function __construct($mode, $objectKey = null)
-	{
+	public function __construct(
+		$mode,
+		$objectKey = null
+	) {
 		$this->mode = $mode;
 
 		$objectKey = $objectKey !== null ? trim(string: $objectKey) : $objectKey;

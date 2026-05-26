@@ -60,8 +60,10 @@ class PhpEncode implements DataEncodeInterface
 	 * @param resource $tempStream Temp stream Temporary stream
 	 * @param bool     $header     Append XML header flag
 	 */
-	public function __construct(&$tempStream, $header = true)
-	{
+	public function __construct(
+		&$tempStream,
+		$header = true
+	) {
 	}
 
 	/**
@@ -86,13 +88,13 @@ class PhpEncode implements DataEncodeInterface
 	{
 		if ($this->currentObject) {
 			if ($this->currentObject->mode === 'Object') {
-				if (is_array($data)) {
+				if (is_array(value: $data)) {
 					foreach ($data as $k => $v) {
 						$this->currentObject->returnArray[$k] = $this->escape(data: $v);
 					}
 				}
 			} else {
-				if (is_array($data)) {
+				if (is_array(value: $data)) {
 					foreach ($data as $v) {
 						$this->currentObject->returnArray[] = $this->escape(data: $v);
 					}
@@ -125,7 +127,7 @@ class PhpEncode implements DataEncodeInterface
 	private function escape(&$data)
 	{
 		if ($data !== null) {
-			if (is_array($data)) {
+			if (is_array(value: $data)) {
 				foreach ($data as $k => $v) {
 					$data[$k] = $this->escape($v);
 				}
@@ -195,8 +197,10 @@ class PhpEncode implements DataEncodeInterface
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function addKeyData($objectKey, $data): void
-	{
+	public function addKeyData(
+		$objectKey,
+		$data
+	): void {
 		if ($this->currentObject->mode !== 'Object') {
 			throw new \Exception(
 				message: 'Mode should be Object',
@@ -216,7 +220,10 @@ class PhpEncode implements DataEncodeInterface
 	public function startArray($objectKey = null): void
 	{
 		if ($this->currentObject) {
-			array_push($this->objectArr, $this->currentObject);
+			array_push(
+				$this->objectArr,
+				$this->currentObject
+			);
 		}
 		$this->currentObject = new PhpEncoderObject(mode: 'Array');
 		if ($objectKey !== null) {
@@ -266,7 +273,10 @@ class PhpEncode implements DataEncodeInterface
 					code: HttpStatus::$InternalServerError
 				);
 			}
-			array_push($this->objectArr, $this->currentObject);
+			array_push(
+				$this->objectArr,
+				$this->currentObject
+			);
 		}
 		$this->currentObject = new PhpEncoderObject(mode: 'Object');
 		if ($objectKey !== null) {

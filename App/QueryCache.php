@@ -87,8 +87,10 @@ class QueryCache
 	 *
 	 * @return mixed
 	 */
-	public function queryCachePrepend($customerId, $queryCacheKey): mixed
-	{
+	public function queryCachePrepend(
+		$customerId,
+		$queryCacheKey
+	): mixed {
         $this->connectCustomerQueryCache();
 
 		if (
@@ -109,10 +111,12 @@ class QueryCache
 	 *
 	 * @return mixed
 	 */
-	public function queryCacheGet($customerId, $queryCacheKey): mixed
-	{
+	public function queryCacheGet(
+		$customerId,
+		$queryCacheKey
+	): mixed {
         $this->connectCustomerQueryCache();
-        
+
 		if (strlen($queryCacheKey) === 0) {
 			return false;
 		}
@@ -138,10 +142,12 @@ class QueryCache
 	 *
 	 * @return mixed
 	 */
-	public function queryCacheIncrement($customerId, $queryCacheKey): mixed
-	{
+	public function queryCacheIncrement(
+		$customerId,
+		$queryCacheKey
+	): mixed {
         $this->connectCustomerQueryCache();
-        
+
 		if (strlen($queryCacheKey) === 0) {
 			return false;
 		}
@@ -164,10 +170,13 @@ class QueryCache
 	 *
 	 * @return mixed
 	 */
-	public function queryCacheSet($customerId, $queryCacheKey, &$queryCacheValue): mixed
-	{
+	public function queryCacheSet(
+		$customerId,
+		$queryCacheKey,
+		&$queryCacheValue
+	): mixed {
         $this->connectCustomerQueryCache();
-        
+
 		if (strlen($queryCacheKey) === 0) {
 			return false;
 		}
@@ -196,10 +205,12 @@ class QueryCache
 	 *
 	 * @return mixed
 	 */
-	public function queryCacheDelete($customerId, $queryCacheKey): mixed
-	{
+	public function queryCacheDelete(
+		$customerId,
+		$queryCacheKey
+	): mixed {
         $this->connectCustomerQueryCache();
-        
+
 		if (strlen($queryCacheKey) === 0) {
 			return false;
 		}

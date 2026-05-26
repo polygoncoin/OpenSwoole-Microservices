@@ -87,7 +87,11 @@ interface DatabaseServerInterface
 	 *
 	 * @return void
 	 */
-	public function execQuery($sql, $paramArr = [], $pushPop = false): void;
+	public function execQuery(
+		$sql,
+		$paramArr = [],
+		$pushPop = false
+	): void;
 
 	/**
 	 * Fetch single row from statement

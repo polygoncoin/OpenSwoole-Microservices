@@ -91,8 +91,11 @@ class CustomerValidator implements ValidatorInterface
 	 *
 	 * @return int 0/1
 	 */
-	private function getPrimaryCount(&$table, $primary, &$id): int
-	{
+	private function getPrimaryCount(
+		&$table,
+		$primary,
+		&$id
+	): int {
 		$dbServerDatabase = $this->http->req->customerDbObj->dbServerDatabase;
 		$sql = "
 			SELECT count(1) as `count`

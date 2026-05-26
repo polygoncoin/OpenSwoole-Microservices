@@ -116,11 +116,11 @@ class MySqlDatabase implements DatabaseServerInterface
 		}
 
         $this->sqlServerObj = new DB_MySql(
-            $this->dbServerHostname,
-            $this->dbServerPort,
-            $this->dbServerUsername,
-            $this->dbServerPassword,
-            $this->dbServerDatabase
+            dbServerHostname: $this->dbServerHostname,
+            dbServerPort: $this->dbServerPort,
+            dbServerUsername: $this->dbServerUsername,
+            dbServerPassword: $this->dbServerPassword,
+            dbServerDatabase: $this->dbServerDatabase
         );
 	}
 
@@ -219,8 +219,11 @@ class MySqlDatabase implements DatabaseServerInterface
 	 *
 	 * @return void
 	 */
-	public function execQuery($sql, $paramArr = [], $pushPop = false): void
-	{
+	public function execQuery(
+		$sql,
+		$paramArr = [],
+		$pushPop = false
+	): void {
 		$this->connectDb();
 
 		try {

@@ -124,7 +124,8 @@ $server->on(
 					'/open-test',
 					'/open-test-xml',
 					'/supp-test'
-				]
+				],
+				strict: true
 			)
 		) {
 			$testObj = new Test($httpReqData);
@@ -160,7 +161,10 @@ $server->on(
 				$response->status($responseCode);
 
 				foreach ($responseHeaderArr as $headerName => $headerValue) {
-					$response->header($headerName, $headerValue);
+					$response->header(
+						$headerName,
+						$headerValue
+					);
 				}
 				$response->end($responseContent);
 			}

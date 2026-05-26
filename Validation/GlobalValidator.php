@@ -114,7 +114,10 @@ class GlobalValidator implements ValidatorInterface
 			FROM `{$table}`
 			WHERE `{$column}` = ? AND`{$primary}` = ?
 		";
-		$paramArr = [$columnValue, $id];
+		$paramArr = [
+			$columnValue,
+			$id
+		];
 		$this->http->req->customerDbObj->execQuery(sql: $sql, paramArr: $paramArr);
 		$row = $this->http->req->customerDbObj->fetch();
 		$this->http->req->customerDbObj->closeCursor();

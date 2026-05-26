@@ -192,8 +192,10 @@ class DataEncode
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function addKeyData($objectKey, $data): void
-	{
+	public function addKeyData(
+		$objectKey,
+		$data
+	): void {
 		$this->dataEncoder->addKeyData(objectKey: $objectKey, data: $data);
 	}
 

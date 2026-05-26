@@ -46,8 +46,10 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return void
 	 */
-	public function init($sessionSavePath, $sessionName): void
-	{
+	public function init(
+		$sessionSavePath,
+		$sessionName
+	): void {
 		if (!is_dir(filename: $sessionSavePath)) {
 			mkdir(directory: $sessionSavePath, permissions: 0755, recursive: true);
 		}
@@ -86,8 +88,10 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionId, $sessionData): bool|int
-	{
+	public function setSession(
+		$sessionId,
+		$sessionData
+	): bool|int {
 		$filepath = $this->sessionSavePath . '/'
 			. $this->sessionFilePrefix . $sessionId;
 		if (!file_exists(filename: $filepath)) {
@@ -107,8 +111,10 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionId, $sessionData): bool|int
-	{
+	public function updateSession(
+		$sessionId,
+		$sessionData
+	): bool|int {
 		return $this->setSession(sessionId: $sessionId, sessionData: $sessionData);
 	}
 
@@ -120,8 +126,10 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionId, $sessionData): bool
-	{
+	public function touchSession(
+		$sessionId,
+		$sessionData
+	): bool {
 		$filepath = $this->sessionSavePath . '/'
 			. $this->sessionFilePrefix . $sessionId;
 		return touch(filename: $filepath);

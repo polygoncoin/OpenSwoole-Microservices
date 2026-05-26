@@ -29,17 +29,16 @@ $res = Web::trigger(
 	payload: json_encode(value: $payload)
 );
 
-
 $token = null;
 $sessionCookie = null;
 
 if (isset($res['HttpResponse']['Headers']['Set-Cookie'])) {
 	$sessionCookie = substr(
-		$res['HttpResponse']['Headers']['Set-Cookie'],
-		0,
-		strpos(
-			$res['HttpResponse']['Headers']['Set-Cookie'],
-			'; '
+		string: $res['HttpResponse']['Headers']['Set-Cookie'],
+		offset: 0,
+		length: strpos(
+			haystack: $res['HttpResponse']['Headers']['Set-Cookie'],
+			needle: '; '
 		)
 	);
 } elseif (isset($res['HttpResponse']['ResponseBody']['Results']['Token'])) {

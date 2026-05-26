@@ -130,8 +130,8 @@ class Microservices
 					$this->startData();
 					$return = $api->process();
 					if (
-						is_array($return)
-						&& count($return) === 3
+						is_array(value: $return)
+						&& count(value: $return) === 3
 					) {
 						return $return;
 					}

@@ -211,8 +211,10 @@ class DbCommonFunction
 	 * @return DatabaseServer
 	 * @throws \Exception
 	 */
-	public static function connectCustomerDb(&$customerData, $fetchFrom): DatabaseServer
-	{
+	public static function connectCustomerDb(
+		&$customerData,
+		$fetchFrom
+	): DatabaseServer {
 		// Set Database credentials
 		switch ($fetchFrom) {
 			case 'Master':

@@ -37,7 +37,10 @@ interface SessionContainerInterface
 	 *
 	 * @return void
 	 */
-	public function init($sessionSavePath, $sessionName): void;
+	public function init(
+		$sessionSavePath,
+		$sessionName
+	): void;
 
 	/**
 	 * For Custom Session Handler - Validate session id
@@ -56,7 +59,10 @@ interface SessionContainerInterface
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionId, $sessionData): bool|int;
+	public function setSession(
+		$sessionId,
+		$sessionData
+	): bool|int;
 
 	/**
 	 * For Custom Session Handler - Update session data
@@ -66,7 +72,10 @@ interface SessionContainerInterface
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionId, $sessionData): bool|int;
+	public function updateSession(
+		$sessionId,
+		$sessionData
+	): bool|int;
 
 	/**
 	 * For Custom Session Handler - Update session timestamp
@@ -76,7 +85,10 @@ interface SessionContainerInterface
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionId, $sessionData): bool;
+	public function touchSession(
+		$sessionId,
+		$sessionData
+	): bool;
 
 	/**
 	 * For Custom Session Handler - Cleanup old sessions

@@ -82,8 +82,10 @@ class CacheServerKey
 	 *
 	 * @return null|string
 	 */
-	public static function customerUsername($customerId, $username): null|string
-	{
+	public static function customerUsername(
+		$customerId,
+		$username
+	): null|string {
 		if (
 			strlen($customerId) === 0
 			|| strlen($username) === 0
@@ -101,8 +103,10 @@ class CacheServerKey
 	 *
 	 * @return null|string
 	 */
-	public static function customerGroup($customerId, $groupId): null|string
-	{
+	public static function customerGroup(
+		$customerId,
+		$groupId
+	): null|string {
 		if (
 			strlen($customerId) === 0
 			|| strlen($groupId) === 0
@@ -135,8 +139,10 @@ class CacheServerKey
 	 *
 	 * @return null|string
 	 */
-	public static function customerGroupCidr($customerId, $groupId): null|string
-	{
+	public static function customerGroupCidr(
+		$customerId,
+		$groupId
+	): null|string {
 		if (
 			strlen($customerId) === 0
 			|| strlen($groupId) === 0
@@ -154,8 +160,10 @@ class CacheServerKey
 	 *
 	 * @return null|string
 	 */
-	public static function customerUserCidr($customerId, $userId): null|string
-	{
+	public static function customerUserCidr(
+		$customerId,
+		$userId
+	): null|string {
 		if (
 			strlen($customerId) === 0
 			|| strlen($userId) === 0
@@ -188,8 +196,10 @@ class CacheServerKey
 	 *
 	 * @return null|string
 	 */
-	public static function customerUserToken($customerId, $userId): null|string
-	{
+	public static function customerUserToken(
+		$customerId,
+		$userId
+	): null|string {
 		if (
 			strlen($customerId) === 0
 			|| strlen($userId) === 0
@@ -207,8 +217,10 @@ class CacheServerKey
 	 *
 	 * @return null|string
 	 */
-	public static function customerUserSessionId($customerId, $userId): null|string
-	{
+	public static function customerUserSessionId(
+		$customerId,
+		$userId
+	): null|string {
 		if (
 			strlen($customerId) === 0
 			|| strlen($userId) === 0
@@ -226,8 +238,10 @@ class CacheServerKey
 	 *
 	 * @return null|string
 	 */
-	public static function customerUserConcurrency($customerId, $userId): null|string
-	{
+	public static function customerUserConcurrency(
+		$customerId,
+		$userId
+	): null|string {
 		if (
 			strlen($customerId) === 0
 			|| strlen($userId) === 0
@@ -245,8 +259,10 @@ class CacheServerKey
 	 *
 	 * @return null|string
 	 */
-	public static function customerUserReferrerLag($customerId, $userId): null|string
-	{
+	public static function customerUserReferrerLag(
+		$customerId,
+		$userId
+	): null|string {
 		if (
 			strlen($customerId) === 0
 			|| strlen($userId) === 0

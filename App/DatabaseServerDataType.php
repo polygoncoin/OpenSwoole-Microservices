@@ -477,14 +477,23 @@ class DatabaseServerDataType
 		if (
 			$returnFlag
 			&& isset($dataType['enumValues'])
-			&& in_array(needle: $data, haystack: $dataType['enumValues'])
+			&& in_array(
+				needle: $data,
+				haystack: $dataType['enumValues'],
+				strict: true
+			)
 		) {
 			$returnFlag = false;
 		}
 		if (
 			$returnFlag
 			&& isset($dataType['setValues'])
-			&& empty(array_diff([$data], $dataType['setValues']))
+			&& empty(
+				array_diff(
+					[$data],
+					$dataType['setValues']
+				)
+			)
 		) {
 			$returnFlag = false;
 		}

@@ -60,8 +60,10 @@ class XmlEncode implements DataEncodeInterface
 	 * @param resource $tempStream Temp stream Temporary stream
 	 * @param bool     $header     Append XML header flag
 	 */
-	public function __construct(&$tempStream, $header = true)
-	{
+	public function __construct(
+		&$tempStream,
+		$header = true
+	) {
 		$this->tempStream = &$tempStream;
 		if ($header) {
 			$xml = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -200,8 +202,10 @@ class XmlEncode implements DataEncodeInterface
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function addKeyData($objectKey, $data): void
-	{
+	public function addKeyData(
+		$objectKey,
+		$data
+	): void {
 		$this->startObject(objectKey: $objectKey);
 		$this->encode(data: $data);
 		$this->endObject();
@@ -220,7 +224,10 @@ class XmlEncode implements DataEncodeInterface
 			$objectKey = 'Rows';
 		}
 		if ($this->currentObject) {
-			array_push($this->objectArr, $this->currentObject);
+			array_push(
+				$this->objectArr,
+				$this->currentObject
+			);
 		}
 		$this->currentObject = new XmlEncoderObject(mode: 'Array', objectKey: $objectKey);
 		$this->write(data: "<{$this->currentObject->objectKey}>");
@@ -263,7 +270,10 @@ class XmlEncode implements DataEncodeInterface
 					code: HttpStatus::$InternalServerError
 				);
 			}
-			array_push($this->objectArr, $this->currentObject);
+			array_push(
+				$this->objectArr,
+				$this->currentObject
+			);
 		}
 		$this->currentObject = new XmlEncoderObject(mode: 'Object', objectKey: $objectKey);
 		$this->write(data: "<{$this->currentObject->objectKey}>");

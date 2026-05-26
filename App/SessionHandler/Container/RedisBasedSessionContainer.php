@@ -50,8 +50,10 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return void
 	 */
-	public function init($sessionSavePath, $sessionName): void
-	{
+	public function init(
+		$sessionSavePath,
+		$sessionName
+	): void {
 		$this->connect();
 	}
 
@@ -85,8 +87,10 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool|int
 	 */
-	public function setSession($sessionId, $sessionData): bool|int
-	{
+	public function setSession(
+		$sessionId,
+		$sessionData
+	): bool|int {
 		try {
 			if (
 				$this->redisServerObj->set(
@@ -111,8 +115,10 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool|int
 	 */
-	public function updateSession($sessionId, $sessionData): bool|int
-	{
+	public function updateSession(
+		$sessionId,
+		$sessionData
+	): bool|int {
 		return $this->setSession(
 			sessionId: $sessionId,
 			sessionData: $sessionData
@@ -127,10 +133,17 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	 *
 	 * @return bool
 	 */
-	public function touchSession($sessionId, $sessionData): bool
-	{
+	public function touchSession(
+		$sessionId,
+		$sessionData
+	): bool {
 		try {
-			if ($this->redisServerObj->expire($sessionId, $this->sessionMaxLifetime)) {
+			if (
+				$this->redisServerObj->expire(
+					$sessionId,
+					$this->sessionMaxLifetime
+				)
+			) {
 				return true;
 			}
 		} catch (\Exception $e) {
