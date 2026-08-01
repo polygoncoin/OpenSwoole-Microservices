@@ -3,7 +3,7 @@
 /**
  * UploadAPI
  * php version 8.3
- *
+ * 
  * @category  UploadAPI
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\Supplement\Upload;
 /**
  * UploadAPI Trait
  * php version 8.3
- *
+ * 
  * @category  UploadAPI_Trait
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -31,20 +31,34 @@ trait UploadTrait
 {
 	/**
 	 * Saves file as stream
-	 *
+	 * 
 	 * @param string $absFilePath Absolute file path
-	 *
+	 * 
 	 * @return bool
 	 */
-	private function saveFile($absFilePath): bool
-	{
-		$src = fopen(filename: "php://input", mode: "rb");
-		$dest = fopen(filename: $absFilePath, mode: 'wb');
+	private function saveFile(
+		$absFilePath
+	): bool {
+		$src = fopen(
+			filename: "php://input",
+			mode: "rb"
+		);
+		$dest = fopen(
+			filename: $absFilePath,
+			mode: 'wb'
+		);
 
-		stream_copy_to_stream(from: $src, to: $dest);
+		stream_copy_to_stream(
+			from: $src,
+			to: $dest
+		);
 
-		fclose(stream: $dest);
-		fclose(stream: $src);
+		fclose(
+			stream: $dest
+		);
+		fclose(
+			stream: $src
+		);
 
 		return true;
 	}

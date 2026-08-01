@@ -10,7 +10,7 @@ One can clean the URL by making the required changes in the web server .conf fil
 
 ## Pagination in GET request
 
-Requires **countQuery** SQL in the configuration for GET request
+Requires **countQuery** Sql in the configuration for GET request
 ```ini
 defaultPerpage=10
 maxResultsPerPage=1000
@@ -54,31 +54,31 @@ var payload = [
 
 ## HttpRequest Variables
 
-- **$session\['userData'\]** Session Data.
+- **$activeRequestData\['userData'\]** Session Data.
 This remains same for every request and contains key's like id, group\_id, customer\_id
 
-- **$session\['routeParamArr'\]** Data passed in URI.
-Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $session\['routeParamArr'\] will hold these dynamic values as below.
+- **$activeRequestData\['routeParamArray'\]** Data passed in URI.
+Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $activeRequestData\['routeParamArray'\] will hold these dynamic values as below.
 
-- **$session\['payload'\]** request data.
+- **$activeRequestData\['payload'\]** request data.
 For **GET** method, the **$\_GET** is the payload.
 
-- **$session\['__INSERT-IDs__'\]** Insert IDs Data as per configuration.
+- **$activeRequestData\['__INSERT-IDs__'\]** Insert IDs Data as per configuration.
 >For **POST/PUT/PATCH/DELETE** we perform both INSERT as well as UPDATE operation. The insertID contains the insert IDs of the executed INSERT queries.
 
-- **$session\['sqlResults'\]** Hierarchy data.
+- **$activeRequestData\['sqlResults'\]** Hierarchy data.
 >For **GET** method, one can use previous query results if configured to use hierarchy.
 
 ## Hierarchy Configs
 
 - Config/Sql/CustomerDB/GET/Category.php
->In this file one can confirm how previous select data is used recursively in subQuery select as indicated by useHierarchy flag.
+>In this file one can confirm how previous select data is used recursively in subQuery select as indicated by maintainHierarchy flag.
 
 ```PHP
 [
 	'column' => 'parent_id',
-	'fetchFrom' => 'sqlResults',
-	'fetchFromData' => 'return:id'
+	'activeRequestDataKey' => 'sqlResults',
+	'activeRequestDataKeySubKey' => 'return:id'
 ],
 ```
 
@@ -102,7 +102,7 @@ return [
 			'__INSERT-IDs__' => 'sub:id',
 		]
 	],
-	'useHierarchy' => true
+	'maintainHierarchy' => Constant::$TRUE
 ];
 ```
 

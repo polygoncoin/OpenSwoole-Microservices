@@ -3,7 +3,7 @@
 /**
  * Hook
  * php version 8.3
- *
+ * 
  * @category  Hook
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\Hook\HookInterface;
 /**
  * Executes configured hooks
  * php version 8.3
- *
+ * 
  * @category  Hook
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -36,54 +36,69 @@ class Hook
 {
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Hook object
-	 *
+	 * 
 	 * @var null|HookInterface
 	 */
-	private $hookObj = null;
+	private $hookObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
 	}
 
 	/**
 	 * Trigger Hook
-	 *
-	 * @param array $hookArr Hook configuration
-	 *
+	 * 
+	 * @param array $hookArray Hook configuration
+	 * 
 	 * @return bool
 	 */
-	public function triggerHook($hookArr): bool
-	{
-		if (is_array(value: $hookArr)) {
-			for ($i = 0, $iCount = count(value: $hookArr); $i < $iCount; $i++) {
-				$hookName = $hookArr[$i];
+	public function triggerHook(
+		$hookArray
+	): bool {
+		if (
+			is_array(
+				value: $hookArray
+			)
+		) {
+			$indexCount = count(
+				value: $hookArray
+			);
+			for ($index = 0; $index < $indexCount; $index++) {
+				$hookName = $hookArray[$index];
 
 				$hookFile = Constant::$WWW
 					. DIRECTORY_SEPARATOR . 'Hook'
 					. DIRECTORY_SEPARATOR . $hookName . '.php';
 
-				if (file_exists(filename: $hookFile)) {
+				if (
+					file_exists(
+						filename: $hookFile
+					)
+				) {
 					$hookClass = 'Microservices\\Hook\\' . $hookName;
-					$this->hookObj = new $hookClass(http: $this->http);
-					if ($this->hookObj->init()) {
-						$this->hookObj->process();
+					$this->hookObject = new $hookClass(
+						httpObject: $this->httpObject
+					);
+					if ($this->hookObject->init()) {
+						$this->hookObject->process();
 					}
 				} else {
 					throw new \Exception(
-						message: "Hook '{$hook}' missing",
+						message: "Hook '{$hookObject}' missing",
 						code: HttpStatus::$InternalServerError
 					);
 				}

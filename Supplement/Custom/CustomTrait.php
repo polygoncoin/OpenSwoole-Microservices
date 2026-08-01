@@ -3,7 +3,7 @@
 /**
  * CustomAPI
  * php version 8.3
- *
+ * 
  * @category  CustomAPI_Trait
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\Supplement\Custom;
 /**
  * CustomAPI Trait
  * php version 8.3
- *
+ * 
  * @category  CustomAPI_Trait
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>

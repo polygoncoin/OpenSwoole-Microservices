@@ -3,7 +3,7 @@
 /**
  * Test Case
  * php version 8.3
- *
+ * 
  * @category  Test Case
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,14 +15,16 @@
 
 namespace Microservices\TestCase;
 
+use Microservices\App\Constant;
+use Microservices\App\Env;
 use Microservices\App\Web;
 
-$headerArr = $defaultHeaderArr;
+$headerArray = $defaultHeaderArray;
 
 return Web::trigger(
 	homeURL: $homeURL,
-	method: 'GET',
+	httpRequestMethod: Constant::$GET,
 	route: '/reload',
-	header: $headerArr,
+	header: $headerArray,
 	payload: ''
 );

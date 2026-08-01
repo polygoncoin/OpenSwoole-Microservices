@@ -3,7 +3,7 @@
 /**
  * Common Function File
  * php version 8.3
- *
+ * 
  * @category  Common Function
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -16,6 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\CacheServerKey;
+use Microservices\App\Constant;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
@@ -24,7 +25,7 @@ use Microservices\App\Server\CacheServer\CacheServerInterface;
 /**
  * Common Function File
  * php version 8.3
- *
+ * 
  * @category  Common Function
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -36,48 +37,53 @@ use Microservices\App\Server\CacheServer\CacheServerInterface;
 class CommonFunction
 {
 	/**
-	 * Validate remote IP
-	 *
-	 * @param Http   $http
+	 * Check Feature is Enabled (Yes/No)
+	 * 
+	 * @param Http   $httpObject
 	 * @param string $feature
-	 *
+	 * 
 	 * @return bool
 	 */
 	public static function isEnabled(
-		&$http,
+		&$httpObject,
 		$feature
 	): bool {
-		if (!isset($http->req->s['customerData'][$feature])) {
+		if (!isset($httpObject->httpRequestObject->activeRequestData['customerData'][$feature])) {
 			throw new \Exception(
 				message: "Provided feature '{$feature}' not found",
 				code: HttpStatus::$InternalServerError
 			);
 		}
-		if (empty($http->req->s['customerData'][$feature])) {
+		if (empty($httpObject->httpRequestObject->activeRequestData['customerData'][$feature])) {
 			return false;
 		} else {
-			return ($http->req->s['customerData'][$feature] === 'Yes') ? true : false;
+			return ($httpObject->httpRequestObject->activeRequestData['customerData'][$feature] === Constant::$YES) ? Constant::$TRUE : Constant::$FALSE;
 		}
 	}
 
 	/**
 	 * Check Errors related to File Upload
-	 *
-	 * @param array $httpFileArr $httpReqData['files']
-	 *
+	 * 
+	 * @param array $httpFileArray $httpReqData['files']
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
-	public static function validateFileUpload($httpFileArr): void
-	{
-		if (count(value: $httpFileArr) > 1) {
+	public static function validateFileUpload(
+		$httpFileArray
+	): void {
+		if (
+			count(
+				value: $httpFileArray
+			) > 1
+		) {
 			throw new \Exception(
 				message: 'Supports only one file with each request',
 				code: HttpStatus::$BadRequest
 			);
 		}
 
-		foreach ($httpFileArr as $file => $detail) {
+		foreach ($httpFileArray as $file => $detail) {
 			if (isset($detail['error'])) {
 				switch ($detail['error']) {
 					case \UPLOAD_ERR_INI_SIZE: // value 1
@@ -108,7 +114,7 @@ class CommonFunction
 						);
 						break;
 
-					case \UPLOAD_ERR_NO_TMP_DIR: // value 6
+					case \UPLOAD_ERR_NO_TMP_DIRECTORY: // value 6
 						throw new \Exception(
 							message: 'No temporary directory is specified',
 							code: HttpStatus::$InternalServerError
@@ -135,13 +141,14 @@ class CommonFunction
 
 	/**
 	 * Returns start and end IP number for a given CIDR
-	 *
+	 * 
 	 * @param string $cidrString IP address range in CIDR notation for check
-	 *
+	 * 
 	 * @return array
 	 */
-	public static function cidrStringIpNumberRange($cidrString): array
-	{
+	public static function cidrStringIpNumberRange(
+		$cidrString
+	): array {
 		$response = [];
 
 		if (empty($cidrString)) {
@@ -173,10 +180,18 @@ class CommonFunction
 			) {
 				[$cidrIp, $bits] = explode(
 					separator: '/',
-					string: str_replace(search: ' ', replace: '', subject: $cidr)
+					string: str_replace(
+						search: ' ',
+						replace: '',
+						subject: $cidr
+					)
 				);
 				$binCidrIpStr = str_pad(
-					string: decbin(num: ip2long(ip: $cidrIp)),
+					string: decbin(
+						num: ip2long(
+							ip: $cidrIp
+						)
+					),
 					length: 32,
 					pad_string: 0,
 					pad_type: STR_PAD_LEFT
@@ -193,13 +208,20 @@ class CommonFunction
 						pad_type: STR_PAD_RIGHT
 					)
 				);
-				$endIpNumber = $startIpNumber + pow(num: 2, exponent: $bits) - 1;
+				$endIpNumber = $startIpNumber + pow(
+					num: 2,
+					exponent: $bits
+				) - 1;
 				$response[] = [
 					'start' => $startIpNumber,
 					'end' => $endIpNumber
 				];
 			} else {
-				if ($ipNumber = ip2long(ip: $cidr)) {
+				if (
+					$ipNumber = ip2long(
+						ip: $cidr
+					)
+				) {
 					$response[] = [
 						'start' => $ipNumber,
 						'end' => $ipNumber
@@ -213,30 +235,34 @@ class CommonFunction
 
 	/**
 	 * Check IP with CIDR based on cache key containing start and end IP number
-	 *
-	 * @param CacheServerInterface $cacheObj     Cache Server object
+	 * 
+	 * @param CacheServerInterface $cacheObject  Cache Server object
 	 * @param string               $ip           Request Ip
 	 * @param string               $cidrCacheKey Cache Key(s)
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
 	public static function checkCacheCidr(
-		$cacheObj,
+		$cacheObject,
 		$ip,
 		$cidrCacheKey
 	): void {
-		if (!$cacheObj->cacheExist(cacheKey: $cidrCacheKey)) {
+		if (
+			!$cacheObject->cacheExist(
+				cacheKey: $cidrCacheKey
+			)
+		) {
 			return;
 		}
 
-		$cidrIpNumberRangeArr = json_decode(
-			json: $cacheObj->cacheGet(
-				cacheKey: $cidrCacheKey
-			),
-			associative: true
+		$cidrIpNumberRangeArray = $cacheObject->cacheGet(
+			cacheKey: $cidrCacheKey
 		);
-		$isValidIp = self::belongsToCidrIpNumberRange(ip: $ip, cidrIpNumberRangeArr: $cidrIpNumberRangeArr);
+		$isValidIp = self::belongsToCidrIpNumberRange(
+			ip: $ip,
+			cidrIpNumberRangeArray: $cidrIpNumberRangeArray
+		);
 		if (!$isValidIp) {
 			throw new \Exception(
 				message: 'IP not supported',
@@ -247,10 +273,10 @@ class CommonFunction
 
 	/**
 	 * Check IP with CIDR
-	 *
+	 * 
 	 * @param string $ip         Request Ip
 	 * @param string $cidrString CIDRs
-	 *
+	 * 
 	 * @return null|bool
 	 * @throws \Exception
 	 */
@@ -259,9 +285,18 @@ class CommonFunction
 		$cidrString
 	): null|bool {
 		$isValidIp = true;
-		$cidrIpNumberRangeArr = self::cidrStringIpNumberRange(cidrString: $cidrString);
-		if (count(value: $cidrIpNumberRangeArr) > 0) {
-			$isValidIp = self::belongsToCidrIpNumberRange(ip: $ip, cidrIpNumberRangeArr: $cidrIpNumberRangeArr);
+		$cidrIpNumberRangeArray = self::cidrStringIpNumberRange(
+			cidrString: $cidrString
+		);
+		if (
+			count(
+				value: $cidrIpNumberRangeArray
+			) > 0
+		) {
+			$isValidIp = self::belongsToCidrIpNumberRange(
+				ip: $ip,
+				cidrIpNumberRangeArray: $cidrIpNumberRangeArray
+			);
 			if (!$isValidIp) {
 				throw new \Exception(
 					message: 'IP not supported',
@@ -275,24 +310,30 @@ class CommonFunction
 
 	/**
 	 * Belongs to Cidr IP number range
-	 *
-	 * @param string $ip                   IP
-	 * @param array  $cidrIpNumberRangeArr Cidr IP number ranges
-	 *
+	 * 
+	 * @param string $ip                     IP Address
+	 * @param array  $cidrIpNumberRangeArray Cidr IP number ranges
+	 * 
 	 * @return bool
 	 */
 	public static function belongsToCidrIpNumberRange(
 		$ip,
-		$cidrIpNumberRangeArr
+		$cidrIpNumberRangeArray
 	): bool {
 		$isValidIp = false;
-		if (count(value: $cidrIpNumberRangeArr) === 0) {
+		if (
+			count(
+				value: $cidrIpNumberRangeArray
+			) === 0
+		) {
 			return $isValidIp;
 		}
 
-		$ipNumber = ip2long(ip: $ip);
+		$ipNumber = ip2long(
+			ip: $ip
+		);
 
-		foreach ($cidrIpNumberRangeArr as $cidrIpNumber) {
+		foreach ($cidrIpNumberRangeArray as $cidrIpNumber) {
 			if (
 				$cidrIpNumber['start'] === 0
 				&& $cidrIpNumber['end'] === 0
@@ -313,48 +354,78 @@ class CommonFunction
 
 	/**
 	 * Validate remote IP
-	 *
-	 * @param Http $http
-	 *
+	 * 
+	 * @param Http $httpObject
+	 * 
 	 * @return void
 	 */
-	public static function checkPrivateRequestCidr(&$http): void
-	{
+	public static function checkPrivateRequestCidr(
+		&$httpObject
+	): void {
 		if (
 			!self::isEnabled(
-				http: $http,
-				feature: 'enableCidrCheck'
+				httpObject: $httpObject,
+				feature: 'customer_enabled_cidr_check'
 			)
 		) {
 			return;
 		}
 
 		self::checkCacheCidr(
-			cacheObj: DbCommonFunction::$gCacheServer,
-			ip: $http->httpReqData['server']['httpRequestIP'],
+			cacheObject: DbCommonFunction::$globalCacheServerObject,
+			ip: $httpObject->httpReqData['server']['httpRequestIp'],
 			cidrCacheKey: CacheServerKey::customerCidr(
-				customerId: $http->req->customerId
+				customerId: $httpObject->httpRequestObject->customerId
 			)
 		);
 
-		if ($http !== null) {
+		if ($httpObject !== Constant::$NULL) {
 			self::checkCacheCidr(
-				cacheObj: $http->req->customerCacheObj,
-				ip: $http->httpReqData['server']['httpRequestIP'],
+				cacheObject: $httpObject->httpRequestObject->customerCacheObject,
+				ip: $httpObject->httpReqData['server']['httpRequestIp'],
 				cidrCacheKey: CacheServerKey::customerGroupCidr(
-					customerId: $http->req->customerId,
-					groupId: $http->req->groupId
+					customerId: $httpObject->httpRequestObject->customerId,
+					customerUserGroupId: $httpObject->httpRequestObject->customerUserGroupId
 				)
 			);
 
 			self::checkCacheCidr(
-				cacheObj: $http->req->customerCacheObj,
-				ip: $http->httpReqData['server']['httpRequestIP'],
+				cacheObject: $httpObject->httpRequestObject->customerCacheObject,
+				ip: $httpObject->httpReqData['server']['httpRequestIp'],
 				cidrCacheKey: CacheServerKey::customerUserCidr(
-					customerId: $http->req->customerId,
-					userId: $http->req->userId
+					customerId: $httpObject->httpRequestObject->customerId,
+					customerUserId: $httpObject->httpRequestObject->customerUserId
 				)
 			);
 		}
+	}
+
+	/**
+	 * JSON Decode
+	 * 
+	 * @param mixed $value
+	 * 
+	 * @return mixed
+	 */
+	public static function jsonDecode(
+		$value
+	): mixed {
+		$isArray = str_starts_with(
+			haystack: $value,
+			needle: '['
+		);
+		$isObject = str_starts_with(
+			haystack: $value,
+			needle: '{'
+		);
+
+		if ($isArray || $isObject) {
+			$value = json_decode(
+				json: $value,
+				associative: Constant::$TRUE
+			);
+		}
+
+		return $value;
 	}
 }

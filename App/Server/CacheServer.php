@@ -3,7 +3,7 @@
 /**
  * Cache
  * php version 8.3
- *
+ * 
  * @category  Server
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,13 +15,14 @@
 
 namespace Microservices\App\Server;
 
+use Microservices\App\Constant;
 use Microservices\App\HttpStatus;
 use Microservices\App\Server\CacheServer\CacheServerInterface;
 
 /**
  * Cache Server
  * php version 8.3
- *
+ * 
  * @category  Cache Server
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -34,63 +35,63 @@ class CacheServer
 {
 	/**
 	 * Cache Server Type
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerType = null;
 
 	/**
 	 * Cache Server Hostname
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerHostname = null;
 
 	/**
 	 * Cache Server Port
-	 *
+	 * 
 	 * @var null|int
 	 */
 	private $cacheServerPort = null;
 
 	/**
 	 * Cache Server Username
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerUsername = null;
 
 	/**
 	 * Cache Server Password
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerPassword = null;
 
 	/**
 	 * Cache Server DB
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerDatabase = null;
 
 	/**
 	 * Cache collection
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $cacheServerTable = null;
 
 	/**
 	 * Cache Server Object
-	 *
+	 * 
 	 * @var null|CacheServerInterface
 	 */
-	private $cacheServerObj = null;
+	private $cacheServerObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string      $cacheServerType     Cache Server Type
 	 * @param string      $cacheServerHostname Cache Server Hostname
 	 * @param int         $cacheServerPort     Cache Server Port
@@ -119,12 +120,12 @@ class CacheServer
 
 	/**
 	 * Connect Cache
-	 *
+	 * 
 	 * @return void
 	 */
 	public function connectCache(): void
 	{
-		if ($this->cacheServerObj !== null) {
+		if ($this->cacheServerObject !== Constant::$NULL) {
 			return;
 		}
 
@@ -136,7 +137,7 @@ class CacheServer
                     'Memcached',
                     'MongoDb'
                 ],
-				strict: true
+				strict: Constant::$TRUE
             )
         ) {
 			throw new \Exception(
@@ -148,7 +149,7 @@ class CacheServer
 		$cacheServerNS = 'Microservices\\App\\Server\\CacheServer\\'
             . $this->cacheServerType . 'Cache';
 
-		$this->cacheServerObj = new $cacheServerNS(
+		$this->cacheServerObject = new $cacheServerNS(
 			cacheServerHostname: $this->cacheServerHostname,
 			cacheServerPort: $this->cacheServerPort,
 			cacheServerUsername: $this->cacheServerUsername,
@@ -160,47 +161,53 @@ class CacheServer
 
 	/**
 	 * Cache key exist
-	 *
+	 * 
 	 * @param string $cacheKey Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function cacheExist($cacheKey): mixed
-	{
+	public function cacheExist(
+		$cacheKey
+	): mixed {
 		$this->connectCache();
 
-		if (strlen($cacheKey) === 0) {
+		if (empty($cacheKey)) {
 			return false;
 		}
 
-		return $this->cacheServerObj->cacheExist(cacheKey: $cacheKey);
+		return $this->cacheServerObject->cacheExist(
+			cacheKey: $cacheKey
+		);
 	}
 
 	/**
 	 * Get cache key
-	 *
+	 * 
 	 * @param string $cacheKey Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function cacheGet($cacheKey): mixed
-	{
+	public function cacheGet(
+		$cacheKey
+	): mixed {
 		$this->connectCache();
 
-		if (strlen($cacheKey) === 0) {
+		if (empty($cacheKey)) {
 			return false;
 		}
 
-		return $this->cacheServerObj->cacheGet(cacheKey: $cacheKey);
+		return $this->cacheServerObject->cacheGet(
+			cacheKey: $cacheKey
+		);
 	}
 
 	/**
 	 * Set cache key
-	 *
+	 * 
 	 * @param string $cacheKey    Cache key
-	 * @param string $cacheValue  Cache value
+	 * @param mixed  $cacheValue  Cache value
 	 * @param int    $cacheExpire Seconds to expire. Default 0 - doesn't expire
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function cacheSet(
@@ -210,11 +217,11 @@ class CacheServer
 	): mixed {
 		$this->connectCache();
 
-		if (strlen($cacheKey) === 0) {
+		if (empty($cacheKey)) {
 			return false;
 		}
 
-		return $this->cacheServerObj->cacheSet(
+		return $this->cacheServerObject->cacheSet(
 			cacheKey: $cacheKey,
 			cacheValue: $cacheValue,
 			cacheExpire: $cacheExpire
@@ -223,10 +230,10 @@ class CacheServer
 
 	/**
 	 * Increment cache key with offset
-	 *
+	 * 
 	 * @param string $cacheKey    Cache key
 	 * @param int    $cacheOffset Offset
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function cacheIncrement(
@@ -235,11 +242,11 @@ class CacheServer
 	): mixed {
 		$this->connectCache();
 
-		if (strlen($cacheKey) === 0) {
+		if (empty($cacheKey)) {
 			return false;
 		}
 
-		return $this->cacheServerObj->cacheIncrement(
+		return $this->cacheServerObject->cacheIncrement(
 			cacheKey: $cacheKey,
 			cacheOffset: $cacheOffset
 		);
@@ -247,19 +254,22 @@ class CacheServer
 
 	/**
 	 * Delete cache key
-	 *
+	 * 
 	 * @param string $cacheKey Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function cacheDelete($cacheKey): mixed
-	{
+	public function cacheDelete(
+		$cacheKey
+	): mixed {
 		$this->connectCache();
 
-		if (strlen($cacheKey) === 0) {
+		if (empty($cacheKey)) {
 			return false;
 		}
 
-		return $this->cacheServerObj->cacheDelete(cacheKey: $cacheKey);
+		return $this->cacheServerObject->cacheDelete(
+			cacheKey: $cacheKey
+		);
 	}
 }

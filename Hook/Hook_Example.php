@@ -3,7 +3,7 @@
 /**
  * Hook
  * php version 8.3
- *
+ * 
  * @category  Hook
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,6 +15,7 @@
 
 namespace Microservices\Hook;
 
+use Microservices\App\Constant;
 use Microservices\App\Http;
 use Microservices\Hook\HookInterface;
 use Microservices\Hook\HookTrait;
@@ -22,7 +23,7 @@ use Microservices\Hook\HookTrait;
 /**
  * Hook Example class
  * php version 8.3
- *
+ * 
  * @category  Hook_Example
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -37,24 +38,25 @@ class Hook_Example implements HookInterface
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
 	}
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -64,7 +66,7 @@ class Hook_Example implements HookInterface
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -76,13 +78,13 @@ class Hook_Example implements HookInterface
 
 	/**
 	 * Exec Hook
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
 	private function execHook(): void
 	{
 		// Change payload.
-		$this->http->req->s['payload']['hook'] = 'Yes';
+		$this->httpObject->httpRequestObject->activeRequestData['payload']['hook'] = Constant::$YES;
 	}
 }

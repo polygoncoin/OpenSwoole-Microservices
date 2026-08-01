@@ -3,7 +3,7 @@
 /**
  * Middleware
  * php version 8.3
- *
+ * 
  * @category  Middleware
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -16,7 +16,6 @@
 namespace Microservices\App;
 
 use Microservices\App\CacheServerKey;
-use Microservices\App\CommonFunction;
 use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Http;
@@ -25,7 +24,7 @@ use Microservices\App\HttpStatus;
 /**
  * Class handling detail for Auth middleware
  * php version 8.3
- *
+ * 
  * @category  Auth_Middleware
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,47 +37,48 @@ class Auth
 {
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
 	}
 
 	/**
 	 * Load User Data
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
 	public function loadUserData(): void
 	{
-		if (isset($this->http->req->s['userData'])) {
+		if (isset($this->httpObject->httpRequestObject->activeRequestData['userData'])) {
 			return;
 		}
 
 		if (
 			isset($_SESSION)
-			&& isset($_SESSION['id'])
+			&& isset($_SESSION['customer_user_id'])
 		) {
-			$this->http->req->s['userData'] = $_SESSION;
-			$this->http->req->s['authId'] = session_id();
+			$this->httpObject->httpRequestObject->activeRequestData['userData'] = $_SESSION;
+			$this->httpObject->httpRequestObject->activeRequestData['authId'] = session_id();
 		} elseif (
-			isset($this->http->httpReqData['header']['tokenHeader'])
-			&& $this->http->httpReqData['header']['tokenHeader'] !== null
+			isset($this->httpObject->httpReqData['header']['tokenHeader'])
+			&& $this->httpObject->httpReqData['header']['tokenHeader'] !== Constant::$NULL
 		) {
 			if (
 				!preg_match(
 					pattern: '/Bearer\s(\S+)/',
-					subject: $this->http->httpReqData['header']['tokenHeader'],
+					subject: $this->httpObject->httpReqData['header']['tokenHeader'],
 					matches: $matches
 				)
 			) {
@@ -87,12 +87,12 @@ class Auth
 					code: HttpStatus::$BadRequest
 				);
 			}
-			$this->http->req->s['authId'] = $matches[1];
+			$this->httpObject->httpRequestObject->activeRequestData['authId'] = $matches[1];
 			$tokenKey = CacheServerKey::token(
-				token: $this->http->req->s['authId']
+				token: $this->httpObject->httpRequestObject->activeRequestData['authId']
 			);
 			if (
-				!$this->http->req->customerCacheObj->cacheExist(
+				!$this->httpObject->httpRequestObject->customerCacheObject->cacheExist(
 					cacheKey: $tokenKey
 				)
 			) {
@@ -101,11 +101,8 @@ class Auth
 					code: HttpStatus::$BadRequest
 				);
 			}
-			$this->http->req->s['userData'] = json_decode(
-				json: $this->http->req->customerCacheObj->cacheGet(
-					cacheKey: $tokenKey
-				),
-				associative: true
+			$this->httpObject->httpRequestObject->activeRequestData['userData'] = $this->httpObject->httpRequestObject->customerCacheObject->cacheGet(
+				cacheKey: $tokenKey
 			);
 		} else {
 			throw new \Exception(
@@ -114,53 +111,54 @@ class Auth
 			);
 		}
 
-		if (($this->http->req->s['userData']['authTimestamp'] + Constant::$TOKEN_EXPIRY_TIME) <= Env::$timestamp) {
+		if (($this->httpObject->httpRequestObject->activeRequestData['userData']['authTimestamp'] + Constant::$TOKEN_EXPIRY_TIME) <= Env::$timestamp) {
 			throw new \Exception(
 				message: 'Login has timed out. Please login',
 				code: HttpStatus::$BadRequest
 			);
 		}
 
-		if ($this->http->req->s['userData']['httpRequestHash'] !== $this->http->httpReqData['httpRequestHash']) {
+		if ($this->httpObject->httpRequestObject->activeRequestData['userData']['httpRequestHash'] !== $this->httpObject->httpReqData['httpRequestHash']) {
 			throw new \Exception(
 				message: 'Current Browser or the Device location not matching with Browser or the Device location during Login',
 				code: HttpStatus::$PreconditionFailed
 			);
 		}
 
-		$this->http->req->userId = $this->http->req->s['userData']['id'];
-		$this->http->req->groupId = $this->http->req->s['userData']['group_id'];
+		$this->httpObject->httpRequestObject->customerUserId = $this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_id'];
+		$this->httpObject->httpRequestObject->customerUserGroupId = $this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'];
 	}
 
 	/**
 	 * Load Group Data
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
 	public function loadGroupData(): void
 	{
-		if (isset($this->http->req->s['groupData'])) {
+		if (isset($this->httpObject->httpRequestObject->activeRequestData['groupData'])) {
 			return;
 		}
 
 		// Load groupData
 		$groupCacheKey = CacheServerKey::customerGroup(
-			customerId: $this->http->req->customerId,
-			groupId: $this->http->req->groupId
+			customerId: $this->httpObject->httpRequestObject->customerId,
+			customerUserGroupId: $this->httpObject->httpRequestObject->customerUserGroupId
 		);
-		if (!$this->http->req->customerCacheObj->cacheExist(cacheKey: $groupCacheKey)) {
+		if (
+			!$this->httpObject->httpRequestObject->customerCacheObject->cacheExist(
+				cacheKey: $groupCacheKey
+			)
+		) {
 			throw new \Exception(
 				message: "Cache '{$groupCacheKey}' missing",
 				code: HttpStatus::$InternalServerError
 			);
 		}
 
-		$this->http->req->s['groupData'] = json_decode(
-			json: $this->http->req->customerCacheObj->cacheGet(
-				cacheKey: $groupCacheKey
-			),
-			associative: true
+		$this->httpObject->httpRequestObject->activeRequestData['groupData'] = $this->httpObject->httpRequestObject->customerCacheObject->cacheGet(
+			cacheKey: $groupCacheKey
 		);
 	}
 }

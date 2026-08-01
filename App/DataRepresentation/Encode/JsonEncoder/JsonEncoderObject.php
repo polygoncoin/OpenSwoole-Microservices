@@ -3,7 +3,7 @@
 /**
  * Handling JSON Encode
  * php version 8.3
- *
+ * 
  * @category  DataEncode_JSON
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -17,10 +17,10 @@ namespace Microservices\App\DataRepresentation\Encode\JsonEncoder;
 
 /**
  * JSON Encoder Object
- *
+ * 
  * This class is built to help maintain state of simple/associative array
  * php version 8.3
- *
+ * 
  * @category  Json_Encoder_Object
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -36,11 +36,12 @@ class JsonEncoderObject
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string $mode Values can be one among Array/object
 	 */
-	public function __construct($mode)
-	{
+	public function __construct(
+		$mode
+	) {
 		$this->mode = $mode;
 	}
 }

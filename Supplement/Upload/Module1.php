@@ -3,7 +3,7 @@
 /**
  * UploadAPI
  * php version 8.3
- *
+ * 
  * @category  UploadAPI
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\Supplement\Upload\UploadTrait;
 /**
  * UploadAPI Example
  * php version 8.3
- *
+ * 
  * @category  UploadAPI_Example
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,24 +38,25 @@ class Module1 implements UploadInterface
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
 	}
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -65,26 +66,28 @@ class Module1 implements UploadInterface
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
 	{
 		$absFilePath = $this->getLocation();
-		$this->saveFile(absFilePath: $absFilePath);
+		$this->saveFile(
+			absFilePath: $absFilePath
+		);
 
 		return true;
 	}
 
 	/**
 	 * Function to get filename with location depending upon $sess
-	 *
+	 * 
 	 * @return string
 	 */
 	private function getLocation(): string
 	{
-		return Constant::$DROPBOX_PRIVATE_DIR
-			. DIRECTORY_SEPARATOR . $this->http->req->customerId
+		return Constant::$DROPBOX_PRIVATE_DIRECTORY
+			. DIRECTORY_SEPARATOR . $this->httpObject->httpRequestObject->customerId
 			. DIRECTORY_SEPARATOR . 'test.png';
 	}
 }

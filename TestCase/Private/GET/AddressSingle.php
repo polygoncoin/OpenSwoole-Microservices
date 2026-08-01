@@ -3,7 +3,7 @@
 /**
  * Test Case
  * php version 8.3
- *
+ * 
  * @category  Test Case
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,33 +15,34 @@
 
 namespace Microservices\TestCase;
 
-use Microservices\App\Web;
+use Microservices\App\Constant;
 use Microservices\App\Env;
+use Microservices\App\Web;
 
-$headerArr = $defaultHeaderArr;
+$headerArray = $defaultHeaderArray;
 $proceed = false;
 
 if (
 	isset($token)
-	&& $token !== null
+	&& $token !== Constant::$NULL
 ) {
-	$headerArr[] = "Authorization: Bearer {$token}";
+	$headerArray[] = "Authorization: Bearer {$token}";
 	$proceed = true;
 }
 if (
 	isset($sessionCookie)
-	&& $sessionCookie !== null
+	&& $sessionCookie !== Constant::$NULL
 ) {
-	$headerArr[] = "Cookie: {$sessionCookie}";
+	$headerArray[] = "Cookie: {$sessionCookie}";
 	$proceed = true;
 }
 
 if (isset($proceed)) {
 	return Web::trigger(
 		homeURL: $homeURL,
-		method: 'GET',
+		httpRequestMethod: Constant::$GET,
 		route: '/address/1',
-		header: $headerArr,
+		header: $headerArray,
 		payload: ''
 	);
 }

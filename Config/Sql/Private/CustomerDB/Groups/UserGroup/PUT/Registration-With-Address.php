@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- *
+ * 
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,41 +13,44 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+use Microservices\DatabaseTable;
 
 return [
-	'__QUERY__' => "UPDATE `{$this->http->req->s['customerData']['userTable']}` SET __SET__ WHERE __WHERE__",
+	'__QUERY__' => "UPDATE `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` SET __SET__ WHERE __WHERE__",
 	'__SET__' => [
 		[
-			'column' => 'firstname',
-			'fetchFrom' => 'payload',
-			'fetchFromData' => 'firstname'
+			'column' => 'customer_user_contact_name',
+			'activeRequestDataKey' => 'payload',
+			'activeRequestDataKeySubKey' => 'firstname'
 		],
 		[
-			'column' => 'lastname',
-			'fetchFrom' => 'payload',
-			'fetchFromData' => 'lastname'
+			'column' => 'customer_user_contact_person',
+			'activeRequestDataKey' => 'payload',
+			'activeRequestDataKeySubKey' => 'lastname'
 		],
 		[
-			'column' => 'email',
-			'fetchFrom' => 'payload',
-			'fetchFromData' => 'email'
+			'column' => 'customer_user_contact_email_address',
+			'activeRequestDataKey' => 'payload',
+			'activeRequestDataKeySubKey' => 'email'
 		],
 		[
-			'column' => 'username',
-			'fetchFrom' => 'payload',
-			'fetchFromData' => 'username'
+			'column' => 'customer_user_username',
+			'activeRequestDataKey' => 'payload',
+			'activeRequestDataKeySubKey' => 'username'
 		],
 		[
-			'column' => 'password_hash',
-			'fetchFrom' => 'function',
-			'fetchFromData' => function($session) {
+			'column' => 'customer_user_password_hash',
+			'activeRequestDataKey' => 'function',
+			'activeRequestDataKeySubKey' => function($activeRequestData) {
 				if (
-					isset($session['payload'])
-					&& isset($session['payload']['password'])
+					isset($activeRequestData['payload'])
+					&& isset($activeRequestData['payload']['password'])
 				) {
 					return password_hash(
-						password: $session['payload']['password'],
+						password: $activeRequestData['payload']['password'],
 						algo: PASSWORD_DEFAULT
 					);
 				}
@@ -56,14 +59,14 @@ return [
 	],
 	'__WHERE__' => [
 		[
-			'column' => 'is_deleted',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => 'No'
+			'column' => 'customer_user_is_deleted',
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => Constant::$NO
 		],
 		[
-			'column' => 'id',
-			'fetchFrom' => 'routeParamArr',
-			'fetchFromData' => 'id',
+			'column' => DatabaseTable::$customerUserPrimaryKey,
+			'activeRequestDataKey' => 'routeParamArray',
+			'activeRequestDataKeySubKey' => 'id',
 			'dataType' => DatabaseServerDataType::$PrimaryKey
 		]
 	],
@@ -73,20 +76,20 @@ return [
 			'__SET__' => [
 				[
 					'column' => 'address',
-					'fetchFrom' => 'payload',
-					'fetchFromData' => 'address'
+					'activeRequestDataKey' => 'payload',
+					'activeRequestDataKeySubKey' => 'address'
 				]
 			],
 			'__WHERE__' => [
 				[
 					'column' => 'is_deleted',
-					'fetchFrom' => 'custom',
-					'fetchFromData' => 'No'
+					'activeRequestDataKey' => 'custom',
+					'activeRequestDataKeySubKey' => Constant::$NO
 				],
 				[
-					'column' => 'id',
-					'fetchFrom' => 'payload',
-					'fetchFromData' => 'id',
+					'column' => DatabaseTable::$addressPrimaryKey,
+					'activeRequestDataKey' => 'payload',
+					'activeRequestDataKeySubKey' => 'id',
 					'dataType' => DatabaseServerDataType::$PrimaryKey
 				],
 			],
@@ -96,13 +99,13 @@ return [
 		[
 			'function' => 'primaryKeyExist',
 			'functionArgs' => [
-				'table' => ['custom', $this->http->req->s['customerData']['userTable']],
-				'primary' => ['custom', 'id'],
-				'id' => ['routeParamArr', 'id']
+				'table' => ['custom', $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']],
+				'primary' => ['custom', DatabaseTable::$customerUserPrimaryKey],
+				'id' => ['routeParamArray', 'id']
 			],
 			'errorMessage' => 'Invalid registration id'
 		],
 	],
-	'useHierarchy' => true,
+	'maintainHierarchy' => Constant::$TRUE,
 	'idempotentWindow' => 10
 ];

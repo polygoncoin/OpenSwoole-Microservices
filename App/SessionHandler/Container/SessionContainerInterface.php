@@ -3,7 +3,7 @@
 /**
  * Custom Session Handler
  * php version 7
- *
+ * 
  * @category  SessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\App\SessionHandler\Container;
 /**
  * Custom Session Handler Interface
  * php version 7
- *
+ * 
  * @category  CustomSessionHandler_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -31,10 +31,10 @@ interface SessionContainerInterface
 {
 	/**
 	 * For Custom Session Handler - Initialize session
-	 *
+	 * 
 	 * @param string $sessionSavePath Session Save Path
 	 * @param string $sessionName     Session Name
-	 *
+	 * 
 	 * @return void
 	 */
 	public function init(
@@ -44,19 +44,21 @@ interface SessionContainerInterface
 
 	/**
 	 * For Custom Session Handler - Validate session id
-	 *
+	 * 
 	 * @param string $sessionId Session id
-	 *
+	 * 
 	 * @return bool|string
 	 */
-	public function getSession($sessionId): bool|string;
+	public function getSession(
+		$sessionId
+	): bool|string;
 
 	/**
 	 * For Custom Session Handler - Write session data
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function setSession(
@@ -66,10 +68,10 @@ interface SessionContainerInterface
 
 	/**
 	 * For Custom Session Handler - Update session data
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function updateSession(
@@ -79,10 +81,10 @@ interface SessionContainerInterface
 
 	/**
 	 * For Custom Session Handler - Update session timestamp
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function touchSession(
@@ -92,25 +94,29 @@ interface SessionContainerInterface
 
 	/**
 	 * For Custom Session Handler - Cleanup old sessions
-	 *
+	 * 
 	 * @param integer $sessionMaxLifetime Session Max Lifetime
-	 *
+	 * 
 	 * @return bool
 	 */
-	public function gcSession($sessionMaxLifetime): bool;
+	public function gcSession(
+		$sessionMaxLifetime
+	): bool;
 
 	/**
 	 * For Custom Session Handler - Destroy a session
-	 *
+	 * 
 	 * @param string $sessionId Session id
-	 *
+	 * 
 	 * @return bool
 	 */
-	public function deleteSession($sessionId): bool;
+	public function deleteSession(
+		$sessionId
+	): bool;
 
 	/**
 	 * For Custom Session Handler - Close container connection
-	 *
+	 * 
 	 * @return void
 	 */
 	public function closeSession(): void;

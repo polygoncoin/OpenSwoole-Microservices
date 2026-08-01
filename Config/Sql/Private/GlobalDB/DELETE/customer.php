@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- *
+ * 
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,32 +13,35 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+use Microservices\DatabaseTable;
 
 return [
 	'__QUERY__' => "UPDATE `{$Env::$customerTable}` SET __SET__ WHERE __WHERE__",
 	'__SET__' => [
 		[
 			'column' => 'updated_by',
-			'fetchFrom' => 'userData',
-			'fetchFromData' => 'id'
+			'activeRequestDataKey' => 'userData',
+			'activeRequestDataKeySubKey' => DatabaseTable::$customerUserPrimaryKey
 		],
 		[
 			'column' => 'updated_on',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => date('Y-m-d H:i:s')
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => date('Y-m-d H:i:s')
 		],
 	],
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => 'No'
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => Constant::$NO
 		],
 		[
-			'column' => 'id',
-			'fetchFrom' => 'routeParamArr',
-			'fetchFromData' => 'id',
+			'column' => DatabaseTable::$customerPrimaryKey,
+			'activeRequestDataKey' => 'routeParamArray',
+			'activeRequestDataKeySubKey' => 'id',
 			'dataType' => DatabaseServerDataType::$INT
 		]
 	],
@@ -46,8 +49,8 @@ return [
 		[
 			'function' => 'primaryKeyExist',
 			'functionArgs' => [
-				'table' => ['custom', $Env::$customerTable],
-				'primary' => ['custom', 'id'],
+				'table' => ['custom', Env::$customerTable],
+				'primary' => ['custom', DatabaseTable::$customerPrimaryKey],
 				'id' => ['payload', 'id', DatabaseServerDataType::$INT]
 			],
 			'errorMessage' => 'Invalid Customer Id'
@@ -55,10 +58,10 @@ return [
 		[
 			'function' => '_checkColumnValueExist',
 			'functionArgs' => [
-				'table' => ['custom', $Env::$customerTable],
+				'table' => ['custom', Env::$customerTable],
 				'column' => ['custom', 'is_deleted'],
-				'columnValue' => ['custom', 'No'],
-				'primary' => ['custom', 'id'],
+				'columnValue' => ['custom', Constant::$NO],
+				'primary' => ['custom', DatabaseTable::$customerPrimaryKey],
 				'id' => ['payload', 'id', DatabaseServerDataType::$INT],
 			],
 			'errorMessage' => 'Record is already deleted'

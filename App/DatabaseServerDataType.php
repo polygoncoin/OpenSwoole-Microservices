@@ -3,7 +3,7 @@
 /**
  * DataTypes
  * php version 8.3
- *
+ * 
  * @category  DataTypes
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Constant;
 use Microservices\App\HttpStatus;
 
 /* String Data Types */
@@ -319,7 +320,7 @@ use Microservices\App\HttpStatus;
 /**
  * Custom DataTypes
  * php version 8.3
- *
+ * 
  * @category  DataTypes
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -335,39 +336,39 @@ class DatabaseServerDataType
 	 * You can configure them in /Config/Sql folder as a data type
 	 * This will validate the received payload/uriParam/etc data where this is
 	 * configured
-	 *
+	 * 
 	 * DatabaseServerDataType::$CustomINT
-	 *
+	 * 
 	 * public static $CustomINT = [
-	 *
+	 * 
 	 *     // Required param
 	 *        // PHP data type (bool, int, float, string)
 	 *        'dataType' => 'int',
-	 *
+	 * 
 	 *     // Optional params
 	 *        // Value can be null
-	 *        'canBeNull' => false,
+	 *        'canBeNull' => Constant::$FALSE,
 	 *        // Minimum value (int)
 	 *        'minValue' => 1,
 	 *        // Maximum value (int)
-	 *        'maxValue' => false,
+	 *        'maxValue' => Constant::$FALSE,
 	 *        // Minimum length (string)
-	 *        'minLength' => false,
+	 *        'minLength' => Constant::$FALSE,
 	 *        // Maximum length (string)
-	 *        'maxLength' => false,
+	 *        'maxLength' => Constant::$FALSE,
 	 *        // Any one value from the Array
-	 *        'enumValues' => false,
+	 *        'enumValues' => Constant::$FALSE,
 	 *        // Values belonging to this Array
-	 *        'setValues' => false,
-	 *
+	 *        'setValues' => Constant::$FALSE,
+	 * 
 	 *        // Values should pass this regex before use
-	 *        'regex' => false
+	 *        'regex' => Constant::$FALSE
 	 *  ];
 	 */
 
 	/**
 	 * Custom int DataType
-	 *
+	 * 
 	 * @var array $INT
 	 */
 	public static $INT = [
@@ -376,7 +377,7 @@ class DatabaseServerDataType
 
 	/**
 	 * Custom primary key DataType
-	 *
+	 * 
 	 * @var array $PrimaryKey
 	 */
 	public static $PrimaryKey = [
@@ -385,7 +386,7 @@ class DatabaseServerDataType
 
 	/**
 	 * Custom default DataType
-	 *
+	 * 
 	 * @var array $Default
 	 */
 	public static $Default = [
@@ -394,15 +395,15 @@ class DatabaseServerDataType
 
 	public static $HttpMethod = [
 		'dataType' => 'string',
-		'enumValues' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+		'enumValues' => ['GET', 'QUERY', 'POST', 'PUT', 'PATCH', 'DELETE']
 	];
 
 	/**
 	 * Validates DataType
-	 *
+	 * 
 	 * @param bool|float|int|string|null $data     Data
 	 * @param array                      $dataType Custom data type
-	 *
+	 * 
 	 * @return bool|float|int|string|null
 	 * @throws \Exception
 	 */
@@ -427,7 +428,9 @@ class DatabaseServerDataType
 				$data = (string)$data;
 				break;
 			case 'json':
-				$data = (string)json_encode(value: $data);
+				$data = (string)json_encode(
+					value: $data
+				);
 				break;
 			default:
 				throw new \Exception(
@@ -441,8 +444,8 @@ class DatabaseServerDataType
 		if (
 			$returnFlag
 			&& isset($dataType['canBeNull'])
-			&& $dataType['canBeNull'] === true
-			&& $data === null
+			&& $dataType['canBeNull'] === Constant::$TRUE
+			&& $data === Constant::$NULL
 		) {
 			return true;
 		}
@@ -463,14 +466,18 @@ class DatabaseServerDataType
 		if (
 			$returnFlag
 			&& isset($dataType['minLength'])
-			&& $dataType['minLength'] <= strlen(string: $data)
+			&& $dataType['minLength'] <= strlen(
+				string: $data
+			)
 		) {
 			$returnFlag = false;
 		}
 		if (
 			$returnFlag
 			&& isset($dataType['maxLength'])
-			&& strlen(string: $data) <= $dataType['maxLength']
+			&& strlen(
+				string: $data
+			) <= $dataType['maxLength']
 		) {
 			$returnFlag = false;
 		}
@@ -480,7 +487,7 @@ class DatabaseServerDataType
 			&& in_array(
 				needle: $data,
 				haystack: $dataType['enumValues'],
-				strict: true
+				strict: Constant::$TRUE
 			)
 		) {
 			$returnFlag = false;
@@ -500,7 +507,10 @@ class DatabaseServerDataType
 		if (
 			$returnFlag
 			&& isset($dataType['regex'])
-			&& preg_match(pattern: $dataType['regex'], subject: $data) === 0
+			&& preg_match(
+				pattern: $dataType['regex'],
+				subject: $data
+			) === 0
 		) {
 			$returnFlag = false;
 		}

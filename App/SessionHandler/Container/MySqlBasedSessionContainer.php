@@ -3,7 +3,7 @@
 /**
  * Custom Session Handler
  * php version 7
- *
+ * 
  * @category  SessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,6 +15,7 @@
 
 namespace Microservices\App\SessionHandler\Container;
 
+use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 use Microservices\App\SessionHandler\Container\SessionContainerHelper;
@@ -22,7 +23,7 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 /**
  * Custom Session Handler using MySql
  * php version 7
- *
+ * 
  * @category  CustomSessionHandler_MySQL
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -41,14 +42,14 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	public $mySqlServerDatabase = null;
 	public $mySqlServerTable = null;
 
-	private $mySqlServerObj = null;
+	private $mySqlServerObject = null;
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @param string $sessionSavePath Session Save Path
 	 * @param string $sessionName     Session Name
-	 *
+	 * 
 	 * @return void
 	 */
 	public function init(
@@ -60,37 +61,45 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Validate session id
-	 *
+	 * 
 	 * @param string $sessionId Session id
-	 *
+	 * 
 	 * @return bool|string
 	 */
-	public function getSession($sessionId): bool|string
-	{
+	public function getSession(
+		$sessionId
+	): bool|string {
 		$sql = "
 			SELECT `sessionData`
 			FROM `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
 			WHERE `sessionId` = :sessionId AND lastAccessed > :lastAccessed
 		";
-		$paramArr = [
+		$paramArray = [
 			':sessionId' => $sessionId,
 			':lastAccessed' => (Env::$timestamp - $this->sessionMaxLifetime)
 		];
 		if (
-			($row = $this->getSql(sql: $sql, paramArr: $paramArr))
-			&& isset($row['sessionData'])
+			(
+				$record = $this->getSql(
+					sql: $sql,
+					paramArray: $paramArray
+				)
+			)
+			&& isset($record['sessionData'])
 		) {
-			return $this->decryptData(cipherText: $row['sessionData']);
+			return $this->decryptData(
+				cipherText: $record['sessionData']
+			);
 		}
 		return false;
 	}
 
 	/**
 	 * For Custom Session Handler - Write session data
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function setSession(
@@ -104,21 +113,26 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 				`lastAccessed` = :lastAccessed,
 				`sessionId` = :sessionId
 		";
-		$paramArr = [
+		$paramArray = [
 			':sessionId' => $sessionId,
-			':sessionData' => $this->encryptData(plainText: $sessionData),
+			':sessionData' => $this->encryptData(
+				plainText: $sessionData
+			),
 			':lastAccessed' => Env::$timestamp
 		];
 
-		return $this->execSql(sql: $sql, paramArr: $paramArr);
+		return $this->execSql(
+			sql: $sql,
+			paramArray: $paramArray
+		);
 	}
 
 	/**
 	 * For Custom Session Handler - Update session data
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function updateSession(
@@ -133,21 +147,26 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 			WHERE
 				`sessionId` = :sessionId
 		";
-		$paramArr = [
+		$paramArray = [
 			':sessionId' => $sessionId,
-			':sessionData' => $this->encryptData(plainText: $sessionData),
+			':sessionData' => $this->encryptData(
+				plainText: $sessionData
+			),
 			':lastAccessed' => Env::$timestamp
 		];
 
-		return $this->execSql(sql: $sql, paramArr: $paramArr);
+		return $this->execSql(
+			sql: $sql,
+			paramArray: $paramArray
+		);
 	}
 
 	/**
 	 * For Custom Session Handler - Update session timestamp
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function touchSession(
@@ -159,154 +178,179 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 			SET `lastAccessed` = :lastAccessed
 			WHERE `sessionId` = :sessionId
 		";
-		$paramArr = [
+		$paramArray = [
 			':sessionId' => $sessionId,
 			':lastAccessed' => Env::$timestamp
 		];
-		return $this->execSql(sql: $sql, paramArr: $paramArr);
+		return $this->execSql(
+			sql: $sql,
+			paramArray: $paramArray
+		);
 	}
 
 	/**
 	 * For Custom Session Handler - Cleanup old sessions
-	 *
+	 * 
 	 * @param integer $sessionMaxLifetime Session Max Lifetime
-	 *
+	 * 
 	 * @return bool
 	 */
-	public function gcSession($sessionMaxLifetime): bool
-	{
+	public function gcSession(
+		$sessionMaxLifetime
+	): bool {
 		$lastAccessed = Env::$timestamp - $sessionMaxLifetime;
 		$sql = "
 			DELETE FROM `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
 			WHERE `lastAccessed` < :lastAccessed
 		";
-		$paramArr = [
+		$paramArray = [
 			':lastAccessed' => $lastAccessed
 		];
-		return $this->execSql(sql: $sql, paramArr: $paramArr);
+		return $this->execSql(
+			sql: $sql,
+			paramArray: $paramArray
+		);
 	}
 
 	/**
 	 * For Custom Session Handler - Destroy a session
-	 *
+	 * 
 	 * @param string $sessionId Session id
-	 *
+	 * 
 	 * @return bool
 	 */
-	public function deleteSession($sessionId): bool
-	{
+	public function deleteSession(
+		$sessionId
+	): bool {
 		$sql = "
 			DELETE FROM `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
 			WHERE `sessionId` = :sessionId
 		";
-		$paramArr = [
+		$paramArray = [
 			':sessionId' => $sessionId
 		];
-		return $this->execSql(sql: $sql, paramArr: $paramArr);
+		return $this->execSql(
+			sql: $sql,
+			paramArray: $paramArray
+		);
 	}
 
 	/**
 	 * Close File Container
-	 *
+	 * 
 	 * @return void
 	 */
 	public function closeSession(): void
 	{
-		$this->mySqlServerObj = null;
+		$this->mySqlServerObject = null;
 	}
 
 	/**
 	 * Connect
-	 *
+	 * 
 	 * @return void
 	 */
 	private function connect(): void
 	{
 		try {
-			$this->mySqlServerObj = new \PDO(
+			$this->mySqlServerObject = new \PDO(
 				dsn: "mysql:host={$this->mySqlServerHostname}",
 				username: $this->mySqlServerUsername,
 				password: $this->mySqlServerPassword,
 				options: [
-					\PDO::ATTR_EMULATE_PREPARES => false,
+					\PDO::ATTR_EMULATE_PREPARES => Constant::$FALSE,
 				]
 			);
 		} catch (\Exception $e) {
-			$this->manageException(e: $e);
+			$this->manageException(
+				e: $e
+			);
 		}
 	}
 
 	/**
 	 * Get Session
-	 *
-	 * @param string $sql      SQL query
-	 * @param array  $paramArr SQL query params
-	 *
+	 * 
+	 * @param string $sql        Sql query
+	 * @param array  $paramArray Sql query params
+	 * 
 	 * @return mixed
 	 */
 	private function getSql(
 		$sql,
-		$paramArr = []
+		$paramArray = []
 	): mixed {
-		$row = [];
+		$record = [];
 		try {
-			$stmt = $this->mySqlServerObj->prepare(
+			$stmt = $this->mySqlServerObject->prepare(
 				query: $sql,
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
-			$stmt->execute(paramArr: $paramArr);
+			$stmt->execute(
+				paramArray: $paramArray
+			);
 			switch ($stmt->rowCount()) {
 				case 0:
-					$row = [];
+					$record = [];
 					break;
 				case 1:
-					$row = $stmt->fetch();
+					$record = $stmt->fetch();
 					break;
 				default:
-					$row = false;
+					$record = false;
 					break;
 			}
 			$stmt->closeCursor();
 		} catch (\Exception $e) {
-			$this->manageException(e: $e);
+			$this->manageException(
+				e: $e
+			);
 		}
-		return $row;
+		return $record;
 	}
 
 	/**
-	 * Execute SQL
-	 *
-	 * @param string $sql      SQL query
-	 * @param array  $paramArr SQL query params
-	 *
+	 * Execute Sql
+	 * 
+	 * @param string $sql        Sql query
+	 * @param array  $paramArray Sql query params
+	 * 
 	 * @return bool
 	 */
 	private function execSql(
 		$sql,
-		$paramArr = []
+		$paramArray = []
 	): bool {
 		try {
-			$stmt = $this->mySqlServerObj->prepare(
+			$stmt = $this->mySqlServerObject->prepare(
 				query: $sql,
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
-			$stmt->execute(paramArr: $paramArr);
+			$stmt->execute(
+				paramArray: $paramArray
+			);
 			$stmt->closeCursor();
 		} catch (\Exception $e) {
-			$this->manageException(e: $e);
+			$this->manageException(
+				e: $e
+			);
 		}
 		return true;
 	}
 
 	/**
 	 * Manage Exception
-	 *
+	 * 
 	 * @param \Exception $e Exception
-	 *
+	 * 
 	 * @return never
 	 */
-	private function manageException(\Exception $e): never
-	{
-		die($e->getMessage());
+	private function manageException(
+		\Exception $e
+	): never {
+		throw new \Exception(
+			message: $e->getMessage(),
+			code: HttpStatus::$InternalServerError
+		);
 	}
 }

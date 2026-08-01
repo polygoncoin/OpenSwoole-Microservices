@@ -3,7 +3,7 @@
 /**
  * Service
  * php version 8.3
- *
+ * 
  * @category  Microservices
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,7 +15,6 @@
 
 namespace Microservices\App;
 
-use Microservices\App\CommonFunction;
 use Microservices\App\Constant;
 use Microservices\App\Dropbox;
 use Microservices\App\Env;
@@ -25,7 +24,7 @@ use Microservices\App\Http;
 /**
  * Service
  * php version 8.3
- *
+ * 
  * @category  Microservices
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,67 +37,70 @@ class Microservices
 {
 	/**
 	 * Start micro timestamp;
-	 *
+	 * 
 	 * @var null|int
 	 */
-	private $tsStart = null;
+	private $startMicroTimestamp = null;
 
 	/**
 	 * End micro timestamp;
-	 *
+	 * 
 	 * @var null|int
 	 */
-	private $tsEnd = null;
+	private $endMicroTimestamp = null;
 
 	/**
 	 * HTTP request data
-	 *
+	 * 
 	 * @var null|array
 	 */
 	public $httpReqData = null;
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	public $http = null;
+	public $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param array $httpReqData HTTP request data
 	 * @throws \Exception
 	 */
-	public function __construct(&$httpReqData)
-	{
+	public function __construct(
+		&$httpReqData
+	) {
 		$this->httpReqData = &$httpReqData;
-		$this->http = new Http($this->httpReqData);
+		$this->httpObject = new Http(
+			$this->httpReqData
+		);
 	}
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
 	{
 		if (Env::$OUTPUT_PERFORMANCE_STATS) {
-			$this->tsStart = microtime(as_float: true);
+			$this->startMicroTimestamp = microtime(as_float: Constant::$TRUE);
 		}
 
-		return $this->http->init();
+		return $this->httpObject->init();
 	}
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 * @throws \Exception
 	 */
 	public function process(): mixed
 	{
-		$this->http->initRequest();
+		$this->httpObject->initRequest();
 
 		$class = null;
 
@@ -114,7 +116,9 @@ class Microservices
 
 			// Requires auth token
 			default:
-				$gateway = new Gateway(http: $this->http);
+				$gateway = new Gateway(
+					httpObject: $this->httpObject
+				);
 				$gateway->init();
 				$gateway = null;
 
@@ -124,14 +128,20 @@ class Microservices
 
 		// Class found
 		try {
-			if ($class !== null) {
-				$api = new $class(http: $this->http);
+			if ($class !== Constant::$NULL) {
+				$api = new $class(
+					httpObject: $this->httpObject
+				);
 				if ($api->init()) {
 					$this->startData();
 					$return = $api->process();
 					if (
-						is_array(value: $return)
-						&& count(value: $return) === 3
+						is_array(
+							value: $return
+						)
+						&& count(
+							value: $return
+						) === 3
 					) {
 						return $return;
 					}
@@ -141,7 +151,9 @@ class Microservices
 				}
 			}
 		} catch (\Exception $e) {
-			$this->log(e: $e);
+			$this->manageException(
+				e: $e
+			);
 		}
 
 		return true;
@@ -149,82 +161,94 @@ class Microservices
 
 	/**
 	 * Start Data Output
-	 *
+	 * 
 	 * @return void
 	 */
 	public function startData(): void
 	{
-		if ($this->http->res === null) {
+		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
 			return;
 		}
-		$this->http->res->dataEncode->startObject();
+		$this->httpObject->httpResponseObject->dataEncodeObject->startObject();
 	}
 
 	/**
 	 * Add HTTP status in response
-	 *
+	 * 
 	 * @return void
 	 */
 	public function addStatus(): void
 	{
-		if ($this->http->res === null) {
+		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
 			return;
 		}
-		$this->http->res->dataEncode->addKeyData(
+		$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
 			objectKey: 'Status',
-			data: $this->http->res->httpStatus
+			data: $this->httpObject->httpResponseObject->httpStatus
 		);
 	}
 
 	/**
 	 * Add Performance detail in response
-	 *
+	 * 
 	 * @return void
 	 */
 	public function addPerformance(): void
 	{
-		if ($this->http->res === null) {
+		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
 			return;
 		}
 		if (Env::$OUTPUT_PERFORMANCE_STATS) {
-			$this->tsEnd = microtime(as_float: true);
-			$time = ceil(num: ($this->tsEnd - $this->tsStart) * 1000);
-			$memory = ceil(num: memory_get_peak_usage() / 1000);
+			$this->endMicroTimestamp = microtime(as_float: Constant::$TRUE);
+			$time = ceil(
+				num: ($this->endMicroTimestamp - $this->startMicroTimestamp) * 1000
+			);
+			$memory = ceil(
+				num: memory_get_peak_usage() / 1000
+			);
 
-			$this->http->res->dataEncode->startObject(objectKey: 'Stats');
-			$this->http->res->dataEncode->startObject(objectKey: 'Performance');
-			$this->http->res->dataEncode->addKeyData(
+			$this->httpObject->httpResponseObject->dataEncodeObject->startObject(
+				objectKey: 'Stats'
+			);
+			$this->httpObject->httpResponseObject->dataEncodeObject->startObject(
+				objectKey: 'Performance'
+			);
+			$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
 				objectKey: 'total-time-taken',
 				data: "{$time} ms"
 			);
-			$this->http->res->dataEncode->addKeyData(
+			$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
 				objectKey: 'peak-memory-usage',
 				data: "{$memory} KB"
 			);
-			$this->http->res->dataEncode->endObject();
-			$this->http->res->dataEncode->addKeyData(
+			$this->httpObject->httpResponseObject->dataEncodeObject->endObject();
+			$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
 				objectKey: 'getrusage',
 				data: getrusage()
 			);
-			$this->http->res->dataEncode->endObject();
+			$this->httpObject->httpResponseObject->dataEncodeObject->endObject();
 		}
 	}
 
 	/**
 	 * Add Performance detail in response
-	 *
+	 * 
 	 * @return array
 	 */
 	public function returnPerformance(): array
 	{
-		if ($this->http->res === null) {
+		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
 			return [];
 		}
 		$returnPerformance = [];
 		if (Env::$OUTPUT_PERFORMANCE_STATS) {
-			$this->tsEnd = microtime(as_float: true);
-			$time = ceil(num: ($this->tsEnd - $this->tsStart) * 1000);
-			$memory = ceil(num: memory_get_peak_usage() / 1000);
+			$this->endMicroTimestamp = microtime(as_float: Constant::$TRUE);
+			$time = ceil(
+				num: ($this->endMicroTimestamp - $this->startMicroTimestamp) * 1000
+			);
+			$memory = ceil(
+				num: memory_get_peak_usage() / 1000
+			);
 
 			$returnPerformance = [
 				'Stats' => [
@@ -242,107 +266,108 @@ class Microservices
 
 	/**
 	 * End response
-	 *
+	 * 
 	 * @return void
 	 */
 	public function endData(): void
 	{
-		if ($this->http->res === null) {
+		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
 			return;
 		}
-		$this->http->res->dataEncode->endObject();
-		$this->http->res->dataEncode->end();
+		$this->httpObject->httpResponseObject->dataEncodeObject->endObject();
+		$this->httpObject->httpResponseObject->dataEncodeObject->end();
 	}
 
 	/**
 	 * Output response
-	 *
+	 * 
 	 * @return void
 	 */
 	public function outputResults(): void
 	{
-		if ($this->http->res === null) {
+		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
 			return;
 		}
-		http_response_code(response_code: $this->http->res->httpStatus);
-		$this->http->res->dataEncode->streamData();
+		http_response_code(response_code: $this->httpObject->httpResponseObject->httpStatus);
+		$this->httpObject->httpResponseObject->dataEncodeObject->streamData();
 	}
 
 	/**
 	 * Return encoded result
-	 *
+	 * 
 	 * @return bool|string
 	 */
 	public function returnResults(): bool|string
 	{
-		if ($this->http->res === null) {
+		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
 			return false;
 		}
-		return $this->http->res->dataEncode->getData();
+		return $this->httpObject->httpResponseObject->dataEncodeObject->getData();
 	}
 
 	/**
 	 * Headers / CORS
-	 *
+	 * 
 	 * @return array
 	 */
 	public function getHeaders(): array
 	{
-		$headerArr = [];
+		$headerArray = [];
 
-		// $headerArr['Access-Control-Allow-Origin'] = $this->httpReqData['server']['domainName'];
-		$headerArr['Vary'] = 'Origin';
-		$headerArr['Access-Control-Allow-Headers'] = '*';
+		// $headerArray['Access-Control-Allow-Origin'] = $this->httpReqData['server']['domainName'];
+		$headerArray['Vary'] = 'Origin';
+		$headerArray['Access-Control-Allow-Headers'] = '*';
 
-		$headerArr['Referrer-Policy'] = 'origin';
-		$headerArr['X-Frame-Options'] = 'SAMEORIGIN';
-		$headerArr['X-Content-Type-Options'] = 'nosniff';
-		$headerArr['Cross-Origin-Resource-Policy'] = 'same-origin';
-		$headerArr['Cross-Origin-Embedder-Policy'] = 'unsafe-none';
-		$headerArr['Cross-Origin-Opener-Policy'] = 'unsafe-none';
+		$headerArray['Referrer-Policy'] = 'origin';
+		$headerArray['X-Frame-Options'] = 'SAMEORIGIN';
+		$headerArray['X-Content-Type-Options'] = 'nosniff';
+		$headerArray['Cross-Origin-Resource-Policy'] = 'same-origin';
+		$headerArray['Cross-Origin-Embedder-Policy'] = 'unsafe-none';
+		$headerArray['Cross-Origin-Opener-Policy'] = 'unsafe-none';
 
 		// Access-Control header are received during OPTIONS request
-		if ($this->httpReqData['server']['httpMethod'] === Constant::$OPTIONS) {
+		if ($this->httpReqData['server']['httpRequestMethod'] === Constant::$OPTIONS) {
 			// may also be using PUT, PATCH, HEAD etc
-			$methods = 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
-			$headerArr['Access-Control-Allow-Methods'] = $methods;
+			$methods = 'GET, QUERY, POST, PUT, PATCH, DELETE, OPTIONS';
+			$headerArray['Access-Control-Allow-Methods'] = $methods;
 		} else {
-			if ($this->http->res === null) {
-				$oRepresentation = Env::$oRepresentation;
+			if ($this->httpObject->httpResponseObject === Constant::$NULL) {
+				$outputRepresentation = Env::$outputRepresentation;
 			} else {
-				$oRepresentation = $this->http->res->oRepresentation;
+				$outputRepresentation = $this->httpObject->httpResponseObject->outputRepresentation;
 			}
-			switch ($oRepresentation) {
+			switch ($outputRepresentation) {
 				case 'XML':
 				case 'XSLT':
-					$headerArr['Content-Type'] = 'text/xml; charset=utf-8';
+					$headerArray['Content-Type'] = 'text/xml; charset=utf-8';
 					break;
 				case 'JSON':
-					$headerArr['Content-Type'] = 'application/json; charset=utf-8';
+					$headerArray['Content-Type'] = 'application/json; charset=utf-8';
 					break;
 				case 'HTML':
 				case 'PHP':
-					$headerArr['Content-Type'] = 'text/html; charset=utf-8';
+					$headerArray['Content-Type'] = 'text/html; charset=utf-8';
 					break;
 			}
 			$cacheControl = 'no-store, no-cache, must-revalidate, max-age=0';
-			$headerArr['Cache-Control'] = $cacheControl;
-			$headerArr['Pragma'] = 'no-cache';
+			$headerArray['Cache-Control'] = $cacheControl;
+			$headerArray['Pragma'] = 'no-cache';
 		}
 
-		return $headerArr;
+		return $headerArray;
 	}
 
 	/**
 	 * Log error
-	 *
+	 * 
 	 * @param \Exception $e Exception
-	 *
+	 * 
 	 * @return never
 	 * @throws \Exception
 	 */
-	private function log($e): never
-	{
+	private function manageException(
+		$e
+	): never {
 		throw new \Exception(
 			message: $e->getMessage(),
 			code: $e->getCode()

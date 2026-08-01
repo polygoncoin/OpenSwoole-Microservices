@@ -3,7 +3,7 @@
 /**
  * NoSql Database
  * php version 8.3
- *
+ * 
  * @category  NoSql
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,13 +15,15 @@
 
 namespace Microservices\App\Server\Container\NoSql;
 
+use Microservices\App\CommonFunction;
+use Microservices\App\Constant;
 use Microservices\App\HttpStatus;
 use Microservices\App\Server\Container\NoSql\NoSqlInterface;
 
 /**
  * Memcached
  * php version 8.3
- *
+ * 
  * @category  Memcached
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -34,28 +36,28 @@ class Memcached implements NoSqlInterface
 {
 	/**
 	 * Cache Server Hostname
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerHostname = null;
 
 	/**
 	 * Cache Server Port
-	 *
+	 * 
 	 * @var null|int
 	 */
 	private $cacheServerPort = null;
 
 	/**
 	 * Cache Server Object
-	 *
+	 * 
 	 * @var null|\Memcached
 	 */
-	private $cacheServerObj = null;
+	private $cacheServerObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string      $cacheServerHostname Cache Server Hostname
 	 * @param int         $cacheServerPort     Cache Server Port
 	 * @param string      $cacheServerUsername Cache Server Username
@@ -77,17 +79,21 @@ class Memcached implements NoSqlInterface
 
 	/**
 	 * Cache Server Object
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
 	public function connect(): void
 	{
-		if ($this->cacheServerObj !== null) {
+		if ($this->cacheServerObject !== Constant::$NULL) {
 			return;
 		}
 
-		if (!extension_loaded(extension: 'memcached')) {
+		if (
+			!extension_loaded(
+				extension: 'memcached'
+			)
+		) {
 			throw new \Exception(
 				message: 'Unable to find Memcached extension',
 				code: HttpStatus::$InternalServerError
@@ -95,8 +101,8 @@ class Memcached implements NoSqlInterface
 		}
 
 		try {
-			$this->cacheServerObj = new \Memcached();
-			$this->cacheServerObj->addServer(
+			$this->cacheServerObject = new \Memcached();
+			$this->cacheServerObject->addServer(
 				$this->cacheServerHostname,
 				$this->cacheServerPort
 			);
@@ -110,47 +116,57 @@ class Memcached implements NoSqlInterface
 
 	/**
 	 * Cache key exist
-	 *
+	 * 
 	 * @param string $key Key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function exist($key): mixed
-	{
+	public function exist(
+		$key
+	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
 
-		return $this->get($key) !== false;
+		return $this->get(
+			$key
+		) !== Constant::$FALSE;
 	}
 
 	/**
 	 * Get cache key
-	 *
+	 * 
 	 * @param string $key Key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function get($key): mixed
-	{
+	public function get(
+		$key
+	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
 
-		return $this->cacheServerObj->get($key);
+		$return = CommonFunction::jsonDecode(
+			value: $this->cacheServerObject->get(
+				$key
+			)
+		);
+
+		return $return;
 	}
 
 	/**
 	 * Set cache key
-	 *
+	 * 
 	 * @param string $key    Key
-	 * @param string $value  Cache value
+	 * @param mixed  $value  Cache value
 	 * @param int    $expire Seconds to expire. Default 0 - doesn't expire
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function set(
@@ -160,17 +176,21 @@ class Memcached implements NoSqlInterface
 	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
 
-		if ($expire === null) {
-			return $this->cacheServerObj->set(
+		$value = json_encode(
+			value: $value
+		);
+
+		if ($expire === Constant::$NULL) {
+			return $this->cacheServerObject->set(
 				$key,
 				$value
 			);
 		} else {
-			return $this->cacheServerObj->set(
+			return $this->cacheServerObject->set(
 				$key,
 				$value,
 				$expire
@@ -180,10 +200,10 @@ class Memcached implements NoSqlInterface
 
 	/**
 	 * Increment cache key with offset
-	 *
+	 * 
 	 * @param string $key    Key
 	 * @param int    $offset Offset
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function increment(
@@ -192,11 +212,11 @@ class Memcached implements NoSqlInterface
 	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
 
-		return $this->cacheServerObj->increment(
+		return $this->cacheServerObject->increment(
 			$key,
 			$offset
 		);
@@ -204,19 +224,22 @@ class Memcached implements NoSqlInterface
 
 	/**
 	 * Delete cache key
-	 *
+	 * 
 	 * @param string $key Key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function delete($key): mixed
-	{
+	public function delete(
+		$key
+	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
 
-		return $this->cacheServerObj->delete($key);
+		return $this->cacheServerObject->delete(
+			$key
+		);
 	}
 }

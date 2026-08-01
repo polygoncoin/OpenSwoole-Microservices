@@ -3,7 +3,7 @@
 /**
  * Query Cache
  * php version 8.3
- *
+ * 
  * @category  Server
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,13 +15,14 @@
 
 namespace Microservices\App\Server;
 
+use Microservices\App\Constant;
 use Microservices\App\HttpStatus;
 use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
 
 /**
  * Query Cache Server
  * php version 8.3
- *
+ * 
  * @category  Query Cache Server
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -34,63 +35,63 @@ class QueryCacheServer
 {
 	/**
 	 * Query Cache Server Type
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerType = null;
 
 	/**
 	 * Query Cache Server Hostname
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerHostname = null;
 
 	/**
 	 * Query Cache Server Port
-	 *
+	 * 
 	 * @var null|int
 	 */
 	private $queryCacheServerPort = null;
 
 	/**
 	 * Query Cache Server Username
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerUsername = null;
 
 	/**
 	 * Query Cache Server Password
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerPassword = null;
 
 	/**
 	 * Query Cache Server DB
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerDatabase = null;
 
 	/**
 	 * Cache collection
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $queryCacheServerTable = null;
 
 	/**
 	 * Query Cache Server Object
-	 *
+	 * 
 	 * @var null|QueryCacheServerInterface
 	 */
-	private $queryCacheServerObj = null;
+	private $queryCacheServerObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string      $queryCacheServerType     Query Cache Server Type
 	 * @param string      $queryCacheServerHostname Query Cache Server Hostname
 	 * @param int         $queryCacheServerPort     Query Cache Server Port
@@ -119,12 +120,12 @@ class QueryCacheServer
 
 	/**
 	 * Connect Query Cache
-	 *
+	 * 
 	 * @return void
 	 */
 	public function connectQueryCache(): void
 	{
-		if ($this->queryCacheServerObj !== null) {
+		if ($this->queryCacheServerObject !== Constant::$NULL) {
 			return;
 		}
 
@@ -136,7 +137,7 @@ class QueryCacheServer
                     'Memcached',
                     'MongoDb'
                 ],
-				strict: true
+				strict: Constant::$TRUE
             )
         ) {
 			throw new \Exception(
@@ -148,7 +149,7 @@ class QueryCacheServer
 		$queryCacheServerNS = 'Microservices\\App\\Server\\QueryCacheServer\\'
             . $this->queryCacheServerType . 'QueryCache';
 
-		$this->queryCacheServerObj = new $queryCacheServerNS(
+		$this->queryCacheServerObject = new $queryCacheServerNS(
 			queryCacheServerHostname: $this->queryCacheServerHostname,
 			queryCacheServerPort: $this->queryCacheServerPort,
 			queryCacheServerUsername: $this->queryCacheServerUsername,
@@ -160,50 +161,52 @@ class QueryCacheServer
 
 	/**
 	 * Query Cache key exist
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function queryCacheExist($queryCacheKey): mixed
-	{
+	public function queryCacheExist(
+		$queryCacheKey
+	): mixed {
 		$this->connectQueryCache();
 
-		if (strlen($queryCacheKey) === 0) {
+		if (empty($queryCacheKey)) {
 			return false;
 		}
 
-		return $this->queryCacheServerObj->queryCacheExist(
+		return $this->queryCacheServerObject->queryCacheExist(
 			queryCacheKey: $queryCacheKey
 		);
 	}
 
 	/**
 	 * Get Query Cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function queryCacheGet($queryCacheKey): mixed
-	{
+	public function queryCacheGet(
+		$queryCacheKey
+	): mixed {
 		$this->connectQueryCache();
 
-		if (strlen($queryCacheKey) === 0) {
+		if (empty($queryCacheKey)) {
 			return false;
 		}
 
-		return $this->queryCacheServerObj->queryCacheGet(
+		return $this->queryCacheServerObject->queryCacheGet(
 			queryCacheKey: $queryCacheKey
 		);
 	}
 
 	/**
 	 * Set cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey   Query Cache key
-	 * @param string $queryCacheValue Query Cache value
-	 *
+	 * @param mixed  $queryCacheValue Query Cache value
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheSet(
@@ -212,11 +215,11 @@ class QueryCacheServer
 	): mixed {
 		$this->connectQueryCache();
 
-		if (strlen($queryCacheKey) === 0) {
+		if (empty($queryCacheKey)) {
 			return false;
 		}
 
-		return $this->queryCacheServerObj->queryCacheSet(
+		return $this->queryCacheServerObject->queryCacheSet(
 			queryCacheKey: $queryCacheKey,
 			queryCacheValue:  $queryCacheValue
 		);
@@ -224,10 +227,10 @@ class QueryCacheServer
 
 	/**
 	 * Increment Query Cache key as per offset
-	 *
-	 * @param string $queryCacheKey Query Cache key
-	 * @param int    $queryCacheOffset        Query Cache offset
-	 *
+	 * 
+	 * @param string $queryCacheKey    Query Cache key
+	 * @param int    $queryCacheOffset Query Cache offset
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheIncrement(
@@ -236,11 +239,11 @@ class QueryCacheServer
 	): mixed {
 		$this->connectQueryCache();
 
-		if (strlen($queryCacheKey) === 0) {
+		if (empty($queryCacheKey)) {
 			return false;
 		}
 
-		return $this->queryCacheServerObj->queryCacheIncrement(
+		return $this->queryCacheServerObject->queryCacheIncrement(
 			queryCacheKey: $queryCacheKey,
 			queryCacheOffset: $queryCacheOffset
 		);
@@ -248,20 +251,21 @@ class QueryCacheServer
 
 	/**
 	 * Delete Query Cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function queryCacheDelete($queryCacheKey): mixed
-	{
+	public function queryCacheDelete(
+		$queryCacheKey
+	): mixed {
 		$this->connectQueryCache();
 
-		if (strlen($queryCacheKey) === 0) {
+		if (empty($queryCacheKey)) {
 			return false;
 		}
 
-		return $this->queryCacheServerObj->queryCacheDelete(
+		return $this->queryCacheServerObject->queryCacheDelete(
 			queryCacheKey: $queryCacheKey
 		);
 	}

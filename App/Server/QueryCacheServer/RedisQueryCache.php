@@ -3,7 +3,7 @@
 /**
  * Handling Query Cache via Redis
  * php version 8.3
- *
+ * 
  * @category  QueryCache
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,6 +15,7 @@
 
 namespace Microservices\App\Server\QueryCacheServer;
 
+use Microservices\App\Constant;
 use Microservices\App\HttpStatus;
 use Microservices\App\Server\CacheServer\RedisCache as QueryCache_Redis;
 use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
@@ -22,7 +23,7 @@ use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
 /**
  * Caching via Redis
  * php version 8.3
- *
+ * 
  * @category  QueryCache_Redis
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,56 +36,56 @@ class RedisQueryCache implements QueryCacheServerInterface
 {
 	/**
 	 * Query Cache Server Hostname
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerHostname = null;
 
 	/**
 	 * Query Cache Server Port
-	 *
+	 * 
 	 * @var null|int
 	 */
 	private $queryCacheServerPort = null;
 
 	/**
 	 * Query Cache Server Username
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerUsername = null;
 
 	/**
 	 * Query Cache Server Password
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerPassword = null;
 
 	/**
 	 * Query Cache Server DB
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerDatabase = null;
 
 	/**
 	 * Cache collection
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $queryCacheServerTable = null;
 
 	/**
 	 * Query Cache Server Object
-	 *
+	 * 
 	 * @var null|QueryCache_Redis
 	 */
-	private $queryCacheServerObj = null;
+	private $queryCacheServerObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string      $queryCacheServerHostname Query Cache Server Hostname
 	 * @param int         $queryCacheServerPort     Query Cache Server Port
 	 * @param string      $queryCacheServerUsername Query Cache Server Username
@@ -110,18 +111,18 @@ class RedisQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Connect Query Cache
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
 	public function connectQueryCache(): void
 	{
-		if ($this->queryCacheServerObj !== null) {
+		if ($this->queryCacheServerObject !== Constant::$NULL) {
 			return;
 		}
 
 		try {
-			$this->queryCacheServerObj = new QueryCache_Redis(
+			$this->queryCacheServerObject = new QueryCache_Redis(
 				cacheServerHostname: $this->queryCacheServerHostname,
 				cacheServerPort: $this->queryCacheServerPort,
 				cacheServerUsername: $this->queryCacheServerUsername,
@@ -139,50 +140,52 @@ class RedisQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Query Cache key exist
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function queryCacheExist($queryCacheKey): mixed
-	{
+	public function queryCacheExist(
+		$queryCacheKey
+	): mixed {
 		$this->connectQueryCache();
 
-		if (strlen($queryCacheKey) === 0) {
+		if (empty($queryCacheKey)) {
 			return false;
 		}
 
-		return $this->queryCacheServerObj->cacheExist(
+		return $this->queryCacheServerObject->cacheExist(
 			cacheKey: $queryCacheKey
 		);
 	}
 
 	/**
 	 * Get Query Cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function queryCacheGet($queryCacheKey): mixed
-	{
+	public function queryCacheGet(
+		$queryCacheKey
+	): mixed {
 		$this->connectQueryCache();
 
-		if (strlen($queryCacheKey) === 0) {
+		if (empty($queryCacheKey)) {
 			return false;
 		}
 
-		return $this->queryCacheServerObj->cacheGet(
+		return $this->queryCacheServerObject->cacheGet(
 			cacheKey: $queryCacheKey
 		);
 	}
 
 	/**
 	 * Set cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey   Query Cache key
-	 * @param string $queryCacheValue Query Cache value
-	 *
+	 * @param mixed  $queryCacheValue Query Cache value
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheSet(
@@ -191,11 +194,11 @@ class RedisQueryCache implements QueryCacheServerInterface
 	): mixed {
 		$this->connectQueryCache();
 
-		if (strlen($queryCacheKey) === 0) {
+		if (empty($queryCacheKey)) {
 			return false;
 		}
 
-		return $this->queryCacheServerObj->cacheSet(
+		return $this->queryCacheServerObject->cacheSet(
 			cacheKey: $queryCacheKey,
 			cacheValue:  $queryCacheValue
 		);
@@ -203,10 +206,10 @@ class RedisQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Increment Query Cache key as per offset
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
 	 * @param int    $queryCacheOffset        Query Cache offset
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheIncrement(
@@ -215,11 +218,11 @@ class RedisQueryCache implements QueryCacheServerInterface
 	): mixed {
 		$this->connectQueryCache();
 
-		if (strlen($queryCacheKey) === 0) {
+		if (empty($queryCacheKey)) {
 			return false;
 		}
 
-		return $this->queryCacheServerObj->cacheIncrement(
+		return $this->queryCacheServerObject->cacheIncrement(
 			cacheKey: $queryCacheKey,
 			cacheOffset: $queryCacheOffset
 		);
@@ -227,20 +230,21 @@ class RedisQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Delete Query Cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function queryCacheDelete($queryCacheKey): mixed
-	{
+	public function queryCacheDelete(
+		$queryCacheKey
+	): mixed {
 		$this->connectQueryCache();
 
-		if (strlen($queryCacheKey) === 0) {
+		if (empty($queryCacheKey)) {
 			return false;
 		}
 
-		return $this->queryCacheServerObj->cacheDelete(
+		return $this->queryCacheServerObject->cacheDelete(
 			cacheKey: $queryCacheKey
 		);
 	}

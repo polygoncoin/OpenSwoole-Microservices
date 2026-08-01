@@ -3,7 +3,7 @@
 /**
  * Test Case
  * php version 8.3
- *
+ * 
  * @category  Test Case
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,20 +15,17 @@
 
 namespace Microservices\TestCase;
 
-if (!defined('PRIVATE_GET')) {
-	define('PRIVATE_GET', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'GET');
-	define('PRIVATE_POST', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'POST');
-	define('PRIVATE_PUT', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'PUT');
-	define('PRIVATE_PATCH', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'PATCH');
-	define('PRIVATE_DELETE', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'DELETE');
-}
+use Microservices\App\Constant;
+use Microservices\App\Web;
 
-if (!defined('PUBLIC_GET')) {
-	define('PUBLIC_GET', __DIR__ . DIRECTORY_SEPARATOR . 'Public' . DIRECTORY_SEPARATOR . 'GET');
-	define('PUBLIC_POST', __DIR__ . DIRECTORY_SEPARATOR . 'Public' . DIRECTORY_SEPARATOR . 'POST');
-	define('PUBLIC_PUT', __DIR__ . DIRECTORY_SEPARATOR . 'Public' . DIRECTORY_SEPARATOR . 'PUT');
-	define('PUBLIC_PATCH', __DIR__ . DIRECTORY_SEPARATOR . 'Public' . DIRECTORY_SEPARATOR . 'PATCH');
-	define('PUBLIC_DELETE', __DIR__ . DIRECTORY_SEPARATOR . 'Public' . DIRECTORY_SEPARATOR . 'DELETE');
+if (!defined('PRIVATE_GET')) {
+	define('PRIVATE_DIRECTORY', __DIR__ . DIRECTORY_SEPARATOR . 'Private');
+	define('PRIVATE_GET', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$GET);
+	define('PRIVATE_QUERY', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$QUERY);
+	define('PRIVATE_POST', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$POST);
+	define('PRIVATE_PUT', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$PUT);
+	define('PRIVATE_PATCH', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$PATCH);
+	define('PRIVATE_DELETE', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$DELETE);
 }
 
 // $apiVersion = 'X-API-Version: v1.0.0';
@@ -39,17 +36,13 @@ $contentType = 'Content-Type: text/plain; charset=utf-8';
 
 $curlFile = __DIR__ . '/category.csv';
 
-$defaultHeaderArr = [];
-// $defaultHeaderArr[] = $apiVersion;
-$defaultHeaderArr[] = $cacheControl;
+$defaultHeaderArray = [];
+// $defaultHeaderArray[] = $apiVersion;
+$defaultHeaderArray[] = $cacheControl;
 
 $response = [];
 
-if (defined('__MODE__')) {
-	$homeURL = 'http://127.0.0.1:9501';
-} else {
-	$homeURL = 'http://api.customer001.localhost/Microservices/www/public_html/index.php';
-}
+$homeURL = 'http://127.0.0.1:9501';
 
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Reload.php';
 
@@ -59,22 +52,22 @@ $payload = [
 ];
 $response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Login.php';
 
-$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Route.php';
-
+$response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'CategoryConfig.php';
 $response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Config.php';
 $response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Category.php';
-
 $response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Registration.php';
 $response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Address.php';
 $response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'RegistrationWithAddress.php';
 
+$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Route.php';
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Category.php';
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'CategorySingle.php';
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'CategoryOrderBy.php';
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'RegistrationSingle.php';
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'AddressSingle.php';
-$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR
-	. 'RegistrationWithAddressSingle.php';
+$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'RegistrationWithAddressSingle.php';
+
+$response[] = include PRIVATE_QUERY . DIRECTORY_SEPARATOR . 'Category.php';
 
 $response[] = include PRIVATE_PUT . DIRECTORY_SEPARATOR . 'Registration.php';
 $response[] = include PRIVATE_PUT . DIRECTORY_SEPARATOR . 'Address.php';
@@ -85,13 +78,7 @@ $response[] = include PRIVATE_PATCH . DIRECTORY_SEPARATOR . 'Address.php';
 $response[] = include PRIVATE_DELETE . DIRECTORY_SEPARATOR . 'Registration.php';
 $response[] = include PRIVATE_DELETE . DIRECTORY_SEPARATOR . 'Address.php';
 
-$response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'CategoryConfig.php';
-
-if (defined('__MODE__')) {
-	$homeURL = 'http://127.0.0.1:9501';
-} else {
-	$homeURL = 'http://web.customer001.localhost/Microservices/www/public_html/index.php';
-}
+$homeURL = 'http://127.0.0.1:9501';
 
 // Admin login
 $payload = [
@@ -100,15 +87,13 @@ $payload = [
 ];
 $response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Login.php';
 
-$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Route.php';
-
-$response[] = include PRIVATE_DELETE . DIRECTORY_SEPARATOR . 'CategoryTruncate.php';
-
+$response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'CategoryConfig.php';
 $response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Category.php';
 $response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Registration.php';
 $response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Address.php';
 $response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'RegistrationWithAddress.php';
 
+$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Route.php';
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Category.php';
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'CategorySingle.php';
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'CategoryOrderBy.php';
@@ -117,8 +102,9 @@ $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'RegistrationSingle.ph
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Address.php';
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'AddressSingle.php';
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'RegistrationWithAddress.php';
-$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR
-	. 'RegistrationWithAddressSingle.php';
+$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'RegistrationWithAddressSingle.php';
+
+$response[] = include PRIVATE_QUERY . DIRECTORY_SEPARATOR . 'Category.php';
 
 $response[] = include PRIVATE_PUT . DIRECTORY_SEPARATOR . 'Registration.php';
 $response[] = include PRIVATE_PUT . DIRECTORY_SEPARATOR . 'Address.php';
@@ -131,7 +117,6 @@ $response[] = include PRIVATE_PATCH . DIRECTORY_SEPARATOR . 'RegistrationWithAdd
 $response[] = include PRIVATE_DELETE . DIRECTORY_SEPARATOR . 'Registration.php';
 $response[] = include PRIVATE_DELETE . DIRECTORY_SEPARATOR . 'Address.php';
 $response[] = include PRIVATE_DELETE . DIRECTORY_SEPARATOR . 'RegistrationWithAddress.php';
-
-$response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'CategoryConfig.php';
+// $response[] = include PRIVATE_DELETE . DIRECTORY_SEPARATOR . 'CategoryTruncate.php';
 
 return $response;

@@ -3,7 +3,7 @@
 /**
  * Handling PHP Encode
  * php version 8.3
- *
+ * 
  * @category  DataEncode_PHP
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -17,10 +17,10 @@ namespace Microservices\App\DataRepresentation\Encode\PhpEncoder;
 
 /**
  * PHP Encoder Object
- *
+ * 
  * This class is built to help maintain state of simple/associative array
  * php version 8.3
- *
+ * 
  * @category  Php_Encoder_Object
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -37,7 +37,7 @@ class PhpEncoderObject
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string      $mode      Values can be one among Array/object
 	 * @param null|string $objectKey Tag
 	 */

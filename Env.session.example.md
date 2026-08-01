@@ -23,7 +23,7 @@ ENCRYPTION_PASS_PHRASE='H7OO2m3qe9pHyAHFiERlYJKnlTMtCJs9ZbGphX9NO/c='
 ENCRYPTION_IV='HnPG5az9Xaxam9G9tMuRaw=='
 ```
 
-## MySQL based PHP Session related configs
+## MySql based PHP Session related configs
 
 ```ini
 ; MySQL
@@ -35,7 +35,7 @@ mySqlServerDatabase='session_db'
 mySqlServerTable='sessions'
 ```
 
-## PostgreSQL based PHP Session related configs
+## PostgreSql based PHP Session related configs
 
 ```ini
 ; PostgreSQL

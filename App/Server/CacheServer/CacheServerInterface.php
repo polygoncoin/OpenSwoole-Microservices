@@ -3,7 +3,7 @@
 /**
  * NoSql Container
  * php version 8.3
- *
+ * 
  * @category  Cache
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\App\Server\CacheServer;
 /**
  * NoSql Container (Cache) Interface
  * php version 8.3
- *
+ * 
  * @category  Cache_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -31,7 +31,7 @@ interface CacheServerInterface
 {
 	/**
 	 * Cache Server Object
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -39,29 +39,33 @@ interface CacheServerInterface
 
 	/**
 	 * Cache key exist
-	 *
+	 * 
 	 * @param string $cacheKey Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function cacheExist($cacheKey): mixed;
+	public function cacheExist(
+		$cacheKey
+	): mixed;
 
 	/**
 	 * Get cache key
-	 *
+	 * 
 	 * @param string $cacheKey Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function cacheGet($cacheKey): mixed;
+	public function cacheGet(
+		$cacheKey
+	): mixed;
 
 	/**
 	 * Set cache key
-	 *
+	 * 
 	 * @param string $cacheKey    Cache key
-	 * @param string $cacheValue  Cache value
+	 * @param mixed  $cacheValue  Cache value
 	 * @param int    $cacheExpire Seconds to expire. Default 0 - doesn't expire
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function cacheSet(
@@ -72,10 +76,10 @@ interface CacheServerInterface
 
 	/**
 	 * Increment cache key with offset
-	 *
+	 * 
 	 * @param string $cacheKey    Cache key
 	 * @param int    $cacheOffset Offset
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function cacheIncrement(
@@ -85,10 +89,12 @@ interface CacheServerInterface
 
 	/**
 	 * Delete cache key
-	 *
+	 * 
 	 * @param string $cacheKey Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function cacheDelete($cacheKey): mixed;
+	public function cacheDelete(
+		$cacheKey
+	): mixed;
 }

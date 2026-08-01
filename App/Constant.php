@@ -3,7 +3,7 @@
 /**
  * Constant
  * php version 8.3
- *
+ * 
  * @category  Constant
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\App;
 /**
  * Constant
  * php version 8.3
- *
+ * 
  * @category  Constant
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -29,7 +29,9 @@ namespace Microservices\App;
  */
 class Constant
 {
+	// HTTP Request Method
 	public static $GET       = 'GET';
+	public static $QUERY     = 'QUERY';
 	public static $POST      = 'POST';
 	public static $PUT       = 'PUT';
 	public static $PATCH     = 'PATCH';
@@ -39,43 +41,54 @@ class Constant
 	public static $PRODUCTION = 1;
 	public static $DEVELOPMENT = 0;
 
+	public static $NULL = null;
+
+	public static $TRUE = true;
+	public static $FALSE = false;
+
+	public static $YES = 'Yes';
+	public static $NO = 'No';
+
 	public static $TOKEN_EXPIRY_TIME = 25 * 24 * 3600;
 	public static $REQUIRED = true;
 
 	public static $ROOT = null;
 	public static $WWW = null;
-	public static $FILE_DIR = null;
+	public static $FILE_DIRECTORY = null;
 
-	public static $DROPBOX_DIR = null;
-	public static $DROPBOX_PRIVATE_DIR = null;
-	public static $DROPBOX_PUBLIC_DIR = null;
+	public static $SUPPLEMENT_DIRECTORY = null;
+	public static $SUPPLEMENT_NS = null;
 
-	public static $SERVING_FILE_DIR = null;
-	public static $SERVING_FILE_PRIVATE_DIR = null;
-	public static $SERVING_FILE_PUBLIC_DIR = null;
+	public static $DROPBOX_DIRECTORY = null;
+	public static $DROPBOX_PRIVATE_DIRECTORY = null;
+	public static $DROPBOX_PUBLIC_DIRECTORY = null;
 
-	public static $HTML_PRIVATE_DIR = null;
-	public static $PHP_PRIVATE_DIR = null;
-	public static $XSLT_PRIVATE_DIR = null;
+	public static $SERVING_FILE_DIRECTORY = null;
+	public static $SERVING_FILE_PRIVATE_DIRECTORY = null;
+	public static $SERVING_FILE_PUBLIC_DIRECTORY = null;
 
-	public static $HTML_PUBLIC_DIR = null;
-	public static $PHP_PUBLIC_DIR = null;
-	public static $XSLT_PUBLIC_DIR = null;
+	public static $HTML_PRIVATE_DIRECTORY = null;
+	public static $PHP_PRIVATE_DIRECTORY = null;
+	public static $XSLT_PRIVATE_DIRECTORY = null;
 
-	public static $ROUTES_PRIVATE_DIR = null;
-	public static $ROUTES_PUBLIC_DIR = null;
+	public static $HTML_PUBLIC_DIRECTORY = null;
+	public static $PHP_PUBLIC_DIRECTORY = null;
+	public static $XSLT_PUBLIC_DIRECTORY = null;
 
-	public static $QUERIES_PRIVATE_DIR = null;
-	public static $QUERIES_PUBLIC_DIR = null;
+	public static $ROUTES_CONFIG_PRIVATE_DIRECTORY = null;
+	public static $ROUTES_CONFIG_PUBLIC_DIRECTORY = null;
 
-	public static $WEB_COOKIES_DIR = null;
-	public static $LOG_DIR = null;
+	public static $SQL_CONFIG_PRIVATE_DIRECTORY = null;
+	public static $SQL_CONFIG_PUBLIC_DIRECTORY = null;
+
+	public static $WEB_COOKIES_DIRECTORY = null;
+	public static $LOG_DIRECTORY = null;
 
 	private static $initialized = false;
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return void
 	 */
 	public static function init(): void
@@ -84,49 +97,69 @@ class Constant
 			return;
 		}
 
-		self::$ROOT = dirname(path: __DIR__ . '..' . DIRECTORY_SEPARATOR);
+		self::$ROOT = dirname(
+			path: __DIR__ . '..' . DIRECTORY_SEPARATOR
+		);
 		self::$WWW = self::$ROOT;
+		self::$FILE_DIRECTORY = self::$WWW . DIRECTORY_SEPARATOR . 'File';
 
-		self::$FILE_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'File';
+		self::$SUPPLEMENT_DIRECTORY = self::$WWW . DIRECTORY_SEPARATOR . 'Supplement';
+		self::$SUPPLEMENT_NS = 'Microservices\\Supplement';
 
-		self::$DROPBOX_DIR = self::$FILE_DIR . DIRECTORY_SEPARATOR . 'Dropbox';
-		self::$DROPBOX_PRIVATE_DIR = self::$DROPBOX_DIR . DIRECTORY_SEPARATOR . 'Private';
-		self::$DROPBOX_PUBLIC_DIR = self::$DROPBOX_DIR . DIRECTORY_SEPARATOR . 'Public';
+		self::$DROPBOX_DIRECTORY = self::$FILE_DIRECTORY . DIRECTORY_SEPARATOR . 'Dropbox';
+		self::$DROPBOX_PRIVATE_DIRECTORY = self::$DROPBOX_DIRECTORY . DIRECTORY_SEPARATOR . 'Private';
+		self::$DROPBOX_PUBLIC_DIRECTORY = self::$DROPBOX_DIRECTORY . DIRECTORY_SEPARATOR . 'Public';
 
-		self::$SERVING_FILE_DIR = self::$FILE_DIR . DIRECTORY_SEPARATOR . 'ServingFile';
-		self::$SERVING_FILE_PRIVATE_DIR = self::$SERVING_FILE_DIR . DIRECTORY_SEPARATOR . 'Private';
-		self::$SERVING_FILE_PUBLIC_DIR = self::$SERVING_FILE_DIR . DIRECTORY_SEPARATOR . 'Public';
+		self::$SERVING_FILE_DIRECTORY = self::$FILE_DIRECTORY . DIRECTORY_SEPARATOR . 'ServingFile';
+		self::$SERVING_FILE_PRIVATE_DIRECTORY = self::$SERVING_FILE_DIRECTORY . DIRECTORY_SEPARATOR . 'Private';
+		self::$SERVING_FILE_PUBLIC_DIRECTORY = self::$SERVING_FILE_DIRECTORY . DIRECTORY_SEPARATOR . 'Public';
 
-		self::$HTML_PRIVATE_DIR = self::$SERVING_FILE_PRIVATE_DIR . DIRECTORY_SEPARATOR . 'HTML';
-		self::$PHP_PRIVATE_DIR = self::$SERVING_FILE_PRIVATE_DIR . DIRECTORY_SEPARATOR . 'PHP';
-		self::$XSLT_PRIVATE_DIR = self::$SERVING_FILE_PRIVATE_DIR . DIRECTORY_SEPARATOR . 'XSLT';
+		self::$HTML_PRIVATE_DIRECTORY = self::$SERVING_FILE_PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . 'HTML';
+		self::$PHP_PRIVATE_DIRECTORY = self::$SERVING_FILE_PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . 'PHP';
+		self::$XSLT_PRIVATE_DIRECTORY = self::$SERVING_FILE_PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . 'XSLT';
 
-		self::$HTML_PUBLIC_DIR = self::$SERVING_FILE_PUBLIC_DIR . DIRECTORY_SEPARATOR . 'HTML';
-		self::$PHP_PUBLIC_DIR = self::$SERVING_FILE_PUBLIC_DIR . DIRECTORY_SEPARATOR . 'PHP';
-		self::$XSLT_PUBLIC_DIR = self::$SERVING_FILE_PUBLIC_DIR . DIRECTORY_SEPARATOR . 'XSLT';
+		self::$HTML_PUBLIC_DIRECTORY = self::$SERVING_FILE_PUBLIC_DIRECTORY . DIRECTORY_SEPARATOR . 'HTML';
+		self::$PHP_PUBLIC_DIRECTORY = self::$SERVING_FILE_PUBLIC_DIRECTORY . DIRECTORY_SEPARATOR . 'PHP';
+		self::$XSLT_PUBLIC_DIRECTORY = self::$SERVING_FILE_PUBLIC_DIRECTORY . DIRECTORY_SEPARATOR . 'XSLT';
 
-		self::$ROUTES_PRIVATE_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
+		self::$ROUTES_CONFIG_PRIVATE_DIRECTORY = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Route'
 			. DIRECTORY_SEPARATOR . 'Private';
-		self::$ROUTES_PUBLIC_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
+		self::$ROUTES_CONFIG_PUBLIC_DIRECTORY = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Route'
 			. DIRECTORY_SEPARATOR . 'Public';
 
-		self::$QUERIES_PRIVATE_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
+		self::$SQL_CONFIG_PRIVATE_DIRECTORY = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Sql'
 			. DIRECTORY_SEPARATOR . 'Private';
-		self::$QUERIES_PUBLIC_DIR = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
+		self::$SQL_CONFIG_PUBLIC_DIRECTORY = self::$WWW . DIRECTORY_SEPARATOR . 'Config'
 			. DIRECTORY_SEPARATOR . 'Sql'
 			. DIRECTORY_SEPARATOR . 'Public';
 
-		self::$WEB_COOKIES_DIR = self::$ROOT . DIRECTORY_SEPARATOR . 'WebCookie';
-		if (!is_dir(filename: self::$WEB_COOKIES_DIR)) {
-			mkdir(directory: self::$WEB_COOKIES_DIR, permissions: 0755, recursive: true);
+		self::$WEB_COOKIES_DIRECTORY = self::$ROOT . DIRECTORY_SEPARATOR . 'WebCookie';
+		if (
+			!is_dir(
+				filename: self::$WEB_COOKIES_DIRECTORY
+			)
+		) {
+			mkdir(
+				directory: self::$WEB_COOKIES_DIRECTORY,
+				permissions: 0755,
+				recursive: self::$TRUE
+			);
 		}
 
-		self::$LOG_DIR = self::$ROOT . DIRECTORY_SEPARATOR . 'Log';
-		if (!is_dir(filename: self::$LOG_DIR)) {
-			mkdir(directory: self::$LOG_DIR, permissions: 0755, recursive: true);
+		self::$LOG_DIRECTORY = self::$ROOT . DIRECTORY_SEPARATOR . 'Log';
+		if (
+			!is_dir(
+				filename: self::$LOG_DIRECTORY
+			)
+		) {
+			mkdir(
+				directory: self::$LOG_DIRECTORY,
+				permissions: 0755,
+				recursive: self::$TRUE
+			);
 		}
 
 		self::$initialized = true;

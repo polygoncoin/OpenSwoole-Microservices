@@ -3,7 +3,7 @@
 /**
  * Start
  * php version 8.3
- *
+ * 
  * @category  Start
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -25,7 +25,7 @@ use Microservices\App\Log;
 /**
  * Start
  * php version 8.3
- *
+ * 
  * @category  Start
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,91 +38,99 @@ class Start
 {
 	/**
 	 * Process HTTP request data
-	 *
+	 * 
 	 * @param array $httpReqData HTTP request data
-	 *
+	 * 
 	 * @return array
 	 */
-	public static function http(&$httpReqData)
-	{
-		$headerArr = [];
+	public static function http(
+		&$httpReqData
+	): array {
+		$headerArray = [];
 
-		if ($httpReqData['server']['httpMethod'] == Constant::$POST) {
-			$startArrayPos = strpos(
+		if ($httpReqData['server']['httpRequestMethod'] == Constant::$POST) {
+			$isArray = str_starts_with(
 				haystack: $httpReqData['post'],
 				needle: '['
 			);
-			$startObjectPos = strpos(
+			$isObject = str_starts_with(
 				haystack: $httpReqData['post'],
 				needle: '{'
 			);
-			$startXmlPos = strpos(
+			$isXml = str_starts_with(
 				haystack: $httpReqData['post'],
 				needle: '<'
 			);
-			if (
-				$startArrayPos !== 0
-				&& $startObjectPos !== 0
-				&& $startXmlPos !== 0
-			) {
+			if (!$isArray && !$isObject && !$isXml) {
 				parse_str(
 					$httpReqData['post'],
 					$httpReqData['post']
 				);
-				$httpReqData['post'] = json_encode(value: $httpReqData['post']);
+				$httpReqData['post'] = json_encode(
+					value: $httpReqData['post']
+				);
 			}
 		}
 
 		try {
-			$Microservices = new Microservices(httpReqData: $httpReqData);
+			$Microservices = new Microservices(
+				httpReqData: $httpReqData
+			);
 
 			if (
 				$httpReqData['streamData']
-				&& $httpReqData['server']['httpMethod'] == Constant::$OPTIONS
+				&& $httpReqData['server']['httpRequestMethod'] == Constant::$OPTIONS
 			) {
 				// Setting CORS
-				$headerArr = $Microservices->getHeaders();
+				$headerArray = $Microservices->getHeaders();
 				$data = '{}';
 				$status = HttpStatus::$Ok;
 
-				return [$headerArr, $data, $status];
+				return [$headerArray, $data, $status];
 			}
 
 			if ($Microservices->init()) {
 				// Setting CORS
 				if ($httpReqData['streamData']) {
-					$headerArr = $Microservices->getHeaders();
+					$headerArray = $Microservices->getHeaders();
 				}
 
 				$return = $Microservices->process();
 				if (
-					is_array(value: $return)
-					&& count(value: $return) === 3
+					is_array(
+						value: $return
+					)
+					&& count(
+						value: $return
+					) === 3
 				) {
 					return $return;
 				}
 
 				$data = $Microservices->returnResults();
 				if (
-					$Microservices->http === null
-					|| $Microservices->http->res === null
+					$Microservices->httpObject === Constant::$NULL
+					|| $Microservices->httpObject->httpResponseObject === Constant::$NULL
 				) {
 					$status = HttpStatus::$Ok;
 				} else {
-					$status = $Microservices->http->res->httpStatus;
+					$status = $Microservices->httpObject->httpResponseObject->httpStatus;
 				}
 
-				return [$headerArr, $data, $status];
+				return [$headerArray, $data, $status];
 			}
 		} catch (\Exception $e) {
 			if (
 				!in_array(
 					needle: $e->getCode(),
 					haystack: [HttpStatus::$BadRequest, HttpStatus::$TooManyRequest],
-					strict: true
+					strict: Constant::$TRUE
 				)
 			) {
-				list($usec, $sec) = explode(separator: ' ', string: microtime());
+				list($usec, $sec) = explode(
+					separator: ' ',
+					string: microtime()
+				);
 				$dateTime = date(
 					format: 'Y-m-d H:i:s',
 					timestamp: $sec
@@ -135,23 +143,27 @@ class Start
 				$logData = [
 					'LogType' => 'ERROR',
 					'DateTime' => $dateTime,
-					'httpReqData' => $Microservices->http->httpReqData,
+					'httpReqData' => $Microservices->httpObject->httpReqData,
 					'HttpCode' => $e->getCode(),
 					'HttpMessage' => $e->getMessage(),
 				];
 
-				$logObj = new Log(http: $Microservices->http);
-				$logId = $logObj->log(logData: $logData);
+				$logObject = new Log(
+					httpObject: $Microservices->httpObject
+				);
+				$logId = $logObject->log(
+					logData: $logData
+				);
 			}
 
-			$headerArr = [];
+			$headerArray = [];
 			if ($e->getCode() == HttpStatus::$TooManyRequest) {
-				$headerArr['Retry-After'] = $e->getMessage();
+				$headerArray['Retry-After'] = $e->getMessage();
 				$arr = [
 					'Message' => 'Too Many request',
 					'RetryAfter' => $e->getMessage()
 				];
-			} elseif(
+			} elseif (
 				isset($logId)
 				&& $logId > 0
 			) {
@@ -165,27 +177,34 @@ class Start
 				];
 			}
 
-			// $dataEncode = new DataEncode(httpReqData: $httpReqData);
-			// $dataEncode->init();
-			// $dataEncode->startObject();
-			// $dataEncode->addKeyData(objectKey: 'Error', data: $arr);
+			// $dataEncodeObject = new DataEncode(
+			// httpReqData: $httpReqData
+			// );
+			// $dataEncodeObject->init();
+			// $dataEncodeObject->startObject();
+			// $dataEncodeObject->addKeyData(
+			// objectKey: 'Error',
+			// data: $arr
+			// );
 
-			// $data = $dataEncode->getData();
+			// $data = $dataEncodeObject->getData();
 
 			if (Env::$OUTPUT_PERFORMANCE_STATS) {
 				$performanceData = $Microservices->returnPerformance();
-				$errorArr = [
+				$errorArray = [
 					'Error' => $arr,
 					'Status' => $e->getCode(),
 					'Stats' => $performanceData['Stats']
 				];
 			} else {
-				$errorArr = ['Error' => $arr];
+				$errorArray = ['Error' => $arr];
 			}
-			$data = json_encode(value: $errorArr);
+			$data = json_encode(
+				value: $errorArray
+			);
 			$status = $e->getCode();
 
-			return [$headerArr, $data, $status];
+			return [$headerArray, $data, $status];
 		}
 	}
 }

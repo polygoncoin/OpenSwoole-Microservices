@@ -3,7 +3,7 @@
 /**
  * API Route config
  * php version 8.3
- *
+ * 
  * @category  API_Route_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,17 +13,19 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
+
 return [
 	'group' => [
-		'__FILE__' => $this->http->req->QUERIES_DIR
+		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
 			. DIRECTORY_SEPARATOR . 'GlobalDB'
-			. DIRECTORY_SEPARATOR . 'POST'
+			. DIRECTORY_SEPARATOR . Constant::$POST
 			. DIRECTORY_SEPARATOR . 'groups.php',
 	],
 	'customer' => [
-		'__FILE__' => $this->http->req->QUERIES_DIR
+		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
 			. DIRECTORY_SEPARATOR . 'GlobalDB'
-			. DIRECTORY_SEPARATOR . 'POST'
+			. DIRECTORY_SEPARATOR . Constant::$POST
 			. DIRECTORY_SEPARATOR . 'customer.php',
 	],
 ];

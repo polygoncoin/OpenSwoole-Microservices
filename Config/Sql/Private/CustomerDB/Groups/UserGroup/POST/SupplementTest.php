@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- *
+ * 
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,18 +13,23 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
+use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+use Microservices\DatabaseTable;
+
 return [
 	// detail of data to perform task
 	'__PAYLOAD__' => [
 		[
 			'column' => 'id',
-			'fetchFrom' => 'payload',
-			'fetchFromData' => 'payload-id-1',
+			'activeRequestDataKey' => 'payload',
+			'activeRequestDataKeySubKey' => 'payload-id-1',
 		],
 		[
 			'column' => 'column-1',
-			'fetchFrom' => 'payload',
-			'fetchFromData' => 'payload-param-1',
+			'activeRequestDataKey' => 'payload',
+			'activeRequestDataKeySubKey' => 'payload-param-1',
 		],
 	],
 	'__SUB-PAYLOAD__' => [
@@ -32,13 +37,13 @@ return [
 			'__PAYLOAD__' => [
 				[
 					'column' => 'sub-id',
-					'fetchFrom' => 'payload',
-					'fetchFromData' => 'sub-payload-id-1',
+					'activeRequestDataKey' => 'payload',
+					'activeRequestDataKeySubKey' => 'sub-payload-id-1',
 				],
 				[
 					'column' => 'sub-column-1',
-					'fetchFrom' => 'payload',
-					'fetchFromData' => 'sub-payload-param-1',
+					'activeRequestDataKey' => 'payload',
+					'activeRequestDataKeySubKey' => 'sub-payload-param-1',
 				],
 			],
 		]
@@ -47,5 +52,5 @@ return [
 		'Hook_Example',
 	],
 
-	'useHierarchy' => true
+	'maintainHierarchy' => Constant::$TRUE
 ];

@@ -3,7 +3,7 @@
 /**
  * Handling XML Encode
  * php version 8.3
- *
+ * 
  * @category  DataEncode_XML
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,12 +15,14 @@
 
 namespace Microservices\App\DataRepresentation\Encode\XmlEncoder;
 
+use Microservices\App\Constant;
+
 /**
  * XML Encopder Object
- *
+ * 
  * This class is built to help maintain state of simple/associative array
  * php version 8.3
- *
+ * 
  * @category  Xml_Encoder_Object
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -36,7 +38,7 @@ class XmlEncoderObject
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string      $mode      Values can be one among Array/object
 	 * @param null|string $objectKey Tag
 	 */
@@ -45,8 +47,12 @@ class XmlEncoderObject
 		$objectKey
 	) {
 		$this->mode = $mode;
-		if ($objectKey !== null) {
-			$this->objectKey = str_replace(search: ':', replace: '-', subject: $objectKey);
+		if ($objectKey !== Constant::$NULL) {
+			$this->objectKey = str_replace(
+				search: ':',
+				replace: '-',
+				subject: $objectKey
+			);
 		} else {
 			$this->objectKey = $objectKey;
 		}

@@ -3,7 +3,7 @@
 /**
  * API Route config
  * php version 8.3
- *
+ * 
  * @category  API_Route_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-return require $this->http->req->ROUTES_DIR
+return require $this->httpObject->httpRequestObject->routesDirectory
 	. DIRECTORY_SEPARATOR . 'CustomerDB'
 	. DIRECTORY_SEPARATOR . 'Common'
 	. DIRECTORY_SEPARATOR . 'PATCHroutes.php';

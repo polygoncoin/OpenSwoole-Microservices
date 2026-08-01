@@ -3,7 +3,7 @@
 /**
  * NoSql Database
  * php version 8.3
- *
+ * 
  * @category  NoSql
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,6 +15,8 @@
 
 namespace Microservices\App\Server\Container\NoSql;
 
+use Microservices\App\CommonFunction;
+use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\Server\Container\NoSql\NoSqlInterface;
@@ -22,7 +24,7 @@ use Microservices\App\Server\Container\NoSql\NoSqlInterface;
 /**
  * MongoDb
  * php version 8.3
- *
+ * 
  * @category  MongoDb
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -39,70 +41,70 @@ class MongoDb implements NoSqlInterface
 
 	/**
 	 * Cache Server Hostname
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerHostname = null;
 
 	/**
 	 * Cache Server Port
-	 *
+	 * 
 	 * @var null|int
 	 */
 	private $cacheServerPort = null;
 
 	/**
 	 * Cache Server Username
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerUsername = null;
 
 	/**
 	 * Cache Server Password
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerPassword = null;
 
 	/**
 	 * Cache Server DB
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerDatabase = null;
 
 	/**
 	 * Cache collection
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $cacheServerTable = null;
 
 	/**
 	 * Cache Object
-	 *
+	 * 
 	 * @var null|\MongoDB\Customer
 	 */
-	private $cacheServerObj = null;
+	private $cacheServerObject = null;
 
 	/**
 	 * Database Object
-	 *
+	 * 
 	 * @var null|Object
 	 */
-	private $cacheServerDatabaseObj = null;
+	private $cacheServerDatabaseObject = null;
 
 	/**
 	 * Collection Object
-	 *
+	 * 
 	 * @var null|Object
 	 */
-	private $collectionObj = null;
+	private $collectionObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string      $cacheServerHostname Cache Server Hostname
 	 * @param int         $cacheServerPort     Cache Server Port
 	 * @param string      $cacheServerUsername Cache Server Username
@@ -128,43 +130,45 @@ class MongoDb implements NoSqlInterface
 
 	/**
 	 * Cache Server Object
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
 	public function connect(): void
 	{
-		if ($this->cacheServerObj !== null) {
+		if ($this->cacheServerObject !== Constant::$NULL) {
 			return;
 		}
 
 		try {
-			if ($this->uri === null) {
+			if ($this->uri === Constant::$NULL) {
 				$UP = '';
 				if (
-					$this->cacheServerUsername !== null
-					&& $this->cacheServerPassword !== null
+					$this->cacheServerUsername !== Constant::$NULL
+					&& $this->cacheServerPassword !== Constant::$NULL
 				) {
 					$UP = "{$this->cacheServerUsername}:{$this->cacheServerPassword}@";
 				}
 				$this->uri = 'mongodb://' . $UP
 					. $this->cacheServerHostname . ':' . $this->cacheServerPort;
 			}
-			$this->cacheServerObj = new \MongoDB\Customer($this->uri);
+			$this->cacheServerObject = new \MongoDB\Customer(
+				$this->uri
+			);
 
 			// Select a database
-			$this->cacheServerDatabaseObj = $this->cacheServerObj->selectDatabase(
+			$this->cacheServerDatabaseObject = $this->cacheServerObject->selectDatabase(
 				$this->cacheServerDatabase
 			);
 
 			// Select a collection
-			$this->collectionObj = $this->cacheServerDatabaseObj->selectCollection(
+			$this->collectionObject = $this->cacheServerDatabaseObject->selectCollection(
 				$this->cacheServerTable
 			);
 
 			// Create the TTL index
 			// Set the indexed field to 'expireOn' and expireAfterSeconds to 0
-			$this->collectionObj->createIndex(
+			$this->collectionObject->createIndex(
 				['expireOn' => 1],
 				['expireAfterSeconds' => 0]
 			);
@@ -178,22 +182,27 @@ class MongoDb implements NoSqlInterface
 
 	/**
 	 * Cache key exist
-	 *
+	 * 
 	 * @param string $key Key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function exist($key): mixed
-	{
+	public function exist(
+		$key
+	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
 
 		$filter = ['key' => $key];
 
-		if ($document = $this->collectionObj->findOne($filter)) {
+		if (
+			$document = $this->collectionObject->findOne(
+				$filter
+			)
+		) {
 			return true;
 		}
 		return false;
@@ -201,30 +210,38 @@ class MongoDb implements NoSqlInterface
 
 	/**
 	 * Get cache key
-	 *
+	 * 
 	 * @param string $key Key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function get($key): mixed
-	{
+	public function get(
+		$key
+	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
 
 		$filter = ['key' => $key];
-		return $this->collectionObj->findOne($filter);
+
+		$return = CommonFunction::jsonDecode(
+			value: $this->collectionObject->findOne(
+				$filter
+			)
+		);
+
+		return $return;
 	}
 
 	/**
 	 * Set cache key
-	 *
+	 * 
 	 * @param string $key    Key
-	 * @param string $value  Cache value
+	 * @param mixed  $value  Cache value
 	 * @param int    $expire Seconds to expire. Default 0 - doesn't expire
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function set(
@@ -234,17 +251,21 @@ class MongoDb implements NoSqlInterface
 	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
+
+		$value = json_encode(
+			value: $value
+		);
 
 		$document = [
 			'key' => $key,
 			'value' => $value
 		];
 
-		if ($expire === null) {
-			if ($this->collectionObj->insertOne($document)) {
+		if ($expire === Constant::$NULL) {
+			if ($this->collectionObject->insertOne($document)) {
 				return true;
 			}
 		} else {
@@ -252,7 +273,7 @@ class MongoDb implements NoSqlInterface
 			$document['expireOn'] = new MongoDB\BSON\UTCDateTime(
 				(Env::$timestamp + $expire) * 1000
 			);
-			if ($this->collectionObj->insertOne($document)) {
+			if ($this->collectionObject->insertOne($document)) {
 				return true;
 			}
 		}
@@ -261,10 +282,10 @@ class MongoDb implements NoSqlInterface
 
 	/**
 	 * Increment cache key with offset
-	 *
+	 * 
 	 * @param string $key    Key
 	 * @param int    $offset Offset
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function increment(
@@ -273,13 +294,13 @@ class MongoDb implements NoSqlInterface
 	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
 
 		$filter = ['key' => $key];
 		$update = ['$inc' => ['value' => $offset]];
-		$result = $this->collectionObj->updateOne(
+		$result = $this->collectionObject->updateOne(
 			$filter,
 			$update
 		);
@@ -289,21 +310,22 @@ class MongoDb implements NoSqlInterface
 
 	/**
 	 * Delete cache key
-	 *
+	 * 
 	 * @param string $key Key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function delete($key): mixed
-	{
+	public function delete(
+		$key
+	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
 
 		$filter = ['key' => $key];
-		if ($this->collectionObj->deleteOne($filter)) {
+		if ($this->collectionObject->deleteOne($filter)) {
 			return true;
 		}
 		return false;

@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- *
+ * 
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,15 +13,20 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
+use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+use Microservices\DatabaseTable;
+
 return [
-	'__QUERY__' => "UPDATE `{$this->http->req->s['customerData']['userTable']}` SET __SET__ WHERE __WHERE__",
+	'__QUERY__' => "UPDATE `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` SET __SET__ WHERE __WHERE__",
 	'__VALIDATE__' => [
 		[
 			'function' => 'primaryKeyExist',
 			'functionArgs' => [
-				'table' => ['custom', $this->http->req->s['customerData']['userTable']],
-				'primary' => ['custom', 'id'],
-				'id' => ['routeParamArr', 'id']
+				'table' => ['custom', $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']],
+				'primary' => ['custom', DatabaseTable::$customerUserPrimaryKey],
+				'id' => ['routeParamArray', 'id']
 			],
 			'errorMessage' => 'Invalid registration id'
 		],

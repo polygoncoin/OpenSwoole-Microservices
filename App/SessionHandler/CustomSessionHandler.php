@@ -3,7 +3,7 @@
 /**
  * Custom Session Handler
  * php version 7
- *
+ * 
  * @category  SessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,12 +15,13 @@
 
 namespace Microservices\App\SessionHandler;
 
+use Microservices\App\Constant;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 
 /**
  * Custom Session Handler
  * php version 7
- *
+ * 
  * @category  CustomSessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -36,35 +37,35 @@ class CustomSessionHandler implements
 {
 	/**
 	 * Session cookie name
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $sessionName = null;
 
 	/**
 	 * Session data cookie name
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $sessionDataName = null;
 
 	/**
 	 * Session Container
-	 *
+	 * 
 	 * @var null|SessionContainerInterface
 	 */
 	private $container = null;
 
 	/**
 	 * Session found
-	 *
+	 * 
 	 * @var null|bool
 	 */
 	private $foundSession = null;
 
 	/**
 	 * Session id
-	 *
+	 * 
 	 * @var string
 	 */
 	private $sessionId = '';
@@ -73,14 +74,14 @@ class CustomSessionHandler implements
 	 * Session id created flag to handle session_regenerate_id
 	 * In this case validateId is called after create_sid function
 	 * Also, we have used this to validate created sessionId
-	 *
+	 * 
 	 * @var null|bool
 	 */
 	private $creatingSessionId = null;
 
 	/**
 	 * Session Data
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $sessionData = '';
@@ -90,28 +91,29 @@ class CustomSessionHandler implements
 	 * To be careful with the 'read_and_close' option
 	 * It doesn't update the session last modification timestamp
 	 * unlike the default PHP behaviour
-	 *
+	 * 
 	 * @var bool
 	 */
 	private $isTimestampUpdated = false;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param SessionContainerInterface $container Container
 	 */
-	public function __construct(&$container)
-	{
+	public function __construct(
+		&$container
+	) {
 		$this->container = &$container;
 	}
 
 	/**
 	 * Open session
 	 * A callable with the following signature
-	 *
+	 * 
 	 * @param string $sessionSavePath Save Path
 	 * @param string $sessionName     Session Name
-	 *
+	 * 
 	 * @return bool true for success or false for failure
 	 */
 	public function open(
@@ -128,24 +130,37 @@ class CustomSessionHandler implements
 
 	/**
 	 * Validate session id
-	 *
+	 * 
 	 * Calls if session cookie is present in request
-	 *
+	 * 
 	 * A callable with the following signature
-	 *
+	 * 
 	 * @param string $sessionId Session id
-	 *
+	 * 
 	 * @return bool true if the session id is valid otherwise false
 	 */
-	public function validateId($sessionId): bool
-	{
-		if ($sessionData = $this->container->getSession(sessionId: $sessionId)) {
-			if (is_null(value: $this->creatingSessionId)) {
+	public function validateId(
+		$sessionId
+	): bool {
+		if (
+			$sessionData = $this->container->getSession(
+				sessionId: $sessionId
+			)
+		) {
+			if (
+				is_null(
+					value: $this->creatingSessionId
+				)
+			) {
 				$this->sessionData = &$sessionData;
 			}
 			$this->foundSession = true;
 		} else {
-			if (is_null(value: $this->creatingSessionId)) {
+			if (
+				is_null(
+					value: $this->creatingSessionId
+				)
+			) {
 				$this->unsetSessionCookie();
 			}
 			$this->foundSession = false;
@@ -157,12 +172,12 @@ class CustomSessionHandler implements
 
 	/**
 	 * Create session id
-	 *
+	 * 
 	 * Calls if no session cookie is present
 	 * Invoked internally when a new session id is needed
-	 *
+	 * 
 	 * A callable with the following signature
-	 *
+	 * 
 	 * @return string should be new session id
 	 */
 	public function create_sid(): string // phpcs:ignore
@@ -170,14 +185,20 @@ class CustomSessionHandler implements
 		// Delete session if previous sessionId exist eg; used for
 		// session_regenerate_id()
 		if (!empty($this->sessionId)) {
-			$this->container->deleteSession(sessionId: $this->sessionId);
+			$this->container->deleteSession(
+				sessionId: $this->sessionId
+			);
 		}
 
 		$this->creatingSessionId = true;
 
 		do {
 			$sessionId = $this->getRandomString();
-		} while ($this->validateId(sessionId: $sessionId) === true);
+		} while (
+			$this->validateId(
+				sessionId: $sessionId
+			) === Constant::$TRUE
+		);
 
 		$this->creatingSessionId = null;
 
@@ -186,30 +207,31 @@ class CustomSessionHandler implements
 
 	/**
 	 * Read session data
-	 *
+	 * 
 	 * A callable with the following signature
-	 *
+	 * 
 	 * @param string $sessionId Session id
-	 *
+	 * 
 	 * @return string|false the session data or an empty string
 	 */
-	public function read($sessionId): string|false
-	{
+	public function read(
+		$sessionId
+	): string|false {
 		$this->sessionId = $sessionId;
 		return $this->sessionData;
 	}
 
 	/**
 	 * Write session data
-	 *
+	 * 
 	 * When session.lazy_write is enabled, and session data is unchanged
 	 * it will skip this method call. Instead it will call updateTimestamp
-	 *
+	 * 
 	 * A callable with the following signature
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool true for success or false for failure
 	 */
 	public function write(
@@ -221,7 +243,11 @@ class CustomSessionHandler implements
 		// unless previous data is not empty
 		if (
 			empty($sessionData)
-			&& empty(unserialize(data: $sessionData))
+			&& empty(
+				unserialize(
+					data: $sessionData
+				)
+			)
 		) {
 			$this->unsetSessionCookie();
 			return true;
@@ -242,16 +268,16 @@ class CustomSessionHandler implements
 
 	/**
 	 * Update session timestamp
-	 *
+	 * 
 	 * When session.lazy_write is enabled, and session data is unchanged
 	 * UpdateTimestamp is called instead (of write) to only update the timestamp
 	 * of session
-	 *
+	 * 
 	 * A callable with the following signature
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool true for success or false for failure
 	 */
 	public function updateTimestamp(
@@ -263,7 +289,11 @@ class CustomSessionHandler implements
 		// unless previous data is not empty
 		if (
 			empty($sessionData)
-			&& empty(unserialize(data: $sessionData))
+			&& empty(
+				unserialize(
+					data: $sessionData
+				)
+			)
 		) {
 			$this->unsetSessionCookie();
 			return true;
@@ -283,40 +313,46 @@ class CustomSessionHandler implements
 
 	/**
 	 * Cleanup old sessions
-	 *
+	 * 
 	 * A callable with the following signature
-	 *
+	 * 
 	 * @param integer $sessionMaxLifetime Session life time
-	 *
+	 * 
 	 * @return bool true for success or false for failure
 	 */
-	public function gc($sessionMaxLifetime): int|false
-	{
-		return $this->container->gcSession(sessionMaxLifetime: $sessionMaxLifetime);
+	public function gc(
+		$sessionMaxLifetime
+	): int|false {
+		return $this->container->gcSession(
+			sessionMaxLifetime: $sessionMaxLifetime
+		);
 	}
 
 	/**
 	 * Destroy a session
-	 *
+	 * 
 	 * A callable with the following signature
-	 *
+	 * 
 	 * @param string $sessionId Session id
-	 *
+	 * 
 	 * @return bool true for success or false for failure
 	 */
-	public function destroy($sessionId): bool
-	{
+	public function destroy(
+		$sessionId
+	): bool {
 		// Deleting session cookies set on customer end
 		$this->unsetSessionCookie();
 
-		return $this->container->deleteSession(sessionId: $sessionId);
+		return $this->container->deleteSession(
+			sessionId: $sessionId
+		);
 	}
 
 	/**
 	 * Close the session
-	 *
+	 * 
 	 * A callable with the following signature
-	 *
+	 * 
 	 * @return bool true for success or false for failure
 	 */
 	public function close(): bool
@@ -324,7 +360,7 @@ class CustomSessionHandler implements
 		// Updating timestamp for readonly mode (read_and_close option)
 		if (
 			!$this->isTimestampUpdated
-			&& $this->foundSession === true
+			&& $this->foundSession === Constant::$TRUE
 		) {
 			$this->container->touchSession(
 				sessionId: $this->sessionId,
@@ -344,17 +380,21 @@ class CustomSessionHandler implements
 
 	/**
 	 * Returns 64 char random string
-	 *
+	 * 
 	 * @return string
 	 */
 	private function getRandomString(): string
 	{
-		return bin2hex(string: random_bytes(length: 32));
+		return bin2hex(
+			string: random_bytes(
+				length: 32
+			)
+		);
 	}
 
 	/**
 	 * Unset session cookies
-	 *
+	 * 
 	 * @return void
 	 */
 	private function unsetSessionCookie(): void
@@ -364,7 +404,7 @@ class CustomSessionHandler implements
 				name: $this->sessionName,
 				value: '',
 				expires_or_options: 1,
-				path: $this->container->sessionOptionArr['cookie_path']
+				path: $this->container->sessionOptionArray['cookie_path']
 			);
 		}
 		if (!empty($this->sessionDataName)) {
@@ -372,14 +412,14 @@ class CustomSessionHandler implements
 				name: $this->sessionDataName,
 				value: '',
 				expires_or_options: 1,
-				path: $this->container->sessionOptionArr['cookie_path']
+				path: $this->container->sessionOptionArray['cookie_path']
 			);
 		}
 	}
 
 	/**
 	 * Check Cookies Header
-	 *
+	 * 
 	 * @return void
 	 */
 	private function checkCookiesHeader(): void
@@ -391,29 +431,31 @@ class CustomSessionHandler implements
 
 		// Removed Session Cookie if read_and_close is enabled
 		if (
-			isset($this->container->sessionOptionArr['read_and_close'])
-			&& $this->container->sessionOptionArr['read_and_close'] === true
-			&& $this->creatingSessionId === true
+			isset($this->container->sessionOptionArray['read_and_close'])
+			&& $this->container->sessionOptionArray['read_and_close'] === Constant::$TRUE
+			&& $this->creatingSessionId === Constant::$TRUE
 		) {
 			// Remove Session Set-Cookie header
-			$headerArr = headers_list();
+			$headerArray = headers_list();
 			$headerFound = false;
-			foreach ($headerArr as $index => $header) {
+			foreach ($headerArray as $index => $header) {
 				if (
 					strpos(
 						haystack: $header,
 						needle: $this->sessionName
-					) !== false
+					) !== Constant::$FALSE
 				) {
-					unset($headerArr[$index]);
+					unset($headerArray[$index]);
 					$headerFound = true;
 					break;
 				}
 			}
 			if ($headerFound) {
 				header_remove();
-				foreach ($headerArr as &$header) {
-					header(header: $header);
+				foreach ($headerArray as &$header) {
+					header(
+						header: $header
+					);
 				}
 			}
 		}

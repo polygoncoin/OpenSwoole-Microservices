@@ -3,7 +3,7 @@
 /**
  * HTTP response
  * php version 8.3
- *
+ * 
  * @category  HTTP response
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\App\HttpStatus;
 /**
  * HTTP response
  * php version 8.3
- *
+ * 
  * @category  HTTP response
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -36,74 +36,77 @@ class HttpResponse
 {
 	/**
 	 * Output Representation
-	 *
+	 * 
 	 * @var null|string
 	 */
-	public $oRepresentation = null;
+	public $outputRepresentation = null;
 
 	/**
 	 * Directory for HTML output format
-	 *
+	 * 
 	 * @var null|string
 	 */
-	public $HTML_DIR = null;
+	public $htmlDirectory = null;
 
 	/**
 	 * Directory for PHP output format
-	 *
+	 * 
 	 * @var null|string
 	 */
-	public $PHP_DIR = null;
+	public $phpDirectory = null;
 
 	/**
 	 * Directory for XML output format
-	 *
+	 * 
 	 * @var null|string
 	 */
-	public $XSLT_DIR = null;
+	public $xsltDirectory = null;
 
 	/**
 	 * HTTP Status
-	 *
+	 * 
 	 * @var int
 	 */
 	public $httpStatus;
 
 	/**
 	 * Data Encode object
-	 *
+	 * 
 	 * @var null|DataEncode
 	 */
-	public $dataEncode = null;
+	public $dataEncodeObject = null;
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
 		$this->httpStatus = HttpStatus::$Ok;
-		$this->oRepresentation = Env::$oRepresentation;
-		$this->dataEncode = new DataEncode(http: $this->http);
+		$this->outputRepresentation = Env::$outputRepresentation;
+		$this->dataEncodeObject = new DataEncode(
+			httpObject: $this->httpObject
+		);
 	}
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
 	{
-		$this->dataEncode->init();
+		$this->dataEncodeObject->init();
 
 		return true;
 	}

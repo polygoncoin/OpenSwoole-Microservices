@@ -3,7 +3,7 @@
 /**
  * Logging
  * php version 8.3
- *
+ * 
  * @category  Logging
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -21,7 +21,7 @@ use Microservices\App\Http;
 /**
  * Logging
  * php version 8.3
- *
+ * 
  * @category  Logging
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -34,75 +34,99 @@ class Log
 {
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
 	}
 
 	/**
 	 * Log details
-	 *
+	 * 
 	 * @param array $logData detail to be logged
-	 *
+	 * 
 	 * @return int
 	 */
-	public function log(&$logData): int
-	{
+	public function log(
+		&$logData
+	): int {
 		// Uncomment to log in DB
-		return $this->logIntoDb($logData);
+		return $this->logIntoDb(
+			$logData
+		);
 
 		// Uncomment to log in Filesystem
-		// return $this->logInFilesystem($logData);
+		// return $this->logInFilesystem(
+		// 	$logData
+		// );
 	}
 
 	/**
 	 * Log data into Database
-	 *
+	 * 
 	 * @param array $logData detail to be logged
-	 *
+	 * 
 	 * @return int
 	 */
-	public function logIntoDb(&$logData): int
-	{
-		$exceptionJson = json_encode(value: $logData);
-		if (isset($this->http->req)) {
-			$exceptionJson = json_encode(value: $logData);
-			return $this->http->req->logErrorData(
+	public function logIntoDb(
+		&$logData
+	): int {
+		$exceptionJson = json_encode(
+			value: $logData
+		);
+		if (isset($this->httpObject->httpRequestObject)) {
+			$exceptionJson = json_encode(
+				value: $logData
+			);
+			return $this->httpObject->httpRequestObject->logErrorData(
 				exceptionJson: $exceptionJson
 			);
 		} else {
-			return $this->logInFilesystem($logData);
+			return $this->logInFilesystem(
+				$logData
+			);
 		}
 	}
 
 	/**
 	 * Log data in FIlesystem
-	 *
+	 * 
 	 * @param array $logData detail to be logged
-	 *
+	 * 
 	 * @return int
 	 */
-	public function logInFilesystem(&$logData): int
-	{
-		$logFile = Constant::$LOG_DIR
-			. DIRECTORY_SEPARATOR . 'log-' . date(format: 'YmdH');
-		if (!file_exists(filename: $logFile)) {
-			touch(filename: $logFile);
+	public function logInFilesystem(
+		&$logData
+	): int {
+		$logFile = Constant::$LOG_DIRECTORY
+			. DIRECTORY_SEPARATOR . 'log-' . date(
+				format: 'YmdH'
+			);
+		if (
+			!file_exists(
+				filename: $logFile
+			)
+		) {
+			touch(
+				filename: $logFile
+			);
 		}
 
 		file_put_contents(
 			filename: $logFile,
-			data: json_encode(value: $logData) . PHP_EOL,
+			data: json_encode(
+				value: $logData
+			) . PHP_EOL,
 			flags: FILE_APPEND
 		);
 

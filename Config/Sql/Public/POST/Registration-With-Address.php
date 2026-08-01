@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- *
+ * 
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,91 +13,94 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
+use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+use Microservices\DatabaseTable;
+
 return [
-	'__QUERY__' => "INSERT INTO `{$this->http->req->s['customerData']['userTable']}` SET __SET__",
+	'__QUERY__' => "INSERT INTO `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` SET __SET__",
 	'__SET__' => [
 		[
-			'column' => 'customer_id',
-			'fetchFrom' => 'customerData',
-			'fetchFromData' => 'id'
+			'column' => 'customer_user_contact_name',
+			'activeRequestDataKey' => 'payload',
+			'activeRequestDataKeySubKey' => 'firstname'
 		],
 		[
-			'column' => 'firstname',
-			'fetchFrom' => 'payload',
-			'fetchFromData' => 'firstname'
+			'column' => 'customer_user_contact_person',
+			'activeRequestDataKey' => 'payload',
+			'activeRequestDataKeySubKey' => 'lastname'
 		],
 		[
-			'column' => 'lastname',
-			'fetchFrom' => 'payload',
-			'fetchFromData' => 'lastname'
+			'column' => 'customer_user_contact_email_address',
+			'activeRequestDataKey' => 'payload',
+			'activeRequestDataKeySubKey' => 'email'
 		],
 		[
-			'column' => 'email',
-			'fetchFrom' => 'payload',
-			'fetchFromData' => 'email'
+			'column' => 'customer_user_username',
+			'activeRequestDataKey' => 'payload',
+			'activeRequestDataKeySubKey' => 'username'
 		],
 		[
-			'column' => 'username',
-			'fetchFrom' => 'payload',
-			'fetchFromData' => 'username'
-		],
-		[
-			'column' => 'password_hash',
-			'fetchFrom' => 'function',
-			'fetchFromData' => function($session) {
+			'column' => 'customer_user_password_hash',
+			'activeRequestDataKey' => 'function',
+			'activeRequestDataKeySubKey' => function($activeRequestData) {
 				if (
-					isset($session['payload'])
-					&& isset($session['payload']['password'])
+					isset($activeRequestData['payload'])
+					&& isset($activeRequestData['payload']['password'])
 				) {
 					return password_hash(
-						password: $session['payload']['password'],
+						password: $activeRequestData['payload']['password'],
 						algo: PASSWORD_DEFAULT
 					);
 				}
 			}
 		],
 		[
-			'column' => 'allowed_cidr',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => '0.0.0.0/0'
+			'column' => 'customer_user_allowed_cidr',
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => '0.0.0.0/0'
 		],
 		[
-			'column' => 'group_id',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => '1'
+			'column' => DatabaseTable::$customerUserGroupPrimaryKey,
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => '1'
 		],
 	],
 	'__INSERT-IDs__' => 'registration:id',
+	'__PRIMARY-KEY__' => DatabaseTable::$customerUserPrimaryKey,
 	'__SUB-QUERY__' => [
 		'address' => [
 			'__QUERY__' => 'INSERT INTO `address` SET __SET__',
 			'__SET__' => [
 				[
-					'column' => 'customer_id',
-					'fetchFrom' => 'customerData',
-					'fetchFromData' => 'id'
+					'column' => DatabaseTable::$customerPrimaryKey,
+					'activeRequestDataKey' => 'customerData',
+					'activeRequestDataKeySubKey' => DatabaseTable::$customerPrimaryKey
 				],
 				[
-					'column' => 'user_id',
-					'fetchFrom' => '__INSERT-IDs__',
-					'fetchFromData' => 'registration:id'
+					'column' => DatabaseTable::$customerUserPrimaryKey,
+					'activeRequestDataKey' => '__INSERT-IDs__',
+					'activeRequestDataKeySubKey' => 'registration:id'
 				],
 				[
 					'column' => 'address',
-					'fetchFrom' => 'payload',
-					'fetchFromData' => 'address'
+					'activeRequestDataKey' => 'payload',
+					'activeRequestDataKeySubKey' => 'address'
 				],
 			],
 			'__INSERT-IDs__' => 'address:id',
+			'__PRIMARY-KEY__' => DatabaseTable::$addressPrimaryKey,
 			'__PAYLOAD-TYPE__' => 'Array',
 			'__MAX-PAYLOAD-OBJECTS__' => 2
 		]
 	],
 	'rateLimitMaxRequest' => 100,
 	'rateLimitMaxRequestWindow' => 3600,
-	'useHierarchy' => true,
+	'maintainHierarchy' => Constant::$TRUE,
 	'__PAYLOAD-TYPE__' => 'Object',
 	'idempotentWindow' => 10,
+	'responseLagWindow' => 3600,
 	'responseLag' => [
 		// No of request => Seconds Lag
 		1 => 0,

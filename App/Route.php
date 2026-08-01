@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Route - Available routeArr
+ * Route - Available routeArray
  * php version 8.3
- *
+ * 
  * @category  Route
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -22,9 +22,9 @@ use Microservices\App\Http;
 use Microservices\App\HttpStatus;
 
 /**
- * Route - Available routeArr
+ * Route - Available routeArray
  * php version 8.3
- *
+ * 
  * @category  Route
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -36,21 +36,15 @@ use Microservices\App\HttpStatus;
 class Route
 {
 	/**
-	 * Supported HTTP methods of routeArr
-	 *
+	 * Supported HTTP methods of routeArray
+	 * 
 	 * @var array
 	 */
-	private $httpMethodArr = [
-		'GET',
-		'POST',
-		'PUT',
-		'PATCH',
-		'DELETE'
-	];
+	private $httpMethodArray = null;
 
 	/**
 	 * Route folder
-	 *
+	 * 
 	 * @var string
 	 */
 	private $routesFolder = DIRECTORY_SEPARATOR . 'Config'
@@ -58,39 +52,48 @@ class Route
 
 	/**
 	 * Route config ignore key's
-	 *
+	 * 
 	 * @var array
 	 */
-	private $reservedKeyArr = ['dataType'];
+	private $reservedKeyArray = ['dataType'];
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
+		$this->httpMethodArray = [
+			Constant::$GET,
+			Constant::$QUERY,
+			Constant::$POST,
+			Constant::$PUT,
+			Constant::$PATCH,
+			Constant::$DELETE
+		];
 	}
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
 	{
 		if (
 			CommonFunction::isEnabled(
-				http: $this->http,
-				feature: 'enableRoutesRequest'
+				httpObject: $this->httpObject,
+				feature: 'customer_enabled_routes_request'
 			)
 		) {
 			return true;
@@ -100,17 +103,14 @@ class Route
 	}
 
 	/**
-	 * Make allowed routeArr list of a logged-in user
-	 *
+	 * Make allowed routeArray list of a logged-in user
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
 	{
-		$Constant = __NAMESPACE__ . '\Constant';
-		$Env = __NAMESPACE__ . '\Env';
-
-		$httpRouteArr = [];
-		if ($this->http->req->isPublicRequest) {
+		$httpRouteArray = [];
+		if ($this->httpObject->httpRequestObject->isPublicRequest) {
 			$userRoutesFolder = Constant::$WWW . $this->routesFolder
 				. DIRECTORY_SEPARATOR . 'Public';
 		} else {
@@ -118,31 +118,40 @@ class Route
 				. DIRECTORY_SEPARATOR . 'Private'
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
-				. DIRECTORY_SEPARATOR . $this->http->req->s['groupData']['name'];
+				. DIRECTORY_SEPARATOR . $this->httpObject->httpRequestObject->activeRequestData['groupData']['customer_user_group_name'];
 		}
 
-		foreach ($this->httpMethodArr as $method) {
-			$httpRouteArr[$method] = [];
+		foreach ($this->httpMethodArray as $httpRequestMethod) {
+			$httpRouteArray[$httpRequestMethod] = [];
 			$routeFileLocation =  $userRoutesFolder
-				. DIRECTORY_SEPARATOR . $method . 'routes.php';
-			if (!file_exists(filename: $routeFileLocation)) {
+				. DIRECTORY_SEPARATOR . $httpRequestMethod . 'routes.php';
+			if (
+				!file_exists(
+					filename: $routeFileLocation
+				)
+			) {
 				throw new \Exception(
-					message: json_encode(value: [$routeFileLocation]),
+					message: json_encode(
+						value: [$routeFileLocation]
+					),
 					code: HttpStatus::$BadRequest
 				);
 				continue;
 			}
-			$routeArr = include $routeFileLocation;
+			$Constant = __NAMESPACE__ . '\Constant';
+			$Env = __NAMESPACE__ . '\Env';
+
+			$routeArray = include $routeFileLocation;
 			$route = '';
 			$this->getRoutes(
-				routeArr: $routeArr,
+				routeArray: $routeArray,
 				route: $route,
-				httpRouteArr: $httpRouteArr[$method]
+				httpRouteArray: $httpRouteArray[$httpRequestMethod]
 			);
 		}
-		$this->http->res->dataEncode->addKeyData(
+		$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
 			objectKey: 'Results',
-			data: $httpRouteArr
+			data: $httpRouteArray
 		);
 
 		return true;
@@ -150,37 +159,41 @@ class Route
 
 	/**
 	 * Create Route list
-	 *
-	 * @param array  $routeArr     Route
-	 * @param string $route        Current Route
-	 * @param array  $httpRouteArr All HTTP Route
-	 *
+	 * 
+	 * @param array  $routeArray     Route
+	 * @param string $route          Current Route
+	 * @param array  $httpRouteArray All HTTP Route
+	 * 
 	 * @return void
 	 */
 	private function getRoutes(
-		&$routeArr,
+		&$routeArray,
 		$route,
-		&$httpRouteArr
+		&$httpRouteArray
 	): void {
-		foreach ($routeArr as $routeElement => &$_routeArr) {
+		foreach ($routeArray as $routeElement => &$_routeArray) {
 			if (
 				in_array(
 					needle: $routeElement,
-					haystack: $this->reservedKeyArr,
-					strict: true
+					haystack: $this->reservedKeyArray,
+					strict: Constant::$TRUE
 				)
 			) {
 				continue;
 			}
 			if ($routeElement === '__FILE__') {
-				$httpRouteArr[] = $route;
+				$httpRouteArray[] = $route;
 			}
-			if (is_array(value: $_routeArr)) {
+			if (
+				is_array(
+					value: $_routeArray
+				)
+			) {
 				$_route = $route . '/' . $routeElement;
 				$this->getRoutes(
-					routeArr: $_routeArr,
+					routeArray: $_routeArray,
 					route: $_route,
-					httpRouteArr: $httpRouteArr
+					httpRouteArray: $httpRouteArray
 				);
 			}
 		}

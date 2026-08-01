@@ -7,7 +7,7 @@
 return [
 	'tableName' => [
 		'parts' => [
-			'__FILE__' => 'SQL file location'
+			'__FILE__' => 'Sql file location'
 		]
 	]
 ];
@@ -19,7 +19,7 @@ return [
 	'tableName' => [
 		'{id:int}' => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => 'SQL file location'
+			'__FILE__' => 'Sql file location'
 		]
 	]
 ];
@@ -32,11 +32,11 @@ return [
 	'tableName' => [
 		'{id:int}' => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => 'SQL file location for integer data type'
+			'__FILE__' => 'Sql file location for integer data type'
 		],
 		'{id:string}' => [
 			'dataType' => DatabaseServerDataType::$Default,
-			'__FILE__' => 'SQL file location for string data type'
+			'__FILE__' => 'Sql file location for string data type'
 		]
 	]
 ];
@@ -49,7 +49,7 @@ return [
 	'{tableName:string}' => [
 		'dataType' => DatabaseServerDataType::$Tables,
 		'{id:int}' => [
-			'__FILE__' => 'SQL file location'
+			'__FILE__' => 'Sql file location'
 		]
 	]
 ];
@@ -61,7 +61,7 @@ return [
 return [
 	'{tableName:string}' => [
 		'dataType' => DatabaseServerDataType::$Tables,
-		'__FILE__' => 'SQL file location',
+		'__FILE__' => 'Sql file location',
 		'__PRE-ROUTE-HOOKS__' => [// These will apply recursively
 			'Hook_1',
 			'...'
@@ -72,13 +72,13 @@ return [
 		]
 		'{id:int}' => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => 'SQL file location',
+			'__FILE__' => 'Sql file location',
 			'__PRE-ROUTE-HOOKS__' => [], // For noi hooks
 			'__POST-ROUTE-HOOKS__' => [] // For noi hooks
 		],
 
 		// Input Data Representation
-		'iRepresentation' => 'XML' // JSON/XML - Defaults to JSON
+		'inputRepresentation' => 'XML' // JSON/XML - Defaults to JSON
 	]
 ];
 ```
@@ -96,22 +96,22 @@ public static $PrimaryKey = [
 
 // Optional params
 	// Value can be null
-	'canBeNull' => false,
+	'canBeNull' => Constant::$FALSE,
 	// Minimum value (int)
 	'minValue' => 1,
 	// Maximum value (int)
-	'maxValue' => false,
+	'maxValue' => Constant::$FALSE,
 	// Minimum length (string)
-	'minLength' => false,
+	'minLength' => Constant::$FALSE,
 	// Maximum length (string)
-	'maxLength' => false,
+	'maxLength' => Constant::$FALSE,
 	// Any one value from the Array
-	'enumValues' => false,
+	'enumValues' => Constant::$FALSE,
 	// Values belonging to this Array
-	'setValues' => false,
+	'setValues' => Constant::$FALSE,
 
 	// Values should pass this regex before use
-	'regex' => false
+	'regex' => Constant::$FALSE
 ];
 ```
 

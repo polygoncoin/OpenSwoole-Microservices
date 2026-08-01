@@ -3,7 +3,7 @@
 /**
  * DropboxCacheAPI
  * php version 8.3
- *
+ * 
  * @category  DropboxCacheAPI_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\Supplement\Dropbox;
 /**
  * DropboxCacheAPI Interface
  * php version 8.3
- *
+ * 
  * @category  DropboxCacheAPI_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -31,14 +31,14 @@ interface DropboxInterface
 {
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool;
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed;

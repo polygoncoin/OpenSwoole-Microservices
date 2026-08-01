@@ -3,7 +3,7 @@
 /**
  * Custom Session Handler
  * php version 7
- *
+ * 
  * @category  SessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,6 +15,7 @@
 
 namespace Microservices\App\SessionHandler\Container;
 
+use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 use Microservices\App\SessionHandler\Container\SessionContainerHelper;
@@ -22,7 +23,7 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 /**
  * Custom Session Handler File
  * php version 7
- *
+ * 
  * @category  CustomSessionHandler_File
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -40,40 +41,56 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @param string $sessionSavePath Session Save Path
 	 * @param string $sessionName     Session Name
-	 *
+	 * 
 	 * @return void
 	 */
 	public function init(
 		$sessionSavePath,
 		$sessionName
 	): void {
-		if (!is_dir(filename: $sessionSavePath)) {
-			mkdir(directory: $sessionSavePath, permissions: 0755, recursive: true);
+		if (
+			!is_dir(
+				filename: $sessionSavePath
+			)
+		) {
+			mkdir(
+				directory: $sessionSavePath,
+				permissions: 0755,
+				recursive: Constant::$TRUE
+			);
 		}
 		$this->sessionSavePath = $sessionSavePath;
 	}
 
 	/**
 	 * For Custom Session Handler - Validate session id
-	 *
+	 * 
 	 * @param string $sessionId Session id
-	 *
+	 * 
 	 * @return bool|string
 	 */
-	public function getSession($sessionId): bool|string
-	{
-
+	public function getSession(
+		$sessionId
+	): bool|string {
 		$filepath = $this->sessionSavePath . '/'
 			. $this->sessionFilePrefix . $sessionId;
 
-		if (file_exists(filename: $filepath)) {
-			$fileatime = fileatime(filename: $filepath);
+		if (
+			file_exists(
+				filename: $filepath
+			)
+		) {
+			$fileatime = fileatime(
+				filename: $filepath
+			);
 			if ((Env::$timestamp - $fileatime) < $this->sessionMaxLifetime) {
 				return $this->decryptData(
-					cipherText: file_get_contents(filename: $filepath)
+					cipherText: file_get_contents(
+						filename: $filepath
+					)
 				);
 			}
 		}
@@ -82,10 +99,10 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Write session data
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function setSession(
@@ -94,36 +111,47 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 	): bool|int {
 		$filepath = $this->sessionSavePath . '/'
 			. $this->sessionFilePrefix . $sessionId;
-		if (!file_exists(filename: $filepath)) {
-			touch(filename: $filepath);
+		if (
+			!file_exists(
+				filename: $filepath
+			)
+		) {
+			touch(
+				filename: $filepath
+			);
 		}
 		return file_put_contents(
 			filename: $filepath,
-			data: $this->encryptData(plainText: $sessionData)
+			data: $this->encryptData(
+				plainText: $sessionData
+			)
 		);
 	}
 
 	/**
 	 * For Custom Session Handler - Update session data
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function updateSession(
 		$sessionId,
 		$sessionData
 	): bool|int {
-		return $this->setSession(sessionId: $sessionId, sessionData: $sessionData);
+		return $this->setSession(
+			sessionId: $sessionId,
+			sessionData: $sessionData
+		);
 	}
 
 	/**
 	 * For Custom Session Handler - Update session timestamp
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function touchSession(
@@ -132,18 +160,21 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 	): bool {
 		$filepath = $this->sessionSavePath . '/'
 			. $this->sessionFilePrefix . $sessionId;
-		return touch(filename: $filepath);
+		return touch(
+			filename: $filepath
+		);
 	}
 
 	/**
 	 * For Custom Session Handler - Cleanup old sessions
-	 *
+	 * 
 	 * @param integer $sessionMaxLifetime Session Max Lifetime
-	 *
+	 * 
 	 * @return bool
 	 */
-	public function gcSession($sessionMaxLifetime): bool
-	{
+	public function gcSession(
+		$sessionMaxLifetime
+	): bool {
 		$datetime = date(
 			format: 'Y-m-dTH:i:s+0000',
 			timestamp: (Env::$timestamp - $sessionMaxLifetime)
@@ -158,24 +189,31 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Destroy a session
-	 *
+	 * 
 	 * @param string $sessionId Session id
-	 *
+	 * 
 	 * @return bool
 	 */
-	public function deleteSession($sessionId): bool
-	{
+	public function deleteSession(
+		$sessionId
+	): bool {
 		$filepath = $this->sessionSavePath . '/'
 			. $this->sessionFilePrefix . $sessionId;
-		if (file_exists(filename: $filepath)) {
-			unlink(filename: $filepath);
+		if (
+			file_exists(
+				filename: $filepath
+			)
+		) {
+			unlink(
+				filename: $filepath
+			);
 		}
 		return true;
 	}
 
 	/**
 	 * Close File Container
-	 *
+	 * 
 	 * @return void
 	 */
 	public function closeSession(): void

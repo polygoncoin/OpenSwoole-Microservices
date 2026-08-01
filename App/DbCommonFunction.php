@@ -3,7 +3,7 @@
 /**
  * Database Common Function
  * php version 8.3
- *
+ * 
  * @category  Database Common Function
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 use Microservices\App\Server\CacheServer;
@@ -24,7 +25,7 @@ use Microservices\App\Server\QueryCacheServer;
 /**
  * Database Common Function
  * php version 8.3
- *
+ * 
  * @category  Database Common Function
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,7 +39,7 @@ class DbCommonFunction
 	/** Database Connection */
 	/**
 	 * Global
-	 *
+	 * 
 	 * @var null|DatabaseServer
 	 */
 	public static $gDbServer = null;
@@ -46,14 +47,14 @@ class DbCommonFunction
 	/** Cache Connection */
 	/**
 	 * Global
-	 *
+	 * 
 	 * @var null|CacheServer
 	 */
-	public static $gCacheServer = null;
+	public static $globalCacheServerObject = null;
 
 	/**
 	 * Connect Cache
-	 *
+	 * 
 	 * @param string      $cacheServerType     Cache Server Type
 	 * @param string      $cacheServerHostname Cache Server Hostname
 	 * @param int         $cacheServerPort     Cache Server Port
@@ -61,7 +62,7 @@ class DbCommonFunction
 	 * @param string      $cacheServerPassword Cache Server Password
 	 * @param null|string $cacheServerDatabase Cache Server Database
 	 * @param null|string $cacheServerTable    Cache Server Table
-	 *
+	 * 
 	 * @return CacheServer
 	 */
 	public static function connectCache(
@@ -88,15 +89,15 @@ class DbCommonFunction
 
 	/**
 	 * Connect global Cache
-	 *
+	 * 
 	 * @return void
 	 */
 	public static function connectGlobalCache(): void
 	{
-		if (self::$gCacheServer !== null) {
+		if (self::$globalCacheServerObject !== Constant::$NULL) {
 			return;
 		}
-		self::$gCacheServer = self::connectCache(
+		self::$globalCacheServerObject = self::connectCache(
 			cacheServerType: Env::$gCacheServerType,
 			cacheServerHostname: Env::$gCacheServerHostname,
 			cacheServerPort: Env::$gCacheServerPort,
@@ -108,16 +109,19 @@ class DbCommonFunction
 	}
 
 	/**
-	 * Connect customer Cache based on $fetchFrom
-	 *
+	 * Connect customer Cache based on $activeRequestDataKey
+	 * 
 	 * @param array $customerData Customer Data
-	 *
+	 * 
 	 * @return CacheServer
 	 * @throws \Exception
 	 */
-	public static function connectCustomerCache(&$customerData): CacheServer
-	{
-		$customerCacheServerCred = self::customerCacheServerCred(customerData: $customerData);
+	public static function connectCustomerCache(
+		&$customerData
+	): CacheServer {
+		$customerCacheServerCred = self::customerCacheServerCred(
+			customerData: $customerData
+		);
 		return self::connectCache(
 			cacheServerType: $customerCacheServerCred['cacheServerType'],
 			cacheServerHostname: $customerCacheServerCred['cacheServerHostname'],
@@ -131,14 +135,14 @@ class DbCommonFunction
 
 	/**
 	 * Connect query Cache
-	 *
-	 * @param string $fetchFrom Master/Slave
-	 *
+	 * 
 	 * @return QueryCacheServer
 	 */
 	public static function connectCustomerQueryCache(): QueryCacheServer
 	{
-		$customerQueryCacheServerCred = self::customerQueryCacheServerCred(customerData: $customerData);
+		$customerQueryCacheServerCred = self::customerQueryCacheServerCred(
+			customerData: $customerData
+		);
 		return new QueryCacheServer(
 			queryCacheServerType: $customerQueryCacheServerCred['cacheServerType'],
 			queryCacheServerHostname: $customerQueryCacheServerCred['cacheServerHostname'],
@@ -152,14 +156,14 @@ class DbCommonFunction
 
 	/**
 	 * Connect Database
-	 *
+	 * 
 	 * @param string      $dbServerType     Database Server Type
 	 * @param string      $dbServerHostname Database Server Hostname
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
 	 * @param null|string $dbServerDatabase Database Server Database
-	 *
+	 * 
 	 * @return DatabaseServer
 	 */
 	public static function connectDb(
@@ -184,12 +188,12 @@ class DbCommonFunction
 
 	/**
 	 * Connect global Database
-	 *
+	 * 
 	 * @return void
 	 */
 	public static function connectGlobalDb(): void
 	{
-		if (self::$gDbServer !== null) {
+		if (self::$gDbServer !== Constant::$NULL) {
 			return;
 		}
 		self::$gDbServer = self::connectDb(
@@ -203,22 +207,24 @@ class DbCommonFunction
 	}
 
 	/**
-	 * Connect customer Database based on $fetchFrom
-	 *
+	 * Connect customer Database based on $activeRequestDataKey
+	 * 
 	 * @param array  $customerData Customer Data
-	 * @param string $fetchFrom Master/Slave
-	 *
+	 * @param string $fetchDbMode  Master/Slave
+	 * 
 	 * @return DatabaseServer
 	 * @throws \Exception
 	 */
 	public static function connectCustomerDb(
 		&$customerData,
-		$fetchFrom
+		$fetchDbMode
 	): DatabaseServer {
 		// Set Database credentials
-		switch ($fetchFrom) {
+		switch ($fetchDbMode) {
 			case 'Master':
-				$customerMasterDatabaseServerCred = self::customerMasterDatabaseServerCred(customerData: $customerData);
+				$customerMasterDatabaseServerCred = self::customerMasterDatabaseServerCred(
+					customerData: $customerData
+				);
 				return self::connectDb(
 					dbServerType: $customerMasterDatabaseServerCred['dbServerType'],
 					dbServerHostname: $customerMasterDatabaseServerCred['dbServerHostname'],
@@ -229,7 +235,9 @@ class DbCommonFunction
 				);
 				break;
 			case 'Slave':
-				$customerSlaveDatabaseServerCred = self::customerSlaveDatabaseServerCred(customerData: $customerData);
+				$customerSlaveDatabaseServerCred = self::customerSlaveDatabaseServerCred(
+					customerData: $customerData
+				);
 				return self::connectDb(
 					dbServerType: $customerSlaveDatabaseServerCred['dbServerType'],
 					dbServerHostname: $customerSlaveDatabaseServerCred['dbServerHostname'],
@@ -241,7 +249,7 @@ class DbCommonFunction
 				break;
 			default:
 				throw new \Exception(
-					message: "Invalid fetchFrom value '{$fetchFrom}'",
+					message: "Invalid activeRequestDataKey value '{$activeRequestDataKey}'",
 					code: HttpStatus::$InternalServerError
 				);
 		}
@@ -249,79 +257,83 @@ class DbCommonFunction
 
 	/**
 	 * Returns Cache Master Server detail
-	 *
+	 * 
 	 * @param array $customerData Customer Data
-	 *
+	 * 
 	 * @return array
 	 */
-	public static function customerCacheServerCred(&$customerData): array
-	{
+	public static function customerCacheServerCred(
+		&$customerData
+	): array {
 		return [
-			'cacheServerType' => getenv(name: $customerData['cache_server_type']),
-			'cacheServerHostname' => getenv(name: $customerData['cache_server_hostname']),
-			'cacheServerPort' => getenv(name: $customerData['cache_server_port']),
-			'cacheServerUsername' => getenv(name: $customerData['cache_server_username']),
-			'cacheServerPassword' => getenv(name: $customerData['cache_server_password']),
-			'cacheServerDatabase' => getenv(name: $customerData['cache_server_db']),
-			'cacheServerTable' => getenv(name: $customerData['cache_server_table'])
+			'cacheServerType' => getenv(name: $customerData['customer_cache_server_type']),
+			'cacheServerHostname' => getenv(name: $customerData['customer_cache_server_hostname']),
+			'cacheServerPort' => getenv(name: $customerData['customer_cache_server_port']),
+			'cacheServerUsername' => getenv(name: $customerData['customer_cache_server_username']),
+			'cacheServerPassword' => getenv(name: $customerData['customer_cache_server_password']),
+			'cacheServerDatabase' => getenv(name: $customerData['customer_cache_server_db']),
+			'cacheServerTable' => getenv(name: $customerData['customer_cache_server_table'])
 		];
 	}
 
 	/**
 	 * Returns Query Cache Server detail
-	 *
+	 * 
 	 * @param array $customerData Customer Data
-	 *
+	 * 
 	 * @return array
 	 */
-	public static function customerQueryCacheServerCred(&$customerData): array
-	{
+	public static function customerQueryCacheServerCred(
+		&$customerData
+	): array {
 		return [
-			'cacheServerType' => getenv(name: $customerData['query_cache_server_type']),
-			'cacheServerHostname' => getenv(name: $customerData['query_cache_server_hostname']),
-			'cacheServerPort' => getenv(name: $customerData['query_cache_server_port']),
-			'cacheServerUsername' => getenv(name: $customerData['query_cache_server_username']),
-			'cacheServerPassword' => getenv(name: $customerData['query_cache_server_password']),
-			'cacheServerDatabase' => getenv(name: $customerData['query_cache_server_db']),
-			'cacheServerTable' => getenv(name: $customerData['query_cache_server_table'])
+			'cacheServerType' => getenv(name: $customerData['customer_query_cache_server_type']),
+			'cacheServerHostname' => getenv(name: $customerData['customer_query_cache_server_hostname']),
+			'cacheServerPort' => getenv(name: $customerData['customer_query_cache_server_port']),
+			'cacheServerUsername' => getenv(name: $customerData['customer_query_cache_server_username']),
+			'cacheServerPassword' => getenv(name: $customerData['customer_query_cache_server_password']),
+			'cacheServerDatabase' => getenv(name: $customerData['customer_query_cache_server_db']),
+			'cacheServerTable' => getenv(name: $customerData['customer_query_cache_server_collection'])
 		];
 	}
 
 	/**
 	 * Returns Database Master Server detail
-	 *
+	 * 
 	 * @param array $customerData Customer Data
-	 *
+	 * 
 	 * @return array
 	 */
-	public static function customerMasterDatabaseServerCred(&$customerData): array
-	{
+	public static function customerMasterDatabaseServerCred(
+		&$customerData
+	): array {
 		return [
-			'dbServerType' => getenv(name: $customerData['master_db_server_type']),
-			'dbServerHostname' => getenv(name: $customerData['master_db_server_hostname']),
-			'dbServerPort' => getenv(name: $customerData['master_db_server_port']),
-			'dbServerUsername' => getenv(name: $customerData['master_db_server_username']),
-			'dbServerPassword' => getenv(name: $customerData['master_db_server_password']),
-			'dbServerDatabase' => getenv(name: $customerData['master_db_server_db']),
+			'dbServerType' => getenv(name: $customerData['customer_master_db_server_type']),
+			'dbServerHostname' => getenv(name: $customerData['customer_master_db_server_hostname']),
+			'dbServerPort' => getenv(name: $customerData['customer_master_db_server_port']),
+			'dbServerUsername' => getenv(name: $customerData['customer_master_db_server_username']),
+			'dbServerPassword' => getenv(name: $customerData['customer_master_db_server_password']),
+			'dbServerDatabase' => getenv(name: $customerData['customer_master_db_server_db']),
 		];
 	}
 
 	/**
 	 * Returns Database Slave Server detail
-	 *
+	 * 
 	 * @param array $customerData Customer Data
-	 *
+	 * 
 	 * @return array
 	 */
-	public static function customerSlaveDatabaseServerCred(&$customerData): array
-	{
+	public static function customerSlaveDatabaseServerCred(
+		&$customerData
+	): array {
 		return [
-			'dbServerType' => getenv(name: $customerData['slave_db_server_type']),
-			'dbServerHostname' => getenv(name: $customerData['slave_db_server_hostname']),
-			'dbServerPort' => getenv(name: $customerData['slave_db_server_port']),
-			'dbServerUsername' => getenv(name: $customerData['slave_db_server_username']),
-			'dbServerPassword' => getenv(name: $customerData['slave_db_server_password']),
-			'dbServerDatabase' => getenv(name: $customerData['slave_db_server_db']),
+			'dbServerType' => getenv(name: $customerData['customer_slave_db_server_type']),
+			'dbServerHostname' => getenv(name: $customerData['customer_slave_db_server_hostname']),
+			'dbServerPort' => getenv(name: $customerData['customer_slave_db_server_port']),
+			'dbServerUsername' => getenv(name: $customerData['customer_slave_db_server_username']),
+			'dbServerPassword' => getenv(name: $customerData['customer_slave_db_server_password']),
+			'dbServerDatabase' => getenv(name: $customerData['customer_slave_db_server_db']),
 		];
 	}
 }

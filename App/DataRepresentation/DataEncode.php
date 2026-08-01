@@ -3,7 +3,7 @@
 /**
  * Creates Data Representation Output
  * php version 8.3
- *
+ * 
  * @category  DataEncode
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -24,7 +24,7 @@ use Microservices\App\Http;
 /**
  * Creates Data Representation Output
  * php version 8.3
- *
+ * 
  * @category  DataEncoder
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -37,87 +37,95 @@ class DataEncode
 {
 	/**
 	 * Temporary Stream
-	 *
+	 * 
 	 * @var null|resource|array
 	 */
 	private $tempStream = null;
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Temporary Stream
-	 *
+	 * 
 	 * @var null|Object
 	 */
-	private $dataEncoder = null;
+	private $dataEncoderObject = null;
 
 	/**
 	 * XSLT file
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $xsltFile = null;
 
 	/**
 	 * HTML file
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $htmlFile = null;
 
 	/**
 	 * PHP file
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $phpFile = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
 	}
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @param bool $header Append XML header flag
-	 *
+	 * 
 	 * @return void
 	 */
-	public function init($header = true): void
-	{
-		if ($this->http->httpReqData['server']['httpMethod'] === Constant::$GET) {
-			if ($this->http->res->oRepresentation === 'PHP') {
+	public function init(
+		$header = true
+	): void {
+		if ($this->httpObject->httpReqData['server']['httpRequestMethod'] === Constant::$GET) {
+			if ($this->httpObject->httpResponseObject->outputRepresentation === 'PHP') {
 				$this->tempStream = [];
 			} else {
-				$this->tempStream = fopen(filename: "php://temp", mode: "rw+b");
+				$this->tempStream = fopen(
+					filename: "php://temp",
+					mode: "rw+b"
+				);
 			}
 		} else {
-			if ($this->http->res->oRepresentation === 'PHP') {
+			if ($this->httpObject->httpResponseObject->outputRepresentation === 'PHP') {
 				$this->tempStream = [];
 			} else {
-				$this->tempStream = fopen(filename: "php://memory", mode: "rw+b");
+				$this->tempStream = fopen(
+					filename: "php://memory",
+					mode: "rw+b"
+				);
 			}
 		}
-		switch ($this->http->res->oRepresentation) {
+		switch ($this->httpObject->httpResponseObject->outputRepresentation) {
 			case 'JSON':
-				$this->dataEncoder = new JsonEncode(
+				$this->dataEncoderObject = new JsonEncode(
 					tempStream: $this->tempStream,
 					header: $header
 				);
 				break;
 			case 'PHP':
-				$this->dataEncoder = new PhpEncode(
+				$this->dataEncoderObject = new PhpEncode(
 					tempStream: $this->tempStream,
 					header: $header
 				);
@@ -125,7 +133,7 @@ class DataEncode
 			case 'XML':
 			case 'XSLT':
 			case 'HTML':
-				$this->dataEncoder = new XmlEncode(
+				$this->dataEncoderObject = new XmlEncode(
 					tempStream: $this->tempStream,
 					header: $header
 				);
@@ -137,58 +145,67 @@ class DataEncode
 
 	/**
 	 * Start array
-	 *
+	 * 
 	 * @param null|string $objectKey Used while creating simple array inside an object
-	 *
+	 * 
 	 * @return void
 	 */
-	public function startArray($objectKey = null): void
-	{
-		$this->dataEncoder->startArray(objectKey: $objectKey);
+	public function startArray(
+		$objectKey = null
+	): void {
+		$this->dataEncoderObject->startArray(
+			objectKey: $objectKey
+		);
 	}
 
 	/**
 	 * Add array/value as in the data format
-	 *
+	 * 
 	 * @param string|array $data Representation Data
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function addArrayData($data): void
-	{
-		$this->dataEncoder->addArrayData(data: $data);
+	public function addArrayData(
+		$data
+	): void {
+		$this->dataEncoderObject->addArrayData(
+			data: $data
+		);
 	}
 
 	/**
 	 * End array
-	 *
+	 * 
 	 * @return void
 	 */
 	public function endArray(): void
 	{
-		$this->dataEncoder->endArray();
+		$this->dataEncoderObject->endArray();
 	}
 
 	/**
 	 * Start object
-	 *
+	 * 
 	 * @param null|string $objectKey Used while creating associative array inside an object
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function startObject($objectKey = null): void
-	{
-		$this->dataEncoder->startObject(objectKey: $objectKey);
+	public function startObject(
+		$objectKey = null
+	): void {
+		$this->dataEncoderObject->startObject(
+			objectKey: $objectKey
+		);
 	}
 
 	/**
 	 * Add array/value as in the data format
-	 *
+	 * 
 	 * @param string       $objectKey Key of associative array
 	 * @param string|array $data      Representation Data
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -196,69 +213,82 @@ class DataEncode
 		$objectKey,
 		$data
 	): void {
-		$this->dataEncoder->addKeyData(objectKey: $objectKey, data: $data);
+		$this->dataEncoderObject->addKeyData(
+			objectKey: $objectKey,
+			data: $data
+		);
 	}
 
 	/**
 	 * End object
-	 *
+	 * 
 	 * @return void
 	 */
 	public function endObject(): void
 	{
-		$this->dataEncoder->endObject();
+		$this->dataEncoderObject->endObject();
 	}
 
 	/**
 	 * Encode data
-	 *
+	 * 
 	 * @param string|array $data Representation Data
-	 *
+	 * 
 	 * @return void
 	 */
-	public function encode($data): void
-	{
-		$this->dataEncoder->encode(data: $data);
+	public function encode(
+		$data
+	): void {
+		$this->dataEncoderObject->encode(
+			data: $data
+		);
 	}
 
 	/**
 	 * Append raw data string
-	 *
+	 * 
 	 * @param string $data Representation Data
-	 *
+	 * 
 	 * @return void
 	 */
 	public function appendData(&$data): void
 	{
-		$this->dataEncoder->appendData(data: $data);
+		$this->dataEncoderObject->appendData(
+			data: $data
+		);
 	}
 
 	/**
 	 * Append object data
-	 *
+	 * 
 	 * @param string $objectKey Key of associative array
 	 * @param string $data      Representation Data
-	 *
+	 * 
 	 * @return void
 	 */
-	public function appendKeyData($objectKey, &$data): void
-	{
-		$this->dataEncoder->appendKeyData(objectKey: $objectKey, data: $data);
+	public function appendKeyData(
+		$objectKey,
+		&$data
+	): void {
+		$this->dataEncoderObject->appendKeyData(
+			objectKey: $objectKey,
+			data: $data
+		);
 	}
 
 	/**
 	 * End encoding
-	 *
+	 * 
 	 * @return void
 	 */
 	public function end(): void
 	{
-		$this->dataEncoder->end();
+		$this->dataEncoderObject->end();
 	}
 
 	/**
 	 * Stream encoded data
-	 *
+	 * 
 	 * @return void
 	 */
 	public function streamData(): void
@@ -267,43 +297,69 @@ class DataEncode
 
 		switch (true) {
 			case (
-					$this->http->res->oRepresentation === 'XSLT'
-					&& $this->xsltFile !== null
-					&& file_exists(filename: $this->xsltFile)
+					$this->httpObject->httpResponseObject->outputRepresentation === 'XSLT'
+					&& $this->xsltFile !== Constant::$NULL
+					&& file_exists(
+						filename: $this->xsltFile
+					)
 				):
-				echo $this->processPublicXml(xmlFile: $this->xsltFile);
-				fclose(stream: $this->tempStream);
+				echo $this->processPublicXml(
+					xmlFile: $this->xsltFile
+				);
+				fclose(
+					stream: $this->tempStream
+				);
 				break;
 			case (
-					$this->http->res->oRepresentation === 'HTML'
-					&& $this->htmlFile !== null
-					&& file_exists(filename: $this->htmlFile)
+					$this->httpObject->httpResponseObject->outputRepresentation === 'HTML'
+					&& $this->htmlFile !== Constant::$NULL
+					&& file_exists(
+						filename: $this->htmlFile
+					)
 				):
-				echo $this->processPublicXml(xmlFile: $this->htmlFile);
-				fclose(stream: $this->tempStream);
+				echo $this->processPublicXml(
+					xmlFile: $this->htmlFile
+				);
+				fclose(
+					stream: $this->tempStream
+				);
 				break;
 			case (
-					$this->http->res->oRepresentation === 'PHP'
-					&& $this->phpFile !== null
-					&& file_exists(filename: $this->phpFile)
+					$this->httpObject->httpResponseObject->outputRepresentation === 'PHP'
+					&& $this->phpFile !== Constant::$NULL
+					&& file_exists(
+						filename: $this->phpFile
+					)
 				):
 				$finalArray = &$this->tempStream->finalArray;
 				include_once $this->phpFile;
 				$this->tempStream = null;
 				break;
 			default:
-				rewind(stream: $this->tempStream);
-				$outputStream = fopen(filename: 'php://output', mode: 'wb');
-				stream_copy_to_stream(from: $this->tempStream, to: $outputStream);
-				fclose(stream: $outputStream);
-				fclose(stream: $this->tempStream);
+				rewind(
+					stream: $this->tempStream
+				);
+				$outputStream = fopen(
+					filename: 'php://output',
+					mode: 'wb'
+				);
+				stream_copy_to_stream(
+					from: $this->tempStream,
+					to: $outputStream
+				);
+				fclose(
+					stream: $outputStream
+				);
+				fclose(
+					stream: $this->tempStream
+				);
 				break;
 		}
 	}
 
 	/**
 	 * Get encoded data
-	 *
+	 * 
 	 * @return bool|string
 	 */
 	public function getData(): bool|string
@@ -312,36 +368,56 @@ class DataEncode
 
 		switch (true) {
 			case (
-					$this->http->res->oRepresentation === 'XSLT'
-					&& $this->xsltFile !== null
-					&& file_exists(filename: $this->xsltFile)
+					$this->httpObject->httpResponseObject->outputRepresentation === 'XSLT'
+					&& $this->xsltFile !== Constant::$NULL
+					&& file_exists(
+						filename: $this->xsltFile
+					)
 				):
-				$streamContent = $this->processPublicXml(xmlFile: $this->xsltFile);
-				fclose(stream: $this->tempStream);
+				$streamContent = $this->processPublicXml(
+					xmlFile: $this->xsltFile
+				);
+				fclose(
+					stream: $this->tempStream
+				);
 				break;
 			case (
-					$this->http->res->oRepresentation === 'HTML'
-					&& $this->htmlFile !== null
-					&& file_exists(filename: $this->htmlFile)
+					$this->httpObject->httpResponseObject->outputRepresentation === 'HTML'
+					&& $this->htmlFile !== Constant::$NULL
+					&& file_exists(
+						filename: $this->htmlFile
+					)
 				):
-				$streamContent = $this->processPublicXml(xmlFile: $this->htmlFile);
-				fclose(stream: $this->tempStream);
+				$streamContent = $this->processPublicXml(
+					xmlFile: $this->htmlFile
+				);
+				fclose(
+					stream: $this->tempStream
+				);
 				break;
 			case (
-					$this->http->res->oRepresentation === 'PHP'
-					&& $this->phpFile !== null
-					&& file_exists(filename: $this->phpFile)
+					$this->httpObject->httpResponseObject->outputRepresentation === 'PHP'
+					&& $this->phpFile !== Constant::$NULL
+					&& file_exists(
+						filename: $this->phpFile
+					)
 				):
-				$finalArray = &$this->dataEncoder->finalArray;
+				$finalArray = &$this->dataEncoderObject->finalArray;
 				@ob_clean();
 				include_once $this->phpFile;
 				$streamContent = ob_get_clean();
 				$this->tempStream = null;
 				break;
 			default:
-				rewind(stream: $this->tempStream);
-				$streamContent = stream_get_contents(stream: $this->tempStream);
-				fclose(stream: $this->tempStream);
+				rewind(
+					stream: $this->tempStream
+				);
+				$streamContent = stream_get_contents(
+					stream: $this->tempStream
+				);
+				fclose(
+					stream: $this->tempStream
+				);
 				break;
 		}
 
@@ -350,21 +426,34 @@ class DataEncode
 
 	/**
 	 * Generate XML(XSLT)/HTML data
-	 *
+	 * 
 	 * @param string $xmlFile XML file location
-	 *
+	 * 
 	 * @return string
 	 */
-	private function processPublicXml($xmlFile)
-	{
-		rewind(stream: $this->tempStream);
+	private function processPublicXml(
+		$xmlFile
+	): string {
+		rewind(
+			stream: $this->tempStream
+		);
 		$xml = new \DOMDocument();
-		$xml->loadXML(source: stream_get_contents(stream: $this->tempStream));
+		$xml->loadXML(
+			source: stream_get_contents(
+				stream: $this->tempStream
+			)
+		);
 
 		$xslt = new \XSLTProcessor();
 		$XSL = new \DOMDocument();
-		$XSL->load(filename: $this->xmlFile);
-		$xslt->importStylesheet(stylesheet: $XSL);
-		return $xslt->transformToXML(document: $xml);
+		$XSL->load(
+			filename: $this->xmlFile
+		);
+		$xslt->importStylesheet(
+			stylesheet: $XSL
+		);
+		return $xslt->transformToXML(
+			document: $xml
+		);
 	}
 }

@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- *
+ * 
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,10 +13,13 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+use Microservices\DatabaseTable;
 
 return array_merge(
-	require $this->http->req->QUERIES_DIR
+	require $this->httpObject->httpRequestObject->sqlDirectory
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'Registration.php',
@@ -24,25 +27,25 @@ return array_merge(
 		'__SET__' => [
 			[
 				'column' => 'firstname',
-				'fetchFrom' => 'payload',
-				'fetchFromData' => 'firstname'
+				'activeRequestDataKey' => 'payload',
+				'activeRequestDataKeySubKey' => 'firstname'
 			],
 			[
 				'column' => 'lastname',
-				'fetchFrom' => 'payload',
-				'fetchFromData' => 'lastname'
+				'activeRequestDataKey' => 'payload',
+				'activeRequestDataKeySubKey' => 'lastname'
 			],
 			[
 				'column' => 'email',
-				'fetchFrom' => 'payload',
-				'fetchFromData' => 'email'
+				'activeRequestDataKey' => 'payload',
+				'activeRequestDataKeySubKey' => 'email'
 			],
 		],
 		'__WHERE__' => [
 			[
-				'column' => 'id',
-				'fetchFrom' => 'routeParamArr',
-				'fetchFromData' => 'id',
+				'column' => DatabaseTable::$customerUserPrimaryKey,
+				'activeRequestDataKey' => 'routeParamArray',
+				'activeRequestDataKeySubKey' => 'id',
 				'dataType' => DatabaseServerDataType::$PrimaryKey
 			]
 		],

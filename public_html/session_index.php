@@ -3,7 +3,7 @@
 /**
  * Session Index
  * php version 8.3
- *
+ * 
  * @category  Start
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -19,7 +19,6 @@ use Openswoole\Http\Response;
 
 use Microservices\App\Constant;
 use Microservices\App\Env;
-use Microservices\App\CommonFunction;
 use Microservices\App\HttpStatus;
 use Microservices\App\Reload;
 use Microservices\App\Start;
@@ -29,7 +28,9 @@ define('ROOT', realpath(path: __DIR__ . DIRECTORY_SEPARATOR . '../'));
 define('ROUTE_URL_PARAM', 'route');
 
 require_once ROOT . DIRECTORY_SEPARATOR . 'Autoload.php';
-spl_autoload_register(callback:  'Microservices\Autoload::register');
+spl_autoload_register(
+	callback:  'Microservices\Autoload::register'
+);
 
 $server = new Server('127.0.0.1', 9501);
 
@@ -54,9 +55,13 @@ $server->on(
 			'.env.rateLimiting',
 			'.env.route'
 		] as $envFilename) {
-			$envDataArr = parse_ini_file(filename: ROOT . DIRECTORY_SEPARATOR . $envFilename);
-			foreach ($envDataArr as $envVarName => $envVarValue) {
-				putenv(assignment: "{$envVarName}={$envVarValue}");
+			$envDataArray = parse_ini_file(
+				filename: ROOT . DIRECTORY_SEPARATOR . $envFilename
+			);
+			foreach ($envDataArray as $envVarName => $envVarValue) {
+				putenv(
+					assignment: "{$envVarName}={$envVarValue}"
+				);
 			}
 		}
 
@@ -68,7 +73,7 @@ $server->on(
 
 		$httpReqData['streamData'] = true;
 		$httpReqData['server']['domainName'] = $DOMAIN_NAME;
-		$httpReqData['server']['httpMethod'] = $request->server['request_method'];
+		$httpReqData['server']['httpRequestMethod'] = $request->server['request_method'];
 
 		if (
 			((int)getenv('DISABLE_REQUESTS_VIA_PROXIES')) === 1
@@ -79,12 +84,12 @@ $server->on(
 		}
 
 		if (isset($request->server['remote_addr'])) {
-			$httpReqData['server']['httpRequestIP'] = $request->server['remote_addr'];
+			$httpReqData['server']['httpRequestIp'] = $request->server['remote_addr'];
 		} else {// check proxy headers
 			if (isset($request->header['x-forwarded-for'])) {
-				$httpReqData['server']['httpRequestIP'] = $request->header['x-forwarded-for'];
+				$httpReqData['server']['httpRequestIp'] = $request->header['x-forwarded-for'];
 			} elseif (isset($request->header['x-real-ip'])) {
-				$httpReqData['server']['httpRequestIP'] = $request->header['x-real-ip'];
+				$httpReqData['server']['httpRequestIp'] = $request->header['x-real-ip'];
 			}
 		}
 
@@ -102,6 +107,7 @@ $server->on(
 			$response->end('Missing route');
 			return;
 		}
+		// echo $httpReqData['get'][ROUTE_URL_PARAM] . PHP_EOL;
 
 		$httpReqData['post'] = $request->rawContent();
 		$httpReqData['files'] = &$request->files;
@@ -125,42 +131,47 @@ $server->on(
 					'/open-test-xml',
 					'/supp-test'
 				],
-				strict: true
+				strict: Constant::$TRUE
 			)
 		) {
-			$testObj = new Test($httpReqData);
+			$testObject = new Test($httpReqData);
 			switch ($httpReqData['get'][ROUTE_URL_PARAM]) {
 				case '/all-test':
-					$response->end('<pre>'.print_r(value: $testObj->processAllTest(), return: true));
+					$response->end('<pre>'.print_r(value: $testObject->processAllTest(), return: Constant::$TRUE));
 					break;
 				case '/auth-test':
-					$response->end('<pre>'.print_r(value: $testObj->processPrivate(), return: true));
+					$response->end('<pre>'.print_r(value: $testObject->processPrivate(), return: Constant::$TRUE));
 					break;
 				case '/open-test':
-					$response->end('<pre>'.print_r(value: $testObj->processPublic(), return: true));
+					$response->end('<pre>'.print_r(value: $testObject->processPublic(), return: Constant::$TRUE));
 					break;
 				case '/open-test-xml':
-					$response->end('<pre>'.print_r(value: $testObj->processPublicXml(), return: true));
+					$response->end('<pre>'.print_r(value: $testObject->processPublicXml(), return: Constant::$TRUE));
 					break;
 				case '/supp-test':
-					$response->end('<pre>'.print_r(value: $testObj->processPrivateSupplement(), return: true));
+					$response->end('<pre>'.print_r(value: $testObject->processPrivateSupplement(), return: Constant::$TRUE));
 					break;
 			}
 		} else {
-			if ($httpReqData['get'][ROUTE_URL_PARAM] === '/' . Env::$reloadRequestRoutePrefix) {
+			if (
+				Env::$enableReloadRequest
+				&& $httpReqData['get'][ROUTE_URL_PARAM] === '/' . Env::$reloadRequestRoutePrefix
+			) {
 				Reload::process(
-					httpRequestIp: $httpReqData['server']['httpRequestIP']
+					httpRequestIp: $httpReqData['server']['httpRequestIp']
 				);
 				$response->end();
 			} else {
 				ob_start();
-				[$responseHeaderArr, $responseContent, $responseCode] = Start::http(httpReqData: $httpReqData);
+				[$responseHeaderArray, $responseContent, $responseCode] = Start::http(
+					httpReqData: $httpReqData
+				);
 				@ob_clean();
 
 				$responseCode = $responseCode ?? HttpStatus::$Ok;
 				$response->status($responseCode);
 
-				foreach ($responseHeaderArr as $headerName => $headerValue) {
+				foreach ($responseHeaderArray as $headerName => $headerValue) {
 					$response->header(
 						$headerName,
 						$headerValue
@@ -178,7 +189,7 @@ $server->on(
 $server->set(
 	[
 		// Disable Coroutines for Traditional PHP Sessions
-		'enable_coroutine' => false,
+		'enable_coroutine' => Constant::$FALSE,
 	]
 );
 
@@ -186,12 +197,17 @@ $server->start();
 
 /**
  * Unique HTTP request hash
- *
+ * 
  * @param array $hashArray Hash array
- *
+ * 
  * @return string
  */
-function httpRequestHash($hashArray): string
-{
-	return md5(json_encode(value: $hashArray));
+function httpRequestHash(
+	$hashArray
+): string {
+	return md5(
+		json_encode(
+			value: $hashArray
+		)
+	);
 }

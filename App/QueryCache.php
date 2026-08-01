@@ -3,7 +3,7 @@
 /**
  * Database Common Function
  * php version 8.3
- *
+ * 
  * @category  Database Common Function
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,13 +15,14 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Constant;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Server\QueryCacheServer;
 
 /**
  * Database Common Function
  * php version 8.3
- *
+ * 
  * @category  Database Common Function
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -34,41 +35,44 @@ class QueryCache
 {
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Query Cache Connection Object
-	 *
+	 * 
 	 * @var null|QueryCacheServer
 	 */
-	private $customerQueryCacheServer = null;
+	private $queryCacheServerObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
     }
 
     /**
 	 * Connect query Cache
-	 *
+	 * 
 	 * @return void
 	 */
 	public function connectCustomerQueryCache(): void
 	{
-        if ($this->customerQueryCacheServer !== null) {
+        if ($this->queryCacheServerObject !== Constant::$NULL) {
             return;
         }
 
-		$customerQueryCacheServerCred = DbCommonFunction::customerQueryCacheServerCred(customerData: $this->http->req->s['customerData']);
-		$this->customerQueryCacheServer = new QueryCacheServer(
+		$customerQueryCacheServerCred = DbCommonFunction::customerQueryCacheServerCred(
+			customerData: $this->httpObject->httpRequestObject->activeRequestData['customerData']
+		);
+		$this->queryCacheServerObject = new QueryCacheServer(
 			queryCacheServerType: $customerQueryCacheServerCred['cacheServerType'],
 			queryCacheServerHostname: $customerQueryCacheServerCred['cacheServerHostname'],
 			queryCacheServerPort: $customerQueryCacheServerCred['cacheServerPort'],
@@ -81,10 +85,10 @@ class QueryCache
 
 	/**
 	 * Prepend Query Cache key
-	 *
+	 * 
 	 * @param int    $customerId    Customer Id
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCachePrepend(
@@ -105,10 +109,10 @@ class QueryCache
 
 	/**
 	 * Get Query Cache key
-	 *
+	 * 
 	 * @param int    $customerId    Customer Id
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheGet(
@@ -117,7 +121,7 @@ class QueryCache
 	): mixed {
         $this->connectCustomerQueryCache();
 
-		if (strlen($queryCacheKey) === 0) {
+		if (empty($queryCacheKey)) {
 			return false;
 		}
 
@@ -127,8 +131,14 @@ class QueryCache
 		);
 
 		$json = null;
-		if ($this->customerQueryCacheServer->queryCacheExist(queryCacheKey: $queryCacheKey)) {
-			$json = $this->customerQueryCacheServer->queryCacheGet(queryCacheKey: $queryCacheKey);
+		if (
+			$this->queryCacheServerObject->queryCacheExist(
+				queryCacheKey: $queryCacheKey
+			)
+		) {
+			$json = $this->queryCacheServerObject->queryCacheGet(
+				queryCacheKey: $queryCacheKey
+			);
 		}
 
 		return $json;
@@ -136,10 +146,10 @@ class QueryCache
 
 	/**
 	 * Increment Query Cache key counter
-	 *
+	 * 
 	 * @param int    $customerId    Customer Id
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheIncrement(
@@ -148,7 +158,7 @@ class QueryCache
 	): mixed {
         $this->connectCustomerQueryCache();
 
-		if (strlen($queryCacheKey) === 0) {
+		if (empty($queryCacheKey)) {
 			return false;
 		}
 
@@ -158,16 +168,18 @@ class QueryCache
 			queryCacheKey: $queryCacheKey
 		);
 
-		return $this->customerQueryCacheServer->queryCacheIncrement(queryCacheKey: $queryCacheKey);
+		return $this->queryCacheServerObject->queryCacheIncrement(
+			queryCacheKey: $queryCacheKey
+		);
 	}
 
 	/**
 	 * Set Query Cache key
-	 *
+	 * 
 	 * @param int    $customerId      Customer Id
 	 * @param string $queryCacheKey   Query Cache key
-	 * @param string $queryCacheValue Query Cache value
-	 *
+	 * @param mixed  $queryCacheValue Query Cache value
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheSet(
@@ -177,7 +189,7 @@ class QueryCache
 	): mixed {
         $this->connectCustomerQueryCache();
 
-		if (strlen($queryCacheKey) === 0) {
+		if (empty($queryCacheKey)) {
 			return false;
 		}
 
@@ -193,16 +205,21 @@ class QueryCache
 			queryCacheKey: $delQueryCacheKey
 		);
 
-		$this->customerQueryCacheServer->queryCacheDelete(queryCacheKey: $delQueryCacheKey);
-		return $this->customerQueryCacheServer->queryCacheSet(queryCacheKey: $queryCacheKey, queryCacheValue: $queryCacheValue);
+		$this->queryCacheServerObject->queryCacheDelete(
+			queryCacheKey: $delQueryCacheKey
+		);
+		return $this->queryCacheServerObject->queryCacheSet(
+			queryCacheKey: $queryCacheKey,
+			queryCacheValue: $queryCacheValue
+		);
 	}
 
 	/**
 	 * Delete Query Cache key
-	 *
+	 * 
 	 * @param int    $customerId    Customer Id
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheDelete(
@@ -211,7 +228,7 @@ class QueryCache
 	): mixed {
         $this->connectCustomerQueryCache();
 
-		if (strlen($queryCacheKey) === 0) {
+		if (empty($queryCacheKey)) {
 			return false;
 		}
 
@@ -220,6 +237,8 @@ class QueryCache
 			queryCacheKey: $queryCacheKey
 		);
 
-		return $this->customerQueryCacheServer->queryCacheDelete(queryCacheKey: $queryCacheKey);
+		return $this->queryCacheServerObject->queryCacheDelete(
+			queryCacheKey: $queryCacheKey
+		);
 	}
 }

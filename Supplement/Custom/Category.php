@@ -3,7 +3,7 @@
 /**
  * CustomAPI
  * php version 8.3
- *
+ * 
  * @category  CustomAPI
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,6 +15,7 @@
 
 namespace Microservices\Supplement\Custom;
 
+use Microservices\App\Constant;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Http;
 use Microservices\Supplement\Custom\CustomInterface;
@@ -23,7 +24,7 @@ use Microservices\Supplement\Custom\CustomTrait;
 /**
  * CustomAPI Category
  * php version 8.3
- *
+ * 
  * @category  CustomAPI_Category
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,28 +39,29 @@ class Category implements CustomInterface
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
-		$this->http->req->customerDbObj = DbCommonFunction::connectCustomerDb(
-			customerData: $this->http->req->s['customerData'],
-			fetchFrom: 'Slave'
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
+		$this->httpObject->httpRequestObject->customerDbObject = DbCommonFunction::connectCustomerDb(
+			customerData: $this->httpObject->httpRequestObject->activeRequestData['customerData'],
+			fetchDbMode: 'Slave'
 		);
 	}
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -69,24 +71,30 @@ class Category implements CustomInterface
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
 	{
 		$sql = '
-			SELECT *
+			SELECT * 
 			FROM category
 			WHERE is_deleted = :is_deleted AND parent_id = :parent_id
 		';
-		$paramArr = [
-			':is_deleted' => 'No',
+		$paramArray = [
+			':is_deleted' => Constant::$NO,
 			':parent_id' => 0,
 		];
-		$this->http->req->customerDbObj->execQuery(sql: $sql, paramArr: $paramArr);
-		$rowArr = $this->http->req->customerDbObj->fetchAll();
-		$this->http->req->customerDbObj->closeCursor();
-		$this->http->res->dataEncode->addKeyData(objectKey: 'Results', data: $rowArr);
+		$this->httpObject->httpRequestObject->customerDbObject->execQuery(
+			sql: $sql,
+			paramArray: $paramArray
+		);
+		$rowArray = $this->httpObject->httpRequestObject->customerDbObject->fetchAll();
+		$this->httpObject->httpRequestObject->customerDbObject->closeCursor();
+		$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
+			objectKey: 'Results',
+			data: $rowArray
+		);
 
 		return true;
 	}

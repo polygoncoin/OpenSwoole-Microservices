@@ -3,7 +3,7 @@
 /**
  * Write APIs
  * php version 8.3
- *
+ * 
  * @category  WriteAPI
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -17,6 +17,7 @@ namespace Microservices\App;
 
 use Microservices\App\AppTrait;
 use Microservices\App\CommonFunction;
+use Microservices\App\Constant;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\DbCommonFunction;
 use Microservices\App\Env;
@@ -28,7 +29,7 @@ use Microservices\App\Web;
 /**
  * Write APIs
  * php version 8.3
- *
+ * 
  * @category  WriteAPIs
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -43,46 +44,47 @@ class Write
 
 	/**
 	 * Hook object
-	 *
+	 * 
 	 * @var null|Hook
 	 */
-	private $hook = null;
+	private $hookObject = null;
 
 	/**
 	 * Operate DML As Transactions
-	 *
+	 * 
 	 * @var null|Web
 	 */
 	private $operateAsTransaction = null;
 
 	/**
 	 * Data Encode object
-	 *
+	 * 
 	 * @var null|DataEncode
 	 */
-	public $dataEncode = null;
+	public $dataEncodeObject = null;
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
-		$this->dataEncode = &$this->http->res->dataEncode;
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
+		$this->dataEncodeObject = &$this->httpObject->httpResponseObject->dataEncodeObject;
 	}
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -92,78 +94,48 @@ class Write
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
 	{
-		// Load Sql
-		$writeSqlConfig = &$this->http->req->rParser->sqlConfig;
-
-		// Rate Limiting request if configured for Route Sql.
-		$this->rateLimitRoute(sqlConfig: $writeSqlConfig);
-
-		// Check for configured referrer Lags
-		$this->checkReferrerLag(sqlConfig: $writeSqlConfig);
-
-		// Use results in where clause of sub queries recursively
-		$useHierarchy = $this->getUseHierarchy(
-			sqlConfig: $writeSqlConfig,
-			keyword: 'useHierarchy'
+		$return = $this->writeBasics(
+			sqlConfig: $sqlConfig,
+			maintainHierarchy: $maintainHierarchy
 		);
 
-		if (
-			$this->http->req->rParser->routeEndingWithReservedKeywordFlag
-			&& $this->http->req->rParser->routeEndingReservedKeyword === Env::$explainRequestRouteKeyword
-			&& CommonFunction::isEnabled(
-				http: $this->http,
-				feature: 'enableExplainRequest'
-			)
-		) {
-			return $this->explainWrite(
-				writeSqlConfig: $writeSqlConfig,
-				useHierarchy: $useHierarchy
-			);
-		}
 
-		if (
-			$this->http->req->rParser->routeEndingWithReservedKeywordFlag
-			&& ($this->http->req->rParser->routeEndingReservedKeyword === Env::$importSampleRequestRouteKeyword)
-		) {
-			return $this->generateImportSampleCsv(
-				writeSqlConfig: $writeSqlConfig,
-				useHierarchy: $useHierarchy
-			);
+		if ($return !== Constant::$FALSE) {
+			return $return;
 		}
-
-		// Lag Response
-		$this->lagResponse(sqlConfig: $writeSqlConfig);
 
 		// Operate as Transaction (BEGIN COMMIT else ROLLBACK on error)
-		$this->operateAsTransaction = isset($writeSqlConfig['isTransaction'])
-			? $writeSqlConfig['isTransaction'] : false;
+		$this->operateAsTransaction = isset($sqlConfig['isTransaction'])
+			? $sqlConfig['isTransaction'] : Constant::$FALSE;
+
+		$fetchDbMode = 'Master';
 
 		// Set Server mode to execute query on - Read / Write Server
-		if ($this->http->req->customerDbObj === null) {
-			$this->http->req->customerDbObj = DbCommonFunction::connectCustomerDb(
-				customerData: $this->http->req->s['customerData'],
-				fetchFrom: 'Master'
+		if ($this->httpObject->httpRequestObject->customerDbObject === Constant::$NULL) {
+			$this->httpObject->httpRequestObject->customerDbObject = DbCommonFunction::connectCustomerDb(
+				customerData: $this->httpObject->httpRequestObject->activeRequestData['customerData'],
+				fetchDbMode: $fetchDbMode
 			);
 		}
 
-		$this->processWrite(
-			writeSqlConfig: $writeSqlConfig,
-			useHierarchy: $useHierarchy
+		$this->write(
+			writeSqlConfig: $sqlConfig,
+			writeMaintainHierarchy: $maintainHierarchy
 		);
-		if (isset($writeSqlConfig['affectedQueryCacheKeyArr'])) {
-			for (
-				$i = 0, $iCount = count(value: $writeSqlConfig['affectedQueryCacheKeyArr']);
-				$i < $iCount;
-				$i++
-			) {
-				$this->http->req->customerQueryCacheObj->queryCacheDelete(
-					customerId: $this->http->req->customerId,
-					queryCacheKey: $writeSqlConfig['affectedQueryCacheKeyArr'][$i]
+
+		if (isset($sqlConfig['affectedQueryCacheKeyArray'])) {
+			$indexCount = count(
+				value: $sqlConfig['affectedQueryCacheKeyArray']
+			);
+			for ($index = 0; $index < $indexCount; $index++) {
+				$this->httpObject->httpRequestObject->customerQueryCacheObject->queryCacheDelete(
+					customerId: $this->httpObject->httpRequestObject->customerId,
+					queryCacheKey: $sqlConfig['affectedQueryCacheKeyArray'][$index]
 				);
 			}
 		}
@@ -172,69 +144,33 @@ class Write
 	}
 
 	/**
-	 * Explain write configuration
-	 *
-	 * @param array $writeSqlConfig Write SQL config
-	 * @param bool  $useHierarchy   Use results in where clause of sub queries
-	 *
-	 * @return bool
-	 */
-	private function explainWrite(
-		&$writeSqlConfig,
-		$useHierarchy
-	): bool {
-		$this->dataEncode->startObject(objectKey: 'Config');
-		$this->dataEncode->addKeyData(
-			objectKey: 'Route',
-			data: $this->http->req->rParser->configuredRoute
-		);
-		if (
-			CommonFunction::isEnabled(
-				http: $this->http,
-				feature: 'enablePayloadInResponse'
-			)
-		) {
-			$this->dataEncode->addKeyData(
-				objectKey: Env::$payloadKeyInResponse,
-				data: $this->getExplainParam(
-					sqlConfig: $writeSqlConfig,
-					isFirstCall: true,
-					flag: $useHierarchy
-				)
-			);
-		}
-		$this->dataEncode->endObject();
-
-		return true;
-	}
-
-	/**
-	 * Process for insert/update
-	 *
-	 * @param array $writeSqlConfig Write SQL config
-	 * @param bool  $useHierarchy   Use results in where clause of sub queries
-	 *
+	 * Perform write operation
+	 * 
+	 * @param array $writeSqlConfig         Sql config
+	 * @param bool  $writeMaintainHierarchy If true - Uses parent payload/results in child
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
-	private function processWrite(
+	private function write(
 		&$writeSqlConfig,
-		$useHierarchy
+		$writeMaintainHierarchy
 	): void {
 		// Check for payloadType
 		if (isset($writeSqlConfig['__PAYLOAD-TYPE__'])) {
-			$payloadType = $this->http->req->s['payloadType'];
-			if ($payloadType !== $writeSqlConfig['__PAYLOAD-TYPE__']) {
+			$writePayloadType = $this->httpObject->httpRequestObject->activeRequestData['payloadType'];
+			if ($writePayloadType !== $writeSqlConfig['__PAYLOAD-TYPE__']) {
 				throw new \Exception(
 					message: 'Invalid payload type',
 					code: HttpStatus::$BadRequest
 				);
 			}
+
 			// Check for maximum object's supported when payloadType is Array
 			if (
 				$writeSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
 				&& isset($writeSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
-				&& ($objCount = $this->http->req->dataDecode->count())
+				&& ($objCount = $this->httpObject->httpRequestObject->dataDecodeObject->count())
 				&& ($objCount > $writeSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
 			) {
 				throw new \Exception(
@@ -246,507 +182,529 @@ class Write
 		}
 
 		// Set required fields
-		$this->http->req->s['requiredFieldArrCollection'] = $this->getRequired(
+		$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArrayCollection'] = $this->getRequired(
 			sqlConfig: $writeSqlConfig,
-			isFirstCall: true,
-			flag: $useHierarchy
+			maintainHierarchy: $writeMaintainHierarchy,
+			isFirstCall: Constant::$TRUE
 		);
 
-		$this->dataEncode->startObject(objectKey: 'Results');
+		$this->dataEncodeObject->startObject(
+			objectKey: 'Results'
+		);
+
 		if (
-			isset($this->http->req->s['payloadType'])
-			&& $this->http->req->s['payloadType'] === 'Array'
+			isset($this->httpObject->httpRequestObject->activeRequestData['payloadType'])
+			&& $this->httpObject->httpRequestObject->activeRequestData['payloadType'] === 'Array'
 		) {
 			if (
 				in_array(
-					needle: $this->http->res->oRepresentation,
+					needle: $this->httpObject->httpResponseObject->outputRepresentation,
 					haystack: ['XML', 'XSLT', 'HTML'],
-					strict: true
+					strict: Constant::$TRUE
 				)
 			) {
-				$this->dataEncode->startArray(objectKey: 'Rows');
+				$this->dataEncodeObject->startArray(
+					objectKey: 'Records'
+				);
 			}
 		}
 
-		// Perform action
-		$iCount = $this->http->req->s['payloadType'] === 'Array'
-			? $this->http->req->dataDecode->count() : 1;
+		// For indexCount
+		$indexCount = $this->httpObject->httpRequestObject->activeRequestData['payloadType'] === 'Array'
+			? $this->httpObject->httpRequestObject->dataDecodeObject->count() : 1;
 
-		for ($i = 0; $i < $iCount; $i++) {
-			$configKeyArr = [];
-			$payloadIndexArr = [];
-			if ($i === 0) {
-				if ($this->http->req->s['payloadType'] === 'Array') {
-					$payloadIndexArr[] = "{$i}";
-				} else {
-					$payloadIndexArr[] = '';
-				}
-			} else {
-				$payloadIndexArr[] = "{$i}";
+		for ($index = 0; $index < $indexCount; $index++) {
+			$writePayloadKeyArray = null;
+
+			if ($this->httpObject->httpRequestObject->activeRequestData['payloadType'] === 'Array') {
+				$writePayloadKeyArray = [];
+				$writePayloadKeyArray[] = "{$index}";
 			}
 
-			// Check for Idempotent Window
+			// For Idempotent Window
 			[$idempotentWindow, $hashKey, $hashJson] = $this->checkIdempotent(
 				sqlConfig: $writeSqlConfig,
-				payloadIndexArr: $payloadIndexArr
+				payloadKeyArray: $writePayloadKeyArray
 			);
 
-			// Begin DML operation
-			if ($hashJson === null) {
+			// For DML operation
+			if ($hashJson === Constant::$NULL) {
 				if ($this->operateAsTransaction) {
-					$this->http->req->customerDbObj->begin();
+					$this->httpObject->httpRequestObject->customerDbObject->begin();
 				}
-				$response = [];
-				$this->writeDb(
-					writeSqlConfig: $writeSqlConfig,
-					payloadIndexArr: $payloadIndexArr,
-					configKeyArr: $configKeyArr,
-					useHierarchy: $useHierarchy,
-					response: $response,
-					requiredFieldArr: $this->http->req->s['requiredFieldArrCollection']
+
+				$output = [];
+				$output['Status'] = HttpStatus::$Ok;
+				if (
+					CommonFunction::isEnabled(
+						httpObject: $this->httpObject,
+						feature: 'customer_enabled_payload_in_response'
+					)
+				) {
+					$output[Env::$payloadKeyInResponse] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
+						keyString: $this->getPayloadKey(
+							payloadKeyArray: $writePayloadKeyArray
+						)
+					);
+				}
+
+				$writeResponse = [];
+
+				// For Parent
+				$this->writeParent(
+					writeParentSqlConfig: $writeSqlConfig,
+					writeParentPayloadKeyArray: $writePayloadKeyArray,
+					writeParentRequiredFieldArray: $this->httpObject->httpRequestObject->activeRequestData['requiredFieldArrayCollection'],
+					writeParentResponse: $writeResponse,
+					writeParentMaintainHierarchy: $writeMaintainHierarchy
 				);
 
-				if ($this->http->res->httpStatus === HttpStatus::$Ok) {
+				if ($this->httpObject->httpResponseObject->httpStatus === HttpStatus::$Ok) {
 					if (
 						$this->operateAsTransaction
-						&& ($this->http->req->customerDbObj->beganTransaction === true)
+						&& ($this->httpObject->httpRequestObject->customerDbObject->beganTransaction === Constant::$TRUE)
 					) {
-						$this->http->req->customerDbObj->commit();
+						$this->httpObject->httpRequestObject->customerDbObject->commit();
 					}
-
-					$arr = [];
-					$arr['Status'] = HttpStatus::$Ok;
-					if (
-						CommonFunction::isEnabled(
-							http: $this->http,
-							feature: 'enablePayloadInResponse'
-						)
-					) {
-						$arr[Env::$payloadKeyInResponse] = $this->http->req->dataDecode->getCompleteArray(
-							keyString: implode(
-								separator: ':',
-								array: $payloadIndexArr
-							)
-						);
-					}
-					$arr['PayloadResponse'] = $response;
+					$output['PayloadResponse'] = $writeResponse;
 
 					if (
-						$this->http->req->isPrivateRequest
+						$this->httpObject->httpRequestObject->isPrivateRequest
 						&& $idempotentWindow
 					) {
-						$this->http->req->customerCacheObj->cacheSet(
+						$this->httpObject->httpRequestObject->customerCacheObject->cacheSet(
 							cacheKey: $hashKey,
-							cacheValue: json_encode(value: $arr),
+							cacheValue: $output,
 							cacheExpire: $idempotentWindow
 						);
 					}
 				} else { // Failure
-					$arr = [];
-					$arr['Status'] = $this->http->res->httpStatus;
-					if (
-						CommonFunction::isEnabled(
-							http: $this->http,
-							feature: 'enablePayloadInResponse'
-						)
-					) {
-						$arr[Env::$payloadKeyInResponse] = $this->http->req->dataDecode->getCompleteArray(
-							keyString: implode(
-								separator: ':',
-								array: $payloadIndexArr
-							)
-						);
-					}
-					$arr['Error'] = $response;
+					$output['Status'] = $this->httpObject->httpResponseObject->httpStatus;
+					$output['Error'] = $writeResponse;
 				}
 			} else {
-				$arr = json_decode(
-					json: $hashJson,
-					associative: true
+				$output = CommonFunction::jsonDecode(
+					value: $hashJson
 				);
 			}
 
-			if ($payloadIndexArr[0] === '') {
-				foreach ($arr as $k => $v) {
-					$this->dataEncode->addKeyData(objectKey: $k, data: $v);
+			if ($writePayloadKeyArray === Constant::$NULL) {
+				foreach ($output as $outputKey => &$outputKeyValue) {
+					$this->dataEncodeObject->addKeyData(
+						objectKey: $outputKey,
+						data: $outputKeyValue
+					);
 				}
 			} else {
 				if (
 					in_array(
-						needle: $this->http->res->oRepresentation,
+						needle: $this->httpObject->httpResponseObject->outputRepresentation,
 						haystack: ['XML', 'XSLT', 'HTML'],
-						strict: true
+						strict: Constant::$TRUE
 					)
 				) {
-					$this->dataEncode->startObject(objectKey: 'Row');
-					foreach ($arr as $k => $v) {
-						$this->dataEncode->addKeyData(objectKey: $k, data: $v);
+					$this->dataEncodeObject->startObject(
+						objectKey: 'Record'
+					);
+					foreach ($output as $outputKey => &$outputKeyValue) {
+						$this->dataEncodeObject->addKeyData(
+							objectKey: $outputKey,
+							data: $outputKeyValue
+						);
 					}
-					$this->dataEncode->endObject();
+					$this->dataEncodeObject->endObject();
 				} else {
-					$this->dataEncode->addKeyData(objectKey: $i, data: $arr);
+					$this->dataEncodeObject->addKeyData(
+						objectKey: $index,
+						data: $output
+					);
 				}
 			}
 		}
 
-		if ($this->http->req->s['payloadType'] === 'Array') {
+		if ($this->httpObject->httpRequestObject->activeRequestData['payloadType'] === 'Array') {
 			if (
 				in_array(
-					needle: $this->http->res->oRepresentation,
+					needle: $this->httpObject->httpResponseObject->outputRepresentation,
 					haystack: ['XML', 'XSLT', 'HTML'],
-					strict: true
+					strict: Constant::$TRUE
 				)
 			) {
-				$this->dataEncode->endArray();
+				$this->dataEncodeObject->endArray();
 			}
 		}
-		$this->dataEncode->endObject();
+		$this->dataEncodeObject->endObject();
 	}
 
 	/**
-	 * Process $writeSqlConfig recursively
-	 *
-	 * @param array $writeSqlConfig   Write SQL config
-	 * @param array $payloadIndexArr  Payload Indexes
-	 * @param array $configKeyArr     Config key's
-	 * @param bool  $useHierarchy     Use results in where clause of sub queries
-	 * @param array $response         Response by reference
-	 * @param array $requiredFieldArr Required fields
-	 *
+	 * Write Parent Function
+	 * 
+	 * @param array $writeParentSqlConfig          Sql config
+	 * @param array $writeParentPayloadKeyArray    Payload Indexes
+	 * @param array $writeParentRequiredFieldArray Required fields
+	 * @param array $writeParentResponse           Response by reference
+	 * @param bool  $writeParentMaintainHierarchy  If true - Uses parent payload/results in child
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
-	private function writeDb(
-		&$writeSqlConfig,
-		$payloadIndexArr,
-		$configKeyArr,
-		$useHierarchy,
-		&$response,
-		&$requiredFieldArr
+	private function writeParent(
+		&$writeParentSqlConfig,
+		&$writeParentPayloadKeyArray,
+		&$writeParentRequiredFieldArray,
+		&$writeParentResponse,
+		$writeParentMaintainHierarchy
 	): void {
-		$payloadIndex = is_array(value: $payloadIndexArr)
-			? trim(
-				string: implode(
-					separator: ':',
-					array: $payloadIndexArr
-				),
-				characters: ':'
-			) : null;
+		// For payloadKey
+		$writeParentPayloadKey = $this->getPayloadKey(
+			payloadKeyArray: $writeParentPayloadKeyArray
+		);
 
-		$isObject = null;
-		if ($payloadIndex !== null) {
-			$isObject = $this->http->req->dataDecode->dataType(
-				keyString: $payloadIndex
-			) === 'Object';
+		// For isObject
+		$isObject = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+			keyString: $writeParentPayloadKey
+		) === 'Object';
+		if ($isObject === Constant::$NULL) {
+			return;
 		}
 
-		$iCount = ($isObject || $isObject === null)
-			? 1 : $this->http->req->dataDecode->count(keyString: $payloadIndex);
+		// For indexCount
+		$indexCount = ($isObject || $isObject === Constant::$NULL)
+			? 1 : $this->httpObject->httpRequestObject->dataDecodeObject->count(
+				keyString: $writeParentPayloadKey
+			);
 
-		$mode = getenv(name: $this->http->req->s['customerData']['master_db_server_query_placeholder']);
+		$mode = getenv(name: $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_master_db_server_query_placeholder']);
 		$function = "getSqlAndParam{$mode}Mode";
 
-		for ($i = 0; $i < $iCount; $i++) {
-			if (
-				$isObject
-				|| $isObject === null
-			) {
-				$_response = &$response;
+		for ($index = 0; $index < $indexCount; $index++) {
+			// For Required Fields
+			if (count(value: $writeParentRequiredFieldArray)) {
+				$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray'] = $writeParentRequiredFieldArray;
 			} else {
-				$response[$i] = [];
-				$_response = &$response[$i];
+				$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray'] = [];
 			}
 
-			$payloadIndexArr = $payloadIndexArr;
-			if (
-				$this->operateAsTransaction
-				&& !$this->http->req->customerDbObj->beganTransaction
-			) {
-				$_response['Error'] = 'Transaction rolled back';
-				return;
-			}
-
-			if (
-				$isObject
-				&& $i > 0
-			) {
-				return;
-			}
-
-			if (
-				!$isObject
-				&& !$useHierarchy
-			) {
+			// For payloadKeyArray
+			$writeParentCurrentPayloadKeyArray = $writeParentPayloadKeyArray;
+			if (!$isObject) {
 				array_push(
-					$payloadIndexArr,
-					$i
+					$writeParentCurrentPayloadKeyArray,
+					"{$index}"
 				);
 			}
-			$payloadIndex = is_array(value: $payloadIndexArr)
-				? implode(separator: ':', array: $payloadIndexArr) : '';
 
-			if (!$this->http->req->dataDecode->isset(keyString: $payloadIndex)) {
+			// For payloadKey
+			$writeParentCurrentPayloadKey = $this->getPayloadKey(
+				payloadKeyArray: $writeParentCurrentPayloadKeyArray
+			);
+
+			// For Response
+			if ($isObject) {
+				$writeParentCurrentResponse = &$writeParentResponse;
+			} else {
+				$writeParentResponse[$index] = [];
+				$writeParentCurrentResponse = &$writeParentResponse[$index];
+			}
+
+			// For Validating Hierarchy
+			$writeParentCurrentMaintainHierarchy = $writeParentMaintainHierarchy;
+			if (
+				$writeParentCurrentMaintainHierarchy
+				&& !$this->httpObject->httpRequestObject->dataDecodeObject->isset(
+					keyString: $writeParentCurrentPayloadKey
+				)
+			) {
 				throw new \Exception(
-					message: "Payload key '{$payloadIndex}' not set",
+					message: "Payload key '{$writeParentCurrentPayloadKey}' not set",
 					code: HttpStatus::$NotFound
 				);
 			}
 
-			$this->http->req->s['payload'] = $this->http->req->dataDecode->get(
-				keyString: $payloadIndex
+			// For isObject
+			$isObject = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+				keyString: $writeParentCurrentPayloadKey
+			) === 'Object';
+			if ($isObject === Constant::$NULL) {
+				return;
+			}
+
+			// Load Payload
+			$this->httpObject->httpRequestObject->activeRequestData['payload'] = $this->httpObject->httpRequestObject->dataDecodeObject->get(
+				keyString: $writeParentCurrentPayloadKey
 			);
 
-			if (count(value: $requiredFieldArr)) {
-				$this->http->req->s['requiredFieldArr'] = $requiredFieldArr;
-			} else {
-				$this->http->req->s['requiredFieldArr'] = [];
-			}
-
+			// For Validation
 			if (
-				CommonFunction::isEnabled(
-					http: $this->http,
-					feature: 'enableGlobalCounter'
+				isset($writeParentSqlConfig['__VALIDATE__'])
+				&& !$this->isValidPayload(
+					sqlConfig: $writeParentSqlConfig,
+					response: $writeParentCurrentResponse
 				)
-				&& isset($writeSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'])
-			) {
-				$writeSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'] = Counter::getGlobalCounter();
-			}
-
-			// Validation
-			if (
-				isset($writeSqlConfig['__VALIDATE__'])
-				&& !$this->isValidPayload(writeSqlConfig: $writeSqlConfig, response: $_response)
 			) {
 				continue;
 			}
 
-			// Execute Pre SQL Hook
-			if (isset($writeSqlConfig['__PRE-SQL-HOOKS__'])) {
-				if ($this->hook === null) {
-					$this->hook = new Hook(http: $this->http);
+			// For Pre Hook
+			if (isset($writeParentSqlConfig['__PRE-SQL-HOOKS__'])) {
+				if ($this->hookObject === Constant::$NULL) {
+					$this->hookObject = new Hook(
+						httpObject: $this->httpObject
+					);
 				}
-				$this->hook->triggerHook(
-					hookArr: $writeSqlConfig['__PRE-SQL-HOOKS__']
+				$this->hookObject->triggerHook(
+					hookArray: $writeParentSqlConfig['__PRE-SQL-HOOKS__']
 				);
 			}
 
-			// Get SQL and ParamArr
-			[$id, $sql, $paramArr, $errorArr, $missExecution] = $this->$function(
-				sqlConfig: $writeSqlConfig
+			// Set Sql and ParamArray
+			[$insertId, $sql, $paramArray, $errorArray] = $this->$function(
+				sqlConfig: $writeParentSqlConfig
 			);
 
-			if (!empty($errorArr)) {
-				$_response['Error'] = $errorArr;
-				$this->http->req->customerDbObj->rollBack();
+			if (!empty($errorArray)) {
+				$writeParentCurrentResponse['Error'] = $errorArray;
+				$this->httpObject->httpRequestObject->customerDbObject->rollBack();
 				return;
 			}
 
-			if ($missExecution) {
-				return;
-			}
+			// Execute
+			$this->httpObject->httpRequestObject->customerDbObject->execQuery(
+				sql: $sql,
+				paramArray: $paramArray
+			);
 
-			// Execute Query
-			$this->http->req->customerDbObj->execQuery(sql: $sql, paramArr: $paramArr);
+			// For Rollback
 			if (
 				$this->operateAsTransaction
-				&& !$this->http->req->customerDbObj->beganTransaction
+				&& !$this->httpObject->httpRequestObject->customerDbObject->beganTransaction
 			) {
-				$_response['Error'] = 'Something went wrong';
+				$writeParentCurrentResponse['Error'] = 'Something went wrong';
 				return;
 			}
 
-			if (isset($writeSqlConfig['__INSERT-IDs__'])) {
-				if (
-					CommonFunction::isEnabled(
-						http: $this->http,
-						feature: 'enableGlobalCounter'
-					)
-					&& isset($writeSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'])
-				) {
-					$id = $writeSqlConfig['__VARIABLES__']['__GLOBAL_COUNTER__'];
-				} else {
-					$id = $this->http->req->customerDbObj->lastInsertId();
+			// For Setting Data
+			if (isset($writeParentSqlConfig['__INSERT-IDs__'])) {
+				if ($insertId === Constant::$NULL) {
+					$insertId = $this->httpObject->httpRequestObject->customerDbObject->lastInsertId();
 				}
-				$_response[$writeSqlConfig['__INSERT-IDs__']] = $id;
-				$this->http->req->s['__INSERT-IDs__'][$writeSqlConfig['__INSERT-IDs__']] = $id;
-			} else {
-				$affectedRowCount = $this->http->req->customerDbObj->affectedRowCount();
-				$_response['affectedRowCount'] = $affectedRowCount;
-			}
-			$this->http->req->customerDbObj->closeCursor();
 
-			// triggers
-			if (isset($writeSqlConfig['__TRIGGERS__'])) {
-				$this->dataEncode->addKeyData(
+				if ($isObject) {
+					$writeParentCurrentResponse[$writeParentSqlConfig['__INSERT-IDs__']] = $insertId;
+				} else {
+					if (!is_array($writeParentCurrentResponse[$writeParentSqlConfig['__INSERT-IDs__']])) {
+						$writeParentCurrentResponse[$writeParentSqlConfig['__INSERT-IDs__']] = [];
+					}
+					$writeParentCurrentResponse[$writeParentSqlConfig['__INSERT-IDs__']][] = $insertId;
+				}
+
+				$this->httpObject->httpRequestObject->activeRequestData['__INSERT-IDs__'][$writeParentSqlConfig['__INSERT-IDs__']] = $insertId;
+			} else {
+				$affectedRecordCount = $this->httpObject->httpRequestObject->customerDbObject->affectedRecordCount();
+				$writeParentCurrentResponse['affectedRecordCount'] = $affectedRecordCount;
+			}
+
+			// For Close Cursor
+			$this->httpObject->httpRequestObject->customerDbObject->closeCursor();
+
+			// For Child
+			if (isset($writeParentSqlConfig['__SUB-QUERY__'])) {
+				$this->writeChild(
+					writeChildSqlConfig: $writeParentSqlConfig['__SUB-QUERY__'],
+					writeChildPayloadKeyArray: $writeParentCurrentPayloadKeyArray,
+					writeChildRequiredFieldArray: $writeParentRequiredFieldArray,
+					writeChildResponse: $writeParentCurrentResponse,
+					writeChildMaintainHierarchy: $writeParentCurrentMaintainHierarchy
+				);
+			}
+
+			// For Triggers
+			if (isset($writeParentSqlConfig['__TRIGGERS__'])) {
+				$this->dataEncodeObject->addKeyData(
 					objectKey: '__TRIGGERS__',
 					data: $this->getTriggerData(
-						triggerConfig: $writeSqlConfig['__TRIGGERS__']
+						triggerConfig: $writeParentSqlConfig['__TRIGGERS__']
 					)
 				);
 			}
 
-			// Execute Post SQL Hook
-			if (isset($writeSqlConfig['__POST-SQL-HOOKS__'])) {
-				if ($this->hook === null) {
-					$this->hook = new Hook(http: $this->http);
+			// For Post Hook
+			if (isset($writeParentSqlConfig['__POST-SQL-HOOKS__'])) {
+				if ($this->hookObject === Constant::$NULL) {
+					$this->hookObject = new Hook(
+						httpObject: $this->httpObject
+					);
 				}
-				$this->hook->triggerHook(
-					hookArr: $writeSqlConfig['__POST-SQL-HOOKS__']
-				);
-			}
-
-			// subQuery for payload
-			if (isset($writeSqlConfig['__SUB-QUERY__'])) {
-				$this->callWriteDb(
-					writeSqlConfig: $writeSqlConfig,
-					payloadIndexArr: $payloadIndexArr,
-					configKeyArr: $configKeyArr,
-					useHierarchy: $useHierarchy,
-					response: $_response,
-					requiredFieldArr: $requiredFieldArr
+				$this->hookObject->triggerHook(
+					hookArray: $writeParentSqlConfig['__POST-SQL-HOOKS__']
 				);
 			}
 		}
 	}
 
 	/**
-	 * Function writeDb recursive helper
-	 *
-	 * @param array $writeSqlConfig   Write SQL config
-	 * @param array $payloadIndexArr  Payload Indexes
-	 * @param array $configKeyArr     Config key's
-	 * @param bool  $useHierarchy     Use results in where clause of sub queries
-	 * @param array $response         Response by reference
-	 * @param array $requiredFieldArr Required fields
-	 *
+	 * Write Child Function
+	 * 
+	 * @param array $writeChildSqlConfig          Sql config
+	 * @param array $writeChildPayloadKeyArray    Payload Key's
+	 * @param array $writeChildRequiredFieldArray Required fields
+	 * @param array $writeChildResponse           Response by reference
+	 * @param bool  $writeChildMaintainHierarchy  If true - Uses parent payload/results in child
+	 * 
 	 * @return void
 	 */
-	private function callWriteDb(
-		&$writeSqlConfig,
-		$payloadIndexArr,
-		$configKeyArr,
-		$useHierarchy,
-		&$response,
-		&$requiredFieldArr
+	private function writeChild(
+		&$writeChildSqlConfig,
+		&$writeChildPayloadKeyArray,
+		&$writeChildRequiredFieldArray,
+		&$writeChildResponse,
+		$writeChildMaintainHierarchy
 	): void {
-		if ($useHierarchy) {
-			$row = $this->http->req->s['payload'];
+		if ($writeChildMaintainHierarchy) {
+			$record = $this->httpObject->httpRequestObject->activeRequestData['payload'];
 			$this->resetFetchData(
-				fetchFrom: 'sqlPayload',
-				moduleKeyArr: $configKeyArr,
-				row: $row
+				activeRequestDataKey: 'sqlPayload',
+				payloadKeyArray: $writeChildPayloadKeyArray,
+				record: $record
 			);
 		}
 
 		if (
-			isset($payloadIndexArr[0])
-			&& $payloadIndexArr[0] === ''
+			isset($writeChildPayloadKeyArray[0])
+			&& $writeChildPayloadKeyArray[0] === ''
 		) {
-			$payloadIndexArr = array_shift($payloadIndexArr);
+			$writeChildPayloadKeyArray = array_shift(
+				$writeChildPayloadKeyArray
+			);
 		}
-		if (!is_array(value: $payloadIndexArr)) {
-			$payloadIndexArr = [];
+		if (!is_array(value: $writeChildPayloadKeyArray)) {
+			$writeChildPayloadKeyArray = [];
 		}
 
-		if (
-			isset($writeSqlConfig['__SUB-QUERY__'])
-			&& $this->isObject(arr: $writeSqlConfig['__SUB-QUERY__'])
-		) {
-			foreach ($writeSqlConfig['__SUB-QUERY__'] as $module => &$writeSqlConfig) {
-				$dataExist = false;
-				$modulePayloadIndexArr = $payloadIndexArr;
-				$moduleConfigKeyArr = $configKeyArr;
-				array_push(
-					$modulePayloadIndexArr,
-					$module
+		foreach ($writeChildSqlConfig as $writeModule => $writeChildModuleSqlConfig) {
+			// For payloadKeyArray
+			$writeChildModulePayloadKeyArray = $writeChildPayloadKeyArray;
+			array_push(
+				$writeChildModulePayloadKeyArray,
+				"{$writeModule}"
+			);
+
+			// For payloadKey
+			$writeChildModulePayloadKey = $this->getPayloadKey(
+				payloadKeyArray: $writeChildModulePayloadKeyArray
+			);
+
+			// For Validating Hierarchy
+			$writeChildModuleMaintainHierarchy = $writeChildMaintainHierarchy ?? $this->getMaintainHierarchy(
+				sqlConfig: $writeChildModuleSqlConfig
+			);
+			if (
+				$writeChildModuleMaintainHierarchy
+				&& !$this->httpObject->httpRequestObject->dataDecodeObject->isset(
+					keyString: $writeChildModulePayloadKey
+				)
+			) {
+				throw new \Exception(
+					message: "Invalid payload: Module '{$writeModule}' missing",
+					code: HttpStatus::$NotFound
 				);
-				array_push(
-					$moduleConfigKeyArr,
-					$module
+			}
+
+			// For isObject
+			$isObject = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+				keyString: $writeChildModulePayloadKey
+			) === 'Object';
+			if ($isObject === Constant::$NULL) {
+				return;
+			}
+
+			// For indexCount
+			$indexCount = ($isObject)
+				? 1 : $this->httpObject->httpRequestObject->dataDecodeObject->count(
+					keyString: $writeChildModulePayloadKey
 				);
 
-				$modulePayloadIndexKey = is_array(value: $modulePayloadIndexArr)
-					? implode(separator: ':', array: $modulePayloadIndexArr) : null;
+			// For Required Fields
+			if (isset($writeChildRequiredFieldArray[$writeModule])) {
+				$writeChildModuleRequiredFieldArray = &$writeChildRequiredFieldArray[$writeModule];
+			} else {
+				$writeChildModuleRequiredFieldArray = &$writeChildRequiredFieldArray;
+			}
 
-				$isObject = null;
-				if ($modulePayloadIndexKey !== null) {
-					$isObject = $this->http->req->dataDecode->dataType(
-						keyString: $modulePayloadIndexKey
-					) === 'Object';
-				}
+			// For Response
+			$writeChildResponse[$writeModule] = [];
+			$writeChildModuleResponse = &$writeChildResponse[$writeModule];
 
-				$iCount = ($isObject || $isObject === null)
-					? 1 : $this->http->req->dataDecode->count(keyString: $modulePayloadIndexKey);
-
-				for ($i = 0; $i < $iCount; $i++) {
-					$modulePayloadIndexItt = $modulePayloadIndexArr;
-					if (
-						$isObject
-						|| $isObject === null
-					) {
-						$modulePayloadIndexIttKey = $modulePayloadIndexKey;
-					} else {
-						$modulePayloadIndexIttKey = "{$modulePayloadIndexKey}:{$i}";
-						array_push(
-							$modulePayloadIndexItt,
-							$i
-						);
-					}
-
-					$dataExist = $this->http->req->dataDecode->isset(
-						keyString: $modulePayloadIndexIttKey
+			for ($index = 0; $index < $indexCount; $index++) {
+				// For payloadKeyArray
+				$writeChildModuleCurrentPayloadKeyArray = $writeChildModulePayloadKeyArray;
+				if (!$isObject) {
+					array_push(
+						$writeChildModuleCurrentPayloadKeyArray,
+						"{$index}"
 					);
-
-					if (
-						$useHierarchy
-						&& !$dataExist
-					) { // use parent data of a payload
-						throw new \Exception(
-							message: "Invalid payload: Module '{$module}' missing",
-							code: HttpStatus::$NotFound
-						);
-					}
-					if ($dataExist) {
-						$requiredFieldArr = $requiredFieldArr[$module] ?? $requiredFieldArr;
-						$useHierarchy = $useHierarchy ?? $this->getUseHierarchy(
-							sqlConfig: $writeSqlConfig,
-							keyword: 'useHierarchy'
-						);
-						$response[$module] = [];
-						$response = &$response[$module];
-						$this->writeDb(
-							writeSqlConfig: $writeSqlConfig,
-							payloadIndexArr: $modulePayloadIndexItt,
-							configKeyArr: $moduleConfigKeyArr,
-							useHierarchy: $useHierarchy,
-							response: $response,
-							requiredFieldArr: $requiredFieldArr
-						);
-					}
 				}
+
+				// For payloadKey
+				$writeChildModuleCurrentPayloadKey = $this->getPayloadKey(
+					payloadKeyArray: $writeChildModuleCurrentPayloadKeyArray
+				);
+
+				// For Validating Hierarchy
+				$writeChildModuleCurrentMaintainHierarchy = $writeChildModuleMaintainHierarchy;
+				if (
+					$writeChildModuleCurrentMaintainHierarchy
+					&& !$this->httpObject->httpRequestObject->dataDecodeObject->isset(
+						keyString: $writeChildModuleCurrentPayloadKey
+					)
+				) {
+					throw new \Exception(
+						message: "Invalid payload: Module '{$writeModule}' missing",
+						code: HttpStatus::$NotFound
+					);
+				}
+
+				// For Response
+				if ($isObject) {
+					$writeChildModuleCurrentResponse = &$writeChildModuleResponse;
+				} else {
+					$writeChildModuleResponse[$index] = [];
+					$writeChildModuleCurrentResponse = &$writeChildModuleResponse[$index];
+				}
+
+				// For Parent
+				$this->writeParent(
+					writeParentSqlConfig: $writeChildModuleSqlConfig,
+					writeParentPayloadKeyArray: $writeChildModuleCurrentPayloadKeyArray,
+					writeParentRequiredFieldArray: $writeChildModuleRequiredFieldArray,
+					writeParentResponse: $writeChildModuleCurrentResponse,
+					writeParentMaintainHierarchy: $writeChildModuleCurrentMaintainHierarchy
+				);
 			}
 		}
 	}
 
 	/**
 	 * Validate payload
-	 *
-	 * @param array $writeSqlConfig Write SQL config
-	 * @param array $response       Response by reference
-	 *
+	 * 
+	 * @param array $sqlConfig Sql config
+	 * @param array $response  Response by reference
+	 * 
 	 * @return bool
 	 */
-	private function isValidPayload($writeSqlConfig, &$response): bool
-	{
+	private function isValidPayload(
+		$sqlConfig,
+		&$response
+	): bool {
 		$return = true;
 		$isValidData = true;
-		if (isset($writeSqlConfig['__VALIDATE__'])) {
-			[$isValidData, $errorArr] = $this->validate(
-				validationConfig: $writeSqlConfig['__VALIDATE__']
+		if (isset($sqlConfig['__VALIDATE__'])) {
+			[$isValidData, $errorArray] = $this->validate(
+				validationConfig: $sqlConfig['__VALIDATE__']
 			);
-			if ($isValidData !== true) {
-				$this->http->res->httpStatus = HttpStatus::$BadRequest;
-				$response = $errorArr;
+			if ($isValidData !== Constant::$TRUE) {
+				$this->httpObject->httpResponseObject->httpStatus = HttpStatus::$BadRequest;
+				$response = $errorArray;
 				$return = false;
 			}
 		}

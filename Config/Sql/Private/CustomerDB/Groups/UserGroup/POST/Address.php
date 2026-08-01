@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- *
+ * 
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,62 +13,66 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+use Microservices\DatabaseTable;
 
 return [
 	'__QUERY__' => 'INSERT INTO `address` SET __SET__',
 	'__SET__' => [
 		[
-			'column' => 'customer_id',
-			'fetchFrom' => 'customerData',
-			'fetchFromData' => 'id'
+			'column' => DatabaseTable::$customerPrimaryKey,
+			'activeRequestDataKey' => 'customerData',
+			'activeRequestDataKeySubKey' => DatabaseTable::$customerPrimaryKey
 		],
 		[
-			'column' => 'user_id',
-			'fetchFrom' => 'payload',
-			'fetchFromData' => 'user_id',
+			'column' => DatabaseTable::$customerUserPrimaryKey,
+			'activeRequestDataKey' => 'payload',
+			'activeRequestDataKeySubKey' => 'id',
 			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'address',
-			'fetchFrom' => 'payload',
-			'fetchFromData' => 'address'
+			'activeRequestDataKey' => 'payload',
+			'activeRequestDataKeySubKey' => 'address'
 		],
 	],
 	'__INSERT-IDs__' => 'address:id',
+	'__PRIMARY-KEY__' => DatabaseTable::$addressPrimaryKey,
 	// '__TRIGGERS__' => [
 	//     [
 	//         '__ROUTE__' => [
 	//             [
-	//                 'fetchFrom' => 'custom',
-	//                 'fetchFromData' => 'address'
+	//                 'activeRequestDataKey' => 'custom',
+	//                 'activeRequestDataKeySubKey' => 'address'
 	//             ],
 	//             [
-	//                 'fetchFrom' => '__INSERT-IDs__',
-	//                 'fetchFromData' => 'address:id'
+	//                 'activeRequestDataKey' => '__INSERT-IDs__',
+	//                 'activeRequestDataKeySubKey' => 'address:id'
 	//             ]
 	//         ],
 	//         '__QUERY-STRING__' => [
 	//             [
 	//                 'column' => 'param-1',
-	//                 'fetchFrom' => 'custom',
-	//                 'fetchFromData' => 'address'
+	//                 'activeRequestDataKey' => 'custom',
+	//                 'activeRequestDataKeySubKey' => 'address'
 	//             ],
 	//             [
 	//                 'column' => 'param-2',
-	//                 'fetchFrom' => '__INSERT-IDs__',
-	//                 'fetchFromData' => 'address:id'
+	//                 'activeRequestDataKey' => '__INSERT-IDs__',
+	//                 'activeRequestDataKeySubKey' => 'address:id'
 	//             ]
 	//         ],
-	//         '__METHOD__' => 'PATCH',
+	//         '__METHOD__' => Constant::$PATCH,
 	//         '__PAYLOAD__' => [
 	//             [
 	//                 'column' => 'address',
-	//                 'fetchFrom' => 'custom',
-	//                 'fetchFromData' => 'updated-address'
+	//                 'activeRequestDataKey' => 'custom',
+	//                 'activeRequestDataKeySubKey' => 'updated-address'
 	//             ]
 	//         ]
 	//     ]
 	// ],
-	'isTransaction' => false
+	'isTransaction' => Constant::$FALSE
 ];

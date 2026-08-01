@@ -3,7 +3,7 @@
 /**
  * API Route config
  * php version 8.3
- *
+ * 
  * @category  API_Route_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,13 +13,15 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
 
 return [
-	$Env::$thirdPartyRequestRoutePrefix => [
+	Env::$thirdPartyRequestRoutePrefix => [
 		'{thirdParty:string}' => [
 			'dataType' => DatabaseServerDataType::$Default,
-			'__FILE__' => false
+			'__FILE__' => Constant::$FALSE
 		]
 	]
 ];

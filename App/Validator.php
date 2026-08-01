@@ -3,7 +3,7 @@
 /**
  * Validator
  * php version 8.3
- *
+ * 
  * @category  Validator
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Http;
 use Microservices\Validation\CustomerValidator;
@@ -24,7 +25,7 @@ use Microservices\Validation\ValidatorInterface;
 /**
  * Validator
  * php version 8.3
- *
+ * 
  * @category  Validator
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -37,82 +38,92 @@ class Validator
 {
 	/**
 	 * Validator object
-	 *
+	 * 
 	 * @var null|ValidatorInterface
 	 */
-	private $v = null;
+	private $validatorObject = null;
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
-		if ($this->http->req->customerDbObj->dbServerDatabase === Env::$gDbServerDatabase) {
-			$this->v = new GlobalValidator(http: $this->http);
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
+		if ($this->httpObject->httpRequestObject->customerDbObject->dbServerDatabase === Env::$gDbServerDatabase) {
+			$this->validatorObject = new GlobalValidator(
+				httpObject: $this->httpObject
+			);
 		} else {
-			$this->v = new CustomerValidator(http: $this->http);
+			$this->validatorObject = new CustomerValidator(
+				httpObject: $this->httpObject
+			);
 		}
 	}
 
 	/**
 	 * Validate payload
-	 *
+	 * 
 	 * @param array $validationConfig Validation configuration
-	 *
+	 * 
 	 * @return array
 	 */
-	public function validate(&$validationConfig): array
-	{
+	public function validate(
+		&$validationConfig
+	): array {
 		if (
-			isset(($this->http->req->s['requiredFieldArr']))
-			&& count(value: $this->http->req->s['requiredFieldArr']) > 0
+			isset(($this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray']))
+			&& count(
+				value: $this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray']
+			) > 0
 		) {
 			if (
-				([$isValidData, $errorArr] = $this->validateRequired())
+				([$isValidData, $errorArray] = $this->validateRequired())
 				&& !$isValidData
 			) {
-				return [$isValidData, $errorArr];
+				return [$isValidData, $errorArray];
 			}
 		}
 
-		return $this->v->validate(validationConfig: $validationConfig);
+		return $this->validatorObject->validate(
+			validationConfig: $validationConfig
+		);
 	}
 
 	/**
 	 * Validate required payload
-	 *
+	 * 
 	 * @return array
 	 */
 	private function validateRequired(): array
 	{
 		$isValidData = true;
-		$errorArr = [];
+		$errorArray = [];
 		// Required fields payload validation
-		if (!empty($this->http->req->s['requiredFieldArr']['payload'])) {
-			foreach ($this->http->req->s['requiredFieldArr']['payload'] as $fetchFromData) {
+		if (!empty($this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray']['payload'])) {
+			foreach ($this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray']['payload'] as $activeRequestDataKeySubKey) {
 				if (
 					!in_array(
-						needle: $fetchFromData,
-						haystack: $this->http->req->s['payload'],
-						strict: true
+						needle: $activeRequestDataKeySubKey,
+						haystack: $this->httpObject->httpRequestObject->activeRequestData['payload'],
+						strict: Constant::$TRUE
 					)
 				) {
-					$errorArr[] = 'Missing required payload: ' . $fetchFromData;
+					$errorArray[] = 'Missing required payload: ' . $activeRequestDataKeySubKey;
 					$isValidData = false;
 				}
 			}
 		}
 
-		return [$isValidData, $errorArr];
+		return [$isValidData, $errorArray];
 	}
 }

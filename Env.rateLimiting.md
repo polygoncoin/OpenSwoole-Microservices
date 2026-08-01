@@ -9,7 +9,7 @@ To learn more about Rate Limiting one can [Check Google](https://www.google.com/
 
 ```ini
 ; Rate limit open traffic (not limited by allowed IPs/CIDR and allowed Rate Limit to user)
-rateLimitIPPrefix='IPRL:'
+rateLimitHttpRequestIpPrefix='IPRL:'
 ; Customer based Rate Limitng (GRL) Key prefix used in Redis
 rateLimitCustomerPrefix='CRL:'
 ; Group based Rate Limitng (GRL) Key prefix used in Redis
@@ -19,7 +19,7 @@ rateLimitUserPrefix='URL:'
 ; Route based Rate Limiting (RRL) Key prefix used in Redis
 rateLimitRoutePrefix='RRL:'
 ; User Per IP based Rate Limiting (UIRL) Key prefix used in Redis
-rateLimitUserPerIpPrefix='UIRL:'
+rateLimitUserAsPerHttpRequestIpPrefix='UIRL:'
 ; User Per IP based Rate Limiting (UIRL) Key prefix used in Redis
 rateLimitUserRequestPrefix='URRL:'
 ```
@@ -27,35 +27,35 @@ rateLimitUserRequestPrefix='URRL:'
 ## Setting Rate Limiting key's Limit with window in seconds
 
 ```SQL
-`customer`.`rateLimitIPMaxRequest` INT DEFAULT NULL, -- ; Max request allowed per IP
-`customer`.`rateLimitIPMaxRequestWindow` INT DEFAULT NULL, -- ; Window for Max request allowed per IP
-`customer`.`rateLimitMaxUserPerIp` INT DEFAULT NULL, -- ; Max User allowed per IP
-`customer`.`rateLimitMaxUserPerIpWindow` INT DEFAULT NULL, -- ; Window for Max User allowed per IP
-`customer`.`rateLimitUserMaxRequest` INT DEFAULT NULL, -- ; Max request allowed for user
-`customer`.`rateLimitUserMaxRequestWindow` INT DEFAULT NULL, -- ; Window for Max request allowed for user
-`customer`.`rateLimitMaxUserLoginRequest` INT DEFAULT NULL, -- ; Max User Login request
-`customer`.`rateLimitMaxUserLoginRequestWindow` INT DEFAULT NULL, -- ; Window for Max User Login request
+`customer`.`customer_rate_limit_ip_max_request` INT DEFAULT NULL, -- ; Max request allowed per IP
+`customer`.`customer_rate_limit_ip_max_request_window` INT DEFAULT NULL, -- ; Window for Max request allowed per IP
+`customer`.`customer_rate_limit_max_user_per_ip` INT DEFAULT NULL, -- ; Max User allowed per IP
+`customer`.`customer_rate_limit_max_user_per_ip_window` INT DEFAULT NULL, -- ; Window for Max User allowed per IP
+`customer`.`customer_rate_limit_user_max_request` INT DEFAULT NULL, -- ; Max request allowed for user
+`customer`.`customer_rate_limit_user_max_request_window` INT DEFAULT NULL, -- ; Window for Max request allowed for user
+`customer`.`customer_rate_limit_max_user_login_request` INT DEFAULT NULL, -- ; Max User Login request
+`customer`.`customer_rate_limit_max_user_login_request_window` INT DEFAULT NULL, -- ; Window for Max User Login request
 ```
 
 ## Customer/Group/User based Rate Limiting detail are set in respective Database Tables for records
 
 ```SQL
 -- Customer level
-`customer`.`rateLimitMaxRequest` int DEFAULT NULL,
-`customer`.`rateLimitMaxRequestWindow` int DEFAULT NULL,
+`customer`.`customer_rate_limit_max_request` int DEFAULT NULL,
+`customer`.`customer_rate_limit_max_request_window` int DEFAULT NULL,
 
 -- Group level
-`group`.`rateLimitMaxRequest` int DEFAULT NULL,
-`group`.`rateLimitMaxRequestWindow` int DEFAULT NULL,
+`group`.`customer_user_group_rate_limit_max_request` int DEFAULT NULL,
+`group`.`customer_user_group_rate_limit_max_request_window` int DEFAULT NULL,
 
 -- User level
-`user`.`rateLimitMaxRequest` int DEFAULT NULL,
-`user`.`rateLimitMaxRequestWindow` int DEFAULT NULL,
+`user`.`customer_user_rate_limit_max_request` int DEFAULT NULL,
+`user`.`customer_user_rate_limit_max_request_window` int DEFAULT NULL,
 ```
 
 ## Rate Limiting at route level
 
-If **enableRateLimitForRoute** is **enabled** the Rate Limiting settings indicates settings are present in SQL config file of the route. Each route can have different limits and windows or may also ignore (not compulsary for every route).
+If **customer_enabled_rate_limiting_for_route** is **enabled** the Rate Limiting settings indicates settings are present in Sql config file of the route. Each route can have different limits and windows or may also ignore (not compulsary for every route).
 
 ## Rate Limiting Key
 
@@ -63,7 +63,7 @@ If **enableRateLimitForRoute** is **enabled** the Rate Limiting settings indicat
 rateLimitRoutePrefix='RRL:'   ; Route based Rate Limiting (RRL) Key prefix used in Redis
 ```
 
-- SQL file configuration
+- Sql file configuration
 
 ```PHP
 return [

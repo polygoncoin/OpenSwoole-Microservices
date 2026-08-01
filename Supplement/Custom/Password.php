@@ -3,7 +3,7 @@
 /**
  * CustomAPI
  * php version 8.3
- *
+ * 
  * @category  CustomAPI_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -16,6 +16,7 @@
 namespace Microservices\Supplement\Custom;
 
 use Microservices\App\CacheServerKey;
+use Microservices\App\Constant;
 use Microservices\App\Http;
 use Microservices\App\Reload;
 use Microservices\Supplement\Custom\CustomInterface;
@@ -24,7 +25,7 @@ use Microservices\Supplement\Custom\CustomTrait;
 /**
  * CustomAPI Password
  * php version 8.3
- *
+ * 
  * @category  CustomAPI_Password
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -39,90 +40,101 @@ class Password implements CustomInterface
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
 	}
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
 	{
-		$this->http->req->loadPayload();
+		$this->httpObject->httpRequestObject->loadPayload();
 
 		return true;
 	}
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
 	{
-		switch ($this->http->req->s['payloadType']) {
+		switch ($this->httpObject->httpRequestObject->activeRequestData['payloadType']) {
 			case 'Array':
-				$payload = $this->http->req->dataDecode->get('0');
+				$payload = $this->httpObject->httpRequestObject->dataDecodeObject->get('0');
 				break;
 			case 'Object':
-				$payload = $this->http->req->dataDecode->get();
+				$payload = $this->httpObject->httpRequestObject->dataDecodeObject->get();
 				break;
 		}
-		$this->http->req->s['payload'] = $payload;
+		$this->httpObject->httpRequestObject->activeRequestData['payload'] = $payload;
 
-		$oldPassword = $this->http->req->s['payload']['old_password'];
-		$oldPasswordHash = $this->http->req->s['userData']['password_hash'];
+		$oldPassword = $this->httpObject->httpRequestObject->activeRequestData['payload']['old_password'];
+		$oldPasswordHash = $this->httpObject->httpRequestObject->activeRequestData['userData']['password_hash'];
 
-		if (password_verify(password: $oldPassword, hash: $oldPasswordHash)) {
-			$userName = $this->http->req->s['userData']['username'];
-			$newPassword = $this->http->req->s['payload']['new_password'];
+		if (
+			password_verify(
+				password: $oldPassword,
+				hash: $oldPasswordHash
+			)
+		) {
+			$userName = $this->httpObject->httpRequestObject->activeRequestData['userData']['username'];
+			$newPassword = $this->httpObject->httpRequestObject->activeRequestData['payload']['new_password'];
 			$newPasswordHash = password_hash(
 				password: $newPassword,
 				algo: PASSWORD_DEFAULT
 			);
 
 			$sql = "
-				UPDATE `{$this->http->req->s['customerData']['userTable']}`
+				UPDATE `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}`
 				SET password_hash = :password_hash
 				WHERE username = :username AND is_deleted = :is_deleted
 			";
-			$paramArr = [
+			$paramArray = [
 				':password_hash' => $newPasswordHash,
 				':username' => $userName,
-				':is_deleted' => 'No',
+				':is_deleted' => Constant::$NO,
 			];
 
-			$this->http->req->customerDbObj->execQuery(sql: $sql, paramArr: $paramArr);
-			$this->http->req->customerDbObj->closeCursor();
+			$this->httpObject->httpRequestObject->customerDbObject->execQuery(
+				sql: $sql,
+				paramArray: $paramArray
+			);
+			$this->httpObject->httpRequestObject->customerDbObject->closeCursor();
 
-			$customerId = $this->http->req->customerId;
+			$customerId = $this->httpObject->httpRequestObject->customerId;
 			$cacheKey = CacheServerKey::customerUsername(
 				customerId: $customerId,
 				username: $userName
 			);
 			Reload::processUser(
-				httpRequestIp: $this->http->httpReqData['server']['httpRequestIP'],
-				customerData: $this->http->req->s['customerData'],
-				userId: $this->http->req->userId
+				httpRequestIp: $this->httpObject->httpReqData['server']['httpRequestIp'],
+				customerData: $this->httpObject->httpRequestObject->activeRequestData['customerData'],
+				customerUserId: $this->httpObject->httpRequestObject->customerUserId
 			);
-			$this->http->req->customerCacheObj->cacheDelete(
-				cacheKey: CacheServerKey::token(token: $this->http->req->s['authId'])
+			$this->httpObject->httpRequestObject->customerCacheObject->cacheDelete(
+				cacheKey: CacheServerKey::token(
+					token: $this->httpObject->httpRequestObject->activeRequestData['authId']
+				)
 			);
 
-			$this->http->res->dataEncode->addKeyData(
+			$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
 				objectKey: 'Results',
 				data: 'Password changed successfully. Please login'
 			);

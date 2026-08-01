@@ -18,8 +18,8 @@ concurrentAccessInterval=60 ; Concurrent Access Interval in Seconds
 
 ```ini
 ; Data Representation: JSON/XML/XSLT/HTML/PHP
-iRepresentation='JSON'                  ; JSON/XML - Input Data Representation
-oRepresentation='JSON'                  ; JSON/XML/XSLT/HTML/PHP - Output Data Representation
+inputRepresentation='JSON'                  ; JSON/XML - Input Data Representation
+outputRepresentation='JSON'                  ; JSON/XML/XSLT/HTML/PHP - Output Data Representation
 payloadKeyInResponse='Payload'
 ```
 
@@ -41,8 +41,9 @@ Set below config.
 
 ```ini
 ; Global Auto-Increment counter detail
-gCounter='global_counter'           ; Key or Table
-gCounterMode='Cache'                ; Globally configured Cache / Database
+enableGlobalCounter=1                   ; 1 = true / 0 = false
+gCounter='global_counter'               ; Key or Table
+gCounterMode='Cache'                    ; Globally configured Cache / Database
 ```
 
 ## Idempotent
@@ -53,6 +54,17 @@ This helps managing cache for idempotent request.
 ; Settings to avoid Idempotent request
 idempotentSecret='changeme'         ; hash_hmac secret
 ```
+
+## Supplement
+
+This helps Supplement to execute function on unreserved Keys.
+The function name is com bination of key and this setting value.
+
+```ini
+; Settings to append string to supplement function
+appendSupplementFunctionWith='Process'
+```
+
 
 ## Contributing
 

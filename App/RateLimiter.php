@@ -3,7 +3,7 @@
 /**
  * Rate Limiter
  * php version 8.3
- *
+ * 
  * @category  RateLimiter
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
@@ -22,7 +23,7 @@ use Microservices\App\HttpStatus;
 /**
  * Rate Limiter
  * php version 8.3
- *
+ * 
  * @category  RateLimiter
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,29 +36,30 @@ class RateLimiter
 {
 	/**
 	 * Cache object
-	 *
+	 * 
 	 * @var null|object
 	 */
-	private $cacheObj = null;
+	private $cacheObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param object $cacheObj
+	 * 
+	 * @param object $cacheObject
 	 */
-	public function __construct(&$cacheObj)
-	{
-		$this->cacheObj = &$cacheObj;
+	public function __construct(
+		&$cacheObject
+	) {
+		$this->cacheObject = &$cacheObject;
 	}
 
 	/**
 	 * Check rate limit is valid
-	 *
+	 * 
 	 * @param string $rateLimitPrefix           Prefix
 	 * @param int    $rateLimitMaxRequest       Max request
 	 * @param int    $rateLimitMaxRequestWindow Window in seconds
 	 * @param string $rateLimitKey              Rate Limit Key
-	 *
+	 * 
 	 * @return array
 	 */
 	public function check(
@@ -66,7 +68,6 @@ class RateLimiter
 		$rateLimitMaxRequestWindow,
 		$rateLimitKey
 	): array {
-
 		if (
 			empty($rateLimitPrefix)
 			|| empty($rateLimitMaxRequest)
@@ -79,7 +80,7 @@ class RateLimiter
 			);
 		}
 
-		if ($this->cacheObj === null) {
+		if ($this->cacheObject === Constant::$NULL) {
 			throw new \Exception(
 				message: 'Invalid Rate Limiter Cache object',
 				code: HttpStatus::$InternalServerError
@@ -94,13 +95,17 @@ class RateLimiter
 
 		$rateLimitCacheKey = $rateLimitPrefix . $rateLimitKey;
 
-		if ($this->cacheObj->cacheExist(cacheKey: $rateLimitKey)) {
-			$requestCount = (int)$this->cacheObj->cacheGet(
+		if (
+			$this->cacheObject->cacheExist(
+				cacheKey: $rateLimitKey
+			)
+		) {
+			$requestCount = (int)$this->cacheObject->cacheGet(
 				cacheKey: $rateLimitCacheKey
 			);
 		} else {
 			$requestCount = 0;
-			$this->cacheObj->cacheSet(
+			$this->cacheObject->cacheSet(
 				cacheKey: $rateLimitKey,
 				cacheValue: $requestCount,
 				cacheExpire: $remainder
@@ -116,7 +121,9 @@ class RateLimiter
 		$resetOn = Env::$timestamp + $remainder;
 
 		if ($allowed) {
-			$this->cacheObj->cacheIncrement(cacheKey: $rateLimitKey);
+			$this->cacheObject->cacheIncrement(
+				cacheKey: $rateLimitKey
+			);
 		}
 
 		return [
@@ -128,12 +135,12 @@ class RateLimiter
 
 	/**
 	 * Check Rate limit
-	 *
+	 * 
 	 * @param string $rateLimitPrefix           Prefix
 	 * @param int    $rateLimitMaxRequest       Max request
 	 * @param int    $rateLimitMaxRequestWindow Window in seconds
 	 * @param string $rateLimitKey              Rate limit key
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -143,7 +150,6 @@ class RateLimiter
 		$rateLimitMaxRequestWindow,
 		$rateLimitKey
 	): void {
-
 		if (
 			empty($rateLimitPrefix)
 			|| empty($rateLimitMaxRequest)
@@ -175,7 +181,7 @@ class RateLimiter
 				);
 			}
 		} catch (\Exception $e) {
-			// Handle connection errorArr
+			// Handle connection errorArray
 			throw new \Exception(
 				message: $e->getMessage(),
 				code: $e->getCode()

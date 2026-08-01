@@ -37,9 +37,8 @@ customerMasterDb='customer_master'             ; contains all entities necessary
 
 ; Tables
 customerTable='customer'
-groupTable='group'
 
-; SQL query placeholder
+; Sql query placeholder
 queryPlaceholder='Named'            ; Named(:param) / Unnamed(?)
 ```
 

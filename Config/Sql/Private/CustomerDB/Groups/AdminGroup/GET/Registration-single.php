@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- *
+ * 
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,19 +13,24 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
+use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+use Microservices\DatabaseTable;
+
 return [
-	'__QUERY__' => "SELECT * FROM `{$this->http->req->s['customerData']['userTable']}` WHERE __WHERE__",
+	'__QUERY__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` WHERE __WHERE__",
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => 'No'
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => Constant::$NO
 		],
 		[
-			'column' => 'id',
-			'fetchFrom' => 'routeParamArr',
-			'fetchFromData' => 'id'
+			'column' => DatabaseTable::$customerUserPrimaryKey,
+			'activeRequestDataKey' => 'routeParamArray',
+			'activeRequestDataKeySubKey' => 'id'
 		]
 	],
-	'__MODE__' => 'singleRowFormat'
+	'__MODE__' => 'singleRecordFormat'
 ];

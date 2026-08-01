@@ -3,7 +3,7 @@
 /**
  * Test Case
  * php version 8.3
- *
+ * 
  * @category  Test Case
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,36 +15,37 @@
 
 namespace Microservices\TestCase;
 
-use Microservices\App\Web;
+use Microservices\App\Constant;
 use Microservices\App\Env;
+use Microservices\App\Web;
 
-$headerArr = $defaultHeaderArr;
-$headerArr[] = $contentType;
+$headerArray = $defaultHeaderArray;
+$headerArray[] = $contentType;
 
-$res = Web::trigger(
+$webResponse = Web::trigger(
 	homeURL: $homeURL,
-	method: 'POST',
+	httpRequestMethod: Constant::$POST,
 	route: '/login',
-	header: $headerArr,
+	header: $headerArray,
 	payload: json_encode(value: $payload)
 );
 
 $token = null;
 $sessionCookie = null;
 
-if (isset($res['HttpResponse']['Headers']['Set-Cookie'])) {
+if (isset($webResponse['HttpResponse']['Headers']['Set-Cookie'])) {
 	$sessionCookie = substr(
-		string: $res['HttpResponse']['Headers']['Set-Cookie'],
+		string: $webResponse['HttpResponse']['Headers']['Set-Cookie'],
 		offset: 0,
 		length: strpos(
-			haystack: $res['HttpResponse']['Headers']['Set-Cookie'],
+			haystack: $webResponse['HttpResponse']['Headers']['Set-Cookie'],
 			needle: '; '
 		)
 	);
-} elseif (isset($res['HttpResponse']['ResponseBody']['Results']['Token'])) {
-	$token = $res['HttpResponse']['ResponseBody']['Results']['Token'];
-} elseif (isset($res['HttpResponse']['ResponseBody']['Results']['SessionId'])) {
-	$sessionCookie = "PHPSESSID={$res['HttpResponse']['ResponseBody']['Results']['SessionId']}";
+} elseif (isset($webResponse['HttpResponse']['ResponseBody']['Results']['Token'])) {
+	$token = $webResponse['HttpResponse']['ResponseBody']['Results']['Token'];
+} elseif (isset($webResponse['HttpResponse']['ResponseBody']['Results']['SessionId'])) {
+	$sessionCookie = "PHPSESSID={$webResponse['HttpResponse']['ResponseBody']['Results']['SessionId']}";
 }
 
-return $res;
+return $webResponse;

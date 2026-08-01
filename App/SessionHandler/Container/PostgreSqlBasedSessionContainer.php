@@ -3,7 +3,7 @@
 /**
  * Custom Session Handler
  * php version 7
- *
+ * 
  * @category  SessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,6 +15,7 @@
 
 namespace Microservices\App\SessionHandler\Container;
 
+use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 use Microservices\App\SessionHandler\Container\SessionContainerHelper;
@@ -22,7 +23,7 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 /**
  * Custom Session Handler using PostgreSql
  * php version 7
- *
+ * 
  * @category  CustomSessionHandler_PgSql
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -41,14 +42,14 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public $pgSqlServerDatabase = null;
 	public $pgSqlServerTable = null;
 
-	private $pgSqlServerObj = null;
+	private $pgSqlServerObject = null;
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @param string $sessionSavePath Session Save Path
 	 * @param string $sessionName     Session Name
-	 *
+	 * 
 	 * @return void
 	 */
 	public function init(
@@ -60,36 +61,42 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Validate session id
-	 *
+	 * 
 	 * @param string $sessionId Session id
-	 *
+	 * 
 	 * @return bool|string
 	 */
-	public function getSession($sessionId): bool|string
-	{
+	public function getSession(
+		$sessionId
+	): bool|string {
 		$sql = "
 			SELECT session_data
 			FROM {$this->pgSqlServerTable}
 			WHERE session_id = $1 AND last_accessed > $2
 		";
-		$paramArr = [
+		$paramArray = [
 			$sessionId,
 			(Env::$timestamp - $this->sessionMaxLifetime)
 		];
 
-		$row = $this->getSql(sql: $sql, paramArr: $paramArr);
-		if (isset($row['session_data'])) {
-			return $this->decryptData(cipherText: $row['session_data']);
+		$record = $this->getSql(
+			sql: $sql,
+			paramArray: $paramArray
+		);
+		if (isset($record['session_data'])) {
+			return $this->decryptData(
+				cipherText: $record['session_data']
+			);
 		}
 		return false;
 	}
 
 	/**
 	 * For Custom Session Handler - Write session data
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function setSession(
@@ -100,21 +107,26 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 			INSERT INTO {$this->pgSqlServerTable} (session_id, last_accessed, session_data)
 			VALUES ($1, $2, $3)
 		";
-		$paramArr = [
+		$paramArray = [
 			$sessionId,
 			Env::$timestamp,
-			$this->encryptData(plainText: $sessionData),
+			$this->encryptData(
+				plainText: $sessionData
+			),
 		];
 
-		return $this->execSql(sql: $sql, paramArr: $paramArr);
+		return $this->execSql(
+			sql: $sql,
+			paramArray: $paramArray
+		);
 	}
 
 	/**
 	 * For Custom Session Handler - Update session data
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function updateSession(
@@ -129,21 +141,26 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 			WHERE
 				session_id = $3
 		";
-		$paramArr = [
+		$paramArray = [
 			Env::$timestamp,
-			$this->encryptData(plainText: $sessionData),
+			$this->encryptData(
+				plainText: $sessionData
+			),
 			$sessionId
 		];
 
-		return $this->execSql(sql: $sql, paramArr: $paramArr);
+		return $this->execSql(
+			sql: $sql,
+			paramArray: $paramArray
+		);
 	}
 
 	/**
 	 * For Custom Session Handler - Update session timestamp
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function touchSession(
@@ -155,65 +172,78 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 			SET last_accessed = $1
 			WHERE session_id = $2
 		";
-		$paramArr = [
+		$paramArray = [
 			Env::$timestamp,
 			$sessionId
 		];
-		return $this->execSql(sql: $sql, paramArr: $paramArr);
+		return $this->execSql(
+			sql: $sql,
+			paramArray: $paramArray
+		);
 	}
 
 	/**
 	 * For Custom Session Handler - Cleanup old sessions
-	 *
+	 * 
 	 * @param integer $sessionMaxLifetime Session Max Lifetime
-	 *
+	 * 
 	 * @return bool
 	 */
-	public function gcSession($sessionMaxLifetime): bool
-	{
+	public function gcSession(
+		$sessionMaxLifetime
+	): bool {
 		$sql = "
 			DELETE FROM {$this->pgSqlServerTable}
 			WHERE last_accessed < $1
 		";
-		$paramArr = [
+		$paramArray = [
 			(Env::$timestamp - $sessionMaxLifetime)
 		];
-		return $this->execSql(sql: $sql, paramArr: $paramArr);
+		return $this->execSql(
+			sql: $sql,
+			paramArray: $paramArray
+		);
 	}
 
 	/**
 	 * For Custom Session Handler - Destroy a session
-	 *
+	 * 
 	 * @param string $sessionId Session id
-	 *
+	 * 
 	 * @return bool
 	 */
-	public function deleteSession($sessionId): bool
-	{
+	public function deleteSession(
+		$sessionId
+	): bool {
 		$sql = "
 			DELETE FROM {$this->pgSqlServerTable}
 			WHERE session_id = $1
 		";
-		$paramArr = [
+		$paramArray = [
 			$sessionId
 		];
-		return $this->execSql(sql: $sql, paramArr: $paramArr);
+		return $this->execSql(
+			sql: $sql,
+			paramArray: $paramArray
+		);
 	}
 
 	/**
 	 * Close File Container
-	 *
+	 * 
 	 * @return void
 	 */
 	public function closeSession(): void
 	{
-		pg_close($this->pgSqlServerObj);
-		$this->pgSqlServerObj = null;
+		pg_close(
+			$this->pgSqlServerObject
+		);
+		$this->pgSqlServerObject = null;
 	}
 
 	/**
 	 * Connect
-	 *
+	 * 
 	 * @return void
 	 */
 	private function connect(): void
@@ -221,91 +251,107 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		try {
 			$UP = '';
 			if (
-				$this->pgSqlServerUsername !== null
-				&& $this->pgSqlServerPassword !== null
+				$this->pgSqlServerUsername !== Constant::$NULL
+				&& $this->pgSqlServerPassword !== Constant::$NULL
 			) {
 				$UP = "user={$this->pgSqlServerUsername} password={$this->pgSqlServerPassword}";
 			}
-			$this->pgSqlServerObj = pg_connect(
+			$this->pgSqlServerObject = pg_connect(
 				"host={$this->pgSqlServerHostname} "
 				. "port={$this->pgSqlServerPort} "
 				. "dbname={$this->pgSqlServerDatabase} {$UP}"
 			);
 		} catch (\Exception $e) {
-			$this->manageException(e: $e);
+			$this->manageException(
+				e: $e
+			);
 		}
 	}
 
 	/**
 	 * Get Session
-	 *
-	 * @param string $sql      SQL query
-	 * @param array  $paramArr SQL query params
-	 *
+	 * 
+	 * @param string $sql        Sql query
+	 * @param array  $paramArray Sql query params
+	 * 
 	 * @return mixed
 	 */
 	private function getSql(
 		$sql,
-		$paramArr
+		$paramArray
 	): mixed {
 		try {
 			// Execute the query with parameters
 			$result = pg_query_params(
-				$this->pgSqlServerObj,
+				$this->pgSqlServerObject,
 				$sql,
-				$paramArr
+				$paramArray
 			);
 			if ($result) {
-				$row = [];
-				$rowsCount = pg_num_rows($result);
+				$record = [];
+				$rowsCount = pg_num_rows(
+					$result
+				);
 				if ($rowsCount === 1) {
-					$row = pg_fetch_assoc($result);
+					$record = pg_fetch_assoc(
+						$result
+					);
 				}
-				pg_free_result($result);
-				return $row;
+				pg_free_result(
+					$result
+				);
+				return $record;
 			}
 		} catch (\Exception $e) {
-			$this->manageException(e: $e);
+			$this->manageException(
+				e: $e
+			);
 		}
 		return false;
 	}
 
 	/**
-	 * Execute SQL
-	 *
-	 * @param string $sql      SQL query
-	 * @param array  $paramArr SQL query params
-	 *
+	 * Execute Sql
+	 * 
+	 * @param string $sql        Sql query
+	 * @param array  $paramArray Sql query params
+	 * 
 	 * @return bool
 	 */
 	private function execSql(
 		$sql,
-		$paramArr
+		$paramArray
 	): bool {
 		try {
 			$result = pg_query_params(
-				$this->pgSqlServerObj,
+				$this->pgSqlServerObject,
 				$sql,
-				$paramArr
+				$paramArray
 			);
 			if ($result) {
 				return true;
 			}
 		} catch (\Exception $e) {
-			$this->manageException(e: $e);
+			$this->manageException(
+				e: $e
+			);
 		}
 		return false;
 	}
 
 	/**
 	 * Manage Exception
-	 *
+	 * 
 	 * @param \Exception $e Exception
-	 *
+	 * 
 	 * @return never
 	 */
-	private function manageException(\Exception $e): never
-	{
-		die($e->getMessage());
+	private function manageException(
+		\Exception $e
+	): never {
+		throw new \Exception(
+			message: $e->getMessage(),
+			code: HttpStatus::$InternalServerError
+		);
 	}
 }

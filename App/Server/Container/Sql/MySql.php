@@ -1,9 +1,9 @@
 <?php
 
 /**
- * SQL Database
+ * Sql Database
  * php version 8.3
- *
+ * 
  * @category  Sql
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,13 +15,14 @@
 
 namespace Microservices\App\Server\Container\Sql;
 
+use Microservices\App\Constant;
 use Microservices\App\HttpStatus;
 use Microservices\App\Server\Container\Sql\SqlInterface;
 
 /**
  * MySql Database
  * php version 8.3
- *
+ * 
  * @category  MySql
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -34,70 +35,70 @@ class MySql implements SqlInterface
 {
 	/**
 	 * Database Server Hostname
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $dbServerHostname = null;
 
 	/**
 	 * Database Server Port
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $dbServerPort = null;
 
 	/**
 	 * Database Server Username
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $dbServerUsername = null;
 
 	/**
 	 * Database Server Password
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $dbServerPassword = null;
 
 	/**
 	 * Database Server DB
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $dbServerDatabase = null;
 
 	/**
 	 * Database Server Object
-	 *
+	 * 
 	 * @var null|\PDO
 	 */
-	private $mysqlServerObj = null;
+	private $mysqlServerObject = null;
 
 	/**
 	 * Executed query statement
-	 *
+	 * 
 	 * @var null|\PDOStatement
 	 */
 	private $stmt = null;
 
 	/**
 	 * Executed query statement
-	 *
+	 * 
 	 * @var \PDOStatement[]
 	 */
-	private $stmtArr = [];
+	private $stmtArray = [];
 
 	/**
 	 * Transaction started flag
-	 *
+	 * 
 	 * @var bool
 	 */
 	public $beganTransaction = false;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string      $dbServerHostname Database Server Hostname
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
@@ -120,39 +121,41 @@ class MySql implements SqlInterface
 
 	/**
 	 * Connect Database
-	 *
+	 * 
 	 * @return void
 	 */
 	public function connect(): void
 	{
-		if ($this->mysqlServerObj !== null) {
+		if ($this->mysqlServerObject !== Constant::$NULL) {
 			return;
 		}
 
 		try {
-			$this->mysqlServerObj = new \PDO(
+			$this->mysqlServerObject = new \PDO(
 				dsn: "mysql:host={$this->dbServerHostname};port={$this->dbServerPort}",
 				username: $this->dbServerUsername,
 				password: $this->dbServerPassword,
 				options: [
-					\PDO::ATTR_EMULATE_PREPARES => false,
-					// \PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false
+					\PDO::ATTR_EMULATE_PREPARES => Constant::$FALSE,
+					// \PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => Constant::$FALSE
 				]
 			);
 
-			if ($this->dbServerDatabase !== null) {
+			if ($this->dbServerDatabase !== Constant::$NULL) {
 				$this->useDatabase();
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObj->errorCode()) {
-				$this->log(e: $e);
+			if ((int)$this->mysqlServerObject->errorCode()) {
+				$this->manageException(
+					e: $e
+				);
 			}
 		}
 	}
 
 	/**
 	 * Use Database
-	 *
+	 * 
 	 * @return void
 	 */
 	public function useDatabase(): void
@@ -160,12 +163,16 @@ class MySql implements SqlInterface
 		$this->connect();
 
 		try {
-			if ($this->dbServerDatabase !== null) {
-				$this->mysqlServerObj->exec(statement: "USE `{$this->dbServerDatabase}`");
+			if ($this->dbServerDatabase !== Constant::$NULL) {
+				$this->mysqlServerObject->exec(
+					statement: "USE `{$this->dbServerDatabase}`"
+				);
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObj->errorCode()) {
-				$this->log(e: $e);
+			if ((int)$this->mysqlServerObject->errorCode()) {
+				$this->manageException(
+					e: $e
+				);
 				$this->rollBack();
 			}
 		}
@@ -173,7 +180,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Begin transaction
-	 *
+	 * 
 	 * @return void
 	 */
 	public function begin(): void
@@ -182,17 +189,19 @@ class MySql implements SqlInterface
 
 		$this->beganTransaction = true;
 		try {
-			$this->mysqlServerObj->beginTransaction();
+			$this->mysqlServerObject->beginTransaction();
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObj->errorCode()) {
-				$this->log(e: $e);
+			if ((int)$this->mysqlServerObject->errorCode()) {
+				$this->manageException(
+					e: $e
+				);
 			}
 		}
 	}
 
 	/**
 	 * Commit transaction
-	 *
+	 * 
 	 * @return void
 	 */
 	public function commit(): void
@@ -200,18 +209,20 @@ class MySql implements SqlInterface
 		try {
 			if ($this->beganTransaction) {
 				$this->beganTransaction = false;
-				$this->mysqlServerObj->commit();
+				$this->mysqlServerObject->commit();
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObj->errorCode()) {
-				$this->log(e: $e);
+			if ((int)$this->mysqlServerObject->errorCode()) {
+				$this->manageException(
+					e: $e
+				);
 			}
 		}
 	}
 
 	/**
 	 * Rollback transaction
-	 *
+	 * 
 	 * @return void
 	 */
 	public function rollBack(): void
@@ -219,21 +230,23 @@ class MySql implements SqlInterface
 		try {
 			if ($this->beganTransaction) {
 				$this->beganTransaction = false;
-				$this->mysqlServerObj->rollBack();
+				$this->mysqlServerObject->rollBack();
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObj->errorCode()) {
-				$this->log(e: $e);
+			if ((int)$this->mysqlServerObject->errorCode()) {
+				$this->manageException(
+					e: $e
+				);
 			}
 		}
 	}
 
 	/**
-	 * Affected row count
-	 *
+	 * Affected record count
+	 * 
 	 * @return bool|int
 	 */
-	public function affectedRowCount(): bool|int
+	public function affectedRecordCount(): bool|int
 	{
 		try {
 			if ($this->stmt) {
@@ -243,8 +256,10 @@ class MySql implements SqlInterface
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->mysqlServerObj->errorCode()) {
-				$this->log(e: $e);
+			if ((int)$this->mysqlServerObject->errorCode()) {
+				$this->manageException(
+					e: $e
+				);
 			}
 		}
 		return false;
@@ -252,21 +267,23 @@ class MySql implements SqlInterface
 
 	/**
 	 * Last insert id
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function lastInsertId(): bool|int
 	{
 		try {
-			if (($lastInsertId = $this->mysqlServerObj->lastInsertId()) !== false) {
+			if (($lastInsertId = $this->mysqlServerObject->lastInsertId()) !== Constant::$FALSE) {
 				return $lastInsertId;
 			}
 		} catch (\PDOException $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->mysqlServerObj->errorCode()) {
-				$this->log(e: $e);
+			if ((int)$this->mysqlServerObject->errorCode()) {
+				$this->manageException(
+					e: $e
+				);
 			}
 		}
 		return false;
@@ -274,16 +291,16 @@ class MySql implements SqlInterface
 
 	/**
 	 * Execute query
-	 *
-	 * @param string $sql      SQL query
-	 * @param array  $paramArr SQL query params
-	 * @param bool   $pushPop  Push Pop result set stmt
-	 *
+	 * 
+	 * @param string $sql        Sql query
+	 * @param array  $paramArray Sql query params
+	 * @param bool   $pushPop    Push Pop result set stmt
+	 * 
 	 * @return void
 	 */
 	public function execQuery(
 		$sql,
-		$paramArr = [],
+		$paramArray = [],
 		$pushPop = false
 	): void {
 		$this->connect();
@@ -294,20 +311,26 @@ class MySql implements SqlInterface
 				&& $this->stmt
 			) {
 				array_push(
-					$this->stmtArr,
+					$this->stmtArray,
 					$this->stmt
 				);
 			}
-			$this->stmt = $this->mysqlServerObj->prepare(
+			$this->stmt = $this->mysqlServerObject->prepare(
 				query: $sql,
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
 			if ($this->stmt) {
 				if (
-					is_array(value: $paramArr)
-					&& count(value: $paramArr) > 0
+					is_array(
+						value: $paramArray
+					)
+					&& count(
+						value: $paramArray
+					) > 0
 				) {
-					$this->stmt->execute($paramArr);
+					$this->stmt->execute(
+						$paramArray
+					);
 				} else {
 					$this->stmt->execute();
 				}
@@ -316,26 +339,32 @@ class MySql implements SqlInterface
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->mysqlServerObj->errorCode()) {
-				$this->log(e: $e);
+			if ((int)$this->mysqlServerObject->errorCode()) {
+				$this->manageException(
+					e: $e
+				);
 			}
 		}
 	}
 
 	/**
-	 * Fetch row
-	 *
+	 * Fetch record
+	 * 
 	 * @return mixed
 	 */
 	public function fetch(): mixed
 	{
 		try {
 			if ($this->stmt) {
-				return $this->stmt->fetch(mode: \PDO::FETCH_ASSOC);
+				return $this->stmt->fetch(
+					mode: \PDO::FETCH_ASSOC
+				);
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObj->errorCode()) {
-				$this->log(e: $e);
+			if ((int)$this->mysqlServerObject->errorCode()) {
+				$this->manageException(
+					e: $e
+				);
 			}
 		}
 		return false;
@@ -343,18 +372,22 @@ class MySql implements SqlInterface
 
 	/**
 	 * Fetch all rows
-	 *
+	 * 
 	 * @return array|bool
 	 */
 	public function fetchAll(): array|bool
 	{
 		try {
 			if ($this->stmt) {
-				return $this->stmt->fetchAll(mode: \PDO::FETCH_ASSOC);
+				return $this->stmt->fetchAll(
+					mode: \PDO::FETCH_ASSOC
+				);
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObj->errorCode()) {
-				$this->log(e: $e);
+			if ((int)$this->mysqlServerObject->errorCode()) {
+				$this->manageException(
+					e: $e
+				);
 			}
 		}
 		return false;
@@ -362,40 +395,48 @@ class MySql implements SqlInterface
 
 	/**
 	 * Close statement cursor
-	 *
+	 * 
 	 * @param bool $pushPop Push Pop result set stmt
-	 *
+	 * 
 	 * @return void
 	 */
-	public function closeCursor($pushPop = false): void
-	{
+	public function closeCursor(
+		$pushPop = false
+	): void {
 		try {
 			if ($this->stmt) {
 				$this->stmt->closeCursor();
 				if (
 					$pushPop
-					&& count(value: $this->stmtArr)
+					&& count(
+						value: $this->stmtArray
+					)
 				) {
-					$this->stmt = array_pop(array: $this->stmtArr);
+					$this->stmt = array_pop(
+						array: $this->stmtArray
+					);
 				}
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObj->errorCode()) {
-				$this->log(e: $e);
+			if ((int)$this->mysqlServerObject->errorCode()) {
+				$this->manageException(
+					e: $e
+				);
 			}
 		}
 	}
 
 	/**
 	 * Log error
-	 *
+	 * 
 	 * @param \Exception $e Exception object
-	 *
+	 * 
 	 * @return never
 	 * @throws \Exception
 	 */
-	private function log($e): never
-	{
+	private function manageException(
+		$e
+	): never {
 		throw new \Exception(
 			message: $e->getMessage(),
 			code: HttpStatus::$InternalServerError

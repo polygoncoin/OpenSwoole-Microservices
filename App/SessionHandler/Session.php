@@ -3,7 +3,7 @@
 /**
  * Custom Session Handler
  * php version 7
- *
+ * 
  * @category  SessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -22,7 +22,7 @@ use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 /**
  * Custom Session Handler Config
  * php version 7
- *
+ * 
  * @category  CustomSessionHandler_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,7 +35,7 @@ class Session
 {
 	/**
 	 * Domain Name
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $sessionDomain = null;
@@ -43,11 +43,11 @@ class Session
 	/**
 	 * SET THESE TO ENABLE ENCRYPTION
 	 * ENCRYPTION PASS PHRASE
-	 *
+	 * 
 	 * Value = base64_encode(openssl_random_pseudo_bytes(32))
 	 * Example: public $ENCRYPTION_PASS_PHRASE =
 	 * 'H7OO2m3qe9pHyAHFiERlYJKnlTMtCJs9ZbGphX9NO/c=';
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $ENCRYPTION_PASS_PHRASE = null;
@@ -55,74 +55,74 @@ class Session
 	/**
 	 * SET THESE TO ENABLE ENCRYPTION
 	 * ENCRYPTION IV
-	 *
+	 * 
 	 * Value = base64_encode(openssl_random_pseudo_bytes(16))
 	 * Example: public $ENCRYPTION_IV = 'HnPG5az9Xaxam9G9tMuRaw==';
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $ENCRYPTION_IV = null;
 
 	/**
 	 * Session id Cookie name
-	 *
+	 * 
 	 * @var string
 	 */
 	public $sessionName = 'PHPSESSID'; // Default
 
 	/**
 	 * Session Data Cookie name; For cookie as container
-	 *
+	 * 
 	 * @var string
 	 */
 	public $sessionDataName = 'PHPSESSDATA';
 
 	/**
 	 * Session Life
-	 *
+	 * 
 	 * @var integer
 	 */
 	public $sessionMaxLifetime = null;
 
 	/**
-	 * File Session optionArr
+	 * File Session optionArray
 	 * Example: public $sessionSavePath = '/tmp';
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $sessionSavePath = null;
 
 	/**
 	 * Session mode
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $sessionMode = null;
 
 	/**
 	 * Customer Data
-	 *
+	 * 
 	 * @var null|array
 	 */
 	public $customerData = null;
 
 	/**
 	 * Session Start function argument
-	 *
+	 * 
 	 * @var null|array
 	 */
-	public $optionArr = null;
+	public $optionArray = null;
 
 	/**
 	 * Session handler Container
-	 *
+	 * 
 	 * @var null|SessionContainerInterface
 	 */
 	public $sessionContainer = null;
 
 	/**
 	 * Session initProcess function initialized
-	 *
+	 * 
 	 * @var bool
 	 */
 	public $initProcessInitialized = false;
@@ -137,7 +137,7 @@ class Session
 
 	/**
 	 * Initialize container
-	 *
+	 * 
 	 * @return void
 	 */
 	private function initContainer(): void
@@ -148,16 +148,16 @@ class Session
 		$this->sessionContainer = new $containerClassName();
 
 		// Setting required common parameters
-		$this->sessionContainer->sessionOptionArr = $this->optionArr;
+		$this->sessionContainer->sessionOptionArray = $this->optionArray;
 		$this->sessionContainer->sessionName = $this->sessionName;
 		$this->sessionContainer->sessionMaxLifetime = (int)$this->sessionMaxLifetime;
 
-		$sessionServerHostname = getenv(name: $this->customerData['session_server_hostname']);
-		$sessionServerPort = (int)getenv(name: $this->customerData['session_server_port']);
-		$sessionServerUsername = getenv(name: $this->customerData['session_server_username']);
-		$sessionServerPassword = getenv(name: $this->customerData['session_server_password']);
-		$sessionServerDatabase = getenv(name: $this->customerData['session_server_db']);
-		$sessionServerTable = getenv(name: $this->customerData['session_server_table']);
+		$sessionServerHostname = getenv(name: $this->customerData['customer_session_server_hostname']);
+		$sessionServerPort = (int)getenv(name: $this->customerData['customer_session_server_port']);
+		$sessionServerUsername = getenv(name: $this->customerData['customer_session_server_username']);
+		$sessionServerPassword = getenv(name: $this->customerData['customer_session_server_password']);
+		$sessionServerDatabase = getenv(name: $this->customerData['customer_session_server_db']);
+		$sessionServerTable = getenv(name: $this->customerData['customer_session_server_table']);
 
 		// Setting required parameters as per session Mode / Type
 		switch ($this->sessionMode) {
@@ -217,7 +217,7 @@ class Session
 
 	/**
 	 * Initialize session_set_save_handler process
-	 *
+	 * 
 	 * @return void
 	 */
 	private function initProcess(): void
@@ -238,35 +238,39 @@ class Session
 		if ($this->sessionMode === 'Cookie') {
 			$customSessionHandler->sessionDataName = $this->sessionDataName;
 		}
-		session_set_save_handler($customSessionHandler, true);
+		session_set_save_handler(
+			$customSessionHandler,
+			true
+		);
 
 		$this->initProcessInitialized = true;
 	}
 
 	/**
-	 * Generates session optionArr argument
-	 *
-	 * @param array $optionArr Options
-	 *
+	 * Generates session optionArray argument
+	 * 
+	 * @param array $optionArray Options
+	 * 
 	 * @return void
 	 */
-	private function setOptions($optionArr = []): void
-	{
-		if (isset($optionArr['name'])) {
-			$this->sessionName = $optionArr['name'];
+	private function setOptions(
+		$optionArray = []
+	): void {
+		if (isset($optionArray['name'])) {
+			$this->sessionName = $optionArray['name'];
 		}
 
-		if (isset($optionArr['gc_maxlifetime'])) {
-			$this->sessionMaxLifetime = (int)$optionArr['gc_maxlifetime'];
+		if (isset($optionArray['gc_maxlifetime'])) {
+			$this->sessionMaxLifetime = (int)$optionArray['gc_maxlifetime'];
 		} else {
 			$this->sessionMaxLifetime = (int)Constant::$TOKEN_EXPIRY_TIME;
 		}
 
-		$this->optionArr = [ // always required.
-			'use_strict_mode' => true,
+		$this->optionArray = [ // always required.
+			'use_strict_mode' => Constant::$TRUE,
 			'name' => $this->sessionName,
 			'serialize_handler' => 'php_serialize',
-			'lazy_write' => true,
+			'lazy_write' => Constant::$TRUE,
 			'gc_maxlifetime' => (int)$this->sessionMaxLifetime,
 			'cookie_lifetime' => 0,
 			'cookie_path' => '/',
@@ -275,39 +279,39 @@ class Session
 				strpos(
 					haystack: $this->sessionDomain,
 					needle: 'localhost'
-				) !== false
-			) ? true : false,
-			'cookie_httponly' => true,
+				) !== Constant::$FALSE
+			) ? Constant::$TRUE : Constant::$FALSE,
+			'cookie_httponly' => Constant::$TRUE,
 			'cookie_samesite' => 'Strict'
 		];
 
 		if ($this->sessionMode === 'File') {
-			$this->optionArr['save_path'] = $this->sessionSavePath;
+			$this->optionArray['save_path'] = $this->sessionSavePath;
 		}
 
-		if (!empty($optionArr)) {
-			foreach ($optionArr as $option => $value) {
+		if (!empty($optionArray)) {
+			foreach ($optionArray as $option => $value) {
 				if (
 					in_array(
 						needle: $option,
 						haystack: ['name', 'serialize_handler', 'gc_maxlifetime'],
-						strict: true
+						strict: Constant::$TRUE
 					)
 				) {
 					// Skip option
 					continue;
 				}
-				$this->optionArr[$option] = $value;
+				$this->optionArray[$option] = $value;
 			}
 		}
 	}
 
 	/**
 	 * Initialize session handler
-	 *
+	 * 
 	 * @param array $customerData
 	 * @param array $options      Options
-	 *
+	 * 
 	 * @return void
 	 */
 	public function initSessionHandler(
@@ -315,15 +319,19 @@ class Session
 		$options = []
 	): void {
 		$envFilename = '.env.session';
-		$envDataArr = parse_ini_file(filename: ROOT . DIRECTORY_SEPARATOR . $envFilename);
-		foreach ($envDataArr as $envVarName => $envVarValue) {
-			putenv(assignment: "{$envVarName}={$envVarValue}");
+		$envDataArray = parse_ini_file(
+			filename: ROOT . DIRECTORY_SEPARATOR . $envFilename
+		);
+		foreach ($envDataArray as $envVarName => $envVarValue) {
+			putenv(
+				assignment: "{$envVarName}={$envVarValue}"
+			);
 		}
 
 		$this->customerData = $customerData;
-		$this->sessionMode = getenv(name: $this->customerData['session_server_type']);
+		$this->sessionMode = getenv(name: $this->customerData['customer_session_server_type']);
 
-		// Set optoptionsionArr from php.ini if not set in this class
+		// Set optoptionsionArray from php.ini if not set in this class
 		if (empty($this->sessionName)) {
 			$this->sessionName = session_name();
 		}
@@ -339,21 +347,23 @@ class Session
 		}
 
 		// Initialize
-		$this->setOptions(optionArr: $options);
+		$this->setOptions(
+			optionArray: $options
+		);
 		$this->initProcess();
 	}
 
 	/**
 	 * Close if Session is Active in write mode
-	 *
+	 * 
 	 * @return void
 	 */
 	public function sessionStartCheck(): void
 	{
 		if (isset($_SESSION)) {
 			if (
-				!isset($this->optionArr['read_and_close'])
-				|| $this->optionArr['read_and_close'] !== true
+				!isset($this->optionArray['read_and_close'])
+				|| $this->optionArray['read_and_close'] !== Constant::$TRUE
 			) {
 				session_write_close();
 			}
@@ -362,7 +372,7 @@ class Session
 
 	/**
 	 * Start session in read only mode
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function sessionStartReadonly(): bool
@@ -372,53 +382,66 @@ class Session
 			&& !empty($_COOKIE[$this->sessionName])
 		) {
 			$this->sessionStartCheck();
-			$this->optionArr['read_and_close'] = true;
+			$this->optionArray['read_and_close'] = true;
 
-			$this->sessionContainer->sessionOptionArr = $this->optionArr;
-			return session_start(options: $this->optionArr);
+			$this->sessionContainer->sessionOptionArray = $this->optionArray;
+			return session_start(
+				options: $this->optionArray
+			);
 		}
 		return false;
 	}
 
 	/**
 	 * Start session in read/write mode
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function sessionStartReadWrite(): bool
 	{
-		$this->sessionContainer->sessionOptionArr = $this->optionArr;
+		$this->sessionContainer->sessionOptionArray = $this->optionArray;
 		$this->sessionStartCheck();
-		if (isset($this->optionArr['read_and_close'])) {
-			unset($this->optionArr['read_and_close']);
+		if (isset($this->optionArray['read_and_close'])) {
+			unset($this->optionArray['read_and_close']);
 		}
 
-		return session_start(options: $this->optionArr);
+		return session_start(
+			options: $this->optionArray
+		);
 	}
 
 	/**
 	 * For Custom Session Handler - Destroy a session
-	 *
+	 * 
 	 * @param string $sessionId Session id
-	 *
+	 * 
 	 * @return bool
 	 */
-	public function deleteSession($sessionId): bool
-	{
-		return $this->sessionContainer->deleteSession($sessionId);
+	public function deleteSession(
+		$sessionId
+	): bool {
+		return $this->sessionContainer->deleteSession(
+			$sessionId
+		);
 	}
 
 	/**
 	 * For Custom Session Handler - Destroy a session
-	 *
+	 * 
 	 * @param array $sessionIds Session IDs
-	 *
+	 * 
 	 * @return void
 	 */
-	public function deleteSessions($sessionIds): void
-	{
-		for ($i = 0, $iCount = count(value: $sessionIds); $i < $iCount; $i++) {
-			$this->deleteSession($sessionIds[$i]);
+	public function deleteSessions(
+		$sessionIds
+	): void {
+		$indexCount = count(
+			value: $sessionIds
+		);
+		for ($index = 0; $index < $indexCount; $index++) {
+			$this->deleteSession(
+				$sessionIds[$index]
+			);
 		}
 	}
 }

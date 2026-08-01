@@ -3,7 +3,7 @@
 /**
  * API Route config
  * php version 8.3
- *
+ * 
  * @category  API_Route_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,39 +13,40 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
 
 return [
 	'registration' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->http->req->QUERIES_DIR
+			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'AdminGroup'
-				. DIRECTORY_SEPARATOR . 'PATCH'
+				. DIRECTORY_SEPARATOR . Constant::$PATCH
 				. DIRECTORY_SEPARATOR . 'Registration.php',
 		],
 	],
 	'address' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->http->req->QUERIES_DIR
+			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'AdminGroup'
-				. DIRECTORY_SEPARATOR . 'PATCH'
+				. DIRECTORY_SEPARATOR . Constant::$PATCH
 				. DIRECTORY_SEPARATOR . 'Address.php',
 		],
 	],
 	'registration-with-address' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->http->req->QUERIES_DIR
+			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'AdminGroup'
-				. DIRECTORY_SEPARATOR . 'PATCH'
+				. DIRECTORY_SEPARATOR . Constant::$PATCH
 				. DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
 		],
 	],

@@ -3,7 +3,7 @@
 /**
  * UploadAPI
  * php version 8.3
- *
+ * 
  * @category  UploadAPI
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\Supplement\Upload;
 /**
  * UploadAPI Interface
  * php version 8.3
- *
+ * 
  * @category  UploadAPI_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -31,14 +31,14 @@ interface UploadInterface
 {
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool;
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed;

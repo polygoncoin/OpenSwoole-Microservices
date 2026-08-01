@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- *
+ * 
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,34 +13,39 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
+use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+use Microservices\DatabaseTable;
+
 return [
-	'countQuery' => "SELECT count(1) as `count` FROM `{$this->http->req->s['customerData']['userTable']}` WHERE __WHERE__",
-	'__QUERY__' => "SELECT * FROM `{$this->http->req->s['customerData']['userTable']}` WHERE __WHERE__",
+	'countQuery' => "SELECT count(1) as `count` FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` WHERE __WHERE__",
+	'__QUERY__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` WHERE __WHERE__",
 	'__WHERE__' => [
 		[
-			'column' => 'is_deleted',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => 'No'
+			'column' => 'customer_user_is_deleted',
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => Constant::$NO
 		]
 	],
-	'__MODE__' => 'multipleRowFormat',
+	'__MODE__' => 'multipleRecordFormat',
 	'__SUB-QUERY__' => [
 		'address' => [
 			'__QUERY__' => 'SELECT * FROM `address` WHERE __WHERE__',
 			'__WHERE__' => [
 				[
 					'column' => 'is_deleted',
-					'fetchFrom' => 'custom',
-					'fetchFromData' => 'No'
+					'activeRequestDataKey' => 'custom',
+					'activeRequestDataKeySubKey' => Constant::$NO
 				],
 				[
-					'column' => 'user_id',
-					'fetchFrom' => 'sqlResults',
-					'fetchFromData' => 'return:id'
+					'column' => DatabaseTable::$customerUserPrimaryKey,
+					'activeRequestDataKey' => 'sqlResults',
+					'activeRequestDataKeySubKey' => 'return:' . DatabaseTable::$customerUserPrimaryKey
 				],
 			],
-			'__MODE__' => 'multipleRowFormat',
+			'__MODE__' => 'multipleRecordFormat',
 		]
 	],
-	'useResultSet' => true
+	'maintainHierarchy' => Constant::$TRUE
 ];

@@ -3,7 +3,7 @@
 /**
  * Query Cache
  * php version 8.3
- *
+ * 
  * @category  QueryCache
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\App\Server\QueryCacheServer;
 /**
  * Query Cache Interface
  * php version 8.3
- *
+ * 
  * @category  Query_Cache_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -31,35 +31,39 @@ interface QueryCacheServerInterface
 {
 	/**
 	 * Connect Query Cache
-	 *
+	 * 
 	 * @return void
 	 */
 	public function connectQueryCache(): void;
 
 	/**
 	 * Query Cache key exist
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function queryCacheExist($queryCacheKey): mixed;
+	public function queryCacheExist(
+		$queryCacheKey
+	): mixed;
 
 	/**
 	 * Get Query Cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function queryCacheGet($queryCacheKey): mixed;
+	public function queryCacheGet(
+		$queryCacheKey
+	): mixed;
 
 	/**
 	 * Set cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey   Query Cache key
-	 * @param string $queryCacheValue Query Cache value
-	 *
+	 * @param mixed  $queryCacheValue Query Cache value
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheSet(
@@ -69,10 +73,10 @@ interface QueryCacheServerInterface
 
 	/**
 	 * Increment Query Cache key as per offset
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
 	 * @param int    $queryCacheOffset        Query Cache offset
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheIncrement(
@@ -82,10 +86,12 @@ interface QueryCacheServerInterface
 
 	/**
 	 * Delete cache on basis of key
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function queryCacheDelete($queryCacheKey): mixed;
+	public function queryCacheDelete(
+		$queryCacheKey
+	): mixed;
 }

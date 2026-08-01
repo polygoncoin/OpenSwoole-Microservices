@@ -3,7 +3,7 @@
 /**
  * Custom Session Handler
  * php version 7
- *
+ * 
  * @category  SessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\App\SessionHandler\Container;
 /**
  * Custom Session Handler Helper
  * php version 7
- *
+ * 
  * @category  CustomSessionHandler_Helper
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -43,7 +43,7 @@ class SessionContainerHelper
 	public $iv = null;
 
 	// Session Start $options param
-	public $sessionOptionArr = null;
+	public $sessionOptionArray = null;
 
 	// Session cookie name
 	public $sessionName = null;
@@ -56,13 +56,14 @@ class SessionContainerHelper
 
 	/**
 	 * Encryption
-	 *
+	 * 
 	 * @param string $plainText Plain Text
-	 *
+	 * 
 	 * @return string
 	 */
-	protected function encryptData($plainText): string
-	{
+	protected function encryptData(
+		$plainText
+	): string {
 		if (
 			!empty($this->passphrase)
 			&& !empty($this->iv)
@@ -82,19 +83,22 @@ class SessionContainerHelper
 
 	/**
 	 * Decryption
-	 *
+	 * 
 	 * @param string $cipherText Cipher Text
-	 *
+	 * 
 	 * @return bool|string
 	 */
-	protected function decryptData($cipherText): bool|string
-	{
+	protected function decryptData(
+		$cipherText
+	): bool|string {
 		if (
 			!empty($this->passphrase)
 			&& !empty($this->iv)
 		) {
 			return openssl_decrypt(
-				data: base64_decode(string: $cipherText),
+				data: base64_decode(
+					string: $cipherText
+				),
 				cipher_algo: $this->cipher_algo,
 				passphrase: $this->passphrase,
 				options: $this->options,

@@ -3,7 +3,7 @@
 /**
  * ThirdPartyAPI
  * php version 8.3
- *
+ * 
  * @category  ThirdPartyAPI_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\Supplement\ThirdParty;
 /**
  * ThirdPartyAPI Trait
  * php version 8.3
- *
+ * 
  * @category  ThirdPartyAPI_Trait
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>

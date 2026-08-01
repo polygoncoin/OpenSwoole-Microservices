@@ -3,7 +3,7 @@
 /**
  * Environment
  * php version 8.3
- *
+ * 
  * @category  Environment
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,12 +15,13 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Constant;
 use Microservices\App\HttpStatus;
 
 /**
  * Environment
  * php version 8.3
- *
+ * 
  * @category  Environment
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -37,12 +38,17 @@ class Env
 	public static $OUTPUT_PERFORMANCE_STATS = null;
 	public static $DISABLE_REQUESTS_VIA_PROXIES = null;
 
+	public static $enableGlobalCounter = null;
+	public static $enableReloadRequest = null;
+
+	public static $reloadRestrictedCidr = null;
+
 	public static $sessionMode = null;
 	public static $maxConcurrentLogin = null;
 	public static $concurrentAccessInterval = null;
 
-	public static $iRepresentation = null;
-	public static $oRepresentation = null;
+	public static $inputRepresentation = null;
+	public static $outputRepresentation = null;
 	public static $payloadKeyInResponse = null;
 
 	public static $gCacheServerType = null;
@@ -63,7 +69,6 @@ class Env
 
 	public static $customerMasterDb = null;
 	public static $customerTable = null;
-	public static $groupTable = null;
 	public static $queryPlaceholder = null;
 	public static $defaultPerPage = null;
 	public static $maxResultsPerPage = null;
@@ -85,34 +90,16 @@ class Env
 	public static $thirdPartyRequestRoutePrefix = null;
 	public static $uploadRequestRoutePrefix = null;
 
-	public static $explainRestrictedCidr = null;
-	public static $exportRestrictedCidr = null;
-	public static $importRestrictedCidr = null;
-	public static $importSampleRestrictedCidr = null;
-	public static $routesRestrictedCidr = null;
-	public static $dropboxRestrictedCidr = null;
-	public static $cronRestrictedCidr = null;
-	public static $customRestrictedCidr = null;
-	public static $reloadRestrictedCidr = null;
-	public static $thirdPatyRestrictedCidr = null;
-	public static $uploadRestrictedCidr = null;
-
-	public static $rateLimitIPPrefix = null;
+	public static $rateLimitHttpRequestIpPrefix = null;
 	public static $rateLimitCustomerPrefix = null;
 	public static $rateLimitGroupPrefix = null;
 	public static $rateLimitUserPrefix = null;
 	public static $rateLimitRoutePrefix = null;
-	public static $rateLimitUserPerIpPrefix = null;
+	public static $rateLimitUserAsPerHttpRequestIpPrefix = null;
 	public static $rateLimitUserLoginPrefix = null;
 	public static $rateLimitUserRequestPrefix = null;
 
-	public static $queryCacheServerType = null;
-	public static $queryCacheServerHostname = null;
-	public static $queryCacheServerPort = null;
-	public static $queryCacheServerUsername = null;
-	public static $queryCacheServerPassword = null;
-	public static $queryCacheServerDatabase = null;
-	public static $queryCacheServerTable = null;
+	public static $appendSupplementFunctionWith = null;
 
 	public static $iAllowedRepresentation = ['JSON', 'XML'];
 	public static $oAllowedRepresentation = ['JSON', 'XML', 'XSLT', 'HTML', 'PHP'];
@@ -121,7 +108,7 @@ class Env
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return void
 	 */
 	public static function init(): void
@@ -134,12 +121,17 @@ class Env
 		self::$OUTPUT_PERFORMANCE_STATS = getenv(name: 'OUTPUT_PERFORMANCE_STATS');
 		self::$DISABLE_REQUESTS_VIA_PROXIES = getenv(name: 'DISABLE_REQUESTS_VIA_PROXIES');
 
+		self::$enableGlobalCounter = (bool)getenv(name: 'enableGlobalCounter');
+		self::$enableReloadRequest = (bool)getenv(name: 'enableReloadRequest');
+
+		self::$reloadRestrictedCidr = getenv(name: 'reloadRestrictedCidr');
+
 		self::$sessionMode = getenv(name: 'sessionMode');
 		self::$maxConcurrentLogin = getenv(name: 'maxConcurrentLogin');
 		self::$concurrentAccessInterval = getenv(name: 'concurrentAccessInterval');
 
-		self::$iRepresentation = getenv(name: 'iRepresentation');
-		self::$oRepresentation = getenv(name: 'oRepresentation');
+		self::$inputRepresentation = getenv(name: 'inputRepresentation');
+		self::$outputRepresentation = getenv(name: 'outputRepresentation');
 		self::$payloadKeyInResponse = getenv(name: 'payloadKeyInResponse');
 
 		self::$gCacheServerType = getenv(name: 'gCacheServerType');
@@ -160,7 +152,6 @@ class Env
 
 		self::$customerMasterDb = getenv(name: 'customerMasterDb');
 		self::$customerTable = getenv(name: 'customerTable');
-		self::$groupTable = getenv(name: 'groupTable');
 		self::$queryPlaceholder = getenv(name: 'queryPlaceholder');
 		self::$defaultPerPage = (int)getenv(name: 'defaultPerPage');
 		self::$maxResultsPerPage = (int)getenv(name: 'maxResultsPerPage');
@@ -182,32 +173,26 @@ class Env
 		self::$thirdPartyRequestRoutePrefix = getenv(name: 'thirdPartyRequestRoutePrefix');
 		self::$uploadRequestRoutePrefix = getenv(name: 'uploadRequestRoutePrefix');
 
-		self::$rateLimitIPPrefix = getenv(name: 'rateLimitIPPrefix');
+		self::$rateLimitHttpRequestIpPrefix = getenv(name: 'rateLimitHttpRequestIpPrefix');
 		self::$rateLimitCustomerPrefix = getenv(name: 'rateLimitCustomerPrefix');
 		self::$rateLimitGroupPrefix = getenv(name: 'rateLimitGroupPrefix');
 		self::$rateLimitUserPrefix = getenv(name: 'rateLimitUserPrefix');
 		self::$rateLimitRoutePrefix = getenv(name: 'rateLimitRoutePrefix');
-		self::$rateLimitUserPerIpPrefix = getenv(name: 'rateLimitUserPerIpPrefix');
+		self::$rateLimitUserAsPerHttpRequestIpPrefix = getenv(name: 'rateLimitUserAsPerHttpRequestIpPrefix');
 		self::$rateLimitUserLoginPrefix = getenv(name: 'rateLimitUserLoginPrefix');
 		self::$rateLimitUserRequestPrefix = getenv(name: 'rateLimitUserRequestPrefix');
 
-		self::$queryCacheServerType = getenv(name: 'queryCacheServerType');
-		self::$queryCacheServerHostname = getenv(name: 'queryCacheServerHostname');
-		self::$queryCacheServerPort = getenv(name: 'queryCacheServerPort');
-		self::$queryCacheServerUsername = getenv(name: 'queryCacheServerUsername');
-		self::$queryCacheServerPassword = getenv(name: 'queryCacheServerPassword');
-		self::$queryCacheServerDatabase = getenv(name: 'queryCacheServerDatabase');
-		self::$queryCacheServerTable = getenv(name: 'queryCacheServerTable');
+		self::$appendSupplementFunctionWith = getenv(name: 'appendSupplementFunctionWith');
 
 		self::$initialized = true;
 	}
 
 	/**
 	 * Validate Data Representation
-	 *
+	 * 
 	 * @param string $dataRepresentation Data Representation
 	 * @param string $mode               input / output
-	 *
+	 * 
 	 * @return bool
 	 * @throws \Exception
 	 */
@@ -221,7 +206,7 @@ class Env
 					in_array(
 						needle: $dataRepresentation,
 						haystack: self::$iAllowedRepresentation,
-						strict: true
+						strict: Constant::$TRUE
 					)
 				) {
 					return true;
@@ -237,7 +222,7 @@ class Env
 					in_array(
 						needle: $dataRepresentation,
 						haystack: self::$oAllowedRepresentation,
-						strict: true
+						strict: Constant::$TRUE
 					)
 				) {
 					return true;

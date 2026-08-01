@@ -3,7 +3,7 @@
 /**
  * Stream Video
  * php version 8.3
- *
+ * 
  * @category  StreamVideo
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,13 +15,14 @@
 
 namespace Microservices\App\DropboxHandler;
 
+use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
 
 /**
  * Stream Video
  * php version 8.3
- *
+ * 
  * @category  StreamVideo
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -34,28 +35,28 @@ class StreamVideo
 {
 	/**
 	 * HTTP request data
-	 *
+	 * 
 	 * @var null|array
 	 */
 	private $httpReqData = null;
 
 	/**
 	 * Streamed Video cache duration.
-	 *
+	 * 
 	 * @var integer
 	 */
 	private $cacheDuration = 7 * 24 * 3600; // 1 week
 
 	/**
 	 * Streamed Video size for first request.
-	 *
+	 * 
 	 * @var integer
 	 */
 	private $firstChunkSize = 128 * 1024; // 128 KB
 
 	/**
 	 * Streamed Video size per request.
-	 *
+	 * 
 	 * @var integer
 	 */
 	private $chunkSize = 4 * 1024 * 1024; // 4 MB
@@ -73,37 +74,42 @@ class StreamVideo
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param array $httpReqData HTTP request data
 	 */
-	public function __construct(&$httpReqData)
-	{
+	public function __construct(
+		&$httpReqData
+	) {
 		$this->httpReqData = &$httpReqData;
 	}
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @param string $fileLocation File Location
-	 *
+	 * 
 	 * @return bool|int
 	 */
-	public function init($fileLocation): bool|int
-	{
+	public function init(
+		$fileLocation
+	): bool|int {
 		// Check Range header
 		if (
 			!isset($this->httpReqData['header']['range'])
 			&& strpos(
 				haystack: $this->httpReqData['header']['range'],
 				needle: 'bytes='
-			) !== false
+			) !== Constant::$FALSE
 		) {
 			return HttpStatus::$BadRequest;
 		}
 
 		$this->fileLocation = $fileLocation;
 		// Set buffer Range
-		$range = explode(separator: '=', string: $this->httpReqData['header']['range'])[1];
+		$range = explode(
+			separator: '=',
+			string: $this->httpReqData['header']['range']
+		)[1];
 		list($this->streamFrom, $this->streamTill) = explode(
 			separator: '-',
 			string: $range
@@ -111,20 +117,29 @@ class StreamVideo
 
 		//Set detail of file to be served.
 		// Set file name
-		$this->name = basename(path: $this->fileLocation);
+		$this->name = basename(
+			path: $this->fileLocation
+		);
 		// Get file mime
-		$this->mimeType = mime_content_type($this->fileLocation);
+		$this->mimeType = mime_content_type(
+			$this->fileLocation
+		);
 		// Get file modified time
-		$this->modifiedTimeStamp = filemtime(filename: $this->fileLocation);
+		$this->modifiedTimeStamp = filemtime(
+			filename: $this->fileLocation
+		);
 		// Get file size
-		$this->size = filesize(filename: $this->fileLocation);
+		$this->size = filesize(
+
+		filename: $this->fileLocation
+		);
 
 		return $this->validateFile();
 	}
 
 	/**
 	 * Validate File related detail
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function validateFile(): bool|int
@@ -138,27 +153,27 @@ class StreamVideo
 
 	/**
 	 * Set header on successful validation
-	 *
+	 * 
 	 * @return array
 	 */
 	public function setHeaders(): array
 	{
-		$headerArr = [];
+		$headerArray = [];
 		$status = HttpStatus::$Ok;
 
 		$gmDate = gmdate(
 			format: 'D, d M Y H:i:s',
 			timestamp: Env::$timestamp + $this->cacheDuration
 		);
-		$headerArr['Content-Type'] = $this->mimeType;
-		$headerArr['Cache-Control'] = 'max-age=' . $this->cacheDuration . ', public';
-		$headerArr['Expires'] = "{$gmDate} GMT";
+		$headerArray['Content-Type'] = $this->mimeType;
+		$headerArray['Cache-Control'] = 'max-age=' . $this->cacheDuration . ', public';
+		$headerArray['Expires'] = "{$gmDate} GMT";
 		$gmDate = gmdate(
 			format: 'D, d M Y H:i:s',
 			timestamp: $this->modifiedTimeStamp
 		);
-		$headerArr['Last-Modified'] = "{$gmDate} GMT";
-		$headerArr['Accept-Ranges'] = '0-' . ($this->size - 1);
+		$headerArray['Last-Modified'] = "{$gmDate} GMT";
+		$headerArray['Accept-Ranges'] = '0-' . ($this->size - 1);
 		if ($this->streamFrom == 0) {
 			$this->chunkSize = $this->firstChunkSize;
 		}
@@ -167,7 +182,7 @@ class StreamVideo
 			&& in_array(
 				needle: $this->streamTill,
 				haystack: ['', '1'],
-				strict: true
+				strict: Constant::$TRUE
 			)
 		) {
 			// Mac Safari does not support HTTP/1.1 206 response for first
@@ -181,8 +196,8 @@ class StreamVideo
 			);
 			if ($safariBrowser) {
 				$this->streamTill = $this->size - 1;
-				$headerArr['Content-Length'] = $this->size;
-				return [$headerArr, $status];
+				$headerArray['Content-Length'] = $this->size;
+				return [$headerArray, $status];
 			} else {
 				$chunkSize = $this->size > $this->chunkSize
 					? $this->chunkSize : $this->size;
@@ -198,31 +213,31 @@ class StreamVideo
 			$streamSize = $this->streamTill - $this->streamFrom + 1;
 		}
 		$status = HttpStatus::$PartialContent;
-		$headerArr['Content-Length'] = $streamSize;
-		$headerArr['Content-Range'] = 'bytes ' . $this->streamFrom . '-'
+		$headerArray['Content-Length'] = $streamSize;
+		$headerArray['Content-Range'] = 'bytes ' . $this->streamFrom . '-'
 			. $this->streamTill . '/' . $this->size;
 
-		return [$headerArr, $status];
+		return [$headerArray, $status];
 	}
 
 	/**
 	 * Serve video file content
-	 *
+	 * 
 	 * @return array
 	 */
 	public function serveContent(): array
 	{
-		[$headerArr, $status] = $this->setHeaders();
+		[$headerArray, $status] = $this->setHeaders();
 
 		$totalBytes = $this->streamTill - $this->streamFrom + 1;
 		$data = file_get_contents(
 			filename: $this->fileLocation,
-			use_include_path: false,
+			use_include_path: Constant::$FALSE,
 			context: null,
 			offset: $this->streamFrom,
 			length: $totalBytes
 		);
 
-		return [$headerArr, $data, $status];
+		return [$headerArray, $data, $status];
 	}
 }

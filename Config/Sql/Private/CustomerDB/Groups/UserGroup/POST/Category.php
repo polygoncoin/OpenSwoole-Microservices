@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- *
+ * 
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,18 +13,23 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
+use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+use Microservices\DatabaseTable;
+
 return [
 	'__QUERY__' => 'INSERT INTO `category` SET __SET__',
 	'__SET__' => [
 		[
 			'column' => 'name',
-			'fetchFrom' => 'payload',
-			'fetchFromData' => 'name'
+			'activeRequestDataKey' => 'payload',
+			'activeRequestDataKeySubKey' => 'name'
 		],
 		[
 			'column' => 'parent_id',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => 0
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => 0
 		],
 	],
 	'__INSERT-IDs__' => 'category:id',
@@ -34,13 +39,13 @@ return [
 			'__SET__' => [
 				[
 					'column' => 'name',
-					'fetchFrom' => 'payload',
-					'fetchFromData' => 'subname'
+					'activeRequestDataKey' => 'payload',
+					'activeRequestDataKeySubKey' => 'subname'
 				],
 				[
 					'column' => 'parent_id',
-					'fetchFrom' => '__INSERT-IDs__',
-					'fetchFromData' => 'category:id'
+					'activeRequestDataKey' => '__INSERT-IDs__',
+					'activeRequestDataKeySubKey' => 'category:id'
 				],
 			],
 			'__INSERT-IDs__' => 'sub:id',
@@ -50,13 +55,13 @@ return [
 					'__SET__' => [
 						[
 							'column' => 'name',
-							'fetchFrom' => 'payload',
-							'fetchFromData' => 'subsubname'
+							'activeRequestDataKey' => 'payload',
+							'activeRequestDataKeySubKey' => 'subsubname'
 						],
 						[
 							'column' => 'parent_id',
-							'fetchFrom' => '__INSERT-IDs__',
-							'fetchFromData' => 'sub:id'
+							'activeRequestDataKey' => '__INSERT-IDs__',
+							'activeRequestDataKeySubKey' => 'sub:id'
 						],
 					],
 					'__INSERT-IDs__' => 'subsub:id',
@@ -64,9 +69,9 @@ return [
 			]
 		]
 	],
-	'useHierarchy' => true,
-	'affectedQueryCacheKeyArr' => [
-		$this->http->req->s['customerData']['id'] . ':category',
-		$this->http->req->s['customerData']['id'] . ':category1'
+	'maintainHierarchy' => Constant::$TRUE,
+	'affectedQueryCacheKeyArray' => [
+		$this->httpObject->httpRequestObject->activeRequestData['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
+		$this->httpObject->httpRequestObject->activeRequestData['customerData'][DatabaseTable::$customerPrimaryKey] . ':category1'
 	]
 ];

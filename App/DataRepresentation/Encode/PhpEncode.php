@@ -3,7 +3,7 @@
 /**
  * Handling PHP Raw Array detail for Views
  * php version 8.3
- *
+ * 
  * @category  DataEncode_PHP
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,6 +15,7 @@
 
 namespace Microservices\App\DataRepresentation\Encode;
 
+use Microservices\App\Constant;
 use Microservices\App\DataRepresentation\Encode\DataEncodeInterface;
 use Microservices\App\DataRepresentation\Encode\PhpEncoder\PhpEncoderObject;
 use Microservices\App\HttpStatus;
@@ -22,7 +23,7 @@ use Microservices\App\HttpStatus;
 /**
  * Generates PHP Array
  * php version 8.3
- *
+ * 
  * @category  PHP_Encoder
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,28 +36,28 @@ class PhpEncode implements DataEncodeInterface
 {
 	/**
 	 * Array
-	 *
+	 * 
 	 * @var null|array
 	 */
 	public $finalArray = null;
 
 	/**
 	 * Array of PhpEncoderObject object's
-	 *
+	 * 
 	 * @var PhpEncoderObject[]
 	 */
-	private $objectArr = [];
+	private $jsonEncoderObjectObjectArray = [];
 
 	/**
 	 * Current PhpEncoderObject object
-	 *
+	 * 
 	 * @var null|PhpEncoderObject
 	 */
-	private $currentObject = null;
+	private $jsonEncoderObjectObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param resource $tempStream Temp stream Temporary stream
 	 * @param bool     $header     Append XML header flag
 	 */
@@ -68,38 +69,54 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @param bool $header Append XML header flag
-	 *
+	 * 
 	 * @return void
 	 */
-	public function init($header = true): void
-	{
+	public function init(
+		$header = true
+	): void {
 	}
 
 	/**
 	 * Write to temporary stream
-	 *
+	 * 
 	 * @param string $data Representation Data
-	 *
+	 * 
 	 * @return void
 	 */
-	private function write($data): void
-	{
-		if ($this->currentObject) {
-			if ($this->currentObject->mode === 'Object') {
-				if (is_array(value: $data)) {
+	private function write(
+		$data
+	): void {
+		if ($this->jsonEncoderObjectObject) {
+			if ($this->jsonEncoderObjectObject->mode === 'Object') {
+				if (
+					is_array(
+						value: $data
+					)
+				) {
 					foreach ($data as $k => $v) {
-						$this->currentObject->returnArray[$k] = $this->escape(data: $v);
+						$this->jsonEncoderObjectObject->returnArray[$k] = $this->escape(
+							data: $v
+						);
 					}
 				}
 			} else {
-				if (is_array(value: $data)) {
+				if (
+					is_array(
+						value: $data
+					)
+				) {
 					foreach ($data as $v) {
-						$this->currentObject->returnArray[] = $this->escape(data: $v);
+						$this->jsonEncoderObjectObject->returnArray[] = $this->escape(
+							data: $v
+						);
 					}
 				} else {
-					$this->currentObject->returnArray[] = $this->escape(data: $data);
+					$this->jsonEncoderObjectObject->returnArray[] = $this->escape(
+						data: $data
+					);
 				}
 			}
 		}
@@ -107,32 +124,44 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Encodes both simple and associative array to json
-	 *
+	 * 
 	 * @param string|array $data Representation Data
-	 *
+	 * 
 	 * @return void
 	 */
-	public function encode($data): void
-	{
-		$this->write(data: $data);
+	public function encode(
+		$data
+	): void {
+		$this->write(
+			data: $data
+		);
 	}
 
 	/**
 	 * Escape the json string key or value
-	 *
-	 * @param null|string|array $data Representation Data
-	 *
-	 * @return null|string|array
+	 * 
+	 * @param mixed $data Representation Data
+	 * 
+	 * @return mixed
 	 */
-	private function escape(&$data)
-	{
-		if ($data !== null) {
-			if (is_array(value: $data)) {
+	private function escape(
+		&$data
+	): mixed {
+		if ($data !== Constant::$NULL) {
+			if (
+				is_array(
+					value: $data
+				)
+			) {
 				foreach ($data as $k => $v) {
 					$data[$k] = $this->escape($v);
 				}
 			} else {
-				$data = nl2br(htmlspecialchars($data));
+				$data = nl2br(
+					htmlspecialchars(
+						$data
+					)
+				);
 			}
 		}
 
@@ -141,59 +170,69 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Append raw json string
-	 *
+	 * 
 	 * @param string $data Reference of Representation Data
-	 *
+	 * 
 	 * @return void
 	 */
-	public function appendData(&$data): void
-	{
-		$this->write(data: $data);
+	public function appendData(
+		&$data
+	): void {
+		$this->write(
+			data: $data
+		);
 	}
 
 	/**
 	 * Append raw json string
-	 *
+	 * 
 	 * @param string $objectKey Key of associative array
 	 * @param string $data      Reference of Representation Data
-	 *
+	 * 
 	 * @return void
 	 */
-	public function appendKeyData($objectKey, &$data): void
-	{
+	public function appendKeyData(
+		$objectKey,
+		&$data
+	): void {
 		if (
-			$this->currentObject
-			&& $this->currentObject->mode === 'Object'
+			$this->jsonEncoderObjectObject
+			&& $this->jsonEncoderObjectObject->mode === 'Object'
 		) {
-			$this->write(data: [$objectKey => $data]);
+			$this->write(
+				data: [$objectKey => $data]
+			);
 		}
 	}
 
 	/**
 	 * Add simple array/value as in the json format
-	 *
+	 * 
 	 * @param string|array $data Representation Data
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function addArrayData($data): void
-	{
-		if ($this->currentObject->mode !== 'Array') {
+	public function addArrayData(
+		$data
+	): void {
+		if ($this->jsonEncoderObjectObject->mode !== 'Array') {
 			throw new \Exception(
 				message: 'Mode should be Array',
 				code: HttpStatus::$InternalServerError
 			);
 		}
-		$this->encode(data: $data);
+		$this->encode(
+			data: $data
+		);
 	}
 
 	/**
 	 * Add simple array/value as in the json format
-	 *
+	 * 
 	 * @param string       $objectKey Key of associative array
 	 * @param string|array $data      Representation Data
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -201,52 +240,63 @@ class PhpEncode implements DataEncodeInterface
 		$objectKey,
 		$data
 	): void {
-		if ($this->currentObject->mode !== 'Object') {
+		if ($this->jsonEncoderObjectObject->mode !== 'Object') {
 			throw new \Exception(
 				message: 'Mode should be Object',
 				code: HttpStatus::$InternalServerError
 			);
 		}
-		$this->encode(data: [$objectKey => $data]);
+		$this->encode(
+			data: [$objectKey => $data]
+		);
 	}
 
 	/**
 	 * Start simple array
-	 *
+	 * 
 	 * @param null|string $objectKey Used while creating simple array inside an object
-	 *
+	 * 
 	 * @return void
 	 */
-	public function startArray($objectKey = null): void
-	{
-		if ($this->currentObject) {
+	public function startArray(
+		$objectKey = null
+	): void {
+		if ($this->jsonEncoderObjectObject) {
 			array_push(
-				$this->objectArr,
-				$this->currentObject
+				$this->jsonEncoderObjectObjectArray,
+				$this->jsonEncoderObjectObject
 			);
 		}
-		$this->currentObject = new PhpEncoderObject(mode: 'Array');
-		if ($objectKey !== null) {
-			$this->currentObject->objectKey = $objectKey;
+		$this->jsonEncoderObjectObject = new PhpEncoderObject(
+			mode: 'Array'
+		);
+		if ($objectKey !== Constant::$NULL) {
+			$this->jsonEncoderObjectObject->objectKey = $objectKey;
 		}
 	}
 
 	/**
 	 * End simple array
-	 *
+	 * 
 	 * @return void
 	 */
 	public function endArray(): void
 	{
-		$objectKey = $this->currentObject->objectKey;
-		$returnArray = &$this->currentObject->returnArray;
-		$this->currentObject = null;
-		if (count(value: $this->objectArr) > 0) {
-			$this->currentObject = array_pop(array: $this->objectArr);
+		$objectKey = $this->jsonEncoderObjectObject->objectKey;
+		$returnArray = &$this->jsonEncoderObjectObject->returnArray;
+		$this->jsonEncoderObjectObject = null;
+		if (
+			count(
+				value: $this->jsonEncoderObjectObjectArray
+			) > 0
+		) {
+			$this->jsonEncoderObjectObject = array_pop(
+				array: $this->jsonEncoderObjectObjectArray
+			);
 			if ($objectKey !== '') {
-				$this->currentObject->returnArray[$objectKey] = &$returnArray;
+				$this->jsonEncoderObjectObject->returnArray[$objectKey] = &$returnArray;
 			} else {
-				$this->currentObject->returnArray[] = &$returnArray;
+				$this->jsonEncoderObjectObject->returnArray[] = &$returnArray;
 			}
 		} else {
 			$this->finalArray = &$returnArray;
@@ -255,18 +305,19 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Start simple array
-	 *
+	 * 
 	 * @param null|string $objectKey Used while creating associative array inside an object
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function startObject($objectKey = null): void
-	{
-		if ($this->currentObject) {
+	public function startObject(
+		$objectKey = null
+	): void {
+		if ($this->jsonEncoderObjectObject) {
 			if (
-				$this->currentObject->mode === 'Object'
-				&& ($objectKey === null)
+				$this->jsonEncoderObjectObject->mode === 'Object'
+				&& ($objectKey === Constant::$NULL)
 			) {
 				throw new \Exception(
 					message: 'Object inside an Object should be supported with key',
@@ -274,32 +325,40 @@ class PhpEncode implements DataEncodeInterface
 				);
 			}
 			array_push(
-				$this->objectArr,
-				$this->currentObject
+				$this->jsonEncoderObjectObjectArray,
+				$this->jsonEncoderObjectObject
 			);
 		}
-		$this->currentObject = new PhpEncoderObject(mode: 'Object');
-		if ($objectKey !== null) {
-			$this->currentObject->objectKey = $objectKey;
+		$this->jsonEncoderObjectObject = new PhpEncoderObject(
+			mode: 'Object'
+		);
+		if ($objectKey !== Constant::$NULL) {
+			$this->jsonEncoderObjectObject->objectKey = $objectKey;
 		}
 	}
 
 	/**
 	 * End associative array
-	 *
+	 * 
 	 * @return void
 	 */
 	public function endObject(): void
 	{
-		$objectKey = $this->currentObject->objectKey;
-		$returnArray = &$this->currentObject->returnArray;
-		$this->currentObject = null;
-		if (count(value: $this->objectArr) > 0) {
-			$this->currentObject = array_pop(array: $this->objectArr);
+		$objectKey = $this->jsonEncoderObjectObject->objectKey;
+		$returnArray = &$this->jsonEncoderObjectObject->returnArray;
+		$this->jsonEncoderObjectObject = null;
+		if (
+			count(
+				value: $this->jsonEncoderObjectObjectArray
+			) > 0
+		) {
+			$this->jsonEncoderObjectObject = array_pop(
+				array: $this->jsonEncoderObjectObjectArray
+			);
 			if ($objectKey !== '') {
-				$this->currentObject->returnArray[$objectKey] = &$returnArray;
+				$this->jsonEncoderObjectObject->returnArray[$objectKey] = &$returnArray;
 			} else {
-				$this->currentObject->returnArray[] = &$returnArray;
+				$this->jsonEncoderObjectObject->returnArray[] = &$returnArray;
 			}
 		} else {
 			$this->finalArray = &$returnArray;
@@ -308,16 +367,16 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Checks json was properly closed
-	 *
+	 * 
 	 * @return void
 	 */
 	public function end(): void
 	{
 		while (
-			$this->currentObject
-			&& $this->currentObject->mode
+			$this->jsonEncoderObjectObject
+			&& $this->jsonEncoderObjectObject->mode
 		) {
-			switch ($this->currentObject->mode) {
+			switch ($this->jsonEncoderObjectObject->mode) {
 				case 'Array':
 					$this->endArray();
 					break;

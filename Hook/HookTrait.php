@@ -3,7 +3,7 @@
 /**
  * Hook
  * php version 8.3
- *
+ * 
  * @category  Hook
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\Hook;
 /**
  * Hook Trait
  * php version 8.3
- *
+ * 
  * @category  Hook_Trait
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>

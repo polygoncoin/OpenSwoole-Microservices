@@ -3,7 +3,7 @@
 /**
  * CustomAPI
  * php version 8.3
- *
+ * 
  * @category  CustomAPI_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\Supplement\Custom;
 /**
  * CustomAPI Interface
  * php version 8.3
- *
+ * 
  * @category  CustomAPI_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -31,14 +31,14 @@ interface CustomInterface
 {
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool;
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed;

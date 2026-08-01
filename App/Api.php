@@ -3,7 +3,7 @@
 /**
  * Initiating API
  * php version 8.3
- *
+ * 
  * @category  API
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,9 +15,8 @@
 
 namespace Microservices\App;
 
-use Microservices\App\CommonFunction;
-use Microservices\App\Dropbox;
 use Microservices\App\Constant;
+use Microservices\App\Dropbox;
 use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\Http;
@@ -27,7 +26,7 @@ use Microservices\App\Supplement;
 /**
  * Class to initialize api HTTP request
  * php version 8.3
- *
+ * 
  * @category  API
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -40,31 +39,32 @@ class Api
 {
 	/**
 	 * Hook object
-	 *
+	 * 
 	 * @var null|Hook
 	 */
-	private $hook = null;
+	private $hookObject = null;
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
 	}
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -74,46 +74,62 @@ class Api
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
 	{
 		// Execute Pre Route Hook
 		if (
-			isset($this->http)
-			&& isset($this->http->req)
-			&& isset($this->http->req->rParser)
-			&& isset($this->http->req->rParser->routeHook)
-			&& $this->http->req->rParser->routeHook !== null
-			&& is_array(value: $this->http->req->rParser->routeHook)
+			isset($this->httpObject)
+			&& isset($this->httpObject->httpRequestObject)
+			&& isset($this->httpObject->httpRequestObject->routeParserObject)
+			&& isset($this->httpObject->httpRequestObject->routeParserObject->routeHook)
+			&& $this->httpObject->httpRequestObject->routeParserObject->routeHook !== Constant::$NULL
+			&& is_array(
+				value: $this->httpObject->httpRequestObject->routeParserObject->routeHook
+			)
 		) {
-			$preRouteHookArr = [];
-			foreach ($this->http->req->rParser->routeHook as $element => &$hookArr) {
-				if (isset($hookArr['__PRE-ROUTE-HOOKS__'])) {
-					$preRouteHookConfig = $hookArr['__PRE-ROUTE-HOOKS__'];
-					if (count(value: $preRouteHookConfig) === 0) {
+			$preRouteHookArray = [];
+			foreach ($this->httpObject->httpRequestObject->routeParserObject->routeHook as $element => &$hookArray) {
+				if (isset($hookArray['__PRE-ROUTE-HOOKS__'])) {
+					$preRouteHookConfig = $hookArray['__PRE-ROUTE-HOOKS__'];
+					if (
+						count(
+							value: $preRouteHookConfig
+						) === 0
+					) {
 						continue;
 					}
-					for ($i = 0, $iCount = count(value: $preRouteHookConfig); $i < $iCount; $i++) {
+
+					 $indexCount = count(
+						value: $preRouteHookConfig
+					 );
+					for ($index = 0; $index < $indexCount; $index++) {
 						if (
 							!in_array(
-								needle: $preRouteHookConfig[$i],
-								haystack: $preRouteHookArr,
-								strict: true
+								needle: $preRouteHookConfig[$index],
+								haystack: $preRouteHookArray,
+								strict: Constant::$TRUE
 							)
 						) {
-							$preRouteHookArr[] = $preRouteHookConfig[$i];
+							$preRouteHookArray[] = $preRouteHookConfig[$index];
 						}
 					}
 				}
 			}
-			if (count(value: $preRouteHookArr) > 0) {
-				if ($this->hook === null) {
-					$this->hook = new Hook(http: $this->http);
+			if (
+				count(
+					value: $preRouteHookArray
+				) > 0
+			) {
+				if ($this->hookObject === Constant::$NULL) {
+					$this->hookObject = new Hook(
+						httpObject: $this->httpObject
+					);
 				}
-				$this->hook->triggerHook(
-					hookArr: $preRouteHookArr
+				$this->hookObject->triggerHook(
+					hookArray: $preRouteHookArray
 				);
 			}
 		}
@@ -121,73 +137,123 @@ class Api
 		// Load Payloads
 		if (
 			!in_array(
-				needle: $this->http->req->rParser->routeEndingReservedKeyword,
+				needle: $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword,
 				haystack: [
 					Env::$explainRequestRouteKeyword,
 					Env::$importSampleRequestRouteKeyword
 				],
-				strict: true
+				strict: Constant::$TRUE
 			)
 		) {
-			$this->http->req->loadPayload();
+			$this->httpObject->httpRequestObject->loadPayload();
 		}
 
 		$class = null;
 		$supplementClass = null;
-		if ($this->checkSupplement(Env::$cronRequestRoutePrefix)) {
-			$supplementClassFileName = ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
-			$supplementClassFileLocation = Constant::$WWW
-					. DIRECTORY_SEPARATOR . 'Supplement'
+		if (
+			$this->checkSupplement(
+				Env::$cronRequestRoutePrefix
+			)
+		) {
+			$supplementClassFileName = ucfirst(
+				string: $this->httpObject->httpRequestObject->routeParserObject->routeElementArray[1]
+			);
+			$supplementClassFileLocation = Constant::$SUPPLEMENT_DIRECTORY
 					. DIRECTORY_SEPARATOR . 'Cron'
 					. DIRECTORY_SEPARATOR . $supplementClassFileName . '.php';
 
-			if (file_exists(filename: $supplementClassFileLocation)) {
-				$supplementClass = 'Microservices\\Supplement\\Cron\\' . $supplementClassFileName;
+			if (
+				file_exists(
+					filename: $supplementClassFileLocation
+				)
+			) {
+				$supplementClass = Constant::$SUPPLEMENT_NS . '\\Cron\\' . $supplementClassFileName;
 			}
-		} elseif ($this->checkSupplement(Env::$customRequestRoutePrefix)) {
-			$supplementClassFileName = ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
-			$supplementClassFileLocation = Constant::$WWW
-					. DIRECTORY_SEPARATOR . 'Supplement'
+		} elseif (
+			$this->checkSupplement(
+				Env::$customRequestRoutePrefix
+			)
+		) {
+			$supplementClassFileName = ucfirst(
+				string: $this->httpObject->httpRequestObject->routeParserObject->routeElementArray[1]
+			);
+			$supplementClassFileLocation = Constant::$SUPPLEMENT_DIRECTORY
 					. DIRECTORY_SEPARATOR . 'Custom'
 					. DIRECTORY_SEPARATOR . $supplementClassFileName . '.php';
 
-			if (file_exists(filename: $supplementClassFileLocation)) {
-				$supplementClass = 'Microservices\\Supplement\\Custom\\' . $supplementClassFileName;
+			if (
+				file_exists(
+					filename: $supplementClassFileLocation
+				)
+			) {
+				$supplementClass = Constant::$SUPPLEMENT_NS . '\\Custom\\' . $supplementClassFileName;
 			}
-		} elseif ($this->checkSupplement(Env::$uploadRequestRoutePrefix)) {
-			$supplementClassFileName = ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
-			$supplementClassFileLocation = Constant::$WWW
-					. DIRECTORY_SEPARATOR . 'Supplement'
+		} elseif (
+			$this->checkSupplement(
+				Env::$uploadRequestRoutePrefix
+			)
+		) {
+			$supplementClassFileName = ucfirst(
+				string: $this->httpObject->httpRequestObject->routeParserObject->routeElementArray[1]
+			);
+			$supplementClassFileLocation = Constant::$SUPPLEMENT_DIRECTORY
 					. DIRECTORY_SEPARATOR . 'Upload'
 					. DIRECTORY_SEPARATOR . $supplementClassFileName . '.php';
 
-			if (file_exists(filename: $supplementClassFileLocation)) {
-				$supplementClass = 'Microservices\\Supplement\\Upload\\' . $supplementClassFileName;
+			if (
+				file_exists(
+					filename: $supplementClassFileLocation
+				)
+			) {
+				$supplementClass = Constant::$SUPPLEMENT_NS . '\\Upload\\' . $supplementClassFileName;
 			}
-		} elseif ($this->checkSupplement(Env::$thirdPartyRequestRoutePrefix)) {
-			$supplementClassFileName = ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
-			$supplementClassFileLocation = Constant::$WWW
-					. DIRECTORY_SEPARATOR . 'Supplement'
+		} elseif (
+			$this->checkSupplement(
+				Env::$thirdPartyRequestRoutePrefix
+			)
+		) {
+			$supplementClassFileName = ucfirst(
+				string: $this->httpObject->httpRequestObject->routeParserObject->routeElementArray[1]
+			);
+			$supplementClassFileLocation = Constant::$SUPPLEMENT_DIRECTORY
 					. DIRECTORY_SEPARATOR . 'ThirdParty'
 					. DIRECTORY_SEPARATOR . $supplementClassFileName . '.php';
 
-			if (file_exists(filename: $supplementClassFileLocation)) {
-				$supplementClass = 'Microservices\\Supplement\\ThirdParty\\' . $supplementClassFileName;
+			if (
+				file_exists(
+					filename: $supplementClassFileLocation
+				)
+			) {
+				$supplementClass = Constant::$SUPPLEMENT_NS . '\\ThirdParty\\' . $supplementClassFileName;
 			}
 		} else {
-			switch ($this->http->httpReqData['server']['httpMethod']) {
+			switch ($this->httpObject->httpReqData['server']['httpRequestMethod']) {
 				case Constant::$GET:
-					if ($this->checkSupplement(Env::$dropboxRequestRoutePrefix)) {
-						$classFileName = ucfirst(string: $this->http->req->rParser->routeElementArr[1]);
-						$classFileLocation = Constant::$WWW
-								. DIRECTORY_SEPARATOR . 'Supplement'
+				case Constant::$QUERY:
+					if (
+						$this->checkSupplement(
+							Env::$dropboxRequestRoutePrefix
+						)
+					) {
+						$classFileName = ucfirst(
+							string: $this->httpObject->httpRequestObject->routeParserObject->routeElementArray[1]
+						);
+						$classFileLocation = Constant::$SUPPLEMENT_DIRECTORY
 								. DIRECTORY_SEPARATOR . 'Dropbox'
 								. DIRECTORY_SEPARATOR . $classFileName . '.php';
 
-						if (file_exists(filename: $classFileLocation)) {
-							$class = 'Microservices\\Supplement\\Dropbox\\' . $classFileName;
+						if (
+							file_exists(
+								filename: $classFileLocation
+							)
+						) {
+							$class = Constant::$SUPPLEMENT_NS . '\\Dropbox\\' . $classFileName;
 						}
-					} elseif ($this->checkSupplement(Env::$routesRequestRoute)) {
+					} elseif (
+						$this->checkSupplement(
+							Env::$routesRequestRoute
+						)
+					) {
 						$class = __NAMESPACE__ . '\\Route';
 					} else {
 						$class = __NAMESPACE__ . '\\Read';
@@ -202,13 +268,21 @@ class Api
 			}
 		}
 
-		if ($supplementClass !== null) {
-			$supplementObj = new Supplement(http: $this->http);
-			if ($supplementObj->init(supplementClass: $supplementClass)) {
-				$return = $supplementObj->process();
+		if ($supplementClass !== Constant::$NULL) {
+			$supplementObject = new Supplement(
+				httpObject: $this->httpObject
+			);
+			if (
+				$supplementObject->init(
+					supplementClass: $supplementClass
+				)
+			) {
+				$return = $supplementObject->process();
 			}
-		} elseif ($class !== null) {
-			$api = new $class(http: $this->http);
+		} elseif ($class !== Constant::$NULL) {
+			$api = new $class(
+				httpObject: $this->httpObject
+			);
 			if ($api->init()) {
 				$return = $api->process();
 			}
@@ -221,46 +295,66 @@ class Api
 
 		// Execute Post Route Hook
 		if (
-			isset($this->http)
-			&& isset($this->http->req)
-			&& isset($this->http->req->rParser)
-			&& isset($this->http->req->rParser->routeHook)
-			&& $this->http->req->rParser->routeHook !== null
-			&& is_array(value: $this->http->req->rParser->routeHook)
+			isset($this->httpObject)
+			&& isset($this->httpObject->httpRequestObject)
+			&& isset($this->httpObject->httpRequestObject->routeParserObject)
+			&& isset($this->httpObject->httpRequestObject->routeParserObject->routeHook)
+			&& $this->httpObject->httpRequestObject->routeParserObject->routeHook !== Constant::$NULL
+			&& is_array(
+				value: $this->httpObject->httpRequestObject->routeParserObject->routeHook
+			)
 		) {
-			$postRouteHookArr = [];
-			foreach ($this->http->req->rParser->routeHook as $element => &$hookArr) {
-				if (isset($hookArr['__POST-ROUTE-HOOKS__'])) {
-					$postRouteHookConfig = $hookArr['__POST-ROUTE-HOOKS__'];
-					if (count(value: $postRouteHookConfig) === 0) {
+			$postRouteHookArray = [];
+			foreach ($this->httpObject->httpRequestObject->routeParserObject->routeHook as $element => &$hookArray) {
+				if (isset($hookArray['__POST-ROUTE-HOOKS__'])) {
+					$postRouteHookConfig = $hookArray['__POST-ROUTE-HOOKS__'];
+					if (
+						count(
+							value: $postRouteHookConfig
+						) === 0
+					) {
 						continue;
 					}
-					for ($i = 0, $iCount = count(value: $postRouteHookConfig); $i < $iCount; $i++) {
+
+					$indexCount = count(
+						value: $postRouteHookConfig
+					);
+					for ($index = 0; $index < $indexCount; $index++) {
 						if (
 							!in_array(
-								needle: $postRouteHookConfig[$i],
-								haystack: $postRouteHookArr,
-								strict: true
+								needle: $postRouteHookConfig[$index],
+								haystack: $postRouteHookArray,
+								strict: Constant::$TRUE
 							)
 						) {
-							$postRouteHookArr[] = $postRouteHookConfig[$i];
+							$postRouteHookArray[] = $postRouteHookConfig[$index];
 						}
 					}
 				}
 			}
-			if (count(value: $postRouteHookArr) > 0) {
-				if ($this->hook === null) {
-					$this->hook = new Hook(http: $this->http);
+			if (
+				count(
+					value: $postRouteHookArray
+				) > 0
+			) {
+				if ($this->hookObject === Constant::$NULL) {
+					$this->hookObject = new Hook(
+						httpObject: $this->httpObject
+					);
 				}
-				$this->hook->triggerHook(
-					hookArr: $postRouteHookArr
+				$this->hookObject->triggerHook(
+					hookArray: $postRouteHookArray
 				);
 			}
 		}
 
 		if (
-			is_array(value: $return)
-			&& count(value: $return) === 3
+			is_array(
+				value: $return
+			)
+			&& count(
+				value: $return
+			) === 3
 		) {
 			return $return;
 		}
@@ -270,22 +364,23 @@ class Api
 
 	/**
 	 * Process before collecting Payload
-	 *
+	 * 
 	 * @param string $supplementMode
-	 *
+	 * 
 	 * @return bool
 	 */
-	private function checkSupplement($supplementMode): bool
-	{
+	private function checkSupplement(
+		$supplementMode
+	): bool {
 		return (
-			$this->http->req->rParser->routeStartingWithReservedKeywordFlag
-			&& $this->http->req->rParser->routeStartingReservedKeyword === $supplementMode
+			$this->httpObject->httpRequestObject->routeParserObject->routeStartingWithReservedKeywordFlag
+			&& $this->httpObject->httpRequestObject->routeParserObject->routeStartingReservedKeyword === $supplementMode
 		);
 	}
 
 	/**
 	 * Execute once done with api process function
-	 *
+	 * 
 	 * @return bool
 	 */
 	private function processAfterPayload(): bool

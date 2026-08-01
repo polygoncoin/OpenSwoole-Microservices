@@ -3,7 +3,7 @@
 /**
  * Test Case
  * php version 8.3
- *
+ * 
  * @category  Test Case
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,20 +15,17 @@
 
 namespace Microservices\TestCase;
 
-if (!defined('PRIVATE_GET')) {
-	define('PRIVATE_GET', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'GET');
-	define('PRIVATE_POST', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'POST');
-	define('PRIVATE_PUT', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'PUT');
-	define('PRIVATE_PATCH', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'PATCH');
-	define('PRIVATE_DELETE', __DIR__ . DIRECTORY_SEPARATOR . 'Private' . DIRECTORY_SEPARATOR . 'DELETE');
-}
+use Microservices\App\Constant;
+use Microservices\App\Web;
 
 if (!defined('PUBLIC_GET')) {
-	define('PUBLIC_GET', __DIR__ . DIRECTORY_SEPARATOR . 'Public' . DIRECTORY_SEPARATOR . 'GET');
-	define('PUBLIC_POST', __DIR__ . DIRECTORY_SEPARATOR . 'Public' . DIRECTORY_SEPARATOR . 'POST');
-	define('PUBLIC_PUT', __DIR__ . DIRECTORY_SEPARATOR . 'Public' . DIRECTORY_SEPARATOR . 'PUT');
-	define('PUBLIC_PATCH', __DIR__ . DIRECTORY_SEPARATOR . 'Public' . DIRECTORY_SEPARATOR . 'PATCH');
-	define('PUBLIC_DELETE', __DIR__ . DIRECTORY_SEPARATOR . 'Public' . DIRECTORY_SEPARATOR . 'DELETE');
+	define('PUBLIC_DIRECTORY', __DIR__ . DIRECTORY_SEPARATOR . 'Public');
+	define('PUBLIC_GET', PUBLIC_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$GET);
+	define('PUBLIC_QUERY', PUBLIC_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$QUERY);
+	define('PUBLIC_POST', PUBLIC_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$POST);
+	define('PUBLIC_PUT', PUBLIC_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$PUT);
+	define('PUBLIC_PATCH', PUBLIC_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$PATCH);
+	define('PUBLIC_DELETE', PUBLIC_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$DELETE);
 }
 
 // $apiVersion = 'X-API-Version: v1.0.0';
@@ -37,16 +34,17 @@ $cacheControl = 'Cache-Control: no-cache';
 // $contentType = 'Content-Type: multipart/form-data; charset=utf-8';
 $contentType = 'Content-Type: text/plain; charset=utf-8';
 
-$defaultHeaderArr = [];
-// $defaultHeaderArr[] = $apiVersion;
-$defaultHeaderArr[] = $cacheControl;
+$defaultHeaderArray = [];
+// $defaultHeaderArray[] = $apiVersion;
+$defaultHeaderArray[] = $cacheControl;
 
 $response = [];
 
-if (defined('__MODE__')) {
-	$homeURL = 'http://127.0.0.1:9501';
-} else {
-	$homeURL = 'http://customer001.localhost/Microservices/www/public_html/index.php';
+$homeURL = 'http://127.0.0.1:9501';
+
+if (!defined('PRIVATE_GET')) {
+	define('PRIVATE_DIRECTORY', __DIR__ . DIRECTORY_SEPARATOR . 'Private');
+	define('PRIVATE_GET', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$GET);
 }
 
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Reload.php';
@@ -58,5 +56,7 @@ $response[] = include PUBLIC_POST . DIRECTORY_SEPARATOR . 'Address.php';
 $response[] = include PUBLIC_GET . DIRECTORY_SEPARATOR . 'CategorySingle.php';
 $response[] = include PUBLIC_GET . DIRECTORY_SEPARATOR . 'Category.php';
 $response[] = include PUBLIC_GET . DIRECTORY_SEPARATOR . 'CategoryOrderBy.php';
+
+$response[] = include PUBLIC_QUERY . DIRECTORY_SEPARATOR . 'Category.php';
 
 return $response;

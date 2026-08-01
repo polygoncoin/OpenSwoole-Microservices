@@ -28,7 +28,6 @@ gDbServerPassword='password'
 gDbServerDatabase='<global>'
 
 ; Tables in <global> database on the server
-groupTable='group'
 customerTable='customer'
 ```
 
@@ -37,27 +36,45 @@ customerTable='customer'
 These **Global Cache Server configuration (Redis)** and **Global Database Server configuration** config key's should be set in customer table in below columns respectively for each customer.
 
 ```SQL
-`customer`.`master_db_server_type` varchar(255) NOT NULL,
-`customer`.`master_db_server_hostname` varchar(255) NOT NULL,
-`customer`.`master_db_server_port` varchar(255) NOT NULL,
-`customer`.`master_db_server_username` varchar(255) NOT NULL,
-`customer`.`master_db_server_password` varchar(255) NOT NULL,
-`customer`.`master_db_server_db` varchar(255) NOT NULL,
-`customer`.`master_db_server_query_placeholder` varchar(255) NOT NULL,
-`customer`.`slave_db_server_type` varchar(255) NOT NULL,
-`customer`.`slave_db_server_hostname` varchar(255) NOT NULL,
-`customer`.`slave_db_server_port` varchar(255) NOT NULL,
-`customer`.`slave_db_server_username` varchar(255) NOT NULL,
-`customer`.`slave_db_server_password` varchar(255) NOT NULL,
-`customer`.`slave_db_server_db` varchar(255) NOT NULL,
-`customer`.`slave_db_server_query_placeholder` varchar(255) NOT NULL,
-`customer`.`cache_server_type` varchar(255) NOT NULL,
-`customer`.`cache_server_hostname` varchar(255) NOT NULL,
-`customer`.`cache_server_port` varchar(255) NOT NULL,
-`customer`.`cache_server_username` varchar(255) NOT NULL,
-`customer`.`cache_server_password` varchar(255) NOT NULL,
-`customer`.`cache_server_db` varchar(255) NOT NULL,
-`customer`.`cache_server_table` varchar(255) NOT NULL,
+`customer`.`customer_master_db_server_type` varchar(255) NOT NULL,
+`customer`.`customer_master_db_server_hostname` varchar(255) NOT NULL,
+`customer`.`customer_master_db_server_port` varchar(255) NOT NULL,
+`customer`.`customer_master_db_server_username` varchar(255) NOT NULL,
+`customer`.`customer_master_db_server_password` varchar(255) NOT NULL,
+`customer`.`customer_master_db_server_db` varchar(255) NOT NULL,
+`customer`.`customer_master_db_server_query_placeholder` varchar(255) NOT NULL,
+
+`customer`.`customer_slave_db_server_type` varchar(255) NOT NULL,
+`customer`.`customer_slave_db_server_hostname` varchar(255) NOT NULL,
+`customer`.`customer_slave_db_server_port` varchar(255) NOT NULL,
+`customer`.`customer_slave_db_server_username` varchar(255) NOT NULL,
+`customer`.`customer_slave_db_server_password` varchar(255) NOT NULL,
+`customer`.`customer_slave_db_server_db` varchar(255) NOT NULL,
+`customer`.`customer_slave_db_server_query_placeholder` varchar(255) NOT NULL,
+
+`customer`.`customer_cache_server_type` varchar(255) NOT NULL,
+`customer`.`customer_cache_server_hostname` varchar(255) NOT NULL,
+`customer`.`customer_cache_server_port` varchar(255) NOT NULL,
+`customer`.`customer_cache_server_username` varchar(255) NOT NULL,
+`customer`.`customer_cache_server_password` varchar(255) NOT NULL,
+`customer`.`customer_cache_server_db` varchar(255) NOT NULL,
+`customer`.`customer_cache_server_table` varchar(255) NOT NULL,
+
+`customer`.`customer_session_server_type` VARCHAR(255) DEFAULT NULL,
+`customer`.`customer_session_server_hostname` VARCHAR(255) DEFAULT NULL,
+`customer`.`customer_session_server_port` VARCHAR(255) DEFAULT NULL,
+`customer`.`customer_session_server_username` VARCHAR(255) DEFAULT NULL,
+`customer`.`customer_session_server_password` VARCHAR(255) DEFAULT NULL,
+`customer`.`customer_session_server_db` VARCHAR(255) DEFAULT NULL,
+`customer`.`customer_session_server_table` VARCHAR(255) DEFAULT NULL,
+
+`customer`.`customer_query_cache_server_type` VARCHAR(255) DEFAULT NULL,
+`customer`.`customer_query_cache_server_hostname` VARCHAR(255) DEFAULT NULL,
+`customer`.`customer_query_cache_server_port` VARCHAR(255) DEFAULT NULL,
+`customer`.`customer_query_cache_server_username` VARCHAR(255) DEFAULT NULL,
+`customer`.`customer_query_cache_server_password` VARCHAR(255) DEFAULT NULL,
+`customer`.`customer_query_cache_server_db` VARCHAR(255) DEFAULT NULL,
+`customer`.`customer_query_cache_server_collection` VARCHAR(255) DEFAULT NULL,
 ```
 
 - **Note**: Only the Key detail in the environment file are to be set in columns of respective record. Eg. for column master_db_server_hostname the value to be set is 'gDbServerType' and not '127.0.0.1'. The configured values for the Key are picked from the env files.
@@ -114,11 +131,11 @@ One can on similar lines can configure slaves server detail or a dedicated maste
 
 ### The query_placeholder column
 
-These column contains key's containing detail about the way the queries are build to use data provided for SQL's'
+These column contains key's containing detail about the way the queries are build to use data provided for Sql's'
 
 ```SQL
-`customer`.`master_db_server_query_placeholder` varchar(255) NOT NULL,
-`customer`.`slave_db_server_query_placeholder` varchar(255) NOT NULL,
+`customer`.`customer_master_db_server_query_placeholder` varchar(255) NOT NULL,
+`customer`.`customer_slave_db_server_query_placeholder` varchar(255) NOT NULL,
 ```
 
 #### Named(:param)

@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- *
+ * 
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,9 +18,9 @@ return [
 	'__WHERE__' => [
 		[
 			'column' => 'name',
-			'fetchFrom' => 'queryParamArr',
-			'fetchFromData' => 'name'
+			'activeRequestDataKey' => 'queryParamArray',
+			'activeRequestDataKeySubKey' => 'name'
 		]
 	],
-	'__MODE__' => 'multipleRowFormat',
+	'__MODE__' => 'multipleRecordFormat',
 ];

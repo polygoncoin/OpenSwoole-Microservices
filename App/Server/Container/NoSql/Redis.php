@@ -3,7 +3,7 @@
 /**
  * NoSql Database
  * php version 8.3
- *
+ * 
  * @category  NoSql
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,13 +15,15 @@
 
 namespace Microservices\App\Server\Container\NoSql;
 
+use Microservices\App\CommonFunction;
+use Microservices\App\Constant;
 use Microservices\App\HttpStatus;
 use Microservices\App\Server\Container\NoSql\NoSqlInterface;
 
 /**
  * Redis
  * php version 8.3
- *
+ * 
  * @category  Redis
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -34,49 +36,49 @@ class Redis implements NoSqlInterface
 {
 	/**
 	 * Cache Server Hostname
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerHostname = null;
 
 	/**
 	 * Cache Server Port
-	 *
+	 * 
 	 * @var null|int
 	 */
 	private $cacheServerPort = null;
 
 	/**
 	 * Cache Server Username
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerUsername = null;
 
 	/**
 	 * Cache Server Password
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerPassword = null;
 
 	/**
 	 * Cache Server DB
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerDatabase = null;
 
 	/**
 	 * Cache Server Object
-	 *
+	 * 
 	 * @var null|\Redis
 	 */
-	private $cacheServerObj = null;
+	private $cacheServerObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string      $cacheServerHostname Cache Server Hostname
 	 * @param int         $cacheServerPort     Cache Server Port
 	 * @param string      $cacheServerUsername Cache Server Username
@@ -101,19 +103,19 @@ class Redis implements NoSqlInterface
 
 	/**
 	 * Cache Server Object
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
 	public function connect(): void
 	{
-		if ($this->cacheServerObj !== null) {
+		if ($this->cacheServerObject !== Constant::$NULL) {
 			return;
 		}
 
 		try {
 			// https://github.com/phpredis/phpredis?tab=readme-ov-file#class-redis
-			$connParamArr = [
+			$connParamArray = [
 				'host' => $this->cacheServerHostname,
 				'port' => (int)$this->cacheServerPort,
 				'connectTimeout' => 2.5
@@ -123,20 +125,22 @@ class Redis implements NoSqlInterface
 				($this->cacheServerUsername !== '')
 				&& ($this->cacheServerPassword !== '')
 			) {
-				$connParamArr['auth'] = [
+				$connParamArray['auth'] = [
 					$this->cacheServerUsername,
 					$this->cacheServerPassword
 				];
 			}
-			$this->cacheServerObj = new \Redis($connParamArr);
+			$this->cacheServerObject = new \Redis(
+				$connParamArray
+			);
 
 			if (!empty($this->cacheServerDatabase)) {
-				$this->cacheServerObj->select(
+				$this->cacheServerObject->select(
 					$this->cacheServerDatabase
 				);
 			}
 
-			if (!$this->cacheServerObj->ping()) {
+			if (!$this->cacheServerObject->ping()) {
 				throw new \Exception(
 					message: 'Unable to ping cache',
 					code: HttpStatus::$InternalServerError
@@ -152,47 +156,57 @@ class Redis implements NoSqlInterface
 
 	/**
 	 * Cache key exist
-	 *
+	 * 
 	 * @param string $key Key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function exist($key): mixed
-	{
+	public function exist(
+		$key
+	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
 
-		return $this->cacheServerObj->exists($key);
+		return $this->cacheServerObject->exists(
+			$key
+		);
 	}
 
 	/**
 	 * Get cache key
-	 *
+	 * 
 	 * @param string $key Key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function get($key): mixed
-	{
+	public function get(
+		$key
+	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
 
-		return $this->cacheServerObj->get($key);
+		$return = CommonFunction::jsonDecode(
+			value: $this->cacheServerObject->get(
+				$key
+			)
+		);
+
+		return $return;
 	}
 
 	/**
 	 * Set cache key
-	 *
+	 * 
 	 * @param string $key    Key
-	 * @param string $value  Cache value
+	 * @param mixed  $value  Cache value
 	 * @param int    $expire Seconds to expire. Default 0 - doesn't expire
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function set(
@@ -202,17 +216,21 @@ class Redis implements NoSqlInterface
 	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
 
-		if ($expire === null) {
-			return $this->cacheServerObj->set(
+		$value = json_encode(
+			value: $value
+		);
+
+		if ($expire === Constant::$NULL) {
+			return $this->cacheServerObject->set(
 				$key,
 				$value
 			);
 		} else {
-			return $this->cacheServerObj->set(
+			return $this->cacheServerObject->set(
 				$key,
 				$value,
 				$expire
@@ -222,10 +240,10 @@ class Redis implements NoSqlInterface
 
 	/**
 	 * Increment cache key with offset
-	 *
+	 * 
 	 * @param string $key    Key
 	 * @param int    $offset Offset
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function increment(
@@ -234,11 +252,11 @@ class Redis implements NoSqlInterface
 	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
 
-		return $this->cacheServerObj->incrBy(
+		return $this->cacheServerObject->incrBy(
 			$key,
 			$offset
 		);
@@ -246,19 +264,22 @@ class Redis implements NoSqlInterface
 
 	/**
 	 * Delete cache key
-	 *
+	 * 
 	 * @param string $key Key
-	 *
+	 * 
 	 * @return mixed
 	 */
-	public function delete($key): mixed
-	{
+	public function delete(
+		$key
+	): mixed {
 		$this->connect();
 
-		if (strlen($key) === 0) {
+		if (empty($key)) {
 			return false;
 		}
 
-		return $this->cacheServerObj->del($key);
+		return $this->cacheServerObject->del(
+			$key
+		);
 	}
 }

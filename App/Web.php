@@ -3,7 +3,7 @@
 /**
  * Web
  * php version 8.3
- *
+ * 
  * @category  Web
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,12 +15,13 @@
 
 namespace Microservices\App;
 
+use Microservices\App\CommonFunction;
 use Microservices\App\Constant;
 
 /**
  * Web class
  * php version 8.3
- *
+ * 
  * @category  Web
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -33,19 +34,19 @@ class Web
 {
 	/**
 	 * Return cURL Config
-	 *
+	 * 
 	 * @param string $homeURL     Site URL
-	 * @param string $method      HTTP method
+	 * @param string $httpRequestMethod      HTTP httpRequestMethod
 	 * @param string $route       Route
 	 * @param string $queryString Query String
 	 * @param array  $header      Header
 	 * @param string $payload     Payload
-	 *
+	 * 
 	 * @return array
 	 */
 	public static function getCurlConfig(
 		$homeURL,
-		$method,
+		$httpRequestMethod,
 		$route,
 		$queryString,
 		$header = [],
@@ -56,28 +57,31 @@ class Web
 		$curlConfig[\CURLOPT_HTTPHEADER] = $header;
 		$curlConfig[\CURLOPT_HEADER] = 1;
 
-		switch ($method) {
-			case 'GET':
+		switch ($httpRequestMethod) {
+			case Constant::$GET:
 				break;
-			case 'POST':
+			case Constant::$POST:
 				$curlConfig[\CURLOPT_POST] = true;
-				if ($fileLocation === null) {
+				if ($fileLocation === Constant::$NULL) {
 					$curlConfig[\CURLOPT_POSTFIELDS] = $payload;
 				}
 				break;
-			case 'PUT':
-			case 'PATCH':
-			case 'DELETE':
-				$curlConfig[\CURLOPT_CUSTOMREQUEST] = $method;
-				if ($fileLocation === null) {
+			case Constant::$QUERY:
+			case Constant::$PUT:
+			case Constant::$PATCH:
+			case Constant::$DELETE:
+				$curlConfig[\CURLOPT_CUSTOMREQUEST] = $httpRequestMethod;
+				if ($fileLocation === Constant::$NULL) {
 					$curlConfig[\CURLOPT_POSTFIELDS] = $payload;
 				}
 				break;
 		}
 		$curlConfig[\CURLOPT_RETURNTRANSFER] = true;
 
-		$cookieFileName = '/' . md5($homeURL) . '-cookies.txt';
-		$cookieFile = Constant::$WEB_COOKIES_DIR . $cookieFileName;
+		$cookieFileName = '/' . md5(
+			$homeURL
+		) . '-cookies.txt';
+		$cookieFile = Constant::$WEB_COOKIES_DIRECTORY . $cookieFileName;
 		$curlConfig[\CURLOPT_COOKIEJAR] = $cookieFile; // Store cookies
 		$curlConfig[\CURLOPT_COOKIEFILE] = $cookieFile; // Read cookies
 
@@ -86,19 +90,19 @@ class Web
 
 	/**
 	 * Trigger cURL
-	 *
-	 * @param string $homeURL Site URL
-	 * @param string $method  HTTP method
-	 * @param string $route   Route
-	 * @param array  $header  Header
-	 * @param string $payload Payload
-	 * @param string $fileLocation    File path
-	 *
+	 * 
+	 * @param string $homeURL      Site URL
+	 * @param string $httpRequestMethod       HTTP httpRequestMethod
+	 * @param string $route        Route
+	 * @param array  $header       Header
+	 * @param string $payload      Payload
+	 * @param string $fileLocation File path
+	 * 
 	 * @return mixed
 	 */
 	public static function trigger(
 		$homeURL,
-		$method,
+		$httpRequestMethod,
 		$route,
 		$header = [],
 		$payload = '',
@@ -108,16 +112,16 @@ class Web
 		$curl = curl_init();
 		$curlConfig = self::getCurlConfig(
 			homeURL: $homeURL,
-			method: $method,
+			httpRequestMethod: $httpRequestMethod,
 			route: $route,
 			queryString: $queryString,
 			header: $header,
 			payload: $payload,
 			fileLocation: $fileLocation
 		);
-		if ($fileLocation !== null) {
-			switch ($method) {
-				case 'POST':
+		if ($fileLocation !== Constant::$NULL) {
+			switch ($httpRequestMethod) {
+				case Constant::$POST:
 					// // Create a CURLFile object
 					// if (function_exists('curl_file_create')) {
 					//     $cFile = curl_file_create($fileLocation, mime_content_type($fileLocation), basename($fileLocation));
@@ -135,18 +139,24 @@ class Web
 						'file' => $curlFile
 					];
 					break;
-				case 'PUT':
-				case 'PATCH':
-				case 'DELETE':
+				case Constant::$QUERY:
+				case Constant::$PUT:
+				case Constant::$PATCH:
+				case Constant::$DELETE:
 					$fp = fopen($fileLocation, 'rb');
 					$curlConfig[\CURLOPT_INFILE] = $fp;
 					$curlConfig[\CURLOPT_INFILESIZE] = filesize($fileLocation);
 					break;
 			}
 		}
-		curl_setopt_array(handle: $curl, options: $curlConfig);
+		curl_setopt_array(
+			handle: $curl,
+			options: $curlConfig
+		);
 
-		$curlResponse = curl_exec(handle: $curl);
+		$curlResponse = curl_exec(
+			handle: $curl
+		);
 
 		$responseHttpCode = curl_getinfo(
 			handle: $curl,
@@ -158,10 +168,13 @@ class Web
 			option: \CURLINFO_CONTENT_TYPE
 		);
 
-		$headerSize = curl_getinfo(handle: $curl, option: \CURLINFO_HEADER_SIZE);
+		$headerSize = curl_getinfo(
+			handle: $curl,
+			option: \CURLINFO_HEADER_SIZE
+		);
 
-		$responseHeaderArr = self::httpParseHeaders(
-			rawHeaderArr: substr(
+		$responseHeaderArray = self::httpParseHeaders(
+			rawHeaderArray: substr(
 				string: $curlResponse,
 				offset: 0,
 				length: $headerSize
@@ -176,27 +189,24 @@ class Web
 
 		$requestPayload = $payload;
 		if (!empty($payload)) {
-			$startArrayPos = strpos(
+			$isArray = str_starts_with(
 				haystack: $payload,
 				needle: '['
 			);
-			$startObjectPos = strpos(
+			$isObject = str_starts_with(
 				haystack: $payload,
 				needle: '{'
 			);
-			$startXmlPos = strpos(
+			$isXml = str_starts_with(
 				haystack: $payload,
 				needle: '<'
 			);
-			if (
-				$startArrayPos === 0
-				|| $startObjectPos === 0
-			) {
-				$requestPayload = json_decode(
-					json: $payload,
-					associative: true
+
+			if ($isArray || $isObject) {
+				$requestPayload = CommonFunction::jsonDecode(
+					value: $payload
 				);
-			} elseif($startXmlPos === 0) {
+			} elseif ($isXml) {
 				$requestPayload = htmlspecialchars(
 					string: $payload
 				);
@@ -204,22 +214,37 @@ class Web
 		}
 
 		$return['HttpRequest'] = [
-			'URL' => htmlspecialchars(string: "{$homeURL}?route={$route}{$queryString}"),
-			'Method' => $method,
-			'Headers' => $curlConfig[\CURLOPT_HTTPHEADER],
-			'Payload' => $requestPayload,
+			'URL' => htmlspecialchars(
+				string: "{$homeURL}?route={$route}{$queryString}"
+			),
+			'Method' => $httpRequestMethod,
+			'Headers' => $curlConfig[\CURLOPT_HTTPHEADER]
 		];
+
+		switch ($httpRequestMethod) {
+			case Constant::$QUERY:
+			case Constant::$POST:
+			case Constant::$PUT:
+			case Constant::$PATCH:
+			case Constant::$DELETE:
+				$return['HttpRequest']['Payload'] = $requestPayload;
+				break;
+		}
 
 		$return['HttpResponse'] = [
 			'HttpCode' => $responseHttpCode,
-			'Headers' => $responseHeaderArr,
+			'Headers' => $responseHeaderArray,
 			'ContentType' => $responseContentType,
 			'ResponseBody' => $responseBody
 		];
 
-		if ($curlResponse === false) {
-			$errorCode = curl_errno(handle: $curl);
-			$errorMessage = curl_error(handle: $curl);
+		if ($curlResponse === Constant::$FALSE) {
+			$errorCode = curl_errno(
+				handle: $curl
+			);
+			$errorMessage = curl_error(
+				handle: $curl
+			);
 
 			$errorConstant = [];
 
@@ -240,7 +265,7 @@ class Web
 				strpos(
 					haystack: $responseContentType,
 					needle: 'application/json;'
-				) !== false
+				) !== Constant::$FALSE
 				&& (
 					strpos(
 						haystack: $responseBody,
@@ -252,9 +277,8 @@ class Web
 					) === 0
 				)
 			) {
-				$response = json_decode(
-					json: $responseBody,
-					associative: true
+				$response = CommonFunction::jsonDecode(
+					value: $responseBody
 				);
 			} else {
 				$response = $responseBody;
@@ -262,33 +286,33 @@ class Web
 
 			$return['HttpResponse']['ResponseBody'] = $response;
 		}
-		curl_close(handle: $curl);
+		curl_close(
+			handle: $curl
+		);
 
 		if (
 			isset($return['HttpResponse']['ResponseBody'])
-			&& !is_array(value: $return['HttpResponse']['ResponseBody'])
+			&& !is_array(
+				value: $return['HttpResponse']['ResponseBody']
+			)
 		) {
-			$startArrayPos = strpos(
+			$isArray = str_starts_with(
 				haystack: $return['HttpResponse']['ResponseBody'],
 				needle: '['
 			);
-			$startObjectPos = strpos(
+			$isObject = str_starts_with(
 				haystack: $return['HttpResponse']['ResponseBody'],
 				needle: '{'
 			);
-			$startXmlPos = strpos(
+			$isXml = str_starts_with(
 				haystack: $return['HttpResponse']['ResponseBody'],
 				needle: '<'
 			);
-			if (
-				$startArrayPos === 0
-				|| $startObjectPos === 0
-			) {
-				$return['HttpResponse']['ResponseBody'] = json_decode(
-					json: $return['HttpResponse']['ResponseBody'],
-					associative: true
+			if ($isArray || $isObject) {
+				$return['HttpResponse']['ResponseBody'] = CommonFunction::jsonDecode(
+					value: $return['HttpResponse']['ResponseBody']
 				);
-			} elseif($startXmlPos === 0) {
+			} elseif ($isXml) {
 				$return['HttpResponse']['ResponseBody'] = htmlspecialchars(
 					string: $return['HttpResponse']['ResponseBody']
 				);
@@ -300,35 +324,55 @@ class Web
 
 	/**
 	 * Generates raw header into array
-	 *
-	 * @param string $rawHeaderArr Raw header from cURL response
-	 *
+	 * 
+	 * @param string $rawHeaderArray Raw header from cURL response
+	 * 
 	 * @return array
 	 * @throws \Exception
 	 */
-	private static function httpParseHeaders($rawHeaderArr): array
-	{
-		$headerArr = [];
+	private static function httpParseHeaders(
+		$rawHeaderArray
+	): array {
+		$headerArray = [];
 		$headerName = '';
 
-		foreach (explode(separator: "\n", string: $rawHeaderArr) as $i => $h) {
-			$h = explode(separator: ':', string: $h, limit: 2);
+		foreach (
+			explode(
+				separator: "\n",
+				string: $rawHeaderArray
+			) as $index => $h
+		) {
+			$h = explode(
+				separator: ':',
+				string: $h,
+				limit: 2
+			);
 
 			if (isset($h[1])) {
-				if (!isset($headerArr[$h[0]])) {
-					$headerArr[$h[0]] = trim(string: $h[1]);
+				if (!isset($headerArray[$h[0]])) {
+					$headerArray[$h[0]] = trim(
+						string: $h[1]
+					);
 				} elseif (
-					isset($headerArr[$h[0]])
-					&& is_array(value: $headerArr[$h[0]])
+					isset($headerArray[$h[0]])
+					&& is_array(
+						value: $headerArray[$h[0]]
+					)
 				) {
-					$headerArr[$h[0]] = array_merge(
-						$headerArr[$h[0]],
-						[trim(string: $h[1])]
+					$headerArray[$h[0]] = array_merge($headerArray[$h[0]],
+						[
+							trim(
+								string: $h[1]
+							)
+						]
 					);
 				} else {
-					$headerArr[$h[0]] = array_merge(
-						[$headerArr[$h[0]]],
-						[trim(string: $h[1])]
+					$headerArray[$h[0]] = array_merge([$headerArray[$h[0]]],
+						[
+							trim(
+								string: $h[1]
+							)
+						]
 					);
 				}
 
@@ -341,77 +385,93 @@ class Web
 						length: 1
 					) == "\t"
 				) {
-					$headerArr[$headerName] .= "\r\n\t" . trim(string: $h[0]);
+					$headerArray[$headerName] .= "\r\n\t" . trim(
+						string: $h[0]
+					);
 				} elseif (!$headerName) {
-					$headerArr[0] = trim(string: $h[0]);
+					$headerArray[0] = trim(
+						string: $h[0]
+					);
 				}
 			}
 		}
 
-		return $headerArr;
+		return $headerArray;
 	}
 
 	/**
 	 * Generates XML Payload
-	 *
-	 * @param array $xmlParamArr     Xml param's
+	 * 
+	 * @param array $xmlParamArray   Xml param's
 	 * @param array $payload         Payload
 	 * @param bool  $rowTagStartFlag Flag
-	 *
+	 * 
 	 * @return array
 	 * @throws \Exception
 	 */
 	public static function genXmlPayload(
-		&$xmlParamArr,
+		&$xmlParamArray,
 		&$payload,
 		$rowTagStartFlag = false
 	): void {
-		if (empty($xmlParamArr)) {
+		if (empty($xmlParamArray)) {
 			return;
 		}
 
 		$rowTagStartFlag = false;
 
-		$isObject = (isset($xmlParamArr[0])) ? false : true;
+		$isObject = (isset($xmlParamArray[0])) ? Constant::$FALSE : Constant::$TRUE;
 
 		if (
 			!$isObject
-			&& count(value: $xmlParamArr) === 1
+			&& count(
+				value: $xmlParamArray
+			) === 1
 		) {
-			$xmlParamArr = $xmlParamArr[0];
-			if (empty($xmlParamArr)) {
+			$xmlParamArray = $xmlParamArray[0];
+			if (empty($xmlParamArray)) {
 				return;
 			}
 			$isObject = true;
 		}
 
 		if (!$isObject) {
-			$payload .= '<Rows>';
+			$payload .= '<Records>';
 			$rowTagStartFlag = true;
 		}
 
 		if ($rowTagStartFlag) {
-			$payload .= '<Row>';
+			$payload .= '<Record>';
 		}
-		foreach ($xmlParamArr as $column => &$value) {
+		foreach ($xmlParamArray as $column => &$value) {
 			if ($isObject) {
 				$payload .= "<{$column}>";
 			}
-			if (is_array(value: $value)) {
-				$_xmlParamArr = $value;
-				self::genXmlPayload(xmlParamArr: $_xmlParamArr, payload: $payload, rowTagStartFlag: $rowTagStartFlag);
+			if (
+				is_array(
+					value: $value
+				)
+			) {
+				$_xmlParamArray = $value;
+				self::genXmlPayload(
+					xmlParamArray: $_xmlParamArray,
+					payload: $payload,
+					rowTagStartFlag: $rowTagStartFlag
+				);
 			} else {
-				$payload .= htmlspecialchars(string: $value);
+				$payload .= htmlspecialchars(
+					string: $value
+				);
 			}
 			if ($isObject) {
 				$payload .= "</{$column}>";
 			}
 		}
 		if ($rowTagStartFlag) {
-			$payload .= '</Row>';
+			$payload .= '</Record>';
 		}
 		if (!$isObject) {
-			$payload .= '</Rows>';
+			$payload .= '</Records>';
 		}
 	}
 }

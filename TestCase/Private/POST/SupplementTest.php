@@ -3,7 +3,7 @@
 /**
  * Test Case
  * php version 8.3
- *
+ * 
  * @category  Test Case
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,30 +15,31 @@
 
 namespace Microservices\TestCase;
 
-use Microservices\App\Web;
+use Microservices\App\Constant;
 use Microservices\App\Env;
+use Microservices\App\Web;
 
-$headerArr = $defaultHeaderArr;
-$headerArr[] = $contentType;
+$headerArray = $defaultHeaderArray;
+$headerArray[] = $contentType;
 $proceed = false;
 
 if (
 	isset($token)
-	&& $token !== null
+	&& $token !== Constant::$NULL
 ) {
-	$headerArr[] = "Authorization: Bearer {$token}";
+	$headerArray[] = "Authorization: Bearer {$token}";
 	$proceed = true;
 }
 if (
 	isset($sessionCookie)
-	&& $sessionCookie !== null
+	&& $sessionCookie !== Constant::$NULL
 ) {
-	$headerArr[] = "Cookie: {$sessionCookie}";
+	$headerArray[] = "Cookie: {$sessionCookie}";
 	$proceed = true;
 }
 
 if (isset($proceed)) {
-	$paramArr = [
+	$paramArray = [
 		[
 			'payload-id-1' => 1,
 			'payload-param-1' => 'payload-param-1-value',
@@ -75,9 +76,9 @@ if (isset($proceed)) {
 
 	return Web::trigger(
 		homeURL: $homeURL,
-		method: 'POST',
+		httpRequestMethod: Constant::$POST,
 		route: '/custom/SupplementTest',
-		header: $headerArr,
-		payload: json_encode(value: $paramArr)
+		header: $headerArray,
+		payload: json_encode(value: $paramArray)
 	);
 }

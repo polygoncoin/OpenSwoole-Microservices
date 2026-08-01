@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- *
+ * 
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,52 +13,57 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
+use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+use Microservices\DatabaseTable;
+
 return [
 	'all' => [
-		'__QUERY__' => "SELECT * FROM `{$Env::$groupTable}` WHERE __WHERE__ ORDER BY id ASC",
+		'__QUERY__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_group_table']}` WHERE __WHERE__ ORDER BY id ASC",
 		'__WHERE__' => [
 			[
 				'column' => 'is_approved',
-				'fetchFrom' => 'custom',
-				'fetchFromData' => 'Yes'
+				'activeRequestDataKey' => 'custom',
+				'activeRequestDataKeySubKey' => Constant::$YES
 			],
 			[
 				'column' => 'is_disabled',
-				'fetchFrom' => 'custom',
-				'fetchFromData' => 'No'
+				'activeRequestDataKey' => 'custom',
+				'activeRequestDataKeySubKey' => Constant::$NO
 			],
 			[
 				'column' => 'is_deleted',
-				'fetchFrom' => 'custom',
-				'fetchFromData' => 'No'
+				'activeRequestDataKey' => 'custom',
+				'activeRequestDataKeySubKey' => Constant::$NO
 			],
 		],
-		'__MODE__' => 'multipleRowFormat'
+		'__MODE__' => 'multipleRecordFormat'
 	],
 	'single' => [
-		'__QUERY__' => "SELECT * FROM `{$Env::$groupTable}` WHERE __WHERE__",
+		'__QUERY__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_group_table']}` WHERE __WHERE__",
 		'__WHERE__' => [
 			[
 				'column' => 'is_approved',
-				'fetchFrom' => 'custom',
-				'fetchFromData' => 'Yes'
+				'activeRequestDataKey' => 'custom',
+				'activeRequestDataKeySubKey' => Constant::$YES
 			],
 			[
 				'column' => 'is_disabled',
-				'fetchFrom' => 'custom',
-				'fetchFromData' => 'No'
+				'activeRequestDataKey' => 'custom',
+				'activeRequestDataKeySubKey' => Constant::$NO
 			],
 			[
 				'column' => 'is_deleted',
-				'fetchFrom' => 'custom',
-				'fetchFromData' => 'No'
+				'activeRequestDataKey' => 'custom',
+				'activeRequestDataKeySubKey' => Constant::$NO
 			],
 			[
-				'column' => 'id',
-				'fetchFrom' => 'routeParamArr',
-				'fetchFromData' => 'id'
+				'column' => DatabaseTable::$customerUserGroupPrimaryKey,
+				'activeRequestDataKey' => 'routeParamArray',
+				'activeRequestDataKeySubKey' => 'id'
 			],
 		],
-		'__MODE__' => 'singleRowFormat'
+		'__MODE__' => 'singleRecordFormat'
 	]
-][isset($this->http->req->s['routeParamArr']['id'])?'single':'all'];
+][isset($this->httpObject->httpRequestObject->activeRequestData['routeParamArray']['id'])?'single':'all'];

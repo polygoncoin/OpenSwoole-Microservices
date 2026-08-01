@@ -3,7 +3,7 @@
 /**
  * API Route config
  * php version 8.3
- *
+ * 
  * @category  API_Route_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,15 +13,17 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
+
 return [
 	'registration' => [
-		'__FILE__' => $this->http->req->QUERIES_DIR
-			. DIRECTORY_SEPARATOR . 'POST'
+		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			. DIRECTORY_SEPARATOR . Constant::$POST
 			. DIRECTORY_SEPARATOR . 'Registration.php',
 	],
 	'registration-with-address' => [
-		'__FILE__' => $this->http->req->QUERIES_DIR
-			. DIRECTORY_SEPARATOR . 'POST'
+		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			. DIRECTORY_SEPARATOR . Constant::$POST
 			. DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
 	],
 ];

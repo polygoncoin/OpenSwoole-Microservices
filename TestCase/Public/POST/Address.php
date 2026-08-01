@@ -3,7 +3,7 @@
 /**
  * Test Case
  * php version 8.3
- *
+ * 
  * @category  Test Case
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,20 +15,22 @@
 
 namespace Microservices\TestCase;
 
+use Microservices\App\Constant;
+use Microservices\App\Env;
 use Microservices\App\Web;
 
-$headerArr = $defaultHeaderArr;
-$headerArr[] = $contentType;
+$headerArray = $defaultHeaderArray;
+$headerArray[] = $contentType;
 
-$paramArr = [
-	'user_id' => 1,
+$paramArray = [
+	'id' => 1,
 	'address' => '203'
 ];
 
 return Web::trigger(
 	homeURL: $homeURL,
-	method: 'POST',
+	httpRequestMethod: Constant::$POST,
 	route: '/address',
-	header: $headerArr,
-	payload: json_encode(value: $paramArr)
+	header: $headerArray,
+	payload: json_encode(value: $paramArray)
 );

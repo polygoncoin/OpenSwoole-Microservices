@@ -3,7 +3,7 @@
 /**
  * HTTP Status
  * php version 8.3
- *
+ * 
  * @category  HTTP Status
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\App;
 /**
  * HTTP Status
  * php version 8.3
- *
+ * 
  * @category  HTTP Status
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>

@@ -3,7 +3,7 @@
 /**
  * Validator
  * php version 8.3
- *
+ * 
  * @category  Validator
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -15,6 +15,7 @@
 
 namespace Microservices\Validation;
 
+use Microservices\App\Constant;
 use Microservices\App\Http;
 use Microservices\Validation\ValidatorInterface;
 use Microservices\Validation\ValidatorTrait;
@@ -22,7 +23,7 @@ use Microservices\Validation\ValidatorTrait;
 /**
  * Validator Global
  * php version 8.3
- *
+ * 
  * @category  Validator_Global
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -37,90 +38,104 @@ class GlobalValidator implements ValidatorInterface
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
-	private $http = null;
+	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param Http $http
+	 * 
+	 * @param Http $httpObject
 	 */
-	public function __construct(Http &$http)
-	{
-		$this->http = &$http;
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
 	}
 
 	/**
 	 * Validate payload
-	 *
+	 * 
 	 * @param array $validationConfig Validation configuration
-	 *
+	 * 
 	 * @return array
 	 */
-	public function validate(&$validationConfig): array
-	{
+	public function validate(
+		&$validationConfig
+	): array {
 		$isValidData = true;
-		$errorArr = [];
+		$errorArray = [];
 		foreach ($validationConfig as &$v) {
-			$argArr = [];
-			foreach ($v['functionArgs'] as $argName => [$fetchFrom, $fetchFromData]) {
-				if ($fetchFrom === 'custom') {
-					$argArr[$argName] = $fetchFromData;
+			$argArray = [];
+			foreach ($v['functionArgs'] as $argName => [$activeRequestDataKey, $activeRequestDataKeySubKey]) {
+				if ($activeRequestDataKey === 'custom') {
+					$argArray[$argName] = $activeRequestDataKeySubKey;
 				} else {
-					$argArr[$argName] = $this->http->req->s[$fetchFrom][$fetchFromData];
+					$argArray[$argName] = $this->httpObject->httpRequestObject->activeRequestData[$activeRequestDataKey][$activeRequestDataKeySubKey];
 				}
 			}
 			$function = $v['function'];
-			if (!$this->$function($argArr)) {
-				$errorArr[] = $v['errorMessage'];
+			if (!$this->$function($argArray)) {
+				$errorArray[] = $v['errorMessage'];
 				$isValidData = false;
 			}
 		}
-		return [$isValidData, $errorArr];
+		return [$isValidData, $errorArray];
 	}
 
 	/**
 	 * Check primary key exist
-	 *
-	 * @param array $argArr Arguments
-	 *
+	 * 
+	 * @param array $argArray Arguments
+	 * 
 	 * @return int 0/1
 	 */
-	private function primaryKeyExist(&$argArr): int
-	{
-		extract(array: $argArr);
+	private function primaryKeyExist(
+		&$argArray
+	): int {
+		extract(
+			array: $argArray
+		);
 		$sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
-		$paramArr = [$id];
-		$this->http->req->customerDbObj->execQuery(sql: $sql, paramArr: $paramArr);
-		$row = $this->http->req->customerDbObj->fetch();
-		$this->http->req->customerDbObj->closeCursor();
-		return (int)(($row['count'] === 0) ? false : true);
+		$paramArray = [$id];
+		$this->httpObject->httpRequestObject->customerDbObject->execQuery(
+			sql: $sql,
+			paramArray: $paramArray
+		);
+		$record = $this->httpObject->httpRequestObject->customerDbObject->fetch();
+		$this->httpObject->httpRequestObject->customerDbObject->closeCursor();
+		return (int)((isset($record['count']) && $record['count'] === 0) ? Constant::$FALSE : Constant::$TRUE);
 	}
 
 	/**
 	 * Check column value exist
-	 *
-	 * @param array $argArr Arguments
-	 *
+	 * 
+	 * @param array $argArray Arguments
+	 * 
 	 * @return bool
 	 */
-	private function checkColumnValueExist(&$argArr): bool
-	{
-		extract(array: $argArr);
+	private function checkColumnValueExist(
+		&$argArray
+	): bool {
+		extract(
+			array: $argArray
+		);
 		$sql = "
 			SELECT count(1) as `count`
 			FROM `{$table}`
 			WHERE `{$column}` = ? AND`{$primary}` = ?
 		";
-		$paramArr = [
+		$paramArray = [
 			$columnValue,
 			$id
 		];
-		$this->http->req->customerDbObj->execQuery(sql: $sql, paramArr: $paramArr);
-		$row = $this->http->req->customerDbObj->fetch();
-		$this->http->req->customerDbObj->closeCursor();
-		return ($row['count'] === 0) ? false : true;
+		$this->httpObject->httpRequestObject->customerDbObject->execQuery(
+			sql: $sql,
+			paramArray: $paramArray
+		);
+		$record = $this->httpObject->httpRequestObject->customerDbObject->fetch();
+		$this->httpObject->httpRequestObject->customerDbObject->closeCursor();
+		return ($record['count'] === 0) ? Constant::$FALSE : Constant::$TRUE;
 	}
 }

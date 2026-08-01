@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- *
+ * 
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,79 +13,84 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
+use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+use Microservices\DatabaseTable;
+
 return [
 	'countQuery' => 'SELECT count(1) as `count` FROM `category` WHERE __WHERE__',
 	'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => 'No'
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => Constant::$NO
 		],
 		[
 			'column' => 'parent_id',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => 0
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => 0
 		]
 	],
-	'__MODE__' => 'multipleRowFormat',
+	'__MODE__' => 'multipleRecordFormat',
 	'__SUB-QUERY__' => [
 		'sub' => [
 			'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
 			'__WHERE__' => [
 				[
 					'column' => 'is_deleted',
-					'fetchFrom' => 'custom',
-					'fetchFromData' => 'No'
+					'activeRequestDataKey' => 'custom',
+					'activeRequestDataKeySubKey' => Constant::$NO
 				],
 				[
 					'column' => 'parent_id',
-					'fetchFrom' => 'sqlResults',
-					'fetchFromData' => 'return:id'
+					'activeRequestDataKey' => 'sqlResults',
+					'activeRequestDataKeySubKey' => 'return:' . DatabaseTable::$categoryPrimaryKey
 				],
 			],
-			'__MODE__' => 'multipleRowFormat',
+			'__MODE__' => 'multipleRecordFormat',
 			'__SUB-QUERY__' => [
 				'subsub' => [
 					'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
 					'__WHERE__' => [
 						[
 							'column' => 'is_deleted',
-							'fetchFrom' => 'custom',
-							'fetchFromData' => 'No'
+							'activeRequestDataKey' => 'custom',
+							'activeRequestDataKeySubKey' => Constant::$NO
 						],
 						[
 							'column' => 'parent_id',
-							'fetchFrom' => 'sqlResults',
-							'fetchFromData' => 'return:sub:id'
+							'activeRequestDataKey' => 'sqlResults',
+							'activeRequestDataKeySubKey' => 'return:sub:' . DatabaseTable::$categoryPrimaryKey
 						],
 					],
-					'__MODE__' => 'multipleRowFormat',
+					'__MODE__' => 'multipleRecordFormat',
 					'__SUB-QUERY__' => [
 						'subsubsub' => [
 							'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
 							'__WHERE__' => [
 								[
 									'column' => 'is_deleted',
-									'fetchFrom' => 'custom',
-									'fetchFromData' => 'No'
+									'activeRequestDataKey' => 'custom',
+									'activeRequestDataKeySubKey' => Constant::$NO
 								],
 								[
 									'column' => 'parent_id',
-									'fetchFrom' => 'sqlResults',
-									'fetchFromData' => 'return:sub:subsub:id'
+									'activeRequestDataKey' => 'sqlResults',
+									'activeRequestDataKeySubKey' => 'return:sub:subsub:' . DatabaseTable::$categoryPrimaryKey
 								],
 							],
-							'__MODE__' => 'multipleRowFormat',
+							'__MODE__' => 'multipleRecordFormat',
 						]
 					]
 				]
 			],
 		]
 	],
-	'useResultSet' => true,
-	'fetchFrom' => 'Master',
-	// 'queryCacheKey' => $this->http->req->s['customerData']['id'] . ':category',
-	'oRepresentation' => 'PHP',
-	'phpFile' => $this->http->res->PHP_DIR . DIRECTORY_SEPARATOR . 'index.php'
+	'maintainHierarchy' => Constant::$TRUE,
+	'fetchDbMode' => 'Master',
+	// 'queryCacheKey' => $this->httpObject->httpRequestObject->activeRequestData['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
+	'outputRepresentation' => 'PHP',
+	'phpFile' => $this->httpObject->httpResponseObject->phpDirectory . DIRECTORY_SEPARATOR . 'index.php'
 ];

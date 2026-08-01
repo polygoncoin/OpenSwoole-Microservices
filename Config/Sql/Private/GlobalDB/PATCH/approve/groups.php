@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- *
+ * 
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -13,47 +13,50 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+use Microservices\DatabaseTable;
 
 return [
-	'__QUERY__' => "UPDATE `{$Env::$groupTable}` SET __SET__ WHERE __WHERE__",
+	'__QUERY__' => "UPDATE `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_group_table']}` SET __SET__ WHERE __WHERE__",
 	'__SET__' => [
 		[
 			'column' => 'is_approved',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => 'Yes'
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => Constant::$YES
 		],
 		[
 			'column' => 'updated_by',
-			'fetchFrom' => 'userData',
-			'fetchFromData' => 'id'
+			'activeRequestDataKey' => 'userData',
+			'activeRequestDataKeySubKey' => DatabaseTable::$customerUserPrimaryKey
 		],
 		[
 			'column' => 'updated_on',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => date(format: 'Y-m-d H:i:s')
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => date(format: 'Y-m-d H:i:s')
 		]
 	],
 	'__WHERE__' => [
 		[
 			'column' => 'is_approved',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => 'No'
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => Constant::$NO
 		],
 		[
 			'column' => 'is_disabled',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => 'No'
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => Constant::$NO
 		],
 		[
 			'column' => 'is_deleted',
-			'fetchFrom' => 'custom',
-			'fetchFromData' => 'No'
+			'activeRequestDataKey' => 'custom',
+			'activeRequestDataKeySubKey' => Constant::$NO
 		],
 		[
-			'column' => 'id',
-			'fetchFrom' => 'payload',
-			'fetchFromData' => 'id',
+			'column' => DatabaseTable::$customerUserGroupPrimaryKey,
+			'activeRequestDataKey' => 'payload',
+			'activeRequestDataKeySubKey' => 'id',
 			'dataType' => DatabaseServerDataType::$INT
 		]
 	],
@@ -61,8 +64,8 @@ return [
 		[
 			'function' => 'primaryKeyExist',
 			'functionArgs' => [
-				'table' => ['custom', $Env::$groupTable],
-				'primary' => ['custom', 'id'],
+				'table' => ['custom', $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_group_table']],
+				'primary' => ['custom', DatabaseTable::$customerUserGroupPrimaryKey],
 				'id' => ['payload', 'id', DatabaseServerDataType::$INT]
 			],
 			'errorMessage' => 'Invalid Group Id'
@@ -70,10 +73,10 @@ return [
 		[
 			'function' => '_checkColumnValueExist',
 			'functionArgs' => [
-				'table' => ['custom', $Env::$groupTable],
+				'table' => ['custom', $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_group_table']],
 				'column' => ['custom', 'is_deleted'],
-				'columnValue' => ['custom', 'No'],
-				'primary' => ['custom', 'id'],
+				'columnValue' => ['custom', Constant::$NO],
+				'primary' => ['custom', DatabaseTable::$customerUserGroupPrimaryKey],
 				'id' => ['payload', 'id', DatabaseServerDataType::$INT],
 			],
 			'errorMessage' => 'Record is deleted'
@@ -81,10 +84,10 @@ return [
 		[
 			'function' => '_checkColumnValueExist',
 			'functionArgs' => [
-				'table' => ['custom', $Env::$groupTable],
+				'table' => ['custom', $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_group_table']],
 				'column' => ['custom', 'is_approved'],
-				'columnValue' => ['custom', 'No'],
-				'primary' => ['custom', 'id'],
+				'columnValue' => ['custom', Constant::$NO],
+				'primary' => ['custom', DatabaseTable::$customerUserGroupPrimaryKey],
 				'id' => ['payload', 'id', DatabaseServerDataType::$INT],
 			],
 			'errorMessage' => 'Record is already approved'
