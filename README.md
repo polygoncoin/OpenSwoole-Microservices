@@ -4,19 +4,19 @@ This is a light & easy low code API generator using configuration arrays. It can
 
 ## .env File
 
-- **[.env.example](Env.example.md)**
+- **[.env](Env.md)**
+- **[.env.rateLimiting](Env.rateLimiting.md)**
+- **[.env.route](Env.route.md)**
 - **[.env.customer.container.example](Env.customer.container.example.md)**
 - **[.env.global.container.example](Env.global.container.example.md)**
-- **[.env.rateLimiting.example](Env.rateLimiting.example.md)**
-- **[.env.route.example](Env.route.example.md)**
 - **[.env.session.example](Env.session.example.md)**
 
 ## Configuration Rules
 
 - **[Rules For Custom DataTypes Configuration](Rules-For-Custom-DataTypes-Configuration.md)**
-- **[Rules For Route Configuration](Rules-For-Route-Configuration.md)**
-- **[Rules For SQL Configuration](Rules-For-SQL-Configuration.md)**
 - **[Rules For Payload Formats](Rules-For-Payload-Formats.md)**
+- **[Rules For Route Configuration](Rules-For-Route-Configuration.md)**
+- **[Rules For Sql Configuration](Rules-For-SQL-Configuration.md)**
 - **[Rules For TestCase Configuration](Rules-For-TestCase-Configuration.md)**
 
 ## JavaScript Examples

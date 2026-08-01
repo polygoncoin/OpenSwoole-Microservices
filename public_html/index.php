@@ -13,9 +13,9 @@
  * @since     Class available since Release 1.0.0
  */
 
-// define ('__MODE__', 'private_api'); // private_api/private_web/public
+define ('__MODE__', 'private_api'); // private_api/private_web/public
 // define ('__MODE__', 'private_web'); // private_api/private_web/public
-define ('__MODE__', 'public'); // private_api/private_web/public
+// define ('__MODE__', 'public'); // private_api/private_web/public
 
 switch (__MODE__) {
 	case 'public':
