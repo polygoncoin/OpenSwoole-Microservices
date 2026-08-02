@@ -376,17 +376,13 @@ class HttpRequest
 		}
 
 		if ($this->httpObject->httpReqData['get'][ROUTE_URL_PARAM] !== '/login') {
-			if ($this->isPublicRequest) {
-				throw new \Exception(
-					message: 'Route not supported',
-					code: HttpStatus::$NotFound
+			if ($this->isPrivateRequest) {
+				$this->authObject = new Auth(
+					httpObject: $this->httpObject
 				);
+				$this->authObject->loadUserData();
+				$this->authObject->loadGroupData();
 			}
-			$this->authObject = new Auth(
-				httpObject: $this->httpObject
-			);
-			$this->authObject->loadUserData();
-			$this->authObject->loadGroupData();
 
 			$this->routeParserObject = new RouteParser(
 				httpObject: $this->httpObject
