@@ -122,10 +122,10 @@ class Supplement
 		}
 
 		// Operate as Transaction (BEGIN COMMIT else ROLLBACK on error)
-		$this->operateAsTransaction = isset($sqlConfig['isTransaction'])
-			? $sqlConfig['isTransaction'] : Constant::$FALSE;
+		$this->operateAsTransaction = isset($sqlConfig['__TRANSACTION__'])
+			? $sqlConfig['__TRANSACTION__'] : Constant::$FALSE;
 
-		$fetchDbMode = $sqlConfig['fetchDbMode'] ?? 'Master';
+		$fetchDbMode = $sqlConfig['__FETCH-MODE__'] ?? 'Master';
 
 		// Set Server mode to execute query on - Read / Write Server
 		if ($this->httpObject->httpRequestObject->customerDbObject === Constant::$NULL) {
@@ -140,14 +140,14 @@ class Supplement
 			supplementMaintainHierarchy: $maintainHierarchy
 		);
 
-		if (isset($sqlConfig['affectedQueryCacheKeyArray'])) {
+		if (isset($sqlConfig['__AFFECTED-CACHE-KEY__'])) {
 			$indexCount = count(
-				value: $sqlConfig['affectedQueryCacheKeyArray']
+				value: $sqlConfig['__AFFECTED-CACHE-KEY__']
 			);
 			for ($index = 0; $index < $indexCount; $index++) {
 				$this->httpObject->httpRequestObject->customerQueryCacheObject->queryCacheDelete(
 					customerId: $this->httpObject->httpRequestObject->customerId,
-					queryCacheKey: $sqlConfig['affectedQueryCacheKeyArray'][$index]
+					queryCacheKey: $sqlConfig['__AFFECTED-CACHE-KEY__'][$index]
 				);
 			}
 		}
@@ -181,13 +181,13 @@ class Supplement
 			// Check for maximum object's supported when payloadType is Array
 			if (
 				$supplementSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
-				&& isset($supplementSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
+				&& isset($supplementSqlConfig['__MAX-PAYLOAD-OBJECT__'])
 				&& ($objCount = $this->httpObject->httpRequestObject->dataDecodeObject->count())
-				&& ($objCount > $supplementSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
+				&& ($objCount > $supplementSqlConfig['__MAX-PAYLOAD-OBJECT__'])
 			) {
 				throw new \Exception(
 					message: 'Maximum supported payload count is '
-						. $supplementSqlConfig['__MAX-PAYLOAD-OBJECTS__'],
+						. $supplementSqlConfig['__MAX-PAYLOAD-OBJECT__'],
 					code: HttpStatus::$BadRequest
 				);
 			}
@@ -454,14 +454,14 @@ class Supplement
 			}
 
 			// For Pre Hook
-			if (isset($supplementParentSqlConfig['__PRE-SQL-HOOKS__'])) {
+			if (isset($supplementParentSqlConfig['__PRE-CONFIG-HOOK__'])) {
 				if ($this->hookObject === Constant::$NULL) {
 					$this->hookObject = new Hook(
 						httpObject: $this->httpObject
 					);
 				}
 				$this->hookObject->triggerHook(
-					hookArray: $supplementParentSqlConfig['__PRE-SQL-HOOKS__']
+					hookArray: $supplementParentSqlConfig['__PRE-CONFIG-HOOK__']
 				);
 			}
 
@@ -485,31 +485,31 @@ class Supplement
 			}
 
 			// For Triggers
-			if (isset($supplementParentSqlConfig['__TRIGGERS__'])) {
+			if (isset($supplementParentSqlConfig['__TRIGGER__'])) {
 				$this->dataEncodeObject->addKeyData(
-					objectKey: '__TRIGGERS__',
+					objectKey: '__TRIGGER__',
 					data: $this->getTriggerData(
-						triggerConfig: $supplementParentSqlConfig['__TRIGGERS__']
+						triggerConfig: $supplementParentSqlConfig['__TRIGGER__']
 					)
 				);
 			}
 
 			// For Post Hook
-			if (isset($supplementParentSqlConfig['__POST-SQL-HOOKS__'])) {
+			if (isset($supplementParentSqlConfig['__POST-CONFIG-HOOK__'])) {
 				if ($this->hookObject === Constant::$NULL) {
 					$this->hookObject = new Hook(
 						httpObject: $this->httpObject
 					);
 				}
 				$this->hookObject->triggerHook(
-					hookArray: $supplementParentSqlConfig['__POST-SQL-HOOKS__']
+					hookArray: $supplementParentSqlConfig['__POST-CONFIG-HOOK__']
 				);
 			}
 
 			// For Child
-			if (isset($supplementParentSqlConfig['__SUB-QUERY__'])) {
+			if (isset($supplementParentSqlConfig['__SUB-CONFIG__'])) {
 				$this->supplementChild(
-					supplementChildSqlConfig: $supplementParentSqlConfig['__SUB-PAYLOAD__'],
+					supplementChildSqlConfig: $supplementParentSqlConfig['__SUB-CONFIG__'],
 					supplementChildPayloadKeyArray: $supplementParentCurrentPayloadKeyArray,
 					supplementChildRequiredFieldArray: $supplementParentRequiredFieldArray,
 					supplementChildResponse: $supplementParentCurrentResponse,
@@ -568,7 +568,7 @@ class Supplement
 
 			// For payloadKey
 			$supplementChildModulePayloadKey = $this->getPayloadKey(
-				payloadKeyArray: $supplementParentPayloadKeyArray
+				payloadKeyArray: $supplementChildPayloadKeyArray
 			);
 
 			// For Validating Hierarchy

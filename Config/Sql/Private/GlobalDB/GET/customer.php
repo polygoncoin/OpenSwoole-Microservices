@@ -20,8 +20,8 @@ use Microservices\DatabaseTable;
 
 return [
 	'all' => [
-		'countQuery' => "SELECT count(1) as `count` FROM `{$Env::$customerTable}` WHERE __WHERE__",
-		'__QUERY__' => "SELECT * FROM `{$Env::$customerTable}` WHERE __WHERE__ ORDER BY id ASC",
+		'__COUNT-SQL__' => "SELECT count(1) as `count` FROM `{$Env::$customerTable}` WHERE __WHERE__",
+		'__SQL__' => "SELECT * FROM `{$Env::$customerTable}` WHERE __WHERE__ ORDER BY id ASC",
 		'__WHERE__' => [
 			[
 				'column' => 'is_approved',
@@ -42,7 +42,7 @@ return [
 		'__MODE__' => 'multipleRecordFormat'
 	],
 	'single' => [
-		'__QUERY__' => "SELECT * FROM `{$Env::$customerTable}` WHERE __WHERE__",
+		'__SQL__' => "SELECT * FROM `{$Env::$customerTable}` WHERE __WHERE__",
 		'__WHERE__' => [
 			[
 				'column' => 'is_approved',

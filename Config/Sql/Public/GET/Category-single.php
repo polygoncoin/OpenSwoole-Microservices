@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
+	'__SQL__' => 'SELECT * FROM `category` WHERE __WHERE__',
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',

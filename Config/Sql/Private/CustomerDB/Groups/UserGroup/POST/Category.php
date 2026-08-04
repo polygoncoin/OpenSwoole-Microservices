@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__QUERY__' => 'INSERT INTO `category` SET __SET__',
+	'__SQL__' => 'INSERT INTO `category` SET __SET__',
 	'__SET__' => [
 		[
 			'column' => 'name',
@@ -32,10 +32,10 @@ return [
 			'activeRequestDataKeySubKey' => 0
 		],
 	],
-	'__INSERT-IDs__' => 'category:id',
-	'__SUB-QUERY__' => [
+	'__INSERT-ID__' => 'category:id',
+	'__SUB-CONFIG__' => [
 		'sub' => [
-			'__QUERY__' => 'INSERT INTO `category` SET __SET__',
+			'__SQL__' => 'INSERT INTO `category` SET __SET__',
 			'__SET__' => [
 				[
 					'column' => 'name',
@@ -44,14 +44,14 @@ return [
 				],
 				[
 					'column' => 'parent_id',
-					'activeRequestDataKey' => '__INSERT-IDs__',
+					'activeRequestDataKey' => '__INSERT-ID__',
 					'activeRequestDataKeySubKey' => 'category:id'
 				],
 			],
-			'__INSERT-IDs__' => 'sub:id',
-			'__SUB-QUERY__' => [
+			'__INSERT-ID__' => 'sub:id',
+			'__SUB-CONFIG__' => [
 				'subsub' => [
-					'__QUERY__' => 'INSERT INTO `category` SET __SET__',
+					'__SQL__' => 'INSERT INTO `category` SET __SET__',
 					'__SET__' => [
 						[
 							'column' => 'name',
@@ -60,17 +60,17 @@ return [
 						],
 						[
 							'column' => 'parent_id',
-							'activeRequestDataKey' => '__INSERT-IDs__',
+							'activeRequestDataKey' => '__INSERT-ID__',
 							'activeRequestDataKeySubKey' => 'sub:id'
 						],
 					],
-					'__INSERT-IDs__' => 'subsub:id',
+					'__INSERT-ID__' => 'subsub:id',
 				]
 			]
 		]
 	],
-	'maintainHierarchy' => Constant::$TRUE,
-	'affectedQueryCacheKeyArray' => [
+	'__HIERARCHY__' => Constant::$TRUE,
+	'__AFFECTED-CACHE-KEY__' => [
 		$this->httpObject->httpRequestObject->activeRequestData['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
 		$this->httpObject->httpRequestObject->activeRequestData['customerData'][DatabaseTable::$customerPrimaryKey] . ':category1'
 	]

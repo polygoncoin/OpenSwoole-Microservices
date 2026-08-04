@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__QUERY__' => "UPDATE `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` SET __SET__ WHERE __WHERE__",
+	'__SQL__' => "UPDATE `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` SET __SET__ WHERE __WHERE__",
 	'__SET__' => [
 		[
 			'column' => 'customer_user_contact_name',
@@ -50,9 +50,9 @@ return [
 			'dataType' => DatabaseServerDataType::$PrimaryKey
 		]
 	],
-	'__SUB-QUERY__' => [
+	'__SUB-CONFIG__' => [
 		'address' => [
-			'__QUERY__' => 'UPDATE `address` SET __SET__ WHERE __WHERE__',
+			'__SQL__' => 'UPDATE `address` SET __SET__ WHERE __WHERE__',
 			'__SET__' => [
 				[
 					'column' => 'address',
@@ -86,6 +86,6 @@ return [
 			'errorMessage' => 'Invalid registration id'
 		],
 	],
-	'maintainHierarchy' => Constant::$TRUE,
+	'__HIERARCHY__' => Constant::$TRUE,
 	'idempotentWindow' => 10
 ];

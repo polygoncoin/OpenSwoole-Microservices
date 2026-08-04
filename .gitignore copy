@@ -1,7 +1,0 @@
-.env.customer.container
-.env.global.container
-.env.session
-/App/SessionHandler/sessions/*
-/Log/*
-/vendor/
-/WebCookie/*

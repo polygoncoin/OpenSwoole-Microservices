@@ -190,7 +190,7 @@ class Start
 			// $data = $dataEncodeObject->getData();
 
 			if (Env::$OUTPUT_PERFORMANCE_STATS) {
-				$performanceData = $Microservices->returnPerformance();
+				$performanceData = $Microservices->httpObject->httpResponseObject->returnPerformance();
 				$errorArray = [
 					'Error' => $arr,
 					'Status' => $e->getCode(),

@@ -19,8 +19,8 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'countQuery' => "SELECT count(1) as `count` FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` WHERE __WHERE__",
-	'__QUERY__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` WHERE __WHERE__",
+	'__COUNT-SQL__' => "SELECT count(1) as `count` FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` WHERE __WHERE__",
+	'__SQL__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` WHERE __WHERE__",
 	'__WHERE__' => [
 		[
 			'column' => 'customer_user_is_deleted',

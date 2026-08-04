@@ -19,8 +19,8 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'countQuery' => 'SELECT count(1) as `count` FROM `category` WHERE __WHERE__',
-	'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
+	'__COUNT-SQL__' => 'SELECT count(1) as `count` FROM `category` WHERE __WHERE__',
+	'__SQL__' => 'SELECT * FROM `category` WHERE __WHERE__',
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
@@ -34,9 +34,9 @@ return [
 		]
 	],
 	'__MODE__' => 'multipleRecordFormat',
-	'__SUB-QUERY__' => [
+	'__SUB-CONFIG__' => [
 		'sub' => [
-			'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
+			'__SQL__' => 'SELECT * FROM `category` WHERE __WHERE__',
 			'__WHERE__' => [
 				[
 					'column' => 'is_deleted',
@@ -50,9 +50,9 @@ return [
 				],
 			],
 			'__MODE__' => 'multipleRecordFormat',
-			'__SUB-QUERY__' => [
+			'__SUB-CONFIG__' => [
 				'subsub' => [
-					'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
+					'__SQL__' => 'SELECT * FROM `category` WHERE __WHERE__',
 					'__WHERE__' => [
 						[
 							'column' => 'is_deleted',
@@ -66,9 +66,9 @@ return [
 						],
 					],
 					'__MODE__' => 'multipleRecordFormat',
-					'__SUB-QUERY__' => [
+					'__SUB-CONFIG__' => [
 						'subsubsub' => [
-							'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
+							'__SQL__' => 'SELECT * FROM `category` WHERE __WHERE__',
 							'__WHERE__' => [
 								[
 									'column' => 'is_deleted',
@@ -88,9 +88,9 @@ return [
 			],
 		]
 	],
-	'maintainHierarchy' => Constant::$TRUE,
-	'fetchDbMode' => 'Master',
-	// 'queryCacheKey' => $this->httpObject->httpRequestObject->activeRequestData['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
-	'outputRepresentation' => 'PHP',
-	'phpFile' => $this->httpObject->httpResponseObject->phpDirectory . DIRECTORY_SEPARATOR . 'index.php'
+	'__HIERARCHY__' => Constant::$TRUE,
+	'__FETCH-MODE__' => 'Master',
+	// '__CACHE-KEY__' => $this->httpObject->httpRequestObject->activeRequestData['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
+	'__OUTPUT-REPRESENTATION__' => 'PHP',
+	'__OUTPUT-REPRESENTATION-FILE__' => $this->httpObject->httpResponseObject->phpDirectory . DIRECTORY_SEPARATOR . 'index.php'
 ];

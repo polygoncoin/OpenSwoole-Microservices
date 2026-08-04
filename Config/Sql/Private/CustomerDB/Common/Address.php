@@ -20,7 +20,7 @@ use Microservices\DatabaseTable;
 
 return [
 	'__SQL-COMMENT__' => '',
-	'__QUERY__' => 'UPDATE `address` SET __SET__ WHERE __WHERE__',
+	'__SQL__' => 'UPDATE `address` SET __SET__ WHERE __WHERE__',
 	'__VALIDATE__' => [
 		[
 			'function' => 'primaryKeyExist',

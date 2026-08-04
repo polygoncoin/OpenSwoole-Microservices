@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__QUERY__' => "INSERT INTO `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` SET __SET__",
+	'__SQL__' => "INSERT INTO `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` SET __SET__",
 	'__SET__' => [
 		[
 			'column' => 'customer_user_contact_name',
@@ -67,11 +67,11 @@ return [
 			'activeRequestDataKeySubKey' => '1'
 		],
 	],
-	'__INSERT-IDs__' => 'registration:id',
+	'__INSERT-ID__' => 'registration:id',
 	'__PRIMARY-KEY__' => DatabaseTable::$customerUserPrimaryKey,
-	'__SUB-QUERY__' => [
+	'__SUB-CONFIG__' => [
 		'address' => [
-			'__QUERY__' => 'INSERT INTO `address` SET __SET__',
+			'__SQL__' => 'INSERT INTO `address` SET __SET__',
 			'__SET__' => [
 				[
 					'column' => DatabaseTable::$customerPrimaryKey,
@@ -80,7 +80,7 @@ return [
 				],
 				[
 					'column' => DatabaseTable::$customerUserPrimaryKey,
-					'activeRequestDataKey' => '__INSERT-IDs__',
+					'activeRequestDataKey' => '__INSERT-ID__',
 					'activeRequestDataKeySubKey' => 'registration:id'
 				],
 				[
@@ -89,13 +89,13 @@ return [
 					'activeRequestDataKeySubKey' => 'address'
 				]
 			],
-			'__INSERT-IDs__' => 'address:id',
+			'__INSERT-ID__' => 'address:id',
 			'__PRIMARY-KEY__' => DatabaseTable::$addressPrimaryKey,
 			'__PAYLOAD-TYPE__' => 'Array',
-			'__MAX-PAYLOAD-OBJECTS__' => 2
+			'__MAX-PAYLOAD-OBJECT__' => 2
 		]
 	],
-	'maintainHierarchy' => Constant::$TRUE,
+	'__HIERARCHY__' => Constant::$TRUE,
 	'__PAYLOAD-TYPE__' => 'Object',
 	'idempotentWindow' => 10
 ];

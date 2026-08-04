@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__QUERY__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` WHERE __WHERE__",
+	'__SQL__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` WHERE __WHERE__",
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
@@ -33,9 +33,9 @@ return [
 		]
 	],
 	'__MODE__' => 'singleRecordFormat',
-	'__SUB-QUERY__' => [
+	'__SUB-CONFIG__' => [
 		'address' => [
-			'__QUERY__' => 'SELECT * FROM `address` WHERE __WHERE__',
+			'__SQL__' => 'SELECT * FROM `address` WHERE __WHERE__',
 			'__WHERE__' => [
 				[
 					'column' => 'is_deleted',
@@ -51,5 +51,5 @@ return [
 			'__MODE__' => 'multipleRecordFormat',
 		]
 	],
-	'maintainHierarchy' => Constant::$TRUE
+	'__HIERARCHY__' => Constant::$TRUE
 ];

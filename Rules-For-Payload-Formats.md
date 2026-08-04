@@ -10,7 +10,7 @@ One can clean the URL by making the required changes in the web server .conf fil
 
 ## Pagination in GET request
 
-Requires **countQuery** Sql in the configuration for GET request
+Requires **__COUNT-SQL__** Sql in the configuration for GET request
 ```ini
 defaultPerpage=10
 maxResultsPerPage=1000
@@ -63,7 +63,7 @@ Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP
 - **$activeRequestData\['payload'\]** request data.
 For **GET** method, the **$\_GET** is the payload.
 
-- **$activeRequestData\['__INSERT-IDs__'\]** Insert IDs Data as per configuration.
+- **$activeRequestData\['__INSERT-ID__'\]** Insert IDs Data as per configuration.
 >For **POST/PUT/PATCH/DELETE** we perform both INSERT as well as UPDATE operation. The insertID contains the insert IDs of the executed INSERT queries.
 
 - **$activeRequestData\['sqlResults'\]** Hierarchy data.
@@ -86,23 +86,23 @@ For **GET** method, the **$\_GET** is the payload.
 
 ```PHP
 return [
-	'__QUERY__' => 'INSERT INTO `category` SET __SET__',
+	'__SQL__' => 'INSERT INTO `category` SET __SET__',
 	'__SET__' => [
 		'name' => ['payload', 'name'],
 		'parent_id' => ['custom', 0],
 	],
-	'__INSERT-IDs__' => 'category:id',
-	'__SUB-QUERY__' => [
+	'__INSERT-ID__' => 'category:id',
+	'__SUB-CONFIG__' => [
 		'module1' => [
-			'__QUERY__' => 'INSERT INTO `category` SET __SET__',
+			'__SQL__' => 'INSERT INTO `category` SET __SET__',
 			'__SET__' => [
 				'name' => ['payload', 'subname'],
-				'parent_id' => ['__INSERT-IDs__', 'category:id'],
+				'parent_id' => ['__INSERT-ID__', 'category:id'],
 			],
-			'__INSERT-IDs__' => 'sub:id',
+			'__INSERT-ID__' => 'sub:id',
 		]
 	],
-	'maintainHierarchy' => Constant::$TRUE
+	'__HIERARCHY__' => Constant::$TRUE
 ];
 ```
 

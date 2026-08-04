@@ -92,8 +92,8 @@ class Api
 		) {
 			$preRouteHookArray = [];
 			foreach ($this->httpObject->httpRequestObject->routeParserObject->routeHook as $element => &$hookArray) {
-				if (isset($hookArray['__PRE-ROUTE-HOOKS__'])) {
-					$preRouteHookConfig = $hookArray['__PRE-ROUTE-HOOKS__'];
+				if (isset($hookArray['__PRE-ROUTE-HOOK__'])) {
+					$preRouteHookConfig = $hookArray['__PRE-ROUTE-HOOK__'];
 					if (
 						count(
 							value: $preRouteHookConfig
@@ -306,8 +306,8 @@ class Api
 		) {
 			$postRouteHookArray = [];
 			foreach ($this->httpObject->httpRequestObject->routeParserObject->routeHook as $element => &$hookArray) {
-				if (isset($hookArray['__POST-ROUTE-HOOKS__'])) {
-					$postRouteHookConfig = $hookArray['__POST-ROUTE-HOOKS__'];
+				if (isset($hookArray['__POST-ROUTE-HOOK__'])) {
+					$postRouteHookConfig = $hookArray['__POST-ROUTE-HOOK__'];
 					if (
 						count(
 							value: $postRouteHookConfig

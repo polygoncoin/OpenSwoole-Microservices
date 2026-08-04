@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__QUERY__' => "UPDATE `{$Env::$customerTable}` SET __SET__ WHERE __WHERE__",
+	'__SQL__' => "UPDATE `{$Env::$customerTable}` SET __SET__ WHERE __WHERE__",
 	'__SET__' => [
 		[
 			'column' => 'updated_by',

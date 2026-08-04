@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__QUERY__' => "INSERT INTO `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` SET __SET__",
+	'__SQL__' => "INSERT INTO `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` SET __SET__",
 	'__SET__' => [
 		[
 			'column' => 'customer_user_contact_name',
@@ -67,7 +67,7 @@ return [
 			'activeRequestDataKeySubKey' => '1'
 		],
 	],
-	'__INSERT-IDs__' => 'registration:id',
+	'__INSERT-ID__' => 'registration:id',
 	'__PRIMARY-KEY__' => DatabaseTable::$customerUserPrimaryKey,
 	'__PAYLOAD-TYPE__' => 'Object',
 	'idempotentWindow' => 10

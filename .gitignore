@@ -1,8 +1,5 @@
-.env
 .env.customer.container
 .env.global.container
-.env.rateLimiting
-.env.route
 .env.session
 /App/SessionHandler/sessions/*
 /Log/*

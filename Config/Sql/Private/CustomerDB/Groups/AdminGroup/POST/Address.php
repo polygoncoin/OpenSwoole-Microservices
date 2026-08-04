@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__QUERY__' => 'INSERT INTO `address` SET __SET__',
+	'__SQL__' => 'INSERT INTO `address` SET __SET__',
 	'__SET__' => [
 		[
 			'column' => DatabaseTable::$customerPrimaryKey,
@@ -38,6 +38,6 @@ return [
 			'activeRequestDataKeySubKey' => 'address'
 		],
 	],
-	'__INSERT-IDs__' => 'address:id',
+	'__INSERT-ID__' => 'address:id',
 	'__PRIMARY-KEY__' => DatabaseTable::$addressPrimaryKey
 ];

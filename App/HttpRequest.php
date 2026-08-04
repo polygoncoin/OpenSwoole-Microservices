@@ -388,10 +388,6 @@ class HttpRequest
 				httpObject: $this->httpObject
 			);
 			$this->routeParserObject->parseRoute();
-
-			if ($this->httpObject->httpResponseObject !== Constant::$NULL) {
-				$this->httpObject->initResponse();
-			}
 		}
 
 		return true;

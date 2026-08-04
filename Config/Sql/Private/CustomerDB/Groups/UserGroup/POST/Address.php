@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__QUERY__' => 'INSERT INTO `address` SET __SET__',
+	'__SQL__' => 'INSERT INTO `address` SET __SET__',
 	'__SET__' => [
 		[
 			'column' => DatabaseTable::$customerPrimaryKey,
@@ -38,9 +38,9 @@ return [
 			'activeRequestDataKeySubKey' => 'address'
 		],
 	],
-	'__INSERT-IDs__' => 'address:id',
+	'__INSERT-ID__' => 'address:id',
 	'__PRIMARY-KEY__' => DatabaseTable::$addressPrimaryKey,
-	// '__TRIGGERS__' => [
+	// '__TRIGGER__' => [
 	//     [
 	//         '__ROUTE__' => [
 	//             [
@@ -48,7 +48,7 @@ return [
 	//                 'activeRequestDataKeySubKey' => 'address'
 	//             ],
 	//             [
-	//                 'activeRequestDataKey' => '__INSERT-IDs__',
+	//                 'activeRequestDataKey' => '__INSERT-ID__',
 	//                 'activeRequestDataKeySubKey' => 'address:id'
 	//             ]
 	//         ],
@@ -60,7 +60,7 @@ return [
 	//             ],
 	//             [
 	//                 'column' => 'param-2',
-	//                 'activeRequestDataKey' => '__INSERT-IDs__',
+	//                 'activeRequestDataKey' => '__INSERT-ID__',
 	//                 'activeRequestDataKeySubKey' => 'address:id'
 	//             ]
 	//         ],
@@ -74,5 +74,5 @@ return [
 	//         ]
 	//     ]
 	// ],
-	'isTransaction' => Constant::$FALSE
+	'__TRANSACTION__' => Constant::$FALSE
 ];

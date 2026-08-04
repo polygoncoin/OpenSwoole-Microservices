@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__QUERY__' => "INSERT INTO `{$Env::$customerTable}` SET __SET__",
+	'__SQL__' => "INSERT INTO `{$Env::$customerTable}` SET __SET__",
 	'__SET__' => [
 		[
 			'column' => 'name',
@@ -57,5 +57,5 @@ return [
 			'activeRequestDataKeySubKey' => Constant::$NO
 		]
 	],
-	'__INSERT-IDs__' => 'customer:id',
+	'__INSERT-ID__' => 'customer:id',
 ];

@@ -36,20 +36,6 @@ use Microservices\App\Http;
 class Microservices
 {
 	/**
-	 * Start micro timestamp;
-	 * 
-	 * @var null|int
-	 */
-	private $startMicroTimestamp = null;
-
-	/**
-	 * End micro timestamp;
-	 * 
-	 * @var null|int
-	 */
-	private $endMicroTimestamp = null;
-
-	/**
 	 * HTTP request data
 	 * 
 	 * @var null|array
@@ -85,10 +71,6 @@ class Microservices
 	 */
 	public function init(): bool
 	{
-		if (Env::$OUTPUT_PERFORMANCE_STATS) {
-			$this->startMicroTimestamp = microtime(as_float: Constant::$TRUE);
-		}
-
 		return $this->httpObject->init();
 	}
 
@@ -129,11 +111,13 @@ class Microservices
 		// Class found
 		try {
 			if ($class !== Constant::$NULL) {
+				$this->httpObject->initResponse();
+				$this->httpObject->httpResponseObject->startData();
+
 				$api = new $class(
 					httpObject: $this->httpObject
 				);
 				if ($api->init()) {
-					$this->startData();
 					$return = $api->process();
 					if (
 						is_array(
@@ -145,10 +129,10 @@ class Microservices
 					) {
 						return $return;
 					}
-					$this->addStatus();
-					$this->addPerformance();
-					$this->endData();
 				}
+				$this->httpObject->httpResponseObject->addStatus();
+				$this->httpObject->httpResponseObject->addPerformance();
+				$this->httpObject->httpResponseObject->endData();
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
@@ -157,125 +141,6 @@ class Microservices
 		}
 
 		return true;
-	}
-
-	/**
-	 * Start Data Output
-	 * 
-	 * @return void
-	 */
-	public function startData(): void
-	{
-		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
-			return;
-		}
-		$this->httpObject->httpResponseObject->dataEncodeObject->startObject();
-	}
-
-	/**
-	 * Add HTTP status in response
-	 * 
-	 * @return void
-	 */
-	public function addStatus(): void
-	{
-		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
-			return;
-		}
-		$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
-			objectKey: 'Status',
-			data: $this->httpObject->httpResponseObject->httpStatus
-		);
-	}
-
-	/**
-	 * Add Performance detail in response
-	 * 
-	 * @return void
-	 */
-	public function addPerformance(): void
-	{
-		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
-			return;
-		}
-		if (Env::$OUTPUT_PERFORMANCE_STATS) {
-			$this->endMicroTimestamp = microtime(as_float: Constant::$TRUE);
-			$time = ceil(
-				num: ($this->endMicroTimestamp - $this->startMicroTimestamp) * 1000
-			);
-			$memory = ceil(
-				num: memory_get_peak_usage() / 1000
-			);
-
-			$this->httpObject->httpResponseObject->dataEncodeObject->startObject(
-				objectKey: 'Stats'
-			);
-			$this->httpObject->httpResponseObject->dataEncodeObject->startObject(
-				objectKey: 'Performance'
-			);
-			$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
-				objectKey: 'total-time-taken',
-				data: "{$time} ms"
-			);
-			$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
-				objectKey: 'peak-memory-usage',
-				data: "{$memory} KB"
-			);
-			$this->httpObject->httpResponseObject->dataEncodeObject->endObject();
-			$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
-				objectKey: 'getrusage',
-				data: getrusage()
-			);
-			$this->httpObject->httpResponseObject->dataEncodeObject->endObject();
-		}
-	}
-
-	/**
-	 * Add Performance detail in response
-	 * 
-	 * @return array
-	 */
-	public function returnPerformance(): array
-	{
-		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
-			return [];
-		}
-		$returnPerformance = [];
-		if (Env::$OUTPUT_PERFORMANCE_STATS) {
-			$this->endMicroTimestamp = microtime(as_float: Constant::$TRUE);
-			$time = ceil(
-				num: ($this->endMicroTimestamp - $this->startMicroTimestamp) * 1000
-			);
-			$memory = ceil(
-				num: memory_get_peak_usage() / 1000
-			);
-
-			$returnPerformance = [
-				'Stats' => [
-					'Performance' => [
-						'total-time-taken' => "{$time} ms",
-						'peak-memory-usage' => "{$memory} KB"
-					],
-					'getrusage' => getrusage()
-				]
-			];
-		}
-
-		return $returnPerformance;
-	}
-
-	/**
-	 * End response
-	 * 
-	 * @return void
-	 */
-	public function endData(): void
-	{
-		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
-			return;
-		}
-		$this->httpObject->httpResponseObject->dataEncodeObject->endObject();
-		$this->httpObject->httpResponseObject->dataEncodeObject->end();
 	}
 
 	/**

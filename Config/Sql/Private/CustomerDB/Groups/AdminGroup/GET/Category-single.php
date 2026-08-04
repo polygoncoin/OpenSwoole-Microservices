@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
+	'__SQL__' => 'SELECT * FROM `category` WHERE __WHERE__',
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
@@ -38,9 +38,9 @@ return [
 		]
 	],
 	'__MODE__' => 'multipleRecordFormat',
-	'__SUB-QUERY__' => [
+	'__SUB-CONFIG__' => [
 		'sub' => [
-			'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
+			'__SQL__' => 'SELECT * FROM `category` WHERE __WHERE__',
 			'__WHERE__' => [
 				[
 					'column' => 'is_deleted',
@@ -54,9 +54,9 @@ return [
 				],
 			],
 			'__MODE__' => 'multipleRecordFormat',
-			'__SUB-QUERY__' => [
+			'__SUB-CONFIG__' => [
 				'subsub' => [
-					'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
+					'__SQL__' => 'SELECT * FROM `category` WHERE __WHERE__',
 					'__WHERE__' => [
 						[
 							'column' => 'is_deleted',
@@ -70,9 +70,9 @@ return [
 						],
 					],
 					'__MODE__' => 'multipleRecordFormat',
-					'__SUB-QUERY__' => [
+					'__SUB-CONFIG__' => [
 						'subsubsub' => [
-							'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
+							'__SQL__' => 'SELECT * FROM `category` WHERE __WHERE__',
 							'__WHERE__' => [
 								[
 									'column' => 'is_deleted',
@@ -92,5 +92,5 @@ return [
 			],
 		]
 	],
-	'maintainHierarchy' => Constant::$TRUE,
+	'__HIERARCHY__' => Constant::$TRUE,
 ];

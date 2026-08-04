@@ -19,8 +19,8 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'countQuery' => 'SELECT count(1) as `count` FROM `category` WHERE __WHERE__',
-	'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
+	'__COUNT-SQL__' => 'SELECT count(1) as `count` FROM `category` WHERE __WHERE__',
+	'__SQL__' => 'SELECT * FROM `category` WHERE __WHERE__',
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
@@ -34,9 +34,9 @@ return [
 		],
 	],
 	'__MODE__' => 'multipleRecordFormat',
-	'__SUB-QUERY__' => [
+	'__SUB-CONFIG__' => [
 		'sub' => [
-			'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
+			'__SQL__' => 'SELECT * FROM `category` WHERE __WHERE__',
 			'__WHERE__' => [
 				[
 					'column' => 'is_deleted',
@@ -50,9 +50,9 @@ return [
 				],
 			],
 			'__MODE__' => 'multipleRecordFormat',
-			'__SUB-QUERY__' => [
+			'__SUB-CONFIG__' => [
 				'subsub' => [
-					'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
+					'__SQL__' => 'SELECT * FROM `category` WHERE __WHERE__',
 					'__WHERE__' => [
 						[
 							'column' => 'is_deleted',
@@ -66,9 +66,9 @@ return [
 						],
 					],
 					'__MODE__' => 'multipleRecordFormat',
-					'__SUB-QUERY__' => [
+					'__SUB-CONFIG__' => [
 						'subsubsub' => [
-							'__QUERY__' => 'SELECT * FROM `category` WHERE __WHERE__',
+							'__SQL__' => 'SELECT * FROM `category` WHERE __WHERE__',
 							'__WHERE__' => [
 								[
 									'column' => 'is_deleted',
@@ -88,15 +88,15 @@ return [
 			],
 		]
 	],
-	'maintainHierarchy' => Constant::$TRUE,
-	'fetchDbMode' => 'Master',
-	'queryCacheKey' => $this->httpObject->httpRequestObject->activeRequestData['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
+	'__HIERARCHY__' => Constant::$TRUE,
+	'__FETCH-MODE__' => 'Master',
+	'__CACHE-KEY__' => $this->httpObject->httpRequestObject->activeRequestData['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
 	'responseLagWindow' => 3600,
 	'responseLag' => [
 		// No of request => Seconds Lag
 		1 => 0,
 		// 2 => 10,
 	],
-	'xsltFile' => $this->httpObject->httpResponseObject->xsltDirectory
+	'__OUTPUT-REPRESENTATION-FILE__' => $this->httpObject->httpResponseObject->xsltDirectory
 		. DIRECTORY_SEPARATOR . 'Category.xls'
 ];

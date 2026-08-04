@@ -62,23 +62,23 @@ return [
 	'{tableName:string}' => [
 		'dataType' => DatabaseServerDataType::$Tables,
 		'__FILE__' => 'Sql file location',
-		'__PRE-ROUTE-HOOKS__' => [// These will apply recursively
+		'__PRE-ROUTE-HOOK__' => [// These will apply recursively
 			'Hook_1',
 			'...'
 		],
-		'__POST-ROUTE-HOOKS__' => [// These will apply recursively
+		'__POST-ROUTE-HOOK__' => [// These will apply recursively
 			'Hook_1',
 			'...'
 		]
 		'{id:int}' => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
 			'__FILE__' => 'Sql file location',
-			'__PRE-ROUTE-HOOKS__' => [], // For noi hooks
-			'__POST-ROUTE-HOOKS__' => [] // For noi hooks
+			'__PRE-ROUTE-HOOK__' => [], // For noi hooks
+			'__POST-ROUTE-HOOK__' => [] // For noi hooks
 		],
 
 		// Input Data Representation
-		'inputRepresentation' => 'XML' // JSON/XML - Defaults to JSON
+		'__INPUT-REPRESENTATION__' => 'XML' // JSON/XML - Defaults to JSON
 	]
 ];
 ```

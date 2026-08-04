@@ -14,7 +14,7 @@
  */
 
 return [
-	'__QUERY__' => 'SELECT * FROM `category` WHERE `name` like CONCAT ('%', :name, '%');',
+	'__SQL__' => 'SELECT * FROM `category` WHERE `name` like CONCAT ('%', :name, '%');',
 	'__WHERE__' => [
 		[
 			'column' => 'name',

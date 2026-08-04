@@ -35,6 +35,20 @@ use Microservices\App\HttpStatus;
 class HttpResponse
 {
 	/**
+	 * Start micro timestamp;
+	 * 
+	 * @var null|int
+	 */
+	private $startMicroTimestamp = null;
+
+	/**
+	 * End micro timestamp;
+	 * 
+	 * @var null|int
+	 */
+	private $endMicroTimestamp = null;
+
+	/**
 	 * Output Representation
 	 * 
 	 * @var null|string
@@ -97,6 +111,10 @@ class HttpResponse
 		$this->dataEncodeObject = new DataEncode(
 			httpObject: $this->httpObject
 		);
+
+		if (Env::$OUTPUT_PERFORMANCE_STATS) {
+			$this->startMicroTimestamp = microtime(as_float: Constant::$TRUE);
+		}
 	}
 
 	/**
@@ -109,5 +127,110 @@ class HttpResponse
 		$this->dataEncodeObject->init();
 
 		return true;
+	}
+
+
+	/**
+	 * Start Data Output
+	 * 
+	 * @return void
+	 */
+	public function startData(): void
+	{
+		$this->dataEncodeObject->startObject();
+	}
+
+	/**
+	 * End response
+	 * 
+	 * @return void
+	 */
+	public function endData(): void
+	{
+		$this->dataEncodeObject->endObject();
+		$this->dataEncodeObject->end();
+	}
+
+	/**
+	 * Add HTTP status in response
+	 * 
+	 * @return void
+	 */
+	public function addStatus(): void
+	{
+		$this->dataEncodeObject->addKeyData(
+			objectKey: 'Status',
+			data: $this->httpStatus
+		);
+	}
+
+	/**
+	 * Add Performance detail in response
+	 * 
+	 * @return void
+	 */
+	public function addPerformance(): void
+	{
+		if (Env::$OUTPUT_PERFORMANCE_STATS) {
+			$this->endMicroTimestamp = microtime(as_float: Constant::$TRUE);
+			$time = ceil(
+				num: ($this->endMicroTimestamp - $this->startMicroTimestamp) * 1000
+			);
+			$memory = ceil(
+				num: memory_get_peak_usage() / 1000
+			);
+
+			$this->dataEncodeObject->startObject(
+				objectKey: 'Stats'
+			);
+			$this->dataEncodeObject->startObject(
+				objectKey: 'Performance'
+			);
+			$this->dataEncodeObject->addKeyData(
+				objectKey: 'total-time-taken',
+				data: "{$time} ms"
+			);
+			$this->dataEncodeObject->addKeyData(
+				objectKey: 'peak-memory-usage',
+				data: "{$memory} KB"
+			);
+			$this->dataEncodeObject->endObject();
+			$this->dataEncodeObject->addKeyData(
+				objectKey: 'getrusage',
+				data: getrusage()
+			);
+			$this->dataEncodeObject->endObject();
+		}
+	}
+
+	/**
+	 * Add Performance detail in response
+	 * 
+	 * @return array
+	 */
+	public function returnPerformance(): array
+	{
+		$returnPerformance = [];
+		if (Env::$OUTPUT_PERFORMANCE_STATS) {
+			$this->endMicroTimestamp = microtime(as_float: Constant::$TRUE);
+			$time = ceil(
+				num: ($this->endMicroTimestamp - $this->startMicroTimestamp) * 1000
+			);
+			$memory = ceil(
+				num: memory_get_peak_usage() / 1000
+			);
+
+			$returnPerformance = [
+				'Stats' => [
+					'Performance' => [
+						'total-time-taken' => "{$time} ms",
+						'peak-memory-usage' => "{$memory} KB"
+					],
+					'getrusage' => getrusage()
+				]
+			];
+		}
+
+		return $returnPerformance;
 	}
 }

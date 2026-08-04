@@ -19,8 +19,8 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'countQuery' => 'SELECT count(1) as `count` FROM `address` WHERE __WHERE__',
-	'__QUERY__' => 'SELECT * FROM `address` WHERE __WHERE__',
+	'__COUNT-SQL__' => 'SELECT count(1) as `count` FROM `address` WHERE __WHERE__',
+	'__SQL__' => 'SELECT * FROM `address` WHERE __WHERE__',
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',

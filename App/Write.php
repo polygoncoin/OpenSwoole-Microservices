@@ -110,8 +110,8 @@ class Write
 		}
 
 		// Operate as Transaction (BEGIN COMMIT else ROLLBACK on error)
-		$this->operateAsTransaction = isset($sqlConfig['isTransaction'])
-			? $sqlConfig['isTransaction'] : Constant::$FALSE;
+		$this->operateAsTransaction = isset($sqlConfig['__TRANSACTION__'])
+			? $sqlConfig['__TRANSACTION__'] : Constant::$FALSE;
 
 		$fetchDbMode = 'Master';
 
@@ -128,14 +128,14 @@ class Write
 			writeMaintainHierarchy: $maintainHierarchy
 		);
 
-		if (isset($sqlConfig['affectedQueryCacheKeyArray'])) {
+		if (isset($sqlConfig['__AFFECTED-CACHE-KEY__'])) {
 			$indexCount = count(
-				value: $sqlConfig['affectedQueryCacheKeyArray']
+				value: $sqlConfig['__AFFECTED-CACHE-KEY__']
 			);
 			for ($index = 0; $index < $indexCount; $index++) {
 				$this->httpObject->httpRequestObject->customerQueryCacheObject->queryCacheDelete(
 					customerId: $this->httpObject->httpRequestObject->customerId,
-					queryCacheKey: $sqlConfig['affectedQueryCacheKeyArray'][$index]
+					queryCacheKey: $sqlConfig['__AFFECTED-CACHE-KEY__'][$index]
 				);
 			}
 		}
@@ -169,13 +169,13 @@ class Write
 			// Check for maximum object's supported when payloadType is Array
 			if (
 				$writeSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
-				&& isset($writeSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
+				&& isset($writeSqlConfig['__MAX-PAYLOAD-OBJECT__'])
 				&& ($objCount = $this->httpObject->httpRequestObject->dataDecodeObject->count())
-				&& ($objCount > $writeSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
+				&& ($objCount > $writeSqlConfig['__MAX-PAYLOAD-OBJECT__'])
 			) {
 				throw new \Exception(
 					message: 'Maximum supported payload count is '
-						. $writeSqlConfig['__MAX-PAYLOAD-OBJECTS__'],
+						. $writeSqlConfig['__MAX-PAYLOAD-OBJECT__'],
 					code: HttpStatus::$BadRequest
 				);
 			}
@@ -446,14 +446,14 @@ class Write
 			}
 
 			// For Pre Hook
-			if (isset($writeParentSqlConfig['__PRE-SQL-HOOKS__'])) {
+			if (isset($writeParentSqlConfig['__PRE-CONFIG-HOOK__'])) {
 				if ($this->hookObject === Constant::$NULL) {
 					$this->hookObject = new Hook(
 						httpObject: $this->httpObject
 					);
 				}
 				$this->hookObject->triggerHook(
-					hookArray: $writeParentSqlConfig['__PRE-SQL-HOOKS__']
+					hookArray: $writeParentSqlConfig['__PRE-CONFIG-HOOK__']
 				);
 			}
 
@@ -484,21 +484,21 @@ class Write
 			}
 
 			// For Setting Data
-			if (isset($writeParentSqlConfig['__INSERT-IDs__'])) {
+			if (isset($writeParentSqlConfig['__INSERT-ID__'])) {
 				if ($insertId === Constant::$NULL) {
 					$insertId = $this->httpObject->httpRequestObject->customerDbObject->lastInsertId();
 				}
 
 				if ($isObject) {
-					$writeParentCurrentResponse[$writeParentSqlConfig['__INSERT-IDs__']] = $insertId;
+					$writeParentCurrentResponse[$writeParentSqlConfig['__INSERT-ID__']] = $insertId;
 				} else {
-					if (!is_array($writeParentCurrentResponse[$writeParentSqlConfig['__INSERT-IDs__']])) {
-						$writeParentCurrentResponse[$writeParentSqlConfig['__INSERT-IDs__']] = [];
+					if (!is_array($writeParentCurrentResponse[$writeParentSqlConfig['__INSERT-ID__']])) {
+						$writeParentCurrentResponse[$writeParentSqlConfig['__INSERT-ID__']] = [];
 					}
-					$writeParentCurrentResponse[$writeParentSqlConfig['__INSERT-IDs__']][] = $insertId;
+					$writeParentCurrentResponse[$writeParentSqlConfig['__INSERT-ID__']][] = $insertId;
 				}
 
-				$this->httpObject->httpRequestObject->activeRequestData['__INSERT-IDs__'][$writeParentSqlConfig['__INSERT-IDs__']] = $insertId;
+				$this->httpObject->httpRequestObject->activeRequestData['__INSERT-ID__'][$writeParentSqlConfig['__INSERT-ID__']] = $insertId;
 			} else {
 				$affectedRecordCount = $this->httpObject->httpRequestObject->customerDbObject->affectedRecordCount();
 				$writeParentCurrentResponse['affectedRecordCount'] = $affectedRecordCount;
@@ -508,9 +508,9 @@ class Write
 			$this->httpObject->httpRequestObject->customerDbObject->closeCursor();
 
 			// For Child
-			if (isset($writeParentSqlConfig['__SUB-QUERY__'])) {
+			if (isset($writeParentSqlConfig['__SUB-CONFIG__'])) {
 				$this->writeChild(
-					writeChildSqlConfig: $writeParentSqlConfig['__SUB-QUERY__'],
+					writeChildSqlConfig: $writeParentSqlConfig['__SUB-CONFIG__'],
 					writeChildPayloadKeyArray: $writeParentCurrentPayloadKeyArray,
 					writeChildRequiredFieldArray: $writeParentRequiredFieldArray,
 					writeChildResponse: $writeParentCurrentResponse,
@@ -519,24 +519,24 @@ class Write
 			}
 
 			// For Triggers
-			if (isset($writeParentSqlConfig['__TRIGGERS__'])) {
+			if (isset($writeParentSqlConfig['__TRIGGER__'])) {
 				$this->dataEncodeObject->addKeyData(
-					objectKey: '__TRIGGERS__',
+					objectKey: '__TRIGGER__',
 					data: $this->getTriggerData(
-						triggerConfig: $writeParentSqlConfig['__TRIGGERS__']
+						triggerConfig: $writeParentSqlConfig['__TRIGGER__']
 					)
 				);
 			}
 
 			// For Post Hook
-			if (isset($writeParentSqlConfig['__POST-SQL-HOOKS__'])) {
+			if (isset($writeParentSqlConfig['__POST-CONFIG-HOOK__'])) {
 				if ($this->hookObject === Constant::$NULL) {
 					$this->hookObject = new Hook(
 						httpObject: $this->httpObject
 					);
 				}
 				$this->hookObject->triggerHook(
-					hookArray: $writeParentSqlConfig['__POST-SQL-HOOKS__']
+					hookArray: $writeParentSqlConfig['__POST-CONFIG-HOOK__']
 				);
 			}
 		}

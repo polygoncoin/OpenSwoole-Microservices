@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__QUERY__' => "INSERT INTO `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_group_table']}` SET __SET__",
+	'__SQL__' => "INSERT INTO `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_group_table']}` SET __SET__",
 	'__SET__' => [
 		[
 			'column' => 'name',
@@ -74,5 +74,5 @@ return [
 			'activeRequestDataKeySubKey' => Constant::$NO
 		]
 	],
-	'__INSERT-IDs__' => 'group:id',
+	'__INSERT-ID__' => 'group:id',
 ];

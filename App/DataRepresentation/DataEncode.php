@@ -117,6 +117,7 @@ class DataEncode
 				);
 			}
 		}
+
 		switch ($this->httpObject->httpResponseObject->outputRepresentation) {
 			case 'JSON':
 				$this->dataEncoderObject = new JsonEncode(

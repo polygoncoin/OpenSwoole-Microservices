@@ -271,11 +271,11 @@ class RouteParser
 			}
 
 			if (isset($routeConfig[$element])) { // Route element is configured
-				if (isset($routeConfig[$element]['__PRE-ROUTE-HOOKS__'])) {
-					$this->routeHook[$element]['__PRE-ROUTE-HOOKS__'] = $routeConfig[$element]['__PRE-ROUTE-HOOKS__'];
+				if (isset($routeConfig[$element]['__PRE-ROUTE-HOOK__'])) {
+					$this->routeHook[$element]['__PRE-ROUTE-HOOK__'] = $routeConfig[$element]['__PRE-ROUTE-HOOK__'];
 				}
-				if (isset($routeConfig[$element]['__POST-ROUTE-HOOKS__'])) {
-					$this->routeHook[$element]['__POST-ROUTE-HOOKS__'] = $routeConfig[$element]['__POST-ROUTE-HOOKS__'];
+				if (isset($routeConfig[$element]['__POST-ROUTE-HOOK__'])) {
+					$this->routeHook[$element]['__POST-ROUTE-HOOK__'] = $routeConfig[$element]['__POST-ROUTE-HOOK__'];
 				}
 				$configuredRoute[] = $element;
 				$routeConfig = &$routeConfig[$element];
@@ -331,11 +331,11 @@ class RouteParser
 						);
 					}
 					$_element = $foundIntRoute ? $foundIntRoute : $foundStringRoute;
-					if (isset($routeConfig[$_element]['__PRE-ROUTE-HOOKS__'])) {
-						$this->routeHook[$_element]['__PRE-ROUTE-HOOKS__'] = $routeConfig[$_element]['__PRE-ROUTE-HOOKS__'];
+					if (isset($routeConfig[$_element]['__PRE-ROUTE-HOOK__'])) {
+						$this->routeHook[$_element]['__PRE-ROUTE-HOOK__'] = $routeConfig[$_element]['__PRE-ROUTE-HOOK__'];
 					}
-					if (isset($routeConfig[$_element]['__POST-ROUTE-HOOKS__'])) {
-						$this->routeHook[$_element]['__POST-ROUTE-HOOKS__'] = $routeConfig[$_element]['__POST-ROUTE-HOOKS__'];
+					if (isset($routeConfig[$_element]['__POST-ROUTE-HOOK__'])) {
+						$this->routeHook[$_element]['__POST-ROUTE-HOOK__'] = $routeConfig[$_element]['__POST-ROUTE-HOOK__'];
 					}
 					$routeConfig = &$routeConfig[$_element];
 				} else {
@@ -345,13 +345,13 @@ class RouteParser
 					);
 				}
 				if (
-					isset($routeConfig['inputRepresentation'])
+					isset($routeConfig['__INPUT-REPRESENTATION__'])
 					&& Env::isValidDataRep(
-						dataRepresentation: $routeConfig['inputRepresentation'],
+						dataRepresentation: $routeConfig['__INPUT-REPRESENTATION__'],
 						mode: 'input'
 					)
 				) {
-					$this->httpObject->httpRequestObject->inputRepresentation = $routeConfig['inputRepresentation'];
+					$this->httpObject->httpRequestObject->inputRepresentation = $routeConfig['__INPUT-REPRESENTATION__'];
 				}
 			}
 		}
@@ -599,38 +599,34 @@ class RouteParser
 			// Output data representation set in Query config file
 			$this->sqlConfig = include $this->sqlConfigFile;
 			if (
-				isset($this->sqlConfig['outputRepresentation'])
+				isset($this->sqlConfig['__OUTPUT-REPRESENTATION__'])
 				&& Env::isValidDataRep(
-					dataRepresentation: $this->sqlConfig['outputRepresentation'],
+					dataRepresentation: $this->sqlConfig['__OUTPUT-REPRESENTATION__'],
 					mode: 'output'
 				)
 			) {
 				if (
-					$this->sqlConfig['outputRepresentation'] === 'HTML'
-					&& isset($this->sqlConfig['htmlFile'])
+					$this->sqlConfig['__OUTPUT-REPRESENTATION__'] === 'HTML'
+					&& isset($this->sqlConfig['__OUTPUT-REPRESENTATION-FILE__'])
 				) {
-					$this->httpObject->httpResponseObject->outputRepresentation = $this->sqlConfig['outputRepresentation'];
-					$this->httpObject->httpResponseObject->dataEncodeObject->htmlFile = $this->sqlConfig['htmlFile'];
+					$this->httpObject->httpResponseObject->outputRepresentation = $this->sqlConfig['__OUTPUT-REPRESENTATION__'];
+					$this->httpObject->httpResponseObject->dataEncodeObject->htmlFile = $this->sqlConfig['__OUTPUT-REPRESENTATION-FILE__'];
 				} elseif (
-					$this->sqlConfig['outputRepresentation'] === 'PHP'
-					&& isset($this->sqlConfig['phpFile'])
+					$this->sqlConfig['__OUTPUT-REPRESENTATION__'] === 'PHP'
+					&& isset($this->sqlConfig['__OUTPUT-REPRESENTATION-FILE__'])
 				) {
-					$this->httpObject->httpResponseObject->outputRepresentation = $this->sqlConfig['outputRepresentation'];
-					$this->httpObject->httpResponseObject->dataEncodeObject->phpFile = $this->sqlConfig['phpFile'];
+					$this->httpObject->httpResponseObject->outputRepresentation = $this->sqlConfig['__OUTPUT-REPRESENTATION__'];
+					$this->httpObject->httpResponseObject->dataEncodeObject->phpFile = $this->sqlConfig['__OUTPUT-REPRESENTATION-FILE__'];
 				} elseif (
-					$this->sqlConfig['outputRepresentation'] === 'XSLT'
-					&& isset($this->sqlConfig['xsltFile'])
+					$this->sqlConfig['__OUTPUT-REPRESENTATION__'] === 'XSLT'
+					&& isset($this->sqlConfig['__OUTPUT-REPRESENTATION-FILE__'])
 				) {
-					$this->httpObject->httpResponseObject->outputRepresentation = $this->sqlConfig['outputRepresentation'];
-					$this->httpObject->httpResponseObject->dataEncodeObject->xsltFile = $this->sqlConfig['xsltFile'];
-				} elseif (
-					!in_array(
-						needle: $this->sqlConfig['outputRepresentation'],
-						haystack: ['HTML', 'PHP', 'XSLT'],
-						strict: Constant::$TRUE
-					)
-				) {
+					$this->httpObject->httpResponseObject->outputRepresentation = $this->sqlConfig['__OUTPUT-REPRESENTATION__'];
+					$this->httpObject->httpResponseObject->dataEncodeObject->xsltFile = $this->sqlConfig['__OUTPUT-REPRESENTATION-FILE__'];
+				} elseif (isset($this->httpObject->httpReqData['get']['outputRepresentation'])) {
 					$this->httpObject->httpResponseObject->outputRepresentation = $this->httpObject->httpReqData['get']['outputRepresentation'];
+				} else {
+					$this->httpObject->httpResponseObject->outputRepresentation = Env::$outputRepresentation;
 				}
 			}
 		}
@@ -646,34 +642,12 @@ class RouteParser
 				dataRepresentation: $this->httpObject->httpReqData['get']['outputRepresentation'],
 				mode: 'output'
 			)
+			&& in_array(
+				$this->httpObject->httpReqData['get']['outputRepresentation'],
+				['JSON', 'XML']
+			)
 		) {
-			if (
-				$this->httpObject->httpReqData['get']['outputRepresentation'] === 'HTML'
-				&& isset($this->sqlConfig['htmlFile'])
-			) {
-				$this->httpObject->httpResponseObject->outputRepresentation = $this->httpObject->httpReqData['get']['outputRepresentation'];
-				$this->httpObject->httpResponseObject->dataEncodeObject->htmlFile = $this->sqlConfig['htmlFile'];
-			} elseif (
-				$this->httpObject->httpReqData['get']['outputRepresentation'] === 'PHP'
-				&& isset($this->sqlConfig['phpFile'])
-			) {
-				$this->httpObject->httpResponseObject->outputRepresentation = $this->httpObject->httpReqData['get']['outputRepresentation'];
-				$this->httpObject->httpResponseObject->dataEncodeObject->phpFile = $this->sqlConfig['phpFile'];
-			} elseif (
-				$this->httpObject->httpReqData['get']['outputRepresentation'] === 'XSLT'
-				&& isset($this->sqlConfig['xsltFile'])
-			) {
-				$this->httpObject->httpResponseObject->outputRepresentation = $this->httpObject->httpReqData['get']['outputRepresentation'];
-				$this->httpObject->httpResponseObject->dataEncodeObject->xsltFile = $this->sqlConfig['xsltFile'];
-			} elseif (
-				!in_array(
-					needle: $this->httpObject->httpReqData['get']['outputRepresentation'],
-					haystack: ['HTML', 'PHP', 'XSLT'],
-					strict: Constant::$TRUE
-				)
-			) {
-				$this->httpObject->httpResponseObject->outputRepresentation = $this->httpObject->httpReqData['get']['outputRepresentation'];
-			}
+			$this->httpObject->httpResponseObject->outputRepresentation = $this->httpObject->httpReqData['get']['outputRepresentation'];
 		}
 	}
 

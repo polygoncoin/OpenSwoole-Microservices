@@ -101,7 +101,7 @@ class Http
 	/**
 	 * Initialize request
 	 * 
-	 * @return bool
+	 * @return void
 	 */
 	public function initRequest(): void
 	{
@@ -111,7 +111,7 @@ class Http
 	/**
 	 * Initialize response
 	 * 
-	 * @return bool
+	 * @return void
 	 */
 	public function initResponse(): void
 	{

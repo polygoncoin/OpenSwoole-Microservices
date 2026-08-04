@@ -136,7 +136,7 @@ class Read
 		}
 
 		// Set Server mode to execute query on - Read / Write Server
-		$fetchDbMode = $sqlConfig['fetchDbMode'] ?? 'Slave';
+		$fetchDbMode = $sqlConfig['__FETCH-MODE__'] ?? 'Slave';
 		$placeholderModeKey = 'customer_' . strtolower($fetchDbMode) . '_db_server_query_placeholder';
 		$this->placeholderMode = getenv(name: $this->httpObject->httpRequestObject->activeRequestData['customerData'][$placeholderModeKey]);
 		$this->httpObject->httpRequestObject->customerDbObject = DbCommonFunction::connectCustomerDb(
@@ -159,7 +159,7 @@ class Read
 			$json = $this->dataEncodeObject->getData();
 			$this->httpObject->httpRequestObject->customerQueryCacheObject->queryCacheSet(
 				customerId: $this->httpObject->httpRequestObject->customerId,
-				queryCacheKey: $sqlConfig['queryCacheKey'],
+				queryCacheKey: $sqlConfig['__CACHE-KEY__'],
 				queryCacheValue: $json
 			);
 			$this->httpObject->httpResponseObject->dataEncodeObject->appendData(
@@ -195,13 +195,13 @@ class Read
 			// Check for maximum object's supported when payloadType is Array
 			if (
 				$readSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
-				&& isset($readSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
+				&& isset($readSqlConfig['__MAX-PAYLOAD-OBJECT__'])
 				&& ($objCount = $this->httpObject->httpRequestObject->dataDecodeObject->count())
-				&& ($objCount > $readSqlConfig['__MAX-PAYLOAD-OBJECTS__'])
+				&& ($objCount > $readSqlConfig['__MAX-PAYLOAD-OBJECT__'])
 			) {
 				throw new \Exception(
 					message: 'Maximum supported payload count is '
-						. $readSqlConfig['__MAX-PAYLOAD-OBJECTS__'],
+						. $readSqlConfig['__MAX-PAYLOAD-OBJECT__'],
 					code: HttpStatus::$BadRequest
 				);
 			}
@@ -396,14 +396,14 @@ class Read
 			}
 
 			// For Pre Hook
-			if (isset($readParentSqlConfig['__PRE-SQL-HOOKS__'])) {
+			if (isset($readParentSqlConfig['__PRE-CONFIG-HOOK__'])) {
 				if ($this->hookObject === Constant::$NULL) {
 					$this->hookObject = new Hook(
 						httpObject: $this->httpObject
 					);
 				}
 				$this->hookObject->triggerHook(
-					hookArray: $readParentSqlConfig['__PRE-SQL-HOOKS__']
+					hookArray: $readParentSqlConfig['__PRE-CONFIG-HOOK__']
 				);
 			}
 
@@ -430,7 +430,7 @@ class Read
 				// Query will return multiple rows
 				case 'multipleRecordFormat':
 					if ($readParentIsFirstCall) {
-						if (isset($readParentSqlConfig['countQuery'])) {
+						if (isset($readParentSqlConfig['__COUNT-SQL__'])) {
 							$this->dataEncodeObject->startObject(
 								objectKey: 'PayloadResponse'
 							);
@@ -439,7 +439,7 @@ class Read
 								objectKey: 'PayloadResponse'
 							);
 						}
-						if (isset($readParentSqlConfig['countQuery'])) {
+						if (isset($readParentSqlConfig['__COUNT-SQL__'])) {
 							$this->fetchRecordCount(
 								readSqlConfig: $readParentSqlConfig
 							);
@@ -465,7 +465,7 @@ class Read
 					$this->dataEncodeObject->endArray();
 					if (
 						$readParentIsFirstCall
-						&& isset($readParentSqlConfig['countQuery'])
+						&& isset($readParentSqlConfig['__COUNT-SQL__'])
 					) {
 						$this->dataEncodeObject->endObject();
 					}
@@ -473,24 +473,24 @@ class Read
 			}
 
 			// For Triggers
-			if (isset($readParentSqlConfig['__TRIGGERS__'])) {
+			if (isset($readParentSqlConfig['__TRIGGER__'])) {
 				$this->dataEncodeObject->addKeyData(
-					objectKey: '__TRIGGERS__',
+					objectKey: '__TRIGGER__',
 					data: $this->getTriggerData(
-						triggerConfig: $readParentSqlConfig['__TRIGGERS__']
+						triggerConfig: $readParentSqlConfig['__TRIGGER__']
 					)
 				);
 			}
 
 			// For Post Hook
-			if (isset($readParentSqlConfig['__POST-SQL-HOOKS__'])) {
+			if (isset($readParentSqlConfig['__POST-CONFIG-HOOK__'])) {
 				if ($this->hookObject === Constant::$NULL) {
 					$this->hookObject = new Hook(
 						httpObject: $this->httpObject
 					);
 				}
 				$this->hookObject->triggerHook(
-					hookArray: $readParentSqlConfig['__POST-SQL-HOOKS__']
+					hookArray: $readParentSqlConfig['__POST-CONFIG-HOOK__']
 				);
 			}
 		}
@@ -534,16 +534,16 @@ class Read
 
 		if (
 			!(
-				isset($readChildSqlConfig['__SUB-QUERY__'])
+				isset($readChildSqlConfig['__SUB-CONFIG__'])
 				&& !$this->isObject(
-					arr: $readChildSqlConfig['__SUB-QUERY__']
+					arr: $readChildSqlConfig['__SUB-CONFIG__']
 				)
 			)
 		) {
 			return;
 		}
 
-		foreach ($readChildSqlConfig['__SUB-QUERY__'] as $readModule => &$readChildModuleSqlConfig) {
+		foreach ($readChildSqlConfig['__SUB-CONFIG__'] as $readModule => &$readChildModuleSqlConfig) {
 			// For payloadKeyArray
 			$readChildModulePayloadKeyArray = $readChildPayloadKeyArray;
 			array_push(
@@ -645,15 +645,15 @@ class Read
 	private function fetchRecordCount(
 		$readSqlConfig
 	): void {
-		if (!isset($readSqlConfig['countQuery'])) {
+		if (!isset($readSqlConfig['__COUNT-SQL__'])) {
 			return;
 		}
-		$readSqlConfig['__QUERY__'] = $readSqlConfig['countQuery'];
+		$readSqlConfig['__SQL__'] = $readSqlConfig['__COUNT-SQL__'];
 		if (isset($readSqlConfig['__COUNT-SQL-COMMENT__'])) {
 			$readSqlConfig['__SQL-COMMENT__'] = $readSqlConfig['__COUNT-SQL-COMMENT__'];
 		}
 		unset($readSqlConfig['__COUNT-SQL-COMMENT__']);
-		unset($readSqlConfig['countQuery']);
+		unset($readSqlConfig['__COUNT-SQL__']);
 
 		$this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['page']  = $this->httpObject->httpRequestObject->activeRequestData['payload']['page'] ?? 1;
 		$this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['perPage']  = $this->httpObject->httpRequestObject->activeRequestData['payload']['perPage'] ??
@@ -760,9 +760,9 @@ class Read
 			}
 			// check if selected column-name mismatches or conflicts with
 			// configured module/submodule names
-			if (isset($readSqlConfig['__SUB-QUERY__'])) {
+			if (isset($readSqlConfig['__SUB-CONFIG__'])) {
 				$subQueryKeyArray = array_keys(
-					array: $readSqlConfig['__SUB-QUERY__']
+					array: $readSqlConfig['__SUB-CONFIG__']
 				);
 				foreach ($dbFetchedRecord as $objectKey => &$objectKeyValue) {
 					if (
@@ -788,7 +788,7 @@ class Read
 		$this->httpObject->httpRequestObject->customerDbObject->closeCursor();
 
 		// For Child
-		if (isset($readSqlConfig['__SUB-QUERY__'])) {
+		if (isset($readSqlConfig['__SUB-CONFIG__'])) {
 			$this->readChild(
 				readChildSqlConfig: $readSqlConfig,
 				readChildPayloadKeyArray: $readPayloadKeyArray,
@@ -869,7 +869,7 @@ class Read
 			}
 		}
 
-		if (isset($readSqlConfig['countQuery'])) {
+		if (isset($readSqlConfig['__COUNT-SQL__'])) {
 			$start = $this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['start'];
 			$offset = $this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['perPage'];
 			$sql .= " LIMIT {$start}, {$offset}";
@@ -893,7 +893,7 @@ class Read
 					$singleColumn = true;
 				}
 				$singleColumn = $singleColumn
-					&& !isset($readSqlConfig['__SUB-QUERY__']);
+					&& !isset($readSqlConfig['__SUB-CONFIG__']);
 			}
 			if ($singleColumn) {
 				$this->dataEncodeObject->encode(
@@ -903,7 +903,7 @@ class Read
 						)
 					]
 				);
-			} elseif (isset($readSqlConfig['__SUB-QUERY__'])) {
+			} elseif (isset($readSqlConfig['__SUB-CONFIG__'])) {
 				$this->dataEncodeObject->startObject();
 				foreach ($dbFetchedRecord as $rowKey => &$rowKeyValue) {
 					$this->dataEncodeObject->addKeyData(
@@ -956,7 +956,7 @@ class Read
 		[$id, $sql, $paramArray, $errorArray] = $this->$function(
 			sqlConfig: $readSqlConfig
 		);
-		$fetchDbMode = $readSqlConfig['fetchDbMode'] ?? 'Slave';
+		$fetchDbMode = $readSqlConfig['__FETCH-MODE__'] ?? 'Slave';
 
 		$exportDbData = [];
 		switch ($fetchDbMode) {

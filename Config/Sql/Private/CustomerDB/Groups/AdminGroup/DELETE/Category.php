@@ -14,5 +14,5 @@
  */
 
 return [
-	'__QUERY__' => 'TRUNCATE TABLE `category`;',
+	'__SQL__' => 'TRUNCATE TABLE `category`;',
 ];

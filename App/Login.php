@@ -83,10 +83,6 @@ class Login
 	 */
 	public function init(): bool
 	{
-		if ($this->httpObject->httpResponseObject !== Constant::$NULL) {
-			$this->httpObject->initResponse();
-		}
-
 		return true;
 	}
 
@@ -521,8 +517,6 @@ class Login
 	 */
 	private function outputDetail(&$output): void
 	{
-		$this->httpObject->initResponse();
-		$this->httpObject->httpResponseObject->dataEncodeObject->startObject();
 		$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
 			objectKey: 'Results',
 			data: $output

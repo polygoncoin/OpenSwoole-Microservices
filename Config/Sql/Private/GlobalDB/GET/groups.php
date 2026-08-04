@@ -20,7 +20,7 @@ use Microservices\DatabaseTable;
 
 return [
 	'all' => [
-		'__QUERY__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_group_table']}` WHERE __WHERE__ ORDER BY id ASC",
+		'__SQL__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_group_table']}` WHERE __WHERE__ ORDER BY id ASC",
 		'__WHERE__' => [
 			[
 				'column' => 'is_approved',
@@ -41,7 +41,7 @@ return [
 		'__MODE__' => 'multipleRecordFormat'
 	],
 	'single' => [
-		'__QUERY__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_group_table']}` WHERE __WHERE__",
+		'__SQL__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_group_table']}` WHERE __WHERE__",
 		'__WHERE__' => [
 			[
 				'column' => 'is_approved',

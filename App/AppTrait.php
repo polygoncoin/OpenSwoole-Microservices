@@ -151,13 +151,13 @@ trait AppTrait
 
 		// Check in subQuery
 		if (
-			isset($sqlConfig['__SUB-QUERY__'])
-			|| isset($sqlConfig['__SUB-PAYLOAD__'])
+			isset($sqlConfig['__SUB-CONFIG__'])
+			|| isset($sqlConfig['__SUB-CONFIG__'])
 		) {
 			if (
-				isset($sqlConfig['__SUB-QUERY__'])
+				isset($sqlConfig['__SUB-CONFIG__'])
 				&& !$this->isObject(
-					arr: $sqlConfig['__SUB-QUERY__']
+					arr: $sqlConfig['__SUB-CONFIG__']
 				)
 			) {
 				throw new \Exception(
@@ -166,9 +166,9 @@ trait AppTrait
 				);
 			}
 			if (
-				isset($sqlConfig['__SUB-PAYLOAD__'])
+				isset($sqlConfig['__SUB-CONFIG__'])
 				&& !$this->isObject(
-					arr: $sqlConfig['__SUB-PAYLOAD__']
+					arr: $sqlConfig['__SUB-CONFIG__']
 				)
 			) {
 				throw new \Exception(
@@ -176,7 +176,7 @@ trait AppTrait
 					code: HttpStatus::$InternalServerError
 				);
 			}
-			foreach (['__SUB-QUERY__', '__SUB-PAYLOAD__'] as $option) {
+			foreach (['__SUB-CONFIG__', '__SUB-CONFIG__'] as $option) {
 				if (isset($sqlConfig[$option])) {
 					foreach ($sqlConfig[$option] as $module => &$moduleSqlConfig) {
 						$maintainHierarchy = ($maintainHierarchy) ?? $this->getMaintainHierarchy(
@@ -256,8 +256,8 @@ trait AppTrait
 			$sql .= ' */';
 		}
 		switch (true) {
-			case isset($sqlConfig['__QUERY__']):
-				$sql .= $sqlConfig['__QUERY__'];
+			case isset($sqlConfig['__SQL__']):
+				$sql .= $sqlConfig['__SQL__'];
 				break;
 			case isset($sqlConfig['__DOWNLOAD__']):
 				$sql .= $sqlConfig['__DOWNLOAD__'];
@@ -278,7 +278,7 @@ trait AppTrait
 		) {
 			[$setParamArray, $errorArray] = $this->getSqlParam(
 				sqlConfig: $sqlConfig['__SET__'],
-				sqlConfigVariables: $sqlConfig['__VARIABLES__'] ?? []
+				sqlConfigVariables: $sqlConfig['__VARIABLE__'] ?? []
 			);
 			if (empty($errorArray)) {
 				if (!empty($setParamArray)) {
@@ -293,9 +293,9 @@ trait AppTrait
 						&& Env::$enableGlobalCounter
 						&& isset($sqlConfig['__PRIMARY-KEY__'])
 						&& !isset($sqlConfig['__WHERE__'])
-						&& isset($sqlConfig['__QUERY__'])
+						&& isset($sqlConfig['__SQL__'])
 						&& strpos(
-								haystack: strtolower(trim($sqlConfig['__QUERY__'])),
+								haystack: strtolower(trim($sqlConfig['__SQL__'])),
 								needle: 'insert'
 							) === 0
 					) {
@@ -331,7 +331,7 @@ trait AppTrait
 			$wErrorArray = [];
 			[$whereParamArray, $wErrorArray] = $this->getSqlParam(
 				sqlConfig: $sqlConfig['__WHERE__'],
-				sqlConfigVariables: $sqlConfig['__VARIABLES__'] ?? []
+				sqlConfigVariables: $sqlConfig['__VARIABLE__'] ?? []
 			);
 			if (empty($wErrorArray)) {
 				if (!empty($whereParamArray)) {
@@ -419,8 +419,8 @@ trait AppTrait
 			$sql .= ' */';
 		}
 		switch (true) {
-			case isset($sqlConfig['__QUERY__']):
-				$sql .= $sqlConfig['__QUERY__'];
+			case isset($sqlConfig['__SQL__']):
+				$sql .= $sqlConfig['__SQL__'];
 				break;
 			case isset($sqlConfig['__DOWNLOAD__']):
 				$sql .= $sqlConfig['__DOWNLOAD__'];
@@ -441,7 +441,7 @@ trait AppTrait
 		) {
 			[$setParamArray, $errorArray] = $this->getSqlParam(
 				sqlConfig: $sqlConfig['__SET__'],
-				sqlConfigVariables: $sqlConfig['__VARIABLES__'] ?? []
+				sqlConfigVariables: $sqlConfig['__VARIABLE__'] ?? []
 			);
 			if (empty($errorArray)) {
 				if (!empty($setParamArray)) {
@@ -456,9 +456,9 @@ trait AppTrait
 						&& Env::$enableGlobalCounter
 						&& isset($sqlConfig['__PRIMARY-KEY__'])
 						&& !isset($sqlConfig['__WHERE__'])
-						&& isset($sqlConfig['__QUERY__'])
+						&& isset($sqlConfig['__SQL__'])
 						&& strpos(
-								haystack: strtolower(trim($sqlConfig['__QUERY__'])),
+								haystack: strtolower(trim($sqlConfig['__SQL__'])),
 								needle: 'insert'
 							) === 0
 					) {
@@ -489,7 +489,7 @@ trait AppTrait
 			$wErrorArray = [];
 			[$whereParamArray, $wErrorArray] = $this->getSqlParam(
 				sqlConfig: $sqlConfig['__WHERE__'],
-				sqlConfigVariables: $sqlConfig['__VARIABLES__'] ?? []
+				sqlConfigVariables: $sqlConfig['__VARIABLE__'] ?? []
 			);
 			if (empty($wErrorArray)) {
 				if (!empty($whereParamArray)) {
@@ -715,8 +715,8 @@ trait AppTrait
 		&$sqlConfig
 	): bool {
 		if (
-			isset($sqlConfig['maintainHierarchy'])
-			&& $sqlConfig['maintainHierarchy'] === Constant::$TRUE
+			isset($sqlConfig['__HIERARCHY__'])
+			&& $sqlConfig['__HIERARCHY__'] === Constant::$TRUE
 		) {
 			return true;
 		}
@@ -740,7 +740,7 @@ trait AppTrait
 	): array {
 		$explainParamArray = [];
 
-		if (isset($sqlConfig['countQuery'])) {
+		if (isset($sqlConfig['__COUNT-SQL__'])) {
 			$sqlConfig['__CONFIG__'][] = [
 				'column' => 'page',
 				'activeRequestDataKey' => 'queryParamArray',
@@ -828,8 +828,8 @@ trait AppTrait
 			}
 		}
 
-		// Check in subQuery//'__SUB-PAYLOAD__'
-		foreach (['__SUB-PAYLOAD__', '__SUB-QUERY__'] as $option) {
+		// Check in subQuery//'__SUB-CONFIG__'
+		foreach (['__SUB-CONFIG__', '__SUB-CONFIG__'] as $option) {
 			if (isset($sqlConfig[$option])) {
 				foreach ($sqlConfig[$option] as $module => &$moduleSqlConfig) {
 					$maintainHierarchy = ($maintainHierarchy) ?? $this->getMaintainHierarchy(
@@ -1612,7 +1612,7 @@ trait AppTrait
 				httpObject: $this->httpObject,
 				feature: 'customer_enabled_response_caching'
 			)
-			&& isset($sqlConfig['queryCacheKey'])
+			&& isset($sqlConfig['__CACHE-KEY__'])
 			&& !isset($this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['orderBy'])
 		) {
 			$cacheReqCount = 0;
@@ -1620,7 +1620,7 @@ trait AppTrait
 			for ($index = 0;$index < 5; $index++) {
 				$json = $this->httpObject->httpRequestObject->customerQueryCacheObject->queryCacheGet(
 					customerId: $this->httpObject->httpRequestObject->customerId,
-					queryCacheKey: $sqlConfig['queryCacheKey']
+					queryCacheKey: $sqlConfig['__CACHE-KEY__']
 				);
 				if ($json !== Constant::$NULL) {
 					$cacheHit = 'true';
@@ -1636,7 +1636,7 @@ trait AppTrait
 					if (!$queryCacheReqFlag) {
 						$cacheReqCount = $this->httpObject->httpRequestObject->customerQueryCacheObject->queryCacheIncrement(
 							customerId: $this->httpObject->httpRequestObject->customerId,
-							queryCacheKey: $sqlConfig['queryCacheKey']
+							queryCacheKey: $sqlConfig['__CACHE-KEY__']
 						);
 						if ($cacheReqCount === 1) {
 							$toBeCached = true;

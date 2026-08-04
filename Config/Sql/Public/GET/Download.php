@@ -27,7 +27,7 @@ return [
 			'activeRequestDataKeySubKey' => Constant::$NO
 		]
 	],
-	'fetchDbMode' => 'Master',
+	'__FETCH-MODE__' => 'Master',
 	'downloadFile' => 'Test.csv',
 	'exportFile' => ''
 ];
