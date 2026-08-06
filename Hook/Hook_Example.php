@@ -61,7 +61,7 @@ class Hook_Example implements HookInterface
 	 */
 	public function init(): bool
 	{
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -73,7 +73,7 @@ class Hook_Example implements HookInterface
 	{
 		$this->execHook();
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**

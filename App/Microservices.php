@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\CommonFunction;
 use Microservices\App\Constant;
 use Microservices\App\Dropbox;
 use Microservices\App\Env;
@@ -84,9 +85,9 @@ class Microservices
 	{
 		$this->httpObject->initRequest();
 
-		$class = null;
+		$class = Constant::$NULL;
 
-		switch (true) {
+		switch (Constant::$TRUE) {
 			case $this->httpReqData['get'][ROUTE_URL_PARAM] === '/logout':
 				$class = __NAMESPACE__ . '\\Logout';
 				break;
@@ -102,7 +103,7 @@ class Microservices
 					httpObject: $this->httpObject
 				);
 				$gateway->init();
-				$gateway = null;
+				$gateway = Constant::$NULL;
 
 				$class = __NAMESPACE__ . '\\Api';
 				break;
@@ -140,7 +141,7 @@ class Microservices
 			);
 		}
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -165,7 +166,7 @@ class Microservices
 	public function returnResults(): bool|string
 	{
 		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
-			return false;
+			return Constant::$FALSE;
 		}
 		return $this->httpObject->httpResponseObject->dataEncodeObject->getData();
 	}
@@ -196,12 +197,18 @@ class Microservices
 			$methods = 'GET, QUERY, POST, PUT, PATCH, DELETE, OPTIONS';
 			$headerArray['Access-Control-Allow-Methods'] = $methods;
 		} else {
-			if ($this->httpObject->httpResponseObject === Constant::$NULL) {
+			if (
+				$this->httpObject->httpResponseObject === Constant::$NULL
+				|| !isset($this->httpObject->httpRequestObject->routeParserObject->sqlConfig)
+			) {
 				$outputRepresentation = Env::$outputRepresentation;
 			} else {
-				$outputRepresentation = $this->httpObject->httpResponseObject->outputRepresentation;
+				$outputRepresentation = CommonFunction::getOutputRepresentation(
+					sqlConfig: $this->httpObject->httpRequestObject->routeParserObject->sqlConfig,
+					httpReqData: $this->httpObject->httpReqData
+				);
 			}
-			switch ($outputRepresentation) {
+			switch ($outputRepresentation['outputRepresentation']) {
 				case 'XML':
 				case 'XSLT':
 					$headerArray['Content-Type'] = 'text/xml; charset=utf-8';

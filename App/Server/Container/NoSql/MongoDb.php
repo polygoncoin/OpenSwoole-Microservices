@@ -193,7 +193,7 @@ class MongoDb implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		$filter = ['key' => $key];
@@ -203,9 +203,9 @@ class MongoDb implements NoSqlInterface
 				$filter
 			)
 		) {
-			return true;
+			return Constant::$TRUE;
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -221,7 +221,7 @@ class MongoDb implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		$filter = ['key' => $key];
@@ -252,7 +252,7 @@ class MongoDb implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		$value = json_encode(
@@ -266,7 +266,7 @@ class MongoDb implements NoSqlInterface
 
 		if ($expire === Constant::$NULL) {
 			if ($this->collectionObject->insertOne($document)) {
-				return true;
+				return Constant::$TRUE;
 			}
 		} else {
 			// Current UTC timestamp
@@ -274,10 +274,10 @@ class MongoDb implements NoSqlInterface
 				(Env::$timestamp + $expire) * 1000
 			);
 			if ($this->collectionObject->insertOne($document)) {
-				return true;
+				return Constant::$TRUE;
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -295,7 +295,7 @@ class MongoDb implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		$filter = ['key' => $key];
@@ -321,13 +321,13 @@ class MongoDb implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		$filter = ['key' => $key];
 		if ($this->collectionObject->deleteOne($filter)) {
-			return true;
+			return Constant::$TRUE;
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 }

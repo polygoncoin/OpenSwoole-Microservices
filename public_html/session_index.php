@@ -71,7 +71,7 @@ $server->on(
 
 		$httpReqData = [];
 
-		$httpReqData['streamData'] = true;
+		$httpReqData['streamData'] = Constant::$TRUE;
 		$httpReqData['server']['domainName'] = $DOMAIN_NAME;
 		$httpReqData['server']['httpRequestMethod'] = $request->server['request_method'];
 
@@ -163,7 +163,11 @@ $server->on(
 				$response->end();
 			} else {
 				ob_start();
-				[$responseHeaderArray, $responseContent, $responseCode] = Start::http(
+				[
+					$responseHeaderArray,
+					$responseContent,
+					$responseCode
+				] = Start::http(
 					httpReqData: $httpReqData
 				);
 				@ob_clean();

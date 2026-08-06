@@ -125,7 +125,7 @@ class CustomSessionHandler implements
 			sessionName: $sessionName
 		);
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -154,7 +154,7 @@ class CustomSessionHandler implements
 			) {
 				$this->sessionData = &$sessionData;
 			}
-			$this->foundSession = true;
+			$this->foundSession = Constant::$TRUE;
 		} else {
 			if (
 				is_null(
@@ -163,7 +163,7 @@ class CustomSessionHandler implements
 			) {
 				$this->unsetSessionCookie();
 			}
-			$this->foundSession = false;
+			$this->foundSession = Constant::$FALSE;
 		}
 
 		// Don't change this return value
@@ -190,7 +190,7 @@ class CustomSessionHandler implements
 			);
 		}
 
-		$this->creatingSessionId = true;
+		$this->creatingSessionId = Constant::$TRUE;
 
 		do {
 			$sessionId = $this->getRandomString();
@@ -200,7 +200,7 @@ class CustomSessionHandler implements
 			) === Constant::$TRUE
 		);
 
-		$this->creatingSessionId = null;
+		$this->creatingSessionId = Constant::$NULL;
 
 		return $sessionId;
 	}
@@ -250,7 +250,7 @@ class CustomSessionHandler implements
 			)
 		) {
 			$this->unsetSessionCookie();
-			return true;
+			return Constant::$TRUE;
 		}
 
 		$function = ($this->foundSession) ? 'updateSession' : 'setSession';
@@ -260,7 +260,7 @@ class CustomSessionHandler implements
 				sessionData: $sessionData
 			)
 		) {
-			$this->isTimestampUpdated = true;
+			$this->isTimestampUpdated = Constant::$TRUE;
 		}
 
 		return $this->isTimestampUpdated;
@@ -296,7 +296,7 @@ class CustomSessionHandler implements
 			)
 		) {
 			$this->unsetSessionCookie();
-			return true;
+			return Constant::$TRUE;
 		}
 
 		if (
@@ -305,7 +305,7 @@ class CustomSessionHandler implements
 				sessionData: $sessionData
 			)
 		) {
-			$this->isTimestampUpdated = true;
+			$this->isTimestampUpdated = Constant::$TRUE;
 		}
 
 		return $this->isTimestampUpdated;
@@ -372,10 +372,10 @@ class CustomSessionHandler implements
 
 		$this->container->closeSession();
 		$this->sessionData = '';
-		$this->foundSession = null;
-		$this->isTimestampUpdated = false;
+		$this->foundSession = Constant::$NULL;
+		$this->isTimestampUpdated = Constant::$FALSE;
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -437,7 +437,7 @@ class CustomSessionHandler implements
 		) {
 			// Remove Session Set-Cookie header
 			$headerArray = headers_list();
-			$headerFound = false;
+			$headerFound = Constant::$FALSE;
 			foreach ($headerArray as $index => $header) {
 				if (
 					strpos(
@@ -446,7 +446,7 @@ class CustomSessionHandler implements
 					) !== Constant::$FALSE
 				) {
 					unset($headerArray[$index]);
-					$headerFound = true;
+					$headerFound = Constant::$TRUE;
 					break;
 				}
 			}

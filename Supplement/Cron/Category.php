@@ -15,6 +15,7 @@
 
 namespace Microservices\Supplement\Cron;
 
+use Microservices\App\Constant;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
 use Microservices\Supplement\Cron\CronInterface;
@@ -61,7 +62,7 @@ class Category implements CronInterface
 	 */
 	public function init(): bool
 	{
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -76,6 +77,6 @@ class Category implements CronInterface
 			code: HttpStatus::$Ok
 		);
 
-		return true;
+		return Constant::$TRUE;
 	}
 }

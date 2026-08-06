@@ -15,6 +15,8 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Constant;
+
 /**
  * Cache Server Key
  * php version 8.3
@@ -40,7 +42,7 @@ class CacheServerKey
 		&$domainName
 	): null|string {
 		if (empty($domainName)) {
-			return null;
+			return Constant::$NULL;
 		}
 		return "pub:{$domainName}";
 	}
@@ -56,7 +58,7 @@ class CacheServerKey
 		$domainName
 	): null|string {
 		if (empty($domainName)) {
-			return null;
+			return Constant::$NULL;
 		}
 		return "pri:t:{$domainName}";
 	}
@@ -72,7 +74,7 @@ class CacheServerKey
 		$domainName
 	): null|string {
 		if (empty($domainName)) {
-			return null;
+			return Constant::$NULL;
 		}
 		return "pri:s:{$domainName}";
 	}
@@ -93,7 +95,7 @@ class CacheServerKey
 			strlen($customerId) === 0
 			|| strlen($username) === 0
 		) {
-			return null;
+			return Constant::$NULL;
 		}
 		return "c:{$customerId}:u:{$username}";
 	}
@@ -114,7 +116,7 @@ class CacheServerKey
 			strlen($customerId) === 0
 			|| strlen($customerUserGroupId) === 0
 		) {
-			return null;
+			return Constant::$NULL;
 		}
 		return "c:{$customerId}:g:{$customerUserGroupId}";
 	}
@@ -130,7 +132,7 @@ class CacheServerKey
 		$customerId
 	): null|string {
 		if (empty($customerId)) {
-			return null;
+			return Constant::$NULL;
 		}
 		return "c:{$customerId}:cidr";
 	}
@@ -151,7 +153,7 @@ class CacheServerKey
 			strlen($customerId) === 0
 			|| strlen($customerUserGroupId) === 0
 		) {
-			return null;
+			return Constant::$NULL;
 		}
 		return "c:{$customerId}:g:{$customerUserGroupId}:cidr";
 	}
@@ -172,7 +174,7 @@ class CacheServerKey
 			strlen($customerId) === 0
 			|| strlen($customerUserId) === 0
 		) {
-			return null;
+			return Constant::$NULL;
 		}
 		return "c:{$customerId}:u:{$customerUserId}:cidr";
 	}
@@ -188,7 +190,7 @@ class CacheServerKey
 		$token
 	): null|string {
 		if (empty($token)) {
-			return null;
+			return Constant::$NULL;
 		}
 		return "t:{$token}";
 	}
@@ -209,7 +211,7 @@ class CacheServerKey
 			strlen($customerId) === 0
 			|| strlen($customerUserId) === 0
 		) {
-			return null;
+			return Constant::$NULL;
 		}
 		return "c:{$customerId}:u:{$customerUserId}:token";
 	}
@@ -230,7 +232,7 @@ class CacheServerKey
 			strlen($customerId) === 0
 			|| strlen($customerUserId) === 0
 		) {
-			return null;
+			return Constant::$NULL;
 		}
 		return "c:{$customerId}:u:{$customerUserId}:sId";
 	}
@@ -251,7 +253,7 @@ class CacheServerKey
 			strlen($customerId) === 0
 			|| strlen($customerUserId) === 0
 		) {
-			return null;
+			return Constant::$NULL;
 		}
 		return "c:{$customerId}:u:{$customerUserId}:con";
 	}
@@ -272,7 +274,7 @@ class CacheServerKey
 			strlen($customerId) === 0
 			|| strlen($customerUserId) === 0
 		) {
-			return null;
+			return Constant::$NULL;
 		}
 		return "c:{$customerId}:u:{$customerUserId}:rlag";
 	}

@@ -21,21 +21,21 @@ use Microservices\App\Web;
 
 $headerArray = $defaultHeaderArray;
 $headerArray[] = $contentType;
-$proceed = false;
+$proceed = Constant::$FALSE;
 
 if (
 	isset($token)
 	&& $token !== Constant::$NULL
 ) {
 	$headerArray[] = "Authorization: Bearer {$token}";
-	$proceed = true;
+	$proceed = Constant::$TRUE;
 }
 if (
 	isset($sessionCookie)
 	&& $sessionCookie !== Constant::$NULL
 ) {
 	$headerArray[] = "Cookie: {$sessionCookie}";
-	$proceed = true;
+	$proceed = Constant::$TRUE;
 }
 
 if (isset($proceed)) {
@@ -49,6 +49,8 @@ if (isset($proceed)) {
 		httpRequestMethod: Constant::$PUT,
 		route: '/address/1',
 		header: $headerArray,
-		payload: json_encode(value: $paramArray)
+		payload: json_encode(
+			value: $paramArray
+		)
 	);
 }

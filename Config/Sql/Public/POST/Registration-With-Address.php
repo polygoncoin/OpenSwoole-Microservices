@@ -44,13 +44,13 @@ return [
 		[
 			'column' => 'customer_user_password_hash',
 			'activeRequestDataKey' => 'function',
-			'activeRequestDataKeySubKey' => function($activeRequestData) {
-				if (
-					isset($activeRequestData['payload'])
-					&& isset($activeRequestData['payload']['password'])
-				) {
+			'activeRequestDataKeySubKey' => function(
+				$activeRequestData,
+				$payload
+			) {
+				if (isset($payload['password'])) {
 					return password_hash(
-						password: $activeRequestData['payload']['password'],
+						password: $payload['password'],
 						algo: PASSWORD_DEFAULT
 					);
 				}
@@ -102,8 +102,9 @@ return [
 	'idempotentWindow' => 10,
 	'responseLagWindow' => 3600,
 	'responseLag' => [
-		// No of request => Seconds Lag
-		1 => 0,
-		// 2 => 10,
+		[
+			'requestCount' => 1,
+			'lagResponse' => 0
+		]
 	]
 ];

@@ -86,7 +86,11 @@ class Start
 				$data = '{}';
 				$status = HttpStatus::$Ok;
 
-				return [$headerArray, $data, $status];
+				return [
+					$headerArray,
+					$data,
+					$status
+				];
 			}
 
 			if ($Microservices->init()) {
@@ -117,7 +121,11 @@ class Start
 					$status = $Microservices->httpObject->httpResponseObject->httpStatus;
 				}
 
-				return [$headerArray, $data, $status];
+				return [
+					$headerArray,
+					$data,
+					$status
+				];
 			}
 		} catch (\Exception $e) {
 			if (
@@ -127,7 +135,10 @@ class Start
 					strict: Constant::$TRUE
 				)
 			) {
-				list($usec, $sec) = explode(
+				list(
+					$usec,
+					$sec
+				) = explode(
 					separator: ' ',
 					string: microtime()
 				);
@@ -151,8 +162,17 @@ class Start
 				$logObject = new Log(
 					httpObject: $Microservices->httpObject
 				);
+				
+				$payload = [];
+				if (
+					isset($Microservices->httpObject->httpRequestObject)
+					&& isset($Microservices->httpObject->httpRequestObject->dataDecodeObject)
+				) {
+					$payload = $Microservices->httpObject->httpRequestObject->dataDecodeObject->get();
+				}
 				$logId = $logObject->log(
-					logData: $logData
+					logData: $logData,
+					payload: $payload
 				);
 			}
 
@@ -204,7 +224,11 @@ class Start
 			);
 			$status = $e->getCode();
 
-			return [$headerArray, $data, $status];
+			return [
+				$headerArray,
+				$data,
+				$status
+			];
 		}
 	}
 }

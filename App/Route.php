@@ -96,10 +96,10 @@ class Route
 				feature: 'customer_enabled_routes_request'
 			)
 		) {
-			return true;
+			return Constant::$TRUE;
 		}
 
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -154,7 +154,7 @@ class Route
 			data: $httpRouteArray
 		);
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**

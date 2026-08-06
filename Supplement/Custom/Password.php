@@ -65,7 +65,7 @@ class Password implements CustomInterface
 	{
 		$this->httpObject->httpRequestObject->loadPayload();
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -75,17 +75,20 @@ class Password implements CustomInterface
 	 */
 	public function process(): mixed
 	{
-		switch ($this->httpObject->httpRequestObject->activeRequestData['payloadType']) {
+		$payloadType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+			keyString: Constant::$NULL
+		);
+
+		switch ($payloadType) {
 			case 'Array':
-				$payload = $this->httpObject->httpRequestObject->dataDecodeObject->get('0');
+				$payload = $this->httpObject->httpRequestObject->dataDecodeObject->getObject('0');
 				break;
 			case 'Object':
-				$payload = $this->httpObject->httpRequestObject->dataDecodeObject->get();
+				$payload = $this->httpObject->httpRequestObject->dataDecodeObject->getObject();
 				break;
 		}
-		$this->httpObject->httpRequestObject->activeRequestData['payload'] = $payload;
 
-		$oldPassword = $this->httpObject->httpRequestObject->activeRequestData['payload']['old_password'];
+		$oldPassword = $payload['old_password'];
 		$oldPasswordHash = $this->httpObject->httpRequestObject->activeRequestData['userData']['password_hash'];
 
 		if (
@@ -95,7 +98,7 @@ class Password implements CustomInterface
 			)
 		) {
 			$userName = $this->httpObject->httpRequestObject->activeRequestData['userData']['username'];
-			$newPassword = $this->httpObject->httpRequestObject->activeRequestData['payload']['new_password'];
+			$newPassword = $payload['new_password'];
 			$newPasswordHash = password_hash(
 				password: $newPassword,
 				algo: PASSWORD_DEFAULT
@@ -140,6 +143,6 @@ class Password implements CustomInterface
 			);
 		}
 
-		return true;
+		return Constant::$TRUE;
 	}
 }

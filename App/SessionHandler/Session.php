@@ -240,10 +240,10 @@ class Session
 		}
 		session_set_save_handler(
 			$customSessionHandler,
-			true
+			Constant::$TRUE
 		);
 
-		$this->initProcessInitialized = true;
+		$this->initProcessInitialized = Constant::$TRUE;
 	}
 
 	/**
@@ -382,14 +382,14 @@ class Session
 			&& !empty($_COOKIE[$this->sessionName])
 		) {
 			$this->sessionStartCheck();
-			$this->optionArray['read_and_close'] = true;
+			$this->optionArray['read_and_close'] = Constant::$TRUE;
 
 			$this->sessionContainer->sessionOptionArray = $this->optionArray;
 			return session_start(
 				options: $this->optionArray
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**

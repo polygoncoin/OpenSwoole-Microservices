@@ -16,6 +16,7 @@
 namespace Microservices\Supplement\ThirdParty;
 
 use Microservices\App\CommonFunction;
+use Microservices\App\Constant;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
 use Microservices\Supplement\ThirdParty\ThirdPartyInterface;
@@ -63,7 +64,7 @@ class Google implements ThirdPartyInterface
 	 */
 	public function init(): bool
 	{
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -110,7 +111,7 @@ class Google implements ThirdPartyInterface
 			output: $output
 		);
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**

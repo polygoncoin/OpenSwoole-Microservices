@@ -172,7 +172,7 @@ class DatabaseServer
 	{
 		$this->connectDb();
 
-		$this->beganTransaction = true;
+		$this->beganTransaction = Constant::$TRUE;
         $this->dbServerObject->begin();
 	}
 
@@ -184,8 +184,8 @@ class DatabaseServer
 	public function commit(): void
 	{
 		if ($this->beganTransaction) {
-			$this->beganTransaction = false;
-	        $this->dbServerObject->commit();
+			$this->beganTransaction = Constant::$FALSE;
+			$this->dbServerObject->commit();
 		}
 	}
 
@@ -197,8 +197,8 @@ class DatabaseServer
 	public function rollBack(): void
 	{
 		if ($this->beganTransaction) {
-			$this->beganTransaction = false;
-	        $this->dbServerObject->rollBack();
+			$this->beganTransaction = Constant::$FALSE;
+			$this->dbServerObject->rollBack();
 		}
 	}
 
@@ -216,7 +216,7 @@ class DatabaseServer
 				$this->rollBack();
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 
 	}
 
@@ -228,13 +228,13 @@ class DatabaseServer
 	public function lastInsertId(): bool|int
 	{
 		try {
-	        return $this->dbServerObject->lastInsertId();
+			return $this->dbServerObject->lastInsertId();
 		} catch (\Exception $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**

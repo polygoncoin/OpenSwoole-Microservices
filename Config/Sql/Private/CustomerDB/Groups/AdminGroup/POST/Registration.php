@@ -40,13 +40,13 @@ return [
 		[
 			'column' => 'customer_user_password_hash',
 			'activeRequestDataKey' => 'function',
-			'activeRequestDataKeySubKey' => function($activeRequestData) {
-				if (
-					isset($activeRequestData['payload'])
-					&& isset($activeRequestData['payload']['password'])
-				) {
+			'activeRequestDataKeySubKey' => function(
+				$activeRequestData,
+				$payload
+			) {
+				if (isset($payload['password'])) {
 					return password_hash(
-						password: $activeRequestData['payload']['password'],
+						password: $payload['password'],
 						algo: PASSWORD_DEFAULT
 					);
 				}

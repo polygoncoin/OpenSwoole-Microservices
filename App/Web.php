@@ -61,7 +61,7 @@ class Web
 			case Constant::$GET:
 				break;
 			case Constant::$POST:
-				$curlConfig[\CURLOPT_POST] = true;
+				$curlConfig[\CURLOPT_POST] = Constant::$TRUE;
 				if ($fileLocation === Constant::$NULL) {
 					$curlConfig[\CURLOPT_POSTFIELDS] = $payload;
 				}
@@ -76,7 +76,7 @@ class Web
 				}
 				break;
 		}
-		$curlConfig[\CURLOPT_RETURNTRANSFER] = true;
+		$curlConfig[\CURLOPT_RETURNTRANSFER] = Constant::$TRUE;
 
 		$cookieFileName = '/' . md5(
 			$homeURL
@@ -248,7 +248,7 @@ class Web
 
 			$errorConstant = [];
 
-			$list   = get_defined_constants(true);
+			$list   = get_defined_constants(Constant::$TRUE);
 			$list   = preg_grep('/^CURLE_/', array_flip($list['curl']));
 
 			foreach ($list as $const) {
@@ -418,7 +418,7 @@ class Web
 			return;
 		}
 
-		$rowTagStartFlag = false;
+		$rowTagStartFlag = Constant::$FALSE;
 
 		$isObject = (isset($xmlParamArray[0])) ? Constant::$FALSE : Constant::$TRUE;
 
@@ -432,12 +432,12 @@ class Web
 			if (empty($xmlParamArray)) {
 				return;
 			}
-			$isObject = true;
+			$isObject = Constant::$TRUE;
 		}
 
 		if (!$isObject) {
 			$payload .= '<Records>';
-			$rowTagStartFlag = true;
+			$rowTagStartFlag = Constant::$TRUE;
 		}
 
 		if ($rowTagStartFlag) {

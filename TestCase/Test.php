@@ -42,7 +42,7 @@ class Test
 	/**
 	 * Constructor
 	 * 
-	 * @param array $httpReqData
+	 * @param array $httpReqData HTTP request data
 	 */
 	public function __construct(
 		&$httpReqData

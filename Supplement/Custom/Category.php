@@ -66,7 +66,7 @@ class Category implements CustomInterface
 	 */
 	public function init(): bool
 	{
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -77,7 +77,7 @@ class Category implements CustomInterface
 	public function process(): mixed
 	{
 		$sql = '
-			SELECT * 
+			SELECT *
 			FROM category
 			WHERE is_deleted = :is_deleted AND parent_id = :parent_id
 		';
@@ -96,6 +96,6 @@ class Category implements CustomInterface
 			data: $rowArray
 		);
 
-		return true;
+		return Constant::$TRUE;
 	}
 }

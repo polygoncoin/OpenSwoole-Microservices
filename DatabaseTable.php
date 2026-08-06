@@ -30,20 +30,20 @@ namespace Microservices;
 class DatabaseTable
 {
 	// Global Primary Key Column
-	public static $globalCounterPrimaryKey 		= 'id';
-	public static $requestPrimaryKey     		= 'request_id';
-	public static $errorLogPrimaryKey      		= 'error_id';
-	public static $debugLogPrimaryKey       	= 'debug_id';
-	public static $superAdminPrimaryKey     	= 'super_admin_id';
+	public static $globalCounterPrimaryKey      = 'id';
+	public static $requestPrimaryKey            = 'request_id';
+	public static $errorLogPrimaryKey           = 'error_id';
+	public static $debugLogPrimaryKey           = 'debug_id';
+	public static $superAdminPrimaryKey         = 'super_admin_id';
 	public static $superAdminContactPrimaryKey  = 'super_admin_contact_id';
 	public static $superAdminGroupPrimaryKey    = 'super_admin_group_id';
-	public static $customerPrimaryKey    		= 'customer_id';
+	public static $customerPrimaryKey           = 'customer_id';
 	public static $customerContactPrimaryKey    = 'customer_contact_id';
 
 	// Customer Master Primary Key Column
-	public static $customerUserGroupPrimaryKey	= 'customer_user_group_id';
-	public static $customerUserPrimaryKey    	= 'customer_user_id';
+	public static $customerUserGroupPrimaryKey  = 'customer_user_group_id';
+	public static $customerUserPrimaryKey       = 'customer_user_id';
 	public static $importFileDetailPrimaryKey   = 'id';
-	public static $addressPrimaryKey    		= 'id';
-	public static $categoryPrimaryKey   		= 'id';
+	public static $addressPrimaryKey            = 'id';
+	public static $categoryPrimaryKey           = 'id';
 }

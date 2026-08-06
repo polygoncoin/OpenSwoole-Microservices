@@ -91,7 +91,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -115,14 +115,14 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 				)
 			];
 			if ($this->collectionObject->insertOne($document)) {
-				return true;
+				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -153,14 +153,14 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 					$update
 				)
 			) {
-				return true;
+				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -189,14 +189,14 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 					$update
 				)
 			) {
-				return true;
+				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -209,7 +209,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	public function gcSession(
 		$sessionMaxLifetime
 	): bool {
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -226,14 +226,14 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 			$filter = ['sessionId' => $sessionId];
 
 			if ($this->collectionObject->deleteOne($filter)) {
-				return true;
+				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -243,7 +243,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	public function closeSession(): void
 	{
-		$this->mongoDbServerObject = null;
+		$this->mongoDbServerObject = Constant::$NULL;
 	}
 
 	/**

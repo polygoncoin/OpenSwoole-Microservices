@@ -108,7 +108,7 @@ class JsonDecode implements DataDecodeInterface
 			jsonFileHandle: $this->jsonFileHandle
 		);
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -130,7 +130,7 @@ class JsonDecode implements DataDecodeInterface
 	 */
 	public function indexData(): void
 	{
-		$this->jsonFileIndex = null;
+		$this->jsonFileIndex = Constant::$NULL;
 		foreach (
 			$this->jsonDecodeEngineObject->process(
 				index: Constant::$TRUE
@@ -178,9 +178,10 @@ class JsonDecode implements DataDecodeInterface
 	 * 
 	 * @return bool
 	 */
-	public function isset($keyString = null): bool
-	{
-		$return = true;
+	public function isset(
+		$keyString = null
+	): bool {
+		$return = Constant::$TRUE;
 		if (
 			($keyString !== Constant::$NULL)
 			&& strlen(
@@ -197,7 +198,7 @@ class JsonDecode implements DataDecodeInterface
 				if (isset($jsonFileIndex[$objectKey])) {
 					$jsonFileIndex = &$jsonFileIndex[$objectKey];
 				} else {
-					$return = false;
+					$return = Constant::$FALSE;
 					break;
 				}
 			}
@@ -308,7 +309,7 @@ class JsonDecode implements DataDecodeInterface
 				keyString: $keyString
 			)
 		) {
-			return false;
+			return Constant::$FALSE;
 		}
 		$valueArray = [];
 		$this->load(
@@ -317,6 +318,29 @@ class JsonDecode implements DataDecodeInterface
 		foreach ($this->jsonDecodeEngineObject->process() as $valueArray) {
 			break;
 		}
+		return $valueArray;
+	}
+
+	/**
+	 * Get Object as per $keyString (Ignores Sub Objects/Array)
+	 * 
+	 * @param string $keyString Key values separated by colon
+	 * 
+	 * @return mixed
+	 */
+	public function getObject(
+		$keyString = ''
+	): mixed {
+		$valueArray = $this->get(
+			keyString: $keyString
+		);
+
+		foreach($valueArray as $key => $value) {
+			if (is_array($value)) {
+				unset($valueArray[$key]);
+			}
+		}
+
 		return $valueArray;
 	}
 
@@ -335,7 +359,7 @@ class JsonDecode implements DataDecodeInterface
 				keyString: $keyString
 			)
 		) {
-			return false;
+			return Constant::$FALSE;
 		}
 		$this->load(
 			keyString: $keyString
@@ -361,12 +385,12 @@ class JsonDecode implements DataDecodeInterface
 		if (
 			in_array(
 				needle: $keyString,
-				haystack: [null, ''],
+				haystack: [Constant::$NULL, ''],
 				strict: Constant::$TRUE
 			)
 		) {
-			$this->jsonDecodeEngineObject->startIndex = null;
-			$this->jsonDecodeEngineObject->endIndex = null;
+			$this->jsonDecodeEngineObject->startIndex = Constant::$NULL;
+			$this->jsonDecodeEngineObject->endIndex = Constant::$NULL;
 			return;
 		}
 		$jsonFileIndex = &$this->jsonFileIndex;

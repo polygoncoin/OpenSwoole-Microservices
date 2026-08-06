@@ -122,20 +122,20 @@ class JsonDecodeEngine
 		$index = false
 	): Generator {
 		// Flags Variable
-		$quote = false;
+		$quote = Constant::$FALSE;
 
 		// Values inside Quotes
 		$keyValue = '';
 		$valueValue = '';
 
 		// Values without Quotes
-		$nullStr = null;
+		$nullStr = Constant::$NULL;
 
 		// Variable mode - key/value;
 		$varMode = 'keyValue';
 
 		$strToEscape  = '';
-		$prevIsEscape = false;
+		$prevIsEscape = Constant::$FALSE;
 
 		$this->charCounter = $this->startIndex !== Constant::$NULL ? $this->startIndex : 0;
 		fseek(
@@ -162,12 +162,12 @@ class JsonDecodeEngine
 			);
 			$this->charCounter++
 		) {
-			switch (true) {
+			switch (Constant::$TRUE) {
 				case $quote === Constant::$FALSE:
-					switch (true) {
+					switch (Constant::$TRUE) {
 						// Start of Key or value inside quote
 						case $char === '"':
-							$quote = true;
+							$quote = Constant::$TRUE;
 							$nullStr = '';
 							break;
 
@@ -213,7 +213,7 @@ class JsonDecodeEngine
 									}
 									break;
 							}
-							$nullStr = null;
+							$nullStr = Constant::$NULL;
 							$keyValue = $valueValue = '';
 							$varMode = 'keyValue';
 							break;
@@ -238,7 +238,7 @@ class JsonDecodeEngine
 					break;
 
 				case $quote === Constant::$TRUE:
-					switch (true) {
+					switch (Constant::$TRUE) {
 						// Collect string to be escaped
 						case $varMode === 'valueValue'
 							&& ($char === '\\'
@@ -251,7 +251,7 @@ class JsonDecodeEngine
 								)
 							):
 							$strToEscape .= $char;
-							$prevIsEscape = true;
+							$prevIsEscape = Constant::$TRUE;
 							break;
 
 						// Escape value with char
@@ -268,7 +268,7 @@ class JsonDecodeEngine
 								subject: $strToEscape . $char
 							);
 							$strToEscape = '';
-							$prevIsEscape = false;
+							$prevIsEscape = Constant::$FALSE;
 							break;
 
 						// Escape value without char
@@ -285,13 +285,13 @@ class JsonDecodeEngine
 								subject: $strToEscape . $char
 							);
 							$strToEscape = '';
-							$prevIsEscape = false;
+							$prevIsEscape = Constant::$FALSE;
 							break;
 
 						// Closing double quotes
 						case $char === '"':
-							$quote = false;
-							switch (true) {
+							$quote = Constant::$FALSE;
+							switch (Constant::$TRUE) {
 								// Closing qoute of Key
 								case $varMode === 'keyValue':
 									$varMode = 'valueValue';
@@ -317,7 +317,7 @@ class JsonDecodeEngine
 			}
 		}
 		$this->jsonDecodeObjectObjectArray = [];
-		$this->jsonDecodeObjectObject = null;
+		$this->jsonDecodeObjectObject = Constant::$NULL;
 	}
 
 	/**
@@ -364,7 +364,7 @@ class JsonDecodeEngine
 		$nullStr,
 		$index
 	): array|bool {
-		$arr = false;
+		$arr = Constant::$FALSE;
 		switch ($char) {
 			case '[':
 				if (!$index) {
@@ -415,7 +415,7 @@ class JsonDecodeEngine
 						];
 					}
 				}
-				$this->jsonDecodeObjectObject = null;
+				$this->jsonDecodeObjectObject = Constant::$NULL;
 				$this->popPreviousObject();
 				break;
 			case '}':
@@ -444,7 +444,7 @@ class JsonDecodeEngine
 						];
 					}
 				}
-				$this->jsonDecodeObjectObject = null;
+				$this->jsonDecodeObjectObject = Constant::$NULL;
 				$this->popPreviousObject();
 				break;
 		}
@@ -459,7 +459,7 @@ class JsonDecodeEngine
 		) {
 			return $arr;
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -472,9 +472,9 @@ class JsonDecodeEngine
 	private function checkNullStr(
 		$nullStr
 	): bool|int|null {
-		$return = false;
+		$return = Constant::$FALSE;
 		if ($nullStr === 'null') {
-			$return = null;
+			$return = Constant::$NULL;
 		} elseif (
 			is_numeric(
 				value: $nullStr
@@ -592,7 +592,7 @@ class JsonDecodeEngine
 		) {
 			$this->jsonDecodeObjectObject = array_pop($this->jsonDecodeObjectObjectArray);
 		} else {
-			$this->jsonDecodeObjectObject = null;
+			$this->jsonDecodeObjectObject = Constant::$NULL;
 		}
 	}
 
@@ -622,7 +622,7 @@ class JsonDecodeEngine
 	 */
 	private function getObjectValues(): array|bool
 	{
-		$arr = false;
+		$arr = Constant::$FALSE;
 		if (
 			$this->jsonDecodeObjectObject !== Constant::$NULL
 			&& $this->jsonDecodeObjectObject->mode === 'Object'

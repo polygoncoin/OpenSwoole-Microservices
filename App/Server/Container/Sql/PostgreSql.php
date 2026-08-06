@@ -173,7 +173,7 @@ class PostgreSql implements SqlInterface
 	{
 		$this->connect();
 
-		$this->beganTransaction = true;
+		$this->beganTransaction = Constant::$TRUE;
 		try {
 			$this->pgsqlServerObject->beginTransaction();
 		} catch (\PDOException $e) {
@@ -194,7 +194,7 @@ class PostgreSql implements SqlInterface
 	{
 		try {
 			if ($this->beganTransaction) {
-				$this->beganTransaction = false;
+				$this->beganTransaction = Constant::$FALSE;
 				$this->pgsqlServerObject->commit();
 			}
 		} catch (\PDOException $e) {
@@ -215,7 +215,7 @@ class PostgreSql implements SqlInterface
 	{
 		try {
 			if ($this->beganTransaction) {
-				$this->beganTransaction = false;
+				$this->beganTransaction = Constant::$FALSE;
 				$this->pgsqlServerObject->rollBack();
 			}
 		} catch (\PDOException $e) {
@@ -248,7 +248,7 @@ class PostgreSql implements SqlInterface
 				);
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -272,7 +272,7 @@ class PostgreSql implements SqlInterface
 				);
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -342,7 +342,7 @@ class PostgreSql implements SqlInterface
 				);
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -365,7 +365,7 @@ class PostgreSql implements SqlInterface
 				);
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**

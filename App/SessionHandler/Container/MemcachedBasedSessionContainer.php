@@ -15,6 +15,7 @@
 
 namespace Microservices\App\SessionHandler\Container;
 
+use Microservices\App\Constant;
 use Microservices\App\HttpStatus;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 use Microservices\App\SessionHandler\Container\SessionContainerHelper;
@@ -75,7 +76,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -100,14 +101,14 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 					$this->sessionMaxLifetime
 				)
 			) {
-				return true;
+				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -147,14 +148,14 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 					$this->sessionMaxLifetime
 				)
 			) {
-				return true;
+				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -167,7 +168,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	public function gcSession(
 		$sessionMaxLifetime
 	): bool {
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -182,14 +183,14 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	): bool {
 		try {
 			if ($this->memcachedServerObject->delete($sessionId)) {
-				return true;
+				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -199,7 +200,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	public function closeSession(): void
 	{
-		$this->memcachedServerObject = null;
+		$this->memcachedServerObject = Constant::$NULL;
 	}
 
 	/**

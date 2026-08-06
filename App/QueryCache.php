@@ -101,7 +101,7 @@ class QueryCache
 			strlen($customerId) === 0
 			|| strlen($queryCacheKey) === 0
 		) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return "qc:{$customerId}:{$queryCacheKey}";
@@ -122,7 +122,7 @@ class QueryCache
         $this->connectCustomerQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		$queryCacheKey = $this->queryCachePrepend(
@@ -130,7 +130,7 @@ class QueryCache
 			queryCacheKey: $queryCacheKey
 		);
 
-		$json = null;
+		$json = Constant::$NULL;
 		if (
 			$this->queryCacheServerObject->queryCacheExist(
 				queryCacheKey: $queryCacheKey
@@ -159,7 +159,7 @@ class QueryCache
         $this->connectCustomerQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		$queryCacheKey = 'i:' . $queryCacheKey;
@@ -190,7 +190,7 @@ class QueryCache
         $this->connectCustomerQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		$delQueryCacheKey = 'i:' . $queryCacheKey;
@@ -229,7 +229,7 @@ class QueryCache
         $this->connectCustomerQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		$queryCacheKey = $this->queryCachePrepend(

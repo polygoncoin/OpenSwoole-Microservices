@@ -162,7 +162,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->cacheExist(
@@ -183,7 +183,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->cacheGet(
@@ -206,7 +206,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->cacheSet(
@@ -230,7 +230,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->cacheIncrement(
@@ -252,7 +252,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->cacheDelete(

@@ -160,6 +160,21 @@ class DataDecode
 	}
 
 	/**
+	 * Get Object as per $keyString (Ignores Sub Objects/Array)
+	 * 
+	 * @param string $keyString Key values separated by colon
+	 * 
+	 * @return mixed
+	 */
+	public function getObject(
+		$keyString = ''
+	): mixed {
+		return $this->dataDecoderObject->getObject(
+			keyString: $keyString
+		);
+	}
+
+	/**
 	 * Get complete result as per $keyString
 	 * 
 	 * @param string $keyString Key values separated by colon

@@ -91,7 +91,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 				cipherText: $record['sessionData']
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -242,7 +242,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	public function closeSession(): void
 	{
-		$this->mySqlServerObject = null;
+		$this->mySqlServerObject = Constant::$NULL;
 	}
 
 	/**
@@ -297,7 +297,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 					$record = $stmt->fetch();
 					break;
 				default:
-					$record = false;
+					$record = Constant::$FALSE;
 					break;
 			}
 			$stmt->closeCursor();
@@ -335,7 +335,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 				e: $e
 			);
 		}
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**

@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Constant;
 use Microservices\App\DataRepresentation\DataEncode;
 use Microservices\App\Env;
 use Microservices\App\Http;
@@ -49,34 +50,6 @@ class HttpResponse
 	private $endMicroTimestamp = null;
 
 	/**
-	 * Output Representation
-	 * 
-	 * @var null|string
-	 */
-	public $outputRepresentation = null;
-
-	/**
-	 * Directory for HTML output format
-	 * 
-	 * @var null|string
-	 */
-	public $htmlDirectory = null;
-
-	/**
-	 * Directory for PHP output format
-	 * 
-	 * @var null|string
-	 */
-	public $phpDirectory = null;
-
-	/**
-	 * Directory for XML output format
-	 * 
-	 * @var null|string
-	 */
-	public $xsltDirectory = null;
-
-	/**
 	 * HTTP Status
 	 * 
 	 * @var int
@@ -107,10 +80,6 @@ class HttpResponse
 	) {
 		$this->httpObject = &$httpObject;
 		$this->httpStatus = HttpStatus::$Ok;
-		$this->outputRepresentation = Env::$outputRepresentation;
-		$this->dataEncodeObject = new DataEncode(
-			httpObject: $this->httpObject
-		);
 
 		if (Env::$OUTPUT_PERFORMANCE_STATS) {
 			$this->startMicroTimestamp = microtime(as_float: Constant::$TRUE);
@@ -124,9 +93,18 @@ class HttpResponse
 	 */
 	public function init(): bool
 	{
+		$outputRepresentation = CommonFunction::getOutputRepresentation(
+			sqlConfig: [],
+			httpReqData: $this->httpObject->httpReqData
+		);
+		$this->dataEncodeObject = new DataEncode(
+			httpObject: $this->httpObject,
+			outputRepresentation: $outputRepresentation
+		);
+
 		$this->dataEncodeObject->init();
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 

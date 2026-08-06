@@ -121,7 +121,9 @@ interface DataEncodeInterface
 	 * 
 	 * @return void
 	 */
-	public function appendData(&$data): void;
+	public function appendData(
+		&$data
+	): void;
 
 	/**
 	 * Append raw data string

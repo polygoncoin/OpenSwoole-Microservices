@@ -15,6 +15,8 @@
 
 namespace Microservices\Supplement\Upload;
 
+use Microservices\App\Constant;
+
 /**
  * UploadAPI Trait
  * php version 8.3
@@ -60,6 +62,6 @@ trait UploadTrait
 			stream: $src
 		);
 
-		return true;
+		return Constant::$TRUE;
 	}
 }

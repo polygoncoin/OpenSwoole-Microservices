@@ -146,7 +146,7 @@ class MySqlDatabase implements DatabaseServerInterface
 	{
 		$this->connectDb();
 
-		$this->beganTransaction = true;
+		$this->beganTransaction = Constant::$TRUE;
         $this->sqlServerObject->begin();
 	}
 
@@ -158,8 +158,8 @@ class MySqlDatabase implements DatabaseServerInterface
 	public function commit(): void
 	{
 		if ($this->beganTransaction) {
-			$this->beganTransaction = false;
-	        $this->sqlServerObject->commit();
+			$this->beganTransaction = Constant::$FALSE;
+			$this->sqlServerObject->commit();
 		}
 	}
 
@@ -171,8 +171,8 @@ class MySqlDatabase implements DatabaseServerInterface
 	public function rollBack(): void
 	{
 		if ($this->beganTransaction) {
-			$this->beganTransaction = false;
-	        $this->sqlServerObject->rollBack();
+			$this->beganTransaction = Constant::$FALSE;
+			$this->sqlServerObject->rollBack();
 		}
 	}
 
@@ -190,7 +190,7 @@ class MySqlDatabase implements DatabaseServerInterface
 				$this->rollBack();
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 
 	}
 
@@ -202,13 +202,13 @@ class MySqlDatabase implements DatabaseServerInterface
 	public function lastInsertId(): bool|int
 	{
 		try {
-	        return $this->sqlServerObject->lastInsertId();
+			return $this->sqlServerObject->lastInsertId();
 		} catch (\Exception $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**

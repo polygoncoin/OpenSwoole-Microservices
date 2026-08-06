@@ -83,7 +83,7 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 				return $sessionData;
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -216,7 +216,7 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 	public function gcSession(
 		$sessionMaxLifetime
 	): bool {
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -232,7 +232,7 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 		if (isset($_COOKIE[$this->sessionDataName])) {
 			unset($_COOKIE[$this->sessionDataName]);
 		}
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**

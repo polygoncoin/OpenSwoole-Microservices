@@ -20,21 +20,21 @@ use Microservices\App\Env;
 use Microservices\App\Web;
 
 $headerArray = $defaultHeaderArray;
-$proceed = false;
+$proceed = Constant::$FALSE;
 
 if (
 	isset($token)
 	&& $token !== Constant::$NULL
 ) {
 	$headerArray[] = "Authorization: Bearer {$token}";
-	$proceed = true;
+	$proceed = Constant::$TRUE;
 }
 if (
 	isset($sessionCookie)
 	&& $sessionCookie !== Constant::$NULL
 ) {
 	$headerArray[] = "Cookie: {$sessionCookie}";
-	$proceed = true;
+	$proceed = Constant::$TRUE;
 }
 
 if (isset($proceed)) {

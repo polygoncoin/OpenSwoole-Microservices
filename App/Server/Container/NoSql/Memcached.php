@@ -127,7 +127,7 @@ class Memcached implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->get(
@@ -148,7 +148,7 @@ class Memcached implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		$return = CommonFunction::jsonDecode(
@@ -177,7 +177,7 @@ class Memcached implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		$value = json_encode(
@@ -213,7 +213,7 @@ class Memcached implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->cacheServerObject->increment(
@@ -235,7 +235,7 @@ class Memcached implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->cacheServerObject->delete(

@@ -57,7 +57,7 @@ class Http
 	/**
 	 * Constructor
 	 * 
-	 * @param array $httpReqData
+	 * @param array $httpReqData HTTP request data
 	 */
 	public function __construct(
 		&$httpReqData
@@ -82,20 +82,12 @@ class Http
 		if ($this->httpRequestObject->isPrivateRequest) {
 			$this->httpRequestObject->routesDirectory = Constant::$ROUTES_CONFIG_PRIVATE_DIRECTORY;
 			$this->httpRequestObject->sqlDirectory = Constant::$SQL_CONFIG_PRIVATE_DIRECTORY;
-
-			$this->httpResponseObject->htmlDirectory = Constant::$HTML_PRIVATE_DIRECTORY;
-			$this->httpResponseObject->phpDirectory = Constant::$PHP_PRIVATE_DIRECTORY;
-			$this->httpResponseObject->xsltDirectory = Constant::$XSLT_PRIVATE_DIRECTORY;
 		} else {
 			$this->httpRequestObject->routesDirectory = Constant::$ROUTES_CONFIG_PUBLIC_DIRECTORY;
 			$this->httpRequestObject->sqlDirectory = Constant::$SQL_CONFIG_PUBLIC_DIRECTORY;
-
-			$this->httpResponseObject->htmlDirectory = Constant::$HTML_PUBLIC_DIRECTORY;
-			$this->httpResponseObject->phpDirectory = Constant::$PHP_PUBLIC_DIRECTORY;
-			$this->httpResponseObject->xsltDirectory = Constant::$XSLT_PUBLIC_DIRECTORY;
 		}
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**

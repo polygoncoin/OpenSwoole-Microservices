@@ -61,7 +61,7 @@ class Module1 implements UploadInterface
 	 */
 	public function init(): bool
 	{
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -76,7 +76,7 @@ class Module1 implements UploadInterface
 			absFilePath: $absFilePath
 		);
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**

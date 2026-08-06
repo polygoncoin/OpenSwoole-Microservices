@@ -16,6 +16,7 @@
 namespace Microservices\App;
 
 use Microservices\App\CommonFunction;
+use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Http;
 
@@ -67,7 +68,7 @@ class Gateway
 			$this->rateLimitRequest();
 		}
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**

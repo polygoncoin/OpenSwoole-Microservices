@@ -162,6 +162,6 @@ class Constant
 			);
 		}
 
-		self::$initialized = true;
+		self::$initialized = self::$TRUE;
 	}
 }

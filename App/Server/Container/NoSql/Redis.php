@@ -167,7 +167,7 @@ class Redis implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->cacheServerObject->exists(
@@ -188,7 +188,7 @@ class Redis implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		$return = CommonFunction::jsonDecode(
@@ -217,7 +217,7 @@ class Redis implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		$value = json_encode(
@@ -253,7 +253,7 @@ class Redis implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->cacheServerObject->incrBy(
@@ -275,7 +275,7 @@ class Redis implements NoSqlInterface
 		$this->connect();
 
 		if (empty($key)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->cacheServerObject->del(

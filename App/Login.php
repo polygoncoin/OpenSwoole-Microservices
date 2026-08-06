@@ -83,7 +83,7 @@ class Login
 	 */
 	public function init(): bool
 	{
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -136,7 +136,7 @@ class Login
 			);
 		}
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -156,7 +156,7 @@ class Login
 		}
 
 		$this->httpObject->httpRequestObject->loadPayload();
-		$this->payload = $this->httpObject->httpRequestObject->dataDecodeObject->get();
+		$this->payload = $this->httpObject->httpRequestObject->dataDecodeObject->getObject();
 
 		// Check for required conditions variables
 		$requiredParamData = [
@@ -263,7 +263,7 @@ class Login
 	private function generateToken(): array
 	{
 		//generates a crypto-secure 64 characters long
-		while (true) {
+		while (Constant::$TRUE) {
 			$authId = bin2hex(
 				string: random_bytes(
 					length: 32
@@ -350,14 +350,14 @@ class Login
 	{
 		$httpRequestHash = $this->httpObject->httpReqData['httpRequestHash'];
 
-		$customerUserTokenKey = null;
-		$customerUserToken = null;
+		$customerUserTokenKey = Constant::$NULL;
+		$customerUserToken = Constant::$NULL;
 
-		$authFound = false;
+		$authFound = Constant::$FALSE;
 		$authFoundData = [];
 
-		$customerUserConcurrencyKey = null;
-		$customerUserConcurrencyData = null;
+		$customerUserConcurrencyKey = Constant::$NULL;
+		$customerUserConcurrencyData = Constant::$NULL;
 
 		$customerUserTokenKey = CacheServerKey::customerUserToken(
 			customerId: $this->httpObject->httpRequestObject->customerId,
@@ -430,7 +430,7 @@ class Login
 						&& $authData['httpRequestHash'] === $httpRequestHash
 					) {
 						$authFoundData = $authData;
-						$authFound = true;
+						$authFound = Constant::$TRUE;
 					}
 				}
 			}
@@ -451,14 +451,14 @@ class Login
 				);
 				if ($authData['httpRequestHash'] === $httpRequestHash) {
 					$authFoundData = $authData;
-					$authFound = true;
+					$authFound = Constant::$TRUE;
 				}
 			}
 		}
 
 		if (!$authFound) {
 			$authFoundData = $this->generateToken();
-			$authFound = true;
+			$authFound = Constant::$TRUE;
 
 			$this->cacheSet(
 				cacheKey: $customerUserTokenKey,
@@ -532,14 +532,14 @@ class Login
 	{
 		$httpRequestHash = $this->httpObject->httpReqData['httpRequestHash'];
 
-		$customerUserSessionIdKey = null;
-		$customerUserSessionId = null;
+		$customerUserSessionIdKey = Constant::$NULL;
+		$customerUserSessionId = Constant::$NULL;
 
-		$authFound = false;
+		$authFound = Constant::$FALSE;
 		$authFoundData = [];
 
-		$customerUserConcurrencyKey = null;
-		$customerUserConcurrencyData = null;
+		$customerUserConcurrencyKey = Constant::$NULL;
+		$customerUserConcurrencyData = Constant::$NULL;
 
 		$customerUserSessionIdKey = CacheServerKey::customerUserSessionId(
 			customerId: $this->httpObject->httpRequestObject->customerId,
@@ -612,7 +612,7 @@ class Login
 						&& $authData['httpRequestHash'] === $httpRequestHash
 					) {
 						$authFoundData = $authData;
-						$authFound = true;
+						$authFound = Constant::$TRUE;
 					}
 				}
 			}
@@ -629,14 +629,14 @@ class Login
 			if ($customerUserSessionId === session_id()) {
 				if ($_SESSION['httpRequestHash'] === $httpRequestHash) {
 					$authFoundData = $_SESSION;
-					$authFound = true;
+					$authFound = Constant::$TRUE;
 				}
 			}
 		}
 
 		if (!$authFound) {
 			$authFoundData = $this->generateSession();
-			$authFound = true;
+			$authFound = Constant::$TRUE;
 
 			$this->cacheSet(
 				cacheKey: $customerUserSessionIdKey,
@@ -702,7 +702,7 @@ class Login
 			);
 		}
 
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -721,7 +721,7 @@ class Login
 			);
 		}
 
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -746,7 +746,7 @@ class Login
 			);
 		}
 
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -765,6 +765,6 @@ class Login
 			);
 		}
 
-		return false;
+		return Constant::$FALSE;
 	}
 }

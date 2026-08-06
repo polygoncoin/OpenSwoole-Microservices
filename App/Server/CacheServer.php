@@ -172,7 +172,7 @@ class CacheServer
 		$this->connectCache();
 
 		if (empty($cacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->cacheServerObject->cacheExist(
@@ -193,7 +193,7 @@ class CacheServer
 		$this->connectCache();
 
 		if (empty($cacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->cacheServerObject->cacheGet(
@@ -218,7 +218,7 @@ class CacheServer
 		$this->connectCache();
 
 		if (empty($cacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->cacheServerObject->cacheSet(
@@ -243,7 +243,7 @@ class CacheServer
 		$this->connectCache();
 
 		if (empty($cacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->cacheServerObject->cacheIncrement(
@@ -265,7 +265,7 @@ class CacheServer
 		$this->connectCache();
 
 		if (empty($cacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->cacheServerObject->cacheDelete(

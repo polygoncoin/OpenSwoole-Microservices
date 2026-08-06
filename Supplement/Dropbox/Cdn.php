@@ -79,8 +79,9 @@ class Cdn implements DropboxInterface
 	 * 
 	 * @param Http $httpObject
 	 */
-	public function __construct(&$httpObject = null)
-	{
+	public function __construct(
+		&$httpObject = null
+	) {
 		$this->httpObject = &$httpObject;
 	}
 
@@ -159,7 +160,7 @@ class Cdn implements DropboxInterface
 		// Get the $fileLocation file mime
 		$this->mimeType = mime_content_type($this->fileLocation);
 
-		switch (true) {
+		switch (Constant::$TRUE) {
 			case in_array(
 				needle: $this->mimeType,
 				haystack: $this->supportedVideoMimeArray,
@@ -176,7 +177,11 @@ class Cdn implements DropboxInterface
 						)
 					) !== HttpStatus::$Ok
 				) {
-					$return = [$headerArray, $data, $httpStatus];
+					$return = [
+						$headerArray,
+						$data,
+						$httpStatus
+					];
 				} else {
 					$return = $videoStream->serveContent();
 				}
@@ -219,7 +224,11 @@ class Cdn implements DropboxInterface
 			)
 		) {
 			$status = HttpStatus::$NotModified;
-			return [$headerArray, $data, $status];
+			return [
+				$headerArray,
+				$data,
+				$status
+			];
 		}
 
 		// Set header
@@ -240,6 +249,10 @@ class Cdn implements DropboxInterface
 			filename: $this->fileLocation
 		);
 
-		return [$headerArray, file_get_contents($this->fileLocation), $status];
+		return [
+			$headerArray,
+			file_get_contents($this->fileLocation),
+			$status
+		];
 	}
 }

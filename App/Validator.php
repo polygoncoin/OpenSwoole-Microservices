@@ -87,10 +87,18 @@ class Validator
 			) > 0
 		) {
 			if (
-				([$isValidData, $errorArray] = $this->validateRequired())
+				(
+					[
+						$isValidData,
+						$errorArray
+					] = $this->validateRequired()
+				)
 				&& !$isValidData
 			) {
-				return [$isValidData, $errorArray];
+				return [
+					$isValidData,
+					$errorArray
+				];
 			}
 		}
 
@@ -106,7 +114,7 @@ class Validator
 	 */
 	private function validateRequired(): array
 	{
-		$isValidData = true;
+		$isValidData = Constant::$TRUE;
 		$errorArray = [];
 		// Required fields payload validation
 		if (!empty($this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray']['payload'])) {
@@ -119,11 +127,14 @@ class Validator
 					)
 				) {
 					$errorArray[] = 'Missing required payload: ' . $activeRequestDataKeySubKey;
-					$isValidData = false;
+					$isValidData = Constant::$FALSE;
 				}
 			}
 		}
 
-		return [$isValidData, $errorArray];
+		return [
+			$isValidData,
+			$errorArray
+		];
 	}
 }

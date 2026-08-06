@@ -88,7 +88,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 				cipherText: $record['session_data']
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -238,7 +238,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		pg_close(
 			$this->pgSqlServerObject
 		);
-		$this->pgSqlServerObject = null;
+		$this->pgSqlServerObject = Constant::$NULL;
 	}
 
 	/**
@@ -307,7 +307,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -329,14 +329,14 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 				$paramArray
 			);
 			if ($result) {
-				return true;
+				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**

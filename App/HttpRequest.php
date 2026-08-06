@@ -226,9 +226,9 @@ class HttpRequest
 
 		DbCommonFunction::connectGlobalCache();
 
-		$this->isPublicDomain = false;
-		$this->isPrivateSessionDomain = false;
-		$this->isPrivateTokenDomain = false;
+		$this->isPublicDomain = Constant::$FALSE;
+		$this->isPrivateSessionDomain = Constant::$FALSE;
+		$this->isPrivateTokenDomain = Constant::$FALSE;
 
 		$publicDomainCacheKey = CacheServerKey::publicDomain(
 			domainName: $this->httpObject->httpReqData['server']['domainName']
@@ -238,10 +238,10 @@ class HttpRequest
 				cacheKey: $publicDomainCacheKey
 			)
 		) {
-			$this->isPublicDomain = true;
+			$this->isPublicDomain = Constant::$TRUE;
 			$this->domainCacheKey = $publicDomainCacheKey;
-			$this->isPrivateRequest = false;
-			$this->isPublicRequest = true;
+			$this->isPrivateRequest = Constant::$FALSE;
+			$this->isPublicRequest = Constant::$TRUE;
 		}
 		if (!$this->isPublicDomain) {
 			$privateSessionDomainCacheKey = CacheServerKey::privateSessionDomain(
@@ -252,10 +252,10 @@ class HttpRequest
 					cacheKey: $privateSessionDomainCacheKey
 				)
 			) {
-				$this->isPrivateSessionDomain = true;
+				$this->isPrivateSessionDomain = Constant::$TRUE;
 				$this->domainCacheKey = $privateSessionDomainCacheKey;
-				$this->isPrivateRequest = true;
-				$this->isPublicRequest = false;
+				$this->isPrivateRequest = Constant::$TRUE;
+				$this->isPublicRequest = Constant::$FALSE;
 			}
 		}
 		if (
@@ -270,10 +270,10 @@ class HttpRequest
 					cacheKey: $privateTokenDomainCacheKey
 				)
 			) {
-				$this->isPrivateTokenDomain = true;
+				$this->isPrivateTokenDomain = Constant::$TRUE;
 				$this->domainCacheKey = $privateTokenDomainCacheKey;
-				$this->isPrivateRequest = true;
-				$this->isPublicRequest = false;
+				$this->isPrivateRequest = Constant::$TRUE;
+				$this->isPublicRequest = Constant::$FALSE;
 			}
 		}
 	}
@@ -390,7 +390,7 @@ class HttpRequest
 			$this->routeParserObject->parseRoute();
 		}
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -400,10 +400,6 @@ class HttpRequest
 	 */
 	public function loadPayload(): void
 	{
-		if (isset($this->activeRequestData['payloadType'])) {
-			return;
-		}
-
 		$payloadJson = "{}";
 
 		$this->urlDecode(
@@ -424,9 +420,6 @@ class HttpRequest
 
 		$this->dataDecodeObject->init();
 		$this->dataDecodeObject->indexData();
-
-		$this->activeRequestData['payloadType'] = $this->dataDecodeObject->dataType();
-
 	}
 
 	/**
@@ -446,7 +439,7 @@ class HttpRequest
 			case Constant::$PUT:
 			case Constant::$PATCH:
 			case Constant::$DELETE:
-				switch (true) {
+				switch (Constant::$TRUE) {
 					case (
 						$this->httpObject->httpReqData['get'][ROUTE_URL_PARAM] !== '/login'
 						&& $this->routeParserObject->routeEndingWithReservedKeywordFlag
@@ -543,10 +536,10 @@ class HttpRequest
 	public function getUploadedFileMd5Data(
 		$uploadedFileMd5
 	): mixed {
-		$uploadedFileMd5Data = false;
+		$uploadedFileMd5Data = Constant::$FALSE;
 
 		$sql = "SELECT
-				*
+				 *
 			FROM
 				`import_file_detail`
 			WHERE
@@ -624,12 +617,14 @@ class HttpRequest
 	 * 
 	 * @param string $debugMode
 	 * @param string $debugJson
+	 * @param string $payloadJson
 	 * 
 	 * @return int
 	 */
 	public function logDebugData(
 		$debugMode,
-		$debugJson
+		&$debugJson,
+		&$payloadJson
 	): int {
 		$logId = 0;
 		if ($this->isPrivateRequest) {
@@ -655,9 +650,7 @@ class HttpRequest
 			$paramArray[':customer_user_id'] = $this->customerUserId;
 			$paramArray[':request_route'] = $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM];
 			$paramArray[':request_method'] = $this->httpObject->httpReqData['server']['httpRequestMethod'];
-			$paramArray[':request_payload_json'] = isset($this->activeRequestData['payload']) ? json_encode(
-				value: $this->activeRequestData['payload']
-			) : '{}';
+			$paramArray[':request_payload_json'] = $payloadJson;
 			$paramArray[':request_config_json'] = isset($this->routeParserObject->sqlConfig) ? json_encode(
 				value: $this->routeParserObject->sqlConfig
 			) : '{}';
@@ -681,11 +674,13 @@ class HttpRequest
 	 * Log Error Data
 	 * 
 	 * @param string $exceptionJson
+	 * @param string $payloadJson
 	 * 
 	 * @return int
 	 */
 	public function logErrorData(
-		$exceptionJson
+		&$exceptionJson,
+		&$payloadJson
 	): int {
 		$logId = 0;
 		if ($this->isPrivateRequest) {
@@ -709,9 +704,7 @@ class HttpRequest
 			$paramArray[':customer_user_id'] = $this->customerUserId;
 			$paramArray[':request_route'] = $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM];
 			$paramArray[':request_method'] = $this->httpObject->httpReqData['server']['httpRequestMethod'];
-			$paramArray[':request_payload_json'] = isset($this->activeRequestData['payload']) ? json_encode(
-				value: $this->activeRequestData['payload']
-			) : '{}';
+			$paramArray[':request_payload_json'] = $payloadJson;
 			$paramArray[':request_config_json'] = isset($this->routeParserObject->sqlConfig) ? json_encode(
 				value: $this->routeParserObject->sqlConfig
 			) : '{}';
@@ -894,8 +887,8 @@ class HttpRequest
 		);
 		$dataEncodeObject->startObject();
 
-		$csvHeaderData = false;
-		$counter = null;
+		$csvHeaderData = Constant::$FALSE;
+		$counter = Constant::$NULL;
 		$currentModeArray = [];
 
 		$fp = fopen($csvFile, "r");
@@ -938,7 +931,10 @@ class HttpRequest
 				continue;
 			}
 
-			[$currentModeArray, $csvFieldRecordArray] = $this->formatCsvArray(
+			[
+				$currentModeArray,
+				$csvFieldRecordArray
+			] = $this->formatCsvArray(
 				csvHeaderData: $csvHeaderData,
 				csvRecordArray: $csvRecordArray
 			);
@@ -1016,7 +1012,7 @@ class HttpRequest
 		}
 		$dataEncodeObject->endObject();
 		$json = $dataEncodeObject->getData();
-		$dataEncodeObject = null;
+		$dataEncodeObject = Constant::$NULL;
 		$json = substr(
 			string: $json,
 			offset: 7,
@@ -1054,7 +1050,10 @@ class HttpRequest
 		if (!isset($csvHeaderData['__column__'])) {
 			throw new \Exception(
 				message: json_encode(
-					value: [$currentModeArray,$csvHeaderData]
+					value: [
+						$currentModeArray,
+						$csvHeaderData
+					]
 				),
 				code: HttpStatus::$BadRequest
 			);
@@ -1066,6 +1065,9 @@ class HttpRequest
 			}
 			$csvFieldRecordArray[$field] = $csvRecordArray[$column];
 		}
-		return [$currentModeArray, $csvFieldRecordArray];
+		return [
+			$currentModeArray,
+			$csvFieldRecordArray
+		];
 	}
 }

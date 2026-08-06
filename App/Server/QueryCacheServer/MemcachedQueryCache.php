@@ -151,7 +151,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->cacheExist(
@@ -172,7 +172,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->cacheGet(
@@ -195,7 +195,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->cacheSet(
@@ -219,7 +219,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->cacheIncrement(
@@ -241,7 +241,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->cacheDelete(

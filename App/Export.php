@@ -15,6 +15,7 @@
 
 namespace Microservices\App;
 
+use Microservices\App\Constant;
 use Microservices\App\Export\ExportDatabaseServer;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
@@ -134,8 +135,11 @@ class Export
 		$sql = 'SELECT 1;';
 
 		$toggleUseTmpFile = $this->useTmpFile;
-		$this->useTmpFile = false;
-		[$shellCommand, $tmpFilename] = $this->getShellCommand(
+		$this->useTmpFile = Constant::$FALSE;
+		[
+			$shellCommand,
+			$tmpFilename
+		] = $this->getShellCommand(
 			sql: $sql
 		);
 		$this->useTmpFile = $toggleUseTmpFile;
@@ -244,11 +248,14 @@ class Export
 				arg: $tmpFilename
 			);
 		} else {
-			$tmpFilename = null;
+			$tmpFilename = Constant::$NULL;
 			$shellCommand .= ' 2>&1';
 		}
 
-		return [$shellCommand, $tmpFilename];
+		return [
+			$shellCommand,
+			$tmpFilename
+		];
 	}
 
 	/**
@@ -267,7 +274,10 @@ class Export
 		$paramArray = [],
 		$exportFile = null
 	): array {
-		[$shellCommand, $tmpFilename] = $this->getShellCommand(
+		[
+			$shellCommand,
+			$tmpFilename
+		] = $this->getShellCommand(
 			sql: $sql,
 			paramArray: $paramArray,
 			exportFile: $exportFile
@@ -278,8 +288,8 @@ class Export
 				value: $exportFile
 			)
 		) {
-			$this->useTmpFile = true;
-			$this->unlink = false;
+			$this->useTmpFile = Constant::$TRUE;
+			$this->unlink = Constant::$FALSE;
 		}
 
 		if ($this->useTmpFile) {
@@ -303,7 +313,11 @@ class Export
 			$data = shell_exec(
 				command: $shellCommand
 			);
-			$return = [$headerArray, $data, HttpStatus::$Ok];
+			$return = [
+				$headerArray,
+				$data,
+				HttpStatus::$Ok
+			];
 		}
 
 		return $return;
@@ -323,7 +337,10 @@ class Export
 		$paramArray = [],
 		$exportFile = null
 	): array {
-		[$shellCommand, $tmpFilename] = $this->getShellCommand(
+		[
+			$shellCommand,
+			$tmpFilename
+		] = $this->getShellCommand(
 			sql: $sql,
 			paramArray: $paramArray,
 			exportFile: $exportFile
@@ -335,7 +352,11 @@ class Export
 			command: $shellCommand
 		);
 
-		return [$headerArray = [], $data = '', HttpStatus::$Ok];
+		return [
+			$headerArray = [],
+			$data = '',
+			HttpStatus::$Ok
+		];
 	}
 
 	/**
@@ -394,6 +415,10 @@ class Export
 			//handle error via logs.
 		}
 
-		return [$headerArray, $data, HttpStatus::$Ok];
+		return [
+			$headerArray,
+			$data,
+			HttpStatus::$Ok
+		];
 	}
 }

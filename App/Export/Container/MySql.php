@@ -296,7 +296,10 @@ class MySql implements ExportDatabaseServerInterface
 					),
 					subject: $sql
 				);
-				$bindParamArray = array_merge($bindParamArray, $tmpParamArray);
+				$bindParamArray = array_merge(
+					$bindParamArray,
+					$tmpParamArray
+				);
 			} else {
 				$bindParamArray[$parameterisedColumn] = $valueArray;
 			}

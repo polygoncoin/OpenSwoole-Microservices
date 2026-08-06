@@ -95,6 +95,6 @@ class JsonDecodeObject
 		$objectKey = $objectKey !== Constant::$NULL ? trim(
 			string: $objectKey
 		) : $objectKey;
-		$this->objectKey = !empty($objectKey) ? $objectKey : null;
+		$this->objectKey = !empty($objectKey) ? $objectKey : Constant::$NULL;
 	}
 }

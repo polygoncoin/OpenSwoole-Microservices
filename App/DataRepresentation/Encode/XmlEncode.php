@@ -298,7 +298,7 @@ class XmlEncode implements DataEncodeInterface
 		$this->write(
 			data: "</{$this->jsonEncoderObjectObject->objectKey}>"
 		);
-		$this->jsonEncoderObjectObject = null;
+		$this->jsonEncoderObjectObject = Constant::$NULL;
 		if (
 			count(
 				value: $this->jsonEncoderObjectObjectArray
@@ -357,7 +357,7 @@ class XmlEncode implements DataEncodeInterface
 		$this->write(
 			data: "</{$this->jsonEncoderObjectObject->objectKey}>"
 		);
-		$this->jsonEncoderObjectObject = null;
+		$this->jsonEncoderObjectObject = Constant::$NULL;
 		if (
 			count(
 				value: $this->jsonEncoderObjectObjectArray

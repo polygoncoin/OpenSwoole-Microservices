@@ -50,13 +50,6 @@ class Supplement
 	private $hookObject = null;
 
 	/**
-	 * Operate DML As Transactions
-	 * 
-	 * @var null|bool
-	 */
-	private $operateAsTransaction = null;
-
-	/**
 	 * Data Encode object
 	 * 
 	 * @var null|DataEncode
@@ -117,13 +110,12 @@ class Supplement
 			$maintainHierarchy
 		);
 
+		$operateAsTransaction = isset($sqlConfig['__TRANSACTION__'])
+			? $sqlConfig['__TRANSACTION__'] : Constant::$FALSE;
+
 		if ($return !== Constant::$FALSE) {
 			return $return;
 		}
-
-		// Operate as Transaction (BEGIN COMMIT else ROLLBACK on error)
-		$this->operateAsTransaction = isset($sqlConfig['__TRANSACTION__'])
-			? $sqlConfig['__TRANSACTION__'] : Constant::$FALSE;
 
 		$fetchDbMode = $sqlConfig['__FETCH-MODE__'] ?? 'Master';
 
@@ -137,61 +129,32 @@ class Supplement
 
 		$this->supplement(
 			supplementSqlConfig: $sqlConfig,
-			supplementMaintainHierarchy: $maintainHierarchy
+			supplementMaintainHierarchy: $maintainHierarchy,
+			supplementOperateAsTransaction: $operateAsTransaction
 		);
 
-		if (isset($sqlConfig['__AFFECTED-CACHE-KEY__'])) {
-			$indexCount = count(
-				value: $sqlConfig['__AFFECTED-CACHE-KEY__']
-			);
-			for ($index = 0; $index < $indexCount; $index++) {
-				$this->httpObject->httpRequestObject->customerQueryCacheObject->queryCacheDelete(
-					customerId: $this->httpObject->httpRequestObject->customerId,
-					queryCacheKey: $sqlConfig['__AFFECTED-CACHE-KEY__'][$index]
-				);
-			}
-		}
-
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
 	 * Process Function to insert/update
 	 * 
-	 * @param array $supplementSqlConfig         Sql config
-	 * @param bool  $supplementMaintainHierarchy If true - Uses parent payload/results in child
+	 * @param array $supplementSqlConfig            Sql config
+	 * @param bool  $supplementMaintainHierarchy    If true - Uses parent payload/results in child
+	 * @param bool  $supplementOperateAsTransaction If true - Operates as transaction
 	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
 	private function supplement(
 		&$supplementSqlConfig,
-		$supplementMaintainHierarchy
+		$supplementMaintainHierarchy,
+		$supplementOperateAsTransaction
 	): void {
-		// Check for payloadType
-		if (isset($supplementSqlConfig['__PAYLOAD-TYPE__'])) {
-			$supplementPayloadType = $this->httpObject->httpRequestObject->activeRequestData['payloadType'];
-			if ($supplementPayloadType !== $supplementSqlConfig['__PAYLOAD-TYPE__']) {
-				throw new \Exception(
-					message: 'Invalid payload type',
-					code: HttpStatus::$BadRequest
-				);
-			}
-
-			// Check for maximum object's supported when payloadType is Array
-			if (
-				$supplementSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
-				&& isset($supplementSqlConfig['__MAX-PAYLOAD-OBJECT__'])
-				&& ($objCount = $this->httpObject->httpRequestObject->dataDecodeObject->count())
-				&& ($objCount > $supplementSqlConfig['__MAX-PAYLOAD-OBJECT__'])
-			) {
-				throw new \Exception(
-					message: 'Maximum supported payload count is '
-						. $supplementSqlConfig['__MAX-PAYLOAD-OBJECT__'],
-					code: HttpStatus::$BadRequest
-				);
-			}
-		}
+		$supplementOutputRepresentation = CommonFunction::getOutputRepresentation(
+			sqlConfig: $supplementSqlConfig,
+			httpReqData: $this->httpObject->httpReqData
+		);
 
 		// Set required fields
 		$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArrayCollection'] = $this->getRequired(
@@ -203,13 +166,15 @@ class Supplement
 		$this->dataEncodeObject->startObject(
 			objectKey: 'Results'
 		);
-		if (
-			isset($this->httpObject->httpRequestObject->activeRequestData['payloadType'])
-			&& $this->httpObject->httpRequestObject->activeRequestData['payloadType'] === 'Array'
-		) {
+
+		$supplementPayloadType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+			keyString: Constant::$NULL
+		);
+
+		if ($supplementPayloadType === 'Array') {
 			if (
 				in_array(
-					needle: $this->httpObject->httpResponseObject->outputRepresentation,
+					needle: $supplementOutputRepresentation['outputRepresentation'],
 					haystack: ['XML', 'XSLT', 'HTML'],
 					strict: Constant::$TRUE
 				)
@@ -221,26 +186,31 @@ class Supplement
 		}
 
 		// For indexCount
-		$indexCount = $this->httpObject->httpRequestObject->activeRequestData['payloadType'] === 'Array'
+		$indexCount = $supplementPayloadType === 'Array'
 			? $this->httpObject->httpRequestObject->dataDecodeObject->count() : 1;
 
 		for ($index = 0; $index < $indexCount; $index++) {
-			$supplementPayloadKeyArray = null;
+			$supplementPayloadKeyArray = Constant::$NULL;
 
-			if ($this->httpObject->httpRequestObject->activeRequestData['payloadType'] === 'Array') {
+			if ($supplementPayloadType === 'Array') {
 				$supplementPayloadKeyArray = [];
 				$supplementPayloadKeyArray[] = "{$index}";
 			}
 
 			// For Idempotent Window
-			[$idempotentWindow, $hashKey, $hashJson] = $this->checkIdempotent(
+			[
+				$idempotentWindow,
+				$hashKey,
+				$hashJson
+			] = $this->checkIdempotent(
 				sqlConfig: $supplementSqlConfig,
 				payloadKeyArray: $supplementPayloadKeyArray
 			);
 
 			// For DML operation
 			if ($hashJson === Constant::$NULL) {
-				if ($this->operateAsTransaction) {
+
+				if ($supplementOperateAsTransaction) {
 					$this->httpObject->httpRequestObject->customerDbObject->begin();
 				}
 
@@ -268,12 +238,13 @@ class Supplement
 					supplementParentRequiredFieldArray: $this->httpObject->httpRequestObject->activeRequestData['requiredFieldArrayCollection'],
 					supplementParentResponse: $supplementResponse,
 					supplementParentModule: '',
-					supplementParentMaintainHierarchy: $supplementMaintainHierarchy
+					supplementParentMaintainHierarchy: $supplementMaintainHierarchy,
+					supplementParentOperateAsTransaction: $supplementOperateAsTransaction
 				);
 
 				if ($this->httpObject->httpResponseObject->httpStatus === HttpStatus::$Ok) {
 					if (
-						$this->operateAsTransaction
+						$supplementOperateAsTransaction
 						&& ($this->httpObject->httpRequestObject->customerDbObject->beganTransaction === Constant::$TRUE)
 					) {
 						$this->httpObject->httpRequestObject->customerDbObject->commit();
@@ -289,7 +260,7 @@ class Supplement
 					}
 				} else { // Failure
 					$output['Status'] = $this->httpObject->httpResponseObject->httpStatus;
-					$output['Error'] = $writeResponse;
+					$output['Error'] = $supplementResponse;
 				}
 			} else {
 				$output = CommonFunction::jsonDecode(
@@ -307,7 +278,7 @@ class Supplement
 			} else {
 				if (
 					in_array(
-						needle: $this->httpObject->httpResponseObject->outputRepresentation,
+						needle: $supplementOutputRepresentation['outputRepresentation'],
 						haystack: ['XML', 'XSLT', 'HTML'],
 						strict: Constant::$TRUE
 					)
@@ -331,10 +302,10 @@ class Supplement
 			}
 		}
 
-		if ($this->httpObject->httpRequestObject->activeRequestData['payloadType'] === 'Array') {
+		if ($supplementPayloadType === 'Array') {
 			if (
 				in_array(
-					needle: $this->httpObject->httpResponseObject->outputRepresentation,
+					needle: $supplementOutputRepresentation['outputRepresentation'],
 					haystack: ['XML', 'XSLT', 'HTML'],
 					strict: Constant::$TRUE
 				)
@@ -348,12 +319,13 @@ class Supplement
 	/**
 	 * Supplement Parent Function
 	 * 
-	 * @param array  $supplementParentSqlConfig          Sql config
-	 * @param array  $supplementParentPayloadKeyArray    Payload Indexes
-	 * @param array  $supplementParentRequiredFieldArray Required fields
-	 * @param array  $supplementParentResponse           Response by reference
-	 * @param string $supplementParentModule             Parent Module
-	 * @param bool   $supplementParentMaintainHierarchy  If true - Uses parent payload/results in child
+	 * @param array  $supplementParentSqlConfig            Sql config
+	 * @param array  $supplementParentPayloadKeyArray      Payload Indexes
+	 * @param array  $supplementParentRequiredFieldArray   Required fields
+	 * @param array  $supplementParentResponse             Response by reference
+	 * @param string $supplementParentModule               Parent Module
+	 * @param bool   $supplementParentMaintainHierarchy    If true - Uses parent payload/results in child
+	 * @param bool   $supplementParentOperateAsTransaction If true - Operates as transaction
 	 * 
 	 * @return void
 	 * @throws \Exception
@@ -364,7 +336,8 @@ class Supplement
 		&$supplementParentRequiredFieldArray,
 		&$supplementParentResponse,
 		$supplementParentModule,
-		$supplementParentMaintainHierarchy
+		$supplementParentMaintainHierarchy,
+		$supplementParentOperateAsTransaction
 	): void {
 		// For payloadKey
 		$supplementParentPayloadKey = $this->getPayloadKey(
@@ -384,6 +357,23 @@ class Supplement
 			? 1 : $this->httpObject->httpRequestObject->dataDecodeObject->count(
 				keyString: $supplementParentPayloadKey
 			);
+
+		if (isset($supplementParentSqlConfig['__PAYLOAD-TYPE__'])) {
+			$supplementPayloadType = $isObject ? 'Object' : 'Array';
+			if ($supplementPayloadType !== $supplementParentSqlConfig['__PAYLOAD-TYPE__']) {
+				$errorArray[] = "Payload can't be an {$supplementPayloadType}";
+			}
+
+			// Check for maximum object's supported when payloadType is Array
+			if (
+				$supplementParentSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
+				&& isset($supplementParentSqlConfig['__MAX-PAYLOAD-OBJECT__'])
+				&& ($indexCount > $supplementParentSqlConfig['__MAX-PAYLOAD-OBJECT__'])
+			) {
+				$errorArray[] = 'Maximum supported payload count is '
+						. $supplementParentSqlConfig['__MAX-PAYLOAD-OBJECT__'];
+			}
+		}
 
 		for ($index = 0; $index < $indexCount; $index++) {
 			// For Required Fields
@@ -415,8 +405,11 @@ class Supplement
 				$supplementParentCurrentResponse = &$supplementParentResponse[$index];
 			}
 
-			// For Validating Hierarchy
+			// For Setting Current Values
+			$supplementParentCurrentOperateAsTransaction = $supplementParentOperateAsTransaction;
 			$supplementParentCurrentMaintainHierarchy = $supplementParentMaintainHierarchy;
+
+			// For Validating Hierarchy
 			if (
 				$supplementParentCurrentMaintainHierarchy
 				&& !$this->httpObject->httpRequestObject->dataDecodeObject->isset(
@@ -438,7 +431,7 @@ class Supplement
 			}
 
 			// For Payload
-			$this->httpObject->httpRequestObject->activeRequestData['payload'] = $this->httpObject->httpRequestObject->dataDecodeObject->get(
+			$supplementParentPayload = $this->httpObject->httpRequestObject->dataDecodeObject->getObject(
 				keyString: $supplementParentCurrentPayloadKey
 			);
 
@@ -477,11 +470,30 @@ class Supplement
 
 			// For Rollback
 			if (
-				$this->operateAsTransaction
+				$supplementParentCurrentOperateAsTransaction
 				&& !$this->httpObject->httpRequestObject->customerDbObject->beganTransaction
 			) {
 				$supplementParentCurrentResponse['Error'] = 'Something went wrong';
 				return;
+			}
+
+			// For Child
+			if (isset($supplementParentSqlConfig['__SUB-CONFIG__'])) {
+				if ($supplementParentCurrentMaintainHierarchy) {
+					$this->resetFetchData(
+						activeRequestDataKey: 'previousPayload',
+						payloadKeyArray: $supplementParentCurrentPayloadKeyArray,
+						record: $supplementParentPayload
+					);
+				}
+				$this->supplementChild(
+					supplementChildSqlConfig: $supplementParentSqlConfig['__SUB-CONFIG__'],
+					supplementChildPayloadKeyArray: $supplementParentCurrentPayloadKeyArray,
+					supplementChildRequiredFieldArray: $supplementParentRequiredFieldArray,
+					supplementChildResponse: $supplementParentCurrentResponse,
+					supplementChildMaintainHierarchy: $supplementParentCurrentMaintainHierarchy,
+					supplementChildOperateAsTransaction: $supplementParentCurrentOperateAsTransaction
+				);
 			}
 
 			// For Triggers
@@ -489,7 +501,8 @@ class Supplement
 				$this->dataEncodeObject->addKeyData(
 					objectKey: '__TRIGGER__',
 					data: $this->getTriggerData(
-						triggerConfig: $supplementParentSqlConfig['__TRIGGER__']
+						triggerConfig: $supplementParentSqlConfig['__TRIGGER__'],
+						payload: $supplementParentPayload
 					)
 				);
 			}
@@ -506,15 +519,17 @@ class Supplement
 				);
 			}
 
-			// For Child
-			if (isset($supplementParentSqlConfig['__SUB-CONFIG__'])) {
-				$this->supplementChild(
-					supplementChildSqlConfig: $supplementParentSqlConfig['__SUB-CONFIG__'],
-					supplementChildPayloadKeyArray: $supplementParentCurrentPayloadKeyArray,
-					supplementChildRequiredFieldArray: $supplementParentRequiredFieldArray,
-					supplementChildResponse: $supplementParentCurrentResponse,
-					supplementChildMaintainHierarchy: $supplementParentCurrentMaintainHierarchy
+			// For Affected Cache
+			if (isset($supplementParentSqlConfig['__AFFECTED-CACHE-KEY__'])) {
+				$indexCount = count(
+					value: $supplementParentSqlConfig['__AFFECTED-CACHE-KEY__']
 				);
+				for ($index = 0; $index < $indexCount; $index++) {
+					$this->httpObject->httpRequestObject->customerQueryCacheObject->queryCacheDelete(
+						customerId: $this->httpObject->httpRequestObject->customerId,
+						queryCacheKey: $supplementParentSqlConfig['__AFFECTED-CACHE-KEY__'][$index]
+					);
+				}
 			}
 		}
 	}
@@ -522,11 +537,12 @@ class Supplement
 	/**
 	 * Write Child Function
 	 * 
-	 * @param array $supplementChildSqlConfig          Sql config
-	 * @param array $supplementChildPayloadKeyArray    Payload Indexes
-	 * @param array $supplementChildRequiredFieldArray Required fields
-	 * @param array $supplementChildResponse           Response by reference
-	 * @param bool  $supplementChildMaintainHierarchy  If true - Uses parent payload/results in child
+	 * @param array  $supplementChildSqlConfig            Sql config
+	 * @param array  $supplementChildPayloadKeyArray      Payload Indexes
+	 * @param array  $supplementChildRequiredFieldArray   Required fields
+	 * @param array  $supplementChildResponse             Response by reference
+	 * @param bool   $supplementChildMaintainHierarchy    If true - Uses parent payload/results in child
+	 * @param bool   $supplementChildOperateAsTransaction If true - Operates as transaction
 	 * 
 	 * @return void
 	 */
@@ -535,17 +551,9 @@ class Supplement
 		&$supplementChildPayloadKeyArray,
 		&$supplementChildRequiredFieldArray,
 		&$supplementChildResponse,
-		$supplementChildMaintainHierarchy
+		$supplementChildMaintainHierarchy,
+		$supplementChildOperateAsTransaction
 	): void {
-		if ($supplementChildMaintainHierarchy) {
-			$record = $this->httpObject->httpRequestObject->activeRequestData['payload'];
-			$this->resetFetchData(
-				activeRequestDataKey: 'sqlPayload',
-				payloadKeyArray: $supplementChildPayloadKeyArray,
-				record: $record
-			);
-		}
-
 		if (
 			isset($supplementChildPayloadKeyArray[0])
 			&& $supplementChildPayloadKeyArray[0] === ''
@@ -571,10 +579,14 @@ class Supplement
 				payloadKeyArray: $supplementChildPayloadKeyArray
 			);
 
-			// For Validating Hierarchy
+			// For Setting Current Values
+			$supplementChildModuleOperateAsTransaction = $supplementChildOperateAsTransaction ?? isset($supplementChildModuleSqlConfig['__TRANSACTION__'])
+				? $supplementChildModuleSqlConfig['__TRANSACTION__'] : Constant::$FALSE;
 			$supplementChildModuleMaintainHierarchy = $supplementChildMaintainHierarchy ?? $this->getMaintainHierarchy(
 				sqlConfig: $supplementChildModuleSqlConfig
 			);
+
+			// For Validating Hierarchy
 			if (
 				$supplementChildModuleMaintainHierarchy
 				&& !$this->httpObject->httpRequestObject->dataDecodeObject->isset(
@@ -627,8 +639,11 @@ class Supplement
 					payloadKeyArray: $supplementChildModuleCurrentPayloadKeyArray
 				);
 
-				// For Validating Hierarchy
+				// For Setting Current Values
+				$supplementChildModuleCurrentOperateAsTransaction = $supplementChildModuleOperateAsTransaction;
 				$supplementChildModuleCurrentMaintainHierarchy = $supplementChildModuleMaintainHierarchy;
+
+				// For Validating Hierarchy
 				if (
 					$supplementChildModuleCurrentMaintainHierarchy
 					&& !$this->httpObject->httpRequestObject->dataDecodeObject->isset(
@@ -656,7 +671,8 @@ class Supplement
 					supplementParentRequiredFieldArray: $supplementChildModuleRequiredFieldArray,
 					supplementParentResponse: $supplementChildModuleCurrentResponse,
 					supplementParentModule: $supplementModule,
-					supplementParentMaintainHierarchy: $supplementChildModuleCurrentMaintainHierarchy
+					supplementParentMaintainHierarchy: $supplementChildModuleCurrentMaintainHierarchy,
+					supplementParentOperateAsTransaction: $supplementChildModuleCurrentOperateAsTransaction
 				);
 			}
 		}
@@ -674,18 +690,18 @@ class Supplement
 		$sqlConfig,
 		$response
 	): bool {
-		$return = true;
-		$isValidData = true;
-		if (isset($sqlConfig['__VALIDATE__'])) {
-			[$isValidData, $errorArray] = $this->validate(
-				validationConfig: $sqlConfig['__VALIDATE__']
-			);
-			if ($isValidData !== Constant::$TRUE) {
-				$this->httpObject->httpResponseObject->httpStatus = HttpStatus::$BadRequest;
-				$response['Error'] = $errorArray;
-				$return = false;
-			}
-		}
+		$return = Constant::$TRUE;
+		// $isValidData = Constant::$TRUE;
+		// if (isset($sqlConfig['__VALIDATE__'])) {
+		// 	[$isValidData, $errorArray] = $this->validate(
+		// 		validationConfig: $sqlConfig['__VALIDATE__']
+		// 	);
+		// 	if ($isValidData !== Constant::$TRUE) {
+		// 		$this->httpObject->httpResponseObject->httpStatus = HttpStatus::$BadRequest;
+		// 		$response['Error'] = $errorArray;
+		// 		$return = Constant::$FALSE;
+		// 	}
+		// }
 		return $return;
 	}
 }

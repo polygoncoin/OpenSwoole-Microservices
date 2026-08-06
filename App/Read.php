@@ -88,7 +88,7 @@ class Read
 	 */
 	public function init(): bool
 	{
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -106,6 +106,11 @@ class Read
 		if ($return !== Constant::$FALSE) {
 			return $return;
 		}
+
+		$outputRepresentation = CommonFunction::getOutputRepresentation(
+			sqlConfig: $sqlConfig,
+			httpReqData: $this->httpObject->httpReqData
+		);
 
 		if (isset($sqlConfig['__DOWNLOAD__'])) {
 			return $this->download(
@@ -126,7 +131,8 @@ class Read
 			&& $toBeCached
 		) {
 			$this->dataEncodeObject = new DataEncode(
-				httpObject: $this->httpObject
+				httpObject: $this->httpObject,
+				outputRepresentation: $outputRepresentation
 			);
 			$this->dataEncodeObject->init(
 				header: Constant::$FALSE
@@ -146,7 +152,8 @@ class Read
 
 		$this->read(
 			readSqlConfig: $sqlConfig,
-			readMaintainHierarchy: $maintainHierarchy
+			readMaintainHierarchy: $maintainHierarchy,
+			readOutputRepresentation: $outputRepresentation
 		);
 
 		if (
@@ -167,46 +174,23 @@ class Read
 			);
 		}
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
 	 * Perform read operation
 	 * 
-	 * @param array $readSqlConfig         Sql config
-	 * @param bool  $readMaintainHierarchy If true - Uses parent payload/results in child
+	 * @param array $readSqlConfig            Sql config
+	 * @param bool  $readMaintainHierarchy    If true - Uses parent payload/results in child
+	 * @param array $readOutputRepresentation Output Representation
 	 * 
 	 * @return void
 	 */
 	private function read(
 		&$readSqlConfig,
-		$readMaintainHierarchy
+		$readMaintainHierarchy,
+		$readOutputRepresentation
 	): void {
-		// Check for payloadType
-		if (isset($readSqlConfig['__PAYLOAD-TYPE__'])) {
-			$readPayloadType = $this->httpObject->httpRequestObject->activeRequestData['payloadType'];
-			if ($readPayloadType !== $readSqlConfig['__PAYLOAD-TYPE__']) {
-				throw new \Exception(
-					message: 'Invalid payload type',
-					code: HttpStatus::$BadRequest
-				);
-			}
-
-			// Check for maximum object's supported when payloadType is Array
-			if (
-				$readSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
-				&& isset($readSqlConfig['__MAX-PAYLOAD-OBJECT__'])
-				&& ($objCount = $this->httpObject->httpRequestObject->dataDecodeObject->count())
-				&& ($objCount > $readSqlConfig['__MAX-PAYLOAD-OBJECT__'])
-			) {
-				throw new \Exception(
-					message: 'Maximum supported payload count is '
-						. $readSqlConfig['__MAX-PAYLOAD-OBJECT__'],
-					code: HttpStatus::$BadRequest
-				);
-			}
-		}
-
 		// Set required fields
 		$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArrayCollection'] = $this->getRequired(
 			sqlConfig: $readSqlConfig,
@@ -218,19 +202,20 @@ class Read
 			objectKey: 'Results'
 		);
 
-		$startArray = false;
-		if (
-			isset($this->httpObject->httpRequestObject->activeRequestData['payloadType'])
-			&& $this->httpObject->httpRequestObject->activeRequestData['payloadType'] === 'Array'
-		) {
+		$readPayloadType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+			keyString: Constant::$NULL
+		);
+
+		$startArray = Constant::$FALSE;
+		if ($readPayloadType === 'Array') {
 			if (
 				in_array(
-					needle: $this->httpObject->httpResponseObject->outputRepresentation,
+					needle: $readOutputRepresentation['outputRepresentation'],
 					haystack: ['XML', 'XSLT', 'HTML'],
 					strict: Constant::$TRUE
 				)
 			) {
-				$startArray = true;
+				$startArray = Constant::$TRUE;
 			}
 		}
 
@@ -240,12 +225,12 @@ class Read
 			);
 		}
 
-		$indexCount = $this->httpObject->httpRequestObject->activeRequestData['payloadType'] === 'Array'
+		$indexCount = $readPayloadType === 'Array'
 			? $this->httpObject->httpRequestObject->dataDecodeObject->count() : 1;
 
 		// Start Read operation
 		for ($index = 0; $index < $indexCount; $index++) {
-			$readPayloadKeyArray = null;
+			$readPayloadKeyArray = Constant::$NULL;
 
 			if (isset($this->httpObject->httpRequestObject->activeRequestData['requiredFieldArrayCollection'])) {
 				$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray'] = $this->httpObject->httpRequestObject->activeRequestData['requiredFieldArrayCollection'];
@@ -253,7 +238,7 @@ class Read
 				$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray'] = [];
 			}
 
-			if ($this->httpObject->httpRequestObject->activeRequestData['payloadType'] === 'Array') {
+			if ($readPayloadType === 'Array') {
 				$readPayloadKeyArray = [];
 				$readPayloadKeyArray[] = "{$index}";
 				$this->dataEncodeObject->startObject($index);
@@ -285,7 +270,7 @@ class Read
 				readParentIsFirstCall: Constant::$TRUE
 			);
 
-			if ($this->httpObject->httpRequestObject->activeRequestData['payloadType'] === 'Array') {
+			if ($readPayloadType === 'Array') {
 				$this->dataEncodeObject->endObject();
 			}
 		}
@@ -298,11 +283,11 @@ class Read
 	/**
 	 * Process Read Parent Config Function
 	 * 
-	 * @param array $readParentSqlConfig          Sql config
+	 * @param array $readParentSqlConfig            Sql config
 	 * @param array $readParentPayloadKeyArray.
 	 * @param array $readParentRequiredFieldArray
-	 * @param bool  $readMaintainHierarchy        If true - Uses parent payload/results in child
-	 * @param bool  $readIsFirstCall              true to represent the first call in recursion
+	 * @param bool  $readMaintainHierarchy          If true - Uses parent payload/results in child
+	 * @param bool  $readIsFirstCall                true to represent the first call in recursion
 	 * 
 	 * @return void
 	 */
@@ -331,6 +316,23 @@ class Read
 			? 1 : $this->httpObject->httpRequestObject->dataDecodeObject->count(
 				keyString: $readParentPayloadKey
 			);
+
+		if (isset($readParentSqlConfig['__PAYLOAD-TYPE__'])) {
+			$readPayloadType = $isObject ? 'Object' : 'Array';
+			if ($readPayloadType !== $readParentSqlConfig['__PAYLOAD-TYPE__']) {
+				$errorArray[] = "Payload can't be an {$readPayloadType}";
+			}
+
+			// Check for maximum object's supported when payloadType is Array
+			if (
+				$readParentSqlConfig['__PAYLOAD-TYPE__'] === 'Array'
+				&& isset($readParentSqlConfig['__MAX-PAYLOAD-OBJECT__'])
+				&& ($indexCount > $readParentSqlConfig['__MAX-PAYLOAD-OBJECT__'])
+			) {
+				$errorArray[] = 'Maximum supported payload count is '
+						. $readParentSqlConfig['__MAX-PAYLOAD-OBJECT__'];
+			}
+		}
 
 		$mode = getenv(name: $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_master_db_server_query_placeholder']);
 		$function = "getSqlAndParam{$mode}Mode";
@@ -380,9 +382,17 @@ class Read
 			}
 
 			// For Payload
-			$this->httpObject->httpRequestObject->activeRequestData['payload'] = $this->httpObject->httpRequestObject->dataDecodeObject->get(
+			$readParentPayload = $this->httpObject->httpRequestObject->dataDecodeObject->getObject(
 				keyString: $readParentCurrentPayloadKey
 			);
+
+			if ($readParentCurrentMaintainHierarchy) {
+				$this->resetFetchData(
+					activeRequestDataKey: 'previousPayload',
+					payloadKeyArray: $readParentCurrentPayloadKeyArray,
+					record: $readParentPayload
+				);
+			}
 
 			// For Validation
 			if (
@@ -421,6 +431,7 @@ class Read
 
 					$this->fetchSingleRecord(
 						readSqlConfig: $readParentSqlConfig,
+						readPayload: $readParentPayload,
 						readPayloadKeyArray: $readParentCurrentPayloadKeyArray,
 						readMaintainHierarchy: $readParentCurrentMaintainHierarchy,
 						readIsFirstCall: $readParentIsFirstCall
@@ -429,6 +440,8 @@ class Read
 					break;
 				// Query will return multiple rows
 				case 'multipleRecordFormat':
+					$start = Constant::$NULL;
+					$perPage = Constant::$NULL;
 					if ($readParentIsFirstCall) {
 						if (isset($readParentSqlConfig['__COUNT-SQL__'])) {
 							$this->dataEncodeObject->startObject(
@@ -440,8 +453,13 @@ class Read
 							);
 						}
 						if (isset($readParentSqlConfig['__COUNT-SQL__'])) {
-							$this->fetchRecordCount(
-								readSqlConfig: $readParentSqlConfig
+							$page  = $readParentPayload['page'] ?? 1;
+							$perPage  = $readParentPayload['perPage'] ?? Env::$defaultPerPage;
+							$start = $this->fetchRecordCount(
+								readSqlConfig: $readParentSqlConfig,
+								readPayload: $readParentPayload,
+								page: $page,
+								perPage: $perPage
 							);
 							$this->dataEncodeObject->startArray(
 								objectKey: 'Data'
@@ -458,9 +476,13 @@ class Read
 					}
 					$this->fetchMultipleRecords(
 						readSqlConfig: $readParentSqlConfig,
+						readPayload: $readParentPayload,
 						readPayloadKeyArray: $readParentCurrentPayloadKeyArray,
 						readMaintainHierarchy: $readParentCurrentMaintainHierarchy,
-						readIsFirstCall: $readParentIsFirstCall
+						readIsFirstCall: $readParentIsFirstCall,
+						start: $start,
+						offset: $perPage
+
 					);
 					$this->dataEncodeObject->endArray();
 					if (
@@ -477,7 +499,8 @@ class Read
 				$this->dataEncodeObject->addKeyData(
 					objectKey: '__TRIGGER__',
 					data: $this->getTriggerData(
-						triggerConfig: $readParentSqlConfig['__TRIGGER__']
+						triggerConfig: $readParentSqlConfig['__TRIGGER__'],
+						payload: $readParentPayload
 					)
 				);
 			}
@@ -493,16 +516,30 @@ class Read
 					hookArray: $readParentSqlConfig['__POST-CONFIG-HOOK__']
 				);
 			}
+
+			// For Affected Cache
+			if (isset($readParentSqlConfig['__AFFECTED-CACHE-KEY__'])) {
+				$indexCount = count(
+					value: $readParentSqlConfig['__AFFECTED-CACHE-KEY__']
+				);
+				for ($index = 0; $index < $indexCount; $index++) {
+					$this->httpObject->httpRequestObject->customerQueryCacheObject->queryCacheDelete(
+						customerId: $this->httpObject->httpRequestObject->customerId,
+						queryCacheKey: $readParentSqlConfig['__AFFECTED-CACHE-KEY__'][$index]
+					);
+				}
+			}
 		}
 	}
 
 	/**
 	 * Process Read Child Config Function
 	 * 
-	 * @param array $readSqlConfig         Sql config
+	 * @param array $readSqlConfig                 Sql config
 	 * @param array $readPayloadKeyArray
-	 * @param array $dbFetchedRecord       Record data fetched from DB
-	 * @param bool  $readMaintainHierarchy If true - Uses parent payload/results in child
+	 * @param array $dbFetchedRecord               Record data fetched from DB
+	 * @param bool  $readMaintainHierarchy         If true - Uses parent payload/results in child
+	 * @param bool  $readChildOutputRepresentation Output Representation
 	 * 
 	 * @return void
 	 */
@@ -512,14 +549,6 @@ class Read
 		&$dbFetchedRecord,
 		$readChildMaintainHierarchy
 	): void {
-		if ($readChildMaintainHierarchy) {
-			$this->resetFetchData(
-				activeRequestDataKey: 'sqlPayload',
-				payloadKeyArray: $readChildPayloadKeyArray,
-				record: $dbFetchedRecord
-			);
-		}
-
 		if (
 			isset($readChildPayloadKeyArray[0])
 			&& $readChildPayloadKeyArray[0] === ''
@@ -638,16 +667,19 @@ class Read
 	 * Fetch dbFetchedRecord count
 	 * 
 	 * @param array $readSqlConfig Sql config
+	 * @param array $readPayload   Payload
+	 * @param int   $page          Page Number
+	 * @param int   $perPage       Records Per Page
 	 * 
-	 * @return void
+	 * @return int
 	 * @throws \Exception
 	 */
 	private function fetchRecordCount(
-		$readSqlConfig
-	): void {
-		if (!isset($readSqlConfig['__COUNT-SQL__'])) {
-			return;
-		}
+		$readSqlConfig,
+		&$readPayload,
+		$page,
+		$perPage
+	): int {
 		$readSqlConfig['__SQL__'] = $readSqlConfig['__COUNT-SQL__'];
 		if (isset($readSqlConfig['__COUNT-SQL-COMMENT__'])) {
 			$readSqlConfig['__SQL-COMMENT__'] = $readSqlConfig['__COUNT-SQL-COMMENT__'];
@@ -655,25 +687,24 @@ class Read
 		unset($readSqlConfig['__COUNT-SQL-COMMENT__']);
 		unset($readSqlConfig['__COUNT-SQL__']);
 
-		$this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['page']  = $this->httpObject->httpRequestObject->activeRequestData['payload']['page'] ?? 1;
-		$this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['perPage']  = $this->httpObject->httpRequestObject->activeRequestData['payload']['perPage'] ??
-			Env::$defaultPerPage;
-
-		if ($this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['perPage'] > Env::$maxResultsPerPage) {
+		if ($perPage > Env::$maxResultsPerPage) {
 			throw new \Exception(
 				message: 'perPage exceeds max perPage value of ' . Env::$maxResultsPerPage,
 				code: HttpStatus::$Forbidden
 			);
 		}
 
-		$this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['start'] = (
-			($this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['page'] - 1) * 
-			$this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['perPage']
-		);
+		$start = ($page - 1) * $perPage;
 
 		$function = "getSqlAndParam{$this->placeholderMode}Mode";
-		[$id, $sql, $paramArray, $errorArray] = $this->$function(
-			sqlConfig: $readSqlConfig
+		[
+			$id,
+			$sql,
+			$paramArray,
+			$errorArray
+		] = $this->$function(
+			sqlConfig: $readSqlConfig,
+			payload: $readPayload
 		);
 
 		if (!empty($errorArray)) {
@@ -694,16 +725,16 @@ class Read
 
 		$totalRecordsCount = isset($dbFetchedRecord['count']) ? $dbFetchedRecord['count'] : 0;
 		$totalPages = ceil(
-			num: $totalRecordsCount / $this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['perPage']
+			num: $totalRecordsCount / $perPage
 		);
 
 		$this->dataEncodeObject->addKeyData(
 			objectKey: 'page',
-			data: $this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['page']
+			data: $page
 		);
 		$this->dataEncodeObject->addKeyData(
 			objectKey: 'perPage',
-			data: $this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['perPage']
+			data: $perPage
 		);
 		$this->dataEncodeObject->addKeyData(
 			objectKey: 'totalPages',
@@ -713,12 +744,15 @@ class Read
 			objectKey: 'totalRecords',
 			data: $totalRecordsCount
 		);
+
+		return $start;
 	}
 
 	/**
 	 * Fetch single record
 	 * 
 	 * @param array $readSqlConfig          Sql config
+	 * @param array $readPayload            Payload
 	 * @param array $readPayloadKeyArray
 	 * @param bool  $readMaintainHierarchy  If true - Uses parent payload/results in child
 	 * @param bool  $readIsFirstCall        true to represent the first call in recursion
@@ -728,13 +762,20 @@ class Read
 	 */
 	private function fetchSingleRecord(
 		&$readSqlConfig,
+		&$readPayload,
 		&$readPayloadKeyArray,
 		$readMaintainHierarchy,
 		$readIsFirstCall
 	): void {
 		$function = "getSqlAndParam{$this->placeholderMode}Mode";
-		[$id, $sql, $paramArray, $errorArray] = $this->$function(
+		[
+			$id,
+			$sql,
+			$paramArray,
+			$errorArray
+		] = $this->$function(
 			sqlConfig: $readSqlConfig,
+			payload: $readPayload,
 			payloadKeyArray: $readPayloadKeyArray
 		);
 
@@ -802,23 +843,35 @@ class Read
 	 * Fetch multiple record
 	 * 
 	 * @param array $readSqlConfig         Sql config
+	 * @param array $readPayload           Payload
 	 * @param array $readPayloadKeyArray
 	 * @param bool  $readMaintainHierarchy If true - Uses parent payload/results in child
 	 * @param bool  $readIsFirstCall       true to represent first call in recursion
+	 * @param bool  $start                 Start fetching record from
+	 * @param bool  $offset                Number of record to be fetched
 	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
 	private function fetchMultipleRecords(
 		&$readSqlConfig,
+		&$readPayload,
 		&$readPayloadKeyArray,
 		$readMaintainHierarchy,
-		$readIsFirstCall
+		$readIsFirstCall,
+		$start = null,
+		$offset = null
 	): void {
 		$function = "getSqlAndParam{$this->placeholderMode}Mode";
 
-		[$id, $sql, $paramArray, $errorArray] = $this->$function(
+		[
+			$id,
+			$sql,
+			$paramArray,
+			$errorArray
+		] = $this->$function(
 			sqlConfig: $readSqlConfig,
+			payload: $readPayload,
 			payloadKeyArray: $readPayloadKeyArray
 		);
 
@@ -870,19 +923,17 @@ class Read
 		}
 
 		if (isset($readSqlConfig['__COUNT-SQL__'])) {
-			$start = $this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['start'];
-			$offset = $this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['perPage'];
 			$sql .= " LIMIT {$start}, {$offset}";
 		}
 
-		$pushPop = true;
+		$pushPop = Constant::$TRUE;
 		$this->httpObject->httpRequestObject->customerDbObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray,
 			pushPop: $pushPop
 		);
 
-		$singleColumn = false;
+		$singleColumn = Constant::$FALSE;
 		for ($index = 0; $dbFetchedRecord = $this->httpObject->httpRequestObject->customerDbObject->fetch(); $index++) {
 			if ($index === 0) {
 				if (
@@ -890,7 +941,7 @@ class Read
 						value: $dbFetchedRecord
 					) === 1
 				) {
-					$singleColumn = true;
+					$singleColumn = Constant::$TRUE;
 				}
 				$singleColumn = $singleColumn
 					&& !isset($readSqlConfig['__SUB-CONFIG__']);
@@ -917,7 +968,7 @@ class Read
 					readChildSqlConfig: $readSqlConfig,
 					readChildPayloadKeyArray: $readPayloadKeyArray,
 					dbFetchedRecord: $dbFetchedRecord,
-					readChildMaintainHierarchy: $readMaintainHierarchy
+					readChildMaintainHierarchy: $readMaintainHierarchy,
 				);
 				$this->dataEncodeObject->endObject();
 			} else {
@@ -939,7 +990,7 @@ class Read
 	 * @return array
 	 */
 	private function download(
-		$readSqlConfig
+		&$readSqlConfig,
 	): array {
 		$return = [[], '', HttpStatus::$Ok];
 
@@ -952,9 +1003,19 @@ class Read
 			return [[], '', HttpStatus::$NotFound];
 		}
 
+		$readPayload = $this->httpObject->httpRequestObject->dataDecodeObject->getObject(
+			keyString: Constant::$NULL
+		);
+
 		$function = "getSqlAndParam{$this->placeholderMode}Mode";
-		[$id, $sql, $paramArray, $errorArray] = $this->$function(
-			sqlConfig: $readSqlConfig
+		[
+			$id,
+			$sql,
+			$paramArray,
+			$errorArray
+		] = $this->$function(
+			sqlConfig: $readSqlConfig,
+			payload: $readPayload
 		);
 		$fetchDbMode = $readSqlConfig['__FETCH-MODE__'] ?? 'Slave';
 

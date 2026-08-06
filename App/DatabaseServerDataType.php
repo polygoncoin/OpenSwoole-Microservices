@@ -413,7 +413,7 @@ class DatabaseServerDataType
 	): bool {
 		switch ($dataType['dataType']) {
 			case 'null':
-				$data = null;
+				$data = Constant::$NULL;
 				break;
 			case 'bool':
 				$data = (bool)$data;
@@ -439,7 +439,7 @@ class DatabaseServerDataType
 				);
 		}
 
-		$returnFlag = true;
+		$returnFlag = Constant::$TRUE;
 
 		if (
 			$returnFlag
@@ -447,21 +447,21 @@ class DatabaseServerDataType
 			&& $dataType['canBeNull'] === Constant::$TRUE
 			&& $data === Constant::$NULL
 		) {
-			return true;
+			return Constant::$TRUE;
 		}
 		if (
 			$returnFlag
 			&& isset($dataType['minValue'])
 			&& $dataType['minValue'] <= $data
 		) {
-			$returnFlag = false;
+			$returnFlag = Constant::$FALSE;
 		}
 		if (
 			$returnFlag
 			&& isset($dataType['maxValue'])
 			&& $data <= $dataType['maxValue']
 		) {
-			$returnFlag = false;
+			$returnFlag = Constant::$FALSE;
 		}
 		if (
 			$returnFlag
@@ -470,7 +470,7 @@ class DatabaseServerDataType
 				string: $data
 			)
 		) {
-			$returnFlag = false;
+			$returnFlag = Constant::$FALSE;
 		}
 		if (
 			$returnFlag
@@ -479,7 +479,7 @@ class DatabaseServerDataType
 				string: $data
 			) <= $dataType['maxLength']
 		) {
-			$returnFlag = false;
+			$returnFlag = Constant::$FALSE;
 		}
 		if (
 			$returnFlag
@@ -490,7 +490,7 @@ class DatabaseServerDataType
 				strict: Constant::$TRUE
 			)
 		) {
-			$returnFlag = false;
+			$returnFlag = Constant::$FALSE;
 		}
 		if (
 			$returnFlag
@@ -502,7 +502,7 @@ class DatabaseServerDataType
 				)
 			)
 		) {
-			$returnFlag = false;
+			$returnFlag = Constant::$FALSE;
 		}
 		if (
 			$returnFlag
@@ -512,7 +512,7 @@ class DatabaseServerDataType
 				subject: $data
 			) === 0
 		) {
-			$returnFlag = false;
+			$returnFlag = Constant::$FALSE;
 		}
 
 		if (!$returnFlag) {
@@ -522,6 +522,6 @@ class DatabaseServerDataType
 			);
 		}
 
-		return true;
+		return Constant::$TRUE;
 	}
 }

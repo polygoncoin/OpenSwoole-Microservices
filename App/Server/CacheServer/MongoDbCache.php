@@ -151,7 +151,7 @@ class MongoDbCache implements CacheServerInterface
 		$this->connectCache();
 
 		if (empty($cacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->noSqlServerObject->exist(
@@ -172,7 +172,7 @@ class MongoDbCache implements CacheServerInterface
 		$this->connectCache();
 
 		if (empty($cacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->noSqlServerObject->get(
@@ -197,7 +197,7 @@ class MongoDbCache implements CacheServerInterface
 		$this->connectCache();
 
 		if (empty($cacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->noSqlServerObject->set(
@@ -222,7 +222,7 @@ class MongoDbCache implements CacheServerInterface
 		$this->connectCache();
 
 		if (empty($cacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->noSqlServerObject->increment(
@@ -244,7 +244,7 @@ class MongoDbCache implements CacheServerInterface
 		$this->connectCache();
 
 		if (empty($cacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->noSqlServerObject->delete(

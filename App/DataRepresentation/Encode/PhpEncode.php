@@ -284,7 +284,7 @@ class PhpEncode implements DataEncodeInterface
 	{
 		$objectKey = $this->jsonEncoderObjectObject->objectKey;
 		$returnArray = &$this->jsonEncoderObjectObject->returnArray;
-		$this->jsonEncoderObjectObject = null;
+		$this->jsonEncoderObjectObject = Constant::$NULL;
 		if (
 			count(
 				value: $this->jsonEncoderObjectObjectArray
@@ -346,7 +346,7 @@ class PhpEncode implements DataEncodeInterface
 	{
 		$objectKey = $this->jsonEncoderObjectObject->objectKey;
 		$returnArray = &$this->jsonEncoderObjectObject->returnArray;
-		$this->jsonEncoderObjectObject = null;
+		$this->jsonEncoderObjectObject = Constant::$NULL;
 		if (
 			count(
 				value: $this->jsonEncoderObjectObjectArray

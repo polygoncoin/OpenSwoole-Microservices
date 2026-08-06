@@ -178,7 +178,7 @@ class RouteParser
 					cidrString: $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_dropbox_request_restricted_cidr']
 				);
 			}
-			$this->routeStartingWithReservedKeywordFlag = true;
+			$this->routeStartingWithReservedKeywordFlag = Constant::$TRUE;
 			$this->routeStartingReservedKeyword = Env::$dropboxRequestRoutePrefix;
 
 			$this->configuredRoute = '/' . implode(
@@ -205,7 +205,7 @@ class RouteParser
 				cidrString: $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_routes_request_restricted_cidr']
 			);
 
-			$this->routeStartingWithReservedKeywordFlag = true;
+			$this->routeStartingWithReservedKeywordFlag = Constant::$TRUE;
 			$this->routeStartingReservedKeyword = Env::$routesRequestRoute;
 
 			$this->configuredRoute = '/' . implode(
@@ -400,7 +400,7 @@ class RouteParser
 				strict: Constant::$TRUE
 			)
 		) {
-			$this->routeStartingWithReservedKeywordFlag = true;
+			$this->routeStartingWithReservedKeywordFlag = Constant::$TRUE;
 			$this->routeStartingReservedKeyword = $routeStartingKeyword;
 			if (
 				CommonFunction::isEnabled(
@@ -417,7 +417,7 @@ class RouteParser
 			}
 		}
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -430,7 +430,7 @@ class RouteParser
 	private function isEndingWithReservedRouteKeyword(
 		$routeEndingKeyword
 	): bool {
-		$return = false;
+		$return = Constant::$FALSE;
 
 		if (
 			CommonFunction::isEnabled(
@@ -439,9 +439,9 @@ class RouteParser
 			)
 			&& Env::$explainRequestRouteKeyword === $routeEndingKeyword
 		) {
-			$this->routeEndingWithReservedKeywordFlag = true;
+			$this->routeEndingWithReservedKeywordFlag = Constant::$TRUE;
 			$this->routeEndingReservedKeyword = Env::$explainRequestRouteKeyword;
-			$return = true;
+			$return = Constant::$TRUE;
 		} elseif (
 			CommonFunction::isEnabled(
 				httpObject: $this->httpObject,
@@ -449,9 +449,9 @@ class RouteParser
 			)
 			&& Env::$importRequestRouteKeyword === $routeEndingKeyword
 		) {
-			$this->routeEndingWithReservedKeywordFlag = true;
+			$this->routeEndingWithReservedKeywordFlag = Constant::$TRUE;
 			$this->routeEndingReservedKeyword = Env::$importRequestRouteKeyword;
-			$return = true;
+			$return = Constant::$TRUE;
 		} elseif (
 			CommonFunction::isEnabled(
 				httpObject: $this->httpObject,
@@ -459,9 +459,9 @@ class RouteParser
 			)
 			&& Env::$importSampleRequestRouteKeyword === $routeEndingKeyword
 		) {
-			$this->routeEndingWithReservedKeywordFlag = true;
+			$this->routeEndingWithReservedKeywordFlag = Constant::$TRUE;
 			$this->routeEndingReservedKeyword = Env::$importSampleRequestRouteKeyword;
-			$return = true;
+			$return = Constant::$TRUE;
 		}
 
 		return $return;
@@ -496,14 +496,17 @@ class RouteParser
 				needle: '{'
 			) !== 0
 		) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		$dynamicRoute = trim(
 			string: $routeElement,
 			characters: '{}'
 		);
-		[$paramName, $paramDataType] = explode(
+		[
+			$paramName,
+			$paramDataType
+		] = explode(
 			separator: ':',
 			string: $dynamicRoute
 		);
@@ -543,7 +546,7 @@ class RouteParser
 			);
 		}
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -598,56 +601,6 @@ class RouteParser
 			// Output data representation over rides global
 			// Output data representation set in Query config file
 			$this->sqlConfig = include $this->sqlConfigFile;
-			if (
-				isset($this->sqlConfig['__OUTPUT-REPRESENTATION__'])
-				&& Env::isValidDataRep(
-					dataRepresentation: $this->sqlConfig['__OUTPUT-REPRESENTATION__'],
-					mode: 'output'
-				)
-			) {
-				if (
-					$this->sqlConfig['__OUTPUT-REPRESENTATION__'] === 'HTML'
-					&& isset($this->sqlConfig['__OUTPUT-REPRESENTATION-FILE__'])
-				) {
-					$this->httpObject->httpResponseObject->outputRepresentation = $this->sqlConfig['__OUTPUT-REPRESENTATION__'];
-					$this->httpObject->httpResponseObject->dataEncodeObject->htmlFile = $this->sqlConfig['__OUTPUT-REPRESENTATION-FILE__'];
-				} elseif (
-					$this->sqlConfig['__OUTPUT-REPRESENTATION__'] === 'PHP'
-					&& isset($this->sqlConfig['__OUTPUT-REPRESENTATION-FILE__'])
-				) {
-					$this->httpObject->httpResponseObject->outputRepresentation = $this->sqlConfig['__OUTPUT-REPRESENTATION__'];
-					$this->httpObject->httpResponseObject->dataEncodeObject->phpFile = $this->sqlConfig['__OUTPUT-REPRESENTATION-FILE__'];
-				} elseif (
-					$this->sqlConfig['__OUTPUT-REPRESENTATION__'] === 'XSLT'
-					&& isset($this->sqlConfig['__OUTPUT-REPRESENTATION-FILE__'])
-				) {
-					$this->httpObject->httpResponseObject->outputRepresentation = $this->sqlConfig['__OUTPUT-REPRESENTATION__'];
-					$this->httpObject->httpResponseObject->dataEncodeObject->xsltFile = $this->sqlConfig['__OUTPUT-REPRESENTATION-FILE__'];
-				} elseif (isset($this->httpObject->httpReqData['get']['outputRepresentation'])) {
-					$this->httpObject->httpResponseObject->outputRepresentation = $this->httpObject->httpReqData['get']['outputRepresentation'];
-				} else {
-					$this->httpObject->httpResponseObject->outputRepresentation = Env::$outputRepresentation;
-				}
-			}
-		}
-
-		// Switch Output data representation if set in URL param
-		if (
-			CommonFunction::isEnabled(
-				httpObject: $this->httpObject,
-				feature: 'customer_enabled_output_representation_in_query_string'
-			)
-			&& isset($this->httpObject->httpReqData['get']['outputRepresentation'])
-			&& Env::isValidDataRep(
-				dataRepresentation: $this->httpObject->httpReqData['get']['outputRepresentation'],
-				mode: 'output'
-			)
-			&& in_array(
-				$this->httpObject->httpReqData['get']['outputRepresentation'],
-				['JSON', 'XML']
-			)
-		) {
-			$this->httpObject->httpResponseObject->outputRepresentation = $this->httpObject->httpReqData['get']['outputRepresentation'];
 		}
 	}
 
@@ -691,10 +644,10 @@ class RouteParser
 		&$routeConfig,
 		&$element
 	): array {
-		$foundIntRoute = false;
-		$foundIntParamName = false;
-		$foundStringRoute = false;
-		$foundStringParamName = false;
+		$foundIntRoute = Constant::$FALSE;
+		$foundIntParamName = Constant::$FALSE;
+		$foundStringRoute = Constant::$FALSE;
+		$foundStringParamName = Constant::$FALSE;
 		foreach (
 			array_keys(
 				array: $routeConfig

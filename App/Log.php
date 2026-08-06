@@ -58,11 +58,13 @@ class Log
 	 * @return int
 	 */
 	public function log(
-		&$logData
+		&$logData,
+		&$payload
 	): int {
 		// Uncomment to log in DB
 		return $this->logIntoDb(
-			$logData
+			logData: $logData,
+			payload: $payload
 		);
 
 		// Uncomment to log in Filesystem
@@ -74,12 +76,14 @@ class Log
 	/**
 	 * Log data into Database
 	 * 
-	 * @param array $logData detail to be logged
+	 * @param array $logData Detail to be logged
+	 * @param array $payload Payload
 	 * 
 	 * @return int
 	 */
 	public function logIntoDb(
-		&$logData
+		&$logData,
+		&$payload
 	): int {
 		$exceptionJson = json_encode(
 			value: $logData
@@ -88,8 +92,10 @@ class Log
 			$exceptionJson = json_encode(
 				value: $logData
 			);
+			$payloadJson = json_encode($payload);
 			return $this->httpObject->httpRequestObject->logErrorData(
-				exceptionJson: $exceptionJson
+				exceptionJson: $exceptionJson,
+				payloadJson: $payloadJson
 			);
 		} else {
 			return $this->logInFilesystem(

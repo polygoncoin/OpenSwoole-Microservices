@@ -320,7 +320,7 @@ class JsonEncode implements DataEncodeInterface
 		$this->write(
 			data: ']'
 		);
-		$this->jsonEncoderObjectObject = null;
+		$this->jsonEncoderObjectObject = Constant::$NULL;
 		if (
 			count(
 				value: $this->jsonEncoderObjectObjectArray
@@ -387,7 +387,7 @@ class JsonEncode implements DataEncodeInterface
 		$this->write(
 			data: '}'
 		);
-		$this->jsonEncoderObjectObject = null;
+		$this->jsonEncoderObjectObject = Constant::$NULL;
 		if (
 			count(
 				value: $this->jsonEncoderObjectObjectArray

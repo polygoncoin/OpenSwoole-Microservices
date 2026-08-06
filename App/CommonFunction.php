@@ -55,7 +55,7 @@ class CommonFunction
 			);
 		}
 		if (empty($httpObject->httpRequestObject->activeRequestData['customerData'][$feature])) {
-			return false;
+			return Constant::$FALSE;
 		} else {
 			return ($httpObject->httpRequestObject->activeRequestData['customerData'][$feature] === Constant::$YES) ? Constant::$TRUE : Constant::$FALSE;
 		}
@@ -178,7 +178,10 @@ class CommonFunction
 					needle: '/'
 				)
 			) {
-				[$cidrIp, $bits] = explode(
+				[
+					$cidrIp,
+					$bits
+				] = explode(
 					separator: '/',
 					string: str_replace(
 						search: ' ',
@@ -284,7 +287,7 @@ class CommonFunction
 		$ip,
 		$cidrString
 	): null|bool {
-		$isValidIp = true;
+		$isValidIp = Constant::$TRUE;
 		$cidrIpNumberRangeArray = self::cidrStringIpNumberRange(
 			cidrString: $cidrString
 		);
@@ -320,7 +323,7 @@ class CommonFunction
 		$ip,
 		$cidrIpNumberRangeArray
 	): bool {
-		$isValidIp = false;
+		$isValidIp = Constant::$FALSE;
 		if (
 			count(
 				value: $cidrIpNumberRangeArray
@@ -338,13 +341,13 @@ class CommonFunction
 				$cidrIpNumber['start'] === 0
 				&& $cidrIpNumber['end'] === 0
 			) {
-				$isValidIp = true;
+				$isValidIp = Constant::$TRUE;
 				break;
 			} elseif (
 				$cidrIpNumber['start'] <= $ipNumber
 				&& $ipNumber <= $cidrIpNumber['end']
 			) {
-				$isValidIp = true;
+				$isValidIp = Constant::$TRUE;
 				break;
 			}
 		}
@@ -427,5 +430,60 @@ class CommonFunction
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Get Output Representation
+	 * 
+	 * @param array $sqlConfig                   Sql config
+	 * @param array $httpReqData                 HTTP request data
+	 * @param array $currentOutputRepresentation Current Output Representation
+	 * 
+	 * @return null|array
+	 */
+	public static function getOutputRepresentation(
+		$sqlConfig,
+		$httpReqData,
+		$currentOutputRepresentation = null
+	): null|array {
+		$returnOutputRepresentation = [];
+		switch (Constant::$TRUE) {
+			case isset($httpReqData['get']['outputRepresentation'])
+				&& in_array(
+					needle: $httpReqData['get']['outputRepresentation'],
+					haystack: ['JSON', 'XML'],
+					strict: Constant::$TRUE
+				):
+				$returnOutputRepresentation = [
+					'outputRepresentation' => $httpReqData['get']['outputRepresentation'],
+					'outputRepresentationFileLocation' => Constant::$FALSE
+				];
+				break;
+			case isset($sqlConfig['__OUTPUT-REPRESENTATION__'])
+				&& Env::isValidDataRep(
+					dataRepresentation: $sqlConfig['__OUTPUT-REPRESENTATION__'],
+					mode: 'output'
+				)
+				&& in_array(
+					needle: $sqlConfig['__OUTPUT-REPRESENTATION__'],
+					haystack: ['HTML', 'PHP', 'XSLT'],
+					strict: Constant::$TRUE
+				)
+				&& isset($sqlConfig['__OUTPUT-REPRESENTATION-FILE__']):
+				$returnOutputRepresentation = [
+					'outputRepresentation' => $sqlConfig['__OUTPUT-REPRESENTATION__'],
+					'outputRepresentationFileLocation' => $sqlConfig['__OUTPUT-REPRESENTATION-FILE__']
+				];
+				break;
+			default:
+				$returnOutputRepresentation = Env::$outputRepresentation;
+				break;
+		}
+
+		if ($returnOutputRepresentation === $currentOutputRepresentation) {
+			return Constant::$NULL;
+		} else {
+			return $returnOutputRepresentation;
+		}
 	}
 }

@@ -94,7 +94,7 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 				);
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -184,7 +184,7 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 				'{$this->sessionFilePrefix}*' -type f -not -newermt \
 				'{$datetime}' -delete"
 		);
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -208,7 +208,7 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 				filename: $filepath
 			);
 		}
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**

@@ -172,7 +172,7 @@ class QueryCacheServer
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->queryCacheExist(
@@ -193,7 +193,7 @@ class QueryCacheServer
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->queryCacheGet(
@@ -216,7 +216,7 @@ class QueryCacheServer
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->queryCacheSet(
@@ -240,7 +240,7 @@ class QueryCacheServer
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->queryCacheIncrement(
@@ -262,7 +262,7 @@ class QueryCacheServer
 		$this->connectQueryCache();
 
 		if (empty($queryCacheKey)) {
-			return false;
+			return Constant::$FALSE;
 		}
 
 		return $this->queryCacheServerObject->queryCacheDelete(

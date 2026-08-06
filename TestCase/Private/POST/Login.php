@@ -27,11 +27,13 @@ $webResponse = Web::trigger(
 	httpRequestMethod: Constant::$POST,
 	route: '/login',
 	header: $headerArray,
-	payload: json_encode(value: $payload)
+	payload: json_encode(
+		value: $payload
+	)
 );
 
-$token = null;
-$sessionCookie = null;
+$token = Constant::$NULL;
+$sessionCookie = Constant::$NULL;
 
 if (isset($webResponse['HttpResponse']['Headers']['Set-Cookie'])) {
 	$sessionCookie = substr(

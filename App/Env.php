@@ -131,7 +131,10 @@ class Env
 		self::$concurrentAccessInterval = getenv(name: 'concurrentAccessInterval');
 
 		self::$inputRepresentation = getenv(name: 'inputRepresentation');
-		self::$outputRepresentation = getenv(name: 'outputRepresentation');
+		self::$outputRepresentation = [
+			'outputRepresentation' => getenv(name: 'outputRepresentation'),
+			'outputRepresentationFileLocation' => Constant::$FALSE
+		];
 		self::$payloadKeyInResponse = getenv(name: 'payloadKeyInResponse');
 
 		self::$gCacheServerType = getenv(name: 'gCacheServerType');
@@ -184,7 +187,7 @@ class Env
 
 		self::$appendSupplementFunctionWith = getenv(name: 'appendSupplementFunctionWith');
 
-		self::$initialized = true;
+		self::$initialized = Constant::$TRUE;
 	}
 
 	/**
@@ -209,7 +212,7 @@ class Env
 						strict: Constant::$TRUE
 					)
 				) {
-					return true;
+					return Constant::$TRUE;
 				} else {
 					throw new \Exception(
 						message: "Invalid Data Representation '{$dataRepresentation}'",
@@ -225,7 +228,7 @@ class Env
 						strict: Constant::$TRUE
 					)
 				) {
-					return true;
+					return Constant::$TRUE;
 				} else {
 					throw new \Exception(
 						message: "Invalid Data Representation '{$dataRepresentation}'",
@@ -234,6 +237,6 @@ class Env
 				}
 				break;
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 }

@@ -104,6 +104,6 @@ class Hook
 				}
 			}
 		}
-		return true;
+		return Constant::$TRUE;
 	}
 }

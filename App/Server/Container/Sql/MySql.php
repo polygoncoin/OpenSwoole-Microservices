@@ -187,7 +187,7 @@ class MySql implements SqlInterface
 	{
 		$this->connect();
 
-		$this->beganTransaction = true;
+		$this->beganTransaction = Constant::$TRUE;
 		try {
 			$this->mysqlServerObject->beginTransaction();
 		} catch (\PDOException $e) {
@@ -208,7 +208,7 @@ class MySql implements SqlInterface
 	{
 		try {
 			if ($this->beganTransaction) {
-				$this->beganTransaction = false;
+				$this->beganTransaction = Constant::$FALSE;
 				$this->mysqlServerObject->commit();
 			}
 		} catch (\PDOException $e) {
@@ -229,7 +229,7 @@ class MySql implements SqlInterface
 	{
 		try {
 			if ($this->beganTransaction) {
-				$this->beganTransaction = false;
+				$this->beganTransaction = Constant::$FALSE;
 				$this->mysqlServerObject->rollBack();
 			}
 		} catch (\PDOException $e) {
@@ -262,7 +262,7 @@ class MySql implements SqlInterface
 				);
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -286,7 +286,7 @@ class MySql implements SqlInterface
 				);
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -367,7 +367,7 @@ class MySql implements SqlInterface
 				);
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -390,7 +390,7 @@ class MySql implements SqlInterface
 				);
 			}
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**

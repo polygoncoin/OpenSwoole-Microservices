@@ -32,6 +32,8 @@ return Web::trigger(
 	httpRequestMethod: Constant::$QUERY,
 	route: '/category',
 	header: $headerArray,
-	payload: json_encode(value: $paramArray)
+	payload: json_encode(
+		value: $paramArray
+	)
 );
 

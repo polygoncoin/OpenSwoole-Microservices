@@ -82,7 +82,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -107,14 +107,14 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 					$this->sessionMaxLifetime
 				)
 			) {
-				return true;
+				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -154,14 +154,14 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 					$this->sessionMaxLifetime
 				)
 			) {
-				return true;
+				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -174,7 +174,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	public function gcSession(
 		$sessionMaxLifetime
 	): bool {
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -189,14 +189,14 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	): bool {
 		try {
 			if ($this->redisServerObject->del($sessionId)) {
-				return true;
+				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
 				e: $e
 			);
 		}
-		return false;
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -206,7 +206,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	public function closeSession(): void
 	{
-		$this->redisServerObject = null;
+		$this->redisServerObject = Constant::$NULL;
 	}
 
 	/**

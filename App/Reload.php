@@ -149,7 +149,7 @@ class Reload
 			);
 		}
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -237,7 +237,7 @@ class Reload
 			}
 		}
 
-		return true;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -324,6 +324,6 @@ class Reload
 			);
 		}
 
-		return true;
+		return Constant::$TRUE;
 	}
 }
