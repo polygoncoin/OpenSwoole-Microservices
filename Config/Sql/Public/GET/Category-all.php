@@ -98,6 +98,6 @@ return [
 			'lagResponse' => 0
 		]
 	],
-	'__OUTPUT-REPRESENTATION-FILE__' => Constant::$XSLT_PUBLIC_DIRECTORY
+	'outputRepresentationFileLocation' => Constant::$XSLT_PUBLIC_DIRECTORY
 		. DIRECTORY_SEPARATOR . 'Category.xls'
 ];

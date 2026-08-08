@@ -32,8 +32,6 @@ return [
 	 * __HIERARCHY__, - for all
 	 * __CACHE-KEY__, - for all
 	 * __AFFECTED-CACHE-KEY__, - for all
-	 * __OUTPUT-REPRESENTATION__, - for all
-	 * __OUTPUT-REPRESENTATION-FILE__, - for all
 	 * 
 	 * __VARIABLE__,
 	 */
@@ -161,8 +159,6 @@ return [
 		 * __HIERARCHY__, - for all
 		 * __CACHE-KEY__, - for all
 		 * __AFFECTED-CACHE-KEY__, - for all
-		 * __OUTPUT-REPRESENTATION__, - for all
-		 * __OUTPUT-REPRESENTATION-FILE__, - for all
 		 * 
 		 * __VARIABLE__,
 		 */
@@ -333,10 +329,10 @@ return [
 	],
 
 	// Data Representation
-	'__OUTPUT-REPRESENTATION__' => 'XML', // JSON/XML/XSLT/HTML/PHP - Defaults to JSON
+	'outputRepresentation' => 'XML', // JSON/XML/XSLT/HTML/PHP - Defaults to JSON
 
 	// Respective Data Representation File (XSLT/HTML/PHP)
-	'__OUTPUT-REPRESENTATION-FILE__' => 'file-path',
+	'outputRepresentationFileLocation' => 'file-path',
 
 	// Rate Limiting Route access
 	'rateLimitMaxRequest' => 1, // Allowed number of request in defined seconds window

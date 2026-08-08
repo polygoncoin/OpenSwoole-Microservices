@@ -91,6 +91,6 @@ return [
 	'__HIERARCHY__' => Constant::$TRUE,
 	'__FETCH-MODE__' => 'Master',
 	// '__CACHE-KEY__' => $this->httpObject->httpRequestObject->activeRequestData['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
-	'__OUTPUT-REPRESENTATION__' => 'PHP',
-	'__OUTPUT-REPRESENTATION-FILE__' => Constant::$PHP_PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . 'index.php'
+	'outputRepresentation' => 'PHP',
+	'outputRepresentationFileLocation' => Constant::$PHP_PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . 'index.php'
 ];

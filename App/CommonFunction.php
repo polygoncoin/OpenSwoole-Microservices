@@ -435,16 +435,14 @@ class CommonFunction
 	/**
 	 * Get Output Representation
 	 * 
-	 * @param array $sqlConfig                   Sql config
-	 * @param array $httpReqData                 HTTP request data
-	 * @param array $currentOutputRepresentation Current Output Representation
+	 * @param array $sqlConfig   Sql config
+	 * @param array $httpReqData HTTP request data
 	 * 
 	 * @return null|array
 	 */
 	public static function getOutputRepresentation(
 		$sqlConfig,
-		$httpReqData,
-		$currentOutputRepresentation = null
+		$httpReqData
 	): null|array {
 		$returnOutputRepresentation = [];
 		switch (Constant::$TRUE) {
@@ -459,20 +457,20 @@ class CommonFunction
 					'outputRepresentationFileLocation' => Constant::$FALSE
 				];
 				break;
-			case isset($sqlConfig['__OUTPUT-REPRESENTATION__'])
+			case isset($sqlConfig['outputRepresentation'])
 				&& Env::isValidDataRep(
-					dataRepresentation: $sqlConfig['__OUTPUT-REPRESENTATION__'],
+					dataRepresentation: $sqlConfig['outputRepresentation'],
 					mode: 'output'
 				)
 				&& in_array(
-					needle: $sqlConfig['__OUTPUT-REPRESENTATION__'],
+					needle: $sqlConfig['outputRepresentation'],
 					haystack: ['HTML', 'PHP', 'XSLT'],
 					strict: Constant::$TRUE
 				)
-				&& isset($sqlConfig['__OUTPUT-REPRESENTATION-FILE__']):
+				&& isset($sqlConfig['outputRepresentationFileLocation']):
 				$returnOutputRepresentation = [
-					'outputRepresentation' => $sqlConfig['__OUTPUT-REPRESENTATION__'],
-					'outputRepresentationFileLocation' => $sqlConfig['__OUTPUT-REPRESENTATION-FILE__']
+					'outputRepresentation' => $sqlConfig['outputRepresentation'],
+					'outputRepresentationFileLocation' => $sqlConfig['outputRepresentationFileLocation']
 				];
 				break;
 			default:
@@ -480,10 +478,6 @@ class CommonFunction
 				break;
 		}
 
-		if ($returnOutputRepresentation === $currentOutputRepresentation) {
-			return Constant::$NULL;
-		} else {
-			return $returnOutputRepresentation;
-		}
+		return $returnOutputRepresentation;
 	}
 }
