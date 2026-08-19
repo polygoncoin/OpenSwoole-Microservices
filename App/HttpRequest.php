@@ -54,21 +54,6 @@ class HttpRequest
 	public $inputRepresentation = null;
 
 	/**
-	 * Routes Configuration Directory
-	 * 
-	 * @var null|string
-	 */
-	public $routesDirectory = null;
-
-	/**
-	 * Sql & Payload Configuration Directory
-	 * Payload Configuration Directory for Supplement
-	 * 
-	 * @var null|string
-	 */
-	public $sqlDirectory = null;
-
-	/**
 	 * Rate Limiter
 	 * 
 	 * @var null|RateLimiter

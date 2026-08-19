@@ -98,6 +98,9 @@ class Read
 	 */
 	public function process(): mixed
 	{
+		// Load Sql
+		$sqlConfig = &$this->httpObject->httpRequestObject->routeParserObject->sqlConfig;
+
 		$return = $this->readBasics(
 			$sqlConfig,
 			$maintainHierarchy
@@ -202,12 +205,12 @@ class Read
 			objectKey: 'Results'
 		);
 
-		$readPayloadType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+		$readPayloadDataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
 			keyString: Constant::$NULL
 		);
 
 		$startArray = Constant::$FALSE;
-		if ($readPayloadType === 'Array') {
+		if ($readPayloadDataType === 'Array') {
 			if (
 				in_array(
 					needle: $readOutputRepresentation['outputRepresentation'],
@@ -225,7 +228,7 @@ class Read
 			);
 		}
 
-		$indexCount = $readPayloadType === 'Array'
+		$indexCount = $readPayloadDataType === 'Array'
 			? $this->httpObject->httpRequestObject->dataDecodeObject->count() : 1;
 
 		// Start Read operation
@@ -238,7 +241,7 @@ class Read
 				$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray'] = [];
 			}
 
-			if ($readPayloadType === 'Array') {
+			if ($readPayloadDataType === 'Array') {
 				$readPayloadKeyArray = [];
 				$readPayloadKeyArray[] = "{$index}";
 				$this->dataEncodeObject->startObject($index);
@@ -270,7 +273,7 @@ class Read
 				readParentIsFirstCall: Constant::$TRUE
 			);
 
-			if ($readPayloadType === 'Array') {
+			if ($readPayloadDataType === 'Array') {
 				$this->dataEncodeObject->endObject();
 			}
 		}
@@ -304,12 +307,13 @@ class Read
 		);
 
 		// For isObject
-		$isObject = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+		$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
 			keyString: $readParentPayloadKey
-		) === 'Object';
-		if ($isObject === Constant::$NULL) {
+		);
+		if ($dataType === Constant::$NULL) {
 			return;
 		}
+		$isObject = $dataType === 'Object';
 
 		// For indexCount
 		$indexCount = ($isObject || $isObject === Constant::$NULL)
@@ -318,9 +322,9 @@ class Read
 			);
 
 		if (isset($readParentSqlConfig['__PAYLOAD-TYPE__'])) {
-			$readPayloadType = $isObject ? 'Object' : 'Array';
-			if ($readPayloadType !== $readParentSqlConfig['__PAYLOAD-TYPE__']) {
-				$errorArray[] = "Payload can't be an {$readPayloadType}";
+			$readPayloadDataType = $isObject ? 'Object' : 'Array';
+			if ($readPayloadDataType !== $readParentSqlConfig['__PAYLOAD-TYPE__']) {
+				$errorArray[] = "Payload can't be an {$readPayloadDataType}";
 			}
 
 			// Check for maximum object's supported when payloadType is Array
@@ -374,12 +378,13 @@ class Read
 			}
 
 			// For isObject
-			$isObject = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+			$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
 				keyString: $readParentCurrentPayloadKey
-			) === 'Object';
-			if ($isObject === Constant::$NULL) {
+			);
+			if ($dataType === Constant::$NULL) {
 				return;
 			}
+			$isObject = $dataType === 'Object';
 
 			// For Payload
 			$readParentPayload = $this->httpObject->httpRequestObject->dataDecodeObject->getObject(
@@ -602,12 +607,13 @@ class Read
 			}
 
 			// For isObject
-			$isObject = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+			$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
 				keyString: $readChildModulePayloadKey
-			) === 'Object';
-			if ($isObject === Constant::$NULL) {
+			);
+			if ($dataType === Constant::$NULL) {
 				return;
 			}
+			$isObject = $dataType === 'Object';
 
 			// For indexCount
 			$indexCount = ($isObject || $isObject === Constant::$NULL)

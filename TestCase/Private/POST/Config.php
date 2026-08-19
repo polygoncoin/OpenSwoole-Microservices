@@ -19,32 +19,12 @@ use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Web;
 
-$headerArray = $defaultHeaderArray;
-$headerArray[] = $contentType;
-$proceed = Constant::$FALSE;
-
-if (
-	isset($token)
-	&& $token !== Constant::$NULL
-) {
-	$headerArray[] = "Authorization: Bearer {$token}";
-	$proceed = Constant::$TRUE;
-}
-if (
-	isset($sessionCookie)
-	&& $sessionCookie !== Constant::$NULL
-) {
-	$headerArray[] = "Cookie: {$sessionCookie}";
-	$proceed = Constant::$TRUE;
-}
-
-if (isset($proceed)) {
+if ($proceed) {
 	return Web::trigger(
 		homeURL: $homeURL,
 		httpRequestMethod: Constant::$POST,
-		// route: '/category/explain',
 		route: '/custom/SupplementTest/explain',
-		header: $headerArray,
+		header: $privateHeaderArray,
 		payload: ''
 	);
 }

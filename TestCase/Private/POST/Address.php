@@ -19,27 +19,7 @@ use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Web;
 
-$headerArray = $defaultHeaderArray;
-$headerArray[] = $contentType;
-
-$proceed = Constant::$FALSE;
-
-if (
-	isset($token)
-	&& $token !== Constant::$NULL
-) {
-	$headerArray[] = "Authorization: Bearer {$token}";
-	$proceed = Constant::$TRUE;
-}
-if (
-	isset($sessionCookie)
-	&& $sessionCookie !== Constant::$NULL
-) {
-	$headerArray[] = "Cookie: {$sessionCookie}";
-	$proceed = Constant::$TRUE;
-}
-
-if (isset($proceed)) {
+if ($proceed) {
 	$paramArray = [
 		'id' => 1,
 		'address' => '203'
@@ -49,7 +29,7 @@ if (isset($proceed)) {
 		homeURL: $homeURL,
 		httpRequestMethod: Constant::$POST,
 		route: '/address',
-		header: $headerArray,
+		header: $privateHeaderArray,
 		payload: json_encode(value: $paramArray)
 	);
 }

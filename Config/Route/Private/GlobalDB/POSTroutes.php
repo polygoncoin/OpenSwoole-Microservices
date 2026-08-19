@@ -17,13 +17,13 @@ use Microservices\App\Constant;
 
 return [
 	'group' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 			. DIRECTORY_SEPARATOR . 'GlobalDB'
 			. DIRECTORY_SEPARATOR . Constant::$POST
 			. DIRECTORY_SEPARATOR . 'groups.php',
 	],
 	'customer' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 			. DIRECTORY_SEPARATOR . 'GlobalDB'
 			. DIRECTORY_SEPARATOR . Constant::$POST
 			. DIRECTORY_SEPARATOR . 'customer.php',

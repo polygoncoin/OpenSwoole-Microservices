@@ -20,7 +20,7 @@ return [
 	'registration' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'UserGroup'
@@ -31,7 +31,7 @@ return [
 	'address' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'UserGroup'

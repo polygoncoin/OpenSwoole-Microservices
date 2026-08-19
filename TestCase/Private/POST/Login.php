@@ -19,14 +19,11 @@ use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Web;
 
-$headerArray = $defaultHeaderArray;
-$headerArray[] = $contentType;
-
 $webResponse = Web::trigger(
 	homeURL: $homeURL,
 	httpRequestMethod: Constant::$POST,
 	route: '/login',
-	header: $headerArray,
+	header: $publicHeaderArray,
 	payload: json_encode(
 		value: $payload
 	)
@@ -34,6 +31,7 @@ $webResponse = Web::trigger(
 
 $token = Constant::$NULL;
 $sessionCookie = Constant::$NULL;
+$proceed = Constant::$FALSE;
 
 if (isset($webResponse['HttpResponse']['Headers']['Set-Cookie'])) {
 	$sessionCookie = substr(
@@ -48,6 +46,22 @@ if (isset($webResponse['HttpResponse']['Headers']['Set-Cookie'])) {
 	$token = $webResponse['HttpResponse']['ResponseBody']['Results']['Token'];
 } elseif (isset($webResponse['HttpResponse']['ResponseBody']['Results']['SessionId'])) {
 	$sessionCookie = "PHPSESSID={$webResponse['HttpResponse']['ResponseBody']['Results']['SessionId']}";
+}
+
+if (
+	$token !== Constant::$NULL
+	|| $sessionCookie !== Constant::$NULL
+) {
+	$privateHeaderArray = $publicHeaderArray;
+	switch (!Constant::$NULL) {
+		case $token:
+			$privateHeaderArray[] = "Authorization: Bearer {$token}";
+			break;
+		case $sessionCookie:
+			$privateHeaderArray[] = "Cookie: {$sessionCookie}";
+			break;
+	}
+	$proceed = Constant::$TRUE;
 }
 
 return $webResponse;

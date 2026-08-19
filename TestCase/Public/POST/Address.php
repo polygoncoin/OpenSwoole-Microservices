@@ -19,9 +19,6 @@ use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Web;
 
-$headerArray = $defaultHeaderArray;
-$headerArray[] = $contentType;
-
 $paramArray = [
 	'id' => 1,
 	'address' => '203'
@@ -31,6 +28,6 @@ return Web::trigger(
 	homeURL: $homeURL,
 	httpRequestMethod: Constant::$POST,
 	route: '/address',
-	header: $headerArray,
+	header: $publicHeaderArray,
 	payload: json_encode(value: $paramArray)
 );

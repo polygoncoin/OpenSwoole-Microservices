@@ -25,27 +25,27 @@ return [
 		]
 	],
 	'login' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PUBLIC_DIRECTORY
 			. DIRECTORY_SEPARATOR . Constant::$GET
 			. DIRECTORY_SEPARATOR . 'Login.php',
 	],
 	'category' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PUBLIC_DIRECTORY
 			. DIRECTORY_SEPARATOR . Constant::$GET
 			. DIRECTORY_SEPARATOR . 'Category-all.php',
 		'search' => [
-			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			'__FILE__' => Constant::$SQL_CONFIG_PUBLIC_DIRECTORY
 				. DIRECTORY_SEPARATOR . Constant::$GET
 				. DIRECTORY_SEPARATOR . 'Category-search.php',
 		],
 		'{id:int}' => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			'__FILE__' => Constant::$SQL_CONFIG_PUBLIC_DIRECTORY
 				. DIRECTORY_SEPARATOR . Constant::$GET
 				. DIRECTORY_SEPARATOR . 'Category-Single.php',
 		],
 		'download' => [
-			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			'__FILE__' => Constant::$SQL_CONFIG_PUBLIC_DIRECTORY
 				. DIRECTORY_SEPARATOR . Constant::$GET
 				. DIRECTORY_SEPARATOR . 'Download.php',
 		]

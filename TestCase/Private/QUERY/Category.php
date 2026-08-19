@@ -19,21 +19,19 @@ use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Web;
 
-$headerArray = $defaultHeaderArray;
-$headerArray[] = $contentType;
+if ($proceed) {
+	$paramArray = [
+		['id' => 1],
+		['id' => 2]
+	];
 
-$paramArray = [
-	['id' => 1],
-	['id' => 2]
-];
-
-return Web::trigger(
-	homeURL: $homeURL,
-	httpRequestMethod: Constant::$QUERY,
-	route: '/category',
-	header: $headerArray,
-	payload: json_encode(
-		value: $paramArray
-	)
-);
-
+	return Web::trigger(
+		homeURL: $homeURL,
+		httpRequestMethod: Constant::$QUERY,
+		route: '/category',
+		header: $privateHeaderArray,
+		payload: json_encode(
+			value: $paramArray
+		)
+	);
+}

@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return array_merge(
-	require $this->httpObject->httpRequestObject->sqlDirectory
+	require Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'Registration.php',

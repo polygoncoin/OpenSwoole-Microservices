@@ -19,14 +19,14 @@ use Microservices\App\Env;
 
 return [
 	'category' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Groups'
 			. DIRECTORY_SEPARATOR . 'AdminGroup'
 			. DIRECTORY_SEPARATOR . Constant::$GET
 			. DIRECTORY_SEPARATOR . 'Category-all.php',
 		'search' => [
-			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'AdminGroup'
@@ -35,7 +35,7 @@ return [
 		],
 		'{id:int}' => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'AdminGroup'
@@ -44,7 +44,7 @@ return [
 		]
 	],
 	'registration' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Groups'
 			. DIRECTORY_SEPARATOR . 'AdminGroup'
@@ -52,7 +52,7 @@ return [
 			. DIRECTORY_SEPARATOR . 'Registration-all.php',
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'AdminGroup'
@@ -61,7 +61,7 @@ return [
 		],
 	],
 	'address' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Groups'
 			. DIRECTORY_SEPARATOR . 'AdminGroup'
@@ -69,7 +69,7 @@ return [
 			. DIRECTORY_SEPARATOR . 'Address-all.php',
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'AdminGroup'
@@ -78,7 +78,7 @@ return [
 		],
 	],
 	'registration-with-address' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Groups'
 			. DIRECTORY_SEPARATOR . 'AdminGroup'
@@ -86,7 +86,7 @@ return [
 			. DIRECTORY_SEPARATOR . 'Registration-With-Address-all.php',
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 				. DIRECTORY_SEPARATOR . 'CustomerDB'
 				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . 'AdminGroup'

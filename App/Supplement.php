@@ -105,6 +105,9 @@ class Supplement
 	 */
 	public function process(): mixed
 	{
+		// Load Sql
+		$sqlConfig = &$this->httpObject->httpRequestObject->routeParserObject->sqlConfig;
+
 		$return = $this->writeBasics(
 			$sqlConfig,
 			$maintainHierarchy
@@ -167,11 +170,11 @@ class Supplement
 			objectKey: 'Results'
 		);
 
-		$supplementPayloadType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+		$supplementPayloadDataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
 			keyString: Constant::$NULL
 		);
 
-		if ($supplementPayloadType === 'Array') {
+		if ($supplementPayloadDataType === 'Array') {
 			if (
 				in_array(
 					needle: $supplementOutputRepresentation['outputRepresentation'],
@@ -186,13 +189,13 @@ class Supplement
 		}
 
 		// For indexCount
-		$indexCount = $supplementPayloadType === 'Array'
+		$indexCount = $supplementPayloadDataType === 'Array'
 			? $this->httpObject->httpRequestObject->dataDecodeObject->count() : 1;
 
 		for ($index = 0; $index < $indexCount; $index++) {
 			$supplementPayloadKeyArray = Constant::$NULL;
 
-			if ($supplementPayloadType === 'Array') {
+			if ($supplementPayloadDataType === 'Array') {
 				$supplementPayloadKeyArray = [];
 				$supplementPayloadKeyArray[] = "{$index}";
 			}
@@ -302,7 +305,7 @@ class Supplement
 			}
 		}
 
-		if ($supplementPayloadType === 'Array') {
+		if ($supplementPayloadDataType === 'Array') {
 			if (
 				in_array(
 					needle: $supplementOutputRepresentation['outputRepresentation'],
@@ -345,12 +348,13 @@ class Supplement
 		);
 
 		// For isObject
-		$isObject = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+		$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
 			keyString: $supplementParentPayloadKey
-		) === 'Object';
-		if ($isObject === Constant::$NULL) {
+		);
+		if ($dataType === Constant::$NULL) {
 			return;
 		}
+		$isObject = $dataType === 'Object';
 
 		// For indexCount
 		$indexCount = ($isObject)
@@ -359,9 +363,9 @@ class Supplement
 			);
 
 		if (isset($supplementParentSqlConfig['__PAYLOAD-TYPE__'])) {
-			$supplementPayloadType = $isObject ? 'Object' : 'Array';
-			if ($supplementPayloadType !== $supplementParentSqlConfig['__PAYLOAD-TYPE__']) {
-				$errorArray[] = "Payload can't be an {$supplementPayloadType}";
+			$supplementPayloadDataType = $isObject ? 'Object' : 'Array';
+			if ($supplementPayloadDataType !== $supplementParentSqlConfig['__PAYLOAD-TYPE__']) {
+				$errorArray[] = "Payload can't be an {$supplementPayloadDataType}";
 			}
 
 			// Check for maximum object's supported when payloadType is Array
@@ -423,12 +427,13 @@ class Supplement
 			}
 
 			// For isObject
-			$isObject = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+			$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
 				keyString: $supplementParentCurrentPayloadKey
-			) === 'Object';
-			if ($isObject === Constant::$NULL) {
+			);
+			if ($dataType === Constant::$NULL) {
 				return;
 			}
+			$isObject = $dataType === 'Object';
 
 			// For Payload
 			$supplementParentPayload = $this->httpObject->httpRequestObject->dataDecodeObject->getObject(
@@ -600,12 +605,13 @@ class Supplement
 			}
 
 			// For isObject
-			$isObject = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+			$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
 				keyString: $supplementChildModulePayloadKey
-			) === 'Object';
-			if ($isObject === Constant::$NULL) {
+			);
+			if ($dataType === Constant::$NULL) {
 				return;
 			}
+			$isObject = $dataType === 'Object';
 
 			// For indexCount
 			$indexCount = ($isObject || $isObject === Constant::$NULL)

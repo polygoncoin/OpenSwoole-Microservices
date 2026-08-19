@@ -93,13 +93,6 @@ class RouteParser
 	public $configuredRoute = '';
 
 	/**
-	 * Sql config file
-	 * 
-	 * @var null|string
-	 */
-	public $sqlConfigFile = null;
-
-	/**
 	 * Sql config
 	 * 
 	 * @var null|string
@@ -227,13 +220,13 @@ class RouteParser
 
 		if ($routeFileLocation === Constant::$NULL) {
 			if ($this->httpObject->httpRequestObject->isPrivateRequest) {
-				$routeFileLocation = $this->httpObject->httpRequestObject->routesDirectory
+				$routeFileLocation = Constant::$ROUTES_CONFIG_PRIVATE_DIRECTORY
 					. DIRECTORY_SEPARATOR . 'CustomerDB'
 					. DIRECTORY_SEPARATOR . 'Groups'
 					. DIRECTORY_SEPARATOR . $this->httpObject->httpRequestObject->activeRequestData['groupData']['customer_user_group_name']
 					. DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['server']['httpRequestMethod'] . 'routes.php';
 			} else {
-				$routeFileLocation = $this->httpObject->httpRequestObject->routesDirectory
+				$routeFileLocation = Constant::$ROUTES_CONFIG_PUBLIC_DIRECTORY
 					. DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['server']['httpRequestMethod'] . 'routes.php';
 			}
 		}
@@ -593,14 +586,12 @@ class RouteParser
 				filename: $routeConfig['__FILE__']
 			)
 		) {
-			$this->sqlConfigFile = $routeConfig['__FILE__'];
-
 			$Constant = __NAMESPACE__ . '\Constant';
 			$Env = __NAMESPACE__ . '\Env';
 
 			// Output data representation over rides global
 			// Output data representation set in Query config file
-			$this->sqlConfig = include $this->sqlConfigFile;
+			$this->sqlConfig = include $routeConfig['__FILE__'];
 		}
 	}
 

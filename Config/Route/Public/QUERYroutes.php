@@ -18,7 +18,7 @@ use Microservices\App\DatabaseServerDataType;
 
 return [
 	'category' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PUBLIC_DIRECTORY
 			. DIRECTORY_SEPARATOR . Constant::$QUERY
 			. DIRECTORY_SEPARATOR . 'Category.php',
 	]

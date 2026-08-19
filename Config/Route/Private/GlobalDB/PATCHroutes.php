@@ -20,26 +20,26 @@ return [
 	'group' => [
 		'{customer_user_group_id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 				. DIRECTORY_SEPARATOR . 'GlobalDB'
 				. DIRECTORY_SEPARATOR . Constant::$PATCH
 				. DIRECTORY_SEPARATOR . 'groups.php',
 			'approve'  => [
-				'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+				'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . Constant::$PATCH
 					. DIRECTORY_SEPARATOR . 'approve'
 					. DIRECTORY_SEPARATOR . 'groups.php',
 			],
 			'disable'  => [
-				'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+				'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . Constant::$PATCH
 					. DIRECTORY_SEPARATOR . 'disable'
 					. DIRECTORY_SEPARATOR . 'groups.php',
 			],
 			'enable'  => [
-				'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+				'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . Constant::$PATCH
 					. DIRECTORY_SEPARATOR . 'enable'
@@ -50,26 +50,26 @@ return [
 	'customer' => [
 		'{customer_id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 				. DIRECTORY_SEPARATOR . 'GlobalDB'
 				. DIRECTORY_SEPARATOR . Constant::$PATCH
 				. DIRECTORY_SEPARATOR . 'customer.php',
 			'approve'  => [
-				'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+				'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . Constant::$PATCH
 					. DIRECTORY_SEPARATOR . 'approve'
 					. DIRECTORY_SEPARATOR . 'customer.php',
 			],
 			'disable'  => [
-				'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+				'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . Constant::$PATCH
 					. DIRECTORY_SEPARATOR . 'disable'
 					. DIRECTORY_SEPARATOR . 'customer.php',
 			],
 			'enable'  => [
-				'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+				'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 					. DIRECTORY_SEPARATOR . 'GlobalDB'
 					. DIRECTORY_SEPARATOR . Constant::$PATCH
 					. DIRECTORY_SEPARATOR . 'enable'

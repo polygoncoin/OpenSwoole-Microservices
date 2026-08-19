@@ -17,12 +17,12 @@ use Microservices\App\Constant;
 
 return [
 	'registration' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PUBLIC_DIRECTORY
 			. DIRECTORY_SEPARATOR . Constant::$POST
 			. DIRECTORY_SEPARATOR . 'Registration.php',
 	],
 	'registration-with-address' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PUBLIC_DIRECTORY
 			. DIRECTORY_SEPARATOR . Constant::$POST
 			. DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
 	],

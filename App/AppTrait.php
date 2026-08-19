@@ -1598,9 +1598,6 @@ trait AppTrait
 		&$sqlConfig,
 		&$maintainHierarchy
 	) {
-		// Load Sql
-		$sqlConfig = $this->httpObject->httpRequestObject->routeParserObject->sqlConfig;
-
 		// Rate Limiting request if configured for Route Sql.
 		$this->rateLimitRoute(
 			sqlConfig: $sqlConfig
@@ -1645,9 +1642,6 @@ trait AppTrait
 		&$sqlConfig,
 		&$maintainHierarchy
 	): bool {
-		// Load Sql
-		$sqlConfig = $this->httpObject->httpRequestObject->routeParserObject->sqlConfig;
-
 		// Lag response
 		$this->lagResponse(
 			sqlConfig: $sqlConfig

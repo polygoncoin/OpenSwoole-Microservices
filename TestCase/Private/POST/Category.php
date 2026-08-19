@@ -19,26 +19,7 @@ use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Web;
 
-$headerArray = $defaultHeaderArray;
-// $headerArray[] = 'Content-Type: multipart/form-data; charset=utf-8';
-$proceed = Constant::$FALSE;
-
-if (
-	isset($token)
-	&& $token !== Constant::$NULL
-) {
-	$headerArray[] = "Authorization: Bearer {$token}";
-	$proceed = Constant::$TRUE;
-}
-if (
-	isset($sessionCookie)
-	&& $sessionCookie !== Constant::$NULL
-) {
-	$headerArray[] = "Cookie: {$sessionCookie}";
-	$proceed = Constant::$TRUE;
-}
-
-if (isset($proceed)) {
+if ($proceed) {
 	$paramArray = [
 		[
 			'name' => 'ramesh0',
@@ -69,7 +50,7 @@ if (isset($proceed)) {
 		homeURL: $homeURL,
 		httpRequestMethod: Constant::$POST,
 		route: '/category/import',
-		header: $headerArray,
+		header: $privateHeaderArray,
 		payload: '',//json_encode(value: $paramArray),
 		fileLocation: $curlFile
 	);

@@ -13,8 +13,12 @@
  * @since     Class available since Release 1.0.0
  */
 
+use Microservices\App\Constant;
+use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+
 return array_merge(
-	require $this->httpObject->httpRequestObject->routesDirectory
+	require Constant::$ROUTES_CONFIG_PRIVATE_DIRECTORY
 		. DIRECTORY_SEPARATOR . 'CustomerDB'
 		. DIRECTORY_SEPARATOR . 'Common'
 		. DIRECTORY_SEPARATOR . 'QUERYroutes.php',

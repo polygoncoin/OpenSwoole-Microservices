@@ -17,7 +17,7 @@ use Microservices\App\Constant;
 
 return [
 	'category' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Groups'
 			. DIRECTORY_SEPARATOR . 'AdminGroup'
@@ -25,7 +25,7 @@ return [
 			. DIRECTORY_SEPARATOR . 'Category.php',
 	],
 	'registration' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Groups'
 			. DIRECTORY_SEPARATOR . 'AdminGroup'
@@ -33,7 +33,7 @@ return [
 			. DIRECTORY_SEPARATOR . 'Registration.php',
 	],
 	'address' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Groups'
 			. DIRECTORY_SEPARATOR . 'AdminGroup'
@@ -41,7 +41,7 @@ return [
 			. DIRECTORY_SEPARATOR . 'Address.php',
 	],
 	'registration-with-address' => [
-		'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+		'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 			. DIRECTORY_SEPARATOR . 'CustomerDB'
 			. DIRECTORY_SEPARATOR . 'Groups'
 			. DIRECTORY_SEPARATOR . 'AdminGroup'

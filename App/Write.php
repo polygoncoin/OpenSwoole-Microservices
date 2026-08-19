@@ -99,6 +99,9 @@ class Write
 	 */
 	public function process(): mixed
 	{
+		// Load Sql
+		$sqlConfig = &$this->httpObject->httpRequestObject->routeParserObject->sqlConfig;
+
 		$return = $this->writeBasics(
 			sqlConfig: $sqlConfig,
 			maintainHierarchy: $maintainHierarchy
@@ -161,11 +164,11 @@ class Write
 			objectKey: 'Results'
 		);
 
-		$writePayloadType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+		$writePayloadDataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
 			keyString: Constant::$NULL
 		);
 
-		if ($writePayloadType === 'Array') {
+		if ($writePayloadDataType === 'Array') {
 			if (
 				in_array(
 					needle: $writeOutputRepresentation['outputRepresentation'],
@@ -180,13 +183,13 @@ class Write
 		}
 
 		// For indexCount
-		$indexCount = $writePayloadType === 'Array'
+		$indexCount = $writePayloadDataType === 'Array'
 			? $this->httpObject->httpRequestObject->dataDecodeObject->count() : 1;
 
 		for ($index = 0; $index < $indexCount; $index++) {
 			$writePayloadKeyArray = Constant::$NULL;
 
-			if ($writePayloadType === 'Array') {
+			if ($writePayloadDataType === 'Array') {
 				$writePayloadKeyArray = [];
 				$writePayloadKeyArray[] = "{$index}";
 			}
@@ -297,7 +300,7 @@ class Write
 			}
 		}
 
-		if ($writePayloadType === 'Array') {
+		if ($writePayloadDataType === 'Array') {
 			if (
 				in_array(
 					needle: $writeOutputRepresentation['outputRepresentation'],
@@ -338,12 +341,13 @@ class Write
 		);
 
 		// For isObject
-		$isObject = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+		$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
 			keyString: $writeParentPayloadKey
-		) === 'Object';
-		if ($isObject === Constant::$NULL) {
+		);
+		if ($dataType === Constant::$NULL) {
 			return;
 		}
+		$isObject = $dataType === 'Object';
 
 		// For indexCount
 		$indexCount = ($isObject || $isObject === Constant::$NULL)
@@ -352,9 +356,9 @@ class Write
 			);
 
 		if (isset($writeParentSqlConfig['__PAYLOAD-TYPE__'])) {
-			$writePayloadType = $isObject ? 'Object' : 'Array';
-			if ($writePayloadType !== $writeParentSqlConfig['__PAYLOAD-TYPE__']) {
-				$errorArray[] = "Payload can't be an {$writePayloadType}";
+			$writePayloadDataType = $isObject ? 'Object' : 'Array';
+			if ($writePayloadDataType !== $writeParentSqlConfig['__PAYLOAD-TYPE__']) {
+				$errorArray[] = "Payload can't be an {$writePayloadDataType}";
 			}
 
 			// Check for maximum object's supported when payloadType is Array
@@ -419,12 +423,13 @@ class Write
 			}
 
 			// For isObject
-			$isObject = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+			$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
 				keyString: $writeParentCurrentPayloadKey
-			) === 'Object';
-			if ($isObject === Constant::$NULL) {
+			);
+			if ($dataType === Constant::$NULL) {
 				return;
 			}
+			$isObject = $dataType === 'Object';
 
 			// Load Payload
 			$writeParentPayload = $this->httpObject->httpRequestObject->dataDecodeObject->getObject(
@@ -634,12 +639,13 @@ class Write
 			}
 
 			// For isObject
-			$isObject = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+			$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
 				keyString: $writeChildModulePayloadKey
-			) === 'Object';
-			if ($isObject === Constant::$NULL) {
+			);
+			if ($dataType === Constant::$NULL) {
 				return;
 			}
+			$isObject = $dataType === 'Object';
 
 			// For indexCount
 			$indexCount = ($isObject)

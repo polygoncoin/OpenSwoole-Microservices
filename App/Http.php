@@ -79,14 +79,6 @@ class Http
 			httpObject: $this
 		);
 
-		if ($this->httpRequestObject->isPrivateRequest) {
-			$this->httpRequestObject->routesDirectory = Constant::$ROUTES_CONFIG_PRIVATE_DIRECTORY;
-			$this->httpRequestObject->sqlDirectory = Constant::$SQL_CONFIG_PRIVATE_DIRECTORY;
-		} else {
-			$this->httpRequestObject->routesDirectory = Constant::$ROUTES_CONFIG_PUBLIC_DIRECTORY;
-			$this->httpRequestObject->sqlDirectory = Constant::$SQL_CONFIG_PUBLIC_DIRECTORY;
-		}
-
 		return Constant::$TRUE;
 	}
 

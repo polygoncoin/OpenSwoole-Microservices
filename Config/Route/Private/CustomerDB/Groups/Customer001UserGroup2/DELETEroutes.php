@@ -13,7 +13,11 @@
  * @since     Class available since Release 1.0.0
  */
 
-return require $this->httpObject->httpRequestObject->routesDirectory
+use Microservices\App\Constant;
+use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
+
+return require Constant::$ROUTES_CONFIG_PRIVATE_DIRECTORY
 	. DIRECTORY_SEPARATOR . 'CustomerDB'
 	. DIRECTORY_SEPARATOR . 'Common'
 	. DIRECTORY_SEPARATOR . 'DELETEroutes.php';

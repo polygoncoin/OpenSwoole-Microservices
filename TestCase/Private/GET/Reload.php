@@ -19,12 +19,10 @@ use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Web;
 
-$headerArray = $defaultHeaderArray;
-
 return Web::trigger(
 	homeURL: $homeURL,
 	httpRequestMethod: Constant::$GET,
 	route: '/reload',
-	header: $headerArray,
+	header: $publicHeaderArray,
 	payload: ''
 );

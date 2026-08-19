@@ -20,7 +20,7 @@ return [
 	'group' => [
 		'{customer_user_group_id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 				. DIRECTORY_SEPARATOR . 'GlobalDB'
 				. DIRECTORY_SEPARATOR . Constant::$PUT
 				. DIRECTORY_SEPARATOR . 'groups.php',
@@ -29,7 +29,7 @@ return [
 	'customer' => [
 		'{customer_id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpRequestObject->sqlDirectory
+			'__FILE__' => Constant::$SQL_CONFIG_PRIVATE_DIRECTORY
 				. DIRECTORY_SEPARATOR . 'GlobalDB'
 				. DIRECTORY_SEPARATOR . Constant::$PUT
 				. DIRECTORY_SEPARATOR . 'customer.php',

@@ -34,9 +34,10 @@ $cacheControl = 'Cache-Control: no-cache';
 // $contentType = 'Content-Type: multipart/form-data; charset=utf-8';
 $contentType = 'Content-Type: text/plain; charset=utf-8';
 
-$defaultHeaderArray = [];
-// $defaultHeaderArray[] = $apiVersion;
-$defaultHeaderArray[] = $cacheControl;
+$publicHeaderArray = [];
+// $publicHeaderArray[] = $apiVersion;
+$publicHeaderArray[] = $cacheControl;
+$publicHeaderArray[] = $contentType;
 
 $response = [];
 
