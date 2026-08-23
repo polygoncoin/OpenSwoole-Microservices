@@ -93,8 +93,9 @@ class HttpResponse
 	 */
 	public function init(): bool
 	{
+		$sqlConfig = $this->httpObject->httpRequestObject->routeParserObject->sqlConfig ?? [];
 		$outputRepresentation = CommonFunction::getOutputRepresentation(
-			sqlConfig: $this->httpObject->httpRequestObject->routeParserObject->sqlConfig,
+			sqlConfig: $sqlConfig,
 			httpReqData: $this->httpObject->httpReqData
 		);
 		$this->dataEncodeObject = new DataEncode(
