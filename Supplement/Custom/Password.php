@@ -3,7 +3,7 @@
 /**
  * CustomAPI
  * php version 8.3
- * 
+ *
  * @category  CustomAPI_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -25,7 +25,7 @@ use Microservices\Supplement\Custom\CustomTrait;
 /**
  * CustomAPI Password
  * php version 8.3
- * 
+ *
  * @category  CustomAPI_Password
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -40,14 +40,14 @@ class Password implements CustomInterface
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -58,7 +58,7 @@ class Password implements CustomInterface
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
@@ -70,7 +70,7 @@ class Password implements CustomInterface
 
 	/**
 	 * Process
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -115,11 +115,11 @@ class Password implements CustomInterface
 				':is_deleted' => Constant::$NO,
 			];
 
-			$this->httpObject->httpRequestObject->customerDbObject->execQuery(
+			$this->httpObject->httpRequestObject->databaseServerObject->execQuery(
 				sql: $sql,
 				paramArray: $paramArray
 			);
-			$this->httpObject->httpRequestObject->customerDbObject->closeCursor();
+			$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
 
 			$customerId = $this->httpObject->httpRequestObject->customerId;
 			$cacheKey = CacheServerKey::customerUsername(
@@ -131,7 +131,7 @@ class Password implements CustomInterface
 				customerData: $this->httpObject->httpRequestObject->activeRequestData['customerData'],
 				customerUserId: $this->httpObject->httpRequestObject->customerUserId
 			);
-			$this->httpObject->httpRequestObject->customerCacheObject->cacheDelete(
+			$this->httpObject->httpRequestObject->cacheServerObject->cacheDelete(
 				cacheKey: CacheServerKey::token(
 					token: $this->httpObject->httpRequestObject->activeRequestData['authId']
 				)

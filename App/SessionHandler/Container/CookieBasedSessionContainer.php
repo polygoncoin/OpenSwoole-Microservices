@@ -3,7 +3,7 @@
 /**
  * Custom Session Handler
  * php version 7
- * 
+ *
  * @category  SessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 /**
  * Custom Session Handler using Cookie
  * php version 7
- * 
+ *
  * @category  CustomSessionHandler_Cookie
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -37,10 +37,10 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 {
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @param string $sessionSavePath Session Save Path
 	 * @param string $sessionName     Session Name
-	 * 
+	 *
 	 * @return void
 	 */
 	public function init(
@@ -57,20 +57,20 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Validate session id
-	 * 
+	 *
 	 * @param string $sessionId Session id
-	 * 
+	 *
 	 * @return bool|string
 	 */
 	public function getSession(
 		$sessionId
 	): bool|string {
 		if (
-			isset($_COOKIE[$this->sessionDataName])
-			&& !empty($_COOKIE[$this->sessionDataName])
+			isset($_COOKIE[$this->sessionDataCookieName])
+			&& !empty($_COOKIE[$this->sessionDataCookieName])
 		) {
 			$sessionData = $this->decryptData(
-				cipherText: $_COOKIE[$this->sessionDataName]
+				cipherText: $_COOKIE[$this->sessionDataCookieName]
 			);
 			$sessionDataArray = unserialize(
 				data: $sessionData
@@ -88,10 +88,10 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Write session data
-	 * 
+	 *
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function setSession(
@@ -121,10 +121,10 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 			);
 		}
 
-		$_COOKIE[$this->sessionDataName] = $cookieData;
+		$_COOKIE[$this->sessionDataCookieName] = $cookieData;
 
 		return setcookie(
-			name: $this->sessionDataName,
+			name: $this->sessionDataCookieName,
 			value: $cookieData,
 			expires_or_options: [
 				'expires' => 0,
@@ -139,10 +139,10 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Update session data
-	 * 
+	 *
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function updateSession(
@@ -157,10 +157,10 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Update session timestamp
-	 * 
+	 *
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function touchSession(
@@ -190,10 +190,10 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 			);
 		}
 
-		$_COOKIE[$this->sessionDataName] = $cookieData;
+		$_COOKIE[$this->sessionDataCookieName] = $cookieData;
 
 		return setcookie(
-			name: $this->sessionDataName,
+			name: $this->sessionDataCookieName,
 			value: $cookieData,
 			expires_or_options: [
 				'expires' => 0,
@@ -208,9 +208,9 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Cleanup old sessions
-	 * 
+	 *
 	 * @param integer $sessionMaxLifetime Session Max Lifetime
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function gcSession(
@@ -221,23 +221,23 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Destroy a session
-	 * 
+	 *
 	 * @param string $sessionId Session id
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function deleteSession(
 		$sessionId
 	): bool {
-		if (isset($_COOKIE[$this->sessionDataName])) {
-			unset($_COOKIE[$this->sessionDataName]);
+		if (isset($_COOKIE[$this->sessionDataCookieName])) {
+			unset($_COOKIE[$this->sessionDataCookieName]);
 		}
 		return Constant::$TRUE;
 	}
 
 	/**
 	 * Close File Container
-	 * 
+	 *
 	 * @return void
 	 */
 	public function closeSession(): void

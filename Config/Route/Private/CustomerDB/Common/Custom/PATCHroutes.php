@@ -3,7 +3,7 @@
 /**
  * API Route config
  * php version 8.3
- * 
+ *
  * @category  API_Route_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 
 return [
-	Env::$customRequestRoutePrefix => [
+	Env::$config[$this->httpObject->httpRequestObject->customerId]->CUSTOM_REQUEST_KEYWORD => [
 		'{custom:string}' => [
 			'dataType' => DatabaseServerDataType::$Default,
 			'{id:int}'  => [

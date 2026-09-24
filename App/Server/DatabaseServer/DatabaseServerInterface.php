@@ -3,7 +3,7 @@
 /**
  * Database
  * php version 8.3
- * 
+ *
  * @category  Database
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\App\Server\DatabaseServer;
 /**
  * Database Interface
  * php version 8.3
- * 
+ *
  * @category  Database_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -31,60 +31,60 @@ interface DatabaseServerInterface
 {
 	/**
 	 * Database Server Object
-	 * 
+	 *
 	 * @return void
 	 */
 	public function connectDb(): void;
 
 	/**
 	 * Use Database
-	 * 
+	 *
 	 * @return void
 	 */
 	public function useDatabase(): void;
 
 	/**
 	 * Begin transaction
-	 * 
+	 *
 	 * @return void
 	 */
 	public function begin(): void;
 
 	/**
 	 * Commit transaction
-	 * 
+	 *
 	 * @return void
 	 */
 	public function commit(): void;
 
 	/**
 	 * Rollback transaction
-	 * 
+	 *
 	 * @return void
 	 */
 	public function rollBack(): void;
 
 	/**
 	 * Affected Records by PDO
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function affectedRecordCount(): bool|int;
 
 	/**
 	 * Last Insert id by PDO
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function lastInsertId(): bool|int;
 
 	/**
 	 * Execute Parameterized query
-	 * 
+	 *
 	 * @param string $sql        Sql query
 	 * @param array  $paramArray Sql query params
 	 * @param bool   $pushPop    Push Pop result set stmt
-	 * 
+	 *
 	 * @return void
 	 */
 	public function execQuery(
@@ -95,23 +95,23 @@ interface DatabaseServerInterface
 
 	/**
 	 * Fetch single record from statement
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function fetch(): mixed;
 
 	/**
 	 * Fetch all rows from statement
-	 * 
+	 *
 	 * @return array|bool
 	 */
 	public function fetchAll(): array|bool;
 
 	/**
 	 * Close statement cursor
-	 * 
+	 *
 	 * @param bool $pushPop Push Pop result set stmt
-	 * 
+	 *
 	 * @return void
 	 */
 	public function closeCursor(

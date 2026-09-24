@@ -3,7 +3,7 @@
 /**
  * CronAPI
  * php version 8.3
- * 
+ *
  * @category  CronAPI_Trait
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -24,7 +24,7 @@ use Microservices\Supplement\Cron\CronTrait;
 /**
  * CronAPI
  * php version 8.3
- * 
+ *
  * @category  CronAPI_Example
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -39,14 +39,14 @@ class Category implements CronInterface
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -57,7 +57,7 @@ class Category implements CronInterface
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
@@ -67,7 +67,7 @@ class Category implements CronInterface
 
 	/**
 	 * Process
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function process(): mixed

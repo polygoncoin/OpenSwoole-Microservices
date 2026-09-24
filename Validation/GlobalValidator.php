@@ -3,7 +3,7 @@
 /**
  * Validator
  * php version 8.3
- * 
+ *
  * @category  Validator
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\Validation\ValidatorTrait;
 /**
  * Validator Global
  * php version 8.3
- * 
+ *
  * @category  Validator_Global
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,14 +38,14 @@ class GlobalValidator implements ValidatorInterface
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -56,9 +56,9 @@ class GlobalValidator implements ValidatorInterface
 
 	/**
 	 * Validate payload
-	 * 
+	 *
 	 * @param array $validationConfig Validation configuration
-	 * 
+	 *
 	 * @return array
 	 */
 	public function validate(
@@ -94,9 +94,9 @@ class GlobalValidator implements ValidatorInterface
 
 	/**
 	 * Check primary key exist
-	 * 
+	 *
 	 * @param array $argArray Arguments
-	 * 
+	 *
 	 * @return int 0/1
 	 */
 	private function primaryKeyExist(
@@ -107,20 +107,20 @@ class GlobalValidator implements ValidatorInterface
 		);
 		$sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
 		$paramArray = [$id];
-		$this->httpObject->httpRequestObject->customerDbObject->execQuery(
+		$this->httpObject->httpRequestObject->databaseServerObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$record = $this->httpObject->httpRequestObject->customerDbObject->fetch();
-		$this->httpObject->httpRequestObject->customerDbObject->closeCursor();
+		$record = $this->httpObject->httpRequestObject->databaseServerObject->fetch();
+		$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
 		return (int)((isset($record['count']) && $record['count'] === 0) ? Constant::$FALSE : Constant::$TRUE);
 	}
 
 	/**
 	 * Check column value exist
-	 * 
+	 *
 	 * @param array $argArray Arguments
-	 * 
+	 *
 	 * @return bool
 	 */
 	private function checkColumnValueExist(
@@ -138,12 +138,12 @@ class GlobalValidator implements ValidatorInterface
 			$columnValue,
 			$id
 		];
-		$this->httpObject->httpRequestObject->customerDbObject->execQuery(
+		$this->httpObject->httpRequestObject->databaseServerObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$record = $this->httpObject->httpRequestObject->customerDbObject->fetch();
-		$this->httpObject->httpRequestObject->customerDbObject->closeCursor();
+		$record = $this->httpObject->httpRequestObject->databaseServerObject->fetch();
+		$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
 		return ($record['count'] === 0) ? Constant::$FALSE : Constant::$TRUE;
 	}
 }

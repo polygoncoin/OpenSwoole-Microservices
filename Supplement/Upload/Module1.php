@@ -3,7 +3,7 @@
 /**
  * UploadAPI
  * php version 8.3
- * 
+ *
  * @category  UploadAPI
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\Supplement\Upload\UploadTrait;
 /**
  * UploadAPI Example
  * php version 8.3
- * 
+ *
  * @category  UploadAPI_Example
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,14 +38,14 @@ class Module1 implements UploadInterface
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -56,7 +56,7 @@ class Module1 implements UploadInterface
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
@@ -66,7 +66,7 @@ class Module1 implements UploadInterface
 
 	/**
 	 * Process
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -81,7 +81,7 @@ class Module1 implements UploadInterface
 
 	/**
 	 * Function to get filename with location depending upon $sess
-	 * 
+	 *
 	 * @return string
 	 */
 	private function getLocation(): string

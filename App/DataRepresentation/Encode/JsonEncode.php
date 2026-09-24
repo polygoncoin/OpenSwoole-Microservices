@@ -3,7 +3,7 @@
 /**
  * Handling JSON Encode
  * php version 8.3
- * 
+ *
  * @category  DataEncode_JSON
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\App\HttpStatus;
 /**
  * Creates JSON string
  * php version 8.3
- * 
+ *
  * @category  JSON_Encoder
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -36,28 +36,28 @@ class JsonEncode implements DataEncodeInterface
 {
 	/**
 	 * Temporary Stream
-	 * 
+	 *
 	 * @var null|resource|array
 	 */
 	private $tempStream = null;
 
 	/**
 	 * Array of JsonEncoderObject object's
-	 * 
+	 *
 	 * @var JsonEncoderObject[]
 	 */
 	private $jsonEncoderObjectObjectArray = [];
 
 	/**
 	 * Current JsonEncoderObject object
-	 * 
+	 *
 	 * @var null|JsonEncoderObject
 	 */
 	private $jsonEncoderObjectObject = null;
 
 	/**
 	 * Characters that are escaped while creating JSON
-	 * 
+	 *
 	 * @var string[]
 	 */
 	private $escapeArray = [
@@ -66,7 +66,7 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * Characters that are escaped with for $escapeArray while creating JSON
-	 * 
+	 *
 	 * @var string[]
 	 */
 	private $replaceArray = [
@@ -75,7 +75,7 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param resource $tempStream Temp stream Temporary stream
 	 * @param bool     $header     Append XML header flag
 	 */
@@ -88,9 +88,9 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @param bool $header Append XML header flag
-	 * 
+	 *
 	 * @return void
 	 */
 	public function init(
@@ -100,9 +100,9 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * Write to temporary stream
-	 * 
+	 *
 	 * @param string $data Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	private function write(
@@ -116,9 +116,9 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * Encodes both simple and associative array to json
-	 * 
+	 *
 	 * @param string|array $data Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function encode(
@@ -153,9 +153,9 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * Escape the json string key or value
-	 * 
+	 *
 	 * @param null|string $data Representation Data
-	 * 
+	 *
 	 * @return string
 	 */
 	private function escape(
@@ -174,9 +174,9 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * Append raw json string
-	 * 
+	 *
 	 * @param string $data Reference of Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function appendData(
@@ -195,10 +195,10 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * Append raw json string
-	 * 
+	 *
 	 * @param string $objectKey Key of associative array
 	 * @param string $data      Reference of Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function appendKeyData(
@@ -223,9 +223,9 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * Add simple array/value as in the json format
-	 * 
+	 *
 	 * @param string|array $data Representation Data
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -245,10 +245,10 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * Add simple array/value as in the json format
-	 * 
+	 *
 	 * @param string       $objectKey Key of associative array
 	 * @param string|array $data      Representation Data
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -278,9 +278,9 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * Start simple array
-	 * 
+	 *
 	 * @param null|string $objectKey Used while creating simple array inside an object
-	 * 
+	 *
 	 * @return void
 	 */
 	public function startArray(
@@ -312,7 +312,7 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * End simple array
-	 * 
+	 *
 	 * @return void
 	 */
 	public function endArray(): void
@@ -335,9 +335,9 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * Start simple array
-	 * 
+	 *
 	 * @param null|string $objectKey Used while creating associative array inside an object
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -379,7 +379,7 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * End associative array
-	 * 
+	 *
 	 * @return void
 	 */
 	public function endObject(): void
@@ -402,7 +402,7 @@ class JsonEncode implements DataEncodeInterface
 
 	/**
 	 * Checks json was properly closed
-	 * 
+	 *
 	 * @return void
 	 */
 	public function end(): void

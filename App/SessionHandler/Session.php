@@ -3,7 +3,7 @@
 /**
  * Custom Session Handler
  * php version 7
- * 
+ *
  * @category  SessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -16,13 +16,14 @@
 namespace Microservices\App\SessionHandler;
 
 use Microservices\App\Constant;
+use Microservices\App\Env;
 use Microservices\App\SessionHandler\CustomSessionHandler;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 
 /**
  * Custom Session Handler Config
  * php version 7
- * 
+ *
  * @category  CustomSessionHandler_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -34,110 +35,79 @@ use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 class Session
 {
 	/**
-	 * Domain Name
-	 * 
-	 * @var null|string
-	 */
-	public $sessionDomain = null;
-
-	/**
 	 * SET THESE TO ENABLE ENCRYPTION
 	 * ENCRYPTION PASS PHRASE
-	 * 
+	 *
 	 * Value = base64_encode(openssl_random_pseudo_bytes(32))
-	 * Example: public $ENCRYPTION_PASS_PHRASE =
+	 * Example: public $sessionEncryptionPassPhrase =
 	 * 'H7OO2m3qe9pHyAHFiERlYJKnlTMtCJs9ZbGphX9NO/c=';
-	 * 
+	 *
 	 * @var null|string
 	 */
-	public $ENCRYPTION_PASS_PHRASE = null;
+	public $sessionEncryptionPassPhrase = null;
 
 	/**
 	 * SET THESE TO ENABLE ENCRYPTION
 	 * ENCRYPTION IV
-	 * 
+	 *
 	 * Value = base64_encode(openssl_random_pseudo_bytes(16))
-	 * Example: public $ENCRYPTION_IV = 'HnPG5az9Xaxam9G9tMuRaw==';
-	 * 
+	 * Example: public $sessionEncryptionIv = 'HnPG5az9Xaxam9G9tMuRaw==';
+	 *
 	 * @var null|string
 	 */
-	public $ENCRYPTION_IV = null;
-
-	/**
-	 * Session id Cookie name
-	 * 
-	 * @var string
-	 */
-	public $sessionName = 'PHPSESSID'; // Default
-
-	/**
-	 * Session Data Cookie name; For cookie as container
-	 * 
-	 * @var string
-	 */
-	public $sessionDataName = 'PHPSESSDATA';
-
-	/**
-	 * Session Life
-	 * 
-	 * @var integer
-	 */
-	public $sessionMaxLifetime = null;
-
-	/**
-	 * File Session optionArray
-	 * Example: public $sessionSavePath = '/tmp';
-	 * 
-	 * @var null|string
-	 */
-	public $sessionSavePath = null;
+	public $sessionEncryptionIv = null;
 
 	/**
 	 * Session mode
-	 * 
+	 *
 	 * @var null|string
 	 */
 	public $sessionMode = null;
 
 	/**
-	 * Customer Data
-	 * 
-	 * @var null|array
-	 */
-	public $customerData = null;
-
-	/**
 	 * Session Start function argument
-	 * 
+	 *
 	 * @var null|array
 	 */
 	public $optionArray = null;
 
 	/**
 	 * Session handler Container
-	 * 
+	 *
 	 * @var null|SessionContainerInterface
 	 */
 	public $sessionContainer = null;
 
 	/**
 	 * Session initProcess function initialized
-	 * 
+	 *
 	 * @var bool
 	 */
 	public $initProcessInitialized = false;
 
 	/**
-	 * Constructor
+	 * Session customer id
+	 *
+	 * @var bool
 	 */
-	public function __construct()
-	{
+	public $customerId = null;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param int $customerId Customer Id
+	 */
+	public function __construct($customerId)
+	{
+		$this->customerId = $customerId;
+		Env::loadEnv(
+			customerId: $customerId
+		);
 	}
 
 	/**
 	 * Initialize container
-	 * 
+	 *
 	 * @return void
 	 */
 	private function initContainer(): void
@@ -149,75 +119,66 @@ class Session
 
 		// Setting required common parameters
 		$this->sessionContainer->sessionOptionArray = $this->optionArray;
-		$this->sessionContainer->sessionName = $this->sessionName;
-		$this->sessionContainer->sessionMaxLifetime = (int)$this->sessionMaxLifetime;
-
-		$sessionServerHostname = getenv(name: $this->customerData['customer_session_server_hostname']);
-		$sessionServerPort = (int)getenv(name: $this->customerData['customer_session_server_port']);
-		$sessionServerUsername = getenv(name: $this->customerData['customer_session_server_username']);
-		$sessionServerPassword = getenv(name: $this->customerData['customer_session_server_password']);
-		$sessionServerDatabase = getenv(name: $this->customerData['customer_session_server_db']);
-		$sessionServerTable = getenv(name: $this->customerData['customer_session_server_table']);
 
 		// Setting required parameters as per session Mode / Type
 		switch ($this->sessionMode) {
 			case 'MySql':
-				$this->sessionContainer->mySqlServerHostname = $sessionServerHostname;
-				$this->sessionContainer->mySqlServerPort = $sessionServerPort;
-				$this->sessionContainer->mySqlServerUsername = $sessionServerUsername;
-				$this->sessionContainer->mySqlServerPassword = $sessionServerPassword;
-				$this->sessionContainer->mySqlServerDatabase = $sessionServerDatabase;
-				$this->sessionContainer->mySqlServerTable = $sessionServerTable;
+				$this->sessionContainer->sessionServerHost = Env::$config[$this->customerId]->SESSION_MYSQL_HOST;
+				$this->sessionContainer->sessionServerPort = Env::$config[$this->customerId]->SESSION_MYSQL_PORT;
+				$this->sessionContainer->sessionServerUser = Env::$config[$this->customerId]->SESSION_MYSQL_USER;
+				$this->sessionContainer->sessionServerPassword = Env::$config[$this->customerId]->SESSION_MYSQL_PASSWORD;
+				$this->sessionContainer->sessionServerDb = Env::$config[$this->customerId]->SESSION_MYSQL_DB;
+				$this->sessionContainer->sessionServerTable = Env::$config[$this->customerId]->SESSION_MYSQL_TABLE;
 				break;
 			case 'PostgreSql':
-				$this->sessionContainer->pgSqlServerHostname = $sessionServerHostname;
-				$this->sessionContainer->pgSqlServerPort = $sessionServerPort;
-				$this->sessionContainer->pgSqlServerUsername = $sessionServerUsername;
-				$this->sessionContainer->pgSqlServerPassword = $sessionServerPassword;
-				$this->sessionContainer->pgSqlServerDatabase = $sessionServerDatabase;
-				$this->sessionContainer->pgSqlServerTable = $sessionServerTable;
+				$this->sessionContainer->pgSqlServerHostname = Env::$config[$this->customerId]->SESSION_PGSQL_HOST;
+				$this->sessionContainer->pgSqlServerPort = Env::$config[$this->customerId]->SESSION_PGSQL_PORT;
+				$this->sessionContainer->pgSqlServerUsername = Env::$config[$this->customerId]->SESSION_PGSQL_USER;
+				$this->sessionContainer->pgSqlServerPassword = Env::$config[$this->customerId]->SESSION_PGSQL_PASSWORD;
+				$this->sessionContainer->pgSqlServerDatabase = Env::$config[$this->customerId]->SESSION_PGSQL_DB;
+				$this->sessionContainer->pgSqlServerTable = Env::$config[$this->customerId]->SESSION_PGSQL_TABLE;
 				break;
 			case 'MongoDb':
-				$this->sessionContainer->mongoDbServerHostname = $sessionServerHostname;
-				$this->sessionContainer->mongoDbServerPort = $sessionServerPort;
-				$this->sessionContainer->mongoDbServerUsername = $sessionServerUsername;
-				$this->sessionContainer->mongoDbServerPassword = $sessionServerPassword;
-				$this->sessionContainer->mongoDbServerDatabase = $sessionServerDatabase;
-				$this->sessionContainer->mongoDbServerCollection = $sessionServerTable;
+				$this->sessionContainer->mongoDbServerHostname = Env::$config[$this->customerId]->SESSION_MONGO_HOST;
+				$this->sessionContainer->mongoDbServerPort = Env::$config[$this->customerId]->SESSION_MONGO_PORT;
+				$this->sessionContainer->mongoDbServerUsername = Env::$config[$this->customerId]->SESSION_MONGO_USER;
+				$this->sessionContainer->mongoDbServerPassword = Env::$config[$this->customerId]->SESSION_MONGO_PASSWORD;
+				$this->sessionContainer->mongoDbServerDatabase = Env::$config[$this->customerId]->SESSION_MONGO_DB;
+				$this->sessionContainer->mongoDbServerCollection = Env::$config[$this->customerId]->SESSION_MONGO_TABLE;
 				break;
 			case 'Redis':
-				$this->sessionContainer->redisServerHostname = $sessionServerHostname;
-				$this->sessionContainer->redisServerPort = $sessionServerPort;
-				$this->sessionContainer->redisServerUsername = $sessionServerUsername;
-				$this->sessionContainer->redisServerPassword = $sessionServerPassword;
-				$this->sessionContainer->redisServerDatabase = $sessionServerDatabase;
+				$this->sessionContainer->redisServerHostname = Env::$config[$this->customerId]->SESSION_REDIS_HOST;
+				$this->sessionContainer->redisServerPort = Env::$config[$this->customerId]->SESSION_REDIS_PORT;
+				$this->sessionContainer->redisServerUsername = Env::$config[$this->customerId]->SESSION_REDIS_USER;
+				$this->sessionContainer->redisServerPassword = Env::$config[$this->customerId]->SESSION_REDIS_PASSWORD;
+				$this->sessionContainer->redisServerDatabase = Env::$config[$this->customerId]->SESSION_REDIS_DB;
 				break;
 			case 'Memcached':
-				$this->sessionContainer->memcachedServerHostname = $sessionServerHostname;
-				$this->sessionContainer->memcachedServerPort = $sessionServerPort;
+				$this->sessionContainer->memcachedServerHostname = Env::$config[$this->customerId]->SESSION_MEMCACHE_HOST;
+				$this->sessionContainer->memcachedServerPort = Env::$config[$this->customerId]->SESSION_MEMCACHE_PORT;
 				break;
 			case 'Cookie':
-				$this->sessionContainer->sessionDataName = $this->sessionDataName;
+				$this->sessionContainer->sessionDataCookieName = Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME;
 				break;
 		}
 
 		// Setting encryption parameters
 		if (
-			!empty($this->ENCRYPTION_PASS_PHRASE)
-			&& !empty($this->ENCRYPTION_IV)
+			!empty($this->sessionEncryptionPassPhrase)
+			&& !empty($this->sessionEncryptionIv)
 		) {
 			$this->sessionContainer->passphrase = base64_decode(
-				string: $this->ENCRYPTION_PASS_PHRASE
+				string: $this->sessionEncryptionPassPhrase
 			);
 			$this->sessionContainer->iv = base64_decode(
-				string: $this->ENCRYPTION_IV
+				string: $this->sessionEncryptionIv
 			);
 		}
 	}
 
 	/**
 	 * Initialize session_set_save_handler process
-	 * 
+	 *
 	 * @return void
 	 */
 	private function initProcess(): void
@@ -234,10 +195,6 @@ class Session
 		$customSessionHandler = new CustomSessionHandler(
 			container: $this->sessionContainer
 		);
-		$customSessionHandler->sessionName = $this->sessionName;
-		if ($this->sessionMode === 'Cookie') {
-			$customSessionHandler->sessionDataName = $this->sessionDataName;
-		}
 		session_set_save_handler(
 			$customSessionHandler,
 			Constant::$TRUE
@@ -248,45 +205,30 @@ class Session
 
 	/**
 	 * Generates session optionArray argument
-	 * 
+	 *
 	 * @param array $optionArray Options
-	 * 
+	 *
 	 * @return void
 	 */
 	private function setOptions(
 		$optionArray = []
 	): void {
-		if (isset($optionArray['name'])) {
-			$this->sessionName = $optionArray['name'];
-		}
-
-		if (isset($optionArray['gc_maxlifetime'])) {
-			$this->sessionMaxLifetime = (int)$optionArray['gc_maxlifetime'];
-		} else {
-			$this->sessionMaxLifetime = (int)Constant::$TOKEN_EXPIRY_TIME;
-		}
-
 		$this->optionArray = [ // always required.
 			'use_strict_mode' => Constant::$TRUE,
-			'name' => $this->sessionName,
+			'name' => Env::$config[$this->customerId]->SESSION_COOKIE_NAME,
 			'serialize_handler' => 'php_serialize',
 			'lazy_write' => Constant::$TRUE,
-			'gc_maxlifetime' => (int)$this->sessionMaxLifetime,
-			'cookie_lifetime' => 0,
-			'cookie_path' => '/',
-			'cookie_domain' => '',
-			'cookie_secure' => (
-				strpos(
-					haystack: $this->sessionDomain,
-					needle: 'localhost'
-				) !== Constant::$FALSE
-			) ? Constant::$TRUE : Constant::$FALSE,
-			'cookie_httponly' => Constant::$TRUE,
-			'cookie_samesite' => 'Strict'
+			'gc_maxlifetime' => Env::$config[$this->customerId]->SESSION_LIFETIME,
+			'cookie_lifetime' => Env::$config[$this->customerId]->SESSION_LIFETIME,
+			'cookie_path' => Env::$config[$this->customerId]->SESSION_COOKIE_PATH,
+			'cookie_domain' => Env::$config[$this->customerId]->SESSION_COOKIE_DOMAIN,
+			'cookie_secure' => Env::$config[$this->customerId]->SESSION_COOKIE_SECURE,
+			'cookie_httponly' => Env::$config[$this->customerId]->SESSION_COOKIE_HTTPONLY,
+			'cookie_samesite' => Env::$config[$this->customerId]->SESSION_COOKIE_SAMESITE,
 		];
 
 		if ($this->sessionMode === 'File') {
-			$this->optionArray['save_path'] = $this->sessionSavePath;
+			$this->optionArray['save_path'] = Env::$config[$this->customerId]->SESSION_STORE_PATH;
 		}
 
 		if (!empty($optionArray)) {
@@ -308,43 +250,15 @@ class Session
 
 	/**
 	 * Initialize session handler
-	 * 
-	 * @param array $customerData
-	 * @param array $options      Options
-	 * 
+	 *
+	 * @param array $options Options
+	 *
 	 * @return void
 	 */
 	public function initSessionHandler(
-		$customerData,
 		$options = []
 	): void {
-		$envFilename = '.env.session';
-		$envDataArray = parse_ini_file(
-			filename: ROOT . DIRECTORY_SEPARATOR . $envFilename
-		);
-		foreach ($envDataArray as $envVarName => $envVarValue) {
-			putenv(
-				assignment: "{$envVarName}={$envVarValue}"
-			);
-		}
-
-		$this->customerData = $customerData;
-		$this->sessionMode = getenv(name: $this->customerData['customer_session_server_type']);
-
-		// Set optoptionsionArray from php.ini if not set in this class
-		if (empty($this->sessionName)) {
-			$this->sessionName = session_name();
-		}
-		if ($this->sessionMode === 'File') {
-			if (empty($this->sessionSavePath)) {
-				$this->sessionSavePath = (session_save_path()
-					? session_save_path() : sys_get_temp_dir()) . '/session-files';
-			}
-			if (strpos($this->sessionSavePath, '/') !== 0) {
-				$this->sessionSavePath =
-					__DIR__ . DIRECTORY_SEPARATOR . $this->sessionSavePath;
-			}
-		}
+		$this->sessionMode = Env::$config[$this->customerId]->SESSION_STORE_MODE;
 
 		// Initialize
 		$this->setOptions(
@@ -355,7 +269,7 @@ class Session
 
 	/**
 	 * Close if Session is Active in write mode
-	 * 
+	 *
 	 * @return void
 	 */
 	public function sessionStartCheck(): void
@@ -372,14 +286,14 @@ class Session
 
 	/**
 	 * Start session in read only mode
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function sessionStartReadonly(): bool
 	{
 		if (
-			isset($_COOKIE[$this->sessionName])
-			&& !empty($_COOKIE[$this->sessionName])
+			isset($_COOKIE[Env::$config[$this->customerId]->SESSION_COOKIE_NAME])
+			&& !empty($_COOKIE[Env::$config[$this->customerId]->SESSION_COOKIE_NAME])
 		) {
 			$this->sessionStartCheck();
 			$this->optionArray['read_and_close'] = Constant::$TRUE;
@@ -394,7 +308,7 @@ class Session
 
 	/**
 	 * Start session in read/write mode
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function sessionStartReadWrite(): bool
@@ -412,9 +326,9 @@ class Session
 
 	/**
 	 * For Custom Session Handler - Destroy a session
-	 * 
+	 *
 	 * @param string $sessionId Session id
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function deleteSession(
@@ -427,9 +341,9 @@ class Session
 
 	/**
 	 * For Custom Session Handler - Destroy a session
-	 * 
+	 *
 	 * @param array $sessionIds Session IDs
-	 * 
+	 *
 	 * @return void
 	 */
 	public function deleteSessions(

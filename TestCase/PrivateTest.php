@@ -3,7 +3,7 @@
 /**
  * Test Case
  * php version 8.3
- * 
+ *
  * @category  Test Case
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -43,16 +43,12 @@ $publicHeaderArray[] = $contentType;
 
 $response = [];
 
-if (defined('__MODE__')) {
-	$homeURL = 'http://127.0.0.1:9501';
-} else {
-	$homeURL = 'http://127.0.0.1:9501';
-}
+$homeURL = 'http://127.0.0.1:9501';
 
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Reload.php';
 
 $payload = [
-	'username' => 'customer_1_group_1_user_1',
+	'username' => 'customer_group_user_1',
 	'password' => 'shames11'
 ];
 $response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Login.php';
@@ -87,7 +83,7 @@ $homeURL = 'http://127.0.0.1:9501';
 
 // Admin login
 $payload = [
-	'username' => 'customer_1_admin_1',
+	'username' => 'customer_admin_1',
 	'password' => 'shames11'
 ];
 $response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Login.php';

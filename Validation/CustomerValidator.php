@@ -3,7 +3,7 @@
 /**
  * Validator
  * php version 8.3
- * 
+ *
  * @category  Validator
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\Validation\ValidatorTrait;
 /**
  * Customer Validator
  * php version 8.3
- * 
+ *
  * @category  Validator_Customer
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,14 +38,14 @@ class CustomerValidator implements ValidatorInterface
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -56,9 +56,9 @@ class CustomerValidator implements ValidatorInterface
 
 	/**
 	 * Validate payload
-	 * 
+	 *
 	 * @param array $validationConfig Validation configuration
-	 * 
+	 *
 	 * @return array
 	 */
 	public function validate(
@@ -95,11 +95,11 @@ class CustomerValidator implements ValidatorInterface
 
 	/**
 	 * Get primary key count
-	 * 
+	 *
 	 * @param string $table   Table Name
 	 * @param string $primary Primary Key
 	 * @param int    $id      Primary id
-	 * 
+	 *
 	 * @return int 0/1
 	 */
 	private function getPrimaryCount(
@@ -107,25 +107,25 @@ class CustomerValidator implements ValidatorInterface
 		$primary,
 		&$id
 	): int {
-		$dbServerDatabase = $this->httpObject->httpRequestObject->customerDbObject->dbServerDatabase;
+		$dbServerDatabase = $this->httpObject->httpRequestObject->databaseServerObject->dbServerDatabase;
 		$sql = "
 			SELECT count(1) as `count`
 			FROM `{$dbServerDatabase}`.`{$table}`
 			WHERE `{$primary}` = ?
 		";
 		$paramArray = [$id];
-		$this->httpObject->httpRequestObject->customerDbObject->execQuery(
+		$this->httpObject->httpRequestObject->databaseServerObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		return (int)($this->httpObject->httpRequestObject->customerDbObject->fetch())['count'];
+		return (int)($this->httpObject->httpRequestObject->databaseServerObject->fetch())['count'];
 	}
 
 	/**
 	 * Check primary key exist
-	 * 
+	 *
 	 * @param array $argArray Arguments
-	 * 
+	 *
 	 * @return bool
 	 */
 	private function primaryKeyExist(
@@ -136,12 +136,12 @@ class CustomerValidator implements ValidatorInterface
 		);
 		$sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
 		$paramArray = [$id];
-		$this->httpObject->httpRequestObject->customerDbObject->execQuery(
+		$this->httpObject->httpRequestObject->databaseServerObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$record = $this->httpObject->httpRequestObject->customerDbObject->fetch();
-		$this->httpObject->httpRequestObject->customerDbObject->closeCursor();
+		$record = $this->httpObject->httpRequestObject->databaseServerObject->fetch();
+		$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
 		return (isset($record['count']) && $record['count'] === 0) ? Constant::$FALSE : Constant::$TRUE;
 	}
 }

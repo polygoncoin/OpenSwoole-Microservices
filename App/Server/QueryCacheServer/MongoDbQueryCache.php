@@ -3,7 +3,7 @@
 /**
  * Handling Cache via MongoDb
  * php version 8.3
- * 
+ *
  * @category  Cache
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
 /**
  * Caching via MongoDb
  * php version 8.3
- * 
+ *
  * @category  QueryCache_MongoDb
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -34,95 +34,95 @@ use Microservices\App\Server\QueryCacheServer\QueryCacheServerInterface;
  */
 class MongoDbQueryCache implements QueryCacheServerInterface
 {
-	// "mongodb://<queryCacheServerUsername>:<queryCacheServerPassword>@<cluster-url>:<queryCacheServerPort>/<database-name>
+	// "mongodb://<queryCacheServerUser>:<queryCacheServerPassword>@<cluster-url>:<queryCacheServerPort>/<database-name>
 	// ?retryWrites=true&w=majority"
 	private $uri = null;
 
 	/**
 	 * Query Cache Server Hostname
-	 * 
+	 *
 	 * @var null|string
 	 */
-	private $queryCacheServerHostname = null;
+	private $queryCacheServerHost = null;
 
 	/**
 	 * Query Cache Server Port
-	 * 
+	 *
 	 * @var null|int
 	 */
 	private $queryCacheServerPort = null;
 
 	/**
 	 * Query Cache Server Username
-	 * 
+	 *
 	 * @var null|string
 	 */
-	private $queryCacheServerUsername = null;
+	private $queryCacheServerUser = null;
 
 	/**
 	 * Query Cache Server Password
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $queryCacheServerPassword = null;
 
 	/**
 	 * Query Cache Server DB
-	 * 
+	 *
 	 * @var null|string
 	 */
-	private $queryCacheServerDatabase = null;
+	private $queryCacheServerDb = null;
 
 	/**
 	 * Cache collection
-	 * 
+	 *
 	 * @var null|string
 	 */
 	public $queryCacheServerTable = null;
 
 	/**
 	 * Query Cache Server Object
-	 * 
+	 *
 	 * @var null|QueryCache_MongoDb
 	 */
 	private $queryCacheServerObject = null;
 
 	/**
 	 * Collection Object
-	 * 
+	 *
 	 * @var null|Object
 	 */
 	private $collectionObject = null;
 
 	/**
 	 * Constructor
-	 * 
-	 * @param string      $queryCacheServerHostname Query Cache Server Hostname
+	 *
+	 * @param string      $queryCacheServerHost Query Cache Server Hostname
 	 * @param int         $queryCacheServerPort     Query Cache Server Port
-	 * @param string      $queryCacheServerUsername Query Cache Server Username
+	 * @param string      $queryCacheServerUser Query Cache Server Username
 	 * @param string      $queryCacheServerPassword Query Cache Server Password
-	 * @param null|string $queryCacheServerDatabase Query Cache Server Database
+	 * @param null|string $queryCacheServerDb Query Cache Server Database
 	 * @param null|string $queryCacheServerTable    Query Cache Server Table
 	 */
 	public function __construct(
-		$queryCacheServerHostname,
+		$queryCacheServerHost,
 		$queryCacheServerPort,
-		$queryCacheServerUsername,
+		$queryCacheServerUser,
 		$queryCacheServerPassword,
-		$queryCacheServerDatabase,
+		$queryCacheServerDb,
 		$queryCacheServerTable
 	) {
-		$this->queryCacheServerHostname = $queryCacheServerHostname;
+		$this->queryCacheServerHost = $queryCacheServerHost;
 		$this->queryCacheServerPort = $queryCacheServerPort;
-		$this->queryCacheServerUsername = $queryCacheServerUsername;
+		$this->queryCacheServerUser = $queryCacheServerUser;
 		$this->queryCacheServerPassword = $queryCacheServerPassword;
-		$this->queryCacheServerDatabase = $queryCacheServerDatabase;
+		$this->queryCacheServerDb = $queryCacheServerDb;
 		$this->queryCacheServerTable = $queryCacheServerTable;
 	}
 
 	/**
 	 * Connect Query Cache
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -134,11 +134,11 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 
 		try {
 			$this->queryCacheServerObject = new QueryCache_MongoDb(
-				cacheServerHostname: $this->queryCacheServerHostname,
+				cacheServerHostname: $this->queryCacheServerHost,
 				cacheServerPort: $this->queryCacheServerPort,
-				cacheServerUsername: $this->queryCacheServerUsername,
+				cacheServerUsername: $this->queryCacheServerUser,
 				cacheServerPassword: $this->queryCacheServerPassword,
-				cacheServerDatabase: $this->queryCacheServerDatabase,
+				cacheServerDatabase: $this->queryCacheServerDb,
 				cacheServerTable: $this->queryCacheServerTable
 			);
 		} catch (\Exception $e) {
@@ -151,9 +151,9 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Query Cache key exist
-	 * 
+	 *
 	 * @param string $queryCacheKey Query Cache key
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function queryCacheExist(
@@ -172,9 +172,9 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Get Query Cache key
-	 * 
+	 *
 	 * @param string $queryCacheKey Query Cache key
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function queryCacheGet(
@@ -193,10 +193,10 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Set cache key
-	 * 
+	 *
 	 * @param string $queryCacheKey   Query Cache key
 	 * @param mixed  $queryCacheValue Query Cache value
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function queryCacheSet(
@@ -217,10 +217,10 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Increment Query Cache key as per offset
-	 * 
+	 *
 	 * @param string $queryCacheKey    Query Cache key
 	 * @param int    $queryCacheOffset Query Cache Offset
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function queryCacheIncrement(
@@ -241,9 +241,9 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Delete Query Cache key
-	 * 
+	 *
 	 * @param string $queryCacheKey Query Cache key
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function queryCacheDelete(

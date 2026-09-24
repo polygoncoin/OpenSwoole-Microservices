@@ -3,7 +3,7 @@
 /**
  * NoSql Container
  * php version 8.3
- * 
+ *
  * @category  NoSqlContainers
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\App\Server\Container\NoSql;
 /**
  * NoSql Interface
  * php version 8.3
- * 
+ *
  * @category  NoSql_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -31,7 +31,7 @@ interface NoSqlInterface
 {
 	/**
 	 * Cache Server Object
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -39,9 +39,9 @@ interface NoSqlInterface
 
 	/**
 	 * Cache key exist
-	 * 
+	 *
 	 * @param string $key Key
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function exist(
@@ -50,9 +50,9 @@ interface NoSqlInterface
 
 	/**
 	 * Get cache key
-	 * 
+	 *
 	 * @param string $key Key
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function get(
@@ -61,11 +61,11 @@ interface NoSqlInterface
 
 	/**
 	 * Set cache key
-	 * 
+	 *
 	 * @param string $key    Key
 	 * @param mixed  $value  Cache value
 	 * @param int    $expire Seconds to expire. Default 0 - doesn't expire
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function set(
@@ -76,10 +76,10 @@ interface NoSqlInterface
 
 	/**
 	 * Increment cache key with offset
-	 * 
+	 *
 	 * @param string $key    Key
 	 * @param int    $offset Offset
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function increment(
@@ -89,9 +89,9 @@ interface NoSqlInterface
 
 	/**
 	 * Delete cache key
-	 * 
+	 *
 	 * @param string $key Key
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function delete(

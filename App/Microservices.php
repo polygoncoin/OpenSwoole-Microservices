@@ -3,7 +3,7 @@
 /**
  * Service
  * php version 8.3
- * 
+ *
  * @category  Microservices
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -25,7 +25,7 @@ use Microservices\App\Http;
 /**
  * Service
  * php version 8.3
- * 
+ *
  * @category  Microservices
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,21 +38,21 @@ class Microservices
 {
 	/**
 	 * HTTP request data
-	 * 
+	 *
 	 * @var null|array
 	 */
 	public $httpReqData = null;
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	public $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param array $httpReqData HTTP request data
 	 * @throws \Exception
 	 */
@@ -67,7 +67,7 @@ class Microservices
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
@@ -77,7 +77,7 @@ class Microservices
 
 	/**
 	 * Process
-	 * 
+	 *
 	 * @return mixed
 	 * @throws \Exception
 	 */
@@ -146,7 +146,7 @@ class Microservices
 
 	/**
 	 * Output response
-	 * 
+	 *
 	 * @return void
 	 */
 	public function outputResults(): void
@@ -160,7 +160,7 @@ class Microservices
 
 	/**
 	 * Return encoded result
-	 * 
+	 *
 	 * @return bool|string
 	 */
 	public function returnResults(): bool|string
@@ -173,7 +173,7 @@ class Microservices
 
 	/**
 	 * Headers / CORS
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getHeaders(): array
@@ -201,14 +201,15 @@ class Microservices
 				$this->httpObject->httpResponseObject === Constant::$NULL
 				|| !isset($this->httpObject->httpRequestObject->routeParserObject->sqlConfig)
 			) {
-				$outputRepresentation = Env::$outputRepresentation;
+				$OUTPUT_REPRESENTATION = Env::$SYSTEM_OUTPUT_REPRESENTATION;
 			} else {
-				$outputRepresentation = CommonFunction::getOutputRepresentation(
+				$OUTPUT_REPRESENTATION = CommonFunction::getOutputRepresentation(
 					sqlConfig: $this->httpObject->httpRequestObject->routeParserObject->sqlConfig,
-					httpReqData: $this->httpObject->httpReqData
+					httpReqData: $this->httpObject->httpReqData,
+					customerId: $this->httpObject->httpRequestObject->customerId
 				);
 			}
-			switch ($outputRepresentation['outputRepresentation']) {
+			switch ($OUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION']) {
 				case 'XML':
 				case 'XSLT':
 					$headerArray['Content-Type'] = 'text/xml; charset=utf-8';
@@ -231,9 +232,9 @@ class Microservices
 
 	/**
 	 * Log error
-	 * 
+	 *
 	 * @param \Exception $e Exception
-	 * 
+	 *
 	 * @return never
 	 * @throws \Exception
 	 */

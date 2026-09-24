@@ -3,7 +3,7 @@
 /**
  * Handling PHP Raw Array detail for Views
  * php version 8.3
- * 
+ *
  * @category  DataEncode_PHP
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\App\HttpStatus;
 /**
  * Generates PHP Array
  * php version 8.3
- * 
+ *
  * @category  PHP_Encoder
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -36,28 +36,28 @@ class PhpEncode implements DataEncodeInterface
 {
 	/**
 	 * Array
-	 * 
+	 *
 	 * @var null|array
 	 */
 	public $finalArray = null;
 
 	/**
 	 * Array of PhpEncoderObject object's
-	 * 
+	 *
 	 * @var PhpEncoderObject[]
 	 */
 	private $jsonEncoderObjectObjectArray = [];
 
 	/**
 	 * Current PhpEncoderObject object
-	 * 
+	 *
 	 * @var null|PhpEncoderObject
 	 */
 	private $jsonEncoderObjectObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param resource $tempStream Temp stream Temporary stream
 	 * @param bool     $header     Append XML header flag
 	 */
@@ -69,9 +69,9 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @param bool $header Append XML header flag
-	 * 
+	 *
 	 * @return void
 	 */
 	public function init(
@@ -81,9 +81,9 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Write to temporary stream
-	 * 
+	 *
 	 * @param string $data Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	private function write(
@@ -124,9 +124,9 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Encodes both simple and associative array to json
-	 * 
+	 *
 	 * @param string|array $data Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function encode(
@@ -139,9 +139,9 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Escape the json string key or value
-	 * 
+	 *
 	 * @param mixed $data Representation Data
-	 * 
+	 *
 	 * @return mixed
 	 */
 	private function escape(
@@ -170,9 +170,9 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Append raw json string
-	 * 
+	 *
 	 * @param string $data Reference of Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function appendData(
@@ -185,10 +185,10 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Append raw json string
-	 * 
+	 *
 	 * @param string $objectKey Key of associative array
 	 * @param string $data      Reference of Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function appendKeyData(
@@ -207,9 +207,9 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Add simple array/value as in the json format
-	 * 
+	 *
 	 * @param string|array $data Representation Data
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -229,10 +229,10 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Add simple array/value as in the json format
-	 * 
+	 *
 	 * @param string       $objectKey Key of associative array
 	 * @param string|array $data      Representation Data
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -253,9 +253,9 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Start simple array
-	 * 
+	 *
 	 * @param null|string $objectKey Used while creating simple array inside an object
-	 * 
+	 *
 	 * @return void
 	 */
 	public function startArray(
@@ -277,7 +277,7 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * End simple array
-	 * 
+	 *
 	 * @return void
 	 */
 	public function endArray(): void
@@ -305,9 +305,9 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Start simple array
-	 * 
+	 *
 	 * @param null|string $objectKey Used while creating associative array inside an object
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -339,7 +339,7 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * End associative array
-	 * 
+	 *
 	 * @return void
 	 */
 	public function endObject(): void
@@ -367,7 +367,7 @@ class PhpEncode implements DataEncodeInterface
 
 	/**
 	 * Checks json was properly closed
-	 * 
+	 *
 	 * @return void
 	 */
 	public function end(): void

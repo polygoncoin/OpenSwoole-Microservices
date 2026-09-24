@@ -3,7 +3,7 @@
 /**
  * Hook
  * php version 8.3
- * 
+ *
  * @category  Hook
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\Hook\HookInterface;
 /**
  * Executes configured hooks
  * php version 8.3
- * 
+ *
  * @category  Hook
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -36,21 +36,21 @@ class Hook
 {
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Hook object
-	 * 
+	 *
 	 * @var null|HookInterface
 	 */
 	private $hookObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -61,9 +61,9 @@ class Hook
 
 	/**
 	 * Trigger Hook
-	 * 
+	 *
 	 * @param array $hookArray Hook configuration
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function triggerHook(

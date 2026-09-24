@@ -3,7 +3,7 @@
 /**
  * DropboxCacheAPI
  * php version 8.3
- * 
+ *
  * @category  DropboxCacheAPI
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -24,7 +24,7 @@ use Microservices\Supplement\Dropbox\CacheTrait;
 /**
  * DropboxCacheAPI Category
  * php version 8.3
- * 
+ *
  * @category  DropboxCacheAPI_Category
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -39,28 +39,28 @@ class Cdn implements DropboxInterface
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * File Location
-	 * 
+	 *
 	 * @var string
 	 */
 	private $fileLocation;
 
 	/**
 	 * File mime type
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $mimeType = null;
 
 	/**
 	 * Supported Video mime types
-	 * 
+	 *
 	 * @var array
 	 */
 	private $supportedVideoMimeArray = [
@@ -69,14 +69,14 @@ class Cdn implements DropboxInterface
 
 	/**
 	 * Dropbox Folder
-	 * 
+	 *
 	 * @var string
 	 */
 	private $DROPBOX_DIRECTORY = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -87,7 +87,7 @@ class Cdn implements DropboxInterface
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
@@ -137,7 +137,7 @@ class Cdn implements DropboxInterface
 
 	/**
 	 * Checks whether access to file is allowed
-	 * 
+	 *
 	 * @return void
 	 */
 	public function validateFileRequest(): void
@@ -148,7 +148,7 @@ class Cdn implements DropboxInterface
 
 	/**
 	 * Serve File content
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -195,7 +195,7 @@ class Cdn implements DropboxInterface
 
 	/**
 	 * Serve default
-	 * 
+	 *
 	 * @return array
 	 */
 	public function serveDefault(): array

@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- * 
+ *
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__SQL__' => "UPDATE `{$Env::$customerTable}` SET __SET__ WHERE __WHERE__",
+	'__SQL__' => "UPDATE `{$Env::$SYSTEM_CUSTOMER_TABLE}` SET __SET__ WHERE __WHERE__",
 	'__SET__' => [
 		[
 			'column' => 'name',
@@ -69,7 +69,7 @@ return [
 		[
 			'function' => 'primaryKeyExist',
 			'functionArgs' => [
-				'table' => ['custom', Env::$customerTable],
+				'table' => ['custom', Env::$SYSTEM_CUSTOMER_TABLE],
 				'primary' => ['custom', DatabaseTable::$customerPrimaryKey],
 				'id' => ['payload', 'id', DatabaseServerDataType::$INT]
 			],

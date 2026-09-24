@@ -3,7 +3,7 @@
 /**
  * HTTP response
  * php version 8.3
- * 
+ *
  * @category  HTTP response
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -24,7 +24,7 @@ use Microservices\App\HttpStatus;
 /**
  * HTTP response
  * php version 8.3
- * 
+ *
  * @category  HTTP response
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -37,42 +37,42 @@ class HttpResponse
 {
 	/**
 	 * Start micro timestamp;
-	 * 
+	 *
 	 * @var null|int
 	 */
 	private $startMicroTimestamp = null;
 
 	/**
 	 * End micro timestamp;
-	 * 
+	 *
 	 * @var null|int
 	 */
 	private $endMicroTimestamp = null;
 
 	/**
 	 * HTTP Status
-	 * 
+	 *
 	 * @var int
 	 */
 	public $httpStatus;
 
 	/**
 	 * Data Encode object
-	 * 
+	 *
 	 * @var null|DataEncode
 	 */
 	public $dataEncodeObject = null;
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -81,26 +81,27 @@ class HttpResponse
 		$this->httpObject = &$httpObject;
 		$this->httpStatus = HttpStatus::$Ok;
 
-		if (Env::$OUTPUT_PERFORMANCE_STATS) {
+		if (Env::$config[$this->httpObject->httpRequestObject->customerId]->OUTPUT_PERFORMANCE_STATS) {
 			$this->startMicroTimestamp = microtime(as_float: Constant::$TRUE);
 		}
 	}
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
 	{
 		$sqlConfig = $this->httpObject->httpRequestObject->routeParserObject->sqlConfig ?? [];
-		$outputRepresentation = CommonFunction::getOutputRepresentation(
+		$OUTPUT_REPRESENTATION = CommonFunction::getOutputRepresentation(
 			sqlConfig: $sqlConfig,
-			httpReqData: $this->httpObject->httpReqData
+			httpReqData: $this->httpObject->httpReqData,
+			customerId: $this->httpObject->httpRequestObject->customerId
 		);
 		$this->dataEncodeObject = new DataEncode(
 			httpObject: $this->httpObject,
-			outputRepresentation: $outputRepresentation
+			OUTPUT_REPRESENTATION: $OUTPUT_REPRESENTATION
 		);
 
 		$this->dataEncodeObject->init();
@@ -111,7 +112,7 @@ class HttpResponse
 
 	/**
 	 * Start Data Output
-	 * 
+	 *
 	 * @return void
 	 */
 	public function startData(): void
@@ -121,7 +122,7 @@ class HttpResponse
 
 	/**
 	 * End response
-	 * 
+	 *
 	 * @return void
 	 */
 	public function endData(): void
@@ -132,7 +133,7 @@ class HttpResponse
 
 	/**
 	 * Add HTTP status in response
-	 * 
+	 *
 	 * @return void
 	 */
 	public function addStatus(): void
@@ -145,12 +146,12 @@ class HttpResponse
 
 	/**
 	 * Add Performance detail in response
-	 * 
+	 *
 	 * @return void
 	 */
 	public function addPerformance(): void
 	{
-		if (Env::$OUTPUT_PERFORMANCE_STATS) {
+		if (Env::$config[$this->httpObject->httpRequestObject->customerId]->OUTPUT_PERFORMANCE_STATS) {
 			$this->endMicroTimestamp = microtime(as_float: Constant::$TRUE);
 			$time = ceil(
 				num: ($this->endMicroTimestamp - $this->startMicroTimestamp) * 1000
@@ -184,13 +185,13 @@ class HttpResponse
 
 	/**
 	 * Add Performance detail in response
-	 * 
+	 *
 	 * @return array
 	 */
 	public function returnPerformance(): array
 	{
 		$returnPerformance = [];
-		if (Env::$OUTPUT_PERFORMANCE_STATS) {
+		if (Env::$config[$this->httpObject->httpRequestObject->customerId]->OUTPUT_PERFORMANCE_STATS) {
 			$this->endMicroTimestamp = microtime(as_float: Constant::$TRUE);
 			$time = ceil(
 				num: ($this->endMicroTimestamp - $this->startMicroTimestamp) * 1000

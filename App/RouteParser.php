@@ -3,7 +3,7 @@
 /**
  * RouteParser
  * php version 8.3
- * 
+ *
  * @category  RouteParser
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -25,7 +25,7 @@ use Microservices\App\HttpStatus;
 /**
  * RouteParser
  * php version 8.3
- * 
+ *
  * @category  RouteParser
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,91 +38,91 @@ class RouteParser
 {
 	/**
 	 * Array containing detail of received route elements
-	 * 
+	 *
 	 * @var string[]
 	 */
 	public $routeElementArray = [];
 
 	/**
 	 * Route file location
-	 * 
+	 *
 	 * @var null|string
 	 */
 	public $routeFileLocation = null;
 
 	/**
 	 * Pre / Post hooks defined in respective Route file
-	 * 
+	 *
 	 * @var string
 	 */
 	public $routeHook = null;
 
 	/**
 	 * Is Starting With Reserved Route Keyword Flag
-	 * 
+	 *
 	 * @var bool
 	 */
 	public $routeStartingWithReservedKeywordFlag = false;
 
 	/**
 	 * Route Starting Reserved Keyword
-	 * 
+	 *
 	 * @var string
 	 */
 	public $routeStartingReservedKeyword = '';
 
 	/**
 	 * Is Ending With Reserved Route Keyword Flag
-	 * 
+	 *
 	 * @var bool
 	 */
 	public $routeEndingWithReservedKeywordFlag = false;
 
 	/**
 	 * Route Ending Reserved Keyword
-	 * 
+	 *
 	 * @var string
 	 */
 	public $routeEndingReservedKeyword = '';
 
 	/**
 	 * Raw route / Configured Path
-	 * 
+	 *
 	 * @var string
 	 */
 	public $configuredRoute = '';
 
 	/**
 	 * Sql config
-	 * 
+	 *
 	 * @var null|string
 	 */
 	public $sqlConfig = null;
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	public $httpObject = null;
 
 	/**
 	 * Reserved Routes Prefix
-	 * 
+	 *
 	 * @var null|array
 	 */
 	public $reservedRoutesPrefix = null;
 
 	/**
 	 * Reserved Routes CIDR
-	 * 
+	 *
 	 * @var null|array
 	 */
 	public $reservedRoutesCidrString = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -133,9 +133,9 @@ class RouteParser
 
 	/**
 	 * Parse route as per method
-	 * 
+	 *
 	 * @param string $routeFileLocation Route file
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -152,7 +152,7 @@ class RouteParser
 
 		if (
 			isset($this->routeElementArray[1])
-			&& $this->routeElementArray[1] === Env::$dropboxRequestRoutePrefix
+			&& $this->routeElementArray[1] === Env::$config[$this->httpObject->httpRequestObject->customerId]->DROPBOX_REQUEST_KEYWORD
 		) {
 			if ($this->httpObject->httpRequestObject->isPrivateRequest) {
 				if (
@@ -172,7 +172,7 @@ class RouteParser
 				);
 			}
 			$this->routeStartingWithReservedKeywordFlag = Constant::$TRUE;
-			$this->routeStartingReservedKeyword = Env::$dropboxRequestRoutePrefix;
+			$this->routeStartingReservedKeyword = Env::$config[$this->httpObject->httpRequestObject->customerId]->DROPBOX_REQUEST_KEYWORD;
 
 			$this->configuredRoute = '/' . implode(
 				separator: '/',
@@ -181,7 +181,7 @@ class RouteParser
 
 			return;
 		}
-		if ($this->routeElementArray[0] === Env::$routesRequestRoute) {
+		if ($this->routeElementArray[0] === Env::$SYSTEM_ROUTE_REQUEST_KEYWORD) {
 			if (
 				!CommonFunction::isEnabled(
 					httpObject: $this->httpObject,
@@ -199,7 +199,7 @@ class RouteParser
 			);
 
 			$this->routeStartingWithReservedKeywordFlag = Constant::$TRUE;
-			$this->routeStartingReservedKeyword = Env::$routesRequestRoute;
+			$this->routeStartingReservedKeyword = Env::$SYSTEM_ROUTE_REQUEST_KEYWORD;
 
 			$this->configuredRoute = '/' . implode(
 				separator: '/',
@@ -212,7 +212,7 @@ class RouteParser
 		$routeLastElementPos = count(
 			value: $this->routeElementArray
 		) - 1;
-		// if ($this->routeElementArray[$routeLastElementPos] === Env::$importSampleRequestRouteKeyword) {
+		// if ($this->routeElementArray[$routeLastElementPos] === Env::$config[$this->httpObject->httpRequestObject->customerId]->IMPORT_SAMPLE_REQUEST_KEYWORD) {
 		//     if (isset($this->httpObject->httpReqData['server']['httpRequestMethod'])) {
 		//         $this->httpObject->httpReqData['server']['httpRequestMethod'] = $this->httpObject->httpReqData['server']['httpRequestMethod'];
 		//     }
@@ -344,7 +344,7 @@ class RouteParser
 						mode: 'input'
 					)
 				) {
-					$this->httpObject->httpRequestObject->inputRepresentation = $routeConfig['__INPUT-REPRESENTATION__'];
+					$this->httpObject->httpRequestObject->INPUT_REPRESENTATION = $routeConfig['__INPUT-REPRESENTATION__'];
 				}
 			}
 		}
@@ -356,13 +356,13 @@ class RouteParser
 				httpObject: $this->httpObject,
 				feature: 'customer_enabled_input_representation_in_query_string'
 			)
-			&& isset($this->httpObject->httpReqData['get']['inputRepresentation'])
+			&& isset($this->httpObject->httpReqData['get']['INPUT_REPRESENTATION'])
 			&& Env::isValidDataRep(
-				dataRepresentation: $this->httpObject->httpReqData['get']['inputRepresentation'],
+				dataRepresentation: $this->httpObject->httpReqData['get']['INPUT_REPRESENTATION'],
 				mode: 'input'
 			)
 		) {
-			$this->httpObject->httpRequestObject->inputRepresentation = $this->httpObject->httpReqData['get']['inputRepresentation'];
+			$this->httpObject->httpRequestObject->INPUT_REPRESENTATION = $this->httpObject->httpReqData['get']['INPUT_REPRESENTATION'];
 		}
 
 		$this->configuredRoute = '/' . implode(
@@ -376,9 +376,9 @@ class RouteParser
 
 	/**
 	 * Process Route Starting Keyword
-	 * 
+	 *
 	 * @param string $routeStartingKeyword Route Starting Keyword
-	 * 
+	 *
 	 * @return bool
 	 * @throws \Exception
 	 */
@@ -415,9 +415,9 @@ class RouteParser
 
 	/**
 	 * Process Route Ending Keyword
-	 * 
+	 *
 	 * @param string $routeEndingKeyword Route Ending Keyword
-	 * 
+	 *
 	 * @return bool
 	 */
 	private function isEndingWithReservedRouteKeyword(
@@ -430,30 +430,30 @@ class RouteParser
 				httpObject: $this->httpObject,
 				feature: 'customer_enabled_explain_request'
 			)
-			&& Env::$explainRequestRouteKeyword === $routeEndingKeyword
+			&& Env::$config[$this->httpObject->httpRequestObject->customerId]->EXPLAIN_REQUEST_KEYWORD === $routeEndingKeyword
 		) {
 			$this->routeEndingWithReservedKeywordFlag = Constant::$TRUE;
-			$this->routeEndingReservedKeyword = Env::$explainRequestRouteKeyword;
+			$this->routeEndingReservedKeyword = Env::$config[$this->httpObject->httpRequestObject->customerId]->EXPLAIN_REQUEST_KEYWORD;
 			$return = Constant::$TRUE;
 		} elseif (
 			CommonFunction::isEnabled(
 				httpObject: $this->httpObject,
 				feature: 'customer_enabled_import_request'
 			)
-			&& Env::$importRequestRouteKeyword === $routeEndingKeyword
+			&& Env::$config[$this->httpObject->httpRequestObject->customerId]->IMPORT_REQUEST_KEYWORD === $routeEndingKeyword
 		) {
 			$this->routeEndingWithReservedKeywordFlag = Constant::$TRUE;
-			$this->routeEndingReservedKeyword = Env::$importRequestRouteKeyword;
+			$this->routeEndingReservedKeyword = Env::$config[$this->httpObject->httpRequestObject->customerId]->IMPORT_REQUEST_KEYWORD;
 			$return = Constant::$TRUE;
 		} elseif (
 			CommonFunction::isEnabled(
 				httpObject: $this->httpObject,
 				feature: 'customer_enabled_import_sample_request'
 			)
-			&& Env::$importSampleRequestRouteKeyword === $routeEndingKeyword
+			&& Env::$config[$this->httpObject->httpRequestObject->customerId]->IMPORT_SAMPLE_REQUEST_KEYWORD === $routeEndingKeyword
 		) {
 			$this->routeEndingWithReservedKeywordFlag = Constant::$TRUE;
-			$this->routeEndingReservedKeyword = Env::$importSampleRequestRouteKeyword;
+			$this->routeEndingReservedKeyword = Env::$config[$this->httpObject->httpRequestObject->customerId]->IMPORT_SAMPLE_REQUEST_KEYWORD;
 			$return = Constant::$TRUE;
 		}
 
@@ -462,14 +462,14 @@ class RouteParser
 
 	/**
 	 * Process Route Element
-	 * 
+	 *
 	 * @param string $routeElement         Configured route element
 	 * @param string $element              Element
 	 * @param string $foundIntRoute        Found as int route element
 	 * @param string $foundIntParamName    Found as int param name
 	 * @param string $foundStringRoute     Found as String route element
 	 * @param string $foundStringParamName Found as String param name
-	 * 
+	 *
 	 * @return bool
 	 * @throws \Exception
 	 */
@@ -544,9 +544,9 @@ class RouteParser
 
 	/**
 	 * Validate Sql config file
-	 * 
+	 *
 	 * @param array $routeConfig Route config
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -597,9 +597,9 @@ class RouteParser
 
 	/**
 	 * Check presence of Dynamic String in URL same as configured in Route file.
-	 * 
+	 *
 	 * @param string $element Route element
-	 * 
+	 *
 	 * @return void
 	 */
 	private function checkPresenceOfDynamicString(
@@ -625,10 +625,10 @@ class RouteParser
 
 	/**
 	 * Find Ruute and Param Name from Dynamic String configured in Route file.
-	 * 
+	 *
 	 * @param array  $routeConfig Route config
 	 * @param string $element     Route element
-	 * 
+	 *
 	 * @return array
 	 */
 	private function findRouteAndParamName(
@@ -684,21 +684,21 @@ class RouteParser
 
 	/**
 	 * Set Reserved Route
-	 * 
+	 *
 	 * @return void
 	 */
 	private function setReservedRouteArray(): void
 	{
 		$this->reservedRoutesPrefix = [
-			Env::$cronRequestRoutePrefix,
-			Env::$reloadRequestRoutePrefix,
-			Env::$routesRequestRoute
+			Env::$config[$this->httpObject->httpRequestObject->customerId]->CRON_REQUEST_KEYWORD,
+			Env::$SYSTEM_RELOAD_REQUEST_KEYWORD,
+			Env::$SYSTEM_ROUTE_REQUEST_KEYWORD
 		];
 
 		$this->reservedRoutesCidrString = [
-			Env::$cronRequestRoutePrefix => $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_cron_request_restricted_cidr'],
-			Env::$reloadRequestRoutePrefix => Env::$reloadRestrictedCidr,
-			Env::$routesRequestRoute => $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_routes_request_restricted_cidr']
+			Env::$config[$this->httpObject->httpRequestObject->customerId]->CRON_REQUEST_KEYWORD => $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_cron_request_restricted_cidr'],
+			Env::$SYSTEM_RELOAD_REQUEST_KEYWORD => Env::$config[$this->httpObject->httpRequestObject->customerId]->RELOAD_CACHE_CIDR,
+			Env::$SYSTEM_ROUTE_REQUEST_KEYWORD => $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_routes_request_restricted_cidr']
 		];
 
 		if (
@@ -707,8 +707,8 @@ class RouteParser
 				feature: 'customer_enabled_custom_request'
 			)
 		) {
-			$this->reservedRoutesPrefix[] = Env::$customRequestRoutePrefix;
-			$this->reservedRoutesCidrString[Env::$customRequestRoutePrefix] = $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_custom_request_restricted_cidr'];
+			$this->reservedRoutesPrefix[] = Env::$config[$this->httpObject->httpRequestObject->customerId]->CUSTOM_REQUEST_KEYWORD;
+			$this->reservedRoutesCidrString[Env::$config[$this->httpObject->httpRequestObject->customerId]->CUSTOM_REQUEST_KEYWORD] = $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_custom_request_restricted_cidr'];
 		}
 		if (
 			CommonFunction::isEnabled(
@@ -716,8 +716,8 @@ class RouteParser
 				feature: 'customer_enabled_thirdparty_request'
 			)
 		) {
-			$this->reservedRoutesPrefix[] = Env::$thirdPartyRequestRoutePrefix;
-			$this->reservedRoutesCidrString[Env::$thirdPartyRequestRoutePrefix] = $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_thirdparty_request_restricted_cidr'];
+			$this->reservedRoutesPrefix[] = Env::$config[$this->httpObject->httpRequestObject->customerId]->THIRD_PARTY_REQUEST_KEYWORD;
+			$this->reservedRoutesCidrString[Env::$config[$this->httpObject->httpRequestObject->customerId]->THIRD_PARTY_REQUEST_KEYWORD] = $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_thirdparty_request_restricted_cidr'];
 		}
 		if (
 			CommonFunction::isEnabled(
@@ -725,8 +725,8 @@ class RouteParser
 				feature: 'customer_enabled_upload_request'
 			)
 		) {
-			$this->reservedRoutesPrefix[] = Env::$uploadRequestRoutePrefix;
-			$this->reservedRoutesCidrString[Env::$uploadRequestRoutePrefix] = $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_upload_request_restricted_cidr'];
+			$this->reservedRoutesPrefix[] = Env::$config[$this->httpObject->httpRequestObject->customerId]->UPLOAD_REQUEST_KEYWORD;
+			$this->reservedRoutesCidrString[Env::$config[$this->httpObject->httpRequestObject->customerId]->UPLOAD_REQUEST_KEYWORD] = $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_upload_request_restricted_cidr'];
 		}
 	}
 }

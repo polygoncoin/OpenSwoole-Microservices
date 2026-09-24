@@ -3,7 +3,7 @@
 /**
  * Common Function File
  * php version 8.3
- * 
+ *
  * @category  Common Function
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,6 +18,7 @@ namespace Microservices\App;
 use Microservices\App\CacheServerKey;
 use Microservices\App\Constant;
 use Microservices\App\DbCommonFunction;
+use Microservices\App\Env;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
 use Microservices\App\Server\CacheServer\CacheServerInterface;
@@ -25,7 +26,7 @@ use Microservices\App\Server\CacheServer\CacheServerInterface;
 /**
  * Common Function File
  * php version 8.3
- * 
+ *
  * @category  Common Function
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,10 +39,10 @@ class CommonFunction
 {
 	/**
 	 * Check Feature is Enabled (Yes/No)
-	 * 
+	 *
 	 * @param Http   $httpObject
 	 * @param string $feature
-	 * 
+	 *
 	 * @return bool
 	 */
 	public static function isEnabled(
@@ -63,9 +64,9 @@ class CommonFunction
 
 	/**
 	 * Check Errors related to File Upload
-	 * 
+	 *
 	 * @param array $httpFileArray $httpReqData['files']
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -141,9 +142,9 @@ class CommonFunction
 
 	/**
 	 * Returns start and end IP number for a given CIDR
-	 * 
+	 *
 	 * @param string $cidrString IP address range in CIDR notation for check
-	 * 
+	 *
 	 * @return array
 	 */
 	public static function cidrStringIpNumberRange(
@@ -238,11 +239,11 @@ class CommonFunction
 
 	/**
 	 * Check IP with CIDR based on cache key containing start and end IP number
-	 * 
+	 *
 	 * @param CacheServerInterface $cacheObject  Cache Server object
 	 * @param string               $ip           Request Ip
 	 * @param string               $cidrCacheKey Cache Key(s)
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -276,10 +277,10 @@ class CommonFunction
 
 	/**
 	 * Check IP with CIDR
-	 * 
+	 *
 	 * @param string $ip         Request Ip
 	 * @param string $cidrString CIDRs
-	 * 
+	 *
 	 * @return null|bool
 	 * @throws \Exception
 	 */
@@ -313,10 +314,10 @@ class CommonFunction
 
 	/**
 	 * Belongs to Cidr IP number range
-	 * 
+	 *
 	 * @param string $ip                     IP Address
 	 * @param array  $cidrIpNumberRangeArray Cidr IP number ranges
-	 * 
+	 *
 	 * @return bool
 	 */
 	public static function belongsToCidrIpNumberRange(
@@ -357,9 +358,9 @@ class CommonFunction
 
 	/**
 	 * Validate remote IP
-	 * 
+	 *
 	 * @param Http $httpObject
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function checkPrivateRequestCidr(
@@ -384,7 +385,7 @@ class CommonFunction
 
 		if ($httpObject !== Constant::$NULL) {
 			self::checkCacheCidr(
-				cacheObject: $httpObject->httpRequestObject->customerCacheObject,
+				cacheObject: $httpObject->httpRequestObject->cacheServerObject,
 				ip: $httpObject->httpReqData['server']['httpRequestIp'],
 				cidrCacheKey: CacheServerKey::customerGroupCidr(
 					customerId: $httpObject->httpRequestObject->customerId,
@@ -393,7 +394,7 @@ class CommonFunction
 			);
 
 			self::checkCacheCidr(
-				cacheObject: $httpObject->httpRequestObject->customerCacheObject,
+				cacheObject: $httpObject->httpRequestObject->cacheServerObject,
 				ip: $httpObject->httpReqData['server']['httpRequestIp'],
 				cidrCacheKey: CacheServerKey::customerUserCidr(
 					customerId: $httpObject->httpRequestObject->customerId,
@@ -405,9 +406,9 @@ class CommonFunction
 
 	/**
 	 * JSON Decode
-	 * 
+	 *
 	 * @param mixed $value
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public static function jsonDecode(
@@ -434,47 +435,52 @@ class CommonFunction
 
 	/**
 	 * Get Output Representation
-	 * 
+	 *
 	 * @param array $sqlConfig   Sql config
 	 * @param array $httpReqData HTTP request data
-	 * 
+	 * @param int   $customerId  Customer id
+	 *
 	 * @return null|array
 	 */
 	public static function getOutputRepresentation(
 		$sqlConfig,
-		$httpReqData
+		$httpReqData,
+		$customerId
 	): null|array {
 		$returnOutputRepresentation = [];
 		switch (Constant::$TRUE) {
-			case isset($httpReqData['get']['outputRepresentation'])
+			case isset($httpReqData['get']['OUTPUT_REPRESENTATION'])
 				&& in_array(
-					needle: $httpReqData['get']['outputRepresentation'],
+					needle: $httpReqData['get']['OUTPUT_REPRESENTATION'],
 					haystack: ['JSON', 'XML'],
 					strict: Constant::$TRUE
 				):
 				$returnOutputRepresentation = [
-					'outputRepresentation' => $httpReqData['get']['outputRepresentation'],
-					'outputRepresentationFileLocation' => Constant::$FALSE
+					'OUTPUT_REPRESENTATION' => $httpReqData['get']['OUTPUT_REPRESENTATION'],
+					'OUTPUT_REPRESENTATION_FILE' => Constant::$FALSE
 				];
 				break;
-			case isset($sqlConfig['outputRepresentation'])
+			case isset($sqlConfig['OUTPUT_REPRESENTATION'])
 				&& Env::isValidDataRep(
-					dataRepresentation: $sqlConfig['outputRepresentation'],
+					dataRepresentation: $sqlConfig['OUTPUT_REPRESENTATION'],
 					mode: 'output'
 				)
 				&& in_array(
-					needle: $sqlConfig['outputRepresentation'],
+					needle: $sqlConfig['OUTPUT_REPRESENTATION'],
 					haystack: ['HTML', 'PHP', 'XSLT'],
 					strict: Constant::$TRUE
 				)
-				&& isset($sqlConfig['outputRepresentationFileLocation']):
+				&& isset($sqlConfig['OUTPUT_REPRESENTATION_FILE']):
 				$returnOutputRepresentation = [
-					'outputRepresentation' => $sqlConfig['outputRepresentation'],
-					'outputRepresentationFileLocation' => $sqlConfig['outputRepresentationFileLocation']
+					'OUTPUT_REPRESENTATION' => $sqlConfig['OUTPUT_REPRESENTATION'],
+					'OUTPUT_REPRESENTATION_FILE' => $sqlConfig['OUTPUT_REPRESENTATION_FILE']
 				];
 				break;
 			default:
-				$returnOutputRepresentation = Env::$outputRepresentation;
+				Env::loadEnv(
+					customerId: $customerId
+				);
+				$returnOutputRepresentation = Env::$config[$customerId]->OUTPUT_REPRESENTATION;
 				break;
 		}
 

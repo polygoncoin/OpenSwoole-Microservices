@@ -3,7 +3,7 @@
 /**
  * API Route config
  * php version 8.3
- * 
+ *
  * @category  API_Route_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -94,7 +94,7 @@ return [
 				. DIRECTORY_SEPARATOR . 'Registration-With-Address-single.php',
 		],
 	],
-	Env::$routesRequestRoute => [
+	Env::$SYSTEM_ROUTE_REQUEST_KEYWORD => [
 		'__FILE__' => Constant::$FALSE,
 		'{method:string}' => [
 			'dataType' => DatabaseServerDataType::$HttpMethod,

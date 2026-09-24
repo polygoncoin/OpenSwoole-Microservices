@@ -3,7 +3,7 @@
 /**
  * Initiating API
  * php version 8.3
- * 
+ *
  * @category  API
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -26,7 +26,7 @@ use Microservices\App\Supplement;
 /**
  * Class to initialize api HTTP request
  * php version 8.3
- * 
+ *
  * @category  API
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -39,21 +39,21 @@ class Api
 {
 	/**
 	 * Hook object
-	 * 
+	 *
 	 * @var null|Hook
 	 */
 	private $hookObject = null;
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -64,7 +64,7 @@ class Api
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
@@ -74,7 +74,7 @@ class Api
 
 	/**
 	 * Process
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -139,8 +139,8 @@ class Api
 			!in_array(
 				needle: $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword,
 				haystack: [
-					Env::$explainRequestRouteKeyword,
-					Env::$importSampleRequestRouteKeyword
+					Env::$config[$this->httpObject->httpRequestObject->customerId]->EXPLAIN_REQUEST_KEYWORD,
+					Env::$config[$this->httpObject->httpRequestObject->customerId]->IMPORT_SAMPLE_REQUEST_KEYWORD
 				],
 				strict: Constant::$TRUE
 			)
@@ -152,7 +152,7 @@ class Api
 		$supplementClass = Constant::$NULL;
 		if (
 			$this->checkSupplement(
-				Env::$cronRequestRoutePrefix
+				Env::$config[$this->httpObject->httpRequestObject->customerId]->CRON_REQUEST_KEYWORD
 			)
 		) {
 			$supplementClassFileName = ucfirst(
@@ -171,7 +171,7 @@ class Api
 			}
 		} elseif (
 			$this->checkSupplement(
-				Env::$customRequestRoutePrefix
+				Env::$config[$this->httpObject->httpRequestObject->customerId]->CUSTOM_REQUEST_KEYWORD
 			)
 		) {
 			$supplementClassFileName = ucfirst(
@@ -190,7 +190,7 @@ class Api
 			}
 		} elseif (
 			$this->checkSupplement(
-				Env::$uploadRequestRoutePrefix
+				Env::$config[$this->httpObject->httpRequestObject->customerId]->UPLOAD_REQUEST_KEYWORD
 			)
 		) {
 			$supplementClassFileName = ucfirst(
@@ -209,7 +209,7 @@ class Api
 			}
 		} elseif (
 			$this->checkSupplement(
-				Env::$thirdPartyRequestRoutePrefix
+				Env::$config[$this->httpObject->httpRequestObject->customerId]->THIRD_PARTY_REQUEST_KEYWORD
 			)
 		) {
 			$supplementClassFileName = ucfirst(
@@ -232,7 +232,7 @@ class Api
 				case Constant::$QUERY:
 					if (
 						$this->checkSupplement(
-							Env::$dropboxRequestRoutePrefix
+							Env::$config[$this->httpObject->httpRequestObject->customerId]->DROPBOX_REQUEST_KEYWORD
 						)
 					) {
 						$classFileName = ucfirst(
@@ -251,7 +251,7 @@ class Api
 						}
 					} elseif (
 						$this->checkSupplement(
-							Env::$routesRequestRoute
+							Env::$SYSTEM_ROUTE_REQUEST_KEYWORD
 						)
 					) {
 						$class = __NAMESPACE__ . '\\Route';
@@ -364,9 +364,9 @@ class Api
 
 	/**
 	 * Process before collecting Payload
-	 * 
+	 *
 	 * @param string $supplementMode
-	 * 
+	 *
 	 * @return bool
 	 */
 	private function checkSupplement(
@@ -380,7 +380,7 @@ class Api
 
 	/**
 	 * Execute once done with api process function
-	 * 
+	 *
 	 * @return bool
 	 */
 	private function processAfterPayload(): bool

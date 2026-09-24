@@ -3,7 +3,7 @@
 /**
  * Logging
  * php version 8.3
- * 
+ *
  * @category  Logging
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -21,7 +21,7 @@ use Microservices\App\Http;
 /**
  * Logging
  * php version 8.3
- * 
+ *
  * @category  Logging
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -34,14 +34,14 @@ class Log
 {
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -52,9 +52,9 @@ class Log
 
 	/**
 	 * Log details
-	 * 
+	 *
 	 * @param array $logData detail to be logged
-	 * 
+	 *
 	 * @return int
 	 */
 	public function log(
@@ -75,10 +75,10 @@ class Log
 
 	/**
 	 * Log data into Database
-	 * 
+	 *
 	 * @param array $logData Detail to be logged
 	 * @param array $payload Payload
-	 * 
+	 *
 	 * @return int
 	 */
 	public function logIntoDb(
@@ -106,9 +106,9 @@ class Log
 
 	/**
 	 * Log data in FIlesystem
-	 * 
+	 *
 	 * @param array $logData detail to be logged
-	 * 
+	 *
 	 * @return int
 	 */
 	public function logInFilesystem(

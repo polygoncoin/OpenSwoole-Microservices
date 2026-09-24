@@ -3,7 +3,7 @@
 /**
  * Custom Session Handler
  * php version 7
- * 
+ *
  * @category  SessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\App\SessionHandler\Container;
 /**
  * Custom Session Handler Helper
  * php version 7
- * 
+ *
  * @category  CustomSessionHandler_Helper
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -49,16 +49,16 @@ class SessionContainerHelper
 	public $sessionName = null;
 
 	// Session data cookie name
-	public $sessionDataName = null;
+	public $sessionDataCookieName = null;
 
 	// Session timeout
 	public $sessionMaxLifetime = null;
 
 	/**
 	 * Encryption
-	 * 
+	 *
 	 * @param string $plainText Plain Text
-	 * 
+	 *
 	 * @return string
 	 */
 	protected function encryptData(
@@ -83,9 +83,9 @@ class SessionContainerHelper
 
 	/**
 	 * Decryption
-	 * 
+	 *
 	 * @param string $cipherText Cipher Text
-	 * 
+	 *
 	 * @return bool|string
 	 */
 	protected function decryptData(

@@ -3,7 +3,7 @@
 /**
  * Gateway
  * php version 8.3
- * 
+ *
  * @category  Gateway
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\App\Http;
 /**
  * Gateway - contains checks like IP and Rate Limiting functions
  * php version 8.3
- * 
+ *
  * @category  Gateway
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -36,14 +36,14 @@ class Gateway
 {
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -54,7 +54,7 @@ class Gateway
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
@@ -73,7 +73,7 @@ class Gateway
 
 	/**
 	 * Rate Limit request
-	 * 
+	 *
 	 * @return void
 	 */
 	private function rateLimitRequest(): void
@@ -98,7 +98,7 @@ class Gateway
 
 	/**
 	 * Rate Limit Customer
-	 * 
+	 *
 	 * @return void
 	 */
 	private function rateLimitCustomer(): void
@@ -114,7 +114,7 @@ class Gateway
 			return;
 		}
 
-		$rateLimitCustomerPrefix = Env::$rateLimitCustomerPrefix;
+		$RATE_LIMIT_IP_PREFIX = Env::$config[$this->httpObject->httpRequestObject->customerId]->RATE_LIMIT_IP_PREFIX;
 		$rateLimitMaxRequest =
 				$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_rate_limit_max_request'];
 		$rateLimitMaxRequestWindow =
@@ -122,7 +122,7 @@ class Gateway
 		$rateLimitKey = $this->httpObject->httpRequestObject->customerId;
 
 		$this->httpObject->httpRequestObject->rateLimiterObject->checkRateLimit(
-			rateLimitPrefix: $rateLimitCustomerPrefix,
+			rateLimitPrefix: Env::$config[$this->httpObject->httpRequestObject->customerId]->RATE_LIMIT_ROUTE_PREFIX,
 			rateLimitMaxRequest: $rateLimitMaxRequest,
 			rateLimitMaxRequestWindow: $rateLimitMaxRequestWindow,
 			rateLimitKey: $rateLimitKey
@@ -131,7 +131,7 @@ class Gateway
 
 	/**
 	 * Rate Limit Customer Group
-	 * 
+	 *
 	 * @return void
 	 */
 	private function rateLimitGroup(): void
@@ -147,8 +147,8 @@ class Gateway
 			return;
 		}
 
-		$rateLimitGroupPrefix =
-			Env::$rateLimitGroupPrefix;
+		$RATE_LIMIT_GROUP_PREFIX =
+			Env::$config[$this->httpObject->httpRequestObject->customerId]->RATE_LIMIT_GROUP_PREFIX;
 		$rateLimitMaxRequest =
 			$this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_rate_limit_max_request'];
 		$rateLimitMaxRequestWindow =
@@ -157,7 +157,7 @@ class Gateway
 			. $this->httpObject->httpRequestObject->customerUserId;
 
 		$this->httpObject->httpRequestObject->rateLimiterObject->checkRateLimit(
-			rateLimitPrefix: $rateLimitGroupPrefix,
+			rateLimitPrefix: Env::$config[$this->httpObject->httpRequestObject->customerId]->RATE_LIMIT_ROUTE_PREFIX,
 			rateLimitMaxRequest: $rateLimitMaxRequest,
 			rateLimitMaxRequestWindow: $rateLimitMaxRequestWindow,
 			rateLimitKey: $rateLimitKey
@@ -166,7 +166,7 @@ class Gateway
 
 	/**
 	 * Rate Limit Customer Group User
-	 * 
+	 *
 	 * @return void
 	 */
 	private function rateLimitUser(): void
@@ -182,7 +182,7 @@ class Gateway
 			return;
 		}
 
-		$rateLimitUserPrefix = Env::$rateLimitUserPrefix;
+		$RATE_LIMIT_USER_PREFIX = Env::$config[$this->httpObject->httpRequestObject->customerId]->RATE_LIMIT_USER_PREFIX;
 		$rateLimitMaxRequest =
 			$this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_rate_limit_max_request'];
 		$rateLimitMaxRequestWindow =
@@ -191,7 +191,7 @@ class Gateway
 			. $this->httpObject->httpRequestObject->customerUserId;
 
 		$this->httpObject->httpRequestObject->rateLimiterObject->checkRateLimit(
-			rateLimitPrefix: $rateLimitUserPrefix,
+			rateLimitPrefix: Env::$config[$this->httpObject->httpRequestObject->customerId]->RATE_LIMIT_ROUTE_PREFIX,
 			rateLimitMaxRequest: $rateLimitMaxRequest,
 			rateLimitMaxRequestWindow: $rateLimitMaxRequestWindow,
 			rateLimitKey: $rateLimitKey
@@ -200,7 +200,7 @@ class Gateway
 
 	/**
 	 * Rate Limit Customer Group User request Delay
-	 * 
+	 *
 	 * @return void
 	 */
 	private function rateLimitUserRequest(): void
@@ -216,14 +216,14 @@ class Gateway
 			return;
 		}
 
-		$rateLimitUserPrefix = Env::$rateLimitUserRequestPrefix;
+		$RATE_LIMIT_USER_PREFIX = Env::$config[$this->httpObject->httpRequestObject->customerId]->RATE_LIMIT_USER_PREFIX;
 		$rateLimitMaxRequest = $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_rate_limit_user_max_request'];
 		$rateLimitMaxRequestWindow = $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_rate_limit_user_max_request_window'];
 		$rateLimitKey = $this->httpObject->httpRequestObject->customerId . ':'
 			. $this->httpObject->httpRequestObject->customerUserId;
 
 		$this->httpObject->httpRequestObject->rateLimiterObject->checkRateLimit(
-			rateLimitPrefix: $rateLimitUserPrefix,
+			rateLimitPrefix: Env::$config[$this->httpObject->httpRequestObject->customerId]->RATE_LIMIT_ROUTE_PREFIX,
 			rateLimitMaxRequest: $rateLimitMaxRequest,
 			rateLimitMaxRequestWindow: $rateLimitMaxRequestWindow,
 			rateLimitKey: $rateLimitKey
@@ -232,7 +232,7 @@ class Gateway
 
 	/**
 	 * Rate Limit request from source IP
-	 * 
+	 *
 	 * @return void
 	 */
 	private function rateLimitIp(): void
@@ -246,13 +246,13 @@ class Gateway
 			return;
 		}
 
-		$rateLimitHttpRequestIpPrefix = Env::$rateLimitHttpRequestIpPrefix;
+		$RATE_LIMIT_IP_PREFIX = Env::$config[$this->httpObject->httpRequestObject->customerId]->RATE_LIMIT_IP_PREFIX;
 		$customer_rate_limit_ip_max_request = $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_rate_limit_ip_max_request'];
 		$customer_rate_limit_ip_max_request_window = $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_rate_limit_ip_max_request_window'];
 		$rateLimitKey = $this->httpObject->httpRequestObject->customerId . ':' . $this->httpObject->httpReqData['server']['httpRequestIp'];
 
 		$this->httpObject->httpRequestObject->rateLimiterObject->checkRateLimit(
-			rateLimitPrefix: $rateLimitHttpRequestIpPrefix,
+			rateLimitPrefix: Env::$config[$this->httpObject->httpRequestObject->customerId]->RATE_LIMIT_ROUTE_PREFIX,
 			rateLimitMaxRequest: $customer_rate_limit_ip_max_request,
 			rateLimitMaxRequestWindow: $customer_rate_limit_ip_max_request_window,
 			rateLimitKey: $rateLimitKey

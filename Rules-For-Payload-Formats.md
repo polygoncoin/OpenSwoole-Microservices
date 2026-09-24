@@ -2,9 +2,9 @@
 
 ## GET request
 
-- [http://127.0.0.1:9501?route=/reload](http://127.0.0.1:9501?route=/reload)
+- [http://localhost/Microservices/www/public\_html/index.php?route=/reload](http://localhost/Microservices/www/public_html/index.php?route=/reload)
 
-- [http://127.0.0.1:9501?route=/tableName/1](http://127.0.0.1:9501?route=/tableName/1)
+- [http://localhost/Microservices/www/public\_html/index.php?route=/tableName/1](http://localhost/Microservices/www/public_html/index.php?route=/tableName/1)
 
 One can clean the URL by making the required changes in the web server .conf file.
 
@@ -13,12 +13,12 @@ One can clean the URL by making the required changes in the web server .conf fil
 Requires **__COUNT-SQL__** Sql in the configuration for GET request
 ```ini
 defaultPerpage=10
-maxResultsPerPage=1000
+MAX_PER_PAGE_COUNT=1000
 ```
 
-- [http://127.0.0.1:9501?route=/tableName?page=1](http://127.0.0.1:9501?route=/tableName/1?page=1)
-- [http://127.0.0.1:9501?route=/tableName?page=1&perpage=25](http://127.0.0.1:9501?route=/tableName/1?page=1&perpage=25)
-- [http://127.0.0.1:9501?route=/tableName?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"}](http://127.0.0.1:9501?route=/tableName/1?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"})
+- [http://localhost/Microservices/www/public\_html/index.php?route=/tableName?page=1](http://localhost/Microservices/www/public_html/index.php?route=/tableName/1?page=1)
+- [http://localhost/Microservices/www/public\_html/index.php?route=/tableName?page=1&perpage=25](http://localhost/Microservices/www/public_html/index.php?route=/tableName/1?page=1&perpage=25)
+- [http://localhost/Microservices/www/public\_html/index.php?route=/tableName?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"}](http://localhost/Microservices/www/public_html/index.php?route=/tableName/1?page=1&perpage=25&orderBy={"field1":"ASC","field2":"DESC"})
 
 >One need to urlencode orderBy value
 
@@ -28,9 +28,9 @@ maxResultsPerPage=1000
 
 ```javascript
 var payload = {
-	"key1": "value1",
-	"key2": "value2",
-	...
+    "key1": "value1",
+    "key2": "value2",
+    ...
 };
 ```
 
@@ -38,17 +38,17 @@ var payload = {
 
 ```javascript
 var payload = [
-	{
-		"key1": "value1",
-		"key2": "value2",
-		...
-	},
-	{
-		"key1": "value1",
-		"key2": "value2",
-		...
-	},
-	...
+    {
+        "key1": "value1",
+        "key2": "value2",
+        ...
+    },
+    {
+        "key1": "value1",
+        "key2": "value2",
+        ...
+    },
+    ...
 ];
 ```
 
@@ -76,9 +76,9 @@ For **GET** method, the **$\_GET** is the payload.
 
 ```PHP
 [
-	'column' => 'parent_id',
-	'activeRequestDataKey' => 'sqlResults',
-	'activeRequestDataKeySubKey' => 'return:id'
+    'column' => 'parent_id',
+    'activeRequestDataKey' => 'sqlResults',
+    'activeRequestDataKeySubKey' => 'return:id'
 ],
 ```
 
@@ -86,23 +86,23 @@ For **GET** method, the **$\_GET** is the payload.
 
 ```PHP
 return [
-	'__SQL__' => 'INSERT INTO `category` SET __SET__',
-	'__SET__' => [
-		'name' => ['payload', 'name'],
-		'parent_id' => ['custom', 0],
-	],
-	'__INSERT-ID__' => 'category:id',
-	'__SUB-CONFIG__' => [
-		'module1' => [
-			'__SQL__' => 'INSERT INTO `category` SET __SET__',
-			'__SET__' => [
-				'name' => ['payload', 'subname'],
-				'parent_id' => ['__INSERT-ID__', 'category:id'],
-			],
-			'__INSERT-ID__' => 'sub:id',
-		]
-	],
-	'__HIERARCHY__' => Constant::$TRUE
+    '__SQL__' => 'INSERT INTO `category` SET __SET__',
+    '__SET__' => [
+        'name' => ['payload', 'name'],
+        'parent_id' => ['custom', 0],
+    ],
+    '__INSERT-ID__' => 'category:id',
+    '__SUB-CONFIG__' => [
+        'module1' => [
+            '__SQL__' => 'INSERT INTO `category` SET __SET__',
+            '__SET__' => [
+                'name' => ['payload', 'subname'],
+                'parent_id' => ['__INSERT-ID__', 'category:id'],
+            ],
+            '__INSERT-ID__' => 'sub:id',
+        ]
+    ],
+    '__HIERARCHY__' => Constant::$TRUE
 ];
 ```
 
@@ -112,10 +112,10 @@ return [
 
 ```javascript
 var payload = {
-	"name":"name",
-	"module1": {
-		"subname":"subname-value",
-	}
+    "name":"name",
+    "module1": {
+        "subname":"subname-value",
+    }
 }
 ```
 
@@ -123,17 +123,17 @@ var payload = {
 
 ```javascript
 var payload = {
-	"name":"name",
-	"module1":
-	[
-		{
-			"subname":"subname1",
-		},
-		{
-			"subname":"subname2",
-		},
-		...
-	]
+    "name":"name",
+    "module1":
+    [
+        {
+            "subname":"subname1",
+        },
+        {
+            "subname":"subname2",
+        },
+        ...
+    ]
 }
 ```
 
@@ -141,33 +141,33 @@ var payload = {
 
 ```javascript
 var payload = [
-	{
-		"name":"name1",
-		"module1":
-		[
-			{
-				"subname":"subname1",
-			},
-			{
-				"subname":"subname2",
-			},
-			...
-		]
-	},
-	{
-		"name":"name2",
-		"module1":
-		[
-			{
-				"subname":"subname21",
-			},
-			{
-				"subname":"subname22",
-			},
-			...
-		]
-	},
-	...
+    {
+        "name":"name1",
+        "module1":
+        [
+            {
+                "subname":"subname1",
+            },
+            {
+                "subname":"subname2",
+            },
+            ...
+        ]
+    },
+    {
+        "name":"name2",
+        "module1":
+        [
+            {
+                "subname":"subname21",
+            },
+            {
+                "subname":"subname22",
+            },
+            ...
+        ]
+    },
+    ...
 ]
 ```
 

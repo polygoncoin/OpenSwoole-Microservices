@@ -3,7 +3,7 @@
 /**
  * Export CSV
  * php version 8.3
- * 
+ *
  * @category  Export
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\App\HttpStatus;
 /**
  * Export CSV
  * php version 8.3
- * 
+ *
  * @category  Export
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -37,52 +37,52 @@ class Export
 	/**
 	 * TSV - Tab Seperated Values
 	 * CSV - Comma Seperated Values
-	 * 
+	 *
 	 * @var string
 	 */
 	public $exportMode = 'CSV';
 
 	/**
 	 * Allow creation of temporary file required for streaming large data
-	 * 
+	 *
 	 * @var bool
 	 */
 	public $useTmpFile = false;
 
 	/**
 	 * Used to remove file once CSV content is transferred on customer machine
-	 * 
+	 *
 	 * @var bool
 	 */
 	public $unlink = true;
 
 	/**
 	 * Database Engine
-	 * 
+	 *
 	 * @var null|string
 	 */
 	public $dbServerType = null;
 
 	/**
 	 * Database Object
-	 * 
+	 *
 	 * @var null|ExportDatabaseServer
 	 */
 	public $exportDbServerObject = null;
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http   $httpObject
 	 * @param string $dbServerType Database Type (eg. MySql)
-	 * 
+	 *
 	 * @throws \Exception
 	 */
 	public function __construct(
@@ -98,13 +98,13 @@ class Export
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @param string      $dbServerHostname Database Server Hostname
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
 	 * @param null|string $dbServerDatabase Database Server Database
-	 * 
+	 *
 	 * @return void
 	 */
 	public function init(
@@ -126,7 +126,7 @@ class Export
 
 	/**
 	 * Validate Connection
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -174,9 +174,9 @@ class Export
 
 	/**
 	 * Validate file location.
-	 * 
+	 *
 	 * @param $filename CSV file location.
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -208,11 +208,11 @@ class Export
 
 	/**
 	 * Get Shell Command
-	 * 
+	 *
 	 * @param string      $sql        Sql query
 	 * @param array       $paramArray Sql query params
 	 * @param null|string $exportFile Absolute file path
-	 * 
+	 *
 	 * @return array
 	 * @throws \Exception
 	 */
@@ -260,12 +260,12 @@ class Export
 
 	/**
 	 * Initialize download.
-	 * 
+	 *
 	 * @param $downloadFile Name of CSV file on customer side.
 	 * @param $sql          Sql query
 	 * @param $paramArray   Sql query params
 	 * @param $exportFile   Absolute file path with filename
-	 * 
+	 *
 	 * @return array
 	 */
 	public function initDownload(
@@ -325,11 +325,11 @@ class Export
 
 	/**
 	 * Save Export on server
-	 * 
+	 *
 	 * @param $sql        Sql query
 	 * @param $paramArray Sql query params
 	 * @param $exportFile Absolute file path with filename
-	 * 
+	 *
 	 * @return array
 	 */
 	public function saveExport(
@@ -361,9 +361,9 @@ class Export
 
 	/**
 	 * Get CSV file header
-	 * 
+	 *
 	 * @param $filename Name to be used to save CSV file on customer machine.
-	 * 
+	 *
 	 * @return array
 	 */
 	private function getCsvHeaders(
@@ -381,10 +381,10 @@ class Export
 
 	/**
 	 * Get CSV file data
-	 * 
+	 *
 	 * @param $exportFile   Absolute file location of CSV file.
 	 * @param $downloadFile Name to be used to save CSV file on customer machine.
-	 * 
+	 *
 	 * @return array
 	 */
 	private function getCsvFileData(

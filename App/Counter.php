@@ -3,7 +3,7 @@
 /**
  * Write APIs
  * php version 8.3
- * 
+ *
  * @category  Counter
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -22,7 +22,7 @@ use Microservices\App\HttpStatus;
 /**
  * Write APIs
  * php version 8.3
- * 
+ *
  * @category  Counter
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,30 +35,34 @@ class Counter
 {
 	/**
 	 * Get Global counter
-	 * 
+	 *
 	 * @return int
 	 */
 	public static function getGlobalCounter(): int
 	{
-		if (!Env::$enableGlobalCounter) {
+		if (!Env::$ENABLE_SYSTEM_LEVEL_PRIMARY_KEY) {
 			throw new \Exception(
 				message: 'Enable use of Global Counter',
 				code: HttpStatus::$InternalServerError
 			);
 		}
 
-		switch (Env::$gCounterMode) {
+		switch (Env::$SYSTEM_LEVEL_PRIMARY_KEY_MODE) {
 			case 'Cache':
-				$cacheKey = Env::$gCounter;
-				DbCommonFunction::connectGlobalCache();
+				$cacheKey = Env::$SYSTEM_LEVEL_PRIMARY_KEY_NAME;
+				DbCommonFunction::connectGlobalCache(
+					customerId: 0
+				);
 				$id = (int)DbCommonFunction::$globalCacheServerObject->cacheIncrement(
 					cacheKey: $cacheKey
 				);
 				break;
 			case 'Database':
-				DbCommonFunction::connectGlobalDb();
+				DbCommonFunction::connectGlobalDb(
+					customerId: 0
+				);
 
-				$table = Env::$gDbServerDatabase . '.' . Env::$gCounter;
+				$table = Env::$config[$this->httpObject->httpRequestObject->customerId]->DB_NAME . '.' . Env::$SYSTEM_LEVEL_PRIMARY_KEY_NAME;
 				$sql = "INSERT INTO {$table}() VALUES()";
 				$paramArray = [];
 

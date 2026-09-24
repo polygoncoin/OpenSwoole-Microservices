@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- * 
+ *
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -20,8 +20,8 @@ use Microservices\DatabaseTable;
 
 return [
 	'all' => [
-		'__COUNT-SQL__' => "SELECT count(1) as `count` FROM `{$Env::$customerTable}` WHERE __WHERE__",
-		'__SQL__' => "SELECT * FROM `{$Env::$customerTable}` WHERE __WHERE__ ORDER BY id ASC",
+		'__COUNT-SQL__' => "SELECT count(1) as `count` FROM `{$Env::$SYSTEM_CUSTOMER_TABLE}` WHERE __WHERE__",
+		'__SQL__' => "SELECT * FROM `{$Env::$SYSTEM_CUSTOMER_TABLE}` WHERE __WHERE__ ORDER BY id ASC",
 		'__WHERE__' => [
 			[
 				'column' => 'is_approved',
@@ -42,7 +42,7 @@ return [
 		'__MODE__' => 'multipleRecordFormat'
 	],
 	'single' => [
-		'__SQL__' => "SELECT * FROM `{$Env::$customerTable}` WHERE __WHERE__",
+		'__SQL__' => "SELECT * FROM `{$Env::$SYSTEM_CUSTOMER_TABLE}` WHERE __WHERE__",
 		'__WHERE__' => [
 			[
 				'column' => 'is_approved',

@@ -3,7 +3,7 @@
 /**
  * Stream Video
  * php version 8.3
- * 
+ *
  * @category  StreamVideo
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -22,7 +22,7 @@ use Microservices\App\HttpStatus;
 /**
  * Stream Video
  * php version 8.3
- * 
+ *
  * @category  StreamVideo
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,28 +35,28 @@ class StreamVideo
 {
 	/**
 	 * HTTP request data
-	 * 
+	 *
 	 * @var null|array
 	 */
 	private $httpReqData = null;
 
 	/**
 	 * Streamed Video cache duration.
-	 * 
+	 *
 	 * @var integer
 	 */
 	private $cacheDuration = 7 * 24 * 3600; // 1 week
 
 	/**
 	 * Streamed Video size for first request.
-	 * 
+	 *
 	 * @var integer
 	 */
 	private $firstChunkSize = 128 * 1024; // 128 KB
 
 	/**
 	 * Streamed Video size per request.
-	 * 
+	 *
 	 * @var integer
 	 */
 	private $chunkSize = 4 * 1024 * 1024; // 4 MB
@@ -74,7 +74,7 @@ class StreamVideo
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param array $httpReqData HTTP request data
 	 */
 	public function __construct(
@@ -85,9 +85,9 @@ class StreamVideo
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @param string $fileLocation File Location
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function init(
@@ -142,7 +142,7 @@ class StreamVideo
 
 	/**
 	 * Validate File related detail
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function validateFile(): bool|int
@@ -156,7 +156,7 @@ class StreamVideo
 
 	/**
 	 * Set header on successful validation
-	 * 
+	 *
 	 * @return array
 	 */
 	public function setHeaders(): array
@@ -231,7 +231,7 @@ class StreamVideo
 
 	/**
 	 * Serve video file content
-	 * 
+	 *
 	 * @return array
 	 */
 	public function serveContent(): array

@@ -3,7 +3,7 @@
 /**
  * Database
  * php version 8.3
- * 
+ *
  * @category  Database Server
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -22,7 +22,7 @@ use Microservices\App\Server\DatabaseServer\DatabaseServerInterface;
 /**
  * Database Server
  * php version 8.3
- * 
+ *
  * @category  Database Server
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,63 +35,63 @@ class DatabaseServer
 {
 	/**
 	 * Database Server Type
-	 * 
+	 *
 	 * @var null|string
 	 */
 	public $dbServerType = null;
 
 	/**
 	 * Database Server Hostname
-	 * 
+	 *
 	 * @var null|string
 	 */
 	public $dbServerHostname = null;
 
 	/**
 	 * Database Server Port
-	 * 
+	 *
 	 * @var null|int
 	 */
 	public $dbServerPort = null;
 
 	/**
 	 * Database Server Username
-	 * 
+	 *
 	 * @var null|string
 	 */
 	public $dbServerUsername = null;
 
 	/**
 	 * Database Server Password
-	 * 
+	 *
 	 * @var null|string
 	 */
 	public $dbServerPassword = null;
 
 	/**
 	 * Database Server DB
-	 * 
+	 *
 	 * @var null|string
 	 */
 	public $dbServerDatabase = null;
 
 	/**
 	 * Database Server Object
-	 * 
+	 *
 	 * @var null|DatabaseServerInterface
 	 */
 	private $dbServerObject = null;
 
 	/**
 	 * Transaction started flag
-	 * 
+	 *
 	 * @var bool
 	 */
 	public $beganTransaction = false;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param string      $dbServerType     Database Server Type
 	 * @param string      $dbServerHostname Database Server Hostname
 	 * @param int         $dbServerPort     Database Server Port
@@ -117,7 +117,7 @@ class DatabaseServer
 
 	/**
 	 * Connect Database
-	 * 
+	 *
 	 * @return void
 	 */
 	public function connectDb(): void
@@ -153,7 +153,7 @@ class DatabaseServer
 
 	/**
 	 * Use Database
-	 * 
+	 *
 	 * @return void
 	 */
 	public function useDatabase(): void
@@ -165,7 +165,7 @@ class DatabaseServer
 
 	/**
 	 * Begin transaction
-	 * 
+	 *
 	 * @return void
 	 */
 	public function begin(): void
@@ -178,7 +178,7 @@ class DatabaseServer
 
 	/**
 	 * Commit transaction
-	 * 
+	 *
 	 * @return void
 	 */
 	public function commit(): void
@@ -191,7 +191,7 @@ class DatabaseServer
 
 	/**
 	 * Rollback transaction
-	 * 
+	 *
 	 * @return void
 	 */
 	public function rollBack(): void
@@ -204,7 +204,7 @@ class DatabaseServer
 
 	/**
 	 * Affected record count
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function affectedRecordCount(): bool|int
@@ -222,7 +222,7 @@ class DatabaseServer
 
 	/**
 	 * Last insert id
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function lastInsertId(): bool|int
@@ -239,11 +239,11 @@ class DatabaseServer
 
 	/**
 	 * Execute query
-	 * 
+	 *
 	 * @param string $sql        Sql query
 	 * @param array  $paramArray Sql query params
 	 * @param bool   $pushPop    Push Pop result set stmt
-	 * 
+	 *
 	 * @return void
 	 */
 	public function execQuery(
@@ -268,7 +268,7 @@ class DatabaseServer
 
 	/**
 	 * Fetch record
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function fetch(): mixed
@@ -278,7 +278,7 @@ class DatabaseServer
 
 	/**
 	 * Fetch all rows
-	 * 
+	 *
 	 * @return array|bool
 	 */
 	public function fetchAll(): array|bool
@@ -288,9 +288,9 @@ class DatabaseServer
 
 	/**
 	 * Close statement cursor
-	 * 
+	 *
 	 * @param bool $pushPop Push Pop result set stmt
-	 * 
+	 *
 	 * @return void
 	 */
 	public function closeCursor(

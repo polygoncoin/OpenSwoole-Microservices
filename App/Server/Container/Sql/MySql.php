@@ -3,7 +3,7 @@
 /**
  * Sql Database
  * php version 8.3
- * 
+ *
  * @category  Sql
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -22,7 +22,7 @@ use Microservices\App\Server\Container\Sql\SqlInterface;
 /**
  * MySql Database
  * php version 8.3
- * 
+ *
  * @category  MySql
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,70 +35,70 @@ class MySql implements SqlInterface
 {
 	/**
 	 * Database Server Hostname
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $dbServerHostname = null;
 
 	/**
 	 * Database Server Port
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $dbServerPort = null;
 
 	/**
 	 * Database Server Username
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $dbServerUsername = null;
 
 	/**
 	 * Database Server Password
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $dbServerPassword = null;
 
 	/**
 	 * Database Server DB
-	 * 
+	 *
 	 * @var null|string
 	 */
 	public $dbServerDatabase = null;
 
 	/**
 	 * Database Server Object
-	 * 
+	 *
 	 * @var null|\PDO
 	 */
 	private $mysqlServerObject = null;
 
 	/**
 	 * Executed query statement
-	 * 
+	 *
 	 * @var null|\PDOStatement
 	 */
 	private $stmt = null;
 
 	/**
 	 * Executed query statement
-	 * 
+	 *
 	 * @var \PDOStatement[]
 	 */
 	private $stmtArray = [];
 
 	/**
 	 * Transaction started flag
-	 * 
+	 *
 	 * @var bool
 	 */
 	public $beganTransaction = false;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param string      $dbServerHostname Database Server Hostname
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
@@ -121,7 +121,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Connect Database
-	 * 
+	 *
 	 * @return void
 	 */
 	public function connect(): void
@@ -155,7 +155,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Use Database
-	 * 
+	 *
 	 * @return void
 	 */
 	public function useDatabase(): void
@@ -180,7 +180,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Begin transaction
-	 * 
+	 *
 	 * @return void
 	 */
 	public function begin(): void
@@ -201,7 +201,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Commit transaction
-	 * 
+	 *
 	 * @return void
 	 */
 	public function commit(): void
@@ -222,7 +222,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Rollback transaction
-	 * 
+	 *
 	 * @return void
 	 */
 	public function rollBack(): void
@@ -243,7 +243,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Affected record count
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function affectedRecordCount(): bool|int
@@ -267,7 +267,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Last insert id
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function lastInsertId(): bool|int
@@ -291,11 +291,11 @@ class MySql implements SqlInterface
 
 	/**
 	 * Execute query
-	 * 
+	 *
 	 * @param string $sql        Sql query
 	 * @param array  $paramArray Sql query params
 	 * @param bool   $pushPop    Push Pop result set stmt
-	 * 
+	 *
 	 * @return void
 	 */
 	public function execQuery(
@@ -349,7 +349,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Fetch record
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function fetch(): mixed
@@ -372,7 +372,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Fetch all rows
-	 * 
+	 *
 	 * @return array|bool
 	 */
 	public function fetchAll(): array|bool
@@ -395,9 +395,9 @@ class MySql implements SqlInterface
 
 	/**
 	 * Close statement cursor
-	 * 
+	 *
 	 * @param bool $pushPop Push Pop result set stmt
-	 * 
+	 *
 	 * @return void
 	 */
 	public function closeCursor(
@@ -428,9 +428,9 @@ class MySql implements SqlInterface
 
 	/**
 	 * Log error
-	 * 
+	 *
 	 * @param \Exception $e Exception object
-	 * 
+	 *
 	 * @return never
 	 * @throws \Exception
 	 */

@@ -3,7 +3,7 @@
 /**
  * Load Cache Server Key
  * php version 8.3
- * 
+ *
  * @category  Reload
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -24,7 +24,7 @@ use Microservices\App\Env;
 /**
  * Load Cache Server Key
  * php version 8.3
- * 
+ *
  * @category  Reload
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -37,16 +37,20 @@ class Reload
 {
 	/**
 	 * Process
-	 * 
+	 *
 	 * @param string $httpRequestIp Request Ip
-	 * 
+	 *
 	 * @return bool
 	 */
 	public static function process(
 		$httpRequestIp
 	): bool {
-		DbCommonFunction::connectGlobalCache();
-		DbCommonFunction::connectGlobalDb();
+		DbCommonFunction::connectGlobalCache(
+			customerId: 0
+		);
+		DbCommonFunction::connectGlobalDb(
+			customerId: 0
+		);
 
 		return self::processCustomer(
 			httpRequestIp: $httpRequestIp
@@ -55,26 +59,30 @@ class Reload
 
 	/**
 	 * Cache Customer Data
-	 * 
+	 *
 	 * @param string   $httpRequestIp Request Ip
 	 * @param null|int $customerId    Customer Id
-	 * 
+	 *
 	 * @return bool
 	 */
 	public static function processCustomer(
 		$httpRequestIp,
 		$customerId = null
 	): bool {
-		DbCommonFunction::connectGlobalCache();
-		DbCommonFunction::connectGlobalDb();
+		DbCommonFunction::connectGlobalCache(
+			customerId: 0
+		);
+		DbCommonFunction::connectGlobalDb(
+			customerId: 0
+		);
 
-		$customerTable = getenv(name: 'customerTable');
+		$SYSTEM_CUSTOMER_TABLE = getenv(name: 'SYSTEM_CUSTOMER_TABLE');
 
-		$sql = "SELECT * FROM `{$customerTable}` C";
+		$sql = "SELECT * FROM `{$SYSTEM_CUSTOMER_TABLE}` C";
 		$paramArray = [];
 
 		if ($customerId > 0) {
-			$sql = "SELECT * FROM `{$customerTable}` C WHERE customer_id = :customer_id";
+			$sql = "SELECT * FROM `{$SYSTEM_CUSTOMER_TABLE}` C WHERE customer_id = :customer_id";
 			$paramArray[':customer_id'] = $customerId;
 		}
 
@@ -85,9 +93,13 @@ class Reload
 		$customerDataArray = DbCommonFunction::$gDbServer->fetchAll();
 		DbCommonFunction::$gDbServer->closeCursor();
 		foreach ($customerDataArray as $customerData) {
+			$customerId = $customerData['customer_id'];
+			Env::loadEnv(
+				customerId: $customerId
+			);
 			CommonFunction::checkCidr(
 				ip: $httpRequestIp,
-				cidrString: Env::$reloadRestrictedCidr
+				cidrString: Env::$config[$customerId]->RELOAD_CACHE_CIDR
 			);
 
 			if (!empty($customerData['customer_private_token_domain'])) {
@@ -130,7 +142,7 @@ class Reload
 					) > 0
 				) {
 					$customerCidrCacheKey = CacheServerKey::customerCidr(
-						customerId: $customerData['customer_id']
+						customerId: $customerId
 					);
 					DbCommonFunction::$globalCacheServerObject->cacheSet(
 						cacheKey: $customerCidrCacheKey,
@@ -154,11 +166,11 @@ class Reload
 
 	/**
 	 * Cache Group Data
-	 * 
+	 *
 	 * @param string   $httpRequestIp       Request Ip
 	 * @param array    $customerData        Customer Data
 	 * @param null|int $customerUserGroupId Customer User Group Id
-	 * 
+	 *
 	 * @return bool
 	 */
 	public static function processGroup(
@@ -166,29 +178,14 @@ class Reload
 		$customerData,
 		$customerUserGroupId = null
 	): bool {
-		$customerCacheServerCred = DbCommonFunction::customerCacheServerCred(
-			customerData: $customerData
-		);
-		$customerCacheObject = DbCommonFunction::connectCache(
-			cacheServerType: $customerCacheServerCred['cacheServerType'],
-			cacheServerHostname: $customerCacheServerCred['cacheServerHostname'],
-			cacheServerPort: $customerCacheServerCred['cacheServerPort'],
-			cacheServerUsername: $customerCacheServerCred['cacheServerUsername'],
-			cacheServerPassword: $customerCacheServerCred['cacheServerPassword'],
-			cacheServerDatabase: $customerCacheServerCred['cacheServerDatabase'],
-			cacheServerTable: $customerCacheServerCred['cacheServerTable']
-		);
+		$customerId = $customerData['customer_id'];
 
-		$customerMasterDatabaseServerCred = DbCommonFunction::customerMasterDatabaseServerCred(
-			customerData: $customerData
+		$cacheServerObject = DbCommonFunction::connectCache(
+			customerId: $customerId
 		);
-		$customerDbObject = DbCommonFunction::connectDb(
-			dbServerType: $customerMasterDatabaseServerCred['dbServerType'],
-			dbServerHostname: $customerMasterDatabaseServerCred['dbServerHostname'],
-			dbServerPort: $customerMasterDatabaseServerCred['dbServerPort'],
-			dbServerUsername: $customerMasterDatabaseServerCred['dbServerUsername'],
-			dbServerPassword: $customerMasterDatabaseServerCred['dbServerPassword'],
-			dbServerDatabase: $customerMasterDatabaseServerCred['dbServerDatabase']
+		$databaseServerObject = DbCommonFunction::connectDatabase(
+			customerId: $customerId,
+			fetchDbMode: 'Master'
 		);
 
 		$sql = "SELECT * FROM `{$customerData['customer_user_group_table']}` G";
@@ -200,19 +197,19 @@ class Reload
 		}
 
 		// Groups
-		$customerDbObject->execQuery(
+		$databaseServerObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$groupDataArray = $customerDbObject->fetchAll();
-		$customerDbObject->closeCursor();
+		$groupDataArray = $databaseServerObject->fetchAll();
+		$databaseServerObject->closeCursor();
 
 		foreach ($groupDataArray as $groupData) {
 			$g_key = CacheServerKey::customerGroup(
-				customerId: $customerData['customer_id'],
+				customerId: $customerId,
 				customerUserGroupId: $groupData['customer_user_group_id']
 			);
-			$customerCacheObject->cacheSet(
+			$cacheServerObject->cacheSet(
 				cacheKey: $g_key,
 				cacheValue: $groupData
 			);
@@ -226,10 +223,10 @@ class Reload
 					) > 0
 				) {
 					$groupCidrCacheKey = CacheServerKey::customerGroupCidr(
-						customerId: $customerData['customer_id'],
+						customerId: $customerId,
 						customerUserGroupId: $groupData['customer_user_group_id']
 					);
-					$customerCacheObject->cacheSet(
+					$cacheServerObject->cacheSet(
 						cacheKey: $groupCidrCacheKey,
 						cacheValue: $groupCidrIpNumberRangeArray
 					);
@@ -242,11 +239,11 @@ class Reload
 
 	/**
 	 * Cache User Data
-	 * 
+	 *
 	 * @param string   $httpRequestIp  Request Ip
 	 * @param array    $customerData   Customer Data
 	 * @param null|int $customerUserId User Id
-	 * 
+	 *
 	 * @return bool
 	 */
 	public static function processUser(
@@ -254,29 +251,14 @@ class Reload
 		$customerData,
 		$customerUserId = null
 	): bool {
-		$customerCacheServerCred = DbCommonFunction::customerCacheServerCred(
-			customerData: $customerData
-		);
-		$customerCacheObject = DbCommonFunction::connectCache(
-			cacheServerType: $customerCacheServerCred['cacheServerType'],
-			cacheServerHostname: $customerCacheServerCred['cacheServerHostname'],
-			cacheServerPort: $customerCacheServerCred['cacheServerPort'],
-			cacheServerUsername: $customerCacheServerCred['cacheServerUsername'],
-			cacheServerPassword: $customerCacheServerCred['cacheServerPassword'],
-			cacheServerDatabase: $customerCacheServerCred['cacheServerDatabase'],
-			cacheServerTable: $customerCacheServerCred['cacheServerTable']
-		);
+		$customerId = $customerData['customer_id'];
 
-		$customerMasterDatabaseServerCred = DbCommonFunction::customerMasterDatabaseServerCred(
-			customerData: $customerData
+		$cacheServerObject = DbCommonFunction::connectCache(
+			customerId: $customerId
 		);
-		$customerDbObject = DbCommonFunction::connectDb(
-			dbServerType: $customerMasterDatabaseServerCred['dbServerType'],
-			dbServerHostname: $customerMasterDatabaseServerCred['dbServerHostname'],
-			dbServerPort: $customerMasterDatabaseServerCred['dbServerPort'],
-			dbServerUsername: $customerMasterDatabaseServerCred['dbServerUsername'],
-			dbServerPassword: $customerMasterDatabaseServerCred['dbServerPassword'],
-			dbServerDatabase: $customerMasterDatabaseServerCred['dbServerDatabase']
+		$databaseServerObject = DbCommonFunction::connectDatabase(
+			customerId: $customerId,
+			fetchDbMode: 'Master'
 		);
 
 		$sql = "SELECT * FROM `{$customerData['customer_user_table']}` U";
@@ -288,12 +270,12 @@ class Reload
 		}
 
 		// Groups
-		$customerDbObject->execQuery(
+		$databaseServerObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$userDataArray = $customerDbObject->fetchAll();
-		$customerDbObject->closeCursor();
+		$userDataArray = $databaseServerObject->fetchAll();
+		$databaseServerObject->closeCursor();
 		foreach ($userDataArray as $userData) {
 			if ($userData['customer_user_allowed_cidr'] !== Constant::$NULL) {
 				$userCidrIpNumberRangeArray = CommonFunction::cidrStringIpNumberRange(
@@ -305,20 +287,20 @@ class Reload
 					) > 0
 				) {
 					$userCidrCacheKey = CacheServerKey::customerUserCidr(
-						customerId: $customerData['customer_id'],
+						customerId: $customerId,
 						customerUserId: $userData['customer_user_id']
 					);
-					$customerCacheObject->cacheSet(
+					$cacheServerObject->cacheSet(
 						cacheKey: $userCidrCacheKey,
 						cacheValue: $userCidrIpNumberRangeArray
 					);
 				}
 			}
 			$cu_key = CacheServerKey::customerUsername(
-				customerId: $customerData['customer_id'],
+				customerId: $customerId,
 				username: $userData['customer_user_username']
 			);
-			$customerCacheObject->cacheSet(
+			$cacheServerObject->cacheSet(
 				cacheKey: $cu_key,
 				cacheValue: $userData
 			);

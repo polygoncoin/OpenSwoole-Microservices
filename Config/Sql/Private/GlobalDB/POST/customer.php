@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- * 
+ *
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -19,7 +19,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__SQL__' => "INSERT INTO `{$Env::$customerTable}` SET __SET__",
+	'__SQL__' => "INSERT INTO `{$Env::$SYSTEM_CUSTOMER_TABLE}` SET __SET__",
 	'__SET__' => [
 		[
 			'column' => 'name',

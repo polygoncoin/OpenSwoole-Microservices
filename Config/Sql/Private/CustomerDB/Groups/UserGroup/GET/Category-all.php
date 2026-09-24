@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- * 
+ *
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -91,6 +91,6 @@ return [
 	'__HIERARCHY__' => Constant::$TRUE,
 	'__FETCH-MODE__' => 'Master',
 	// '__CACHE-KEY__' => $this->httpObject->httpRequestObject->activeRequestData['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
-	'outputRepresentation' => 'PHP',
-	'outputRepresentationFileLocation' => Constant::$PHP_PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . 'index.php'
+	'OUTPUT_REPRESENTATION' => 'PHP',
+	'OUTPUT_REPRESENTATION_FILE' => Constant::$PHP_PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . 'index.php'
 ];

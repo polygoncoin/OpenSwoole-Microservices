@@ -3,7 +3,7 @@
 /**
  * HTTP Class
  * php version 8.3
- * 
+ *
  * @category  Http
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -22,7 +22,7 @@ use Microservices\App\HttpResponse;
 /**
  * HTTP Class
  * php version 8.3
- * 
+ *
  * @category  Http
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,28 +35,28 @@ class Http
 {
 	/**
 	 * Microservices HTTP request
-	 * 
+	 *
 	 * @var null|HttpRequest
 	 */
 	public $httpRequestObject = null;
 
 	/**
 	 * Microservices HTTP response
-	 * 
+	 *
 	 * @var null|HttpResponse
 	 */
 	public $httpResponseObject = null;
 
 	/**
 	 * HTTP request data
-	 * 
+	 *
 	 * @var null|array
 	 */
 	public $httpReqData = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param array $httpReqData HTTP request data
 	 */
 	public function __construct(
@@ -67,7 +67,7 @@ class Http
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
@@ -84,7 +84,7 @@ class Http
 
 	/**
 	 * Initialize request
-	 * 
+	 *
 	 * @return void
 	 */
 	public function initRequest(): void
@@ -94,7 +94,7 @@ class Http
 
 	/**
 	 * Initialize response
-	 * 
+	 *
 	 * @return void
 	 */
 	public function initResponse(): void

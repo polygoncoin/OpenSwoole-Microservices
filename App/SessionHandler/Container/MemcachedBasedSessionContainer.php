@@ -3,7 +3,7 @@
 /**
  * Custom Session Handler
  * php version 7
- * 
+ *
  * @category  SessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 /**
  * Custom Session Handler using Memcached
  * php version 7
- * 
+ *
  * @category  CustomSessionHandler_MemcacheD
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,17 +35,17 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	SessionContainerInterface
 {
-	public $memcachedServerHostname = null;
-	public $memcachedServerPort = null;
+	public $sessionServerHost = null;
+	public $sessionServerPort = null;
 
 	private $memcachedServerObject = null;
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @param string $sessionSavePath Session Save Path
 	 * @param string $sessionName     Session Name
-	 * 
+	 *
 	 * @return void
 	 */
 	public function init(
@@ -57,9 +57,9 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Validate session id
-	 * 
+	 *
 	 * @param string $sessionId Session id
-	 * 
+	 *
 	 * @return bool|string
 	 */
 	public function getSession(
@@ -81,10 +81,10 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Write session data
-	 * 
+	 *
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function setSession(
@@ -113,10 +113,10 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Update Session
-	 * 
+	 *
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function updateSession(
@@ -131,10 +131,10 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Update session timestamp
-	 * 
+	 *
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function touchSession(
@@ -160,9 +160,9 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Cleanup old sessions
-	 * 
+	 *
 	 * @param integer $sessionMaxLifetime Session Max Lifetime
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function gcSession(
@@ -173,9 +173,9 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Destroy a session
-	 * 
+	 *
 	 * @param string $sessionId Session id
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function deleteSession(
@@ -195,7 +195,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Close File Container
-	 * 
+	 *
 	 * @return void
 	 */
 	public function closeSession(): void
@@ -205,7 +205,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Connect
-	 * 
+	 *
 	 * @return void
 	 */
 	private function connect(): void
@@ -224,8 +224,8 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 
 			$this->memcachedServerObject = new \Memcached(); // phpcs:ignore
 			$this->memcachedServerObject->addServer(
-				$this->memcachedServerHostname,
-				$this->memcachedServerPort
+				$this->sessionServerHost,
+				$this->sessionServerPort
 			);
 		} catch (\Exception $e) {
 			$this->manageException(
@@ -236,9 +236,9 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Manage Exception
-	 * 
+	 *
 	 * @param \Exception $e Exception
-	 * 
+	 *
 	 * @return never
 	 */
 	private function manageException(

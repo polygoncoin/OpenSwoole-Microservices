@@ -3,7 +3,7 @@
 /**
  * Route - Available routeArray
  * php version 8.3
- * 
+ *
  * @category  Route
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -24,7 +24,7 @@ use Microservices\App\HttpStatus;
 /**
  * Route - Available routeArray
  * php version 8.3
- * 
+ *
  * @category  Route
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -37,14 +37,14 @@ class Route
 {
 	/**
 	 * Supported HTTP methods of routeArray
-	 * 
+	 *
 	 * @var array
 	 */
 	private $httpMethodArray = null;
 
 	/**
 	 * Route folder
-	 * 
+	 *
 	 * @var string
 	 */
 	private $routesFolder = DIRECTORY_SEPARATOR . 'Config'
@@ -52,21 +52,21 @@ class Route
 
 	/**
 	 * Route config ignore key's
-	 * 
+	 *
 	 * @var array
 	 */
 	private $reservedKeyArray = ['dataType'];
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -85,7 +85,7 @@ class Route
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
@@ -104,7 +104,7 @@ class Route
 
 	/**
 	 * Make allowed routeArray list of a logged-in user
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -159,11 +159,11 @@ class Route
 
 	/**
 	 * Create Route list
-	 * 
+	 *
 	 * @param array  $routeArray     Route
 	 * @param string $route          Current Route
 	 * @param array  $httpRouteArray All HTTP Route
-	 * 
+	 *
 	 * @return void
 	 */
 	private function getRoutes(

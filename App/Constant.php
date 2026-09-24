@@ -3,7 +3,7 @@
 /**
  * Constant
  * php version 8.3
- * 
+ *
  * @category  Constant
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\App;
 /**
  * Constant
  * php version 8.3
- * 
+ *
  * @category  Constant
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -96,7 +96,7 @@ class Constant
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function init(): void

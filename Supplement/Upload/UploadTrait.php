@@ -3,7 +3,7 @@
 /**
  * UploadAPI
  * php version 8.3
- * 
+ *
  * @category  UploadAPI
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -20,7 +20,7 @@ use Microservices\App\Constant;
 /**
  * UploadAPI Trait
  * php version 8.3
- * 
+ *
  * @category  UploadAPI_Trait
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -33,9 +33,9 @@ trait UploadTrait
 {
 	/**
 	 * Saves file as stream
-	 * 
+	 *
 	 * @param string $absFilePath Absolute file path
-	 * 
+	 *
 	 * @return bool
 	 */
 	private function saveFile(

@@ -3,7 +3,7 @@
 /**
  * HTTP request
  * php version 8.3
- * 
+ *
  * @category  HTTP request
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,7 +35,7 @@ use Microservices\App\SessionHandler\Session;
 /**
  * HTTP request
  * php version 8.3
- * 
+ *
  * @category  HTTP request
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -48,112 +48,112 @@ class HttpRequest
 {
 	/**
 	 * Input Representation
-	 * 
+	 *
 	 * @var null|string
 	 */
-	public $inputRepresentation = null;
+	public $INPUT_REPRESENTATION = null;
 
 	/**
 	 * Rate Limiter
-	 * 
+	 *
 	 * @var null|RateLimiter
 	 */
 	public $rateLimiterObject = null;
 
 	/**
 	 * Auth middleware object
-	 * 
+	 *
 	 * @var null|Auth
 	 */
 	public $authObject = null;
 
 	/**
 	 * Request id
-	 * 
+	 *
 	 * @var null|int
 	 */
 	public $requestId = null;
 
 	/**
 	 * Data Decode object
-	 * 
+	 *
 	 * @var null|DataDecode
 	 */
 	public $dataDecodeObject = null;
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Customer Cache Object
-	 * 
+	 *
 	 * @var null|CacheServer
 	 */
-	public $customerCacheObject = null;
-
-	/**
-	 * Customer Query Cache Object
-	 * 
-	 * @var null|CacheServer
-	 */
-	public $customerQueryCacheObject = null;
+	public $cacheServerObject = null;
 
 	/**
 	 * Customer Database Object
-	 * 
+	 *
 	 * @var null|DatabaseServer
 	 */
-	public $customerDbObject = null;
+	public $databaseServerObject = null;
+
+	/**
+	 * Customer Query Cache Object
+	 *
+	 * @var null|CacheServer
+	 */
+	public $queryCacheServerObject = null;
 
 	/**
 	 * Active Request Data Collection Array
-	 * 
+	 *
 	 * @var null|array
 	 */
 	public $activeRequestData = null;
 
 	/**
 	 * Public domain cache key exist flag
-	 * 
+	 *
 	 * @var null|bool
 	 */
 	public $isPublicDomain = null;
 
 	/**
 	 * Private session domain cache key exist flag
-	 * 
+	 *
 	 * @var null|bool
 	 */
 	public $isPrivateSessionDomain = null;
 
 	/**
 	 * Private token domain cache key exist flag
-	 * 
+	 *
 	 * @var null|bool
 	 */
 	public $isPrivateTokenDomain = null;
 
 	/**
 	 * Domain cache key
-	 * 
+	 *
 	 * @var null|bool
 	 */
 	public $domainCacheKey = null;
 
 	/**
 	 * Flag for Private request
-	 * 
+	 *
 	 * @var null|bool
 	 */
 	public $isPrivateRequest = null;
 
 	/**
 	 * Flag for Public request
-	 * 
+	 *
 	 * @var null|bool
 	 */
 	public $isPublicRequest = null;
@@ -165,51 +165,53 @@ class HttpRequest
 
 	/**
 	 * Route Parser object
-	 * 
+	 *
 	 * @var null|RouteParser
 	 */
 	public $routeParserObject = null;
 
 	/**
 	 * Customer Id
-	 * 
+	 *
 	 * @var null|int
 	 */
-	public $customerId = null;
+	public $customerId = 0;
 
 	/**
 	 * Group Id
-	 * 
+	 *
 	 * @var null|int
 	 */
 	public $customerUserGroupId = null;
 
 	/**
 	 * User Id
-	 * 
+	 *
 	 * @var null|int
 	 */
 	public $customerUserId = null;
 
 	/**
 	 * Session object
-	 * 
+	 *
 	 * @var null|Session
 	 */
 	public $sessionObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
 		Http &$httpObject
 	) {
 		$this->httpObject = &$httpObject;
-		$this->inputRepresentation = Env::$inputRepresentation;
+		$this->INPUT_REPRESENTATION = Env::$SYSTEM_INPUT_REPRESENTATION;
 
-		DbCommonFunction::connectGlobalCache();
+		DbCommonFunction::connectGlobalCache(
+			customerId: 0
+		);
 
 		$this->isPublicDomain = Constant::$FALSE;
 		$this->isPrivateSessionDomain = Constant::$FALSE;
@@ -265,7 +267,7 @@ class HttpRequest
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
@@ -274,7 +276,7 @@ class HttpRequest
 			!$this->isPublicDomain
 			&& !$this->isPrivateSessionDomain
 			&& !$this->isPrivateTokenDomain
-			&& $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM] !== '/' . Env::$reloadRequestRoutePrefix
+			&& $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM] !== '/' . Env::$config[$this->httpObject->httpRequestObject->customerId]->RELOAD_REQUEST_KEYWORD
 		) {
 			throw new \Exception(
 				message: "Invalid domain: '{$this->httpObject->httpReqData['server']['domainName']}'",
@@ -288,10 +290,11 @@ class HttpRequest
 		$this->customerId = $this->activeRequestData['customerData']['customer_id'];
 
 		if ($this->isPrivateSessionDomain) {
-			$this->sessionObject = new Session();
+			$this->sessionObject = new Session(
+				customerId: $this->httpObject->httpRequestObject->customerId
+			);
 			$this->sessionObject->sessionDomain = $this->httpObject->httpReqData['server']['domainName'];
 			$this->sessionObject->initSessionHandler(
-				customerData: $this->activeRequestData['customerData'],
 				options: []
 			);
 			$this->sessionObject->sessionStartReadonly();
@@ -339,14 +342,14 @@ class HttpRequest
 				)
 			)
 		) {
-			$this->customerQueryCacheObject = new QueryCache(
+			$this->queryCacheServerObject = new QueryCache(
 				$this->httpObject
 			);
 		}
 
 		if ($this->isPrivateRequest) {
-			$this->customerCacheObject = DbCommonFunction::connectCustomerCache(
-				customerData: $this->activeRequestData['customerData']
+			$this->cacheServerObject = DbCommonFunction::connectCache(
+				customerId: $this->httpObject->httpRequestObject->customerId
 			);
 			if (
 				CommonFunction::isEnabled(
@@ -355,7 +358,7 @@ class HttpRequest
 				)
 			) {
 				$this->rateLimiterObject = new RateLimiter(
-					cacheObject: $this->customerCacheObject
+					cacheObject: $this->cacheServerObject
 				);
 			}
 		}
@@ -380,7 +383,7 @@ class HttpRequest
 
 	/**
 	 * Load payload
-	 * 
+	 *
 	 * @return void
 	 */
 	public function loadPayload(): void
@@ -399,7 +402,7 @@ class HttpRequest
 		$payloadJson = $this->setPayloadStream();
 
 		$this->dataDecodeObject = new DataDecode(
-			inputRepresentation: $this->inputRepresentation,
+			INPUT_REPRESENTATION: $this->INPUT_REPRESENTATION,
 			dataFileHandle: $this->payloadStream
 		);
 
@@ -409,7 +412,7 @@ class HttpRequest
 
 	/**
 	 * Set payload stream
-	 * 
+	 *
 	 * @return string
 	 */
 	private function setPayloadStream(): string
@@ -428,7 +431,7 @@ class HttpRequest
 					case (
 						$this->httpObject->httpReqData['get'][ROUTE_URL_PARAM] !== '/login'
 						&& $this->routeParserObject->routeEndingWithReservedKeywordFlag
-						&& ($this->routeParserObject->routeEndingReservedKeyword === Env::$importRequestRouteKeyword)
+						&& ($this->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpRequestObject->customerId]->IMPORT_REQUEST_KEYWORD)
 						&& isset($this->httpObject->httpReqData['files']['file']['tmp_name'])
 					):
 						$uploadedFileName = $this->httpObject->httpReqData['files']['file']['tmp_name'];
@@ -436,8 +439,8 @@ class HttpRequest
 							$this->httpObject->httpReqData['files']['file']['tmp_name']
 						);
 
-						$this->customerDbObject = DbCommonFunction::connectCustomerDb(
-							customerData: $this->httpObject->httpRequestObject->activeRequestData['customerData'],
+						$this->databaseServerObject = DbCommonFunction::connectDatabase(
+							customerId: $this->httpObject->httpRequestObject->customerId,
 							fetchDbMode: 'Master'
 						);
 
@@ -469,17 +472,17 @@ class HttpRequest
 						$paramArray[':uploaded_file_md5'] = $uploadedFileMd5;
 						$paramArray[':request_ip'] = $this->httpObject->httpReqData['server']['httpRequestIp'];
 
-						$this->customerDbObject->execQuery(
+						$this->databaseServerObject->execQuery(
 							sql: $sql,
 							paramArray: $paramArray
 						);
-						$importFileMd5Id = $this->customerDbObject->lastInsertId();
+						$importFileMd5Id = $this->databaseServerObject->lastInsertId();
 
 						$payloadJson = $this->formatCsvPayload(
 							csvFile: $this->httpObject->httpReqData['files']['file']['tmp_name']
 						);
 						break;
-					case $this->inputRepresentation === 'XML':
+					case $this->INPUT_REPRESENTATION === 'XML':
 						$payloadJson = $this->convertXmlToJson(
 							xmlString: $this->httpObject->httpReqData['post']
 						);
@@ -513,9 +516,9 @@ class HttpRequest
 
 	/**
 	 * Get Request Id
-	 * 
+	 *
 	 * @param string $uploadedFileMd5
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function getUploadedFileMd5Data(
@@ -534,11 +537,11 @@ class HttpRequest
 		";
 		$paramArray[':uploaded_file_md5'] = $uploadedFileMd5;
 
-		$this->customerDbObject->execQuery(
+		$this->databaseServerObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		if ($record = $this->customerDbObject->fetch()) {
+		if ($record = $this->databaseServerObject->fetch()) {
 			$uploadedFileMd5Data = &$record;
 		}
 
@@ -547,7 +550,7 @@ class HttpRequest
 
 	/**
 	 * Get Request Id
-	 * 
+	 *
 	 * @param int    $customerId
 	 * @param int    $customerUserGroupId
 	 * @param int    $customerUserId
@@ -555,7 +558,7 @@ class HttpRequest
 	 * @param string $httpRequestMethod
 	 * @param string $httpRequestIp
 	 * @param string $payloadJson
-	 * 
+	 *
 	 * @return int
 	 */
 	public function getRequestId(
@@ -569,7 +572,9 @@ class HttpRequest
 	): int {
 		$requestId = 0;
 		if ($this->isPrivateRequest) {
-			DbCommonFunction::connectGlobalDb();
+			DbCommonFunction::connectGlobalDb(
+				customerId: 0
+			);
 			$sql = 'INSERT INTO `request` SET
 				customer_id = :customer_id,
 				customer_user_group_id = :customer_user_group_id,
@@ -599,11 +604,11 @@ class HttpRequest
 
 	/**
 	 * Log Debug Data
-	 * 
+	 *
 	 * @param string $debugMode
 	 * @param string $debugJson
 	 * @param string $payloadJson
-	 * 
+	 *
 	 * @return int
 	 */
 	public function logDebugData(
@@ -613,7 +618,9 @@ class HttpRequest
 	): int {
 		$logId = 0;
 		if ($this->isPrivateRequest) {
-			DbCommonFunction::connectGlobalDb();
+			DbCommonFunction::connectGlobalDb(
+				customerId: 0
+			);
 			$sql = 'INSERT INTO `debug_log` SET
 				debug_mode = :debug_mode,
 				request_id = :request_id,
@@ -657,10 +664,10 @@ class HttpRequest
 
 	/**
 	 * Log Error Data
-	 * 
+	 *
 	 * @param string $exceptionJson
 	 * @param string $payloadJson
-	 * 
+	 *
 	 * @return int
 	 */
 	public function logErrorData(
@@ -669,7 +676,9 @@ class HttpRequest
 	): int {
 		$logId = 0;
 		if ($this->isPrivateRequest) {
-			DbCommonFunction::connectGlobalDb();
+			DbCommonFunction::connectGlobalDb(
+				customerId: 0
+			);
 			$sql = 'INSERT INTO `error_log` SET
 				request_id = :request_id,
 				customer_id = :customer_id,
@@ -711,9 +720,9 @@ class HttpRequest
 
 	/**
 	 * Convert XML to JSON
-	 * 
+	 *
 	 * @param string $xmlString
-	 * 
+	 *
 	 * @return string
 	 */
 	private function convertXmlToJson(
@@ -742,10 +751,10 @@ class HttpRequest
 
 	/**
 	 * Format Array generated by XML
-	 * 
+	 *
 	 * @param array $arrayFromXml Array generated by XML
 	 * @param array $result       Formatted array
-	 * 
+	 *
 	 * @return void
 	 */
 	private function formatXmlArray(
@@ -819,9 +828,9 @@ class HttpRequest
 
 	/**
 	 * urldecode string or array
-	 * 
+	 *
 	 * @param array|string $value Array vales to be decoded. Basically $httpReqData['get']
-	 * 
+	 *
 	 * @return void
 	 */
 	public function urlDecode(
@@ -856,9 +865,9 @@ class HttpRequest
 
 	/**
 	 * Format CSV Payload
-	 * 
+	 *
 	 * @param string $csvFile
-	 * 
+	 *
 	 * @return string
 	 */
 	public function formatCsvPayload(
@@ -1009,10 +1018,10 @@ class HttpRequest
 
 	/**
 	 * Format CSV Payload
-	 * 
+	 *
 	 * @param array $csvHeaderData
 	 * @param array $csvRecordArray
-	 * 
+	 *
 	 * @return array
 	 */
 	public function formatCsvArray(

@@ -3,7 +3,7 @@
 /**
  * Handling JSON formats
  * php version 8.3
- * 
+ *
  * @category  DataDecode
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -25,7 +25,7 @@ use Microservices\App\HttpStatus;
 /**
  * Creates Arrays from JSON string
  * php version 8.3
- * 
+ *
  * @category  DataDecode_JSON
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,7 +38,7 @@ class JsonDecode implements DataDecodeInterface
 {
 	/**
 	 * JSON File Handle
-	 * 
+	 *
 	 * @var null|resource
 	 */
 	private $jsonFileHandle = null;
@@ -46,28 +46,28 @@ class JsonDecode implements DataDecodeInterface
 	/**
 	 * JSON file indexes
 	 * Contains start and end positions for requested indexes
-	 * 
+	 *
 	 * @var null|array
 	 */
 	public $jsonFileIndex = null;
 
 	/**
 	 * Allowed Payload length
-	 * 
+	 *
 	 * @var int
 	 */
 	private $allowedPayloadLength = 100 * 1024 * 1024; // 100 MB
 
 	/**
 	 * JSON Decode Engine object
-	 * 
+	 *
 	 * @var null|JsonDecodeEngine
 	 */
 	private $jsonDecodeEngineObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param resource $jsonFileHandle File handle
 	 */
 	public function __construct(
@@ -98,7 +98,7 @@ class JsonDecode implements DataDecodeInterface
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
@@ -113,7 +113,7 @@ class JsonDecode implements DataDecodeInterface
 
 	/**
 	 * Validates JSON
-	 * 
+	 *
 	 * @return void
 	 */
 	public function validate(): void
@@ -125,7 +125,7 @@ class JsonDecode implements DataDecodeInterface
 
 	/**
 	 * Index file JSON
-	 * 
+	 *
 	 * @return void
 	 */
 	public function indexData(): void
@@ -173,9 +173,9 @@ class JsonDecode implements DataDecodeInterface
 
 	/**
 	 * Result exist as per $keyString
-	 * 
+	 *
 	 * @param null|string $keyString Key's exist (values separated by colon)
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function isset(
@@ -208,9 +208,9 @@ class JsonDecode implements DataDecodeInterface
 
 	/**
 	 * Datatype of result as per $keyString
-	 * 
+	 *
 	 * @param null|string $keyString Key's exist (values separated by colon)
-	 * 
+	 *
 	 * @return string Object/Array
 	 */
 	public function dataType(
@@ -249,9 +249,9 @@ class JsonDecode implements DataDecodeInterface
 
 	/**
 	 * Count of result as per $keyString
-	 * 
+	 *
 	 * @param null|string $keyString Key values separated by colon
-	 * 
+	 *
 	 * @return int
 	 */
 	public function count(
@@ -296,9 +296,9 @@ class JsonDecode implements DataDecodeInterface
 
 	/**
 	 * Get result as per $keyString
-	 * 
+	 *
 	 * @param string $keyString Key values separated by colon
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function get(
@@ -323,9 +323,9 @@ class JsonDecode implements DataDecodeInterface
 
 	/**
 	 * Get Object as per $keyString (Ignores Sub Objects/Array)
-	 * 
+	 *
 	 * @param string $keyString Key values separated by colon
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function getObject(
@@ -346,9 +346,9 @@ class JsonDecode implements DataDecodeInterface
 
 	/**
 	 * Get complete result as per $keyString
-	 * 
+	 *
 	 * @param string $keyString Key values separated by colon
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function getCompleteArray(
@@ -373,9 +373,9 @@ class JsonDecode implements DataDecodeInterface
 	 * Load result as per $keyString
 	 * Start processing the JSON string for a key's
 	 * Perform search inside key's of JSON like $json['data'][0]['data1']
-	 * 
+	 *
 	 * @param string $keyString Key values separated by colon
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */

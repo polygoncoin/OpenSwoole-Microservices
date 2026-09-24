@@ -3,7 +3,7 @@
 /**
  * Cache Server Key
  * php version 8.3
- * 
+ *
  * @category  Cache Server Key
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -20,7 +20,7 @@ use Microservices\App\Constant;
 /**
  * Cache Server Key
  * php version 8.3
- * 
+ *
  * @category  Cache Server Key
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -33,9 +33,9 @@ class CacheServerKey
 {
 	/**
 	 * Get open to web Domain key
-	 * 
+	 *
 	 * @param string $domainName Domain Name
-	 * 
+	 *
 	 * @return null|string
 	 */
 	public static function publicDomain(
@@ -44,14 +44,14 @@ class CacheServerKey
 		if (empty($domainName)) {
 			return Constant::$NULL;
 		}
-		return "pub:{$domainName}";
+		return "public:domain:{$domainName}";
 	}
 
 	/**
 	 * Get closed to web Domain key
-	 * 
+	 *
 	 * @param string $domainName Domain Name
-	 * 
+	 *
 	 * @return null|string
 	 */
 	public static function privateTokenDomain(
@@ -60,14 +60,14 @@ class CacheServerKey
 		if (empty($domainName)) {
 			return Constant::$NULL;
 		}
-		return "pri:t:{$domainName}";
+		return "private:tokenDomain:{$domainName}";
 	}
 
 	/**
 	 * Get closed to web Domain key
-	 * 
+	 *
 	 * @param string $domainName Domain Name
-	 * 
+	 *
 	 * @return null|string
 	 */
 	public static function privateSessionDomain(
@@ -76,15 +76,15 @@ class CacheServerKey
 		if (empty($domainName)) {
 			return Constant::$NULL;
 		}
-		return "pri:s:{$domainName}";
+		return "private:sessionDomain:{$domainName}";
 	}
 
 	/**
 	 * Get Customer user username key
-	 * 
+	 *
 	 * @param int    $customerId Customer Id
 	 * @param string $username   Username
-	 * 
+	 *
 	 * @return null|string
 	 */
 	public static function customerUsername(
@@ -97,15 +97,15 @@ class CacheServerKey
 		) {
 			return Constant::$NULL;
 		}
-		return "c:{$customerId}:u:{$username}";
+		return "customer:{$customerId}:username:{$username}";
 	}
 
 	/**
 	 * Get Group key
-	 * 
+	 *
 	 * @param int $customerId          Customer Id
 	 * @param int $customerUserGroupId Customer User Group Id
-	 * 
+	 *
 	 * @return null|string
 	 */
 	public static function customerGroup(
@@ -118,14 +118,14 @@ class CacheServerKey
 		) {
 			return Constant::$NULL;
 		}
-		return "c:{$customerId}:g:{$customerUserGroupId}";
+		return "customer:{$customerId}:group:{$customerUserGroupId}";
 	}
 
 	/**
 	 * Get Customer CIDR key
-	 * 
+	 *
 	 * @param int $customerId Customer Id
-	 * 
+	 *
 	 * @return null|string
 	 */
 	public static function customerCidr(
@@ -134,15 +134,15 @@ class CacheServerKey
 		if (empty($customerId)) {
 			return Constant::$NULL;
 		}
-		return "c:{$customerId}:cidr";
+		return "customer:{$customerId}:CIDR";
 	}
 
 	/**
 	 * Get Customer group CIDR key
-	 * 
+	 *
 	 * @param int $customerId          Customer Id
 	 * @param int $customerUserGroupId Customer User Group Id
-	 * 
+	 *
 	 * @return null|string
 	 */
 	public static function customerGroupCidr(
@@ -155,15 +155,15 @@ class CacheServerKey
 		) {
 			return Constant::$NULL;
 		}
-		return "c:{$customerId}:g:{$customerUserGroupId}:cidr";
+		return "customer:{$customerId}:group:{$customerUserGroupId}:CIDR";
 	}
 
 	/**
 	 * Get Customer user CIDR key
-	 * 
+	 *
 	 * @param int $customerId     Customer Id
 	 * @param int $customerUserId Customer User Id
-	 * 
+	 *
 	 * @return null|string
 	 */
 	public static function customerUserCidr(
@@ -176,14 +176,14 @@ class CacheServerKey
 		) {
 			return Constant::$NULL;
 		}
-		return "c:{$customerId}:u:{$customerUserId}:cidr";
+		return "customer:{$customerId}:user:{$customerUserId}:CIDR";
 	}
 
 	/**
 	 * Get Token key
-	 * 
+	 *
 	 * @param string $token Token
-	 * 
+	 *
 	 * @return null|string
 	 */
 	public static function token(
@@ -192,15 +192,15 @@ class CacheServerKey
 		if (empty($token)) {
 			return Constant::$NULL;
 		}
-		return "t:{$token}";
+		return "token:{$token}";
 	}
 
 	/**
 	 * Get Customer user Token key
-	 * 
+	 *
 	 * @param int $customerId     Customer Id
 	 * @param int $customerUserId Customer User Id
-	 * 
+	 *
 	 * @return null|string
 	 */
 	public static function customerUserToken(
@@ -213,15 +213,15 @@ class CacheServerKey
 		) {
 			return Constant::$NULL;
 		}
-		return "c:{$customerId}:u:{$customerUserId}:token";
+		return "customer:{$customerId}:user:{$customerUserId}:token";
 	}
 
 	/**
 	 * Get Customer user Session id key
-	 * 
+	 *
 	 * @param int $customerId     Customer Id
 	 * @param int $customerUserId Customer User Id
-	 * 
+	 *
 	 * @return null|string
 	 */
 	public static function customerUserSessionId(
@@ -234,15 +234,15 @@ class CacheServerKey
 		) {
 			return Constant::$NULL;
 		}
-		return "c:{$customerId}:u:{$customerUserId}:sId";
+		return "customer:{$customerId}:user:{$customerUserId}:sessionId";
 	}
 
 	/**
 	 * Get key maintaining concurrency interval(active session) for current user
-	 * 
+	 *
 	 * @param int $customerId     Customer Id
 	 * @param int $customerUserId Customer User Id
-	 * 
+	 *
 	 * @return null|string
 	 */
 	public static function customerUserConcurrency(
@@ -255,15 +255,15 @@ class CacheServerKey
 		) {
 			return Constant::$NULL;
 		}
-		return "c:{$customerId}:u:{$customerUserId}:con";
+		return "customer:{$customerId}:user:{$customerUserId}:concurrency";
 	}
 
 	/**
 	 * Get Customer user Referrer lag key
-	 * 
+	 *
 	 * @param int $customerId     Customer Id
 	 * @param int $customerUserId Customer User Id
-	 * 
+	 *
 	 * @return null|string
 	 */
 	public static function customerUserReferrerLag(
@@ -276,6 +276,6 @@ class CacheServerKey
 		) {
 			return Constant::$NULL;
 		}
-		return "c:{$customerId}:u:{$customerUserId}:rlag";
+		return "customer:{$customerId}:user:{$customerUserId}:referrer:lag";
 	}
 }

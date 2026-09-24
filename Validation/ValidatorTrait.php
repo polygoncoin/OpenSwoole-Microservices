@@ -3,7 +3,7 @@
 /**
  * Validator
  * php version 8.3
- * 
+ *
  * @category  Validator
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\Validation;
 /**
  * Validator Trait
  * php version 8.3
- * 
+ *
  * @category  Validator_Trait
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -31,9 +31,9 @@ trait ValidatorTrait
 {
 	/**
 	 * Validate string is alphanumeric
-	 * 
+	 *
 	 * @param string $v String
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	private function isAlphanumeric(
@@ -47,9 +47,9 @@ trait ValidatorTrait
 
 	/**
 	 * Validate string is an email
-	 * 
+	 *
 	 * @param string $v email address
-	 * 
+	 *
 	 * @return mixed
 	 */
 	private function isEmail(

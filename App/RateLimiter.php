@@ -3,7 +3,7 @@
 /**
  * Rate Limiter
  * php version 8.3
- * 
+ *
  * @category  RateLimiter
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\App\HttpStatus;
 /**
  * Rate Limiter
  * php version 8.3
- * 
+ *
  * @category  RateLimiter
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -36,14 +36,14 @@ class RateLimiter
 {
 	/**
 	 * Cache object
-	 * 
+	 *
 	 * @var null|object
 	 */
 	private $cacheObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param object $cacheObject
 	 */
 	public function __construct(
@@ -54,12 +54,12 @@ class RateLimiter
 
 	/**
 	 * Check rate limit is valid
-	 * 
+	 *
 	 * @param string $rateLimitPrefix           Prefix
 	 * @param int    $rateLimitMaxRequest       Max request
 	 * @param int    $rateLimitMaxRequestWindow Window in seconds
 	 * @param string $rateLimitKey              Rate Limit Key
-	 * 
+	 *
 	 * @return array
 	 */
 	public function check(
@@ -75,7 +75,14 @@ class RateLimiter
 			|| empty($rateLimitKey)
 		) {
 			throw new \Exception(
-				message: 'Invalid Rate Limiter Data',
+				message: 'Invalid Rate Limiter Data 1 '.json_encode(
+					[
+						$rateLimitPrefix,
+						$rateLimitMaxRequest,
+						$rateLimitMaxRequestWindow,
+						$rateLimitKey
+					]
+				),
 				code: HttpStatus::$InternalServerError
 			);
 		}
@@ -135,12 +142,12 @@ class RateLimiter
 
 	/**
 	 * Check Rate limit
-	 * 
+	 *
 	 * @param string $rateLimitPrefix           Prefix
 	 * @param int    $rateLimitMaxRequest       Max request
 	 * @param int    $rateLimitMaxRequestWindow Window in seconds
 	 * @param string $rateLimitKey              Rate limit key
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -157,7 +164,14 @@ class RateLimiter
 			|| empty($rateLimitKey)
 		) {
 			throw new \Exception(
-				message: 'Invalid Rate Limiter Data',
+				message: 'Invalid Rate Limiter Data 2 '.json_encode(
+					[
+						$rateLimitPrefix,
+						$rateLimitMaxRequest,
+						$rateLimitMaxRequestWindow,
+						$rateLimitKey
+					]
+				),
 				code: HttpStatus::$InternalServerError
 			);
 		}

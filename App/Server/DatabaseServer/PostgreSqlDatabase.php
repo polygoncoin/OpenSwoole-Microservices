@@ -3,7 +3,7 @@
 /**
  * Handling Database via PostgreSql
  * php version 8.3
- * 
+ *
  * @category  Database
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -22,7 +22,7 @@ use Microservices\App\Server\Container\Sql\PostgreSql as DB_PostgreSql;
 /**
  * PostgreSql Database
  * php version 8.3
- * 
+ *
  * @category  Database_PostgreSql
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,56 +35,56 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 {
 	/**
 	 * Database Server Hostname
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $dbServerHostname = null;
 
 	/**
 	 * Database Server Port
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $dbServerPort = null;
 
 	/**
 	 * Database Server Username
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $dbServerUsername = null;
 
 	/**
 	 * Database Server Password
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $dbServerPassword = null;
 
 	/**
 	 * Database Server DB
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $dbServerDatabase = null;
 
 	/**
 	 * Database Server Object
-	 * 
+	 *
 	 * @var null|DB_PostgreSql
 	 */
 	private $sqlServerObject = null;
 
 	/**
 	 * Transaction started flag
-	 * 
+	 *
 	 * @var bool
 	 */
 	public $beganTransaction = false;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param string      $dbServerHostname Database Server Hostname
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
@@ -107,7 +107,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 
 	/**
 	 * Connect Database
-	 * 
+	 *
 	 * @return void
 	 */
 	public function connectDb(): void
@@ -127,7 +127,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 
 	/**
 	 * Use Database
-	 * 
+	 *
 	 * @return void
 	 */
 	public function useDatabase(): void
@@ -139,7 +139,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 
 	/**
 	 * Begin transaction
-	 * 
+	 *
 	 * @return void
 	 */
 	public function begin(): void
@@ -152,7 +152,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 
 	/**
 	 * Commit transaction
-	 * 
+	 *
 	 * @return void
 	 */
 	public function commit(): void
@@ -165,7 +165,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 
 	/**
 	 * Rollback transaction
-	 * 
+	 *
 	 * @return void
 	 */
 	public function rollBack(): void
@@ -178,7 +178,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 
 	/**
 	 * Affected record count
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function affectedRecordCount(): bool|int
@@ -196,7 +196,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 
 	/**
 	 * Last insert id
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function lastInsertId(): bool|int
@@ -213,11 +213,11 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 
 	/**
 	 * Execute query
-	 * 
+	 *
 	 * @param string $sql        Sql query
 	 * @param array  $paramArray Sql query params
 	 * @param bool   $pushPop    Push Pop result set stmt
-	 * 
+	 *
 	 * @return void
 	 */
 	public function execQuery(
@@ -242,7 +242,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 
 	/**
 	 * Fetch record
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function fetch(): mixed
@@ -252,7 +252,7 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 
 	/**
 	 * Fetch all rows
-	 * 
+	 *
 	 * @return array|bool
 	 */
 	public function fetchAll(): array|bool
@@ -262,9 +262,9 @@ class PostgreSqlDatabase implements DatabaseServerInterface
 
 	/**
 	 * Close statement cursor
-	 * 
+	 *
 	 * @param bool $pushPop Push Pop result set stmt
-	 * 
+	 *
 	 * @return void
 	 */
 	public function closeCursor(

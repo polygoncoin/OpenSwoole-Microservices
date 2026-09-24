@@ -3,7 +3,7 @@
 /**
  * Read / Write Trait
  * php version 8.3
- * 
+ *
  * @category  API
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -28,7 +28,7 @@ use Microservices\App\Validator;
 /**
  * Trait for API
  * php version 8.3
- * 
+ *
  * @category  API_Trait
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -41,16 +41,16 @@ trait AppTrait
 {
 	/**
 	 * Validator class object
-	 * 
+	 *
 	 * @var null|Validator
 	 */
 	public $validatorObject = null;
 
 	/**
 	 * Function to help execute PHP functions enclosed with double quotes
-	 * 
+	 *
 	 * @param mixed $param Returned values by PHP inbuilt functions
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function execPhpFunc(
@@ -61,11 +61,11 @@ trait AppTrait
 
 	/**
 	 * Get required payload
-	 * 
+	 *
 	 * @param array $sqlConfig         Sql config
 	 * @param bool  $maintainHierarchy Maintain Hierarchy
 	 * @param bool  $isFirstCall       true to represent the first call in recursion
-	 * 
+	 *
 	 * @return array
 	 * @throws \Exception
 	 */
@@ -217,9 +217,9 @@ trait AppTrait
 
 	/**
 	 * Validate payload
-	 * 
+	 *
 	 * @param array $validationConfig Validation config from Config file
-	 * 
+	 *
 	 * @return array
 	 */
 	public function validate(
@@ -238,11 +238,11 @@ trait AppTrait
 
 	/**
 	 * Generate Sql query and its param's in Named format
-	 * 
+	 *
 	 * @param array      $sqlConfig       Sql config
 	 * @param array      $payload         Payload
 	 * @param array|null $payloadKeyArray Payload key's
-	 * 
+	 *
 	 * @return array
 	 */
 	private function getSqlAndParamNamedMode(
@@ -297,7 +297,7 @@ trait AppTrait
 
 					if (
 						$found
-						&& Env::$enableGlobalCounter
+						&& Env::$ENABLE_SYSTEM_LEVEL_PRIMARY_KEY
 						&& isset($sqlConfig['__PRIMARY-KEY__'])
 						&& !isset($sqlConfig['__WHERE__'])
 						&& isset($sqlConfig['__SQL__'])
@@ -419,11 +419,11 @@ trait AppTrait
 
 	/**
 	 * Generate Sql query and its param's in Unnamed format
-	 * 
+	 *
 	 * @param array      $sqlConfig       Sql config
 	 * @param array      $payload         Payload
 	 * @param array|null $payloadKeyArray Payload key's
-	 * 
+	 *
 	 * @return array
 	 */
 	private function getSqlAndParamUnnamedMode(
@@ -478,7 +478,7 @@ trait AppTrait
 
 					if (
 						$found
-						&& Env::$enableGlobalCounter
+						&& Env::$ENABLE_SYSTEM_LEVEL_PRIMARY_KEY
 						&& isset($sqlConfig['__PRIMARY-KEY__'])
 						&& !isset($sqlConfig['__WHERE__'])
 						&& isset($sqlConfig['__SQL__'])
@@ -591,11 +591,11 @@ trait AppTrait
 
 	/**
 	 * Generates ParamArray for statement to execute
-	 * 
+	 *
 	 * @param array $sqlConfig          Sql config
 	 * @param array $sqlConfigVariables Payload Variables
 	 * @param array $payload.           Payload
-	 * 
+	 *
 	 * @return array
 	 * @throws \Exception
 	 */
@@ -735,9 +735,9 @@ trait AppTrait
 
 	/**
 	 * Function to find array is associative/simple array
-	 * 
+	 *
 	 * @param array $arr Array to search for associative/simple array
-	 * 
+	 *
 	 * @return bool
 	 */
 	private function isObject(
@@ -758,9 +758,9 @@ trait AppTrait
 
 	/**
 	 * Use results in where clause of sub queries recursively
-	 * 
+	 *
 	 * @param array  $sqlConfig Sql config
-	 * 
+	 *
 	 * @return bool
 	 */
 	private function getMaintainHierarchy(
@@ -777,11 +777,11 @@ trait AppTrait
 
 	/**
 	 * Return explain params recursively
-	 * 
+	 *
 	 * @param array $sqlConfig         Sql config
 	 * @param bool  $maintainHierarchy Maintain Hierarchy flag
 	 * @param bool  $isFirstCall       Flag to check if this is first request
-	 * 
+	 *
 	 * @return array
 	 * @throws \Exception
 	 */
@@ -912,11 +912,11 @@ trait AppTrait
 
 	/**
 	 * Function to reset data for module key wise
-	 * 
+	 *
 	 * @param string $activeRequestDataKey sqlResults / sqlParamArray / previousPayload
 	 * @param array  $payloadKeyArray      Module key's in recursion
 	 * @param array  $record               Record data fetched from DB
-	 * 
+	 *
 	 * @return void
 	 */
 	private function resetFetchData(
@@ -947,9 +947,9 @@ trait AppTrait
 
 	/**
 	 * Rate Limiting request on basis of Sql config
-	 * 
+	 *
 	 * @param array $sqlConfig Sql config
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -989,7 +989,7 @@ trait AppTrait
 
 		// @throws \Exception
 		$this->httpObject->httpRequestObject->rateLimiterObject->checkRateLimit(
-			rateLimitPrefix: Env::$rateLimitRoutePrefix,
+			rateLimitPrefix: Env::$config[$this->httpObject->httpRequestObject->customerId]->RATE_LIMIT_ROUTE_PREFIX,
 			rateLimitMaxRequest: $sqlConfig['rateLimitMaxRequest'],
 			rateLimitMaxRequestWindow: $sqlConfig['rateLimitMaxRequestWindow'],
 			rateLimitKey: $rateLimitKey
@@ -998,9 +998,9 @@ trait AppTrait
 
 	/**
 	 * Check Referrer Lag
-	 * 
+	 *
 	 * @param array $sqlConfig Sql config
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -1022,7 +1022,7 @@ trait AppTrait
 			) > 0
 		) {
 			if (
-				!$this->httpObject->httpRequestObject->customerCacheObject->cacheExist(
+				!$this->httpObject->httpRequestObject->cacheServerObject->cacheExist(
 					cacheKey: $customerUserReferrerLagKey
 				)
 			) {
@@ -1031,7 +1031,7 @@ trait AppTrait
 					code: HttpStatus::$BadRequest
 				);
 			}
-			$referrerLagData = $this->httpObject->httpRequestObject->customerCacheObject->cacheGet(
+			$referrerLagData = $this->httpObject->httpRequestObject->cacheServerObject->cacheGet(
 				cacheKey: $customerUserReferrerLagKey
 			);
 			if (
@@ -1050,7 +1050,7 @@ trait AppTrait
 								if ($tsDiff <= $referrerSqlConfig['maximumReferrerLagWindow']) {
 									$found = Constant::$TRUE;
 								} else {
-									$this->httpObject->httpRequestObject->customerCacheObject->cacheDelete(
+									$this->httpObject->httpRequestObject->cacheServerObject->cacheDelete(
 										cacheKey: $customerUserReferrerLagKey
 									);
 								}
@@ -1058,7 +1058,7 @@ trait AppTrait
 								$found = Constant::$TRUE;
 							}
 						} else {
-							$this->httpObject->httpRequestObject->customerCacheObject->cacheDelete(
+							$this->httpObject->httpRequestObject->cacheServerObject->cacheDelete(
 								cacheKey: $customerUserReferrerLagKey
 							);
 						}
@@ -1078,11 +1078,11 @@ trait AppTrait
 			&& $sqlConfig['enableReferrerLag'] === Constant::$YES
 		) {
 			if (
-				!$this->httpObject->httpRequestObject->customerCacheObject->cacheExist(
+				!$this->httpObject->httpRequestObject->cacheServerObject->cacheExist(
 					cacheKey: $customerUserReferrerLagKey
 				)
 			) {
-				$this->httpObject->httpRequestObject->customerCacheObject->cacheSet(
+				$this->httpObject->httpRequestObject->cacheServerObject->cacheSet(
 					cacheKey: $customerUserReferrerLagKey,
 					cacheValue: [
 						'initRoute' => $this->httpObject->httpRequestObject->routeParserObject->configuredRoute,
@@ -1100,10 +1100,10 @@ trait AppTrait
 
 	/**
 	 * Check for Idempotent Window
-	 * 
+	 *
 	 * @param array $sqlConfig       Sql config
 	 * @param array $payloadKeyArray Payload Indexes
-	 * 
+	 *
 	 * @return array
 	 */
 	private function checkIdempotent(
@@ -1123,7 +1123,7 @@ trait AppTrait
 			$idempotentWindow = (int)$sqlConfig['idempotentWindow'];
 			if ($idempotentWindow) {
 				$payloadSignature = [
-					'idempotentSecret' => Env::$idempotentSecret,
+					'SECRET' => Env::$config[$this->httpObject->httpRequestObject->customerId]->SECRET,
 					'idempotentWindow' => $idempotentWindow,
 					'httpRequestIp' => $this->httpObject->httpReqData['server']['httpRequestIp'],
 					'customerId' => $this->httpObject->httpRequestObject->customerId,
@@ -1151,14 +1151,14 @@ trait AppTrait
 				);
 				if (
 					$this->httpObject->httpRequestObject->isPrivateRequest
-					&& $this->httpObject->httpRequestObject->customerCacheObject->cacheExist(
+					&& $this->httpObject->httpRequestObject->cacheServerObject->cacheExist(
 						cacheKey: $hashKey
 					)
 				) {
 					$hashJson = str_replace(
 						search: 'JSON',
 						replace: json_encode(
-							value: $this->httpObject->httpRequestObject->customerCacheObject->cacheGet(
+							value: $this->httpObject->httpRequestObject->cacheServerObject->cacheGet(
 								cacheKey: $hashKey
 							)
 						),
@@ -1177,9 +1177,9 @@ trait AppTrait
 
 	/**
 	 * Lag response
-	 * 
+	 *
 	 * @param array $sqlConfig Sql config
-	 * 
+	 *
 	 * @return void
 	 */
 	private function lagResponse(
@@ -1213,18 +1213,18 @@ trait AppTrait
 		);
 
 		if (
-			$this->httpObject->httpRequestObject->customerCacheObject->cacheExist(
+			$this->httpObject->httpRequestObject->cacheServerObject->cacheExist(
 				cacheKey: $hashKey
 			)
 		) {
-			$currentNoOfRequest = $this->httpObject->httpRequestObject->customerCacheObject->cacheGet(
+			$currentNoOfRequest = $this->httpObject->httpRequestObject->cacheServerObject->cacheGet(
 				cacheKey: $hashKey
 			);
 		} else {
 			$currentNoOfRequest = 0;
 		}
 
-		$this->httpObject->httpRequestObject->customerCacheObject->cacheSet(
+		$this->httpObject->httpRequestObject->cacheServerObject->cacheSet(
 			cacheKey: $hashKey,
 			cacheValue: ++$noOfRequest,
 			cacheExpire: $sqlConfig['responseLagWindow']
@@ -1253,10 +1253,10 @@ trait AppTrait
 
 	/**
 	 * Get Trigger data
-	 * 
+	 *
 	 * @param array $triggerConfig Trigger Config
 	 * @param array $payload       Payload
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function getTriggerData(
@@ -1323,10 +1323,10 @@ trait AppTrait
 
 	/**
 	 * Get Trigger detail
-	 * 
+	 *
 	 * @param array $triggerConfig Trigger Config
 	 * @param array $payload       Payload
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function getTriggerHttp(
@@ -1396,10 +1396,10 @@ trait AppTrait
 
 	/**
 	 * Get Trigger param's
-	 * 
+	 *
 	 * @param array $payloadConfig API Payload configuration
 	 * @param array $payload       Payload
-	 * 
+	 *
 	 * @return array
 	 * @throws \Exception
 	 */
@@ -1484,10 +1484,10 @@ trait AppTrait
 
 	/**
 	 * Process import function of configuration
-	 * 
+	 *
 	 * @param array $sqlConfig         Sql config
 	 * @param bool  $maintainHierarchy If true - Uses parent payload/results in child
-	 * 
+	 *
 	 * @return string
 	 */
 	private function generateImportSampleCsv(
@@ -1556,10 +1556,10 @@ trait AppTrait
 
 	/**
 	 * Generate sample CSV helper
-	 * 
+	 *
 	 * @param string $module
 	 * @param array  $explainParamArray
-	 * 
+	 *
 	 * @return array
 	 */
 	private function genCsvHelper(
@@ -1588,10 +1588,10 @@ trait AppTrait
 
 	/**
 	 * Basic Read Processes for process Function
-	 * 
+	 *
 	 * @param array $sqlConfig         Sql config
 	 * @param bool  $maintainHierarchy If true - Uses parent payload/results in child
-	 * 
+	 *
 	 * @return array
 	 */
 	private function readBasics(
@@ -1615,7 +1615,7 @@ trait AppTrait
 
 		if (
 			$this->httpObject->httpRequestObject->routeParserObject->routeEndingWithReservedKeywordFlag
-			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$explainRequestRouteKeyword
+			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpRequestObject->customerId]->EXPLAIN_REQUEST_KEYWORD
 			&& CommonFunction::isEnabled(
 				httpObject: $this->httpObject,
 				feature: 'customer_enabled_explain_request'
@@ -1632,10 +1632,10 @@ trait AppTrait
 
 	/**
 	 * Basic Write Processes for process Function (Supplement is considered as Write)
-	 * 
+	 *
 	 * @param array $sqlConfig         Sql config
 	 * @param bool  $maintainHierarchy If true - Uses parent payload/results in child
-	 * 
+	 *
 	 * @return bool
 	 */
 	private function writeBasics(
@@ -1664,7 +1664,7 @@ trait AppTrait
 
 		if (
 			$this->httpObject->httpRequestObject->routeParserObject->routeEndingWithReservedKeywordFlag
-			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$explainRequestRouteKeyword
+			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpRequestObject->customerId]->EXPLAIN_REQUEST_KEYWORD
 			&& CommonFunction::isEnabled(
 				httpObject: $this->httpObject,
 				feature: 'customer_enabled_explain_request'
@@ -1678,7 +1678,7 @@ trait AppTrait
 
 		if (
 			$this->httpObject->httpRequestObject->routeParserObject->routeEndingWithReservedKeywordFlag
-			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$importSampleRequestRouteKeyword
+			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpRequestObject->customerId]->IMPORT_SAMPLE_REQUEST_KEYWORD
 		) {
 			return $this->generateImportSampleCsv(
 				sqlConfig: $sqlConfig,
@@ -1691,9 +1691,9 @@ trait AppTrait
 
 	/**
 	 * Get results to be cached flag
-	 * 
+	 *
 	 * @param array $sqlConfig Sql config
-	 * 
+	 *
 	 * @return bool
 	 */
 	private function getToBeCached(
@@ -1711,7 +1711,7 @@ trait AppTrait
 			$cacheReqCount = 0;
 			$queryCacheReqFlag = Constant::$FALSE;
 			for ($index = 0;$index < 5; $index++) {
-				$json = $this->httpObject->httpRequestObject->customerQueryCacheObject->queryCacheGet(
+				$json = $this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheGet(
 					customerId: $this->httpObject->httpRequestObject->customerId,
 					queryCacheKey: $sqlConfig['__CACHE-KEY__']
 				);
@@ -1727,7 +1727,7 @@ trait AppTrait
 					return Constant::$TRUE;
 				} else {
 					if (!$queryCacheReqFlag) {
-						$cacheReqCount = $this->httpObject->httpRequestObject->customerQueryCacheObject->queryCacheIncrement(
+						$cacheReqCount = $this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheIncrement(
 							customerId: $this->httpObject->httpRequestObject->customerId,
 							queryCacheKey: $sqlConfig['__CACHE-KEY__']
 						);
@@ -1759,10 +1759,10 @@ trait AppTrait
 
 	/**
 	 * Explain configuration
-	 * 
+	 *
 	 * @param array $sqlConfig         Sql config
 	 * @param bool  $maintainHierarchy If true - Uses parent payload/results in child
-	 * 
+	 *
 	 * @return bool
 	 */
 	private function explain(
@@ -1791,9 +1791,9 @@ trait AppTrait
 
 	/**
 	 * Get Payload Key
-	 * 
+	 *
 	 * @param array $payloadKeyArray Payload Key Array
-	 * 
+	 *
 	 * @return null|string
 	 */
 	private function getPayloadKey(

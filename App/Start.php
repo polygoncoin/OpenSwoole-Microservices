@@ -3,7 +3,7 @@
 /**
  * Start
  * php version 8.3
- * 
+ *
  * @category  Start
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -25,7 +25,7 @@ use Microservices\App\Log;
 /**
  * Start
  * php version 8.3
- * 
+ *
  * @category  Start
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,9 +38,9 @@ class Start
 {
 	/**
 	 * Process HTTP request data
-	 * 
+	 *
 	 * @param array $httpReqData HTTP request data
-	 * 
+	 *
 	 * @return array
 	 */
 	public static function http(
@@ -162,7 +162,7 @@ class Start
 				$logObject = new Log(
 					httpObject: $Microservices->httpObject
 				);
-				
+
 				$payload = [];
 				if (
 					isset($Microservices->httpObject->httpRequestObject)
@@ -209,7 +209,11 @@ class Start
 
 			// $data = $dataEncodeObject->getData();
 
-			if (Env::$OUTPUT_PERFORMANCE_STATS) {
+			if (
+				isset($Microservices->httpObject->httpRequestObject)
+				&& isset(Env::$config[$Microservices->httpObject->httpRequestObject->customerId])
+				&& Env::$config[$Microservices->httpObject->httpRequestObject->customerId]->OUTPUT_PERFORMANCE_STATS
+			) {
 				$performanceData = $Microservices->httpObject->httpResponseObject->returnPerformance();
 				$errorArray = [
 					'Error' => $arr,

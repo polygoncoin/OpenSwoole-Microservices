@@ -3,7 +3,7 @@
 /**
  * Handling JSON formats
  * php version 8.3
- * 
+ *
  * @category  DataDecode
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -22,13 +22,13 @@ use Microservices\App\HttpStatus;
 
 /**
  * Creates Arrays from JSON String
- * 
+ *
  * This class is built to decode large json string or file
  * (which leads to memory limit issues for larger data set)
  * This class gives access to create object's from JSON string
  * in parts for what ever smallest part of data
  * php version 8.3
- * 
+ *
  * @category  JSON_Decode_Engine
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -41,28 +41,28 @@ class JsonDecodeEngine
 {
 	/**
 	 * File Handle
-	 * 
+	 *
 	 * @var null|resource
 	 */
 	private $jsonFileHandle = null;
 
 	/**
 	 * Array of JsonDecodeObject object's
-	 * 
+	 *
 	 * @var JsonDecodeObject[]
 	 */
 	private $jsonDecodeObjectObjectArray = [];
 
 	/**
 	 * Current JsonDecodeObject object
-	 * 
+	 *
 	 * @var JsonDecodeObject
 	 */
 	private $jsonDecodeObjectObject = null;
 
 	/**
 	 * Characters that are escaped while creating JSON
-	 * 
+	 *
 	 * @var string[]
 	 */
 	private $escapeArray = [
@@ -71,7 +71,7 @@ class JsonDecodeEngine
 
 	/**
 	 * Characters that are escaped with for $escapeArray while creating JSON
-	 * 
+	 *
 	 * @var string[]
 	 */
 	private $replaceArray = [
@@ -80,14 +80,14 @@ class JsonDecodeEngine
 
 	/**
 	 * JSON file start position
-	 * 
+	 *
 	 * @var null|int
 	 */
 	public $startIndex = null;
 
 	/**
 	 * JSON file end position
-	 * 
+	 *
 	 * @var null|int
 	 */
 	public $endIndex = null;
@@ -95,14 +95,14 @@ class JsonDecodeEngine
 	/**
 	 * JSON char counter
 	 * Starts from $startIndex till $endIndex
-	 * 
+	 *
 	 * @var null|int
 	 */
 	private $charCounter = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param null|resource $jsonFileHandle JSON file handle
 	 */
 	public function __construct(
@@ -113,9 +113,9 @@ class JsonDecodeEngine
 
 	/**
 	 * Start processing the JSON string
-	 * 
+	 *
 	 * @param bool $index Index output
-	 * 
+	 *
 	 * @return Generator
 	 */
 	public function process(
@@ -322,7 +322,7 @@ class JsonDecodeEngine
 
 	/**
 	 * Get JSON string
-	 * 
+	 *
 	 * @return bool|string
 	 */
 	public function getJsonString(): bool|string
@@ -350,12 +350,12 @@ class JsonDecodeEngine
 
 	/**
 	 * Handles array / object open close char
-	 * 
+	 *
 	 * @param string $char     Character among any one "[" "]" "{" "}"
 	 * @param string $keyValue String value of key of an object
 	 * @param string $nullStr  String present in JSON without double quotes
 	 * @param bool   $index    Index output
-	 * 
+	 *
 	 * @return array|bool
 	 */
 	private function handleOpenClose(
@@ -464,9 +464,9 @@ class JsonDecodeEngine
 
 	/**
 	 * Check String present in JSON without double quotes for null or int
-	 * 
+	 *
 	 * @param string $nullStr String present in JSON without double quotes
-	 * 
+	 *
 	 * @return bool|int|null
 	 */
 	private function checkNullStr(
@@ -492,9 +492,9 @@ class JsonDecodeEngine
 
 	/**
 	 * Start of array
-	 * 
+	 *
 	 * @param null|string $objectKey Used while creating simple array inside an object
-	 * 
+	 *
 	 * @return void
 	 */
 	private function startArray(
@@ -512,9 +512,9 @@ class JsonDecodeEngine
 
 	/**
 	 * Start of object
-	 * 
+	 *
 	 * @param null|string $objectKey Used while creating object inside an object
-	 * 
+	 *
 	 * @return void
 	 */
 	private function startObject(
@@ -532,9 +532,9 @@ class JsonDecodeEngine
 
 	/**
 	 * Push current object
-	 * 
+	 *
 	 * @param null|string $objectKey Used while creating object inside an object
-	 * 
+	 *
 	 * @return void
 	 */
 	private function pushCurrentObject(
@@ -580,7 +580,7 @@ class JsonDecodeEngine
 
 	/**
 	 * Pop Previous object
-	 * 
+	 *
 	 * @return void
 	 */
 	private function popPreviousObject(): void
@@ -598,7 +598,7 @@ class JsonDecodeEngine
 
 	/**
 	 * Increment arrayKey counter for array of object's or arrays
-	 * 
+	 *
 	 * @return void
 	 */
 	private function increment(): void
@@ -617,7 +617,7 @@ class JsonDecodeEngine
 
 	/**
 	 * Returns extracted object values
-	 * 
+	 *
 	 * @return array|bool
 	 */
 	private function getObjectValues(): array|bool
@@ -638,9 +638,9 @@ class JsonDecodeEngine
 
 	/**
 	 * Check for a valid JSON
-	 * 
+	 *
 	 * @param null|string $str Bad JSON string
-	 * 
+	 *
 	 * @return void
 	 */
 	private function isBadJson(
@@ -659,7 +659,7 @@ class JsonDecodeEngine
 
 	/**
 	 * Generated Array
-	 * 
+	 *
 	 * @return array
 	 */
 	private function getKey(): array

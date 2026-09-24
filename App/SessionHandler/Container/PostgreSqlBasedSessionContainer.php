@@ -3,7 +3,7 @@
 /**
  * Custom Session Handler
  * php version 7
- * 
+ *
  * @category  SessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 /**
  * Custom Session Handler using PostgreSql
  * php version 7
- * 
+ *
  * @category  CustomSessionHandler_PgSql
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,21 +35,21 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	SessionContainerInterface
 {
-	public $pgSqlServerHostname = null;
-	public $pgSqlServerPort = null;
-	public $pgSqlServerUsername = null;
-	public $pgSqlServerPassword = null;
-	public $pgSqlServerDatabase = null;
-	public $pgSqlServerTable = null;
+	public $sessionServerHost = null;
+	public $sessionServerPort = null;
+	public $sessionServerUser = null;
+	public $sessionServerPassword = null;
+	public $sessionServerDb = null;
+	public $sessionServerTable = null;
 
 	private $pgSqlServerObject = null;
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @param string $sessionSavePath Session Save Path
 	 * @param string $sessionName     Session Name
-	 * 
+	 *
 	 * @return void
 	 */
 	public function init(
@@ -61,9 +61,9 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Validate session id
-	 * 
+	 *
 	 * @param string $sessionId Session id
-	 * 
+	 *
 	 * @return bool|string
 	 */
 	public function getSession(
@@ -71,7 +71,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	): bool|string {
 		$sql = "
 			SELECT session_data
-			FROM {$this->pgSqlServerTable}
+			FROM {$this->sessionServerTable}
 			WHERE session_id = $1 AND last_accessed > $2
 		";
 		$paramArray = [
@@ -93,10 +93,10 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Write session data
-	 * 
+	 *
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function setSession(
@@ -104,7 +104,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionData
 	): bool|int {
 		$sql = "
-			INSERT INTO {$this->pgSqlServerTable} (session_id, last_accessed, session_data)
+			INSERT INTO {$this->sessionServerTable} (session_id, last_accessed, session_data)
 			VALUES ($1, $2, $3)
 		";
 		$paramArray = [
@@ -123,10 +123,10 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Update session data
-	 * 
+	 *
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function updateSession(
@@ -134,7 +134,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionData
 	): bool|int {
 		$sql = "
-			UPDATE {$this->pgSqlServerTable}
+			UPDATE {$this->sessionServerTable}
 			SET
 				last_accessed = $1,
 				session_data = $2
@@ -157,10 +157,10 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Update session timestamp
-	 * 
+	 *
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function touchSession(
@@ -168,7 +168,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionData
 	): bool {
 		$sql = "
-			UPDATE {$this->pgSqlServerTable}
+			UPDATE {$this->sessionServerTable}
 			SET last_accessed = $1
 			WHERE session_id = $2
 		";
@@ -184,16 +184,16 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Cleanup old sessions
-	 * 
+	 *
 	 * @param integer $sessionMaxLifetime Session Max Lifetime
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function gcSession(
 		$sessionMaxLifetime
 	): bool {
 		$sql = "
-			DELETE FROM {$this->pgSqlServerTable}
+			DELETE FROM {$this->sessionServerTable}
 			WHERE last_accessed < $1
 		";
 		$paramArray = [
@@ -207,16 +207,16 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Destroy a session
-	 * 
+	 *
 	 * @param string $sessionId Session id
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function deleteSession(
 		$sessionId
 	): bool {
 		$sql = "
-			DELETE FROM {$this->pgSqlServerTable}
+			DELETE FROM {$this->sessionServerTable}
 			WHERE session_id = $1
 		";
 		$paramArray = [
@@ -230,7 +230,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Close File Container
-	 * 
+	 *
 	 * @return void
 	 */
 	public function closeSession(): void
@@ -243,7 +243,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Connect
-	 * 
+	 *
 	 * @return void
 	 */
 	private function connect(): void
@@ -251,15 +251,15 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		try {
 			$UP = '';
 			if (
-				$this->pgSqlServerUsername !== Constant::$NULL
-				&& $this->pgSqlServerPassword !== Constant::$NULL
+				$this->sessionServerUser !== Constant::$NULL
+				&& $this->sessionServerPassword !== Constant::$NULL
 			) {
-				$UP = "user={$this->pgSqlServerUsername} password={$this->pgSqlServerPassword}";
+				$UP = "user={$this->sessionServerUser} password={$this->sessionServerPassword}";
 			}
 			$this->pgSqlServerObject = pg_connect(
-				"host={$this->pgSqlServerHostname} "
-				. "port={$this->pgSqlServerPort} "
-				. "dbname={$this->pgSqlServerDatabase} {$UP}"
+				"host={$this->sessionServerHost} "
+				. "port={$this->sessionServerPort} "
+				. "dbname={$this->sessionServerDb} {$UP}"
 			);
 		} catch (\Exception $e) {
 			$this->manageException(
@@ -270,10 +270,10 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Get Session
-	 * 
+	 *
 	 * @param string $sql        Sql query
 	 * @param array  $paramArray Sql query params
-	 * 
+	 *
 	 * @return mixed
 	 */
 	private function getSql(
@@ -312,10 +312,10 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Execute Sql
-	 * 
+	 *
 	 * @param string $sql        Sql query
 	 * @param array  $paramArray Sql query params
-	 * 
+	 *
 	 * @return bool
 	 */
 	private function execSql(
@@ -341,9 +341,9 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Manage Exception
-	 * 
+	 *
 	 * @param \Exception $e Exception
-	 * 
+	 *
 	 * @return never
 	 */
 	private function manageException(

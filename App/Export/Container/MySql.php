@@ -3,7 +3,7 @@
 /**
  * Export CSV
  * php version 8.3
- * 
+ *
  * @category  Export
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -22,7 +22,7 @@ use Microservices\App\Export\ExportDatabaseServerInterface;
 /**
  * Export CSV MySql container.
  * php version 8.3
- * 
+ *
  * @category  Export
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,49 +35,49 @@ class MySql implements ExportDatabaseServerInterface
 {
 	/**
 	 * Database Server Hostname
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $dbServerHostname = null;
 
 	/**
 	 * Database Server Port
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $dbServerPort = null;
 
 	/**
 	 * Database Server Username
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $dbServerUsername = null;
 
 	/**
 	 * Database Server Password
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $dbServerPassword = null;
 
 	/**
 	 * Database Server DB
-	 * 
+	 *
 	 * @var null|string
 	 */
 	public $dbServerDatabase = null;
 
 	/**
 	 * Mysql Customer binary location (One can find this by "which mysql" command)
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $binaryLoc = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @throws \Exception
 	 */
 	public function __construct()
@@ -94,7 +94,7 @@ class MySql implements ExportDatabaseServerInterface
 				);
 			}
 		}
-		$this->binaryLoc = Env::$mySqlBinaryLocationOnWebServer;
+		$this->binaryLoc = Env::$config[$this->httpObject->httpRequestObject->customerId]->MYSQL_CLIENT_LOCATION;
 		if (
 			!file_exists(
 				filename: $this->binaryLoc
@@ -108,13 +108,13 @@ class MySql implements ExportDatabaseServerInterface
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @param string      $dbServerHostname Database Server Hostname
 	 * @param int         $dbServerPort     Database Server Port
 	 * @param string      $dbServerUsername Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
 	 * @param null|string $dbServerDatabase Database Server Database
-	 * 
+	 *
 	 * @return void
 	 */
 	public function init(
@@ -133,10 +133,10 @@ class MySql implements ExportDatabaseServerInterface
 
 	/**
 	 * Validate
-	 * 
+	 *
 	 * @param string $sql        Sql query
 	 * @param array  $paramArray Sql query params
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -213,10 +213,10 @@ class MySql implements ExportDatabaseServerInterface
 
 	/**
 	 * Generate raw Sql query from parameterized query via PDO.
-	 * 
+	 *
 	 * @param string $sql        Sql query
 	 * @param array  $paramArray Sql query params
-	 * 
+	 *
 	 * @return string
 	 * @throws \Exception
 	 */
@@ -334,10 +334,10 @@ class MySql implements ExportDatabaseServerInterface
 
 	/**
 	 * Returns Shell Command
-	 * 
+	 *
 	 * @param string $sql        Sql query
 	 * @param array  $paramArray Sql query params
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getShellCommand(

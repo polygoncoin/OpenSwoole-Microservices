@@ -80,8 +80,8 @@ UNLOCK TABLES;
 
 LOCK TABLES `customer_user` WRITE;
 INSERT INTO `customer_user` VALUES
-(4,2,'',NULL,NULL,'customer_1_group_1_user_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','','','','','','','','','','','','','',0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','Yes','No','No'),
-(5,3,'',NULL,NULL,'customer_1_admin_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','','','','','','','','','','','','','',0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','Yes','No','No');
+(4,2,'',NULL,NULL,'customer_group_user_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','','','','','','','','','','','','','',0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','Yes','No','No'),
+(5,3,'',NULL,NULL,'customer_admin_1','$2y$10$o8hFTjBIXQS.fOED2Ut1ZOCSdDjTnS3lyELI4rWyFEnu4GUyJr3O6','','','','','','','','','','','','','',0,'2023-02-22 04:12:50',NULL,NULL,0,'2023-04-20 16:53:57','Yes','Yes','No','No');
 UNLOCK TABLES;
 
 -- Product Tables definition goes below

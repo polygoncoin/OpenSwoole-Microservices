@@ -3,7 +3,7 @@
 /**
  * Data Encode
  * php version 8.3
- * 
+ *
  * @category  DataEncode
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\App\DataRepresentation\Encode;
 /**
  * Data Encode Interface
  * php version 8.3
- * 
+ *
  * @category  DataEncode_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -31,9 +31,9 @@ interface DataEncodeInterface
 {
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @param bool $header Append XML header flag
-	 * 
+	 *
 	 * @return void
 	 */
 	public function init(
@@ -42,9 +42,9 @@ interface DataEncodeInterface
 
 	/**
 	 * Start simple array
-	 * 
+	 *
 	 * @param null|string $objectKey Used while creating simple array inside an object
-	 * 
+	 *
 	 * @return void
 	 */
 	public function startArray(
@@ -53,9 +53,9 @@ interface DataEncodeInterface
 
 	/**
 	 * Add simple array/value as in the data format
-	 * 
+	 *
 	 * @param string|array $data Representation Data
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -65,16 +65,16 @@ interface DataEncodeInterface
 
 	/**
 	 * End simple array
-	 * 
+	 *
 	 * @return void
 	 */
 	public function endArray(): void;
 
 	/**
 	 * Start simple array
-	 * 
+	 *
 	 * @param null|string $objectKey Used while creating associative array inside an object
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -84,10 +84,10 @@ interface DataEncodeInterface
 
 	/**
 	 * Add simple array/value as in the data format
-	 * 
+	 *
 	 * @param string       $objectKey Key of associative array
 	 * @param string|array $data      Representation Data
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -98,16 +98,16 @@ interface DataEncodeInterface
 
 	/**
 	 * End associative array
-	 * 
+	 *
 	 * @return void
 	 */
 	public function endObject(): void;
 
 	/**
 	 * Encodes both simple and associative array to json
-	 * 
+	 *
 	 * @param string|array $data Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function encode(
@@ -116,9 +116,9 @@ interface DataEncodeInterface
 
 	/**
 	 * Append raw data string
-	 * 
+	 *
 	 * @param string $data Reference of Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function appendData(
@@ -127,10 +127,10 @@ interface DataEncodeInterface
 
 	/**
 	 * Append raw data string
-	 * 
+	 *
 	 * @param string $objectKey Key of associative array
 	 * @param string $data      Reference of Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function appendKeyData(
@@ -140,7 +140,7 @@ interface DataEncodeInterface
 
 	/**
 	 * Checks data was properly closed
-	 * 
+	 *
 	 * @return void
 	 */
 	public function end(): void;

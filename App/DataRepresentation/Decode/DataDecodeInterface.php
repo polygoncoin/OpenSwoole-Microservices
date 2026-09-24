@@ -3,7 +3,7 @@
 /**
  * Data Decode
  * php version 8.3
- * 
+ *
  * @category  DataDecode
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ namespace Microservices\App\DataRepresentation\Decode;
 /**
  * Data Decode Interface
  * php version 8.3
- * 
+ *
  * @category  DataDecode_Interface
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -31,30 +31,30 @@ interface DataDecodeInterface
 {
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool;
 
 	/**
 	 * Validates data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function validate(): void;
 
 	/**
 	 * Index data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function indexData(): void;
 
 	/**
 	 * Result exist as per $keyString
-	 * 
+	 *
 	 * @param null|string $keyString Key's exist (values separated by colon)
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function isset(
@@ -63,9 +63,9 @@ interface DataDecodeInterface
 
 	/**
 	 * Datatype of result as per $keyString
-	 * 
+	 *
 	 * @param null|string $keyString Key's exist (values separated by colon)
-	 * 
+	 *
 	 * @return string Object/Array
 	 */
 	public function dataType(
@@ -74,9 +74,9 @@ interface DataDecodeInterface
 
 	/**
 	 * Count of result as per $keyString
-	 * 
+	 *
 	 * @param null|string $keyString Key values separated by colon
-	 * 
+	 *
 	 * @return int
 	 */
 	public function count(
@@ -85,9 +85,9 @@ interface DataDecodeInterface
 
 	/**
 	 * Get result as per $keyString
-	 * 
+	 *
 	 * @param string $keyString Key values separated by colon
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function get(
@@ -96,9 +96,9 @@ interface DataDecodeInterface
 
 	/**
 	 * Get complete result as per $keyString
-	 * 
+	 *
 	 * @param string $keyString Key values separated by colon
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function getCompleteArray(
@@ -109,9 +109,9 @@ interface DataDecodeInterface
 	 * Load result as per $keyString
 	 * Start processing the data string for a key's
 	 * Perform search inside key's of data like $data['data'][0]['data1']
-	 * 
+	 *
 	 * @param string $keyString Key values separated by colon
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */

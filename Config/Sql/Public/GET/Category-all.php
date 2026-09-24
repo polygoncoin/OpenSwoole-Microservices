@@ -3,7 +3,7 @@
 /**
  * API Query config
  * php version 8.3
- * 
+ *
  * @category  API_Query_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -98,6 +98,6 @@ return [
 			'lagResponse' => 0
 		]
 	],
-	'outputRepresentationFileLocation' => Constant::$XSLT_PUBLIC_DIRECTORY
+	'OUTPUT_REPRESENTATION_FILE' => Constant::$XSLT_PUBLIC_DIRECTORY
 		. DIRECTORY_SEPARATOR . 'Category.xls'
 ];

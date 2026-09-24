@@ -195,41 +195,6 @@ CREATE TABLE `customer` (
     `customer_rate_limit_user_max_request_window` INT DEFAULT NULL, -- ; Window for Max request allowed for user
     `customer_rate_limit_max_user_login_request` INT DEFAULT NULL, -- ; Max User Login request
     `customer_rate_limit_max_user_login_request_window` INT DEFAULT NULL, -- ; Window for Max User Login request
-    `customer_master_db_server_type` VARCHAR(255) NOT NULL,
-    `customer_master_db_server_hostname` VARCHAR(255) NOT NULL,
-    `customer_master_db_server_port` VARCHAR(255) NOT NULL,
-    `customer_master_db_server_username` VARCHAR(255) NOT NULL,
-    `customer_master_db_server_password` VARCHAR(255) NOT NULL,
-    `customer_master_db_server_db` VARCHAR(255) NOT NULL,
-    `customer_master_db_server_query_placeholder` VARCHAR(255) NOT NULL,
-    `customer_slave_db_server_type` VARCHAR(255) NOT NULL,
-    `customer_slave_db_server_hostname` VARCHAR(255) NOT NULL,
-    `customer_slave_db_server_port` VARCHAR(255) NOT NULL,
-    `customer_slave_db_server_username` VARCHAR(255) NOT NULL,
-    `customer_slave_db_server_password` VARCHAR(255) NOT NULL,
-    `customer_slave_db_server_db` VARCHAR(255) NOT NULL,
-    `customer_slave_db_server_query_placeholder` VARCHAR(255) NOT NULL,
-    `customer_cache_server_type` VARCHAR(255) NOT NULL,
-    `customer_cache_server_hostname` VARCHAR(255) NOT NULL,
-    `customer_cache_server_port` VARCHAR(255) NOT NULL,
-    `customer_cache_server_username` VARCHAR(255) NOT NULL,
-    `customer_cache_server_password` VARCHAR(255) NOT NULL,
-    `customer_cache_server_db` VARCHAR(255) NOT NULL,
-    `customer_cache_server_table` VARCHAR(255) NOT NULL,
-    `customer_session_server_type` VARCHAR(255) DEFAULT NULL,
-    `customer_session_server_hostname` VARCHAR(255) DEFAULT NULL,
-    `customer_session_server_port` VARCHAR(255) DEFAULT NULL,
-    `customer_session_server_username` VARCHAR(255) DEFAULT NULL,
-    `customer_session_server_password` VARCHAR(255) DEFAULT NULL,
-    `customer_session_server_db` VARCHAR(255) DEFAULT NULL,
-    `customer_session_server_table` VARCHAR(255) DEFAULT NULL,
-    `customer_query_cache_server_type` VARCHAR(255) DEFAULT NULL,
-    `customer_query_cache_server_hostname` VARCHAR(255) DEFAULT NULL,
-    `customer_query_cache_server_port` VARCHAR(255) DEFAULT NULL,
-    `customer_query_cache_server_username` VARCHAR(255) DEFAULT NULL,
-    `customer_query_cache_server_password` VARCHAR(255) DEFAULT NULL,
-    `customer_query_cache_server_db` VARCHAR(255) DEFAULT NULL,
-    `customer_query_cache_server_collection` VARCHAR(255) DEFAULT NULL, -- ; For MongoDb
     `customer_comments` VARCHAR(255) DEFAULT NULL,
     `customer_created_by` INT DEFAULT NULL,
     `customer_created_on` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -277,5 +242,5 @@ CREATE TABLE `customer_contact` (
 
 LOCK TABLES `customer` WRITE;
 INSERT INTO `customer` VALUES
-(1,'Customer 001','customer_user_group','customer_user',NULL,NULL,NULL,'api.customer001.localhost','web.customer001.localhost','customer001.localhost','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,600,300,600,300,600,300,600,300,'cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cDbServerType001','cDbServerHostname001','cDbServerPort001','cDbServerUsername001','cDbServerPassword001','cDbServerDatabase001','cDbServerQueryPlaceholder001','cCacheServerType001','cCacheServerHostname001','cCacheServerPort001','cCacheServerUsername001','cCacheServerPassword001','cCacheServerDatabase001','cCacheServerTable001','fileSessionMode',NULL,NULL,NULL,NULL,NULL,NULL,'queryCacheServerType','queryCacheServerHostname','queryCacheServerPort','queryCacheServerUsername','queryCacheServerPassword','queryCacheServerDatabase','queryCacheServerTable','',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','Yes','No','No');
+(1,'Customer 001','customer_user_group','customer_user',NULL,NULL,NULL,'api.customer001.localhost','web.customer001.localhost','customer001.localhost','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,600,300,600,300,600,300,600,300,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','Yes','No','No');
 UNLOCK TABLES;

@@ -3,7 +3,7 @@
 /**
  * Custom Session Handler
  * php version 7
- * 
+ *
  * @category  SessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 /**
  * Custom Session Handler using MySql
  * php version 7
- * 
+ *
  * @category  CustomSessionHandler_MySQL
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -35,21 +35,21 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	SessionContainerInterface
 {
-	public $mySqlServerHostname = null;
-	public $mySqlServerPort = null;
-	public $mySqlServerUsername = null;
-	public $mySqlServerPassword = null;
-	public $mySqlServerDatabase = null;
-	public $mySqlServerTable = null;
+	public $sessionServerHost = null;
+	public $sessionServerPort = null;
+	public $sessionServerUser = null;
+	public $sessionServerPassword = null;
+	public $sessionServerDb = null;
+	public $sessionServerTable = null;
 
 	private $mySqlServerObject = null;
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @param string $sessionSavePath Session Save Path
 	 * @param string $sessionName     Session Name
-	 * 
+	 *
 	 * @return void
 	 */
 	public function init(
@@ -61,9 +61,9 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Validate session id
-	 * 
+	 *
 	 * @param string $sessionId Session id
-	 * 
+	 *
 	 * @return bool|string
 	 */
 	public function getSession(
@@ -71,7 +71,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	): bool|string {
 		$sql = "
 			SELECT `sessionData`
-			FROM `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
+			FROM `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
 			WHERE `sessionId` = :sessionId AND lastAccessed > :lastAccessed
 		";
 		$paramArray = [
@@ -96,10 +96,10 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Write session data
-	 * 
+	 *
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function setSession(
@@ -107,7 +107,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionData
 	): bool|int {
 		$sql = "
-			INSERT INTO `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
+			INSERT INTO `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
 			SET
 				`sessionData` = :sessionData,
 				`lastAccessed` = :lastAccessed,
@@ -129,10 +129,10 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Update session data
-	 * 
+	 *
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 * 
+	 *
 	 * @return bool|int
 	 */
 	public function updateSession(
@@ -140,7 +140,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionData
 	): bool|int {
 		$sql = "
-			UPDATE `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
+			UPDATE `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
 			SET
 				`sessionData` = :sessionData,
 				`lastAccessed` = :lastAccessed
@@ -163,10 +163,10 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Update session timestamp
-	 * 
+	 *
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function touchSession(
@@ -174,7 +174,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionData
 	): bool {
 		$sql = "
-			UPDATE `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
+			UPDATE `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
 			SET `lastAccessed` = :lastAccessed
 			WHERE `sessionId` = :sessionId
 		";
@@ -190,9 +190,9 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Cleanup old sessions
-	 * 
+	 *
 	 * @param integer $sessionMaxLifetime Session Max Lifetime
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function gcSession(
@@ -200,7 +200,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	): bool {
 		$lastAccessed = Env::$timestamp - $sessionMaxLifetime;
 		$sql = "
-			DELETE FROM `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
+			DELETE FROM `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
 			WHERE `lastAccessed` < :lastAccessed
 		";
 		$paramArray = [
@@ -214,16 +214,16 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Destroy a session
-	 * 
+	 *
 	 * @param string $sessionId Session id
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function deleteSession(
 		$sessionId
 	): bool {
 		$sql = "
-			DELETE FROM `{$this->mySqlServerDatabase}`.`{$this->mySqlServerTable}`
+			DELETE FROM `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
 			WHERE `sessionId` = :sessionId
 		";
 		$paramArray = [
@@ -237,7 +237,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Close File Container
-	 * 
+	 *
 	 * @return void
 	 */
 	public function closeSession(): void
@@ -247,16 +247,16 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Connect
-	 * 
+	 *
 	 * @return void
 	 */
 	private function connect(): void
 	{
 		try {
 			$this->mySqlServerObject = new \PDO(
-				dsn: "mysql:host={$this->mySqlServerHostname}",
-				username: $this->mySqlServerUsername,
-				password: $this->mySqlServerPassword,
+				dsn: "mysql:host={$this->sessionServerHost}",
+				username: $this->sessionServerUser,
+				password: $this->sessionServerPassword,
 				options: [
 					\PDO::ATTR_EMULATE_PREPARES => Constant::$FALSE,
 				]
@@ -270,10 +270,10 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Get Session
-	 * 
+	 *
 	 * @param string $sql        Sql query
 	 * @param array  $paramArray Sql query params
-	 * 
+	 *
 	 * @return mixed
 	 */
 	private function getSql(
@@ -311,10 +311,10 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Execute Sql
-	 * 
+	 *
 	 * @param string $sql        Sql query
 	 * @param array  $paramArray Sql query params
-	 * 
+	 *
 	 * @return bool
 	 */
 	private function execSql(
@@ -340,9 +340,9 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Manage Exception
-	 * 
+	 *
 	 * @param \Exception $e Exception
-	 * 
+	 *
 	 * @return never
 	 */
 	private function manageException(

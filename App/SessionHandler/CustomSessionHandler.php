@@ -3,7 +3,7 @@
 /**
  * Custom Session Handler
  * php version 7
- * 
+ *
  * @category  SessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -21,7 +21,7 @@ use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 /**
  * Custom Session Handler
  * php version 7
- * 
+ *
  * @category  CustomSessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -37,35 +37,35 @@ class CustomSessionHandler implements
 {
 	/**
 	 * Session cookie name
-	 * 
+	 *
 	 * @var null|string
 	 */
 	public $sessionName = null;
 
 	/**
 	 * Session data cookie name
-	 * 
+	 *
 	 * @var null|string
 	 */
-	public $sessionDataName = null;
+	public $sessionDataCookieName = null;
 
 	/**
 	 * Session Container
-	 * 
+	 *
 	 * @var null|SessionContainerInterface
 	 */
 	private $container = null;
 
 	/**
 	 * Session found
-	 * 
+	 *
 	 * @var null|bool
 	 */
 	private $foundSession = null;
 
 	/**
 	 * Session id
-	 * 
+	 *
 	 * @var string
 	 */
 	private $sessionId = '';
@@ -74,14 +74,14 @@ class CustomSessionHandler implements
 	 * Session id created flag to handle session_regenerate_id
 	 * In this case validateId is called after create_sid function
 	 * Also, we have used this to validate created sessionId
-	 * 
+	 *
 	 * @var null|bool
 	 */
 	private $creatingSessionId = null;
 
 	/**
 	 * Session Data
-	 * 
+	 *
 	 * @var null|string
 	 */
 	private $sessionData = '';
@@ -91,14 +91,14 @@ class CustomSessionHandler implements
 	 * To be careful with the 'read_and_close' option
 	 * It doesn't update the session last modification timestamp
 	 * unlike the default PHP behaviour
-	 * 
+	 *
 	 * @var bool
 	 */
 	private $isTimestampUpdated = false;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param SessionContainerInterface $container Container
 	 */
 	public function __construct(
@@ -110,10 +110,10 @@ class CustomSessionHandler implements
 	/**
 	 * Open session
 	 * A callable with the following signature
-	 * 
+	 *
 	 * @param string $sessionSavePath Save Path
 	 * @param string $sessionName     Session Name
-	 * 
+	 *
 	 * @return bool true for success or false for failure
 	 */
 	public function open(
@@ -130,13 +130,13 @@ class CustomSessionHandler implements
 
 	/**
 	 * Validate session id
-	 * 
+	 *
 	 * Calls if session cookie is present in request
-	 * 
+	 *
 	 * A callable with the following signature
-	 * 
+	 *
 	 * @param string $sessionId Session id
-	 * 
+	 *
 	 * @return bool true if the session id is valid otherwise false
 	 */
 	public function validateId(
@@ -172,12 +172,12 @@ class CustomSessionHandler implements
 
 	/**
 	 * Create session id
-	 * 
+	 *
 	 * Calls if no session cookie is present
 	 * Invoked internally when a new session id is needed
-	 * 
+	 *
 	 * A callable with the following signature
-	 * 
+	 *
 	 * @return string should be new session id
 	 */
 	public function create_sid(): string // phpcs:ignore
@@ -207,11 +207,11 @@ class CustomSessionHandler implements
 
 	/**
 	 * Read session data
-	 * 
+	 *
 	 * A callable with the following signature
-	 * 
+	 *
 	 * @param string $sessionId Session id
-	 * 
+	 *
 	 * @return string|false the session data or an empty string
 	 */
 	public function read(
@@ -223,15 +223,15 @@ class CustomSessionHandler implements
 
 	/**
 	 * Write session data
-	 * 
+	 *
 	 * When session.lazy_write is enabled, and session data is unchanged
 	 * it will skip this method call. Instead it will call updateTimestamp
-	 * 
+	 *
 	 * A callable with the following signature
-	 * 
+	 *
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 * 
+	 *
 	 * @return bool true for success or false for failure
 	 */
 	public function write(
@@ -268,16 +268,16 @@ class CustomSessionHandler implements
 
 	/**
 	 * Update session timestamp
-	 * 
+	 *
 	 * When session.lazy_write is enabled, and session data is unchanged
 	 * UpdateTimestamp is called instead (of write) to only update the timestamp
 	 * of session
-	 * 
+	 *
 	 * A callable with the following signature
-	 * 
+	 *
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 * 
+	 *
 	 * @return bool true for success or false for failure
 	 */
 	public function updateTimestamp(
@@ -313,11 +313,11 @@ class CustomSessionHandler implements
 
 	/**
 	 * Cleanup old sessions
-	 * 
+	 *
 	 * A callable with the following signature
-	 * 
+	 *
 	 * @param integer $sessionMaxLifetime Session life time
-	 * 
+	 *
 	 * @return bool true for success or false for failure
 	 */
 	public function gc(
@@ -330,11 +330,11 @@ class CustomSessionHandler implements
 
 	/**
 	 * Destroy a session
-	 * 
+	 *
 	 * A callable with the following signature
-	 * 
+	 *
 	 * @param string $sessionId Session id
-	 * 
+	 *
 	 * @return bool true for success or false for failure
 	 */
 	public function destroy(
@@ -350,9 +350,9 @@ class CustomSessionHandler implements
 
 	/**
 	 * Close the session
-	 * 
+	 *
 	 * A callable with the following signature
-	 * 
+	 *
 	 * @return bool true for success or false for failure
 	 */
 	public function close(): bool
@@ -380,7 +380,7 @@ class CustomSessionHandler implements
 
 	/**
 	 * Returns 64 char random string
-	 * 
+	 *
 	 * @return string
 	 */
 	private function getRandomString(): string
@@ -394,7 +394,7 @@ class CustomSessionHandler implements
 
 	/**
 	 * Unset session cookies
-	 * 
+	 *
 	 * @return void
 	 */
 	private function unsetSessionCookie(): void
@@ -407,9 +407,9 @@ class CustomSessionHandler implements
 				path: $this->container->sessionOptionArray['cookie_path']
 			);
 		}
-		if (!empty($this->sessionDataName)) {
+		if (!empty($this->sessionDataCookieName)) {
 			setcookie(
-				name: $this->sessionDataName,
+				name: $this->sessionDataCookieName,
 				value: '',
 				expires_or_options: 1,
 				path: $this->container->sessionOptionArray['cookie_path']
@@ -419,7 +419,7 @@ class CustomSessionHandler implements
 
 	/**
 	 * Check Cookies Header
-	 * 
+	 *
 	 * @return void
 	 */
 	private function checkCookiesHeader(): void

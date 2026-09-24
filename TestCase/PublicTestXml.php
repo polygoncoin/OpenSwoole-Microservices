@@ -3,7 +3,7 @@
 /**
  * Test Case
  * php version 8.3
- * 
+ *
  * @category  Test Case
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -73,7 +73,7 @@ $response[] = Web::trigger(
 	homeURL: $homeURL,
 	httpRequestMethod: Constant::$POST,
 	route: '/registration-with-address'
-		. '&inputRepresentation=XML&outputRepresentation=XML',
+		. '&INPUT_REPRESENTATION=XML&OUTPUT_REPRESENTATION=XML',
 	header: $publicHeaderArray,
 	payload: $payload
 );

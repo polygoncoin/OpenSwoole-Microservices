@@ -130,9 +130,9 @@ One need to enable same in .env file as below
 ```ini
 ; Keyword to append with in route with slash.
 ; Explain Route & its Payload
-explainRequestRouteKeyword='explain'    ; to append "/explain" at the end of route
-importRequestRouteKeyword='import'  ; to append "/import" at the end of route
-importSampleRequestRouteKeyword='import-sample'
+EXPLAIN_REQUEST_KEYWORD='explain'    ; to append "/explain" at the end of route
+IMPORT_REQUEST_KEYWORD='import'  ; to append "/import" at the end of route
+IMPORT_SAMPLE_REQUEST_KEYWORD='import-sample'
 ```
 
 ## Contributing

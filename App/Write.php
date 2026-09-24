@@ -3,7 +3,7 @@
 /**
  * Write APIs
  * php version 8.3
- * 
+ *
  * @category  WriteAPI
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -29,7 +29,7 @@ use Microservices\App\Web;
 /**
  * Write APIs
  * php version 8.3
- * 
+ *
  * @category  WriteAPIs
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -44,35 +44,35 @@ class Write
 
 	/**
 	 * Hook object
-	 * 
+	 *
 	 * @var null|Hook
 	 */
 	private $hookObject = null;
 
 	/**
 	 * Operate DML As Transactions
-	 * 
+	 *
 	 * @var null|Web
 	 */
 	private $operateAsTransaction = null;
 
 	/**
 	 * Data Encode object
-	 * 
+	 *
 	 * @var null|DataEncode
 	 */
 	public $dataEncodeObject = null;
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -84,7 +84,7 @@ class Write
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
@@ -94,7 +94,7 @@ class Write
 
 	/**
 	 * Process
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -117,9 +117,9 @@ class Write
 		$fetchDbMode = 'Master';
 
 		// Set Server mode to execute query on - Read / Write Server
-		if ($this->httpObject->httpRequestObject->customerDbObject === Constant::$NULL) {
-			$this->httpObject->httpRequestObject->customerDbObject = DbCommonFunction::connectCustomerDb(
-				customerData: $this->httpObject->httpRequestObject->activeRequestData['customerData'],
+		if ($this->httpObject->httpRequestObject->databaseServerObject === Constant::$NULL) {
+			$this->httpObject->httpRequestObject->databaseServerObject = DbCommonFunction::connectDatabase(
+				customerId: $this->httpObject->httpRequestObject->customerId,
 				fetchDbMode: $fetchDbMode
 			);
 		}
@@ -135,11 +135,11 @@ class Write
 
 	/**
 	 * Perform write operation
-	 * 
+	 *
 	 * @param array $writeSqlConfig            Sql config
 	 * @param bool  $writeMaintainHierarchy    If true - Uses parent payload/results in child
 	 * @param bool  $writeOperateAsTransaction If true - Operates as transaction
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -150,7 +150,8 @@ class Write
 	): void {
 		$writeOutputRepresentation = CommonFunction::getOutputRepresentation(
 			sqlConfig: $writeSqlConfig,
-			httpReqData: $this->httpObject->httpReqData
+			httpReqData: $this->httpObject->httpReqData,
+			customerId: $this->httpObject->httpRequestObject->customerId
 		);
 
 		// Set required fields
@@ -171,7 +172,7 @@ class Write
 		if ($writePayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $writeOutputRepresentation['outputRepresentation'],
+					needle: $writeOutputRepresentation['OUTPUT_REPRESENTATION'],
 					haystack: ['XML', 'XSLT', 'HTML'],
 					strict: Constant::$TRUE
 				)
@@ -207,7 +208,7 @@ class Write
 			// For DML operation
 			if ($hashJson === Constant::$NULL) {
 				if ($writeOperateAsTransaction) {
-					$this->httpObject->httpRequestObject->customerDbObject->begin();
+					$this->httpObject->httpRequestObject->databaseServerObject->begin();
 				}
 
 				$output = [];
@@ -218,7 +219,7 @@ class Write
 						feature: 'customer_enabled_payload_in_response'
 					)
 				) {
-					$output[Env::$payloadKeyInResponse] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
+					$output[Env::$config[$this->httpObject->httpRequestObject->customerId]->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
 						keyString: $this->getPayloadKey(
 							payloadKeyArray: $writePayloadKeyArray
 						)
@@ -240,9 +241,9 @@ class Write
 				if ($this->httpObject->httpResponseObject->httpStatus === HttpStatus::$Ok) {
 					if (
 						$writeOperateAsTransaction
-						&& ($this->httpObject->httpRequestObject->customerDbObject->beganTransaction === Constant::$TRUE)
+						&& ($this->httpObject->httpRequestObject->databaseServerObject->beganTransaction === Constant::$TRUE)
 					) {
-						$this->httpObject->httpRequestObject->customerDbObject->commit();
+						$this->httpObject->httpRequestObject->databaseServerObject->commit();
 					}
 					$output['PayloadResponse'] = $writeResponse;
 
@@ -250,7 +251,7 @@ class Write
 						$this->httpObject->httpRequestObject->isPrivateRequest
 						&& $idempotentWindow
 					) {
-						$this->httpObject->httpRequestObject->customerCacheObject->cacheSet(
+						$this->httpObject->httpRequestObject->cacheServerObject->cacheSet(
 							cacheKey: $hashKey,
 							cacheValue: $output,
 							cacheExpire: $idempotentWindow
@@ -276,7 +277,7 @@ class Write
 			} else {
 				if (
 					in_array(
-						needle: $writeOutputRepresentation['outputRepresentation'],
+						needle: $writeOutputRepresentation['OUTPUT_REPRESENTATION'],
 						haystack: ['XML', 'XSLT', 'HTML'],
 						strict: Constant::$TRUE
 					)
@@ -303,7 +304,7 @@ class Write
 		if ($writePayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $writeOutputRepresentation['outputRepresentation'],
+					needle: $writeOutputRepresentation['OUTPUT_REPRESENTATION'],
 					haystack: ['XML', 'XSLT', 'HTML'],
 					strict: Constant::$TRUE
 				)
@@ -316,14 +317,14 @@ class Write
 
 	/**
 	 * Write Parent Function
-	 * 
+	 *
 	 * @param array $writeParentSqlConfig            Sql config
 	 * @param array $writeParentPayloadKeyArray      Payload Indexes
 	 * @param array $writeParentRequiredFieldArray   Required fields
 	 * @param array $writeParentResponse             Response by reference
 	 * @param bool  $writeParentMaintainHierarchy    If true - Uses parent payload/results in child
 	 * @param bool  $writeParentOperateAsTransaction If true - Operates as transaction
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -372,7 +373,7 @@ class Write
 			}
 		}
 
-		$mode = getenv(name: $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_master_db_server_query_placeholder']);
+		$mode = Env::$config[$this->httpObject->httpRequestObject->customerId]->MASTER_DB_PLACEHOLDER;
 		$function = "getSqlAndParam{$mode}Mode";
 
 		for ($index = 0; $index < $indexCount; $index++) {
@@ -472,12 +473,12 @@ class Write
 
 			if (!empty($errorArray)) {
 				$writeParentCurrentResponse['Error'] = $errorArray;
-				$this->httpObject->httpRequestObject->customerDbObject->rollBack();
+				$this->httpObject->httpRequestObject->databaseServerObject->rollBack();
 				return;
 			}
 
 			// Execute
-			$this->httpObject->httpRequestObject->customerDbObject->execQuery(
+			$this->httpObject->httpRequestObject->databaseServerObject->execQuery(
 				sql: $sql,
 				paramArray: $paramArray
 			);
@@ -485,7 +486,7 @@ class Write
 			// For Rollback
 			if (
 				$writeParentCurrentOperateAsTransaction
-				&& !$this->httpObject->httpRequestObject->customerDbObject->beganTransaction
+				&& !$this->httpObject->httpRequestObject->databaseServerObject->beganTransaction
 			) {
 				$writeParentCurrentResponse['Error'] = 'Something went wrong';
 				return;
@@ -494,7 +495,7 @@ class Write
 			// For Setting Data
 			if (isset($writeParentSqlConfig['__INSERT-ID__'])) {
 				if ($insertId === Constant::$NULL) {
-					$insertId = $this->httpObject->httpRequestObject->customerDbObject->lastInsertId();
+					$insertId = $this->httpObject->httpRequestObject->databaseServerObject->lastInsertId();
 				}
 
 				if ($isObject) {
@@ -508,12 +509,12 @@ class Write
 
 				$this->httpObject->httpRequestObject->activeRequestData['__INSERT-ID__'][$writeParentSqlConfig['__INSERT-ID__']] = $insertId;
 			} else {
-				$affectedRecordCount = $this->httpObject->httpRequestObject->customerDbObject->affectedRecordCount();
+				$affectedRecordCount = $this->httpObject->httpRequestObject->databaseServerObject->affectedRecordCount();
 				$writeParentCurrentResponse['affectedRecordCount'] = $affectedRecordCount;
 			}
 
 			// For Close Cursor
-			$this->httpObject->httpRequestObject->customerDbObject->closeCursor();
+			$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
 
 			// For Child
 			if (isset($writeParentSqlConfig['__SUB-CONFIG__'])) {
@@ -564,7 +565,7 @@ class Write
 					value: $writeParentSqlConfig['__AFFECTED-CACHE-KEY__']
 				);
 				for ($index = 0; $index < $indexCount; $index++) {
-					$this->httpObject->httpRequestObject->customerQueryCacheObject->queryCacheDelete(
+					$this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheDelete(
 						customerId: $this->httpObject->httpRequestObject->customerId,
 						queryCacheKey: $writeParentSqlConfig['__AFFECTED-CACHE-KEY__'][$index]
 					);
@@ -575,14 +576,14 @@ class Write
 
 	/**
 	 * Write Child Function
-	 * 
+	 *
 	 * @param array $writeChildSqlConfig            Sql config
 	 * @param array $writeChildPayloadKeyArray      Payload Key's
 	 * @param array $writeChildRequiredFieldArray   Required fields
 	 * @param array $writeChildResponse             Response by reference
 	 * @param bool  $writeChildMaintainHierarchy    If true - Uses parent payload/results in child
 	 * @param bool  $writeChildOperateAsTransaction If true - Operates as transaction
-	 * 
+	 *
 	 * @return void
 	 */
 	private function writeChild(
@@ -719,10 +720,10 @@ class Write
 
 	/**
 	 * Validate payload
-	 * 
+	 *
 	 * @param array $sqlConfig Sql config
 	 * @param array $response  Response by reference
-	 * 
+	 *
 	 * @return bool
 	 */
 	private function isValidPayload(

@@ -3,7 +3,7 @@
 /**
  * API Route config
  * php version 8.3
- * 
+ *
  * @category  API_Route_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -18,7 +18,7 @@ use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 
 return [
-	Env::$uploadRequestRoutePrefix => [
+	Env::$config[$this->httpObject->httpRequestObject->customerId]->UPLOAD_REQUEST_KEYWORD => [
 		'{module:string}' => [
 			'dataType' => DatabaseServerDataType::$Default,
 			'{id:int}'  => [

@@ -2,15 +2,6 @@
 
 This is a light & easy low code API generator using configuration arrays. It can be used to create API's in very short time once you are done with your database.
 
-## .env File
-
-- **[.env](Env.md)**
-- **[.env.rateLimiting](Env.rateLimiting.md)**
-- **[.env.route](Env.route.md)**
-- **[.env.customer.container.example](Env.customer.container.example.md)**
-- **[.env.global.container.example](Env.global.container.example.md)**
-- **[.env.session.example](Env.session.example.md)**
-
 ## Configuration Rules
 
 - **[Rules For Custom DataTypes Configuration](Rules-For-Custom-DataTypes-Configuration.md)**

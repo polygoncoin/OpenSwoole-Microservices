@@ -3,7 +3,7 @@
 /**
  * Creates Data Representation Output
  * php version 8.3
- * 
+ *
  * @category  DataEncode
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -24,7 +24,7 @@ use Microservices\App\Http;
 /**
  * Creates Data Representation Output
  * php version 8.3
- * 
+ *
  * @category  DataEncoder
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -37,73 +37,73 @@ class DataEncode
 {
 	/**
 	 * Temporary Stream
-	 * 
+	 *
 	 * @var null|resource|array
 	 */
 	private $tempStream = null;
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Output Representation
-	 * 
+	 *
 	 * @var null|string
 	 */
-	private $outputRepresentation = null;
+	private $OUTPUT_REPRESENTATION = null;
 
 	/**
 	 * Output Representation File
-	 * 
+	 *
 	 * @var null|string
 	 */
 	public $outputRepresentationFileLocation = null;
 
 	/**
 	 * Temporary Stream
-	 * 
+	 *
 	 * @var null|Object
 	 */
 	private $dataEncoderObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http       $httpObject
-	 * @param null|array $outputRepresentation
+	 * @param null|array $OUTPUT_REPRESENTATION
 	 */
 	public function __construct(
 		Http &$httpObject,
-		$outputRepresentation = null
+		$OUTPUT_REPRESENTATION = null
 	) {
 		$this->httpObject = &$httpObject;
 
-		if ($outputRepresentation === Constant::$NULL) {
-			$outputRepresentation = [
-				'outputRepresentation' => 'JSON',
-				'outputRepresentationFileLocation' => Constant::$FALSE
+		if ($OUTPUT_REPRESENTATION === Constant::$NULL) {
+			$OUTPUT_REPRESENTATION = [
+				'OUTPUT_REPRESENTATION' => 'JSON',
+				'OUTPUT_REPRESENTATION_FILE' => Constant::$FALSE
 			];
 		}
-		$this->outputRepresentation = $outputRepresentation['outputRepresentation'];
-		$this->outputRepresentationFileLocation = $outputRepresentation['outputRepresentationFileLocation'];
+		$this->OUTPUT_REPRESENTATION = $OUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'];
+		$this->outputRepresentationFileLocation = $OUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION_FILE'];
 	}
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @param bool $header Append XML header flag
-	 * 
+	 *
 	 * @return void
 	 */
 	public function init(
 		$header = true
 	): void {
 		if ($this->httpObject->httpReqData['server']['httpRequestMethod'] === Constant::$GET) {
-			if ($this->outputRepresentation === 'PHP') {
+			if ($this->OUTPUT_REPRESENTATION === 'PHP') {
 				$this->tempStream = [];
 			} else {
 				$this->tempStream = fopen(
@@ -112,7 +112,7 @@ class DataEncode
 				);
 			}
 		} else {
-			if ($this->outputRepresentation === 'PHP') {
+			if ($this->OUTPUT_REPRESENTATION === 'PHP') {
 				$this->tempStream = [];
 			} else {
 				$this->tempStream = fopen(
@@ -122,7 +122,7 @@ class DataEncode
 			}
 		}
 
-		switch ($this->outputRepresentation) {
+		switch ($this->OUTPUT_REPRESENTATION) {
 			case 'JSON':
 				$this->dataEncoderObject = new JsonEncode(
 					tempStream: $this->tempStream,
@@ -150,9 +150,9 @@ class DataEncode
 
 	/**
 	 * Start array
-	 * 
+	 *
 	 * @param null|string $objectKey Used while creating simple array inside an object
-	 * 
+	 *
 	 * @return void
 	 */
 	public function startArray(
@@ -165,9 +165,9 @@ class DataEncode
 
 	/**
 	 * Add array/value as in the data format
-	 * 
+	 *
 	 * @param string|array $data Representation Data
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -181,7 +181,7 @@ class DataEncode
 
 	/**
 	 * End array
-	 * 
+	 *
 	 * @return void
 	 */
 	public function endArray(): void
@@ -191,9 +191,9 @@ class DataEncode
 
 	/**
 	 * Start object
-	 * 
+	 *
 	 * @param null|string $objectKey Used while creating associative array inside an object
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -207,10 +207,10 @@ class DataEncode
 
 	/**
 	 * Add array/value as in the data format
-	 * 
+	 *
 	 * @param string       $objectKey Key of associative array
 	 * @param string|array $data      Representation Data
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -226,7 +226,7 @@ class DataEncode
 
 	/**
 	 * End object
-	 * 
+	 *
 	 * @return void
 	 */
 	public function endObject(): void
@@ -236,9 +236,9 @@ class DataEncode
 
 	/**
 	 * Encode data
-	 * 
+	 *
 	 * @param string|array $data Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function encode(
@@ -251,9 +251,9 @@ class DataEncode
 
 	/**
 	 * Append raw data string
-	 * 
+	 *
 	 * @param string $data Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function appendData(
@@ -266,10 +266,10 @@ class DataEncode
 
 	/**
 	 * Append object data
-	 * 
+	 *
 	 * @param string $objectKey Key of associative array
 	 * @param string $data      Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function appendKeyData(
@@ -284,7 +284,7 @@ class DataEncode
 
 	/**
 	 * End encoding
-	 * 
+	 *
 	 * @return void
 	 */
 	public function end(): void
@@ -294,7 +294,7 @@ class DataEncode
 
 	/**
 	 * Stream encoded data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function streamData(): void
@@ -303,7 +303,7 @@ class DataEncode
 
 		switch (Constant::$TRUE) {
 			case (
-					$this->outputRepresentation === 'XSLT'
+					$this->OUTPUT_REPRESENTATION === 'XSLT'
 					&& $this->outputRepresentationFileLocation !== Constant::$NULL
 					&& file_exists(
 						filename: $this->outputRepresentationFileLocation
@@ -317,7 +317,7 @@ class DataEncode
 				);
 				break;
 			case (
-					$this->outputRepresentation === 'HTML'
+					$this->OUTPUT_REPRESENTATION === 'HTML'
 					&& $this->outputRepresentationFileLocation !== Constant::$NULL
 					&& file_exists(
 						filename: $this->outputRepresentationFileLocation
@@ -331,7 +331,7 @@ class DataEncode
 				);
 				break;
 			case (
-					$this->outputRepresentation === 'PHP'
+					$this->OUTPUT_REPRESENTATION === 'PHP'
 					&& $this->outputRepresentationFileLocation !== Constant::$NULL
 					&& file_exists(
 						filename: $this->outputRepresentationFileLocation
@@ -365,7 +365,7 @@ class DataEncode
 
 	/**
 	 * Get encoded data
-	 * 
+	 *
 	 * @return bool|string
 	 */
 	public function getData(): bool|string
@@ -374,7 +374,7 @@ class DataEncode
 
 		switch (Constant::$TRUE) {
 			case (
-					$this->outputRepresentation === 'XSLT'
+					$this->OUTPUT_REPRESENTATION === 'XSLT'
 					&& $this->outputRepresentationFileLocation !== Constant::$NULL
 					&& file_exists(
 						filename: $this->outputRepresentationFileLocation
@@ -388,7 +388,7 @@ class DataEncode
 				);
 				break;
 			case (
-					$this->outputRepresentation === 'HTML'
+					$this->OUTPUT_REPRESENTATION === 'HTML'
 					&& $this->outputRepresentationFileLocation !== Constant::$NULL
 					&& file_exists(
 						filename: $this->outputRepresentationFileLocation
@@ -402,7 +402,7 @@ class DataEncode
 				);
 				break;
 			case (
-					$this->outputRepresentation === 'PHP'
+					$this->OUTPUT_REPRESENTATION === 'PHP'
 					&& $this->outputRepresentationFileLocation !== Constant::$NULL
 					&& file_exists(
 						filename: $this->outputRepresentationFileLocation
@@ -432,9 +432,9 @@ class DataEncode
 
 	/**
 	 * Generate XML(XSLT)/HTML data
-	 * 
+	 *
 	 * @param string $xmlFile XML file location
-	 * 
+	 *
 	 * @return string
 	 */
 	private function processPublicXml(

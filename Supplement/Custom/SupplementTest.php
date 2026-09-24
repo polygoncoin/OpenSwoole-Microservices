@@ -3,7 +3,7 @@
 /**
  * CustomAPI
  * php version 8.3
- * 
+ *
  * @category  CustomAPI
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\Supplement\Custom\CustomTrait;
 /**
  * CustomAPI Supplement Test
  * php version 8.3
- * 
+ *
  * @category  CustomAPI_SupplementTest
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,14 +38,14 @@ class SupplementTest implements CustomInterface
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -56,7 +56,7 @@ class SupplementTest implements CustomInterface
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
@@ -66,7 +66,7 @@ class SupplementTest implements CustomInterface
 
 	/**
 	 * Process
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -76,7 +76,7 @@ class SupplementTest implements CustomInterface
 
 	/**
 	 * Process
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function subProcess(): mixed

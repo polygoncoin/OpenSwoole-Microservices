@@ -3,7 +3,7 @@
 /**
  * Handling XML Encode
  * php version 8.3
- * 
+ *
  * @category  DataEncode_XML
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -23,7 +23,7 @@ use Microservices\App\HttpStatus;
 /**
  * Generates XML
  * php version 8.3
- * 
+ *
  * @category  Xml_Encoder
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -36,28 +36,28 @@ class XmlEncode implements DataEncodeInterface
 {
 	/**
 	 * Temporary Stream
-	 * 
+	 *
 	 * @var null|resource|array
 	 */
 	private $tempStream = null;
 
 	/**
 	 * Array of XmlEncoderObject object's
-	 * 
+	 *
 	 * @var XmlEncoderObject[]
 	 */
 	private $jsonEncoderObjectObjectArray = [];
 
 	/**
 	 * Current XmlEncoderObject object
-	 * 
+	 *
 	 * @var null|XmlEncoderObject
 	 */
 	private $jsonEncoderObjectObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param resource $tempStream Temp stream Temporary stream
 	 * @param bool     $header     Append XML header flag
 	 */
@@ -76,9 +76,9 @@ class XmlEncode implements DataEncodeInterface
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @param bool $header Append XML header flag
-	 * 
+	 *
 	 * @return void
 	 */
 	public function init(
@@ -88,9 +88,9 @@ class XmlEncode implements DataEncodeInterface
 
 	/**
 	 * Write to temporary stream
-	 * 
+	 *
 	 * @param string $data Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	private function write(
@@ -104,9 +104,9 @@ class XmlEncode implements DataEncodeInterface
 
 	/**
 	 * Encodes both simple and associative array to XML
-	 * 
+	 *
 	 * @param string|array $data Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function encode(
@@ -158,9 +158,9 @@ class XmlEncode implements DataEncodeInterface
 
 	/**
 	 * Escape the XML string value
-	 * 
+	 *
 	 * @param null|string $data Representation Data
-	 * 
+	 *
 	 * @return string
 	 */
 	private function escape(
@@ -176,9 +176,9 @@ class XmlEncode implements DataEncodeInterface
 
 	/**
 	 * Append raw XML string
-	 * 
+	 *
 	 * @param string $data Reference of Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function appendData(
@@ -193,10 +193,10 @@ class XmlEncode implements DataEncodeInterface
 
 	/**
 	 * Append raw XML string
-	 * 
+	 *
 	 * @param string $objectKey Tag of associative array
 	 * @param string $data      Reference of Representation Data
-	 * 
+	 *
 	 * @return void
 	 */
 	public function appendKeyData(
@@ -218,9 +218,9 @@ class XmlEncode implements DataEncodeInterface
 
 	/**
 	 * Add simple array/value as in the XML format
-	 * 
+	 *
 	 * @param string|array $data Representation Data
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -240,10 +240,10 @@ class XmlEncode implements DataEncodeInterface
 
 	/**
 	 * Add simple array/value as in the XML format
-	 * 
+	 *
 	 * @param string       $objectKey Tag of associative array
 	 * @param string|array $data      Representation Data
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -262,9 +262,9 @@ class XmlEncode implements DataEncodeInterface
 
 	/**
 	 * Start simple array
-	 * 
+	 *
 	 * @param null|string $objectKey Used while creating simple array inside an object
-	 * 
+	 *
 	 * @return void
 	 */
 	public function startArray(
@@ -290,7 +290,7 @@ class XmlEncode implements DataEncodeInterface
 
 	/**
 	 * End simple array
-	 * 
+	 *
 	 * @return void
 	 */
 	public function endArray(): void
@@ -312,9 +312,9 @@ class XmlEncode implements DataEncodeInterface
 
 	/**
 	 * Start simple array
-	 * 
+	 *
 	 * @param null|string $objectKey Used while creating associative array inside an object
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -349,7 +349,7 @@ class XmlEncode implements DataEncodeInterface
 
 	/**
 	 * End associative array
-	 * 
+	 *
 	 * @return void
 	 */
 	public function endObject(): void
@@ -371,7 +371,7 @@ class XmlEncode implements DataEncodeInterface
 
 	/**
 	 * Checks XML was properly closed
-	 * 
+	 *
 	 * @return void
 	 */
 	public function end(): void
@@ -393,9 +393,9 @@ class XmlEncode implements DataEncodeInterface
 
 	/**
 	 * Checks XML was properly closed
-	 * 
+	 *
 	 * @param null|string $objectKey Used while creating associative array inside an object
-	 * 
+	 *
 	 * @return array|string
 	 */
 	private function escapeTag(

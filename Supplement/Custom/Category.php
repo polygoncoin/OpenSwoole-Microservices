@@ -3,7 +3,7 @@
 /**
  * CustomAPI
  * php version 8.3
- * 
+ *
  * @category  CustomAPI
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -24,7 +24,7 @@ use Microservices\Supplement\Custom\CustomTrait;
 /**
  * CustomAPI Category
  * php version 8.3
- * 
+ *
  * @category  CustomAPI_Category
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -39,29 +39,29 @@ class Category implements CustomInterface
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
 		Http &$httpObject
 	) {
 		$this->httpObject = &$httpObject;
-		$this->httpObject->httpRequestObject->customerDbObject = DbCommonFunction::connectCustomerDb(
-			customerData: $this->httpObject->httpRequestObject->activeRequestData['customerData'],
+		$this->httpObject->httpRequestObject->databaseServerObject = DbCommonFunction::connectDatabase(
+			customerId: $this->httpObject->httpRequestObject->customerId,
 			fetchDbMode: 'Slave'
 		);
 	}
 
 	/**
 	 * Initialize
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function init(): bool
@@ -71,7 +71,7 @@ class Category implements CustomInterface
 
 	/**
 	 * Process
-	 * 
+	 *
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -85,12 +85,12 @@ class Category implements CustomInterface
 			':is_deleted' => Constant::$NO,
 			':parent_id' => 0,
 		];
-		$this->httpObject->httpRequestObject->customerDbObject->execQuery(
+		$this->httpObject->httpRequestObject->databaseServerObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$rowArray = $this->httpObject->httpRequestObject->customerDbObject->fetchAll();
-		$this->httpObject->httpRequestObject->customerDbObject->closeCursor();
+		$rowArray = $this->httpObject->httpRequestObject->databaseServerObject->fetchAll();
+		$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
 		$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
 			objectKey: 'Results',
 			data: $rowArray

@@ -3,7 +3,7 @@
 /**
  * Middleware
  * php version 8.3
- * 
+ *
  * @category  Middleware
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -24,7 +24,7 @@ use Microservices\App\HttpStatus;
 /**
  * Class handling detail for Auth middleware
  * php version 8.3
- * 
+ *
  * @category  Auth_Middleware
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -37,14 +37,14 @@ class Auth
 {
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -55,7 +55,7 @@ class Auth
 
 	/**
 	 * Load User Data
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -92,7 +92,7 @@ class Auth
 				token: $this->httpObject->httpRequestObject->activeRequestData['authId']
 			);
 			if (
-				!$this->httpObject->httpRequestObject->customerCacheObject->cacheExist(
+				!$this->httpObject->httpRequestObject->cacheServerObject->cacheExist(
 					cacheKey: $tokenKey
 				)
 			) {
@@ -101,7 +101,7 @@ class Auth
 					code: HttpStatus::$BadRequest
 				);
 			}
-			$this->httpObject->httpRequestObject->activeRequestData['userData'] = $this->httpObject->httpRequestObject->customerCacheObject->cacheGet(
+			$this->httpObject->httpRequestObject->activeRequestData['userData'] = $this->httpObject->httpRequestObject->cacheServerObject->cacheGet(
 				cacheKey: $tokenKey
 			);
 		} else {
@@ -131,7 +131,7 @@ class Auth
 
 	/**
 	 * Load Group Data
-	 * 
+	 *
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -147,7 +147,7 @@ class Auth
 			customerUserGroupId: $this->httpObject->httpRequestObject->customerUserGroupId
 		);
 		if (
-			!$this->httpObject->httpRequestObject->customerCacheObject->cacheExist(
+			!$this->httpObject->httpRequestObject->cacheServerObject->cacheExist(
 				cacheKey: $groupCacheKey
 			)
 		) {
@@ -157,7 +157,7 @@ class Auth
 			);
 		}
 
-		$this->httpObject->httpRequestObject->activeRequestData['groupData'] = $this->httpObject->httpRequestObject->customerCacheObject->cacheGet(
+		$this->httpObject->httpRequestObject->activeRequestData['groupData'] = $this->httpObject->httpRequestObject->cacheServerObject->cacheGet(
 			cacheKey: $groupCacheKey
 		);
 	}

@@ -3,7 +3,7 @@
 /**
  * Validator
  * php version 8.3
- * 
+ *
  * @category  Validator
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -25,7 +25,7 @@ use Microservices\Validation\ValidatorInterface;
 /**
  * Validator
  * php version 8.3
- * 
+ *
  * @category  Validator
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
@@ -38,28 +38,28 @@ class Validator
 {
 	/**
 	 * Validator object
-	 * 
+	 *
 	 * @var null|ValidatorInterface
 	 */
 	private $validatorObject = null;
 
 	/**
 	 * HTTP object
-	 * 
+	 *
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param Http $httpObject
 	 */
 	public function __construct(
 		Http &$httpObject
 	) {
 		$this->httpObject = &$httpObject;
-		if ($this->httpObject->httpRequestObject->customerDbObject->dbServerDatabase === Env::$gDbServerDatabase) {
+		if ($this->httpObject->httpRequestObject->databaseServerObject->dbServerDatabase === Env::$config[$this->httpObject->httpRequestObject->customerId]->DB_NAME) {
 			$this->validatorObject = new GlobalValidator(
 				httpObject: $this->httpObject
 			);
@@ -72,9 +72,9 @@ class Validator
 
 	/**
 	 * Validate payload
-	 * 
+	 *
 	 * @param array $validationConfig Validation configuration
-	 * 
+	 *
 	 * @return array
 	 */
 	public function validate(
@@ -109,7 +109,7 @@ class Validator
 
 	/**
 	 * Validate required payload
-	 * 
+	 *
 	 * @return array
 	 */
 	private function validateRequired(): array
