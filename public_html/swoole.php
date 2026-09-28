@@ -20,14 +20,14 @@ define ('__MODE__', 'private_api'); // token based auth
 switch (__MODE__) {
 	case 'public':
 		$DOMAIN_NAME = 'customer001.localhost'; // Public mode
-		include __DIR__ . DIRECTORY_SEPARATOR . 'swoole_session.php';
+		include __DIR__ . DIRECTORY_SEPARATOR . 'swoole_web.php';
 		break;
 	case 'private_web':
 		$DOMAIN_NAME = 'web.customer001.localhost'; // Private Session mode
-		include __DIR__ . DIRECTORY_SEPARATOR . 'swoole_session.php';
+		include __DIR__ . DIRECTORY_SEPARATOR . 'swoole_web.php';
 		break;
 	case 'private_api':
 		$DOMAIN_NAME = 'api.customer001.localhost'; // Private Token mode
-		include __DIR__ . DIRECTORY_SEPARATOR . 'swoole_token.php';
+		include __DIR__ . DIRECTORY_SEPARATOR . 'swoole_api.php';
 		break;
 }
