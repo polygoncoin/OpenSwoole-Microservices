@@ -36,82 +36,82 @@ class RedisCache implements CacheServerInterface
 {
 	/**
 	 * Cache Server Hostname
-	 *
+	 * 
 	 * @var null|string
 	 */
-	private $cacheServerHostname = null;
+	private $cacheServerHost = null;
 
 	/**
 	 * Cache Server Port
-	 *
+	 * 
 	 * @var null|int
 	 */
 	private $cacheServerPort = null;
 
 	/**
 	 * Cache Server Username
-	 *
+	 * 
 	 * @var null|string
 	 */
-	private $cacheServerUsername = null;
+	private $cacheServerUser = null;
 
 	/**
 	 * Cache Server Password
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $cacheServerPassword = null;
 
 	/**
 	 * Cache Server DB
-	 *
+	 * 
 	 * @var null|string
 	 */
-	private $cacheServerDatabase = null;
+	private $cacheServerDb = null;
 
 	/**
 	 * Cache collection
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $cacheServerTable = null;
 
 	/**
 	 * Cache Server Object
-	 *
+	 * 
 	 * @var null|Cache_Redis
 	 */
 	private $noSqlServerObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param string      $cacheServerHostname Cache Server Hostname
+	 * 
+	 * @param string      $cacheServerHost Cache Server Hostname
 	 * @param int         $cacheServerPort     Cache Server Port
-	 * @param string      $cacheServerUsername Cache Server Username
+	 * @param string      $cacheServerUser Cache Server Username
 	 * @param string      $cacheServerPassword Cache Server Password
-	 * @param null|string $cacheServerDatabase Cache Server Database
+	 * @param null|string $cacheServerDb Cache Server Database
 	 * @param null|string $cacheServerTable    Cache Server Table
 	 */
 	public function __construct(
-		$cacheServerHostname,
+		$cacheServerHost,
 		$cacheServerPort,
-		$cacheServerUsername,
+		$cacheServerUser,
 		$cacheServerPassword,
-		$cacheServerDatabase,
+		$cacheServerDb,
 		$cacheServerTable
 	) {
-		$this->cacheServerHostname = $cacheServerHostname;
+		$this->cacheServerHost = $cacheServerHost;
 		$this->cacheServerPort = $cacheServerPort;
-		$this->cacheServerUsername = $cacheServerUsername;
+		$this->cacheServerUser = $cacheServerUser;
 		$this->cacheServerPassword = $cacheServerPassword;
-		$this->cacheServerDatabase = $cacheServerDatabase;
+		$this->cacheServerDb = $cacheServerDb;
 		$this->cacheServerTable = $cacheServerTable;
 	}
 
 	/**
 	 * Cache Server Object
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -123,11 +123,11 @@ class RedisCache implements CacheServerInterface
 
 		try {
 			$this->noSqlServerObject = new Cache_Redis(
-				cacheServerHostname: $this->cacheServerHostname,
+				cacheServerHost: $this->cacheServerHost,
 				cacheServerPort: $this->cacheServerPort,
-				cacheServerUsername: $this->cacheServerUsername,
+				cacheServerUser: $this->cacheServerUser,
 				cacheServerPassword: $this->cacheServerPassword,
-				cacheServerDatabase: $this->cacheServerDatabase,
+				cacheServerDb: $this->cacheServerDb,
 				cacheServerTable: $this->cacheServerTable
 			);
 		} catch (\Exception $e) {
@@ -140,9 +140,9 @@ class RedisCache implements CacheServerInterface
 
 	/**
 	 * Cache key exist
-	 *
+	 * 
 	 * @param string $cacheKey Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function cacheExist(
@@ -161,9 +161,9 @@ class RedisCache implements CacheServerInterface
 
 	/**
 	 * Get cache key
-	 *
+	 * 
 	 * @param string $cacheKey Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function cacheGet(
@@ -182,11 +182,11 @@ class RedisCache implements CacheServerInterface
 
 	/**
 	 * Set cache key
-	 *
+	 * 
 	 * @param string $cacheKey    Cache key
 	 * @param mixed  $cacheValue  Cache value
 	 * @param int    $cacheExpire Seconds to expire. Default 0 - doesn't expire
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function cacheSet(
@@ -209,10 +209,10 @@ class RedisCache implements CacheServerInterface
 
 	/**
 	 * Increment cache key with offset
-	 *
+	 * 
 	 * @param string $cacheKey    Cache key
 	 * @param int    $cacheOffset Offset
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function cacheIncrement(
@@ -233,9 +233,9 @@ class RedisCache implements CacheServerInterface
 
 	/**
 	 * Delete cache key
-	 *
+	 * 
 	 * @param string $cacheKey Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function cacheDelete(

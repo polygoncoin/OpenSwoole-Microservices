@@ -38,14 +38,14 @@ class Hook_Example implements HookInterface
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -56,7 +56,7 @@ class Hook_Example implements HookInterface
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -66,7 +66,7 @@ class Hook_Example implements HookInterface
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -78,7 +78,7 @@ class Hook_Example implements HookInterface
 
 	/**
 	 * Exec Hook
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */

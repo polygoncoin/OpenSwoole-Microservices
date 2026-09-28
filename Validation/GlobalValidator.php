@@ -38,14 +38,14 @@ class GlobalValidator implements ValidatorInterface
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -56,9 +56,9 @@ class GlobalValidator implements ValidatorInterface
 
 	/**
 	 * Validate payload
-	 *
+	 * 
 	 * @param array $validationConfig Validation configuration
-	 *
+	 * 
 	 * @return array
 	 */
 	public function validate(
@@ -94,9 +94,9 @@ class GlobalValidator implements ValidatorInterface
 
 	/**
 	 * Check primary key exist
-	 *
+	 * 
 	 * @param array $argArray Arguments
-	 *
+	 * 
 	 * @return int 0/1
 	 */
 	private function primaryKeyExist(
@@ -118,9 +118,9 @@ class GlobalValidator implements ValidatorInterface
 
 	/**
 	 * Check column value exist
-	 *
+	 * 
 	 * @param array $argArray Arguments
-	 *
+	 * 
 	 * @return bool
 	 */
 	private function checkColumnValueExist(

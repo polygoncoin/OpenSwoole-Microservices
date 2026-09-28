@@ -41,14 +41,14 @@ class Google implements ThirdPartyInterface
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -59,7 +59,7 @@ class Google implements ThirdPartyInterface
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -69,7 +69,7 @@ class Google implements ThirdPartyInterface
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -116,9 +116,9 @@ class Google implements ThirdPartyInterface
 
 	/**
 	 * Function to end process which outputs the results
-	 *
+	 * 
 	 * @param string $output Output
-	 *
+	 * 
 	 * @return void
 	 */
 	private function endProcess(

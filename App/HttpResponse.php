@@ -37,42 +37,42 @@ class HttpResponse
 {
 	/**
 	 * Start micro timestamp;
-	 *
+	 * 
 	 * @var null|int
 	 */
 	private $startMicroTimestamp = null;
 
 	/**
 	 * End micro timestamp;
-	 *
+	 * 
 	 * @var null|int
 	 */
 	private $endMicroTimestamp = null;
 
 	/**
 	 * HTTP Status
-	 *
+	 * 
 	 * @var int
 	 */
 	public $httpStatus;
 
 	/**
 	 * Data Encode object
-	 *
+	 * 
 	 * @var null|DataEncode
 	 */
 	public $dataEncodeObject = null;
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -81,23 +81,21 @@ class HttpResponse
 		$this->httpObject = &$httpObject;
 		$this->httpStatus = HttpStatus::$Ok;
 
-		if (Env::$config[$this->httpObject->httpRequestObject->customerId]->OUTPUT_PERFORMANCE_STATS) {
-			$this->startMicroTimestamp = microtime(as_float: Constant::$TRUE);
-		}
+		$this->startMicroTimestamp = microtime(as_float: Constant::$TRUE);
 	}
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
 	{
 		$sqlConfig = $this->httpObject->httpRequestObject->routeParserObject->sqlConfig ?? [];
-		$OUTPUT_REPRESENTATION = CommonFunction::getOutputRepresentation(
+		$OUTPUT_REPRESENTATION = CommonFunction::getOUTPUT_REPRESENTATION(
 			sqlConfig: $sqlConfig,
 			httpReqData: $this->httpObject->httpReqData,
-			customerId: $this->httpObject->httpRequestObject->customerId
+			customerId: $this->httpObject->httpReqData['current']['customerId']
 		);
 		$this->dataEncodeObject = new DataEncode(
 			httpObject: $this->httpObject,
@@ -112,7 +110,7 @@ class HttpResponse
 
 	/**
 	 * Start Data Output
-	 *
+	 * 
 	 * @return void
 	 */
 	public function startData(): void
@@ -122,7 +120,7 @@ class HttpResponse
 
 	/**
 	 * End response
-	 *
+	 * 
 	 * @return void
 	 */
 	public function endData(): void
@@ -133,7 +131,7 @@ class HttpResponse
 
 	/**
 	 * Add HTTP status in response
-	 *
+	 * 
 	 * @return void
 	 */
 	public function addStatus(): void
@@ -146,12 +144,12 @@ class HttpResponse
 
 	/**
 	 * Add Performance detail in response
-	 *
+	 * 
 	 * @return void
 	 */
 	public function addPerformance(): void
 	{
-		if (Env::$config[$this->httpObject->httpRequestObject->customerId]->OUTPUT_PERFORMANCE_STATS) {
+		if (Env::$config[$this->httpObject->httpReqData['current']['customerId']]->OUTPUT_PERFORMANCE_STATS) {
 			$this->endMicroTimestamp = microtime(as_float: Constant::$TRUE);
 			$time = ceil(
 				num: ($this->endMicroTimestamp - $this->startMicroTimestamp) * 1000
@@ -185,13 +183,13 @@ class HttpResponse
 
 	/**
 	 * Add Performance detail in response
-	 *
+	 * 
 	 * @return array
 	 */
 	public function returnPerformance(): array
 	{
 		$returnPerformance = [];
-		if (Env::$config[$this->httpObject->httpRequestObject->customerId]->OUTPUT_PERFORMANCE_STATS) {
+		if (Env::$config[$this->httpObject->httpReqData['current']['customerId']]->OUTPUT_PERFORMANCE_STATS) {
 			$this->endMicroTimestamp = microtime(as_float: Constant::$TRUE);
 			$time = ceil(
 				num: ($this->endMicroTimestamp - $this->startMicroTimestamp) * 1000

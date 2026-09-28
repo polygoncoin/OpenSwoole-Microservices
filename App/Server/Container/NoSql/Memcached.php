@@ -36,50 +36,50 @@ class Memcached implements NoSqlInterface
 {
 	/**
 	 * Cache Server Hostname
-	 *
+	 * 
 	 * @var null|string
 	 */
-	private $cacheServerHostname = null;
+	private $cacheServerHost = null;
 
 	/**
 	 * Cache Server Port
-	 *
+	 * 
 	 * @var null|int
 	 */
 	private $cacheServerPort = null;
 
 	/**
 	 * Cache Server Object
-	 *
+	 * 
 	 * @var null|\Memcached
 	 */
 	private $cacheServerObject = null;
 
 	/**
 	 * Constructor
-	 *
-	 * @param string      $cacheServerHostname Cache Server Hostname
+	 * 
+	 * @param string      $cacheServerHost Cache Server Hostname
 	 * @param int         $cacheServerPort     Cache Server Port
-	 * @param string      $cacheServerUsername Cache Server Username
+	 * @param string      $cacheServerUser Cache Server Username
 	 * @param string      $cacheServerPassword Cache Server Password
-	 * @param null|string $cacheServerDatabase Cache Server Database
+	 * @param null|string $cacheServerDb Cache Server Database
 	 * @param null|string $cacheServerTable    Cache Server Table
 	 */
 	public function __construct(
-		$cacheServerHostname,
+		$cacheServerHost,
 		$cacheServerPort,
-		$cacheServerUsername,
+		$cacheServerUser,
 		$cacheServerPassword,
-		$cacheServerDatabase,
+		$cacheServerDb,
 		$cacheServerTable
 	) {
-		$this->cacheServerHostname = $cacheServerHostname;
+		$this->cacheServerHost = $cacheServerHost;
 		$this->cacheServerPort = $cacheServerPort;
 	}
 
 	/**
 	 * Cache Server Object
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -103,7 +103,7 @@ class Memcached implements NoSqlInterface
 		try {
 			$this->cacheServerObject = new \Memcached();
 			$this->cacheServerObject->addServer(
-				$this->cacheServerHostname,
+				$this->cacheServerHost,
 				$this->cacheServerPort
 			);
 		} catch (\Exception $e) {
@@ -116,9 +116,9 @@ class Memcached implements NoSqlInterface
 
 	/**
 	 * Cache key exist
-	 *
+	 * 
 	 * @param string $key Key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function exist(
@@ -137,9 +137,9 @@ class Memcached implements NoSqlInterface
 
 	/**
 	 * Get cache key
-	 *
+	 * 
 	 * @param string $key Key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function get(
@@ -162,11 +162,11 @@ class Memcached implements NoSqlInterface
 
 	/**
 	 * Set cache key
-	 *
+	 * 
 	 * @param string $key    Key
 	 * @param mixed  $value  Cache value
 	 * @param int    $expire Seconds to expire. Default 0 - doesn't expire
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function set(
@@ -200,10 +200,10 @@ class Memcached implements NoSqlInterface
 
 	/**
 	 * Increment cache key with offset
-	 *
+	 * 
 	 * @param string $key    Key
 	 * @param int    $offset Offset
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function increment(
@@ -224,9 +224,9 @@ class Memcached implements NoSqlInterface
 
 	/**
 	 * Delete cache key
-	 *
+	 * 
 	 * @param string $key Key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function delete(

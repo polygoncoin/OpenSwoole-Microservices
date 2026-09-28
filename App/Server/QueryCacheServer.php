@@ -35,63 +35,63 @@ class QueryCacheServer
 {
 	/**
 	 * Query Cache Server Type
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerMode = null;
 
 	/**
 	 * Query Cache Server Hostname
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerHost = null;
 
 	/**
 	 * Query Cache Server Port
-	 *
+	 * 
 	 * @var null|int
 	 */
 	private $queryCacheServerPort = null;
 
 	/**
 	 * Query Cache Server Username
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerUser = null;
 
 	/**
 	 * Query Cache Server Password
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerPassword = null;
 
 	/**
 	 * Query Cache Server DB
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerDb = null;
 
 	/**
 	 * Cache collection
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $queryCacheServerTable = null;
 
 	/**
 	 * Query Cache Server Object
-	 *
+	 * 
 	 * @var null|QueryCacheServerInterface
 	 */
 	private $queryCacheServerObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string      $queryCacheServerMode     Query Cache Server Type
 	 * @param string      $queryCacheServerHost Query Cache Server Hostname
 	 * @param int         $queryCacheServerPort     Query Cache Server Port
@@ -120,7 +120,7 @@ class QueryCacheServer
 
 	/**
 	 * Connect Query Cache
-	 *
+	 * 
 	 * @return void
 	 */
 	public function connectQueryCache(): void
@@ -161,9 +161,9 @@ class QueryCacheServer
 
 	/**
 	 * Query Cache key exist
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheExist(
@@ -182,9 +182,9 @@ class QueryCacheServer
 
 	/**
 	 * Get Query Cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheGet(
@@ -203,10 +203,10 @@ class QueryCacheServer
 
 	/**
 	 * Set cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey   Query Cache key
 	 * @param mixed  $queryCacheValue Query Cache value
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheSet(
@@ -227,10 +227,10 @@ class QueryCacheServer
 
 	/**
 	 * Increment Query Cache key as per offset
-	 *
+	 * 
 	 * @param string $queryCacheKey    Query Cache key
 	 * @param int    $queryCacheOffset Query Cache offset
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheIncrement(
@@ -251,9 +251,9 @@ class QueryCacheServer
 
 	/**
 	 * Delete Query Cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheDelete(

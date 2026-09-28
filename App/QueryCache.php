@@ -35,21 +35,21 @@ class QueryCache
 {
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Query Cache Connection Object
-	 *
+	 * 
 	 * @var null|QueryCacheServer
 	 */
 	private $queryCacheServerObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -60,7 +60,7 @@ class QueryCache
 
     /**
 	 * Connect query Cache
-	 *
+	 * 
 	 * @return void
 	 */
 	public function connectQueryCache(): void
@@ -70,25 +70,25 @@ class QueryCache
         }
 
 		$queryCacheServerCred = DbCommonFunction::getQueryCacheCred(
-			customerId: $this->httpObject->httpRequestObject->customerId
+			customerId: $this->httpObject->httpReqData['current']['customerId']
 		);
 		$this->queryCacheServerObject = new QueryCacheServer(
 			queryCacheServerMode: $queryCacheServerCred['cacheServerType'],
-			queryCacheServerHost: $queryCacheServerCred['cacheServerHostname'],
+			queryCacheServerHost: $queryCacheServerCred['cacheServerHost'],
 			queryCacheServerPort: $queryCacheServerCred['cacheServerPort'],
-			queryCacheServerUser: $queryCacheServerCred['cacheServerUsername'],
+			queryCacheServerUser: $queryCacheServerCred['cacheServerUser'],
 			queryCacheServerPassword: $queryCacheServerCred['cacheServerPassword'],
-			queryCacheServerDb: $queryCacheServerCred['cacheServerDatabase'],
+			queryCacheServerDb: $queryCacheServerCred['cacheServerDb'],
 			queryCacheServerTable: $queryCacheServerCred['cacheServerTable']
 		);
 	}
 
 	/**
 	 * Prepend Query Cache key
-	 *
+	 * 
 	 * @param int    $customerId    Customer Id
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCachePrepend(
@@ -109,10 +109,10 @@ class QueryCache
 
 	/**
 	 * Get Query Cache key
-	 *
+	 * 
 	 * @param int    $customerId    Customer Id
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheGet(
@@ -146,10 +146,10 @@ class QueryCache
 
 	/**
 	 * Increment Query Cache key counter
-	 *
+	 * 
 	 * @param int    $customerId    Customer Id
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheIncrement(
@@ -175,11 +175,11 @@ class QueryCache
 
 	/**
 	 * Set Query Cache key
-	 *
+	 * 
 	 * @param int    $customerId      Customer Id
 	 * @param string $queryCacheKey   Query Cache key
 	 * @param mixed  $queryCacheValue Query Cache value
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheSet(
@@ -216,10 +216,10 @@ class QueryCache
 
 	/**
 	 * Delete Query Cache key
-	 *
+	 * 
 	 * @param int    $customerId    Customer Id
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheDelete(

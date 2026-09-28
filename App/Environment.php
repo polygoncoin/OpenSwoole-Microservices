@@ -34,6 +34,7 @@ class Environment
 {
     public $OUTPUT_PERFORMANCE_STATS = null;
     public $DISABLE_REQUESTS_VIA_PROXIES = null;
+    public $CUSTOMER_CONFIG_DIRECTORY = null;
 
     public $SECRET = null;
     public $PAYLOAD_IN_RESPONSE = null;
@@ -42,8 +43,38 @@ class Environment
     public $RELOAD_REQUEST_KEYWORD = null;
     public $RELOAD_CACHE_CIDR = null;
 
-    public $MAX_CONCURRENT_LOGIN = null;
-    public $MAX_CONCURRENT_LOGIN_WINDOW = null;
+    public $CUSTOMER_ENABLE_INPUT_REPRESENTATION_IN_QUERY_STRING = null;
+    public $CUSTOMER_ENABLE_OUTPUT_REPRESENTATION_IN_QUERY_STRING = null;
+
+    public $CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE = null;
+
+    public $CUSTOMER_ENABLE_RESPONSE_CACHING = null;
+    public $CUSTOMER_ENABLE_QUERY_CACHE_FOR_PUBLIC_REQUEST = null;
+    public $CUSTOMER_ENABLE_QUERY_CACHE_FOR_PRIVATE_SESSION_REQUEST = null;
+    public $CUSTOMER_ENABLE_QUERY_CACHE_FOR_PRIVATE_TOKEN_REQUEST = null;
+
+    public $CUSTOMER_ENABLE_PUBLIC_REQUEST = null;
+    public $CUSTOMER_ENABLE_PRIVATE_SESSION_REQUEST = null;
+    public $CUSTOMER_ENABLE_PRIVATE_TOKEN_REQUEST = null;
+
+    public $CUSTOMER_ENABLE_CIDR = null;
+    public $CUSTOMER_ENABLE_CRON_REQUEST = null;
+    public $CUSTOMER_ENABLE_CUSTOM_REQUEST = null;
+    public $CUSTOMER_ENABLE_DROPBOX_REQUEST = null;
+    public $CUSTOMER_ENABLE_DOWNLOAD_REQUEST = null;
+    public $CUSTOMER_ENABLE_EXPLAIN_REQUEST = null;
+    public $CUSTOMER_ENABLE_IMPORT_REQUEST = null;
+    public $CUSTOMER_ENABLE_IMPORT_SAMPLE_REQUEST = null;
+    public $CUSTOMER_ENABLE_ROUTES_REQUEST = null;
+    public $CUSTOMER_ENABLE_THIRDPARTY_REQUEST = null;
+    public $CUSTOMER_ENABLE_UPLOAD_REQUEST = null;
+
+    public $CUSTOMER_ENABLE_LIMITING = null;
+    public $CUSTOMER_ENABLE_LIMITING_PER_IP = null;
+    public $CUSTOMER_ENABLE_LIMITING_LOGIN_PER_USER = null;
+    public $CUSTOMER_ENABLE_LIMITING_SUCCESSFULL_LOGIN_PER_USER = null;
+    public $CUSTOMER_ENABLE_LIMITING_LOGGED_IN_USER = null;
+    public $CUSTOMER_ENABLE_LIMITING_LOGGED_IN_USER_PER_IP = null;
 
     public $CACHE_MODE = null;
     public $CACHE_HOST = null;
@@ -154,7 +185,7 @@ class Environment
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string $envFile Enviroment file name
 	 */
 	public function __construct($envFile)

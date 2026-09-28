@@ -33,56 +33,56 @@ class JsonDecodeObject
 {
 	/**
 	 * JSON file start position
-	 *
+	 * 
 	 * @var null|int
 	 */
 	public $startIndex = null;
 
 	/**
 	 * JSON file end position
-	 *
+	 * 
 	 * @var null|int
 	 */
 	public $endIndex = null;
 
 	/**
 	 * Object / Array
-	 *
+	 * 
 	 * @var string
 	 */
 	public $mode = '';
 
 	/**
 	 * Object key for parant object
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $objectKey = null;
 
 	/**
 	 * Array key for parant object
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $arrayKey = null;
 
 	/**
 	 * Object values
-	 *
+	 * 
 	 * @var array
 	 */
 	public $objectValueArray = [];
 
 	/**
 	 * Array values
-	 *
+	 * 
 	 * @var array
 	 */
 	public $arrayValueArray = [];
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string $mode      Values can be one among Array
 	 * @param string $objectKey Key for object
 	 */

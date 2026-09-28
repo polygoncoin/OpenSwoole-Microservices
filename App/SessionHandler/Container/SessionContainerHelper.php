@@ -56,9 +56,9 @@ class SessionContainerHelper
 
 	/**
 	 * Encryption
-	 *
+	 * 
 	 * @param string $plainText Plain Text
-	 *
+	 * 
 	 * @return string
 	 */
 	protected function encryptData(
@@ -83,9 +83,9 @@ class SessionContainerHelper
 
 	/**
 	 * Decryption
-	 *
+	 * 
 	 * @param string $cipherText Cipher Text
-	 *
+	 * 
 	 * @return bool|string
 	 */
 	protected function decryptData(

@@ -35,39 +35,40 @@ class Http
 {
 	/**
 	 * Microservices HTTP request
-	 *
+	 * 
 	 * @var null|HttpRequest
 	 */
 	public $httpRequestObject = null;
 
 	/**
 	 * Microservices HTTP response
-	 *
+	 * 
 	 * @var null|HttpResponse
 	 */
 	public $httpResponseObject = null;
 
 	/**
 	 * HTTP request data
-	 *
+	 * 
 	 * @var null|array
 	 */
 	public $httpReqData = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param array $httpReqData HTTP request data
 	 */
 	public function __construct(
 		&$httpReqData
 	) {
 		$this->httpReqData = &$httpReqData;
+		$this->httpReqData['current'] = [];
 	}
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -84,7 +85,7 @@ class Http
 
 	/**
 	 * Initialize request
-	 *
+	 * 
 	 * @return void
 	 */
 	public function initRequest(): void
@@ -94,7 +95,7 @@ class Http
 
 	/**
 	 * Initialize response
-	 *
+	 * 
 	 * @return void
 	 */
 	public function initResponse(): void

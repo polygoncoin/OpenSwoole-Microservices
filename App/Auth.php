@@ -37,14 +37,14 @@ class Auth
 {
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -55,7 +55,7 @@ class Auth
 
 	/**
 	 * Load User Data
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -125,13 +125,13 @@ class Auth
 			);
 		}
 
-		$this->httpObject->httpRequestObject->customerUserId = $this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_id'];
-		$this->httpObject->httpRequestObject->customerUserGroupId = $this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'];
+		$this->httpObject->httpReqData['current']['customerUserId'] = $this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_id'];
+		$this->httpObject->httpReqData['current']['customerUserGroupId'] = $this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'];
 	}
 
 	/**
 	 * Load Group Data
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -143,8 +143,8 @@ class Auth
 
 		// Load groupData
 		$groupCacheKey = CacheServerKey::customerGroup(
-			customerId: $this->httpObject->httpRequestObject->customerId,
-			customerUserGroupId: $this->httpObject->httpRequestObject->customerUserGroupId
+			customerId: $this->httpObject->httpReqData['current']['customerId'],
+			customerUserGroupId: $this->httpObject->httpReqData['current']['customerUserGroupId']
 		);
 		if (
 			!$this->httpObject->httpRequestObject->cacheServerObject->cacheExist(

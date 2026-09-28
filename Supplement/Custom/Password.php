@@ -40,14 +40,14 @@ class Password implements CustomInterface
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -58,7 +58,7 @@ class Password implements CustomInterface
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -70,7 +70,7 @@ class Password implements CustomInterface
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -121,7 +121,7 @@ class Password implements CustomInterface
 			);
 			$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
 
-			$customerId = $this->httpObject->httpRequestObject->customerId;
+			$customerId = $this->httpObject->httpReqData['current']['customerId'];
 			$cacheKey = CacheServerKey::customerUsername(
 				customerId: $customerId,
 				username: $userName
@@ -129,7 +129,7 @@ class Password implements CustomInterface
 			Reload::processUser(
 				httpRequestIp: $this->httpObject->httpReqData['server']['httpRequestIp'],
 				customerData: $this->httpObject->httpRequestObject->activeRequestData['customerData'],
-				customerUserId: $this->httpObject->httpRequestObject->customerUserId
+				customerUserId: $this->httpObject->httpReqData['current']['customerUserId']
 			);
 			$this->httpObject->httpRequestObject->cacheServerObject->cacheDelete(
 				cacheKey: CacheServerKey::token(

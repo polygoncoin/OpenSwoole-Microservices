@@ -90,17 +90,16 @@ One can replace **&lt;filenames&gt;** tag with desired name as per functionality
 Below are route level CIDR settings for a set of system routes (starting / ending with)
 
 ```SQL
-`customer`.`cronRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`customRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`dropboxRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`explainRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`exportRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`importSampleRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`importRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`reloadRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`routesRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`thirdPatyRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`uploadRestrictedCidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`customer_cron_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`customer_custom_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`customer_dropbox_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`customer_explain_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`customer_download_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`customer_import_sample_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`customer_import_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`customer_routes_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`customer_thirdparty_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`customer_upload_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
 ```
 
 ## Contributing

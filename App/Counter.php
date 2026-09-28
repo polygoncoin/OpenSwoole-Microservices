@@ -35,7 +35,7 @@ class Counter
 {
 	/**
 	 * Get Global counter
-	 *
+	 * 
 	 * @return int
 	 */
 	public static function getGlobalCounter(): int
@@ -62,7 +62,7 @@ class Counter
 					customerId: 0
 				);
 
-				$table = Env::$config[$this->httpObject->httpRequestObject->customerId]->DB_NAME . '.' . Env::$SYSTEM_LEVEL_PRIMARY_KEY_NAME;
+				$table = Env::$config[$this->httpObject->httpReqData['current']['customerId']]->DB_NAME . '.' . Env::$SYSTEM_LEVEL_PRIMARY_KEY_NAME;
 				$sql = "INSERT INTO {$table}() VALUES()";
 				$paramArray = [];
 

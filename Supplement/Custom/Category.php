@@ -39,14 +39,14 @@ class Category implements CustomInterface
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -54,14 +54,14 @@ class Category implements CustomInterface
 	) {
 		$this->httpObject = &$httpObject;
 		$this->httpObject->httpRequestObject->databaseServerObject = DbCommonFunction::connectDatabase(
-			customerId: $this->httpObject->httpRequestObject->customerId,
+			customerId: $this->httpObject->httpReqData['current']['customerId'],
 			fetchDbMode: 'Slave'
 		);
 	}
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -71,7 +71,7 @@ class Category implements CustomInterface
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed

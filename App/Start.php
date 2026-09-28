@@ -38,9 +38,9 @@ class Start
 {
 	/**
 	 * Process HTTP request data
-	 *
+	 * 
 	 * @param array $httpReqData HTTP request data
-	 *
+	 * 
 	 * @return array
 	 */
 	public static function http(
@@ -211,8 +211,8 @@ class Start
 
 			if (
 				isset($Microservices->httpObject->httpRequestObject)
-				&& isset(Env::$config[$Microservices->httpObject->httpRequestObject->customerId])
-				&& Env::$config[$Microservices->httpObject->httpRequestObject->customerId]->OUTPUT_PERFORMANCE_STATS
+				&& isset(Env::$config[$Microservices->httpObject->httpReqData['current']['customerId']])
+				&& Env::$config[$Microservices->httpObject->httpReqData['current']['customerId']]->OUTPUT_PERFORMANCE_STATS
 			) {
 				$performanceData = $Microservices->httpObject->httpResponseObject->returnPerformance();
 				$errorArray = [

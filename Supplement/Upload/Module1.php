@@ -38,14 +38,14 @@ class Module1 implements UploadInterface
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -56,7 +56,7 @@ class Module1 implements UploadInterface
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -66,7 +66,7 @@ class Module1 implements UploadInterface
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -81,13 +81,13 @@ class Module1 implements UploadInterface
 
 	/**
 	 * Function to get filename with location depending upon $sess
-	 *
+	 * 
 	 * @return string
 	 */
 	private function getLocation(): string
 	{
 		return Constant::$DROPBOX_PRIVATE_DIRECTORY
-			. DIRECTORY_SEPARATOR . $this->httpObject->httpRequestObject->customerId
+			. DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['current']['customerId']
 			. DIRECTORY_SEPARATOR . 'test.png';
 	}
 }

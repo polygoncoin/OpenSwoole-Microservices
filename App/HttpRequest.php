@@ -48,112 +48,119 @@ class HttpRequest
 {
 	/**
 	 * Input Representation
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $INPUT_REPRESENTATION = null;
 
 	/**
+	 * Input Representation
+	 * 
+	 * @var null|string
+	 */
+	public $SQL_DIRECTORY = null;
+
+	/**
 	 * Rate Limiter
-	 *
+	 * 
 	 * @var null|RateLimiter
 	 */
 	public $rateLimiterObject = null;
 
 	/**
 	 * Auth middleware object
-	 *
+	 * 
 	 * @var null|Auth
 	 */
 	public $authObject = null;
 
 	/**
 	 * Request id
-	 *
+	 * 
 	 * @var null|int
 	 */
 	public $requestId = null;
 
 	/**
 	 * Data Decode object
-	 *
+	 * 
 	 * @var null|DataDecode
 	 */
 	public $dataDecodeObject = null;
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Customer Cache Object
-	 *
+	 * 
 	 * @var null|CacheServer
 	 */
 	public $cacheServerObject = null;
 
 	/**
 	 * Customer Database Object
-	 *
+	 * 
 	 * @var null|DatabaseServer
 	 */
 	public $databaseServerObject = null;
 
 	/**
 	 * Customer Query Cache Object
-	 *
+	 * 
 	 * @var null|CacheServer
 	 */
 	public $queryCacheServerObject = null;
 
 	/**
 	 * Active Request Data Collection Array
-	 *
+	 * 
 	 * @var null|array
 	 */
 	public $activeRequestData = null;
 
 	/**
 	 * Public domain cache key exist flag
-	 *
+	 * 
 	 * @var null|bool
 	 */
 	public $isPublicDomain = null;
 
 	/**
 	 * Private session domain cache key exist flag
-	 *
+	 * 
 	 * @var null|bool
 	 */
 	public $isPrivateSessionDomain = null;
 
 	/**
 	 * Private token domain cache key exist flag
-	 *
+	 * 
 	 * @var null|bool
 	 */
 	public $isPrivateTokenDomain = null;
 
 	/**
 	 * Domain cache key
-	 *
+	 * 
 	 * @var null|bool
 	 */
 	public $domainCacheKey = null;
 
 	/**
 	 * Flag for Private request
-	 *
+	 * 
 	 * @var null|bool
 	 */
 	public $isPrivateRequest = null;
 
 	/**
 	 * Flag for Public request
-	 *
+	 * 
 	 * @var null|bool
 	 */
 	public $isPublicRequest = null;
@@ -165,42 +172,35 @@ class HttpRequest
 
 	/**
 	 * Route Parser object
-	 *
+	 * 
 	 * @var null|RouteParser
 	 */
 	public $routeParserObject = null;
 
 	/**
-	 * Customer Id
-	 *
-	 * @var null|int
-	 */
-	public $customerId = 0;
-
-	/**
 	 * Group Id
-	 *
+	 * 
 	 * @var null|int
 	 */
 	public $customerUserGroupId = null;
 
 	/**
 	 * User Id
-	 *
+	 * 
 	 * @var null|int
 	 */
 	public $customerUserId = null;
 
 	/**
 	 * Session object
-	 *
+	 * 
 	 * @var null|Session
 	 */
 	public $sessionObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -267,16 +267,24 @@ class HttpRequest
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
 	{
+		$this->activeRequestData['customerData'] = DbCommonFunction::$globalCacheServerObject->cacheGet(
+			cacheKey: $this->domainCacheKey
+		);
+		$this->httpObject->httpReqData['current']['customerId'] = $this->activeRequestData['customerData']['customer_id'];
+		Env::loadEnv(
+			customerId: $this->httpObject->httpReqData['current']['customerId']
+		);
+
 		if (
 			!$this->isPublicDomain
 			&& !$this->isPrivateSessionDomain
 			&& !$this->isPrivateTokenDomain
-			&& $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM] !== '/' . Env::$config[$this->httpObject->httpRequestObject->customerId]->RELOAD_REQUEST_KEYWORD
+			&& $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM] !== '/' . Env::$config[$this->httpObject->httpReqData['current']['customerId']]->RELOAD_REQUEST_KEYWORD
 		) {
 			throw new \Exception(
 				message: "Invalid domain: '{$this->httpObject->httpReqData['server']['domainName']}'",
@@ -284,16 +292,10 @@ class HttpRequest
 			);
 		}
 
-		$this->activeRequestData['customerData'] = DbCommonFunction::$globalCacheServerObject->cacheGet(
-			cacheKey: $this->domainCacheKey
-		);
-		$this->customerId = $this->activeRequestData['customerData']['customer_id'];
-
 		if ($this->isPrivateSessionDomain) {
 			$this->sessionObject = new Session(
-				customerId: $this->httpObject->httpRequestObject->customerId
+				customerId: $this->httpObject->httpReqData['current']['customerId']
 			);
-			$this->sessionObject->sessionDomain = $this->httpObject->httpReqData['server']['domainName'];
 			$this->sessionObject->initSessionHandler(
 				options: []
 			);
@@ -302,10 +304,7 @@ class HttpRequest
 
 		if (
 			$this->isPublicRequest
-			&& !CommonFunction::isEnabled(
-				httpObject: $this->httpObject,
-				feature: 'customer_enabled_public_request'
-			)
+			&& !Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_PUBLIC_REQUEST
 		) {
 			throw new \Exception(
 				message: 'Public request are disabled',
@@ -314,14 +313,23 @@ class HttpRequest
 		}
 
 		if (
-			$this->isPrivateRequest
-			&& !CommonFunction::isEnabled(
-				httpObject: $this->httpObject,
-				feature: 'customer_enabled_private_request'
-			)
+			$this->isPrivateSessionDomain
+			&& $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM] !== '/login'
+			&& !Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_PRIVATE_SESSION_REQUEST
 		) {
 			throw new \Exception(
-				message: 'Private request are disabled',
+				message: 'Session based request are disabled',
+				code: HttpStatus::$BadRequest
+			);
+		}
+
+		if (
+			$this->isPrivateTokenDomain
+			&& $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM] !== '/login'
+			&& !Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_PRIVATE_TOKEN_REQUEST
+		) {
+			throw new \Exception(
+				message: 'Token based request are disabled',
 				code: HttpStatus::$BadRequest
 			);
 		}
@@ -329,16 +337,13 @@ class HttpRequest
 		if (
 			(
 				$this->isPublicRequest
-				&& CommonFunction::isEnabled(
-					httpObject: $this->httpObject,
-					feature: 'customer_enabled_query_cache_for_public_request'
-				)
+				&& Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_QUERY_CACHE_FOR_PUBLIC_REQUEST
 			)
 			|| (
 				$this->isPrivateRequest
-				&& CommonFunction::isEnabled(
-					httpObject: $this->httpObject,
-					feature: 'customer_enabled_query_cache_for_private_request'
+				&& (
+					Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_QUERY_CACHE_FOR_PRIVATE_SESSION_REQUEST
+					|| Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_QUERY_CACHE_FOR_PRIVATE_TOKEN_REQUEST
 				)
 			)
 		) {
@@ -349,28 +354,72 @@ class HttpRequest
 
 		if ($this->isPrivateRequest) {
 			$this->cacheServerObject = DbCommonFunction::connectCache(
-				customerId: $this->httpObject->httpRequestObject->customerId
+				customerId: $this->httpObject->httpReqData['current']['customerId']
 			);
-			if (
-				CommonFunction::isEnabled(
-					httpObject: $this->httpObject,
-					feature: 'customer_enabled_rate_limiting'
-				)
-			) {
+			if (Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_LIMITING) {
 				$this->rateLimiterObject = new RateLimiter(
 					cacheObject: $this->cacheServerObject
 				);
 			}
 		}
-
+		
 		if ($this->httpObject->httpReqData['get'][ROUTE_URL_PARAM] !== '/login') {
+			$configDir = Constant::$CONFIG_DIRECTORY
+				. DIRECTORY_SEPARATOR . Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_CONFIG_DIRECTORY;
+			$commonConfigDir = Constant::$CONFIG_DIRECTORY
+				. DIRECTORY_SEPARATOR . 'Common';
+
 			if ($this->isPrivateRequest) {
 				$this->authObject = new Auth(
 					httpObject: $this->httpObject
 				);
 				$this->authObject->loadUserData();
 				$this->authObject->loadGroupData();
+
+				$configDir .= DIRECTORY_SEPARATOR . 'Private';
+				$commonConfigDir .= DIRECTORY_SEPARATOR . 'Private';
+
+				$servingFileDir = $configDir . DIRECTORY_SEPARATOR . 'ServingFile';
+				$routeDir = $configDir . DIRECTORY_SEPARATOR . 'Route'
+					. DIRECTORY_SEPARATOR . "GroupId.{$this->httpObject->httpReqData['current']['customerUserGroupId']}"
+					. DIRECTORY_SEPARATOR . $this->getDataMode();
+				$sqlDir = $configDir . DIRECTORY_SEPARATOR . 'Sql'
+					. DIRECTORY_SEPARATOR . "GroupId.{$this->httpObject->httpReqData['current']['customerUserGroupId']}"
+					. DIRECTORY_SEPARATOR . $this->getDataMode()
+					. DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['server']['httpRequestMethod'];
+
+				$commonRouteDir = $commonConfigDir . DIRECTORY_SEPARATOR . 'Route'
+					. DIRECTORY_SEPARATOR . $this->getDataMode();
+				$commonSqlDir = $commonConfigDir . DIRECTORY_SEPARATOR . 'Sql'
+					. DIRECTORY_SEPARATOR . $this->getDataMode()
+					. DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['server']['httpRequestMethod'];
+			} else {
+				$configDir .= DIRECTORY_SEPARATOR . 'Public';
+				$commonConfigDir .= DIRECTORY_SEPARATOR . 'Public';
+
+				$servingFileDir = $configDir . DIRECTORY_SEPARATOR . 'ServingFile';
+				$routeDir = $configDir . DIRECTORY_SEPARATOR . 'Route'
+					. DIRECTORY_SEPARATOR . $this->getDataMode();
+				$sqlDir = $configDir . DIRECTORY_SEPARATOR . 'Sql'
+					. DIRECTORY_SEPARATOR . $this->getDataMode()
+					. DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['server']['httpRequestMethod'];
+
+				$commonRouteDir = $commonConfigDir . DIRECTORY_SEPARATOR . 'Route'
+					. DIRECTORY_SEPARATOR . $this->getDataMode();
+				$commonSqlDir = $commonConfigDir . DIRECTORY_SEPARATOR . 'Sql'
+					. DIRECTORY_SEPARATOR . $this->getDataMode()
+					. DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['server']['httpRequestMethod'];
 			}
+
+			$this->httpObject->httpReqData['current']['servingFileDir'] = $servingFileDir;
+			$this->httpObject->httpReqData['current']['configDir'] = $configDir;
+			$this->httpObject->httpReqData['current']['routeDir'] = $routeDir;
+			$this->httpObject->httpReqData['current']['sqlDir'] = $sqlDir;
+
+			$this->httpObject->httpReqData['current']['commonServingFileDir'] = $servingFileDir;
+			$this->httpObject->httpReqData['current']['commonConfigDir'] = $configDir;
+			$this->httpObject->httpReqData['current']['commonRouteDir'] = $commonRouteDir;
+			$this->httpObject->httpReqData['current']['commonSqlDir'] = $commonSqlDir;
 
 			$this->routeParserObject = new RouteParser(
 				httpObject: $this->httpObject
@@ -381,9 +430,34 @@ class HttpRequest
 		return Constant::$TRUE;
 	}
 
+
+	/**
+	 * Get data mode string
+	 * 
+	 * @return string
+	 */
+	public function getDataMode() {
+
+		$dataMode = 'DataRetrieval';
+		switch ($this->httpObject->httpReqData['server']['httpRequestMethod']) {
+			case Constant::$GET:
+			case Constant::$QUERY:
+				$dataMode = 'DataRetrieval';
+				break;
+			case Constant::$POST:
+			case Constant::$PUT:
+			case Constant::$PATCH:
+			case Constant::$DELETE:
+				$dataMode = 'DataModification';
+				break;
+		}
+
+		return $dataMode;
+	}
+
 	/**
 	 * Load payload
-	 *
+	 * 
 	 * @return void
 	 */
 	public function loadPayload(): void
@@ -412,7 +486,7 @@ class HttpRequest
 
 	/**
 	 * Set payload stream
-	 *
+	 * 
 	 * @return string
 	 */
 	private function setPayloadStream(): string
@@ -431,7 +505,7 @@ class HttpRequest
 					case (
 						$this->httpObject->httpReqData['get'][ROUTE_URL_PARAM] !== '/login'
 						&& $this->routeParserObject->routeEndingWithReservedKeywordFlag
-						&& ($this->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpRequestObject->customerId]->IMPORT_REQUEST_KEYWORD)
+						&& ($this->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpReqData['current']['customerId']]->IMPORT_REQUEST_KEYWORD)
 						&& isset($this->httpObject->httpReqData['files']['file']['tmp_name'])
 					):
 						$uploadedFileName = $this->httpObject->httpReqData['files']['file']['tmp_name'];
@@ -440,7 +514,7 @@ class HttpRequest
 						);
 
 						$this->databaseServerObject = DbCommonFunction::connectDatabase(
-							customerId: $this->httpObject->httpRequestObject->customerId,
+							customerId: $this->httpObject->httpReqData['current']['customerId'],
 							fetchDbMode: 'Master'
 						);
 
@@ -465,9 +539,9 @@ class HttpRequest
 							uploaded_file_md5 = :uploaded_file_md5,
 							request_ip = :request_ip
 						';
-						$paramArray[':customer_id'] = $this->customerId;
-						$paramArray[':customer_user_group_id'] = $this->customerUserGroupId;
-						$paramArray[':customer_user_id'] = $this->customerUserId;
+						$paramArray[':customer_id'] = $this->httpObject->httpReqData['current']['customerId'];
+						$paramArray[':customer_user_group_id'] = $this->httpObject->httpReqData['current']['customerUserGroupId'];
+						$paramArray[':customer_user_id'] = $this->httpObject->httpReqData['current']['customerUserId'];
 						$paramArray[':uploaded_file_name'] = $uploadedFileName;
 						$paramArray[':uploaded_file_md5'] = $uploadedFileMd5;
 						$paramArray[':request_ip'] = $this->httpObject->httpReqData['server']['httpRequestIp'];
@@ -502,9 +576,9 @@ class HttpRequest
 		);
 
 		$this->requestId = $this->getRequestId(
-			customerId: $this->customerId,
-			customerUserGroupId: $this->customerUserGroupId,
-			customerUserId: $this->customerUserId,
+			customerId: $this->httpObject->httpReqData['current']['customerId'],
+			customerUserGroupId: $this->httpObject->httpReqData['current']['customerUserGroupId'],
+			customerUserId: $this->httpObject->httpReqData['current']['customerUserId'],
 			route: $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM],
 			httpRequestMethod: $this->httpObject->httpReqData['server']['httpRequestMethod'],
 			httpRequestIp: $this->httpObject->httpReqData['server']['httpRequestIp'],
@@ -516,9 +590,9 @@ class HttpRequest
 
 	/**
 	 * Get Request Id
-	 *
+	 * 
 	 * @param string $uploadedFileMd5
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function getUploadedFileMd5Data(
@@ -527,7 +601,7 @@ class HttpRequest
 		$uploadedFileMd5Data = Constant::$FALSE;
 
 		$sql = "SELECT
-				 *
+				 * 
 			FROM
 				`import_file_detail`
 			WHERE
@@ -550,7 +624,7 @@ class HttpRequest
 
 	/**
 	 * Get Request Id
-	 *
+	 * 
 	 * @param int    $customerId
 	 * @param int    $customerUserGroupId
 	 * @param int    $customerUserId
@@ -558,7 +632,7 @@ class HttpRequest
 	 * @param string $httpRequestMethod
 	 * @param string $httpRequestIp
 	 * @param string $payloadJson
-	 *
+	 * 
 	 * @return int
 	 */
 	public function getRequestId(
@@ -604,11 +678,11 @@ class HttpRequest
 
 	/**
 	 * Log Debug Data
-	 *
+	 * 
 	 * @param string $debugMode
 	 * @param string $debugJson
 	 * @param string $payloadJson
-	 *
+	 * 
 	 * @return int
 	 */
 	public function logDebugData(
@@ -637,9 +711,9 @@ class HttpRequest
 			';
 			$paramArray[':debug_mode'] = $debugMode;
 			$paramArray[':request_id'] = $this->requestId;
-			$paramArray[':customer_id'] = $this->customerId;
-			$paramArray[':customer_user_group_id'] = $this->customerUserGroupId;
-			$paramArray[':customer_user_id'] = $this->customerUserId;
+			$paramArray[':customer_id'] = $this->httpObject->httpReqData['current']['customerId'];
+			$paramArray[':customer_user_group_id'] = $this->httpObject->httpReqData['current']['customerUserGroupId'];
+			$paramArray[':customer_user_id'] = $this->httpObject->httpReqData['current']['customerUserId'];
 			$paramArray[':request_route'] = $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM];
 			$paramArray[':request_method'] = $this->httpObject->httpReqData['server']['httpRequestMethod'];
 			$paramArray[':request_payload_json'] = $payloadJson;
@@ -664,10 +738,10 @@ class HttpRequest
 
 	/**
 	 * Log Error Data
-	 *
+	 * 
 	 * @param string $exceptionJson
 	 * @param string $payloadJson
-	 *
+	 * 
 	 * @return int
 	 */
 	public function logErrorData(
@@ -693,9 +767,9 @@ class HttpRequest
 				request_ip = :request_ip
 			';
 			$paramArray[':request_id'] = $this->requestId;
-			$paramArray[':customer_id'] = $this->customerId;
-			$paramArray[':customer_user_group_id'] = $this->customerUserGroupId;
-			$paramArray[':customer_user_id'] = $this->customerUserId;
+			$paramArray[':customer_id'] = $this->httpObject->httpReqData['current']['customerId'];
+			$paramArray[':customer_user_group_id'] = $this->httpObject->httpReqData['current']['customerUserGroupId'];
+			$paramArray[':customer_user_id'] = $this->httpObject->httpReqData['current']['customerUserId'];
 			$paramArray[':request_route'] = $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM];
 			$paramArray[':request_method'] = $this->httpObject->httpReqData['server']['httpRequestMethod'];
 			$paramArray[':request_payload_json'] = $payloadJson;
@@ -720,9 +794,9 @@ class HttpRequest
 
 	/**
 	 * Convert XML to JSON
-	 *
+	 * 
 	 * @param string $xmlString
-	 *
+	 * 
 	 * @return string
 	 */
 	private function convertXmlToJson(
@@ -751,10 +825,10 @@ class HttpRequest
 
 	/**
 	 * Format Array generated by XML
-	 *
+	 * 
 	 * @param array $arrayFromXml Array generated by XML
 	 * @param array $result       Formatted array
-	 *
+	 * 
 	 * @return void
 	 */
 	private function formatXmlArray(
@@ -828,9 +902,9 @@ class HttpRequest
 
 	/**
 	 * urldecode string or array
-	 *
+	 * 
 	 * @param array|string $value Array vales to be decoded. Basically $httpReqData['get']
-	 *
+	 * 
 	 * @return void
 	 */
 	public function urlDecode(
@@ -865,9 +939,9 @@ class HttpRequest
 
 	/**
 	 * Format CSV Payload
-	 *
+	 * 
 	 * @param string $csvFile
-	 *
+	 * 
 	 * @return string
 	 */
 	public function formatCsvPayload(
@@ -1018,10 +1092,10 @@ class HttpRequest
 
 	/**
 	 * Format CSV Payload
-	 *
+	 * 
 	 * @param array $csvHeaderData
 	 * @param array $csvRecordArray
-	 *
+	 * 
 	 * @return array
 	 */
 	public function formatCsvArray(

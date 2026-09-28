@@ -34,14 +34,14 @@ class Web
 {
 	/**
 	 * Return cURL Config
-	 *
+	 * 
 	 * @param string $homeURL     Site URL
 	 * @param string $httpRequestMethod      HTTP httpRequestMethod
 	 * @param string $route       Route
 	 * @param string $queryString Query String
 	 * @param array  $header      Header
 	 * @param string $payload     Payload
-	 *
+	 * 
 	 * @return array
 	 */
 	public static function getCurlConfig(
@@ -90,14 +90,14 @@ class Web
 
 	/**
 	 * Trigger cURL
-	 *
+	 * 
 	 * @param string $homeURL      Site URL
 	 * @param string $httpRequestMethod       HTTP httpRequestMethod
 	 * @param string $route        Route
 	 * @param array  $header       Header
 	 * @param string $payload      Payload
 	 * @param string $fileLocation File path
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public static function trigger(
@@ -324,9 +324,9 @@ class Web
 
 	/**
 	 * Generates raw header into array
-	 *
+	 * 
 	 * @param string $rawHeaderArray Raw header from cURL response
-	 *
+	 * 
 	 * @return array
 	 * @throws \Exception
 	 */
@@ -401,11 +401,11 @@ class Web
 
 	/**
 	 * Generates XML Payload
-	 *
+	 * 
 	 * @param array $xmlParamArray   Xml param's
 	 * @param array $payload         Payload
 	 * @param bool  $rowTagStartFlag Flag
-	 *
+	 * 
 	 * @return array
 	 * @throws \Exception
 	 */

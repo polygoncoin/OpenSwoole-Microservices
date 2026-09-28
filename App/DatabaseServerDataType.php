@@ -336,15 +336,15 @@ class DatabaseServerDataType
 	 * You can configure them in /Config/Sql folder as a data type
 	 * This will validate the received payload/uriParam/etc data where this is
 	 * configured
-	 *
+	 * 
 	 * DatabaseServerDataType::$CustomINT
-	 *
+	 * 
 	 * public static $CustomINT = [
-	 *
+	 * 
 	 *     // Required param
 	 *        // PHP data type (bool, int, float, string)
 	 *        'dataType' => 'int',
-	 *
+	 * 
 	 *     // Optional params
 	 *        // Value can be null
 	 *        'canBeNull' => Constant::$FALSE,
@@ -360,7 +360,7 @@ class DatabaseServerDataType
 	 *        'enumValues' => Constant::$FALSE,
 	 *        // Values belonging to this Array
 	 *        'setValues' => Constant::$FALSE,
-	 *
+	 * 
 	 *        // Values should pass this regex before use
 	 *        'regex' => Constant::$FALSE
 	 *  ];
@@ -368,7 +368,7 @@ class DatabaseServerDataType
 
 	/**
 	 * Custom int DataType
-	 *
+	 * 
 	 * @var array $INT
 	 */
 	public static $INT = [
@@ -377,7 +377,7 @@ class DatabaseServerDataType
 
 	/**
 	 * Custom primary key DataType
-	 *
+	 * 
 	 * @var array $PrimaryKey
 	 */
 	public static $PrimaryKey = [
@@ -386,7 +386,7 @@ class DatabaseServerDataType
 
 	/**
 	 * Custom default DataType
-	 *
+	 * 
 	 * @var array $Default
 	 */
 	public static $Default = [
@@ -400,10 +400,10 @@ class DatabaseServerDataType
 
 	/**
 	 * Validates DataType
-	 *
+	 * 
 	 * @param bool|float|int|string|null $data     Data
 	 * @param array                      $dataType Custom data type
-	 *
+	 * 
 	 * @return bool|float|int|string|null
 	 * @throws \Exception
 	 */

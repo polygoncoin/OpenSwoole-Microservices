@@ -41,16 +41,16 @@ trait AppTrait
 {
 	/**
 	 * Validator class object
-	 *
+	 * 
 	 * @var null|Validator
 	 */
 	public $validatorObject = null;
 
 	/**
 	 * Function to help execute PHP functions enclosed with double quotes
-	 *
+	 * 
 	 * @param mixed $param Returned values by PHP inbuilt functions
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function execPhpFunc(
@@ -61,11 +61,11 @@ trait AppTrait
 
 	/**
 	 * Get required payload
-	 *
+	 * 
 	 * @param array $sqlConfig         Sql config
 	 * @param bool  $maintainHierarchy Maintain Hierarchy
 	 * @param bool  $isFirstCall       true to represent the first call in recursion
-	 *
+	 * 
 	 * @return array
 	 * @throws \Exception
 	 */
@@ -217,9 +217,9 @@ trait AppTrait
 
 	/**
 	 * Validate payload
-	 *
+	 * 
 	 * @param array $validationConfig Validation config from Config file
-	 *
+	 * 
 	 * @return array
 	 */
 	public function validate(
@@ -238,11 +238,11 @@ trait AppTrait
 
 	/**
 	 * Generate Sql query and its param's in Named format
-	 *
+	 * 
 	 * @param array      $sqlConfig       Sql config
 	 * @param array      $payload         Payload
 	 * @param array|null $payloadKeyArray Payload key's
-	 *
+	 * 
 	 * @return array
 	 */
 	private function getSqlAndParamNamedMode(
@@ -419,11 +419,11 @@ trait AppTrait
 
 	/**
 	 * Generate Sql query and its param's in Unnamed format
-	 *
+	 * 
 	 * @param array      $sqlConfig       Sql config
 	 * @param array      $payload         Payload
 	 * @param array|null $payloadKeyArray Payload key's
-	 *
+	 * 
 	 * @return array
 	 */
 	private function getSqlAndParamUnnamedMode(
@@ -591,11 +591,11 @@ trait AppTrait
 
 	/**
 	 * Generates ParamArray for statement to execute
-	 *
+	 * 
 	 * @param array $sqlConfig          Sql config
 	 * @param array $sqlConfigVariables Payload Variables
 	 * @param array $payload.           Payload
-	 *
+	 * 
 	 * @return array
 	 * @throws \Exception
 	 */
@@ -735,9 +735,9 @@ trait AppTrait
 
 	/**
 	 * Function to find array is associative/simple array
-	 *
+	 * 
 	 * @param array $arr Array to search for associative/simple array
-	 *
+	 * 
 	 * @return bool
 	 */
 	private function isObject(
@@ -758,9 +758,9 @@ trait AppTrait
 
 	/**
 	 * Use results in where clause of sub queries recursively
-	 *
+	 * 
 	 * @param array  $sqlConfig Sql config
-	 *
+	 * 
 	 * @return bool
 	 */
 	private function getMaintainHierarchy(
@@ -777,11 +777,11 @@ trait AppTrait
 
 	/**
 	 * Return explain params recursively
-	 *
+	 * 
 	 * @param array $sqlConfig         Sql config
 	 * @param bool  $maintainHierarchy Maintain Hierarchy flag
 	 * @param bool  $isFirstCall       Flag to check if this is first request
-	 *
+	 * 
 	 * @return array
 	 * @throws \Exception
 	 */
@@ -912,11 +912,11 @@ trait AppTrait
 
 	/**
 	 * Function to reset data for module key wise
-	 *
+	 * 
 	 * @param string $activeRequestDataKey sqlResults / sqlParamArray / previousPayload
 	 * @param array  $payloadKeyArray      Module key's in recursion
 	 * @param array  $record               Record data fetched from DB
-	 *
+	 * 
 	 * @return void
 	 */
 	private function resetFetchData(
@@ -947,9 +947,9 @@ trait AppTrait
 
 	/**
 	 * Rate Limiting request on basis of Sql config
-	 *
+	 * 
 	 * @param array $sqlConfig Sql config
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -958,10 +958,7 @@ trait AppTrait
 	): void {
 		if (
 			$this->httpObject->httpRequestObject->isPublicRequest
-			|| !CommonFunction::isEnabled(
-				httpObject: $this->httpObject,
-				feature: 'customer_enabled_rate_limiting_for_route'
-			)
+			|| !Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_LIMITING
 			|| !isset($sqlConfig['rateLimitMaxRequest'])
 			|| !isset($sqlConfig['rateLimitMaxRequestWindow'])
 		) {
@@ -970,15 +967,15 @@ trait AppTrait
 
 		$payloadSignature = [
 			'httpRequestIp' => $this->httpObject->httpReqData['server']['httpRequestIp'],
-			'customerId' => $this->httpObject->httpRequestObject->customerId,
+			'customerId' => $this->httpObject->httpReqData['current']['customerId'],
 			'httpRequestMethod' => $this->httpObject->httpReqData['server']['httpRequestMethod'],
 			'Route' => $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM],
 		];
 		if (isset($this->httpObject->httpRequestObject->activeRequestData['userData'])) {
 			$payloadSignature['customerUserGroupId'] = ($this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'] !== Constant::$NULL
 				? $this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'] : 0);
-			$payloadSignature['customerUserId'] = ($this->httpObject->httpRequestObject->customerUserId !== Constant::$NULL
-				? $this->httpObject->httpRequestObject->customerUserId : 0);
+			$payloadSignature['customerUserId'] = ($this->httpObject->httpReqData['current']['customerUserId'] !== Constant::$NULL
+				? $this->httpObject->httpReqData['current']['customerUserId'] : 0);
 		}
 		$hash = json_encode(
 			value: $payloadSignature
@@ -989,7 +986,7 @@ trait AppTrait
 
 		// @throws \Exception
 		$this->httpObject->httpRequestObject->rateLimiterObject->checkRateLimit(
-			rateLimitPrefix: Env::$config[$this->httpObject->httpRequestObject->customerId]->RATE_LIMIT_ROUTE_PREFIX,
+			rateLimitPrefix: Env::$config[$this->httpObject->httpReqData['current']['customerId']]->RATE_LIMIT_ROUTE_PREFIX,
 			rateLimitMaxRequest: $sqlConfig['rateLimitMaxRequest'],
 			rateLimitMaxRequestWindow: $sqlConfig['rateLimitMaxRequestWindow'],
 			rateLimitKey: $rateLimitKey
@@ -998,9 +995,9 @@ trait AppTrait
 
 	/**
 	 * Check Referrer Lag
-	 *
+	 * 
 	 * @param array $sqlConfig Sql config
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -1008,11 +1005,11 @@ trait AppTrait
 		&$sqlConfig
 	): void {
 		$customerUserId = 0;
-		if (isset($this->httpObject->httpRequestObject->customerUserId)) {
-			$customerUserId = $this->httpObject->httpRequestObject->customerUserId;
+		if (isset($this->httpObject->httpReqData['current']['customerUserId'])) {
+			$customerUserId = $this->httpObject->httpReqData['current']['customerUserId'];
 		}
 		$customerUserReferrerLagKey = CacheServerKey::customerUserReferrerLag(
-			customerId: $this->httpObject->httpRequestObject->customerId,
+			customerId: $this->httpObject->httpReqData['current']['customerId'],
 			customerUserId: $customerUserId
 		);
 		if (
@@ -1100,10 +1097,10 @@ trait AppTrait
 
 	/**
 	 * Check for Idempotent Window
-	 *
+	 * 
 	 * @param array $sqlConfig       Sql config
 	 * @param array $payloadKeyArray Payload Indexes
-	 *
+	 * 
 	 * @return array
 	 */
 	private function checkIdempotent(
@@ -1123,11 +1120,11 @@ trait AppTrait
 			$idempotentWindow = (int)$sqlConfig['idempotentWindow'];
 			if ($idempotentWindow) {
 				$payloadSignature = [
-					'SECRET' => Env::$config[$this->httpObject->httpRequestObject->customerId]->SECRET,
+					'SECRET' => Env::$config[$this->httpObject->httpReqData['current']['customerId']]->SECRET,
 					'idempotentWindow' => $idempotentWindow,
 					'httpRequestIp' => $this->httpObject->httpReqData['server']['httpRequestIp'],
-					'customerId' => $this->httpObject->httpRequestObject->customerId,
-					'customerUserId' => $this->httpObject->httpRequestObject->customerUserId,
+					'customerId' => $this->httpObject->httpReqData['current']['customerId'],
+					'customerUserId' => $this->httpObject->httpReqData['current']['customerUserId'],
 					'httpRequestMethod' => $this->httpObject->httpReqData['server']['httpRequestMethod'],
 					'Route' => $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM],
 					'payload' => $this->httpObject->httpRequestObject->dataDecodeObject->get(
@@ -1139,8 +1136,8 @@ trait AppTrait
 				if (isset($this->httpObject->httpRequestObject->activeRequestData['userData'])) {
 					$payloadSignature['customerUserGroupId'] = ($this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'] !== Constant::$NULL
 						? $this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'] : 0);
-					$payloadSignature['customerUserId'] = ($this->httpObject->httpRequestObject->customerUserId !== Constant::$NULL
-						? $this->httpObject->httpRequestObject->customerUserId : 0);
+					$payloadSignature['customerUserId'] = ($this->httpObject->httpReqData['current']['customerUserId'] !== Constant::$NULL
+						? $this->httpObject->httpReqData['current']['customerUserId'] : 0);
 				}
 
 				$hash = json_encode(
@@ -1177,9 +1174,9 @@ trait AppTrait
 
 	/**
 	 * Lag response
-	 *
+	 * 
 	 * @param array $sqlConfig Sql config
-	 *
+	 * 
 	 * @return void
 	 */
 	private function lagResponse(
@@ -1194,15 +1191,15 @@ trait AppTrait
 
 		$payloadSignature = [
 			'httpRequestIp' => $this->httpObject->httpReqData['server']['httpRequestIp'],
-			'customerId' => $this->httpObject->httpRequestObject->customerId,
+			'customerId' => $this->httpObject->httpReqData['current']['customerId'],
 			'httpRequestMethod' => $this->httpObject->httpReqData['server']['httpRequestMethod'],
 			'Route' => $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM],
 		];
 		if (isset($this->httpObject->httpRequestObject->activeRequestData['userData'])) {
 			$payloadSignature['customerUserGroupId'] = ($this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'] !== Constant::$NULL
 				? $this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'] : 0);
-			$payloadSignature['customerUserId'] = ($this->httpObject->httpRequestObject->customerUserId !== Constant::$NULL
-				? $this->httpObject->httpRequestObject->customerUserId : 0);
+			$payloadSignature['customerUserId'] = ($this->httpObject->httpReqData['current']['customerUserId'] !== Constant::$NULL
+				? $this->httpObject->httpReqData['current']['customerUserId'] : 0);
 		}
 
 		$hash = json_encode(
@@ -1253,10 +1250,10 @@ trait AppTrait
 
 	/**
 	 * Get Trigger data
-	 *
+	 * 
 	 * @param array $triggerConfig Trigger Config
 	 * @param array $payload       Payload
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function getTriggerData(
@@ -1323,10 +1320,10 @@ trait AppTrait
 
 	/**
 	 * Get Trigger detail
-	 *
+	 * 
 	 * @param array $triggerConfig Trigger Config
 	 * @param array $payload       Payload
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function getTriggerHttp(
@@ -1396,10 +1393,10 @@ trait AppTrait
 
 	/**
 	 * Get Trigger param's
-	 *
+	 * 
 	 * @param array $payloadConfig API Payload configuration
 	 * @param array $payload       Payload
-	 *
+	 * 
 	 * @return array
 	 * @throws \Exception
 	 */
@@ -1484,10 +1481,10 @@ trait AppTrait
 
 	/**
 	 * Process import function of configuration
-	 *
+	 * 
 	 * @param array $sqlConfig         Sql config
 	 * @param bool  $maintainHierarchy If true - Uses parent payload/results in child
-	 *
+	 * 
 	 * @return string
 	 */
 	private function generateImportSampleCsv(
@@ -1556,10 +1553,10 @@ trait AppTrait
 
 	/**
 	 * Generate sample CSV helper
-	 *
+	 * 
 	 * @param string $module
 	 * @param array  $explainParamArray
-	 *
+	 * 
 	 * @return array
 	 */
 	private function genCsvHelper(
@@ -1588,10 +1585,10 @@ trait AppTrait
 
 	/**
 	 * Basic Read Processes for process Function
-	 *
+	 * 
 	 * @param array $sqlConfig         Sql config
 	 * @param bool  $maintainHierarchy If true - Uses parent payload/results in child
-	 *
+	 * 
 	 * @return array
 	 */
 	private function readBasics(
@@ -1615,11 +1612,8 @@ trait AppTrait
 
 		if (
 			$this->httpObject->httpRequestObject->routeParserObject->routeEndingWithReservedKeywordFlag
-			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpRequestObject->customerId]->EXPLAIN_REQUEST_KEYWORD
-			&& CommonFunction::isEnabled(
-				httpObject: $this->httpObject,
-				feature: 'customer_enabled_explain_request'
-			)
+			&& Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_EXPLAIN_REQUEST
+			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpReqData['current']['customerId']]->EXPLAIN_REQUEST_KEYWORD
 		) {
 			return $this->explain(
 				sqlConfig: $sqlConfig,
@@ -1632,10 +1626,10 @@ trait AppTrait
 
 	/**
 	 * Basic Write Processes for process Function (Supplement is considered as Write)
-	 *
+	 * 
 	 * @param array $sqlConfig         Sql config
 	 * @param bool  $maintainHierarchy If true - Uses parent payload/results in child
-	 *
+	 * 
 	 * @return bool
 	 */
 	private function writeBasics(
@@ -1664,11 +1658,8 @@ trait AppTrait
 
 		if (
 			$this->httpObject->httpRequestObject->routeParserObject->routeEndingWithReservedKeywordFlag
-			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpRequestObject->customerId]->EXPLAIN_REQUEST_KEYWORD
-			&& CommonFunction::isEnabled(
-				httpObject: $this->httpObject,
-				feature: 'customer_enabled_explain_request'
-			)
+			&& Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_EXPLAIN_REQUEST
+			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpReqData['current']['customerId']]->EXPLAIN_REQUEST_KEYWORD
 		) {
 			return $this->explain(
 				sqlConfig: $sqlConfig,
@@ -1678,7 +1669,7 @@ trait AppTrait
 
 		if (
 			$this->httpObject->httpRequestObject->routeParserObject->routeEndingWithReservedKeywordFlag
-			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpRequestObject->customerId]->IMPORT_SAMPLE_REQUEST_KEYWORD
+			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpReqData['current']['customerId']]->IMPORT_SAMPLE_REQUEST_KEYWORD
 		) {
 			return $this->generateImportSampleCsv(
 				sqlConfig: $sqlConfig,
@@ -1691,9 +1682,9 @@ trait AppTrait
 
 	/**
 	 * Get results to be cached flag
-	 *
+	 * 
 	 * @param array $sqlConfig Sql config
-	 *
+	 * 
 	 * @return bool
 	 */
 	private function getToBeCached(
@@ -1701,10 +1692,7 @@ trait AppTrait
 	): bool {
 		$toBeCached = Constant::$FALSE;
 		if (
-			CommonFunction::isEnabled(
-				httpObject: $this->httpObject,
-				feature: 'customer_enabled_response_caching'
-			)
+			Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_RESPONSE_CACHING
 			&& isset($sqlConfig['__CACHE-KEY__'])
 			&& !isset($this->httpObject->httpRequestObject->activeRequestData['queryParamArray']['orderBy'])
 		) {
@@ -1712,7 +1700,7 @@ trait AppTrait
 			$queryCacheReqFlag = Constant::$FALSE;
 			for ($index = 0;$index < 5; $index++) {
 				$json = $this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheGet(
-					customerId: $this->httpObject->httpRequestObject->customerId,
+					customerId: $this->httpObject->httpReqData['current']['customerId'],
 					queryCacheKey: $sqlConfig['__CACHE-KEY__']
 				);
 				if ($json !== Constant::$NULL) {
@@ -1728,7 +1716,7 @@ trait AppTrait
 				} else {
 					if (!$queryCacheReqFlag) {
 						$cacheReqCount = $this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheIncrement(
-							customerId: $this->httpObject->httpRequestObject->customerId,
+							customerId: $this->httpObject->httpReqData['current']['customerId'],
 							queryCacheKey: $sqlConfig['__CACHE-KEY__']
 						);
 						if ($cacheReqCount === 1) {
@@ -1759,10 +1747,10 @@ trait AppTrait
 
 	/**
 	 * Explain configuration
-	 *
+	 * 
 	 * @param array $sqlConfig         Sql config
 	 * @param bool  $maintainHierarchy If true - Uses parent payload/results in child
-	 *
+	 * 
 	 * @return bool
 	 */
 	private function explain(
@@ -1775,6 +1763,10 @@ trait AppTrait
 		$this->dataEncodeObject->addKeyData(
 			objectKey: 'Route',
 			data: $this->httpObject->httpRequestObject->routeParserObject->configuredRoute
+		);
+		$this->dataEncodeObject->addKeyData(
+			objectKey: 'HttpMethod',
+			data: $this->httpObject->httpReqData['server']['httpRequestMethod']
 		);
 		$this->dataEncodeObject->addKeyData(
 			objectKey: 'Payload',
@@ -1791,9 +1783,9 @@ trait AppTrait
 
 	/**
 	 * Get Payload Key
-	 *
+	 * 
 	 * @param array $payloadKeyArray Payload Key Array
-	 *
+	 * 
 	 * @return null|string
 	 */
 	private function getPayloadKey(

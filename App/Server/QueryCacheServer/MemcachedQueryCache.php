@@ -36,56 +36,56 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 {
 	/**
 	 * Query Cache Server Hostname
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerHost = null;
 
 	/**
 	 * Query Cache Server Port
-	 *
+	 * 
 	 * @var null|int
 	 */
 	private $queryCacheServerPort = null;
 
 	/**
 	 * Query Cache Server Username
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerUser = null;
 
 	/**
 	 * Query Cache Server Password
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerPassword = null;
 
 	/**
 	 * Query Cache Server DB
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $queryCacheServerDb = null;
 
 	/**
 	 * Query Cache Server Table
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $queryCacheServerTable = null;
 
 	/**
 	 * Query Cache Server Object
-	 *
+	 * 
 	 * @var null|QueryCache_Memcached
 	 */
 	private $queryCacheServerObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string      $queryCacheServerHost Query Cache Server Hostname
 	 * @param int         $queryCacheServerPort     Query Cache Server Port
 	 * @param string      $queryCacheServerUser Query Cache Server Username
@@ -111,7 +111,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Connect Query Cache
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -123,11 +123,11 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 
 		try {
 			$this->queryCacheServerObject = new QueryCache_Memcached(
-				cacheServerHostname: $this->queryCacheServerHost,
+				cacheServerHost: $this->queryCacheServerHost,
 				cacheServerPort: $this->queryCacheServerPort,
-				cacheServerUsername: $this->queryCacheServerUser,
+				cacheServerUser: $this->queryCacheServerUser,
 				cacheServerPassword: $this->queryCacheServerPassword,
-				cacheServerDatabase: $this->queryCacheServerDb,
+				cacheServerDb: $this->queryCacheServerDb,
 				cacheServerTable: $this->queryCacheServerTable
 			);
 		} catch (\Exception $e) {
@@ -140,9 +140,9 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Query Cache key exist
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheExist(
@@ -161,9 +161,9 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Get Query Cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheGet(
@@ -182,10 +182,10 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Set Query Cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey   Query Cache key
 	 * @param mixed  $queryCacheValue Query Cache value
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheSet(
@@ -206,10 +206,10 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Increment Query Cache key as per offset
-	 *
+	 * 
 	 * @param string $queryCacheKey    Query Cache key
 	 * @param int    $queryCacheOffset Query Cache Offset
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheIncrement(
@@ -230,9 +230,9 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 
 	/**
 	 * Delete Query Cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheDelete(

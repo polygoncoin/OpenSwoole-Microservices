@@ -17,9 +17,9 @@ return [
 	 * __PRIMARY-KEY__, - for Sql Config only
 	 * __PRE-CONFIG-HOOK__, - for Sql Config only
 	 * __POST-CONFIG-HOOK__, - for Sql Config only
-	 *
+	 * 
 	 * __PAYLOAD__, - for Supplement Config only
-	 *
+	 * 
 	 * __SUB-CONFIG__, - for all
 	 * __TRANSACTION__, - for all
 	 * __HIERARCHY__, - for all
@@ -32,7 +32,7 @@ return [
 	 * __HIERARCHY__, - for all
 	 * __CACHE-KEY__, - for all
 	 * __AFFECTED-CACHE-KEY__, - for all
-	 *
+	 * 
 	 * __VARIABLE__,
 	 */
 
@@ -144,9 +144,9 @@ return [
 		 * __PRIMARY-KEY__, - for Sql Config only
 		 * __PRE-CONFIG-HOOK__, - for Sql Config only
 		 * __POST-CONFIG-HOOK__, - for Sql Config only
-		 *
+		 * 
 		 * __PAYLOAD__, - for Supplement Config only
-		 *
+		 * 
 		 * __SUB-CONFIG__, - for all
 		 * __TRANSACTION__, - for all
 		 * __HIERARCHY__, - for all
@@ -159,7 +159,7 @@ return [
 		 * __HIERARCHY__, - for all
 		 * __CACHE-KEY__, - for all
 		 * __AFFECTED-CACHE-KEY__, - for all
-		 *
+		 * 
 		 * __VARIABLE__,
 		 */
 		'<sub-key>' => [

@@ -37,9 +37,9 @@ class Reload
 {
 	/**
 	 * Process
-	 *
+	 * 
 	 * @param string $httpRequestIp Request Ip
-	 *
+	 * 
 	 * @return bool
 	 */
 	public static function process(
@@ -59,10 +59,10 @@ class Reload
 
 	/**
 	 * Cache Customer Data
-	 *
+	 * 
 	 * @param string   $httpRequestIp Request Ip
 	 * @param null|int $customerId    Customer Id
-	 *
+	 * 
 	 * @return bool
 	 */
 	public static function processCustomer(
@@ -132,9 +132,9 @@ class Reload
 				);
 			}
 
-			if ($customerData['customer_allowed_cidr'] !== Constant::$NULL) {
+			if ($customerData['customer_cidr'] !== Constant::$NULL) {
 				$customerCidrIpNumberRangeArray = CommonFunction::cidrStringIpNumberRange(
-					cidrString: $customerData['customer_allowed_cidr']
+					cidrString: $customerData['customer_cidr']
 				);
 				if (
 					count(
@@ -166,11 +166,11 @@ class Reload
 
 	/**
 	 * Cache Group Data
-	 *
+	 * 
 	 * @param string   $httpRequestIp       Request Ip
 	 * @param array    $customerData        Customer Data
 	 * @param null|int $customerUserGroupId Customer User Group Id
-	 *
+	 * 
 	 * @return bool
 	 */
 	public static function processGroup(
@@ -213,9 +213,9 @@ class Reload
 				cacheKey: $g_key,
 				cacheValue: $groupData
 			);
-			if ($groupData['customer_user_group_allowed_cidr'] !== Constant::$NULL) {
+			if ($groupData['customer_user_group_cidr'] !== Constant::$NULL) {
 				$groupCidrIpNumberRangeArray = CommonFunction::cidrStringIpNumberRange(
-					cidrString: $groupData['customer_user_group_allowed_cidr']
+					cidrString: $groupData['customer_user_group_cidr']
 				);
 				if (
 					count(
@@ -239,11 +239,11 @@ class Reload
 
 	/**
 	 * Cache User Data
-	 *
+	 * 
 	 * @param string   $httpRequestIp  Request Ip
 	 * @param array    $customerData   Customer Data
 	 * @param null|int $customerUserId User Id
-	 *
+	 * 
 	 * @return bool
 	 */
 	public static function processUser(
@@ -277,9 +277,9 @@ class Reload
 		$userDataArray = $databaseServerObject->fetchAll();
 		$databaseServerObject->closeCursor();
 		foreach ($userDataArray as $userData) {
-			if ($userData['customer_user_allowed_cidr'] !== Constant::$NULL) {
+			if ($userData['customer_user_cidr'] !== Constant::$NULL) {
 				$userCidrIpNumberRangeArray = CommonFunction::cidrStringIpNumberRange(
-					cidrString: $userData['customer_user_allowed_cidr']
+					cidrString: $userData['customer_user_cidr']
 				);
 				if (
 					count(

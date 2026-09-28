@@ -33,28 +33,28 @@ class ExportDatabaseServer
 {
 	/**
 	 * Allow creation of temporary file required for streaming large data
-	 *
+	 * 
 	 * @var bool
 	 */
 	public $useTmpFile = false;
 
 	/**
 	 * Database Engine
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $dbServerType = null;
 
 	/**
 	 * Database Class Object as per dbServerType
-	 *
+	 * 
 	 * @var null|ExportDatabaseServerInterface
 	 */
 	public $exportDbServerObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string $dbServerType Database Type (eg. MySql)
 	 */
 	public function __construct(
@@ -67,38 +67,38 @@ class ExportDatabaseServer
 
 	/**
 	 * Initialize
-	 *
-	 * @param string      $dbServerHostname Database Server Hostname
+	 * 
+	 * @param string      $dbServerHost Database Server Hostname
 	 * @param int         $dbServerPort     Database Server Port
-	 * @param string      $dbServerUsername Database Server Username
+	 * @param string      $dbServerUser Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
-	 * @param null|string $dbServerDatabase Database Server Database
-	 *
+	 * @param null|string $dbServerDb Database Server Database
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
 	public function init(
-		$dbServerHostname,
+		$dbServerHost,
 		$dbServerPort,
-		$dbServerUsername,
+		$dbServerUser,
 		$dbServerPassword,
-		$dbServerDatabase
+		$dbServerDb
 	): void {
 		$this->exportDbServerObject->init(
-			dbServerHostname: $dbServerHostname,
+			dbServerHost: $dbServerHost,
 			dbServerPort: $dbServerPort,
-			dbServerUsername: $dbServerUsername,
+			dbServerUser: $dbServerUser,
 			dbServerPassword: $dbServerPassword,
-			dbServerDatabase: $dbServerDatabase
+			dbServerDb: $dbServerDb
 		);
 	}
 
 	/**
 	 * Returns Shell Command
-	 *
+	 * 
 	 * @param string $sql        Sql query
 	 * @param array  $paramArray Sql query params
-	 *
+	 * 
 	 * @return string
 	 */
 	public function getShellCommand(

@@ -36,21 +36,21 @@ class Hook
 {
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Hook object
-	 *
+	 * 
 	 * @var null|HookInterface
 	 */
 	private $hookObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -61,9 +61,9 @@ class Hook
 
 	/**
 	 * Trigger Hook
-	 *
+	 * 
 	 * @param array $hookArray Hook configuration
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function triggerHook(

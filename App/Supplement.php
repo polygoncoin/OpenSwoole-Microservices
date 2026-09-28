@@ -44,35 +44,35 @@ class Supplement
 
 	/**
 	 * Hook object
-	 *
+	 * 
 	 * @var null|Hook
 	 */
 	private $hookObject = null;
 
 	/**
 	 * Data Encode object
-	 *
+	 * 
 	 * @var null|DataEncode
 	 */
 	public $dataEncodeObject = null;
 
 	/**
 	 * Supplement Class object
-	 *
+	 * 
 	 * @var null|object
 	 */
 	public $supplementObject = null;
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -84,9 +84,9 @@ class Supplement
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @param string $supplementClass Supplement class
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(
@@ -100,7 +100,7 @@ class Supplement
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -125,7 +125,7 @@ class Supplement
 		// Set Server mode to execute query on - Read / Write Server
 		if ($this->httpObject->httpRequestObject->databaseServerObject === Constant::$NULL) {
 			$this->httpObject->httpRequestObject->databaseServerObject = DbCommonFunction::connectDatabase(
-				customerId: $this->httpObject->httpRequestObject->customerId,
+				customerId: $this->httpObject->httpReqData['current']['customerId'],
 				fetchDbMode: $fetchDbMode
 			);
 		}
@@ -141,11 +141,11 @@ class Supplement
 
 	/**
 	 * Process Function to insert/update
-	 *
+	 * 
 	 * @param array $supplementSqlConfig            Sql config
 	 * @param bool  $supplementMaintainHierarchy    If true - Uses parent payload/results in child
 	 * @param bool  $supplementOperateAsTransaction If true - Operates as transaction
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -154,10 +154,10 @@ class Supplement
 		$supplementMaintainHierarchy,
 		$supplementOperateAsTransaction
 	): void {
-		$supplementOutputRepresentation = CommonFunction::getOutputRepresentation(
+		$supplementOUTPUT_REPRESENTATION = CommonFunction::getOUTPUT_REPRESENTATION(
 			sqlConfig: $supplementSqlConfig,
 			httpReqData: $this->httpObject->httpReqData,
-			customerId: $this->httpObject->httpRequestObject->customerId
+			customerId: $this->httpObject->httpReqData['current']['customerId']
 		);
 
 		// Set required fields
@@ -178,7 +178,7 @@ class Supplement
 		if ($supplementPayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $supplementOutputRepresentation['OUTPUT_REPRESENTATION'],
+					needle: $supplementOUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'],
 					haystack: ['XML', 'XSLT', 'HTML'],
 					strict: Constant::$TRUE
 				)
@@ -220,13 +220,8 @@ class Supplement
 
 				$output = [];
 				$output['Status'] = HttpStatus::$Ok;
-				if (
-					CommonFunction::isEnabled(
-						httpObject: $this->httpObject,
-						feature: 'customer_enabled_payload_in_response'
-					)
-				) {
-					$output[Env::$config[$this->httpObject->httpRequestObject->customerId]->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
+				if (Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
+					$output[Env::$config[$this->httpObject->httpReqData['current']['customerId']]->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
 						keyString: $this->getPayloadKey(
 							payloadKeyArray: $supplementPayloadKeyArray
 						)
@@ -282,7 +277,7 @@ class Supplement
 			} else {
 				if (
 					in_array(
-						needle: $supplementOutputRepresentation['OUTPUT_REPRESENTATION'],
+						needle: $supplementOUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'],
 						haystack: ['XML', 'XSLT', 'HTML'],
 						strict: Constant::$TRUE
 					)
@@ -309,7 +304,7 @@ class Supplement
 		if ($supplementPayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $supplementOutputRepresentation['OUTPUT_REPRESENTATION'],
+					needle: $supplementOUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'],
 					haystack: ['XML', 'XSLT', 'HTML'],
 					strict: Constant::$TRUE
 				)
@@ -322,7 +317,7 @@ class Supplement
 
 	/**
 	 * Supplement Parent Function
-	 *
+	 * 
 	 * @param array  $supplementParentSqlConfig            Sql config
 	 * @param array  $supplementParentPayloadKeyArray      Payload Indexes
 	 * @param array  $supplementParentRequiredFieldArray   Required fields
@@ -330,7 +325,7 @@ class Supplement
 	 * @param string $supplementParentModule               Parent Module
 	 * @param bool   $supplementParentMaintainHierarchy    If true - Uses parent payload/results in child
 	 * @param bool   $supplementParentOperateAsTransaction If true - Operates as transaction
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -468,7 +463,7 @@ class Supplement
 			if ($supplementParentModule === '') {
 				$processFunction  = 'process';
 			} else {
-				$processFunction  = "{$supplementParentModule}" . Env::$config[$this->httpObject->httpRequestObject->customerId]->APPEND_SUPPLEMENT_FUNCTION_KEYWORD;
+				$processFunction  = "{$supplementParentModule}" . Env::$config[$this->httpObject->httpReqData['current']['customerId']]->APPEND_SUPPLEMENT_FUNCTION_KEYWORD;
 			}
 
 			// For Execute
@@ -532,7 +527,7 @@ class Supplement
 				);
 				for ($index = 0; $index < $indexCount; $index++) {
 					$this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheDelete(
-						customerId: $this->httpObject->httpRequestObject->customerId,
+						customerId: $this->httpObject->httpReqData['current']['customerId'],
 						queryCacheKey: $supplementParentSqlConfig['__AFFECTED-CACHE-KEY__'][$index]
 					);
 				}
@@ -542,14 +537,14 @@ class Supplement
 
 	/**
 	 * Write Child Function
-	 *
+	 * 
 	 * @param array  $supplementChildSqlConfig            Sql config
 	 * @param array  $supplementChildPayloadKeyArray      Payload Indexes
 	 * @param array  $supplementChildRequiredFieldArray   Required fields
 	 * @param array  $supplementChildResponse             Response by reference
 	 * @param bool   $supplementChildMaintainHierarchy    If true - Uses parent payload/results in child
 	 * @param bool   $supplementChildOperateAsTransaction If true - Operates as transaction
-	 *
+	 * 
 	 * @return void
 	 */
 	private function supplementChild(
@@ -687,10 +682,10 @@ class Supplement
 
 	/**
 	 * Checks if the payload is valid
-	 *
+	 * 
 	 * @param array $sqlConfig Sql config
 	 * @param array $response  Response by reference
-	 *
+	 * 
 	 * @return bool
 	 */
 	private function isValidPayload(

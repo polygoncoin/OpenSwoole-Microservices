@@ -34,14 +34,14 @@ class Test
 {
 	/**
 	 * HTTP request data
-	 *
+	 * 
 	 * @var null|array
 	 */
 	public $httpReqData = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param array $httpReqData HTTP request data
 	 */
 	public function __construct(
@@ -52,7 +52,7 @@ class Test
 
 	/**
 	 * Process all request
-	 *
+	 * 
 	 * @return array
 	 */
 	public function processAllTest(): array
@@ -69,7 +69,7 @@ class Test
 
 	/**
 	 * Process auth based request
-	 *
+	 * 
 	 * @return array
 	 */
 	public function processPrivate(): array
@@ -80,7 +80,7 @@ class Test
 
 	/**
 	 * Process open to web request
-	 *
+	 * 
 	 * @return array
 	 */
 	public function processPublic(): array
@@ -92,7 +92,7 @@ class Test
 	/**
 	 * Process open to web xml request
 	 * Request/Response are in XML format
-	 *
+	 * 
 	 * @return array
 	 */
 	public function processPublicXml(): array
@@ -103,7 +103,7 @@ class Test
 
 	/**
 	 * Process supplement request
-	 *
+	 * 
 	 * @return array
 	 */
 	public function processPrivateSupplement(): array

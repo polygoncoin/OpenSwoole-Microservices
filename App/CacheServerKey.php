@@ -33,9 +33,9 @@ class CacheServerKey
 {
 	/**
 	 * Get open to web Domain key
-	 *
+	 * 
 	 * @param string $domainName Domain Name
-	 *
+	 * 
 	 * @return null|string
 	 */
 	public static function publicDomain(
@@ -49,9 +49,9 @@ class CacheServerKey
 
 	/**
 	 * Get closed to web Domain key
-	 *
+	 * 
 	 * @param string $domainName Domain Name
-	 *
+	 * 
 	 * @return null|string
 	 */
 	public static function privateTokenDomain(
@@ -65,9 +65,9 @@ class CacheServerKey
 
 	/**
 	 * Get closed to web Domain key
-	 *
+	 * 
 	 * @param string $domainName Domain Name
-	 *
+	 * 
 	 * @return null|string
 	 */
 	public static function privateSessionDomain(
@@ -81,10 +81,10 @@ class CacheServerKey
 
 	/**
 	 * Get Customer user username key
-	 *
+	 * 
 	 * @param int    $customerId Customer Id
 	 * @param string $username   Username
-	 *
+	 * 
 	 * @return null|string
 	 */
 	public static function customerUsername(
@@ -102,10 +102,10 @@ class CacheServerKey
 
 	/**
 	 * Get Group key
-	 *
+	 * 
 	 * @param int $customerId          Customer Id
 	 * @param int $customerUserGroupId Customer User Group Id
-	 *
+	 * 
 	 * @return null|string
 	 */
 	public static function customerGroup(
@@ -123,9 +123,9 @@ class CacheServerKey
 
 	/**
 	 * Get Customer CIDR key
-	 *
+	 * 
 	 * @param int $customerId Customer Id
-	 *
+	 * 
 	 * @return null|string
 	 */
 	public static function customerCidr(
@@ -139,10 +139,10 @@ class CacheServerKey
 
 	/**
 	 * Get Customer group CIDR key
-	 *
+	 * 
 	 * @param int $customerId          Customer Id
 	 * @param int $customerUserGroupId Customer User Group Id
-	 *
+	 * 
 	 * @return null|string
 	 */
 	public static function customerGroupCidr(
@@ -160,10 +160,10 @@ class CacheServerKey
 
 	/**
 	 * Get Customer user CIDR key
-	 *
+	 * 
 	 * @param int $customerId     Customer Id
 	 * @param int $customerUserId Customer User Id
-	 *
+	 * 
 	 * @return null|string
 	 */
 	public static function customerUserCidr(
@@ -181,9 +181,9 @@ class CacheServerKey
 
 	/**
 	 * Get Token key
-	 *
+	 * 
 	 * @param string $token Token
-	 *
+	 * 
 	 * @return null|string
 	 */
 	public static function token(
@@ -197,10 +197,10 @@ class CacheServerKey
 
 	/**
 	 * Get Customer user Token key
-	 *
+	 * 
 	 * @param int $customerId     Customer Id
 	 * @param int $customerUserId Customer User Id
-	 *
+	 * 
 	 * @return null|string
 	 */
 	public static function customerUserToken(
@@ -218,10 +218,10 @@ class CacheServerKey
 
 	/**
 	 * Get Customer user Session id key
-	 *
+	 * 
 	 * @param int $customerId     Customer Id
 	 * @param int $customerUserId Customer User Id
-	 *
+	 * 
 	 * @return null|string
 	 */
 	public static function customerUserSessionId(
@@ -239,10 +239,10 @@ class CacheServerKey
 
 	/**
 	 * Get key maintaining concurrency interval(active session) for current user
-	 *
+	 * 
 	 * @param int $customerId     Customer Id
 	 * @param int $customerUserId Customer User Id
-	 *
+	 * 
 	 * @return null|string
 	 */
 	public static function customerUserConcurrency(
@@ -260,10 +260,10 @@ class CacheServerKey
 
 	/**
 	 * Get Customer user Referrer lag key
-	 *
+	 * 
 	 * @param int $customerId     Customer Id
 	 * @param int $customerUserId Customer User Id
-	 *
+	 * 
 	 * @return null|string
 	 */
 	public static function customerUserReferrerLag(

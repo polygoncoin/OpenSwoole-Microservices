@@ -31,16 +31,16 @@ interface QueryCacheServerInterface
 {
 	/**
 	 * Connect Query Cache
-	 *
+	 * 
 	 * @return void
 	 */
 	public function connectQueryCache(): void;
 
 	/**
 	 * Query Cache key exist
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheExist(
@@ -49,9 +49,9 @@ interface QueryCacheServerInterface
 
 	/**
 	 * Get Query Cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheGet(
@@ -60,10 +60,10 @@ interface QueryCacheServerInterface
 
 	/**
 	 * Set cache key
-	 *
+	 * 
 	 * @param string $queryCacheKey   Query Cache key
 	 * @param mixed  $queryCacheValue Query Cache value
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheSet(
@@ -73,10 +73,10 @@ interface QueryCacheServerInterface
 
 	/**
 	 * Increment Query Cache key as per offset
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
 	 * @param int    $queryCacheOffset        Query Cache offset
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheIncrement(
@@ -86,9 +86,9 @@ interface QueryCacheServerInterface
 
 	/**
 	 * Delete cache on basis of key
-	 *
+	 * 
 	 * @param string $queryCacheKey Query Cache key
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function queryCacheDelete(

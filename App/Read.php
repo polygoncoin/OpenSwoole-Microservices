@@ -44,35 +44,35 @@ class Read
 
 	/**
 	 * Hook object
-	 *
+	 * 
 	 * @var null|Hook
 	 */
 	private $hookObject = null;
 
 	/**
 	 * Data Encode object
-	 *
+	 * 
 	 * @var null|DataEncode
 	 */
 	public $dataEncodeObject = null;
 
 	/**
 	 * Placeholder Mode
-	 *
+	 * 
 	 * @var null|string
 	 */
 	public $placeholderMode = null;
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -83,7 +83,7 @@ class Read
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -93,7 +93,7 @@ class Read
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -110,10 +110,10 @@ class Read
 			return $return;
 		}
 
-		$OUTPUT_REPRESENTATION = CommonFunction::getOutputRepresentation(
+		$OUTPUT_REPRESENTATION = CommonFunction::getOUTPUT_REPRESENTATION(
 			sqlConfig: $sqlConfig,
 			httpReqData: $this->httpObject->httpReqData,
-			customerId: $this->httpObject->httpRequestObject->customerId
+			customerId: $this->httpObject->httpReqData['current']['customerId']
 		);
 
 		if (isset($sqlConfig['__DOWNLOAD__'])) {
@@ -128,10 +128,7 @@ class Read
 		);
 
 		if (
-			CommonFunction::isEnabled(
-				httpObject: $this->httpObject,
-				feature: 'customer_enabled_response_caching'
-			)
+			Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_RESPONSE_CACHING
 			&& $toBeCached
 		) {
 			$this->dataEncodeObject = new DataEncode(
@@ -148,28 +145,25 @@ class Read
 		// Set Server mode to execute query on - Read / Write Server
 		$fetchDbMode = $sqlConfig['__FETCH-MODE__'] ?? 'Slave';
 		$placeholderModeKey = strtoupper($fetchDbMode) . '_DB_PLACEHOLDER';
-		$this->placeholderMode = Env::$config[$this->httpObject->httpRequestObject->customerId]->$placeholderModeKey;
+		$this->placeholderMode = Env::$config[$this->httpObject->httpReqData['current']['customerId']]->$placeholderModeKey;
 		$this->httpObject->httpRequestObject->databaseServerObject = DbCommonFunction::connectDatabase(
-			customerId: $this->httpObject->httpRequestObject->customerId,
+			customerId: $this->httpObject->httpReqData['current']['customerId'],
 			fetchDbMode: $fetchDbMode
 		);
 
 		$this->read(
 			readSqlConfig: $sqlConfig,
 			readMaintainHierarchy: $maintainHierarchy,
-			readOutputRepresentation: $OUTPUT_REPRESENTATION
+			readOUTPUT_REPRESENTATION: $OUTPUT_REPRESENTATION
 		);
 
 		if (
-			CommonFunction::isEnabled(
-				httpObject: $this->httpObject,
-				feature: 'customer_enabled_response_caching'
-			)
+			Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_RESPONSE_CACHING
 			&& $toBeCached
 		) {
 			$json = $this->dataEncodeObject->getData();
 			$this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheSet(
-				customerId: $this->httpObject->httpRequestObject->customerId,
+				customerId: $this->httpObject->httpReqData['current']['customerId'],
 				queryCacheKey: $sqlConfig['__CACHE-KEY__'],
 				queryCacheValue: $json
 			);
@@ -183,17 +177,17 @@ class Read
 
 	/**
 	 * Perform read operation
-	 *
+	 * 
 	 * @param array $readSqlConfig            Sql config
 	 * @param bool  $readMaintainHierarchy    If true - Uses parent payload/results in child
-	 * @param array $readOutputRepresentation Output Representation
-	 *
+	 * @param array $readOUTPUT_REPRESENTATION Output Representation
+	 * 
 	 * @return void
 	 */
 	private function read(
 		&$readSqlConfig,
 		$readMaintainHierarchy,
-		$readOutputRepresentation
+		$readOUTPUT_REPRESENTATION
 	): void {
 		// Set required fields
 		$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArrayCollection'] = $this->getRequired(
@@ -214,7 +208,7 @@ class Read
 		if ($readPayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $readOutputRepresentation['OUTPUT_REPRESENTATION'],
+					needle: $readOUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'],
 					haystack: ['XML', 'XSLT', 'HTML'],
 					strict: Constant::$TRUE
 				)
@@ -248,18 +242,13 @@ class Read
 				$this->dataEncodeObject->startObject($index);
 			}
 
-			if (
-				CommonFunction::isEnabled(
-					httpObject: $this->httpObject,
-					feature: 'customer_enabled_payload_in_response'
-				)
-			) {
+			if (Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
 				$readPayloadKey = $this->getPayloadKey(
 					payloadKeyArray: $readPayloadKeyArray
 				);
 
 				$this->dataEncodeObject->addKeyData(
-					objectKey: Env::$config[$this->httpObject->httpRequestObject->customerId]->PAYLOAD_IN_RESPONSE,
+					objectKey: Env::$config[$this->httpObject->httpReqData['current']['customerId']]->PAYLOAD_IN_RESPONSE,
 					data: $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
 						keyString: $readPayloadKey
 					)
@@ -286,13 +275,13 @@ class Read
 
 	/**
 	 * Process Read Parent Config Function
-	 *
+	 * 
 	 * @param array $readParentSqlConfig            Sql config
 	 * @param array $readParentPayloadKeyArray.
 	 * @param array $readParentRequiredFieldArray
 	 * @param bool  $readMaintainHierarchy          If true - Uses parent payload/results in child
 	 * @param bool  $readIsFirstCall                true to represent the first call in recursion
-	 *
+	 * 
 	 * @return void
 	 */
 	private function readParent(
@@ -339,7 +328,7 @@ class Read
 			}
 		}
 
-		$mode = Env::$config[$this->httpObject->httpRequestObject->customerId]->MASTER_DB_PLACEHOLDER;
+		$mode = Env::$config[$this->httpObject->httpReqData['current']['customerId']]->MASTER_DB_PLACEHOLDER;
 		$function = "getSqlAndParam{$mode}Mode";
 
 		// For Required Fields
@@ -460,7 +449,7 @@ class Read
 						}
 						if (isset($readParentSqlConfig['__COUNT-SQL__'])) {
 							$page  = $readParentPayload['page'] ?? 1;
-							$perPage  = $readParentPayload['perPage'] ?? Env::$config[$this->httpObject->httpRequestObject->customerId]->DEFAULT_PER_PAGE_COUNT;
+							$perPage  = $readParentPayload['perPage'] ?? Env::$config[$this->httpObject->httpReqData['current']['customerId']]->DEFAULT_PER_PAGE_COUNT;
 							$start = $this->fetchRecordCount(
 								readSqlConfig: $readParentSqlConfig,
 								readPayload: $readParentPayload,
@@ -530,7 +519,7 @@ class Read
 				);
 				for ($index = 0; $index < $indexCount; $index++) {
 					$this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheDelete(
-						customerId: $this->httpObject->httpRequestObject->customerId,
+						customerId: $this->httpObject->httpReqData['current']['customerId'],
 						queryCacheKey: $readParentSqlConfig['__AFFECTED-CACHE-KEY__'][$index]
 					);
 				}
@@ -540,13 +529,13 @@ class Read
 
 	/**
 	 * Process Read Child Config Function
-	 *
+	 * 
 	 * @param array $readSqlConfig                 Sql config
 	 * @param array $readPayloadKeyArray
 	 * @param array $dbFetchedRecord               Record data fetched from DB
 	 * @param bool  $readMaintainHierarchy         If true - Uses parent payload/results in child
-	 * @param bool  $readChildOutputRepresentation Output Representation
-	 *
+	 * @param bool  $readChildOUTPUT_REPRESENTATION Output Representation
+	 * 
 	 * @return void
 	 */
 	private function readChild(
@@ -672,12 +661,12 @@ class Read
 
 	/**
 	 * Fetch dbFetchedRecord count
-	 *
+	 * 
 	 * @param array $readSqlConfig Sql config
 	 * @param array $readPayload   Payload
 	 * @param int   $page          Page Number
 	 * @param int   $perPage       Records Per Page
-	 *
+	 * 
 	 * @return int
 	 * @throws \Exception
 	 */
@@ -694,9 +683,9 @@ class Read
 		unset($readSqlConfig['__COUNT-SQL-COMMENT__']);
 		unset($readSqlConfig['__COUNT-SQL__']);
 
-		if ($perPage > Env::$config[$this->httpObject->httpRequestObject->customerId]->MAX_PER_PAGE_COUNT) {
+		if ($perPage > Env::$config[$this->httpObject->httpReqData['current']['customerId']]->MAX_PER_PAGE_COUNT) {
 			throw new \Exception(
-				message: 'perPage exceeds max perPage value of ' . Env::$config[$this->httpObject->httpRequestObject->customerId]->MAX_PER_PAGE_COUNT,
+				message: 'perPage exceeds max perPage value of ' . Env::$config[$this->httpObject->httpReqData['current']['customerId']]->MAX_PER_PAGE_COUNT,
 				code: HttpStatus::$Forbidden
 			);
 		}
@@ -757,13 +746,13 @@ class Read
 
 	/**
 	 * Fetch single record
-	 *
+	 * 
 	 * @param array $readSqlConfig          Sql config
 	 * @param array $readPayload            Payload
 	 * @param array $readPayloadKeyArray
 	 * @param bool  $readMaintainHierarchy  If true - Uses parent payload/results in child
 	 * @param bool  $readIsFirstCall        true to represent the first call in recursion
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -848,7 +837,7 @@ class Read
 
 	/**
 	 * Fetch multiple record
-	 *
+	 * 
 	 * @param array $readSqlConfig         Sql config
 	 * @param array $readPayload           Payload
 	 * @param array $readPayloadKeyArray
@@ -856,7 +845,7 @@ class Read
 	 * @param bool  $readIsFirstCall       true to represent first call in recursion
 	 * @param bool  $start                 Start fetching record from
 	 * @param bool  $offset                Number of record to be fetched
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -991,9 +980,9 @@ class Read
 
 	/**
 	 * Download data
-	 *
+	 * 
 	 * @param array $readSqlConfig Sql config
-	 *
+	 * 
 	 * @return array
 	 */
 	private function download(
@@ -1001,12 +990,7 @@ class Read
 	): array {
 		$return = [[], '', HttpStatus::$Ok];
 
-		if (
-			!CommonFunction::isEnabled(
-				httpObject: $this->httpObject,
-				feature: 'customer_enabled_download_request'
-			)
-		) {
+		if (!Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_DOWNLOAD_REQUEST) {
 			return [[], '', HttpStatus::$NotFound];
 		}
 
@@ -1030,12 +1014,12 @@ class Read
 		switch ($fetchDbMode) {
 			case 'Master':
 				$exportDbData = DbCommonFunction::getMasterDatabaseCred(
-					customerId: $this->httpObject->httpRequestObject->customerId
+					customerId: $this->httpObject->httpReqData['current']['customerId']
 				);
 				break;
 			case 'Slave':
 				$exportDbData = DbCommonFunction::getSlaveDatabaseServerCred(
-					customerId: $this->httpObject->httpRequestObject->customerId
+					customerId: $this->httpObject->httpReqData['current']['customerId']
 				);
 				break;
 		}
@@ -1046,11 +1030,11 @@ class Read
 			dbServerType: $exportDbData['dbServerType']
 		);
 		$export->init(
-			dbServerHostname: $exportDbData['dbServerHostname'],
+			dbServerHost: $exportDbData['dbServerHost'],
 			dbServerPort: $exportDbData['dbServerPort'],
-			dbServerUsername: $exportDbData['dbServerUsername'],
+			dbServerUser: $exportDbData['dbServerUser'],
 			dbServerPassword: $exportDbData['dbServerPassword'],
-			dbServerDatabase: $exportDbData['dbServerDatabase']
+			dbServerDb: $exportDbData['dbServerDb']
 		);
 
 		if (isset($readSqlConfig['downloadFile'])) {

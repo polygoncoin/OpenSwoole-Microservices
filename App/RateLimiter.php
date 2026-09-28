@@ -36,14 +36,14 @@ class RateLimiter
 {
 	/**
 	 * Cache object
-	 *
+	 * 
 	 * @var null|object
 	 */
 	private $cacheObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param object $cacheObject
 	 */
 	public function __construct(
@@ -54,12 +54,12 @@ class RateLimiter
 
 	/**
 	 * Check rate limit is valid
-	 *
+	 * 
 	 * @param string $rateLimitPrefix           Prefix
 	 * @param int    $rateLimitMaxRequest       Max request
 	 * @param int    $rateLimitMaxRequestWindow Window in seconds
 	 * @param string $rateLimitKey              Rate Limit Key
-	 *
+	 * 
 	 * @return array
 	 */
 	public function check(
@@ -142,12 +142,12 @@ class RateLimiter
 
 	/**
 	 * Check Rate limit
-	 *
+	 * 
 	 * @param string $rateLimitPrefix           Prefix
 	 * @param int    $rateLimitMaxRequest       Max request
 	 * @param int    $rateLimitMaxRequestWindow Window in seconds
 	 * @param string $rateLimitKey              Rate limit key
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */

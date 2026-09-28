@@ -37,14 +37,14 @@ class Route
 {
 	/**
 	 * Supported HTTP methods of routeArray
-	 *
+	 * 
 	 * @var array
 	 */
 	private $httpMethodArray = null;
 
 	/**
 	 * Route folder
-	 *
+	 * 
 	 * @var string
 	 */
 	private $routesFolder = DIRECTORY_SEPARATOR . 'Config'
@@ -52,21 +52,21 @@ class Route
 
 	/**
 	 * Route config ignore key's
-	 *
+	 * 
 	 * @var array
 	 */
 	private $reservedKeyArray = ['dataType'];
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -85,17 +85,12 @@ class Route
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
 	{
-		if (
-			CommonFunction::isEnabled(
-				httpObject: $this->httpObject,
-				feature: 'customer_enabled_routes_request'
-			)
-		) {
+		if (Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_ROUTES_REQUEST) {
 			return Constant::$TRUE;
 		}
 
@@ -104,7 +99,7 @@ class Route
 
 	/**
 	 * Make allowed routeArray list of a logged-in user
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -116,8 +111,6 @@ class Route
 		} else {
 			$userRoutesFolder = Constant::$WWW . $this->routesFolder
 				. DIRECTORY_SEPARATOR . 'Private'
-				. DIRECTORY_SEPARATOR . 'CustomerDB'
-				. DIRECTORY_SEPARATOR . 'Groups'
 				. DIRECTORY_SEPARATOR . $this->httpObject->httpRequestObject->activeRequestData['groupData']['customer_user_group_name'];
 		}
 
@@ -131,9 +124,7 @@ class Route
 				)
 			) {
 				throw new \Exception(
-					message: json_encode(
-						value: [$routeFileLocation]
-					),
+					message: 'Route file missing',
 					code: HttpStatus::$BadRequest
 				);
 				continue;
@@ -159,11 +150,11 @@ class Route
 
 	/**
 	 * Create Route list
-	 *
+	 * 
 	 * @param array  $routeArray     Route
 	 * @param string $route          Current Route
 	 * @param array  $httpRouteArray All HTTP Route
-	 *
+	 * 
 	 * @return void
 	 */
 	private function getRoutes(

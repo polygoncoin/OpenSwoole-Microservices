@@ -35,93 +35,93 @@ class PostgreSql implements SqlInterface
 {
 	/**
 	 * Database Server Hostname
-	 *
+	 * 
 	 * @var null|string
 	 */
-	private $dbServerHostname = null;
+	private $dbServerHost = null;
 
 	/**
 	 * Database Server Port
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $dbServerPort = null;
 
 	/**
 	 * Database Server Username
-	 *
+	 * 
 	 * @var null|string
 	 */
-	private $dbServerUsername = null;
+	private $dbServerUser = null;
 
 	/**
 	 * Database Server Password
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $dbServerPassword = null;
 
 	/**
 	 * Database Server DB
-	 *
+	 * 
 	 * @var null|string
 	 */
-	public $dbServerDatabase = null;
+	public $dbServerDb = null;
 
 	/**
 	 * Database Server Object
-	 *
+	 * 
 	 * @var null|\PDO
 	 */
 	private $pgsqlServerObject = null;
 
 	/**
 	 * Executed query statement
-	 *
+	 * 
 	 * @var null|\PDOStatement
 	 */
 	private $stmt = null;
 
 	/**
 	 * Executed query statement
-	 *
+	 * 
 	 * @var \PDOStatement[]
 	 */
 	private $stmtArray = [];
 
 	/**
 	 * Transaction started flag
-	 *
+	 * 
 	 * @var bool
 	 */
 	public $beganTransaction = false;
 
 	/**
 	 * Constructor
-	 *
-	 * @param string      $dbServerHostname Database Server Hostname
+	 * 
+	 * @param string      $dbServerHost Database Server Hostname
 	 * @param int         $dbServerPort     Database Server Port
-	 * @param string      $dbServerUsername Database Server Username
+	 * @param string      $dbServerUser Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
-	 * @param null|string $dbServerDatabase Database Server Database
+	 * @param null|string $dbServerDb Database Server Database
 	 */
 	public function __construct(
-		$dbServerHostname,
+		$dbServerHost,
 		$dbServerPort,
-		$dbServerUsername,
+		$dbServerUser,
 		$dbServerPassword,
-		$dbServerDatabase
+		$dbServerDb
 	) {
-		$this->dbServerHostname = $dbServerHostname;
+		$this->dbServerHost = $dbServerHost;
 		$this->dbServerPort = $dbServerPort;
-		$this->dbServerUsername = $dbServerUsername;
+		$this->dbServerUser = $dbServerUser;
 		$this->dbServerPassword = $dbServerPassword;
-		$this->dbServerDatabase = $dbServerDatabase;
+		$this->dbServerDb = $dbServerDb;
 	}
 
 	/**
 	 * Connect Database
-	 *
+	 * 
 	 * @return void
 	 */
 	public function connect(): void
@@ -137,8 +137,8 @@ class PostgreSql implements SqlInterface
 				$dbServerPassword
 			);
 			$this->pgsqlServerObject = new \PDO(
-				dsn: "pgsql:host={$this->dbServerHostname};port={$this->dbServerPort};dbname={$this->dbServerDatabase}",
-				username: $this->dbServerUsername,
+				dsn: "pgsql:host={$this->dbServerHost};port={$this->dbServerPort};dbname={$this->dbServerDb}",
+				username: $this->dbServerUser,
 				password: $this->dbServerPassword,
 			);
 			$pgsqlServerObject->setAttribute(
@@ -156,7 +156,7 @@ class PostgreSql implements SqlInterface
 
 	/**
 	 * Use Database
-	 *
+	 * 
 	 * @return void
 	 */
 	public function useDatabase(): void
@@ -166,7 +166,7 @@ class PostgreSql implements SqlInterface
 
 	/**
 	 * Begin transaction
-	 *
+	 * 
 	 * @return void
 	 */
 	public function begin(): void
@@ -187,7 +187,7 @@ class PostgreSql implements SqlInterface
 
 	/**
 	 * Commit transaction
-	 *
+	 * 
 	 * @return void
 	 */
 	public function commit(): void
@@ -208,7 +208,7 @@ class PostgreSql implements SqlInterface
 
 	/**
 	 * Rollback transaction
-	 *
+	 * 
 	 * @return void
 	 */
 	public function rollBack(): void
@@ -229,7 +229,7 @@ class PostgreSql implements SqlInterface
 
 	/**
 	 * Affected record count
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function affectedRecordCount(): bool|int
@@ -253,7 +253,7 @@ class PostgreSql implements SqlInterface
 
 	/**
 	 * Last insert id
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function lastInsertId(): bool|int
@@ -277,11 +277,11 @@ class PostgreSql implements SqlInterface
 
 	/**
 	 * Execute query
-	 *
+	 * 
 	 * @param string $sql        Sql query
 	 * @param array  $paramArray Sql query params
 	 * @param bool   $pushPop    Push Pop result set stmt
-	 *
+	 * 
 	 * @return void
 	 */
 	public function execQuery(
@@ -324,7 +324,7 @@ class PostgreSql implements SqlInterface
 
 	/**
 	 * Fetch record
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function fetch(): mixed
@@ -347,7 +347,7 @@ class PostgreSql implements SqlInterface
 
 	/**
 	 * Fetch all rows
-	 *
+	 * 
 	 * @return array|bool
 	 */
 	public function fetchAll(): array|bool
@@ -370,9 +370,9 @@ class PostgreSql implements SqlInterface
 
 	/**
 	 * Close statement cursor
-	 *
+	 * 
 	 * @param bool $pushPop Push Pop result set stmt
-	 *
+	 * 
 	 * @return void
 	 */
 	public function closeCursor(
@@ -403,9 +403,9 @@ class PostgreSql implements SqlInterface
 
 	/**
 	 * Log error
-	 *
+	 * 
 	 * @param \Exception $e Exception object
-	 *
+	 * 
 	 * @return never
 	 * @throws \Exception
 	 */

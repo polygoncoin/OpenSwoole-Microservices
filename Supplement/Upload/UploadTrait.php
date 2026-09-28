@@ -33,9 +33,9 @@ trait UploadTrait
 {
 	/**
 	 * Saves file as stream
-	 *
+	 * 
 	 * @param string $absFilePath Absolute file path
-	 *
+	 * 
 	 * @return bool
 	 */
 	private function saveFile(

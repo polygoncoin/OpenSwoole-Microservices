@@ -44,35 +44,35 @@ class Write
 
 	/**
 	 * Hook object
-	 *
+	 * 
 	 * @var null|Hook
 	 */
 	private $hookObject = null;
 
 	/**
 	 * Operate DML As Transactions
-	 *
+	 * 
 	 * @var null|Web
 	 */
 	private $operateAsTransaction = null;
 
 	/**
 	 * Data Encode object
-	 *
+	 * 
 	 * @var null|DataEncode
 	 */
 	public $dataEncodeObject = null;
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -84,7 +84,7 @@ class Write
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -94,7 +94,7 @@ class Write
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -119,7 +119,7 @@ class Write
 		// Set Server mode to execute query on - Read / Write Server
 		if ($this->httpObject->httpRequestObject->databaseServerObject === Constant::$NULL) {
 			$this->httpObject->httpRequestObject->databaseServerObject = DbCommonFunction::connectDatabase(
-				customerId: $this->httpObject->httpRequestObject->customerId,
+				customerId: $this->httpObject->httpReqData['current']['customerId'],
 				fetchDbMode: $fetchDbMode
 			);
 		}
@@ -135,11 +135,11 @@ class Write
 
 	/**
 	 * Perform write operation
-	 *
+	 * 
 	 * @param array $writeSqlConfig            Sql config
 	 * @param bool  $writeMaintainHierarchy    If true - Uses parent payload/results in child
 	 * @param bool  $writeOperateAsTransaction If true - Operates as transaction
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -148,10 +148,10 @@ class Write
 		$writeMaintainHierarchy,
 		$writeOperateAsTransaction
 	): void {
-		$writeOutputRepresentation = CommonFunction::getOutputRepresentation(
+		$writeOUTPUT_REPRESENTATION = CommonFunction::getOUTPUT_REPRESENTATION(
 			sqlConfig: $writeSqlConfig,
 			httpReqData: $this->httpObject->httpReqData,
-			customerId: $this->httpObject->httpRequestObject->customerId
+			customerId: $this->httpObject->httpReqData['current']['customerId']
 		);
 
 		// Set required fields
@@ -172,7 +172,7 @@ class Write
 		if ($writePayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $writeOutputRepresentation['OUTPUT_REPRESENTATION'],
+					needle: $writeOUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'],
 					haystack: ['XML', 'XSLT', 'HTML'],
 					strict: Constant::$TRUE
 				)
@@ -213,13 +213,8 @@ class Write
 
 				$output = [];
 				$output['Status'] = HttpStatus::$Ok;
-				if (
-					CommonFunction::isEnabled(
-						httpObject: $this->httpObject,
-						feature: 'customer_enabled_payload_in_response'
-					)
-				) {
-					$output[Env::$config[$this->httpObject->httpRequestObject->customerId]->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
+				if (Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
+					$output[Env::$config[$this->httpObject->httpReqData['current']['customerId']]->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
 						keyString: $this->getPayloadKey(
 							payloadKeyArray: $writePayloadKeyArray
 						)
@@ -277,7 +272,7 @@ class Write
 			} else {
 				if (
 					in_array(
-						needle: $writeOutputRepresentation['OUTPUT_REPRESENTATION'],
+						needle: $writeOUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'],
 						haystack: ['XML', 'XSLT', 'HTML'],
 						strict: Constant::$TRUE
 					)
@@ -304,7 +299,7 @@ class Write
 		if ($writePayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $writeOutputRepresentation['OUTPUT_REPRESENTATION'],
+					needle: $writeOUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'],
 					haystack: ['XML', 'XSLT', 'HTML'],
 					strict: Constant::$TRUE
 				)
@@ -317,14 +312,14 @@ class Write
 
 	/**
 	 * Write Parent Function
-	 *
+	 * 
 	 * @param array $writeParentSqlConfig            Sql config
 	 * @param array $writeParentPayloadKeyArray      Payload Indexes
 	 * @param array $writeParentRequiredFieldArray   Required fields
 	 * @param array $writeParentResponse             Response by reference
 	 * @param bool  $writeParentMaintainHierarchy    If true - Uses parent payload/results in child
 	 * @param bool  $writeParentOperateAsTransaction If true - Operates as transaction
-	 *
+	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -373,7 +368,7 @@ class Write
 			}
 		}
 
-		$mode = Env::$config[$this->httpObject->httpRequestObject->customerId]->MASTER_DB_PLACEHOLDER;
+		$mode = Env::$config[$this->httpObject->httpReqData['current']['customerId']]->MASTER_DB_PLACEHOLDER;
 		$function = "getSqlAndParam{$mode}Mode";
 
 		for ($index = 0; $index < $indexCount; $index++) {
@@ -566,7 +561,7 @@ class Write
 				);
 				for ($index = 0; $index < $indexCount; $index++) {
 					$this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheDelete(
-						customerId: $this->httpObject->httpRequestObject->customerId,
+						customerId: $this->httpObject->httpReqData['current']['customerId'],
 						queryCacheKey: $writeParentSqlConfig['__AFFECTED-CACHE-KEY__'][$index]
 					);
 				}
@@ -576,14 +571,14 @@ class Write
 
 	/**
 	 * Write Child Function
-	 *
+	 * 
 	 * @param array $writeChildSqlConfig            Sql config
 	 * @param array $writeChildPayloadKeyArray      Payload Key's
 	 * @param array $writeChildRequiredFieldArray   Required fields
 	 * @param array $writeChildResponse             Response by reference
 	 * @param bool  $writeChildMaintainHierarchy    If true - Uses parent payload/results in child
 	 * @param bool  $writeChildOperateAsTransaction If true - Operates as transaction
-	 *
+	 * 
 	 * @return void
 	 */
 	private function writeChild(
@@ -720,10 +715,10 @@ class Write
 
 	/**
 	 * Validate payload
-	 *
+	 * 
 	 * @param array $sqlConfig Sql config
 	 * @param array $response  Response by reference
-	 *
+	 * 
 	 * @return bool
 	 */
 	private function isValidPayload(

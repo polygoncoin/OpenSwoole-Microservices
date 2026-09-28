@@ -38,7 +38,7 @@ class XmlEncoderObject
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param string      $mode      Values can be one among Array/object
 	 * @param null|string $objectKey Tag
 	 */

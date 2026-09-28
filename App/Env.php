@@ -47,7 +47,7 @@ class Env
 	public static $SYSTEM_ENABLE_RELOAD_CACHE = null;
     public static $SYSTEM_RELOAD_REQUEST_KEYWORD = null;
 
-	public static $SYSTEM_ROUTE_REQUEST_KEYWORD = null;
+	public static $SYSTEM_KEYWORD = null;
 
 	public static $SYSTEM_INPUT_REPRESENTATION = null;
 	public static $SYSTEM_OUTPUT_REPRESENTATION = null;
@@ -60,7 +60,7 @@ class Env
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return void
 	 */
 	public static function init(): void
@@ -81,7 +81,7 @@ class Env
 		self::$SYSTEM_ENABLE_RELOAD_CACHE = (bool)getenv(name: 'SYSTEM_ENABLE_RELOAD_CACHE');
 		self::$SYSTEM_RELOAD_REQUEST_KEYWORD = getenv(name: 'SYSTEM_RELOAD_REQUEST_KEYWORD');
 
-		self::$SYSTEM_ROUTE_REQUEST_KEYWORD = getenv(name: 'SYSTEM_ROUTE_REQUEST_KEYWORD');
+		self::$SYSTEM_KEYWORD = getenv(name: 'SYSTEM_KEYWORD');
 
 		self::$SYSTEM_INPUT_REPRESENTATION = getenv(name: 'SYSTEM_INPUT_REPRESENTATION');
 		self::$SYSTEM_OUTPUT_REPRESENTATION = [
@@ -95,17 +95,17 @@ class Env
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param int $customerId Customer id
-	 *
+	 * 
 	 * @return void
 	 */
 	public static function loadEnv(
 		$customerId
 	): void {
-		// if (isset(self::$config[$customerId])) {
-		// 	return;
-		// }
+		if (isset(self::$config[$customerId])) {
+			return;
+		}
 		$envFile = ".env.customer.{$customerId}";
 
 		self::$config[$customerId] = new Environment($envFile);
@@ -113,10 +113,10 @@ class Env
 
 	/**
 	 * Validate Data Representation
-	 *
+	 * 
 	 * @param string $dataRepresentation Data Representation
 	 * @param string $mode               input / output
-	 *
+	 * 
 	 * @return bool
 	 * @throws \Exception
 	 */

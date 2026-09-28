@@ -1,0 +1,3 @@
+<IfModule mod_rewrite.c>
+	RewriteRule ^.*$ /404.html [L]
+</IfModule>

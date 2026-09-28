@@ -63,9 +63,9 @@ CREATE TABLE `debug_log` (
 DROP TABLE IF EXISTS `super_admin`;
 CREATE TABLE `super_admin` (
     `super_admin_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `super_admin_allowed_cidr` VARCHAR(250) DEFAULT NULL,
-    `super_admin_rate_limit_max_request` INT DEFAULT NULL,
-    `super_admin_rate_limit_max_request_window` INT DEFAULT NULL,
+    `super_admin_cidr` VARCHAR(250) DEFAULT NULL,
+    `super_admin_rate_limit_count` INT DEFAULT NULL,
+    `super_admin_rate_limit_count_window` INT DEFAULT NULL,
     `super_admin_username` VARCHAR(100) NOT NULL,
     `super_admin_password_hash` VARCHAR(150) NOT NULL,
     `super_admin_user_token` VARCHAR(100) NULL DEFAULT NULL,
@@ -117,9 +117,9 @@ CREATE TABLE `super_admin_contact` (
 DROP TABLE IF EXISTS `super_admin_group`;
 CREATE TABLE `super_admin_group` (
     `super_admin_group_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `super_admin_group_allowed_cidr` VARCHAR(250) DEFAULT NULL,
-    `super_admin_group_rate_limit_max_request` INT DEFAULT NULL,
-    `super_admin_group_rate_limit_max_request_window` INT DEFAULT NULL,
+    `super_admin_group_cidr` VARCHAR(250) DEFAULT NULL,
+    `super_admin_group_rate_limit_count` INT DEFAULT NULL,
+    `super_admin_group_rate_limit_count_window` INT DEFAULT NULL,
     `super_admin_group_name` VARCHAR(100) NOT NULL,
     `super_admin_group_general_information` VARCHAR(250) DEFAULT NULL,
     `super_admin_group_created_by` INT DEFAULT NULL,
@@ -143,59 +143,32 @@ CREATE TABLE `customer` (
     `customer_name` VARCHAR(255) DEFAULT NULL,
     `customer_user_group_table` VARCHAR(255) NOT NULL,
     `customer_user_table` VARCHAR(255) NOT NULL,
-    `customer_allowed_cidr` VARCHAR(250) DEFAULT NULL,
-    `customer_rate_limit_max_request` INT DEFAULT NULL,
-    `customer_rate_limit_max_request_window` INT DEFAULT NULL,
-    `customer_private_token_domain` VARCHAR(255) DEFAULT NULL,
-    `customer_private_session_domain` VARCHAR(255) DEFAULT NULL,
-    `customer_public_domain` VARCHAR(255) DEFAULT NULL,
-    `customer_enabled_cidr_check` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_concurrent_login` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_cron_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_custom_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_dropbox_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_download_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_explain_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_import_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_import_sample_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_input_representation_in_query_string` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_output_representation_in_query_string` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_payload_in_response` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_private_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_public_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_rate_limiting` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_rate_limiting_for_customer` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_rate_limiting_for_customer_user_group` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_rate_limiting_for_ip` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_rate_limiting_for_route` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_rate_limiting_for_user` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_rate_limiting_for_user_per_ip` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_rate_limiting_for_user_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_response_caching` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_routes_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_thirdparty_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_upload_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_query_cache_for_public_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_enabled_query_cache_for_private_request` ENUM('Yes', 'No') NOT NULL DEFAULT 'No',
-    `customer_cron_request_restricted_cidr` VARCHAR(250) DEFAULT NULL,
-    `customer_custom_request_restricted_cidr` VARCHAR(250) DEFAULT NULL,
-    `customer_dropbox_request_restricted_cidr` VARCHAR(250) DEFAULT NULL,
-    `customer_explain_request_restricted_cidr` VARCHAR(250) DEFAULT NULL,
-    `customer_export_request_restricted_cidr` VARCHAR(250) DEFAULT NULL,
-    `customer_import_sample_request_restricted_cidr` VARCHAR(250) DEFAULT NULL,
-    `customer_import_request_restricted_cidr` VARCHAR(250) DEFAULT NULL,
-    `customer_routes_request_restricted_cidr` VARCHAR(250) DEFAULT NULL,
-    `customer_thirdparty_request_restricted_cidr` VARCHAR(250) DEFAULT NULL,
-    `customer_upload_request_restricted_cidr` VARCHAR(250) DEFAULT NULL,
-    `customer_rate_limit_ip_max_request` INT DEFAULT NULL, -- ; Max request allowed per IP
-    `customer_rate_limit_ip_max_request_window` INT DEFAULT NULL, -- ; Window for Max request allowed per IP
-    `customer_rate_limit_max_user_per_ip` INT DEFAULT NULL, -- ; Max User allowed per IP
-    `customer_rate_limit_max_user_per_ip_window` INT DEFAULT NULL, -- ; Window for Max User allowed per IP
-    `customer_rate_limit_user_max_request` INT DEFAULT NULL, -- ; Max request allowed for user
-    `customer_rate_limit_user_max_request_window` INT DEFAULT NULL, -- ; Window for Max request allowed for user
-    `customer_rate_limit_max_user_login_request` INT DEFAULT NULL, -- ; Max User Login request
-    `customer_rate_limit_max_user_login_request_window` INT DEFAULT NULL, -- ; Window for Max User Login request
+    `customer_cidr` VARCHAR(250) DEFAULT NULL,
     `customer_comments` VARCHAR(255) DEFAULT NULL,
+    `customer_public_domain` VARCHAR(255) DEFAULT NULL,
+    `customer_private_session_domain` VARCHAR(255) DEFAULT NULL,
+    `customer_private_token_domain` VARCHAR(255) DEFAULT NULL,
+    `customer_cron_cidr` VARCHAR(250) DEFAULT NULL,
+    `customer_custom_cidr` VARCHAR(250) DEFAULT NULL,
+    `customer_dropbox_cidr` VARCHAR(250) DEFAULT NULL,
+    `customer_download_cidr` VARCHAR(250) DEFAULT NULL,
+    `customer_explain_cidr` VARCHAR(250) DEFAULT NULL,
+    `customer_import_cidr` VARCHAR(250) DEFAULT NULL,
+    `customer_routes_cidr` VARCHAR(250) DEFAULT NULL,
+    `customer_thirdparty_cidr` VARCHAR(250) DEFAULT NULL,
+    `customer_upload_cidr` VARCHAR(250) DEFAULT NULL,
+    `customer_limiting_count` INT DEFAULT NULL,
+    `customer_limiting_count_window` INT DEFAULT NULL,
+    `customer_limiting_per_ip_count` INT DEFAULT NULL,
+    `customer_limiting_per_ip_count_window` INT DEFAULT NULL,
+    `customer_limiting_login_per_user_count` INT DEFAULT NULL,
+    `customer_limiting_login_request_per_user_count_window` INT DEFAULT NULL,
+    `customer_limiting_login_successfull_per_user_count` INT DEFAULT NULL,
+    `customer_limiting_login_successfull_per_user_count_window` INT DEFAULT NULL,
+    `customer_limiting_logged_in_user_count` INT DEFAULT NULL,
+    `customer_limiting_logged_in_user_count_window` INT DEFAULT NULL,
+    `customer_limiting_logged_in_user_per_ip_count` INT DEFAULT NULL,
+    `customer_limiting_logged_in_user_per_ip_count_window` INT DEFAULT NULL,
     `customer_created_by` INT DEFAULT NULL,
     `customer_created_on` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `customer_approved_by` INT DEFAULT NULL,
@@ -241,6 +214,54 @@ CREATE TABLE `customer_contact` (
 -- ----------- Tables Customer Level --------------
 
 LOCK TABLES `customer` WRITE;
-INSERT INTO `customer` VALUES
-(1,'Customer 001','customer_user_group','customer_user',NULL,NULL,NULL,'api.customer001.localhost','web.customer001.localhost','customer001.localhost','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes','Yes',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,600,300,600,300,600,300,600,300,'',NULL,'2023-04-15 08:54:50',NULL,NULL,NULL,'2023-04-29 16:00:41','Yes','Yes','No','No');
+INSERT INTO `customer` SET
+    `customer_id` = 1,
+    `customer_name` = 'Customer 001',
+    `customer_user_group_table` = 'customer_user_group',
+    `customer_user_table` = 'customer_user',
+    `customer_cidr` = NULL,
+    `customer_comments` = NULL,
+
+-- Customer level domain settings
+    `customer_public_domain` = 'ustomer001.localhost',
+    `customer_private_session_domain` = 'web.customer001.localhost',
+    `customer_private_token_domain` = 'api.customer001.localhost',
+
+-- CIDR columns at customer level
+    `customer_cron_cidr` =  NULL,
+    `customer_custom_cidr` =  NULL,
+    `customer_dropbox_cidr` =  NULL,
+    `customer_download_cidr` =  NULL,
+    `customer_explain_cidr` =  NULL,
+    `customer_import_cidr` =  NULL,
+    `customer_routes_cidr` =  NULL,
+    `customer_thirdparty_cidr` =  NULL,
+    `customer_upload_cidr` =  NULL,
+
+-- Rate limiting columns at customer level
+    `customer_limiting_count` =  600,
+    `customer_limiting_count_window` =  300,
+    `customer_limiting_per_ip_count` =  600,
+    `customer_limiting_per_ip_count_window` =  300,
+    `customer_limiting_login_per_user_count` =  600, --
+    `customer_limiting_login_request_per_user_count_window` =  300, --
+    `customer_limiting_login_successfull_per_user_count` =  600,
+    `customer_limiting_login_successfull_per_user_count_window` =  300, --
+    `customer_limiting_logged_in_user_count` =  600,
+    `customer_limiting_logged_in_user_count_window` =  300,
+    `customer_limiting_logged_in_user_per_ip_count` =  600,
+    `customer_limiting_logged_in_user_per_ip_count_window` =  300,
+
+-- Customer level other settings
+    `customer_created_by` = NULL,
+    `customer_created_on` = '2023-04-29 16:00:41',
+    `customer_approved_by` =  NULL,
+    `customer_approved_on` =  NULL,
+    `customer_updated_by` =  NULL,
+    `customer_updated_on` = '2023-04-29 16:00:41',
+    `customer_is_editable` = 'Yes',
+    `customer_is_approved` = 'Yes',
+    `customer_is_disabled` = 'No',
+    `customer_is_deleted` = 'No';
+
 UNLOCK TABLES;

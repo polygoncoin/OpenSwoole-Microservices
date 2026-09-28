@@ -38,21 +38,21 @@ class Microservices
 {
 	/**
 	 * HTTP request data
-	 *
+	 * 
 	 * @var null|array
 	 */
 	public $httpReqData = null;
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	public $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param array $httpReqData HTTP request data
 	 * @throws \Exception
 	 */
@@ -67,7 +67,7 @@ class Microservices
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -77,7 +77,7 @@ class Microservices
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 * @throws \Exception
 	 */
@@ -146,7 +146,7 @@ class Microservices
 
 	/**
 	 * Output response
-	 *
+	 * 
 	 * @return void
 	 */
 	public function outputResults(): void
@@ -160,7 +160,7 @@ class Microservices
 
 	/**
 	 * Return encoded result
-	 *
+	 * 
 	 * @return bool|string
 	 */
 	public function returnResults(): bool|string
@@ -173,7 +173,7 @@ class Microservices
 
 	/**
 	 * Headers / CORS
-	 *
+	 * 
 	 * @return array
 	 */
 	public function getHeaders(): array
@@ -203,10 +203,10 @@ class Microservices
 			) {
 				$OUTPUT_REPRESENTATION = Env::$SYSTEM_OUTPUT_REPRESENTATION;
 			} else {
-				$OUTPUT_REPRESENTATION = CommonFunction::getOutputRepresentation(
+				$OUTPUT_REPRESENTATION = CommonFunction::getOUTPUT_REPRESENTATION(
 					sqlConfig: $this->httpObject->httpRequestObject->routeParserObject->sqlConfig,
 					httpReqData: $this->httpObject->httpReqData,
-					customerId: $this->httpObject->httpRequestObject->customerId
+					customerId: $this->httpObject->httpReqData['current']['customerId']
 				);
 			}
 			switch ($OUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION']) {
@@ -232,9 +232,9 @@ class Microservices
 
 	/**
 	 * Log error
-	 *
+	 * 
 	 * @param \Exception $e Exception
-	 *
+	 * 
 	 * @return never
 	 * @throws \Exception
 	 */

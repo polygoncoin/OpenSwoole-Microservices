@@ -35,93 +35,93 @@ class MySql implements SqlInterface
 {
 	/**
 	 * Database Server Hostname
-	 *
+	 * 
 	 * @var null|string
 	 */
-	private $dbServerHostname = null;
+	private $dbServerHost = null;
 
 	/**
 	 * Database Server Port
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $dbServerPort = null;
 
 	/**
 	 * Database Server Username
-	 *
+	 * 
 	 * @var null|string
 	 */
-	private $dbServerUsername = null;
+	private $dbServerUser = null;
 
 	/**
 	 * Database Server Password
-	 *
+	 * 
 	 * @var null|string
 	 */
 	private $dbServerPassword = null;
 
 	/**
 	 * Database Server DB
-	 *
+	 * 
 	 * @var null|string
 	 */
-	public $dbServerDatabase = null;
+	public $dbServerDb = null;
 
 	/**
 	 * Database Server Object
-	 *
+	 * 
 	 * @var null|\PDO
 	 */
 	private $mysqlServerObject = null;
 
 	/**
 	 * Executed query statement
-	 *
+	 * 
 	 * @var null|\PDOStatement
 	 */
 	private $stmt = null;
 
 	/**
 	 * Executed query statement
-	 *
+	 * 
 	 * @var \PDOStatement[]
 	 */
 	private $stmtArray = [];
 
 	/**
 	 * Transaction started flag
-	 *
+	 * 
 	 * @var bool
 	 */
 	public $beganTransaction = false;
 
 	/**
 	 * Constructor
-	 *
-	 * @param string      $dbServerHostname Database Server Hostname
+	 * 
+	 * @param string      $dbServerHost Database Server Hostname
 	 * @param int         $dbServerPort     Database Server Port
-	 * @param string      $dbServerUsername Database Server Username
+	 * @param string      $dbServerUser Database Server Username
 	 * @param string      $dbServerPassword Database Server Password
-	 * @param null|string $dbServerDatabase Database Server Database
+	 * @param null|string $dbServerDb Database Server Database
 	 */
 	public function __construct(
-		$dbServerHostname,
+		$dbServerHost,
 		$dbServerPort,
-		$dbServerUsername,
+		$dbServerUser,
 		$dbServerPassword,
-		$dbServerDatabase
+		$dbServerDb
 	) {
-		$this->dbServerHostname = $dbServerHostname;
+		$this->dbServerHost = $dbServerHost;
 		$this->dbServerPort = $dbServerPort;
-		$this->dbServerUsername = $dbServerUsername;
+		$this->dbServerUser = $dbServerUser;
 		$this->dbServerPassword = $dbServerPassword;
-		$this->dbServerDatabase = $dbServerDatabase;
+		$this->dbServerDb = $dbServerDb;
 	}
 
 	/**
 	 * Connect Database
-	 *
+	 * 
 	 * @return void
 	 */
 	public function connect(): void
@@ -129,11 +129,11 @@ class MySql implements SqlInterface
 		if ($this->mysqlServerObject !== Constant::$NULL) {
 			return;
 		}
-
+		
 		try {
 			$this->mysqlServerObject = new \PDO(
-				dsn: "mysql:host={$this->dbServerHostname};port={$this->dbServerPort}",
-				username: $this->dbServerUsername,
+				dsn: "mysql:host={$this->dbServerHost};port={$this->dbServerPort}",
+				username: $this->dbServerUser,
 				password: $this->dbServerPassword,
 				options: [
 					\PDO::ATTR_EMULATE_PREPARES => Constant::$FALSE,
@@ -141,7 +141,7 @@ class MySql implements SqlInterface
 				]
 			);
 
-			if ($this->dbServerDatabase !== Constant::$NULL) {
+			if ($this->dbServerDb !== Constant::$NULL) {
 				$this->useDatabase();
 			}
 		} catch (\PDOException $e) {
@@ -155,7 +155,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Use Database
-	 *
+	 * 
 	 * @return void
 	 */
 	public function useDatabase(): void
@@ -163,9 +163,9 @@ class MySql implements SqlInterface
 		$this->connect();
 
 		try {
-			if ($this->dbServerDatabase !== Constant::$NULL) {
+			if ($this->dbServerDb !== Constant::$NULL) {
 				$this->mysqlServerObject->exec(
-					statement: "USE `{$this->dbServerDatabase}`"
+					statement: "USE `{$this->dbServerDb}`"
 				);
 			}
 		} catch (\PDOException $e) {
@@ -180,7 +180,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Begin transaction
-	 *
+	 * 
 	 * @return void
 	 */
 	public function begin(): void
@@ -201,7 +201,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Commit transaction
-	 *
+	 * 
 	 * @return void
 	 */
 	public function commit(): void
@@ -222,7 +222,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Rollback transaction
-	 *
+	 * 
 	 * @return void
 	 */
 	public function rollBack(): void
@@ -243,7 +243,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Affected record count
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function affectedRecordCount(): bool|int
@@ -267,7 +267,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Last insert id
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function lastInsertId(): bool|int
@@ -291,11 +291,11 @@ class MySql implements SqlInterface
 
 	/**
 	 * Execute query
-	 *
+	 * 
 	 * @param string $sql        Sql query
 	 * @param array  $paramArray Sql query params
 	 * @param bool   $pushPop    Push Pop result set stmt
-	 *
+	 * 
 	 * @return void
 	 */
 	public function execQuery(
@@ -349,7 +349,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Fetch record
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function fetch(): mixed
@@ -372,7 +372,7 @@ class MySql implements SqlInterface
 
 	/**
 	 * Fetch all rows
-	 *
+	 * 
 	 * @return array|bool
 	 */
 	public function fetchAll(): array|bool
@@ -395,9 +395,9 @@ class MySql implements SqlInterface
 
 	/**
 	 * Close statement cursor
-	 *
+	 * 
 	 * @param bool $pushPop Push Pop result set stmt
-	 *
+	 * 
 	 * @return void
 	 */
 	public function closeCursor(
@@ -428,9 +428,9 @@ class MySql implements SqlInterface
 
 	/**
 	 * Log error
-	 *
+	 * 
 	 * @param \Exception $e Exception object
-	 *
+	 * 
 	 * @return never
 	 * @throws \Exception
 	 */

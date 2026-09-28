@@ -39,21 +39,21 @@ class Api
 {
 	/**
 	 * Hook object
-	 *
+	 * 
 	 * @var null|Hook
 	 */
 	private $hookObject = null;
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -64,7 +64,7 @@ class Api
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function init(): bool
@@ -74,7 +74,7 @@ class Api
 
 	/**
 	 * Process
-	 *
+	 * 
 	 * @return mixed
 	 */
 	public function process(): mixed
@@ -139,8 +139,8 @@ class Api
 			!in_array(
 				needle: $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword,
 				haystack: [
-					Env::$config[$this->httpObject->httpRequestObject->customerId]->EXPLAIN_REQUEST_KEYWORD,
-					Env::$config[$this->httpObject->httpRequestObject->customerId]->IMPORT_SAMPLE_REQUEST_KEYWORD
+					Env::$config[$this->httpObject->httpReqData['current']['customerId']]->EXPLAIN_REQUEST_KEYWORD,
+					Env::$config[$this->httpObject->httpReqData['current']['customerId']]->IMPORT_SAMPLE_REQUEST_KEYWORD
 				],
 				strict: Constant::$TRUE
 			)
@@ -152,7 +152,7 @@ class Api
 		$supplementClass = Constant::$NULL;
 		if (
 			$this->checkSupplement(
-				Env::$config[$this->httpObject->httpRequestObject->customerId]->CRON_REQUEST_KEYWORD
+				Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CRON_REQUEST_KEYWORD
 			)
 		) {
 			$supplementClassFileName = ucfirst(
@@ -171,7 +171,7 @@ class Api
 			}
 		} elseif (
 			$this->checkSupplement(
-				Env::$config[$this->httpObject->httpRequestObject->customerId]->CUSTOM_REQUEST_KEYWORD
+				Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOM_REQUEST_KEYWORD
 			)
 		) {
 			$supplementClassFileName = ucfirst(
@@ -190,7 +190,7 @@ class Api
 			}
 		} elseif (
 			$this->checkSupplement(
-				Env::$config[$this->httpObject->httpRequestObject->customerId]->UPLOAD_REQUEST_KEYWORD
+				Env::$config[$this->httpObject->httpReqData['current']['customerId']]->UPLOAD_REQUEST_KEYWORD
 			)
 		) {
 			$supplementClassFileName = ucfirst(
@@ -209,7 +209,7 @@ class Api
 			}
 		} elseif (
 			$this->checkSupplement(
-				Env::$config[$this->httpObject->httpRequestObject->customerId]->THIRD_PARTY_REQUEST_KEYWORD
+				Env::$config[$this->httpObject->httpReqData['current']['customerId']]->THIRD_PARTY_REQUEST_KEYWORD
 			)
 		) {
 			$supplementClassFileName = ucfirst(
@@ -232,7 +232,7 @@ class Api
 				case Constant::$QUERY:
 					if (
 						$this->checkSupplement(
-							Env::$config[$this->httpObject->httpRequestObject->customerId]->DROPBOX_REQUEST_KEYWORD
+							Env::$config[$this->httpObject->httpReqData['current']['customerId']]->DROPBOX_REQUEST_KEYWORD
 						)
 					) {
 						$classFileName = ucfirst(
@@ -251,7 +251,7 @@ class Api
 						}
 					} elseif (
 						$this->checkSupplement(
-							Env::$SYSTEM_ROUTE_REQUEST_KEYWORD
+							Env::$SYSTEM_KEYWORD
 						)
 					) {
 						$class = __NAMESPACE__ . '\\Route';
@@ -364,9 +364,9 @@ class Api
 
 	/**
 	 * Process before collecting Payload
-	 *
+	 * 
 	 * @param string $supplementMode
-	 *
+	 * 
 	 * @return bool
 	 */
 	private function checkSupplement(
@@ -380,7 +380,7 @@ class Api
 
 	/**
 	 * Execute once done with api process function
-	 *
+	 * 
 	 * @return bool
 	 */
 	private function processAfterPayload(): bool

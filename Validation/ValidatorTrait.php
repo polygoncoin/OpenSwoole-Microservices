@@ -31,9 +31,9 @@ trait ValidatorTrait
 {
 	/**
 	 * Validate string is alphanumeric
-	 *
+	 * 
 	 * @param string $v String
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	private function isAlphanumeric(
@@ -47,9 +47,9 @@ trait ValidatorTrait
 
 	/**
 	 * Validate string is an email
-	 *
+	 * 
 	 * @param string $v email address
-	 *
+	 * 
 	 * @return mixed
 	 */
 	private function isEmail(

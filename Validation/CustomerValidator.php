@@ -38,14 +38,14 @@ class CustomerValidator implements ValidatorInterface
 
 	/**
 	 * HTTP object
-	 *
+	 * 
 	 * @var null|Http
 	 */
 	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param Http $httpObject
 	 */
 	public function __construct(
@@ -56,9 +56,9 @@ class CustomerValidator implements ValidatorInterface
 
 	/**
 	 * Validate payload
-	 *
+	 * 
 	 * @param array $validationConfig Validation configuration
-	 *
+	 * 
 	 * @return array
 	 */
 	public function validate(
@@ -95,11 +95,11 @@ class CustomerValidator implements ValidatorInterface
 
 	/**
 	 * Get primary key count
-	 *
+	 * 
 	 * @param string $table   Table Name
 	 * @param string $primary Primary Key
 	 * @param int    $id      Primary id
-	 *
+	 * 
 	 * @return int 0/1
 	 */
 	private function getPrimaryCount(
@@ -107,10 +107,10 @@ class CustomerValidator implements ValidatorInterface
 		$primary,
 		&$id
 	): int {
-		$dbServerDatabase = $this->httpObject->httpRequestObject->databaseServerObject->dbServerDatabase;
+		$dbServerDb = $this->httpObject->httpRequestObject->databaseServerObject->dbServerDb;
 		$sql = "
 			SELECT count(1) as `count`
-			FROM `{$dbServerDatabase}`.`{$table}`
+			FROM `{$dbServerDb}`.`{$table}`
 			WHERE `{$primary}` = ?
 		";
 		$paramArray = [$id];
@@ -123,9 +123,9 @@ class CustomerValidator implements ValidatorInterface
 
 	/**
 	 * Check primary key exist
-	 *
+	 * 
 	 * @param array $argArray Arguments
-	 *
+	 * 
 	 * @return bool
 	 */
 	private function primaryKeyExist(

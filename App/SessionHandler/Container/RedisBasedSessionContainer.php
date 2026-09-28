@@ -45,10 +45,10 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Initialize
-	 *
+	 * 
 	 * @param string $sessionSavePath Session Save Path
 	 * @param string $sessionName     Session Name
-	 *
+	 * 
 	 * @return void
 	 */
 	public function init(
@@ -60,9 +60,9 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Validate session id
-	 *
+	 * 
 	 * @param string $sessionId Session id
-	 *
+	 * 
 	 * @return bool|string
 	 */
 	public function getSession(
@@ -87,10 +87,10 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Write session data
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function setSession(
@@ -119,10 +119,10 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Update Session
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool|int
 	 */
 	public function updateSession(
@@ -137,10 +137,10 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Update session timestamp
-	 *
+	 * 
 	 * @param string $sessionId   Session id
 	 * @param string $sessionData Session Data
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function touchSession(
@@ -166,9 +166,9 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Cleanup old sessions
-	 *
+	 * 
 	 * @param integer $sessionMaxLifetime Session Max Lifetime
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function gcSession(
@@ -179,9 +179,9 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * For Custom Session Handler - Destroy a session
-	 *
+	 * 
 	 * @param string $sessionId Session id
-	 *
+	 * 
 	 * @return bool
 	 */
 	public function deleteSession(
@@ -201,7 +201,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Close File Container
-	 *
+	 * 
 	 * @return void
 	 */
 	public function closeSession(): void
@@ -211,7 +211,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Connect
-	 *
+	 * 
 	 * @return void
 	 */
 	private function connect(): void
@@ -259,9 +259,9 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 
 	/**
 	 * Manage Exception
-	 *
+	 * 
 	 * @param \Exception $e Exception
-	 *
+	 * 
 	 * @return never
 	 */
 	private function manageException(
