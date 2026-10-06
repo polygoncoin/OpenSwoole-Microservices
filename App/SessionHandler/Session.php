@@ -17,6 +17,7 @@ namespace Microservices\App\SessionHandler;
 
 use Microservices\App\Constant;
 use Microservices\App\Env;
+use Microservices\App\Http;
 use Microservices\App\SessionHandler\CustomSessionHandler;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 
@@ -65,11 +66,18 @@ class Session
 	public $sessionMode = null;
 
 	/**
-	 * Session Start function argument
+	 * Session customer id
 	 * 
-	 * @var null|array
+	 * @var null|int
 	 */
-	public $optionArray = null;
+	public $customerId = null;
+
+	/**
+	 * Session cookie name
+	 * 
+	 * @var null|string
+	 */
+	public $sessionName = null;
 
 	/**
 	 * Session handler Container
@@ -79,56 +87,51 @@ class Session
 	public $sessionContainer = null;
 
 	/**
-	 * Session initProcess function initialized
+	 * HTTP object
 	 * 
-	 * @var bool
+	 * @var null|Http
 	 */
-	public $initProcessInitialized = false;
-
-	/**
-	 * Session customer id
-	 * 
-	 * @var bool
-	 */
-	public $customerId = null;
+	private $httpObject = null;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param int $customerId Customer Id
+	 * @param Http $httpObject
 	 */
-	public function __construct($customerId)
-	{
-		$this->customerId = $customerId;
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
 		Env::loadEnv(
-			customerId: $customerId
+			customerId: $this->customerId
 		);
+		$this->customerId = $this->httpObject->httpReqData['current']['customerId'];
+		$this->sessionName = Env::$config[$this->customerId]->SESSION_COOKIE_NAME;
 	}
 
 	/**
 	 * Initialize container
 	 * 
-	 * @return void
+	 * @return SessionContainerInterface
 	 */
-	private function initContainer(): void
+	private function getSessionContainer(): SessionContainerInterface
 	{
 		// Initialize Container
 		$containerClassName = 'Microservices\\App\\SessionHandler\\Container\\'
 			. $this->sessionMode . 'BasedSessionContainer';
-		$this->sessionContainer = new $containerClassName();
-
-		// Setting required common parameters
-		$this->sessionContainer->sessionOptionArray = $this->optionArray;
+		$this->sessionContainer = new $containerClassName(
+			httpObject: $this->httpObject
+		);
 
 		// Setting required parameters as per session Mode / Type
 		switch ($this->sessionMode) {
 			case 'MySql':
-				$this->sessionContainer->sessionServerHost = Env::$config[$this->customerId]->SESSION_MYSQL_HOST;
-				$this->sessionContainer->sessionServerPort = Env::$config[$this->customerId]->SESSION_MYSQL_PORT;
-				$this->sessionContainer->sessionServerUser = Env::$config[$this->customerId]->SESSION_MYSQL_USER;
-				$this->sessionContainer->sessionServerPassword = Env::$config[$this->customerId]->SESSION_MYSQL_PASSWORD;
-				$this->sessionContainer->sessionServerDb = Env::$config[$this->customerId]->SESSION_MYSQL_DB;
-				$this->sessionContainer->sessionServerTable = Env::$config[$this->customerId]->SESSION_MYSQL_TABLE;
+				$this->sessionContainer->mySqlServerHost = Env::$config[$this->customerId]->SESSION_MYSQL_HOST;
+				$this->sessionContainer->mySqlServerPort = Env::$config[$this->customerId]->SESSION_MYSQL_PORT;
+				$this->sessionContainer->mySqlServerUser = Env::$config[$this->customerId]->SESSION_MYSQL_USER;
+				$this->sessionContainer->mySqlServerPassword = Env::$config[$this->customerId]->SESSION_MYSQL_PASSWORD;
+				$this->sessionContainer->mySqlServerDb = Env::$config[$this->customerId]->SESSION_MYSQL_DB;
+				$this->sessionContainer->mySqlServerTable = Env::$config[$this->customerId]->SESSION_MYSQL_TABLE;
 				break;
 			case 'PostgreSql':
 				$this->sessionContainer->pgSqlServerHost = Env::$config[$this->customerId]->SESSION_PGSQL_HOST;
@@ -158,7 +161,6 @@ class Session
 				$this->sessionContainer->memcachedServerPort = Env::$config[$this->customerId]->SESSION_MEMCACHE_PORT;
 				break;
 			case 'Cookie':
-				$this->sessionContainer->sessionDataCookieName = Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME;
 				break;
 		}
 
@@ -174,97 +176,71 @@ class Session
 				string: $this->sessionEncryptionIv
 			);
 		}
-	}
+		
+		$this->sessionContainer->customerId = $this->customerId;
+		$this->sessionContainer->sessionName = $this->sessionName;
 
-	/**
-	 * Initialize session_set_save_handler process
-	 * 
-	 * @return void
-	 */
-	private function initProcess(): void
-	{
-		if ($this->initProcessInitialized) {
-			return;
-		}
-
-		$this->sessionStartCheck();
-
-		// Initialize container
-		$this->initContainer();
-
-		$customSessionHandler = new CustomSessionHandler(
-			container: $this->sessionContainer
-		);
-		session_set_save_handler(
-			$customSessionHandler,
-			Constant::$TRUE
-		);
-
-		$this->initProcessInitialized = Constant::$TRUE;
+		return $this->sessionContainer;
 	}
 
 	/**
 	 * Generates session optionArray argument
 	 * 
-	 * @param array $optionArray Options
+	 * @param bool $readonly Readonly mode
 	 * 
-	 * @return void
+	 * @return array
 	 */
-	private function setOptions(
-		$optionArray = []
-	): void {
-		$this->optionArray = [ // always required.
+	private function getSessionOptions(
+		$readonly
+	): array {
+		$options = [ // always required.
 			'use_strict_mode' => Constant::$TRUE,
+			'use_cookies' => Constant::$TRUE,
 			'name' => Env::$config[$this->customerId]->SESSION_COOKIE_NAME,
 			'serialize_handler' => 'php_serialize',
 			'lazy_write' => Constant::$TRUE,
-			'gc_maxlifetime' => Env::$config[$this->customerId]->SESSION_LIFETIME,
-			'cookie_lifetime' => Env::$config[$this->customerId]->SESSION_LIFETIME,
+			'cookie_lifetime' => (int)Env::$config[$this->customerId]->SESSION_LIFETIME,
 			'cookie_path' => Env::$config[$this->customerId]->SESSION_COOKIE_PATH,
-			'cookie_domain' => Env::$config[$this->customerId]->SESSION_COOKIE_DOMAIN,
-			'cookie_secure' => Env::$config[$this->customerId]->SESSION_COOKIE_SECURE,
-			'cookie_httponly' => Env::$config[$this->customerId]->SESSION_COOKIE_HTTPONLY,
+			'cookie_secure' => (bool)Env::$config[$this->customerId]->SESSION_COOKIE_SECURE,
+			'cookie_httponly' => (bool)Env::$config[$this->customerId]->SESSION_COOKIE_HTTPONLY,
 			'cookie_samesite' => Env::$config[$this->customerId]->SESSION_COOKIE_SAMESITE,
 		];
 
 		if ($this->sessionMode === 'File') {
-			$this->optionArray['save_path'] = Env::$config[$this->customerId]->SESSION_STORE_PATH;
+			$options['save_path'] = Env::$config[$this->customerId]->SESSION_STORE_PATH;
 		}
 
-		if (!empty($optionArray)) {
-			foreach ($optionArray as $option => $value) {
-				if (
-					in_array(
-						needle: $option,
-						haystack: ['name', 'serialize_handler', 'gc_maxlifetime'],
-						strict: Constant::$TRUE
-					)
-				) {
-					// Skip option
-					continue;
-				}
-				$this->optionArray[$option] = $value;
-			}
+		if ($readonly === Constant::$TRUE) {
+			$options['read_and_close'] = Constant::$TRUE;
 		}
+
+		// Setting required common parameters
+		$this->sessionContainer->sessionOptions = $options;
+
+		return $options;
 	}
 
 	/**
 	 * Initialize session handler
 	 * 
-	 * @param array $options Options
-	 * 
 	 * @return void
 	 */
-	public function initSessionHandler(
-		$options = []
-	): void {
+	public function initSessionHandler(): void
+	{
 		$this->sessionMode = Env::$config[$this->customerId]->SESSION_STORE_MODE;
 
-		// Initialize
-		$this->setOptions(
-			optionArray: $options
+		// Initialize container
+		$this->sessionContainer = $this->getSessionContainer();
+
+		$customSessionHandler = new CustomSessionHandler(
+			container: $this->sessionContainer
 		);
-		$this->initProcess();
+
+		session_set_save_handler(
+			$customSessionHandler,
+			Constant::$TRUE
+		);
+
 	}
 
 	/**
@@ -272,15 +248,10 @@ class Session
 	 * 
 	 * @return void
 	 */
-	public function sessionStartCheck(): void
+	public function closeActiveSession(): void
 	{
-		if (isset($_SESSION)) {
-			if (
-				!isset($this->optionArray['read_and_close'])
-				|| $this->optionArray['read_and_close'] !== Constant::$TRUE
-			) {
-				session_write_close();
-			}
+		if (session_status() === PHP_SESSION_ACTIVE) {
+			session_write_close();
 		}
 	}
 
@@ -289,21 +260,25 @@ class Session
 	 * 
 	 * @return bool
 	 */
-	public function sessionStartReadonly(): bool
+	public function startReadonly(): bool
 	{
-		if (
-			isset($_COOKIE[Env::$config[$this->customerId]->SESSION_COOKIE_NAME])
-			&& !empty($_COOKIE[Env::$config[$this->customerId]->SESSION_COOKIE_NAME])
-		) {
-			$this->sessionStartCheck();
-			$this->optionArray['read_and_close'] = Constant::$TRUE;
+		$this->closeActiveSession();
 
-			$this->sessionContainer->sessionOptionArray = $this->optionArray;
-			return session_start(
-				options: $this->optionArray
-			);
+		if (
+			!isset($this->httpObject->httpReqData['header']['cookie'][$this->sessionName])
+			|| empty($this->httpObject->httpReqData['header']['cookie'][$this->sessionName])
+		) {
+			return Constant::$FALSE;
 		}
-		return Constant::$FALSE;
+
+		$currentSessionId = $this->httpObject->httpReqData['header']['cookie'][$this->sessionName];
+		session_id($currentSessionId);
+
+		return session_start(
+			options: $this->getSessionOptions(
+				readonly: Constant::$TRUE
+			)
+		);
 	}
 
 	/**
@@ -311,16 +286,22 @@ class Session
 	 * 
 	 * @return bool
 	 */
-	public function sessionStartReadWrite(): bool
+	public function startReadWrite(): bool
 	{
-		$this->sessionContainer->sessionOptionArray = $this->optionArray;
-		$this->sessionStartCheck();
-		if (isset($this->optionArray['read_and_close'])) {
-			unset($this->optionArray['read_and_close']);
+		$this->closeActiveSession();
+
+		if (
+			isset($this->httpObject->httpReqData['header']['cookie'][$this->sessionName])
+			|| !empty($this->httpObject->httpReqData['header']['cookie'][$this->sessionName])
+		) {
+			$currentSessionId = $this->httpObject->httpReqData['header']['cookie'][$this->sessionName];
+			session_id($currentSessionId);
 		}
 
 		return session_start(
-			options: $this->optionArray
+			options: $this->getSessionOptions(
+				readonly: Constant::$FALSE
+			)
 		);
 	}
 

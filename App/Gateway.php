@@ -132,17 +132,17 @@ class Gateway
 	{
 		if (
 			!Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_LIMITING_LOGIN_PER_USER
-			|| empty($this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_count'])
-			|| empty($this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_count_window'])
+			|| empty($this->httpObject->httpRequestObject->activeRequestData['customerUserData']['customer_user_count'])
+			|| empty($this->httpObject->httpRequestObject->activeRequestData['customerUserData']['customer_user_count_window'])
 		) {
 			return;
 		}
 
 		$RATE_LIMIT_USER_PREFIX = Env::$config[$this->httpObject->httpReqData['current']['customerId']]->RATE_LIMIT_USER_PREFIX;
 		$rateLimitMaxRequest =
-			$this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_count'];
+			$this->httpObject->httpRequestObject->activeRequestData['customerUserData']['customer_user_count'];
 		$rateLimitMaxRequestWindow =
-			$this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_count_window'];
+			$this->httpObject->httpRequestObject->activeRequestData['customerUserData']['customer_user_count_window'];
 		$rateLimitKey = $this->httpObject->httpReqData['current']['customerId'] . ':'
 			. $this->httpObject->httpReqData['current']['customerUserId'];
 

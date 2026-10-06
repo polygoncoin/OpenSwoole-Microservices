@@ -54,7 +54,7 @@ var payload = [
 
 ## HttpRequest Variables
 
-- **$activeRequestData\['userData'\]** Session Data.
+- **$activeRequestData\['customerUserData'\]** Session Data.
 This remains same for every request and contains key's like id, group\_id, customer\_id
 
 - **$activeRequestData\['routeParamArray'\]** Data passed in URI.

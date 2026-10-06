@@ -60,6 +60,15 @@ CREATE TABLE `debug_log` (
 -- ----------- Tables for logging --------------
 
 -- ----------- Tables Super Admin level --------------
+DROP TABLE IF EXISTS `session`;
+CREATE TABLE `session` (
+    `sessionId` VARCHAR(250) NOT NULL,
+    `customerId` INT UNSIGNED,
+    `sessionData` TEXT NOT NULL,
+    `lastAccessed` INT UNSIGNED,
+    UNIQUE KEY (`sessionId`)
+) ENGINE = InnoDB;
+
 DROP TABLE IF EXISTS `super_admin`;
 CREATE TABLE `super_admin` (
     `super_admin_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -223,7 +232,7 @@ INSERT INTO `customer` SET
     `customer_comments` = NULL,
 
 -- Customer level domain settings
-    `customer_public_domain` = 'ustomer001.localhost',
+    `customer_public_domain` = 'customer001.localhost',
     `customer_private_session_domain` = 'web.customer001.localhost',
     `customer_private_token_domain` = 'api.customer001.localhost',
 

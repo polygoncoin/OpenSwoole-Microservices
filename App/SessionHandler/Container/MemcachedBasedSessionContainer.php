@@ -16,6 +16,8 @@
 namespace Microservices\App\SessionHandler\Container;
 
 use Microservices\App\Constant;
+use Microservices\App\Env;
+use Microservices\App\Http;
 use Microservices\App\HttpStatus;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 use Microservices\App\SessionHandler\Container\SessionContainerHelper;
@@ -39,6 +41,24 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	public $sessionServerPort = null;
 
 	private $memcachedServerObject = null;
+
+	/**
+	 * HTTP object
+	 * 
+	 * @var null|Http
+	 */
+	private $httpObject = null;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param Http $httpObject
+	 */
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
+	}
 
 	/**
 	 * Initialize
@@ -67,9 +87,10 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	): bool|string {
 		try {
 			if ($data = $this->memcachedServerObject->get($sessionId)) {
-				return $this->decryptData(
+				$sessionData = $this->decryptData(
 					cipherText: $data
 				);
+				return $sessionData;
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
@@ -91,6 +112,15 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		try {
 			if (
 				$this->memcachedServerObject->set(
@@ -98,7 +128,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 					$this->encryptData(
 						plainText: $sessionData
 					),
-					$this->sessionMaxLifetime
+					$this->sessionOptions['cookie_lifetime']
 				)
 			) {
 				return Constant::$TRUE;
@@ -123,6 +153,15 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		return $this->setSession(
 			sessionId: $sessionId,
 			sessionData: $sessionData
@@ -141,11 +180,20 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		try {
 			if (
 				$this->memcachedServerObject->touch(
 					$sessionId,
-					$this->sessionMaxLifetime
+					$this->sessionOptions['cookie_lifetime']
 				)
 			) {
 				return Constant::$TRUE;

@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\TestCase;
+namespace Microservices\TestCase\Public\GET;
 
 use Microservices\App\Constant;
 use Microservices\App\Env;

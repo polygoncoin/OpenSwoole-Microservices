@@ -1,4 +1,5 @@
 <?php
+namespace Microservices\Config\Common\Private\Sql\DataModification\PUT;
 
 /**
  * API Query config
@@ -33,7 +34,7 @@ return [
 		],
 		[
 			'column' => 'updated_by',
-			'activeRequestDataKey' => 'userData',
+			'activeRequestDataKey' => 'customerUserData',
 			'activeRequestDataKeySubKey' => DatabaseTable::$customerUserPrimaryKey
 		],
 		[

@@ -16,6 +16,8 @@
 namespace Microservices\App\SessionHandler\Container;
 
 use Microservices\App\Constant;
+use Microservices\App\Env;
+use Microservices\App\Http;
 use Microservices\App\HttpStatus;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 use Microservices\App\SessionHandler\Container\SessionContainerHelper;
@@ -42,6 +44,24 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	public $sessionServerDb = null;
 
 	private $redisServerObject = null;
+
+	/**
+	 * HTTP object
+	 * 
+	 * @var null|Http
+	 */
+	private $httpObject = null;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param Http $httpObject
+	 */
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
+	}
 
 	/**
 	 * Initialize
@@ -73,9 +93,10 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 				$this->redisServerObject->exists($sessionId)
 				&& ($data = $this->redisServerObject->get($sessionId))
 			) {
-				return $this->decryptData(
+				$sessionData = $this->decryptData(
 					cipherText: $data
 				);
+				return $sessionData;
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
@@ -97,6 +118,15 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		try {
 			if (
 				$this->redisServerObject->set(
@@ -104,7 +134,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 					$this->encryptData(
 						plainText: $sessionData
 					),
-					$this->sessionMaxLifetime
+					$this->sessionOptions['cookie_lifetime']
 				)
 			) {
 				return Constant::$TRUE;
@@ -129,6 +159,15 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		return $this->setSession(
 			sessionId: $sessionId,
 			sessionData: $sessionData
@@ -147,11 +186,20 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		try {
 			if (
 				$this->redisServerObject->expire(
 					$sessionId,
-					$this->sessionMaxLifetime
+					$this->sessionOptions['cookie_lifetime']
 				)
 			) {
 				return Constant::$TRUE;

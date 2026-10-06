@@ -59,7 +59,8 @@ class Test
 	{
 		$response = [];
 
-		$response[] = $this->processPrivate();
+		$response[] = $this->processTokenPrivate();
+		$response[] = $this->processSessionPrivate();
 		$response[] = $this->processPublic();
 		$response[] = $this->processPublicXml();
 		$response[] = $this->processPrivateSupplement();
@@ -68,14 +69,25 @@ class Test
 	}
 
 	/**
-	 * Process auth based request
+	 * Process auth token based request
 	 * 
 	 * @return array
 	 */
-	public function processPrivate(): array
+	public function processTokenPrivate(): array
 	{
 		$httpReqData = &$this->httpReqData;
-		return include __DIR__ . DIRECTORY_SEPARATOR . 'PrivateTest.php';
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'PrivateTokenTest.php';
+	}
+
+	/**
+	 * Process auth session based request
+	 * 
+	 * @return array
+	 */
+	public function processSessionPrivate(): array
+	{
+		$httpReqData = &$this->httpReqData;
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'PrivateSessionTest.php';
 	}
 
 	/**

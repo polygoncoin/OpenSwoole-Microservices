@@ -30,11 +30,14 @@ namespace Microservices\App\SessionHandler\Container;
 class SessionContainerHelper
 {
 	// The cipher method
-	private $cipher_algo = 'AES-256-CBC';
+	public $customerId = '';
+
+	// Session cookie name
+	public $sessionName = null;
 
 	// Bitwise disjunction of the flags OPENSSL_RAW_DATA,
 	// and OPENSSL_ZERO_PADDING or OPENSSL_DON'T_ZERO_PAD_KEY */
-	private $options = OPENSSL_RAW_DATA;
+	private $encryptionOptions = OPENSSL_RAW_DATA;
 
 	// Usually 256-bit passphrase
 	public $passphrase = null;
@@ -43,16 +46,7 @@ class SessionContainerHelper
 	public $iv = null;
 
 	// Session Start $options param
-	public $sessionOptionArray = null;
-
-	// Session cookie name
-	public $sessionName = null;
-
-	// Session data cookie name
-	public $sessionDataCookieName = null;
-
-	// Session timeout
-	public $sessionMaxLifetime = null;
+	public $sessionOptions = null;
 
 	/**
 	 * Encryption
@@ -73,7 +67,7 @@ class SessionContainerHelper
 					data: $plainText,
 					cipher_algo: $this->cipher_algo,
 					passphrase: $this->passphrase,
-					options: $this->options,
+					options: $this->encryptionOptions,
 					iv: $this->iv
 				)
 			);
@@ -101,7 +95,7 @@ class SessionContainerHelper
 				),
 				cipher_algo: $this->cipher_algo,
 				passphrase: $this->passphrase,
-				options: $this->options,
+				options: $this->encryptionOptions,
 				iv: $this->iv
 			);
 		}

@@ -114,7 +114,6 @@ class Environment
     public $SESSION_STORE_PATH = null;
     public $SESSION_COOKIE_NAME = null;
     public $SESSION_COOKIE_PATH = null;
-    public $SESSION_COOKIE_DOMAIN = null;
     public $SESSION_COOKIE_SECURE = null;
     public $SESSION_COOKIE_HTTPONLY = null;
     public $SESSION_COOKIE_SAMESITE = null;

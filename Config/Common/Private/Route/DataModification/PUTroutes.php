@@ -1,4 +1,5 @@
 <?php
+namespace Microservices\Config\Common\Private\Route\DataModification;
 
 /**
  * API Route config

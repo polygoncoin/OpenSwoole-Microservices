@@ -20,6 +20,7 @@ use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
+use Microservices\App\SessionHandler\Session;
 
 /**
  * Class handling detail for Auth middleware
@@ -61,18 +62,24 @@ class Auth
 	 */
 	public function loadUserData(): void
 	{
-		if (isset($this->httpObject->httpRequestObject->activeRequestData['userData'])) {
+		if (isset($this->httpObject->httpRequestObject->activeRequestData['customerUserData'])) {
 			return;
 		}
 
 		if (
-			isset($_SESSION)
-			&& isset($_SESSION['customer_user_id'])
+			$this->httpObject->httpRequestObject->isPrivateSessionDomain
+			&& isset($this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->httpObject->httpReqData['current']['customerId']]->SESSION_COOKIE_NAME])
 		) {
-			$this->httpObject->httpRequestObject->activeRequestData['userData'] = $_SESSION;
-			$this->httpObject->httpRequestObject->activeRequestData['authId'] = session_id();
+			$this->httpObject->httpRequestObject->sessionObject = new Session(
+				httpObject: $this->httpObject
+			);
+			$this->httpObject->httpRequestObject->sessionObject->initSessionHandler();
+			$this->httpObject->httpRequestObject->sessionObject->startReadonly();
+
+			$this->httpObject->httpRequestObject->activeRequestData['customerUserData'] = $_SESSION;
 		} elseif (
-			isset($this->httpObject->httpReqData['header']['tokenHeader'])
+			$this->httpObject->httpRequestObject->isPrivateTokenDomain
+			&& isset($this->httpObject->httpReqData['header']['tokenHeader'])
 			&& $this->httpObject->httpReqData['header']['tokenHeader'] !== Constant::$NULL
 		) {
 			if (
@@ -101,7 +108,7 @@ class Auth
 					code: HttpStatus::$BadRequest
 				);
 			}
-			$this->httpObject->httpRequestObject->activeRequestData['userData'] = $this->httpObject->httpRequestObject->cacheServerObject->cacheGet(
+			$this->httpObject->httpRequestObject->activeRequestData['customerUserData'] = $this->httpObject->httpRequestObject->cacheServerObject->cacheGet(
 				cacheKey: $tokenKey
 			);
 		} else {
@@ -111,22 +118,22 @@ class Auth
 			);
 		}
 
-		if (($this->httpObject->httpRequestObject->activeRequestData['userData']['authTimestamp'] + Constant::$TOKEN_EXPIRY_TIME) <= Env::$timestamp) {
+		if (($this->httpObject->httpRequestObject->activeRequestData['customerUserData']['authTimestamp'] + Constant::$TOKEN_EXPIRY_TIME) <= Env::$timestamp) {
 			throw new \Exception(
-				message: 'Login has timed out. Please login',
+				message: 'Login has timed out. Please login ' . $this->httpObject->httpRequestObject->activeRequestData['customerUserData']['authTimestamp'],
 				code: HttpStatus::$BadRequest
 			);
 		}
 
-		if ($this->httpObject->httpRequestObject->activeRequestData['userData']['httpRequestHash'] !== $this->httpObject->httpReqData['httpRequestHash']) {
-			throw new \Exception(
-				message: 'Current Browser or the Device location not matching with Browser or the Device location during Login',
-				code: HttpStatus::$PreconditionFailed
-			);
-		}
+		// if ($this->httpObject->httpRequestObject->activeRequestData['customerUserData']['httpRequestHash'] !== $this->httpObject->httpReqData['httpRequestHash']) {
+		// 	throw new \Exception(
+		// 		message: 'Current Browser or the Device location not matching with Browser or the Device location during Login',
+		// 		code: HttpStatus::$PreconditionFailed
+		// 	);
+		// }
 
-		$this->httpObject->httpReqData['current']['customerUserId'] = $this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_id'];
-		$this->httpObject->httpReqData['current']['customerUserGroupId'] = $this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'];
+		$this->httpObject->httpReqData['current']['customerUserId'] = $this->httpObject->httpRequestObject->activeRequestData['customerUserData']['customer_user_id'];
+		$this->httpObject->httpReqData['current']['customerUserGroupId'] = $this->httpObject->httpRequestObject->activeRequestData['customerUserData']['customer_user_group_id'];
 	}
 
 	/**

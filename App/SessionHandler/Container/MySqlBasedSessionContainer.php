@@ -17,6 +17,8 @@ namespace Microservices\App\SessionHandler\Container;
 
 use Microservices\App\Constant;
 use Microservices\App\Env;
+use Microservices\App\Http;
+use Microservices\App\HttpStatus;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 
@@ -35,14 +37,32 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	SessionContainerInterface
 {
-	public $sessionServerHost = null;
-	public $sessionServerPort = null;
-	public $sessionServerUser = null;
-	public $sessionServerPassword = null;
-	public $sessionServerDb = null;
-	public $sessionServerTable = null;
+	public $mySqlServerHost = null;
+	public $mySqlServerPort = null;
+	public $mySqlServerUser = null;
+	public $mySqlServerPassword = null;
+	public $mySqlServerDb = null;
+	public $mySqlServerTable = null;
 
 	private $mySqlServerObject = null;
+
+	/**
+	 * HTTP object
+	 * 
+	 * @var null|Http
+	 */
+	private $httpObject = null;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param Http $httpObject
+	 */
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
+	}
 
 	/**
 	 * Initialize
@@ -70,13 +90,13 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId
 	): bool|string {
 		$sql = "
-			SELECT `sessionData`
-			FROM `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
+			SELECT *
+			FROM `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
 			WHERE `sessionId` = :sessionId AND lastAccessed > :lastAccessed
 		";
 		$paramArray = [
 			':sessionId' => $sessionId,
-			':lastAccessed' => (Env::$timestamp - $this->sessionMaxLifetime)
+			':lastAccessed' => (Env::$timestamp - $this->sessionOptions['cookie_lifetime'])
 		];
 		if (
 			(
@@ -87,9 +107,10 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 			)
 			&& isset($record['sessionData'])
 		) {
-			return $this->decryptData(
+			$sessionData = $this->decryptData(
 				cipherText: $record['sessionData']
 			);
+			return $sessionData;
 		}
 		return Constant::$FALSE;
 	}
@@ -106,15 +127,26 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		$sql = "
-			INSERT INTO `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
+			INSERT INTO `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
 			SET
+				`sessionId` = :sessionId,
+				`customerId` = :customerId,
 				`sessionData` = :sessionData,
-				`lastAccessed` = :lastAccessed,
-				`sessionId` = :sessionId
+				`lastAccessed` = :lastAccessed
 		";
 		$paramArray = [
 			':sessionId' => $sessionId,
+			':customerId' => $this->customerId,
 			':sessionData' => $this->encryptData(
 				plainText: $sessionData
 			),
@@ -139,8 +171,17 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		$sql = "
-			UPDATE `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
+			UPDATE `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
 			SET
 				`sessionData` = :sessionData,
 				`lastAccessed` = :lastAccessed
@@ -173,8 +214,17 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		$sql = "
-			UPDATE `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
+			UPDATE `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
 			SET `lastAccessed` = :lastAccessed
 			WHERE `sessionId` = :sessionId
 		";
@@ -200,7 +250,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	): bool {
 		$lastAccessed = Env::$timestamp - $sessionMaxLifetime;
 		$sql = "
-			DELETE FROM `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
+			DELETE FROM `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
 			WHERE `lastAccessed` < :lastAccessed
 		";
 		$paramArray = [
@@ -223,7 +273,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId
 	): bool {
 		$sql = "
-			DELETE FROM `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
+			DELETE FROM `{$this->mySqlServerDb}`.`{$this->mySqlServerTable}`
 			WHERE `sessionId` = :sessionId
 		";
 		$paramArray = [
@@ -254,9 +304,9 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	{
 		try {
 			$this->mySqlServerObject = new \PDO(
-				dsn: "mysql:host={$this->sessionServerHost}",
-				username: $this->sessionServerUser,
-				password: $this->sessionServerPassword,
+				dsn: "mysql:host={$this->mySqlServerHost}",
+				username: $this->mySqlServerUser,
+				password: $this->mySqlServerPassword,
 				options: [
 					\PDO::ATTR_EMULATE_PREPARES => Constant::$FALSE,
 				]
@@ -287,7 +337,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
 			$stmt->execute(
-				paramArray: $paramArray
+				$paramArray
 			);
 			switch ($stmt->rowCount()) {
 				case 0:
@@ -327,7 +377,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
 			$stmt->execute(
-				paramArray: $paramArray
+				$paramArray
 			);
 			$stmt->closeCursor();
 		} catch (\Exception $e) {

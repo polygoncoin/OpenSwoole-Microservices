@@ -1,4 +1,5 @@
 <?php
+namespace Microservices\Config\Common\Public\Route\DataRetrieval;
 
 /**
  * API Route config
@@ -18,7 +19,7 @@ use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 
 return [
-	Env::$config[$this->httpObject->httpRequestObject->customerId]->CRON_REQUEST_KEYWORD => [
+	Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CRON_REQUEST_KEYWORD => [
 		'{cron:string}' => [
 			'dataType' => DatabaseServerDataType::$Default,
 			'__FILE__' => Constant::$FALSE,

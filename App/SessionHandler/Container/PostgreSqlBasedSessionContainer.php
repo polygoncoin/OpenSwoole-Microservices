@@ -17,6 +17,8 @@ namespace Microservices\App\SessionHandler\Container;
 
 use Microservices\App\Constant;
 use Microservices\App\Env;
+use Microservices\App\Http;
+use Microservices\App\HttpStatus;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 
@@ -43,6 +45,24 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public $sessionServerTable = null;
 
 	private $pgSqlServerObject = null;
+
+	/**
+	 * HTTP object
+	 * 
+	 * @var null|Http
+	 */
+	private $httpObject = null;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param Http $httpObject
+	 */
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
+	}
 
 	/**
 	 * Initialize
@@ -76,7 +96,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		";
 		$paramArray = [
 			$sessionId,
-			(Env::$timestamp - $this->sessionMaxLifetime)
+			(Env::$timestamp - $this->sessionOptions['cookie_lifetime'])
 		];
 
 		$record = $this->getSql(
@@ -84,9 +104,10 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 			paramArray: $paramArray
 		);
 		if (isset($record['session_data'])) {
-			return $this->decryptData(
+			$sessionData = $this->decryptData(
 				cipherText: $record['session_data']
 			);
+			return $sessionData;
 		}
 		return Constant::$FALSE;
 	}
@@ -103,6 +124,15 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		$sql = "
 			INSERT INTO {$this->sessionServerTable} (session_id, last_accessed, session_data)
 			VALUES ($1, $2, $3)
@@ -133,6 +163,15 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		$sql = "
 			UPDATE {$this->sessionServerTable}
 			SET
@@ -167,6 +206,15 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		$sql = "
 			UPDATE {$this->sessionServerTable}
 			SET last_accessed = $1

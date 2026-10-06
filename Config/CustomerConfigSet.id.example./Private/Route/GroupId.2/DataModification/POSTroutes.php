@@ -1,4 +1,5 @@
 <?php
+namespace Microservices\Config\CustomerConfigSet_id_example_\Private\Route\GroupId_2\DataModification;
 
 /**
  * API Route config

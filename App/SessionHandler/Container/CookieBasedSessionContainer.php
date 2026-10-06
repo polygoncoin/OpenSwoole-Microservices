@@ -17,6 +17,8 @@ namespace Microservices\App\SessionHandler\Container;
 
 use Microservices\App\Constant;
 use Microservices\App\Env;
+use Microservices\App\Http;
+use Microservices\App\HttpStatus;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 
@@ -35,6 +37,24 @@ use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 class CookieBasedSessionContainer extends SessionContainerHelper implements
 	SessionContainerInterface
 {
+	/**
+	 * HTTP object
+	 * 
+	 * @var null|Http
+	 */
+	private $httpObject = null;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param Http $httpObject
+	 */
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
+	}
+
 	/**
 	 * Initialize
 	 * 
@@ -66,18 +86,18 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId
 	): bool|string {
 		if (
-			isset($_COOKIE[$this->sessionDataCookieName])
-			&& !empty($_COOKIE[$this->sessionDataCookieName])
+			isset($this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME])
+			&& !empty($this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME])
 		) {
 			$sessionData = $this->decryptData(
-				cipherText: $_COOKIE[$this->sessionDataCookieName]
+				cipherText: $this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME]
 			);
 			$sessionDataArray = unserialize(
 				data: $sessionData
 			);
 			if (
-				isset($sessionDataArray['_TS_'])
-				&& ($time = $sessionDataArray['_TS_'] + $this->sessionMaxLifetime)
+				isset($sessionDataArray['authTimestamp'])
+				&& ($time = $sessionDataArray['authTimestamp'] + $this->sessionOptions['cookie_lifetime'])
 				&& $time > Env::$timestamp
 			) {
 				return $sessionData;
@@ -101,7 +121,7 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 		$sessionDataArray = unserialize(
 			data: $sessionData
 		);
-		$sessionDataArray['_TS_'] = Env::$timestamp;
+
 		$sessionData = serialize(
 			value: $sessionDataArray
 		);
@@ -121,16 +141,16 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 			);
 		}
 
-		$_COOKIE[$this->sessionDataCookieName] = $cookieData;
+		$this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME] = $cookieData;
 
 		return setcookie(
-			name: $this->sessionDataCookieName,
+			name: $this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME],
 			value: $cookieData,
 			expires_or_options: [
 				'expires' => 0,
-				'path' => $this->sessionOptionArray['cookie_path'],
+				'path' => $this->sessionOptions['cookie_path'],
 				'domain' => '',
-				'secure' => $this->sessionOptionArray['cookie_secure'],
+				'secure' => $this->sessionOptions['cookie_secure'],
 				'httponly' => Constant::$TRUE,
 				'samesite' => 'Strict'
 			]
@@ -149,6 +169,14 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		return $this->setSession(
 			sessionId: $sessionId,
 			sessionData: $sessionData
@@ -170,7 +198,7 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 		$sessionDataArray = unserialize(
 			data: $sessionData
 		);
-		$sessionDataArray['_TS_'] = Env::$timestamp;
+
 		$sessionData = serialize(
 			value: $sessionDataArray
 		);
@@ -190,16 +218,16 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 			);
 		}
 
-		$_COOKIE[$this->sessionDataCookieName] = $cookieData;
+		$this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME] = $cookieData;
 
 		return setcookie(
-			name: $this->sessionDataCookieName,
+			name: $this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME],
 			value: $cookieData,
 			expires_or_options: [
 				'expires' => 0,
-				'path' => $this->sessionOptionArray['cookie_path'],
+				'path' => $this->sessionOptions['cookie_path'],
 				'domain' => '',
-				'secure' => $this->sessionOptionArray['cookie_secure'],
+				'secure' => $this->sessionOptions['cookie_secure'],
 				'httponly' => Constant::$TRUE,
 				'samesite' => 'Strict'
 			]
@@ -229,8 +257,8 @@ class CookieBasedSessionContainer extends SessionContainerHelper implements
 	public function deleteSession(
 		$sessionId
 	): bool {
-		if (isset($_COOKIE[$this->sessionDataCookieName])) {
-			unset($_COOKIE[$this->sessionDataCookieName]);
+		if (isset($this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME])) {
+			unset($this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME]);
 		}
 		return Constant::$TRUE;
 	}

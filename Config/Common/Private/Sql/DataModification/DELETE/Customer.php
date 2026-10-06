@@ -1,4 +1,5 @@
 <?php
+namespace Microservices\Config\Common\Private\Sql\DataModification\DELETE;
 
 /**
  * API Query config
@@ -23,7 +24,7 @@ return [
 	'__SET__' => [
 		[
 			'column' => 'updated_by',
-			'activeRequestDataKey' => 'userData',
+			'activeRequestDataKey' => 'customerUserData',
 			'activeRequestDataKeySubKey' => DatabaseTable::$customerUserPrimaryKey
 		],
 		[

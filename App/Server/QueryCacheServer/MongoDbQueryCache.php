@@ -13,7 +13,7 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App\Server\Container\NoSql;
+namespace Microservices\App\Server\QueryCacheServer;
 
 use Microservices\App\Constant;
 use Microservices\App\HttpStatus;

@@ -1,4 +1,5 @@
 <?php
+namespace Microservices\Config\Common\Private\Sql\DataModification\PUT;
 
 /**
  * API Query config

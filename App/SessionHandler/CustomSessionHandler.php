@@ -36,20 +36,6 @@ class CustomSessionHandler implements
 	\SessionUpdateTimestampHandlerInterface
 {
 	/**
-	 * Session cookie name
-	 * 
-	 * @var null|string
-	 */
-	public $sessionName = null;
-
-	/**
-	 * Session data cookie name
-	 * 
-	 * @var null|string
-	 */
-	public $sessionDataCookieName = null;
-
-	/**
 	 * Session Container
 	 * 
 	 * @var null|SessionContainerInterface
@@ -57,11 +43,11 @@ class CustomSessionHandler implements
 	private $container = null;
 
 	/**
-	 * Session found
+	 * Session cookie name
 	 * 
-	 * @var null|bool
+	 * @var null|string
 	 */
-	private $foundSession = null;
+	public $sessionName = null;
 
 	/**
 	 * Session id
@@ -71,6 +57,20 @@ class CustomSessionHandler implements
 	private $sessionId = '';
 
 	/**
+	 * Session Data
+	 * 
+	 * @var null|string
+	 */
+	private $sessionData = '';
+
+	/**
+	 * Session found
+	 * 
+	 * @var null|bool
+	 */
+	private $foundSession = null;
+
+	/**
 	 * Session id created flag to handle session_regenerate_id
 	 * In this case validateId is called after create_sid function
 	 * Also, we have used this to validate created sessionId
@@ -78,13 +78,6 @@ class CustomSessionHandler implements
 	 * @var null|bool
 	 */
 	private $creatingSessionId = null;
-
-	/**
-	 * Session Data
-	 * 
-	 * @var null|string
-	 */
-	private $sessionData = '';
 
 	/**
 	 * _isTimestampUpdated flag for read_and_close or readonly session behaviour
@@ -120,6 +113,7 @@ class CustomSessionHandler implements
 		$sessionSavePath,
 		$sessionName
 	): bool {
+		$this->sessionName = $sessionName;
 		$this->container->init(
 			sessionSavePath: $sessionSavePath,
 			sessionName: $sessionName
@@ -130,7 +124,6 @@ class CustomSessionHandler implements
 
 	/**
 	 * Validate session id
-	 * 
 	 * Calls if session cookie is present in request
 	 * 
 	 * A callable with the following signature
@@ -142,32 +135,45 @@ class CustomSessionHandler implements
 	public function validateId(
 		$sessionId
 	): bool {
-		if (
-			$sessionData = $this->container->getSession(
-				sessionId: $sessionId
-			)
-		) {
-			if (
-				is_null(
-					value: $this->creatingSessionId
-				)
-			) {
-				$this->sessionData = &$sessionData;
-			}
-			$this->foundSession = Constant::$TRUE;
+		// Don't change this return value
+		return $this->foundSessionId(
+			sessionId: $sessionId
+		);
+	}
+
+	/**
+	 * Found session id
+	 * 
+	 * @param string $sessionId Session id
+	 * 
+	 * @return bool true if the session id is valid otherwise false
+	 */
+	public function foundSessionId(
+		$sessionId
+	): bool {
+		$sessionData = $this->container->getSession(
+			sessionId: $sessionId
+		);
+		if ($sessionData !== false) {
+			$foundSession = true;
 		} else {
-			if (
-				is_null(
-					value: $this->creatingSessionId
-				)
-			) {
-				$this->unsetSessionCookie();
+			$foundSession = false;
+		}
+
+		if ($this->creatingSessionId === true) {
+			$foundSession = !$foundSession;
+			if ($foundSession === true) {
+				$this->creatingSessionId = false;
 			}
-			$this->foundSession = Constant::$FALSE;
+		} else {
+			$this->foundSession = $foundSession;
+			if ($foundSession) {
+				$this->sessionData = $sessionData;
+			}
 		}
 
 		// Don't change this return value
-		return $this->foundSession;
+		return $foundSession;
 	}
 
 	/**
@@ -182,25 +188,18 @@ class CustomSessionHandler implements
 	 */
 	public function create_sid(): string // phpcs:ignore
 	{
-		// Delete session if previous sessionId exist eg; used for
-		// session_regenerate_id()
-		if (!empty($this->sessionId)) {
-			$this->container->deleteSession(
-				sessionId: $this->sessionId
-			);
-		}
+		$this->creatingSessionId = true;
 
-		$this->creatingSessionId = Constant::$TRUE;
-
-		do {
+		for (;true;) {
 			$sessionId = $this->getRandomString();
-		} while (
-			$this->validateId(
-				sessionId: $sessionId
-			) === Constant::$TRUE
-		);
-
-		$this->creatingSessionId = Constant::$NULL;
+			if (
+				$this->foundSessionId(
+					sessionId: $sessionId
+				) === Constant::$TRUE
+			) {
+				break;
+			}
+		};
 
 		return $sessionId;
 	}
@@ -243,12 +242,17 @@ class CustomSessionHandler implements
 		// unless previous data is not empty
 		if (
 			empty($sessionData)
-			&& empty(
+			|| empty(
 				unserialize(
 					data: $sessionData
 				)
 			)
 		) {
+			if ($this->foundSession) {
+				$this->destroy(
+					$sessionId
+				);
+			}
 			$this->unsetSessionCookie();
 			return Constant::$TRUE;
 		}
@@ -289,13 +293,15 @@ class CustomSessionHandler implements
 		// unless previous data is not empty
 		if (
 			empty($sessionData)
-			&& empty(
+			|| empty(
 				unserialize(
 					data: $sessionData
 				)
 			)
 		) {
-			$this->unsetSessionCookie();
+			$this->destroy(
+				$sessionId
+			);
 			return Constant::$TRUE;
 		}
 
@@ -368,7 +374,7 @@ class CustomSessionHandler implements
 			);
 		}
 
-		$this->checkCookiesHeader();
+		// $this->checkCookiesHeader();
 
 		$this->container->closeSession();
 		$this->sessionData = '';
@@ -404,15 +410,15 @@ class CustomSessionHandler implements
 				name: $this->sessionName,
 				value: '',
 				expires_or_options: 1,
-				path: $this->container->sessionOptionArray['cookie_path']
+				path: $this->container->sessionOptions['cookie_path']
 			);
 		}
-		if (!empty($this->sessionDataCookieName)) {
+		if (!empty($this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME])) {
 			setcookie(
-				name: $this->sessionDataCookieName,
+				name: $this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME],
 				value: '',
 				expires_or_options: 1,
-				path: $this->container->sessionOptionArray['cookie_path']
+				path: $this->container->sessionOptions['cookie_path']
 			);
 		}
 	}
@@ -431,8 +437,8 @@ class CustomSessionHandler implements
 
 		// Removed Session Cookie if read_and_close is enabled
 		if (
-			isset($this->container->sessionOptionArray['read_and_close'])
-			&& $this->container->sessionOptionArray['read_and_close'] === Constant::$TRUE
+			isset($this->container->sessionOptions['read_and_close'])
+			&& $this->container->sessionOptions['read_and_close'] === Constant::$TRUE
 			&& $this->creatingSessionId === Constant::$TRUE
 		) {
 			// Remove Session Set-Cookie header

@@ -86,12 +86,12 @@ class Reload
 			$paramArray[':customer_id'] = $customerId;
 		}
 
-		DbCommonFunction::$gDbServer->execQuery(
+		DbCommonFunction::$globalDbServerObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$customerDataArray = DbCommonFunction::$gDbServer->fetchAll();
-		DbCommonFunction::$gDbServer->closeCursor();
+		$customerDataArray = DbCommonFunction::$globalDbServerObject->fetchAll();
+		DbCommonFunction::$globalDbServerObject->closeCursor();
 		foreach ($customerDataArray as $customerData) {
 			$customerId = $customerData['customer_id'];
 			Env::loadEnv(

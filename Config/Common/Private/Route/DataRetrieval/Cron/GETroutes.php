@@ -1,4 +1,5 @@
 <?php
+namespace Microservices\Config\Common\Private\Route\DataRetrieval\Cron;
 
 /**
  * API Route config

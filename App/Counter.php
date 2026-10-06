@@ -66,11 +66,11 @@ class Counter
 				$sql = "INSERT INTO {$table}() VALUES()";
 				$paramArray = [];
 
-				DbCommonFunction::$gDbServer->execQuery(
+				DbCommonFunction::$globalDbServerObject->execQuery(
 					sql: $sql,
 					paramArray: $paramArray
 				);
-				$id = DbCommonFunction::$gDbServer->lastInsertId();
+				$id = DbCommonFunction::$globalDbServerObject->lastInsertId();
 				break;
 		}
 

@@ -42,7 +42,7 @@ class DbCommonFunction
 	 * 
 	 * @var null|DatabaseServer
 	 */
-	public static $gDbServer = null;
+	public static $globalDbServerObject = null;
 
 	/** Cache Connection */
 	/**
@@ -261,7 +261,7 @@ class DbCommonFunction
 			customerId: $customerId
 		);
 
-		self::$gDbServer = self::connectDatabaseServer(
+		self::$globalDbServerObject = self::connectDatabaseServer(
 			dbServerType: $masterDatabaseServerCred['dbServerType'],
 			dbServerHost: $masterDatabaseServerCred['dbServerHost'],
 			dbServerPort: $masterDatabaseServerCred['dbServerPort'],

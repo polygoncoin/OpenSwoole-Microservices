@@ -49,7 +49,7 @@ class Constant
 	public static $YES = 'Yes';
 	public static $NO = 'No';
 
-	public static $TOKEN_EXPIRY_TIME = 25 * 24 * 3600;
+	public static $TOKEN_EXPIRY_TIME = 30 * 24 * 3600;
 	public static $REQUIRED = true;
 
 	public static $ROOT = null;

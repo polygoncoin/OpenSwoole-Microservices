@@ -1,4 +1,5 @@
 <?php
+namespace Microservices\Config\CustomerConfigSet_1\Private\Route\GroupId_3\DataRetrieval;
 
 /**
  * API Route config

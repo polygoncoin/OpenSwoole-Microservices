@@ -41,45 +41,20 @@ $publicHeaderArray = [];
 $publicHeaderArray[] = $cacheControl;
 $publicHeaderArray[] = $contentType;
 
+// $clientIP = '1.1.1.1';
+// $publicHeaderArray['X-Forwarded-For'] =$clientIP;
+// $publicHeaderArray['Client-IP'] =$clientIP;
+// $publicHeaderArray['X-Real-IP'] =$clientIP;
+// // $publicHeaderArray['CF-Connecting-IP'] =$clientIP; // Use this if the target site uses Cloudflare
+
+$token = Constant::$NULL;
+$proceed = Constant::$FALSE;
+
 $response = [];
 
 $homeURL = 'http://127.0.0.1:9501';
 
 $response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Reload.php';
-
-$payload = [
-	'username' => 'customer_group_user_1',
-	'password' => 'shames11'
-];
-$response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Login.php';
-
-$response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'CategoryConfig.php';
-$response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Config.php';
-$response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Category.php';
-$response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Registration.php';
-$response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'Address.php';
-$response[] = include PRIVATE_POST . DIRECTORY_SEPARATOR . 'RegistrationWithAddress.php';
-
-$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Route.php';
-$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Category.php';
-$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'CategorySingle.php';
-$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'CategoryOrderBy.php';
-$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'RegistrationSingle.php';
-$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'AddressSingle.php';
-$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'RegistrationWithAddressSingle.php';
-
-$response[] = include PRIVATE_QUERY . DIRECTORY_SEPARATOR . 'Category.php';
-
-$response[] = include PRIVATE_PUT . DIRECTORY_SEPARATOR . 'Registration.php';
-$response[] = include PRIVATE_PUT . DIRECTORY_SEPARATOR . 'Address.php';
-
-$response[] = include PRIVATE_PATCH . DIRECTORY_SEPARATOR . 'Registration.php';
-$response[] = include PRIVATE_PATCH . DIRECTORY_SEPARATOR . 'Address.php';
-
-$response[] = include PRIVATE_DELETE . DIRECTORY_SEPARATOR . 'Registration.php';
-$response[] = include PRIVATE_DELETE . DIRECTORY_SEPARATOR . 'Address.php';
-
-$homeURL = 'http://127.0.0.1:9501';
 
 // Admin login
 $payload = [

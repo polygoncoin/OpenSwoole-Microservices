@@ -39,7 +39,11 @@ $publicHeaderArray = [];
 $publicHeaderArray[] = $cacheControl;
 $publicHeaderArray[] = $contentType;
 
+$token = Constant::$NULL;
+$proceed = Constant::$FALSE;
+
 $response = [];
+
 
 $homeURL = 'http://127.0.0.1:9501';
 

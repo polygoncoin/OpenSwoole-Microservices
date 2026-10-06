@@ -230,6 +230,7 @@ class HttpRequest
 			$this->isPrivateRequest = Constant::$FALSE;
 			$this->isPublicRequest = Constant::$TRUE;
 		}
+
 		if (!$this->isPublicDomain) {
 			$privateSessionDomainCacheKey = CacheServerKey::privateSessionDomain(
 				domainName: $this->httpObject->httpReqData['server']['domainName']
@@ -245,6 +246,7 @@ class HttpRequest
 				$this->isPublicRequest = Constant::$FALSE;
 			}
 		}
+
 		if (
 			!$this->isPublicDomain
 			&& !$this->isPrivateSessionDomain
@@ -290,16 +292,6 @@ class HttpRequest
 				message: "Invalid domain: '{$this->httpObject->httpReqData['server']['domainName']}'",
 				code: HttpStatus::$BadRequest
 			);
-		}
-
-		if ($this->isPrivateSessionDomain) {
-			$this->sessionObject = new Session(
-				customerId: $this->httpObject->httpReqData['current']['customerId']
-			);
-			$this->sessionObject->initSessionHandler(
-				options: []
-			);
-			$this->sessionObject->sessionStartReadonly();
 		}
 
 		if (
@@ -666,11 +658,11 @@ class HttpRequest
 			$paramArray[':request_ip'] = $httpRequestIp;
 			$paramArray[':request_payload_json'] = $payloadJson;
 
-			DbCommonFunction::$gDbServer->execQuery(
+			DbCommonFunction::$globalDbServerObject->execQuery(
 				sql: $sql,
 				paramArray: $paramArray
 			);
-			$requestId = DbCommonFunction::$gDbServer->lastInsertId();
+			$requestId = DbCommonFunction::$globalDbServerObject->lastInsertId();
 		}
 
 		return $requestId;
@@ -726,11 +718,11 @@ class HttpRequest
 			$paramArray[':request_debug_json'] = $debugJson;
 			$paramArray[':request_ip'] = $this->httpObject->httpReqData['server']['httpRequestIp'];
 
-			DbCommonFunction::$gDbServer->execQuery(
+			DbCommonFunction::$globalDbServerObject->execQuery(
 				sql: $sql,
 				paramArray: $paramArray
 			);
-			$logId = DbCommonFunction::$gDbServer->lastInsertId();
+			$logId = DbCommonFunction::$globalDbServerObject->lastInsertId();
 		}
 
 		return $logId;
@@ -782,11 +774,11 @@ class HttpRequest
 			$paramArray[':request_exception_json'] = $exceptionJson;
 			$paramArray[':request_ip'] = $this->httpObject->httpReqData['server']['httpRequestIp'];
 
-			DbCommonFunction::$gDbServer->execQuery(
+			DbCommonFunction::$globalDbServerObject->execQuery(
 				sql: $sql,
 				paramArray: $paramArray
 			);
-			$logId = DbCommonFunction::$gDbServer->lastInsertId();
+			$logId = DbCommonFunction::$globalDbServerObject->lastInsertId();
 		}
 
 		return $logId;

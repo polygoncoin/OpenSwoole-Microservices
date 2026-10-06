@@ -1,4 +1,5 @@
 <?php
+namespace Microservices\public_html;
 
 /**
  * Session Index
@@ -24,7 +25,7 @@ use Microservices\App\Reload;
 use Microservices\App\Start;
 use Microservices\TestCase\Test;
 
-define('ROOT', realpath(path: __DIR__ . DIRECTORY_SEPARATOR . '../'));
+define('ROOT', realpath(path: __DIR__ . '/..'));
 define('ROUTE_URL_PARAM', 'route');
 
 require_once ROOT . DIRECTORY_SEPARATOR . 'Autoload.php';
@@ -90,14 +91,19 @@ $server->on(
 		}
 
 		$httpReqData['header'] = $request->header;
+		
+		if (isset($request->cookie)) {
+			$httpReqData['header']['cookie'] = $request->cookie;
+		} else {
+			$httpReqData['header']['cookie'] = null;
+		}
+
 		if (isset($httpReqData['header']['content-type'])) {
 			$httpReqData['header']['contentType'] = $httpReqData['header']['content-type'];
 		} else {
 			$httpReqData['header']['contentType'] = '';
 		}
-		if (isset($request->header['authorization'])) {
-			$httpReqData['header']['tokenHeader'] = $request->header['authorization'];
-		}
+		
 		$httpReqData['get'] = &$request->get;
 		if (isset($httpReqData['get'][ROUTE_URL_PARAM])) {
 			$httpReqData['get'][ROUTE_URL_PARAM] = '/' . trim(

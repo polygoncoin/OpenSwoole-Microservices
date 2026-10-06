@@ -13,11 +13,14 @@
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\TestCase;
+namespace Microservices\TestCase\Private\POST;
 
 use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\Web;
+
+$token = Constant::$NULL;
+$proceed = Constant::$FALSE;
 
 $webResponse = Web::trigger(
 	homeURL: $homeURL,
@@ -29,39 +32,16 @@ $webResponse = Web::trigger(
 	)
 );
 
-$token = Constant::$NULL;
-$sessionCookie = Constant::$NULL;
-$proceed = Constant::$FALSE;
-
-if (isset($webResponse['HttpResponse']['Headers']['Set-Cookie'])) {
-	$sessionCookie = substr(
-		string: $webResponse['HttpResponse']['Headers']['Set-Cookie'],
-		offset: 0,
-		length: strpos(
-			haystack: $webResponse['HttpResponse']['Headers']['Set-Cookie'],
-			needle: '; '
-		)
-	);
-} elseif (isset($webResponse['HttpResponse']['ResponseBody']['Results']['Token'])) {
+if (isset($webResponse['HttpResponse']['ResponseBody']['Results']['Token'])) {
 	$token = $webResponse['HttpResponse']['ResponseBody']['Results']['Token'];
-} elseif (isset($webResponse['HttpResponse']['ResponseBody']['Results']['SessionId'])) {
-	$sessionCookie = "PHPSESSID={$webResponse['HttpResponse']['ResponseBody']['Results']['SessionId']}";
-}
-
-if (
-	$token !== Constant::$NULL
-	|| $sessionCookie !== Constant::$NULL
-) {
 	$privateHeaderArray = $publicHeaderArray;
-	switch (!Constant::$NULL) {
-		case $token:
-			$privateHeaderArray[] = "Authorization: Bearer {$token}";
-			break;
-		case $sessionCookie:
-			$privateHeaderArray[] = "Cookie: {$sessionCookie}";
-			break;
-	}
+	$privateHeaderArray[] = "Authorization: Bearer {$token}";
 	$proceed = Constant::$TRUE;
+} elseif (isset($webResponse['HttpResponse']['ResponseBody']['Results']['SessionId'])) {
+	$privateHeaderArray = $publicHeaderArray;
+	$proceed = Constant::$TRUE;
+} else {
+	$privateHeaderArray = $publicHeaderArray;
 }
 
 return $webResponse;

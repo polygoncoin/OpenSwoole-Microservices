@@ -61,7 +61,7 @@ return [
 			// 'activeRequestDataKey' => 'payload', // Fetch value from payload
 			// 'activeRequestDataKey' => 'function', // Fetch value from function
 			// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-			// 'activeRequestDataKey' => 'userData', // Fetch value from User Data session
+			// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
 			// 'activeRequestDataKey' => 'custom', // Static values
 			// 'activeRequestDataKey' => 'variables', // to fetch values as per __VARIABLE__ key's
 			'activeRequestDataKeySubKey' => 'id',          // key (id)
@@ -96,7 +96,7 @@ return [
 			// 'activeRequestDataKey' => 'payload', // Fetch value from payload
 			// 'activeRequestDataKey' => 'function', // Fetch value from function
 			// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-			// 'activeRequestDataKey' => 'userData', // Fetch value from User Data session
+			// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
 			// 'activeRequestDataKey' => 'custom', // Static values
 			// 'activeRequestDataKey' => 'variables', // to fetch values as per __VARIABLE__ key's
 			'activeRequestDataKeySubKey' => 'id',                       // key (id)
@@ -115,7 +115,7 @@ return [
 			// 'activeRequestDataKey' => 'payload', // Fetch value from payload
 			// 'activeRequestDataKey' => 'function', // Fetch value from function
 			// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-			// 'activeRequestDataKey' => 'userData', // Fetch value from User Data session
+			// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
 			// 'activeRequestDataKey' => 'custom', // Static values
 			// 'activeRequestDataKey' => 'variables', // to fetch values as per __VARIABLE__ key's
 			'activeRequestDataKeySubKey' => 'id',                       // key (id)
@@ -178,7 +178,7 @@ return [
 					// 'activeRequestDataKey' => 'payload', // Fetch value from payload
 					// 'activeRequestDataKey' => 'function', // Fetch value from function
 					// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-					// 'activeRequestDataKey' => 'userData', // Fetch value from User Data session
+					// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
 					// 'activeRequestDataKey' => 'custom', // Static values
 					// 'activeRequestDataKey' => 'variables', // to fetch values as per current module/<sub-key> __VARIABLE__ key's
 					'activeRequestDataKeySubKey' => 'id',                       // key (id)
@@ -241,7 +241,7 @@ return [
 					// 'activeRequestDataKey' => 'payload', // Fetch value from payload
 					// 'activeRequestDataKey' => 'function', // Fetch value from function
 					// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-					// 'activeRequestDataKey' => 'userData', // Fetch value from User Data session
+					// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
 					// 'activeRequestDataKey' => 'custom', // Static values
 					// 'activeRequestDataKey' => '__INSERT-ID__', // Sql Insert IDs
 					'activeRequestDataKeySubKey' => 'address'
@@ -260,7 +260,7 @@ return [
 					// 'activeRequestDataKey' => 'payload', // Fetch value from payload
 					// 'activeRequestDataKey' => 'function', // Fetch value from function
 					// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-					// 'activeRequestDataKey' => 'userData', // Fetch value from User Data session
+					// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
 					// 'activeRequestDataKey' => 'custom', // Static values
 					// 'activeRequestDataKey' => '__INSERT-ID__', // Sql Insert IDs
 					'activeRequestDataKeySubKey' => 'address'
@@ -276,7 +276,7 @@ return [
 					// 'activeRequestDataKey' => 'payload', // Fetch value from payload
 					// 'activeRequestDataKey' => 'function', // Fetch value from function
 					// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-					// 'activeRequestDataKey' => 'userData', // Fetch value from User Data session
+					// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
 					// 'activeRequestDataKey' => 'custom', // Static values
 					// 'activeRequestDataKey' => '__INSERT-ID__', // Sql Insert IDs
 					'activeRequestDataKeySubKey' => 'address'
@@ -406,7 +406,7 @@ return [
 			// 'activeRequestDataKey' => 'payload', // Fetch value from payload
 			// 'activeRequestDataKey' => 'function', // Fetch value from function
 			// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-			// 'activeRequestDataKey' => 'userData', // Fetch value from User Data session
+			// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
 			// 'activeRequestDataKey' => 'custom', // Static values
 			'activeRequestDataKeySubKey' => 'id',                       // key (id)
 			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type

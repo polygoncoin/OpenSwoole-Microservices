@@ -971,9 +971,9 @@ trait AppTrait
 			'httpRequestMethod' => $this->httpObject->httpReqData['server']['httpRequestMethod'],
 			'Route' => $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM],
 		];
-		if (isset($this->httpObject->httpRequestObject->activeRequestData['userData'])) {
-			$payloadSignature['customerUserGroupId'] = ($this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'] !== Constant::$NULL
-				? $this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'] : 0);
+		if (isset($this->httpObject->httpRequestObject->activeRequestData['customerUserData'])) {
+			$payloadSignature['customerUserGroupId'] = ($this->httpObject->httpRequestObject->activeRequestData['customerUserData']['customer_user_group_id'] !== Constant::$NULL
+				? $this->httpObject->httpRequestObject->activeRequestData['customerUserData']['customer_user_group_id'] : 0);
 			$payloadSignature['customerUserId'] = ($this->httpObject->httpReqData['current']['customerUserId'] !== Constant::$NULL
 				? $this->httpObject->httpReqData['current']['customerUserId'] : 0);
 		}
@@ -1133,9 +1133,9 @@ trait AppTrait
 						)
 					)
 				];
-				if (isset($this->httpObject->httpRequestObject->activeRequestData['userData'])) {
-					$payloadSignature['customerUserGroupId'] = ($this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'] !== Constant::$NULL
-						? $this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'] : 0);
+				if (isset($this->httpObject->httpRequestObject->activeRequestData['customerUserData'])) {
+					$payloadSignature['customerUserGroupId'] = ($this->httpObject->httpRequestObject->activeRequestData['customerUserData']['customer_user_group_id'] !== Constant::$NULL
+						? $this->httpObject->httpRequestObject->activeRequestData['customerUserData']['customer_user_group_id'] : 0);
 					$payloadSignature['customerUserId'] = ($this->httpObject->httpReqData['current']['customerUserId'] !== Constant::$NULL
 						? $this->httpObject->httpReqData['current']['customerUserId'] : 0);
 				}
@@ -1195,9 +1195,9 @@ trait AppTrait
 			'httpRequestMethod' => $this->httpObject->httpReqData['server']['httpRequestMethod'],
 			'Route' => $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM],
 		];
-		if (isset($this->httpObject->httpRequestObject->activeRequestData['userData'])) {
-			$payloadSignature['customerUserGroupId'] = ($this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'] !== Constant::$NULL
-				? $this->httpObject->httpRequestObject->activeRequestData['userData']['customer_user_group_id'] : 0);
+		if (isset($this->httpObject->httpRequestObject->activeRequestData['customerUserData'])) {
+			$payloadSignature['customerUserGroupId'] = ($this->httpObject->httpRequestObject->activeRequestData['customerUserData']['customer_user_group_id'] !== Constant::$NULL
+				? $this->httpObject->httpRequestObject->activeRequestData['customerUserData']['customer_user_group_id'] : 0);
 			$payloadSignature['customerUserId'] = ($this->httpObject->httpReqData['current']['customerUserId'] !== Constant::$NULL
 				? $this->httpObject->httpReqData['current']['customerUserId'] : 0);
 		}

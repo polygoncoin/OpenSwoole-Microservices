@@ -1,4 +1,5 @@
 <?php
+namespace Microservices\public_html;
 
 /**
  * Index

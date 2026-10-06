@@ -126,7 +126,7 @@ class QueryCache
 		}
 
 		$queryCacheKey = $this->queryCachePrepend(
-			customerId: $customerId,
+			customerId: $this->httpObject->httpReqData['current']['customerId'],
 			queryCacheKey: $queryCacheKey
 		);
 
@@ -164,7 +164,7 @@ class QueryCache
 
 		$queryCacheKey = 'i:' . $queryCacheKey;
 		$queryCacheKey = $this->queryCachePrepend(
-			customerId: $customerId,
+			customerId: $this->httpObject->httpReqData['current']['customerId'],
 			queryCacheKey: $queryCacheKey
 		);
 
@@ -196,12 +196,12 @@ class QueryCache
 		$delQueryCacheKey = 'i:' . $queryCacheKey;
 
 		$queryCacheKey = $this->queryCachePrepend(
-			customerId: $customerId,
+			customerId: $this->httpObject->httpReqData['current']['customerId'],
 			queryCacheKey: $queryCacheKey
 		);
 
 		$delQueryCacheKey = $this->queryCachePrepend(
-			customerId: $customerId,
+			customerId: $this->httpObject->httpReqData['current']['customerId'],
 			queryCacheKey: $delQueryCacheKey
 		);
 
@@ -233,7 +233,7 @@ class QueryCache
 		}
 
 		$queryCacheKey = $this->queryCachePrepend(
-			customerId: $customerId,
+			customerId: $this->httpObject->httpReqData['current']['customerId'],
 			queryCacheKey: $queryCacheKey
 		);
 

@@ -17,6 +17,8 @@ namespace Microservices\App\SessionHandler\Container;
 
 use Microservices\App\Constant;
 use Microservices\App\Env;
+use Microservices\App\Http;
+use Microservices\App\HttpStatus;
 use Microservices\App\SessionHandler\Container\SessionContainerInterface;
 use Microservices\App\SessionHandler\Container\SessionContainerHelper;
 
@@ -38,6 +40,24 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 	public $sessionSavePath = null;
 
 	private $sessionFilePrefix = 'sess_';
+
+	/**
+	 * HTTP object
+	 * 
+	 * @var null|Http
+	 */
+	private $httpObject = null;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param Http $httpObject
+	 */
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
+	}
 
 	/**
 	 * Initialize
@@ -86,12 +106,13 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 			$fileatime = fileatime(
 				filename: $filepath
 			);
-			if ((Env::$timestamp - $fileatime) < $this->sessionMaxLifetime) {
-				return $this->decryptData(
+			if ((Env::$timestamp - $fileatime) < $this->sessionOptions['cookie_lifetime']) {
+				$sessionData = $this->decryptData(
 					cipherText: file_get_contents(
 						filename: $filepath
 					)
 				);
+				return $sessionData;
 			}
 		}
 		return Constant::$FALSE;
@@ -109,6 +130,14 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		$filepath = $this->sessionSavePath . '/'
 			. $this->sessionFilePrefix . $sessionId;
 		if (
@@ -140,6 +169,14 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		return $this->setSession(
 			sessionId: $sessionId,
 			sessionData: $sessionData
@@ -158,6 +195,14 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
+		$sessionDataArray = unserialize(
+			data: $sessionData
+		);
+
+		$sessionData = serialize(
+			value: $sessionDataArray
+		);
+
 		$filepath = $this->sessionSavePath . '/'
 			. $this->sessionFilePrefix . $sessionId;
 		return touch(

@@ -89,7 +89,7 @@ class Password implements CustomInterface
 		}
 
 		$oldPassword = $payload['old_password'];
-		$oldPasswordHash = $this->httpObject->httpRequestObject->activeRequestData['userData']['password_hash'];
+		$oldPasswordHash = $this->httpObject->httpRequestObject->activeRequestData['customerUserData']['password_hash'];
 
 		if (
 			password_verify(
@@ -97,7 +97,7 @@ class Password implements CustomInterface
 				hash: $oldPasswordHash
 			)
 		) {
-			$userName = $this->httpObject->httpRequestObject->activeRequestData['userData']['username'];
+			$userName = $this->httpObject->httpRequestObject->activeRequestData['customerUserData']['username'];
 			$newPassword = $payload['new_password'];
 			$newPasswordHash = password_hash(
 				password: $newPassword,
@@ -121,9 +121,8 @@ class Password implements CustomInterface
 			);
 			$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
 
-			$customerId = $this->httpObject->httpReqData['current']['customerId'];
 			$cacheKey = CacheServerKey::customerUsername(
-				customerId: $customerId,
+				customerId: $this->httpObject->httpReqData['current']['customerId'],
 				username: $userName
 			);
 			Reload::processUser(
