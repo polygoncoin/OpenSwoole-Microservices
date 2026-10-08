@@ -90,7 +90,7 @@ class Route
 	 */
 	public function init(): bool
 	{
-		if (Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_ROUTES_REQUEST) {
+		if (Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_ROUTES_REQUEST) {
 			return Constant::$TRUE;
 		}
 
@@ -111,7 +111,7 @@ class Route
 		} else {
 			$userRoutesFolder = Constant::$WWW . $this->routesFolder
 				. DIRECTORY_SEPARATOR . 'Private'
-				. DIRECTORY_SEPARATOR . $this->httpObject->httpRequestObject->activeRequestData['groupData']['customer_user_group_name'];
+				. DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['active']['groupData']['customer_user_group_name'];
 		}
 
 		foreach ($this->httpMethodArray as $httpRequestMethod) {

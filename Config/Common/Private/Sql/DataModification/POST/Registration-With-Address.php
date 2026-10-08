@@ -20,33 +20,33 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__SQL__' => "INSERT INTO `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` SET __SET__",
+	'__SQL__' => "INSERT INTO `{$this->httpObject->httpReqData['active']['customerData']['customer_user_table']}` SET __SET__",
 	'__SET__' => [
 		[
 			'column' => 'customer_user_contact_name',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'firstname'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'firstname'
 		],
 		[
 			'column' => 'customer_user_contact_person',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'lastname'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'lastname'
 		],
 		[
 			'column' => 'customer_user_contact_email_address',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'email'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'email'
 		],
 		[
 			'column' => 'customer_user_username',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'username'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'username'
 		],
 		[
 			'column' => 'customer_user_password_hash',
-			'activeRequestDataKey' => 'function',
-			'activeRequestDataKeySubKey' => function(
-				$activeRequestData,
+			'activeDataKey' => 'function',
+			'activeDataKeySubKey' => function(
+				$activeData,
 				$payload
 			) {
 				if (isset($payload['password'])) {
@@ -59,13 +59,13 @@ return [
 		],
 		[
 			'column' => 'customer_user_cidr',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => '0.0.0.0/0'
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => '0.0.0.0/0'
 		],
 		[
 			'column' => DatabaseTable::$customerUserGroupPrimaryKey,
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => '1'
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => '1'
 		],
 	],
 	'__INSERT-ID__' => 'registration:id',
@@ -76,18 +76,18 @@ return [
 			'__SET__' => [
 				[
 					'column' => DatabaseTable::$customerPrimaryKey,
-					'activeRequestDataKey' => 'customerData',
-					'activeRequestDataKeySubKey' => DatabaseTable::$customerPrimaryKey
+					'activeDataKey' => 'customerData',
+					'activeDataKeySubKey' => DatabaseTable::$customerPrimaryKey
 				],
 				[
 					'column' => DatabaseTable::$customerUserPrimaryKey,
-					'activeRequestDataKey' => '__INSERT-ID__',
-					'activeRequestDataKeySubKey' => 'registration:id'
+					'activeDataKey' => '__INSERT-ID__',
+					'activeDataKeySubKey' => 'registration:id'
 				],
 				[
 					'column' => 'address',
-					'activeRequestDataKey' => 'payload',
-					'activeRequestDataKeySubKey' => 'address'
+					'activeDataKey' => 'payload',
+					'activeDataKeySubKey' => 'address'
 				]
 			],
 			'__INSERT-ID__' => 'address:id',

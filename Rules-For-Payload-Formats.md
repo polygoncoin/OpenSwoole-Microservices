@@ -54,19 +54,19 @@ var payload = [
 
 ## HttpRequest Variables
 
-- **$activeRequestData\['customerUserData'\]** Session Data.
+- **$activeData\['customerUserData'\]** Session Data.
 This remains same for every request and contains key's like id, group\_id, customer\_id
 
-- **$activeRequestData\['routeParamArray'\]** Data passed in URI.
-Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $activeRequestData\['routeParamArray'\] will hold these dynamic values as below.
+- **$activeData\['routeParamArray'\]** Data passed in URI.
+Suppose our configured route is **/{table:string}/{id:int}** and we make an HTTP request for **/tableName/1** then $activeData\['routeParamArray'\] will hold these dynamic values as below.
 
-- **$activeRequestData\['payload'\]** request data.
+- **$activeData\['payload'\]** request data.
 For **GET** method, the **$\_GET** is the payload.
 
-- **$activeRequestData\['__INSERT-ID__'\]** Insert IDs Data as per configuration.
+- **$activeData\['__INSERT-ID__'\]** Insert IDs Data as per configuration.
 >For **POST/PUT/PATCH/DELETE** we perform both INSERT as well as UPDATE operation. The insertID contains the insert IDs of the executed INSERT queries.
 
-- **$activeRequestData\['sqlResults'\]** Hierarchy data.
+- **$activeData\['sqlResults'\]** Hierarchy data.
 >For **GET** method, one can use previous query results if configured to use hierarchy.
 
 ## Hierarchy Configs
@@ -77,8 +77,8 @@ For **GET** method, the **$\_GET** is the payload.
 ```PHP
 [
     'column' => 'parent_id',
-    'activeRequestDataKey' => 'sqlResults',
-    'activeRequestDataKeySubKey' => 'return:id'
+    'activeDataKey' => 'sqlResults',
+    'activeDataKeySubKey' => 'return:id'
 ],
 ```
 

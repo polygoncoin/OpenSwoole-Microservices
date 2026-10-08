@@ -24,8 +24,8 @@ return [
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => Constant::$NO
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => Constant::$NO
 		]
 	],
 	'__FETCH-MODE__' => 'Master',

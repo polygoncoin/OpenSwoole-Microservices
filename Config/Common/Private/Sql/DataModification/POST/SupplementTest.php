@@ -24,13 +24,13 @@ return [
 	'__PAYLOAD__' => [
 		[
 			'column' => 'id',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'payload-id-1',
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'payload-id-1',
 		],
 		[
 			'column' => 'column-1',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'payload-param-1',
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'payload-param-1',
 		],
 	],
 	'__SUB-CONFIG__' => [
@@ -38,13 +38,13 @@ return [
 			'__PAYLOAD__' => [
 				[
 					'column' => 'sub-id',
-					'activeRequestDataKey' => 'payload',
-					'activeRequestDataKeySubKey' => 'sub-payload-id-1',
+					'activeDataKey' => 'payload',
+					'activeDataKeySubKey' => 'sub-payload-id-1',
 				],
 				[
 					'column' => 'sub-column-1',
-					'activeRequestDataKey' => 'payload',
-					'activeRequestDataKeySubKey' => 'sub-payload-param-1',
+					'activeDataKey' => 'payload',
+					'activeDataKeySubKey' => 'sub-payload-param-1',
 				],
 			],
 		]

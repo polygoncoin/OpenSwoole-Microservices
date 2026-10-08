@@ -32,6 +32,10 @@ use Microservices\App\HttpStatus;
  */
 class Environment
 {
+    public $PRIVATE_DOMAIN_NAME = null;
+    public $PRIVATE_WEB_DOMAIN_NAME = null;
+    public $PRIVATE_API_DOMAIN_NAME = null;
+
     public $OUTPUT_PERFORMANCE_STATS = null;
     public $DISABLE_REQUESTS_VIA_PROXIES = null;
     public $CUSTOMER_CONFIG_DIRECTORY = null;
@@ -50,12 +54,12 @@ class Environment
 
     public $CUSTOMER_ENABLE_RESPONSE_CACHING = null;
     public $CUSTOMER_ENABLE_QUERY_CACHE_FOR_PUBLIC_REQUEST = null;
-    public $CUSTOMER_ENABLE_QUERY_CACHE_FOR_PRIVATE_SESSION_REQUEST = null;
-    public $CUSTOMER_ENABLE_QUERY_CACHE_FOR_PRIVATE_TOKEN_REQUEST = null;
+    public $CUSTOMER_ENABLE_QUERY_CACHE_FOR_PRIVATE_WEB_REQUEST = null;
+    public $CUSTOMER_ENABLE_QUERY_CACHE_FOR_PRIVATE_API_REQUEST = null;
 
     public $CUSTOMER_ENABLE_PUBLIC_REQUEST = null;
-    public $CUSTOMER_ENABLE_PRIVATE_SESSION_REQUEST = null;
-    public $CUSTOMER_ENABLE_PRIVATE_TOKEN_REQUEST = null;
+    public $CUSTOMER_ENABLE_PRIVATE_WEB_REQUEST = null;
+    public $CUSTOMER_ENABLE_PRIVATE_API_REQUEST = null;
 
     public $CUSTOMER_ENABLE_CIDR = null;
     public $CUSTOMER_ENABLE_CRON_REQUEST = null;

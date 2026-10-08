@@ -70,14 +70,14 @@ class CustomerValidator implements ValidatorInterface
 			$argArray = [];
 			foreach (
 				$v['functionArgs'] as $argName => [
-					$activeRequestDataKey,
-					$activeRequestDataKeySubKey
+					$activeDataKey,
+					$activeDataKeySubKey
 				]
 			) {
-				if ($activeRequestDataKey === 'custom') {
-					$argArray[$argName] = $activeRequestDataKeySubKey;
+				if ($activeDataKey === 'custom') {
+					$argArray[$argName] = $activeDataKeySubKey;
 				} else {
-					$argArray[$argName] = $this->httpObject->httpRequestObject->activeRequestData[$activeRequestDataKey][$activeRequestDataKeySubKey];
+					$argArray[$argName] = $this->httpObject->httpReqData['active'][$activeDataKey][$activeDataKeySubKey];
 				}
 			}
 			$function = $v['function'];

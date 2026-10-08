@@ -20,12 +20,12 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__SQL__' => "UPDATE `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` SET __SET__ WHERE __WHERE__",
+	'__SQL__' => "UPDATE `{$this->httpObject->httpReqData['active']['customerData']['customer_user_table']}` SET __SET__ WHERE __WHERE__",
 	'__VALIDATE__' => [
 		[
 			'function' => 'primaryKeyExist',
 			'functionArgs' => [
-				'table' => ['custom', $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']],
+				'table' => ['custom', $this->httpObject->httpReqData['active']['customerData']['customer_user_table']],
 				'primary' => ['custom', DatabaseTable::$customerUserPrimaryKey],
 				'id' => ['routeParamArray', 'id']
 			],
@@ -35,25 +35,25 @@ return [
 	'__SET__' => [
 		[
 			'column' => 'firstname',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'firstname'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'firstname'
 		],
 		[
 			'column' => 'lastname',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'lastname'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'lastname'
 		],
 		[
 			'column' => 'email',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'email'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'email'
 		],
 	],
 	'__WHERE__' => [
 		[
 			'column' => DatabaseTable::$customerUserPrimaryKey,
-			'activeRequestDataKey' => 'routeParamArray',
-			'activeRequestDataKeySubKey' => 'id',
+			'activeDataKey' => 'routeParamArray',
+			'activeDataKeySubKey' => 'id',
 			'dataType' => DatabaseServerDataType::$PrimaryKey
 		]
 	],

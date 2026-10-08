@@ -19,7 +19,7 @@ use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 
 return [
-	Env::$config[$this->httpObject->httpReqData['current']['customerId']]->THIRD_PARTY_REQUEST_KEYWORD => [
+	Env::$config[$this->httpObject->httpReqData['active']['customerId']]->THIRD_PARTY_REQUEST_KEYWORD => [
 		'{thirdParty:string}' => [
 			'dataType' => DatabaseServerDataType::$Default,
 			'__FILE__' => Constant::$FALSE,

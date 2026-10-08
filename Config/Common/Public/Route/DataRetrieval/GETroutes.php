@@ -19,30 +19,30 @@ use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 
 return [
-	Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CRON_REQUEST_KEYWORD => [
+	Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CRON_REQUEST_KEYWORD => [
 		'{cron:string}' => [
 			'dataType' => DatabaseServerDataType::$Default,
 			'__FILE__' => Constant::$FALSE,
 		]
 	],
 	'login' => [
-		'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+		'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 			. DIRECTORY_SEPARATOR . 'Login.php',
 	],
 	'category' => [
-		'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+		'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 			. DIRECTORY_SEPARATOR . 'Category-all.php',
 		'search' => [
-			'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 					. DIRECTORY_SEPARATOR . 'Category-search.php',
 		],
 		'{id:int}' => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 					. DIRECTORY_SEPARATOR . 'Category-Single.php',
 		],
 		'download' => [
-			'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 					. DIRECTORY_SEPARATOR . 'Download.php',
 		]
 	]

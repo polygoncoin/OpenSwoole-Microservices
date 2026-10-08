@@ -63,7 +63,6 @@ class Http
 		&$httpReqData
 	) {
 		$this->httpReqData = &$httpReqData;
-		$this->httpReqData['current'] = [];
 	}
 
 	/**

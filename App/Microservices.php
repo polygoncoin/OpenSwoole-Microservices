@@ -206,7 +206,7 @@ class Microservices
 				$OUTPUT_REPRESENTATION = CommonFunction::getOUTPUT_REPRESENTATION(
 					sqlConfig: $this->httpObject->httpRequestObject->routeParserObject->sqlConfig,
 					httpReqData: $this->httpObject->httpReqData,
-					customerId: $this->httpObject->httpReqData['current']['customerId']
+					customerId: $this->httpObject->httpReqData['active']['customerId']
 				);
 			}
 			switch ($OUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION']) {

@@ -85,6 +85,6 @@ class Hook_Example implements HookInterface
 	private function execHook(): void
 	{
 		// Change payload.
-		$this->httpObject->httpRequestObject->activeRequestData['payload']['hook'] = Constant::$YES;
+		$this->httpObject->httpReqData['active']['payload']['hook'] = Constant::$YES;
 	}
 }

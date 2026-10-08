@@ -23,13 +23,13 @@ return [
 	'__PAYLOAD__' => [
 		[
 			'column' => 'username',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'username'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'username'
 		],
 		[
 			'column' => 'password',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'password'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'password'
 		],
 	],
 	// '__VALIDATE__' => [

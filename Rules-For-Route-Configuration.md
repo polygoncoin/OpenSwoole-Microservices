@@ -48,6 +48,7 @@ return [
 return [
 	'{tableName:string}' => [
 		'dataType' => DatabaseServerDataType::$Tables,
+		'__FILE__' => 'Sql file location'
 		'{id:int}' => [
 			'__FILE__' => 'Sql file location'
 		]

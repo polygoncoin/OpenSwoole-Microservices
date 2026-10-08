@@ -60,8 +60,8 @@ class Reload
 	/**
 	 * Cache Customer Data
 	 * 
-	 * @param string   $httpRequestIp Request Ip
-	 * @param null|int $customerId    Customer Id
+	 * @param string   $httpRequestIp Request ip
+	 * @param null|int $customerId    Customer id
 	 * 
 	 * @return bool
 	 */
@@ -102,29 +102,29 @@ class Reload
 				cidrString: Env::$config[$customerId]->RELOAD_CACHE_CIDR
 			);
 
-			if (!empty($customerData['customer_private_token_domain'])) {
-				$privateTokenDomainCacheKey = CacheServerKey::privateTokenDomain(
-					domainName: $customerData['customer_private_token_domain']
+			if (!empty(Env::$config[$customerId]->PRIVATE_API_DOMAIN_NAME)) {
+				$privateApiDomainCacheKey = CacheServerKey::privateApiDomain(
+					domainName: Env::$config[$customerId]->PRIVATE_API_DOMAIN_NAME
 				);
 				DbCommonFunction::$globalCacheServerObject->cacheSet(
-					cacheKey: $privateTokenDomainCacheKey,
+					cacheKey: $privateApiDomainCacheKey,
 					cacheValue: $customerData
 				);
 			}
 
-			if (!empty($customerData['customer_private_session_domain'])) {
-				$privateSessionDomainCacheKey = CacheServerKey::privateSessionDomain(
-					domainName: $customerData['customer_private_session_domain']
+			if (!empty(Env::$config[$customerId]->PRIVATE_WEB_DOMAIN_NAME)) {
+				$privateWebDomainCacheKey = CacheServerKey::privateWebDomain(
+					domainName: Env::$config[$customerId]->PRIVATE_WEB_DOMAIN_NAME
 				);
 				DbCommonFunction::$globalCacheServerObject->cacheSet(
-					cacheKey: $privateSessionDomainCacheKey,
+					cacheKey: $privateWebDomainCacheKey,
 					cacheValue: $customerData
 				);
 			}
 
-			if (!empty($customerData['customer_public_domain'])) {
+			if (!empty(Env::$config[$customerId]->PRIVATE_DOMAIN_NAME)) {
 				$publicDomainCacheKey = CacheServerKey::publicDomain(
-					domainName: $customerData['customer_public_domain']
+					domainName: Env::$config[$customerId]->PRIVATE_DOMAIN_NAME
 				);
 				DbCommonFunction::$globalCacheServerObject->cacheSet(
 					cacheKey: $publicDomainCacheKey,
@@ -153,11 +153,11 @@ class Reload
 
 			self::processGroup(
 				httpRequestIp: $httpRequestIp,
-				customerData: $customerData
+				customerId: $customerId
 			);
 			self::processUser(
 				httpRequestIp: $httpRequestIp,
-				customerData: $customerData
+				customerId: $customerId
 			);
 		}
 
@@ -167,18 +167,20 @@ class Reload
 	/**
 	 * Cache Group Data
 	 * 
-	 * @param string   $httpRequestIp       Request Ip
-	 * @param array    $customerData        Customer Data
-	 * @param null|int $customerUserGroupId Customer User Group Id
+	 * @param string   $httpRequestIp       Request ip
+	 * @param null|int $customerId          Customer id
+	 * @param null|int $customerUserGroupId Customer user group id
 	 * 
 	 * @return bool
 	 */
 	public static function processGroup(
 		$httpRequestIp,
-		$customerData,
+		$customerId,
 		$customerUserGroupId = null
 	): bool {
-		$customerId = $customerData['customer_id'];
+		$customerData = self::getCustomerData(
+			$customerId
+		);
 
 		$cacheServerObject = DbCommonFunction::connectCache(
 			customerId: $customerId
@@ -240,18 +242,20 @@ class Reload
 	/**
 	 * Cache User Data
 	 * 
-	 * @param string   $httpRequestIp  Request Ip
-	 * @param array    $customerData   Customer Data
-	 * @param null|int $customerUserId User Id
+	 * @param string   $httpRequestIp  Request ip
+	 * @param null|int $customerId     Customer id
+	 * @param null|int $customerUserId Customer user id
 	 * 
 	 * @return bool
 	 */
 	public static function processUser(
 		$httpRequestIp,
-		$customerData,
+		$customerId,
 		$customerUserId = null
 	): bool {
-		$customerId = $customerData['customer_id'];
+		$customerData = self::getCustomerData(
+			$customerId
+		);
 
 		$cacheServerObject = DbCommonFunction::connectCache(
 			customerId: $customerId
@@ -307,5 +311,33 @@ class Reload
 		}
 
 		return Constant::$TRUE;
+	}
+
+	/**
+	 * Cache User Data
+	 * 
+	 * @param null|int $customerId Customer id
+	 * 
+	 * @return array
+	 */
+	public static function getCustomerData(
+		$customerId
+	): array {
+		if (strlen($customerId) === 0) {
+			return [];
+		}
+
+		$SYSTEM_CUSTOMER_TABLE = Env::$SYSTEM_CUSTOMER_TABLE;
+
+		$sql = "SELECT * FROM `{$SYSTEM_CUSTOMER_TABLE}` C WHERE customer_id = :customer_id";
+		$paramArray[':customer_id'] = $customerId;
+
+		DbCommonFunction::$globalDbServerObject->execQuery(
+			sql: $sql,
+			paramArray: $paramArray
+		);
+		$customerData = DbCommonFunction::$globalDbServerObject->fetch();
+
+		return $customerData;
 	}
 }

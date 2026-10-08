@@ -19,7 +19,7 @@ use Microservices\App\DatabaseServerDataType;
 
 return [
 	'category' => [
-		'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+		'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 			. DIRECTORY_SEPARATOR . 'Category.php',
 	]
 ];

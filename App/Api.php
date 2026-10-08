@@ -139,8 +139,8 @@ class Api
 			!in_array(
 				needle: $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword,
 				haystack: [
-					Env::$config[$this->httpObject->httpReqData['current']['customerId']]->EXPLAIN_REQUEST_KEYWORD,
-					Env::$config[$this->httpObject->httpReqData['current']['customerId']]->IMPORT_SAMPLE_REQUEST_KEYWORD
+					Env::$config[$this->httpObject->httpReqData['active']['customerId']]->EXPLAIN_REQUEST_KEYWORD,
+					Env::$config[$this->httpObject->httpReqData['active']['customerId']]->IMPORT_SAMPLE_REQUEST_KEYWORD
 				],
 				strict: Constant::$TRUE
 			)
@@ -152,7 +152,7 @@ class Api
 		$supplementClass = Constant::$NULL;
 		if (
 			$this->checkSupplement(
-				Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CRON_REQUEST_KEYWORD
+				Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CRON_REQUEST_KEYWORD
 			)
 		) {
 			$supplementClassFileName = ucfirst(
@@ -171,7 +171,7 @@ class Api
 			}
 		} elseif (
 			$this->checkSupplement(
-				Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOM_REQUEST_KEYWORD
+				Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOM_REQUEST_KEYWORD
 			)
 		) {
 			$supplementClassFileName = ucfirst(
@@ -190,7 +190,7 @@ class Api
 			}
 		} elseif (
 			$this->checkSupplement(
-				Env::$config[$this->httpObject->httpReqData['current']['customerId']]->UPLOAD_REQUEST_KEYWORD
+				Env::$config[$this->httpObject->httpReqData['active']['customerId']]->UPLOAD_REQUEST_KEYWORD
 			)
 		) {
 			$supplementClassFileName = ucfirst(
@@ -209,7 +209,7 @@ class Api
 			}
 		} elseif (
 			$this->checkSupplement(
-				Env::$config[$this->httpObject->httpReqData['current']['customerId']]->THIRD_PARTY_REQUEST_KEYWORD
+				Env::$config[$this->httpObject->httpReqData['active']['customerId']]->THIRD_PARTY_REQUEST_KEYWORD
 			)
 		) {
 			$supplementClassFileName = ucfirst(
@@ -232,7 +232,7 @@ class Api
 				case Constant::$QUERY:
 					if (
 						$this->checkSupplement(
-							Env::$config[$this->httpObject->httpReqData['current']['customerId']]->DROPBOX_REQUEST_KEYWORD
+							Env::$config[$this->httpObject->httpReqData['active']['customerId']]->DROPBOX_REQUEST_KEYWORD
 						)
 					) {
 						$classFileName = ucfirst(

@@ -19,7 +19,7 @@ use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 
 return [
-	Env::$config[$this->httpObject->httpReqData['current']['customerId']]->UPLOAD_REQUEST_KEYWORD => [
+	Env::$config[$this->httpObject->httpReqData['active']['customerId']]->UPLOAD_REQUEST_KEYWORD => [
 		'{module:string}' => [
 			'dataType' => DatabaseServerDataType::$Default,
 			'__FILE__' => Constant::$FALSE

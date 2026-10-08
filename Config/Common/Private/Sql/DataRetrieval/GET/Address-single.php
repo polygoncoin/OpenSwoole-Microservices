@@ -24,13 +24,13 @@ return [
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => Constant::$NO
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => Constant::$NO
 		],
 		[
 			'column' => DatabaseTable::$addressPrimaryKey,
-			'activeRequestDataKey' => 'routeParamArray',
-			'activeRequestDataKeySubKey' => 'id'
+			'activeDataKey' => 'routeParamArray',
+			'activeDataKeySubKey' => 'id'
 		]
 	],
 	'__MODE__' => 'singleRecordFormat'

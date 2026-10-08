@@ -47,7 +47,7 @@ $publicHeaderArray[] = $contentType;
 // $publicHeaderArray['X-Real-IP'] =$clientIP;
 // // $publicHeaderArray['CF-Connecting-IP'] =$clientIP; // Use this if the target site uses Cloudflare
 
-$token = Constant::$NULL;
+$apiToken = Constant::$NULL;
 $proceed = Constant::$FALSE;
 
 $response = [];

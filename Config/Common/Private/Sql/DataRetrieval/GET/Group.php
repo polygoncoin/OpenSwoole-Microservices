@@ -21,50 +21,50 @@ use Microservices\DatabaseTable;
 
 return [
 	'all' => [
-		'__SQL__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_group_table']}` WHERE __WHERE__ ORDER BY id ASC",
+		'__SQL__' => "SELECT * FROM `{$this->httpObject->httpReqData['active']['customerData']['customer_user_group_table']}` WHERE __WHERE__ ORDER BY id ASC",
 		'__WHERE__' => [
 			[
 				'column' => 'is_approved',
-				'activeRequestDataKey' => 'custom',
-				'activeRequestDataKeySubKey' => Constant::$YES
+				'activeDataKey' => 'custom',
+				'activeDataKeySubKey' => Constant::$YES
 			],
 			[
 				'column' => 'is_disabled',
-				'activeRequestDataKey' => 'custom',
-				'activeRequestDataKeySubKey' => Constant::$NO
+				'activeDataKey' => 'custom',
+				'activeDataKeySubKey' => Constant::$NO
 			],
 			[
 				'column' => 'is_deleted',
-				'activeRequestDataKey' => 'custom',
-				'activeRequestDataKeySubKey' => Constant::$NO
+				'activeDataKey' => 'custom',
+				'activeDataKeySubKey' => Constant::$NO
 			],
 		],
 		'__MODE__' => 'multipleRecordFormat'
 	],
 	'single' => [
-		'__SQL__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_group_table']}` WHERE __WHERE__",
+		'__SQL__' => "SELECT * FROM `{$this->httpObject->httpReqData['active']['customerData']['customer_user_group_table']}` WHERE __WHERE__",
 		'__WHERE__' => [
 			[
 				'column' => 'is_approved',
-				'activeRequestDataKey' => 'custom',
-				'activeRequestDataKeySubKey' => Constant::$YES
+				'activeDataKey' => 'custom',
+				'activeDataKeySubKey' => Constant::$YES
 			],
 			[
 				'column' => 'is_disabled',
-				'activeRequestDataKey' => 'custom',
-				'activeRequestDataKeySubKey' => Constant::$NO
+				'activeDataKey' => 'custom',
+				'activeDataKeySubKey' => Constant::$NO
 			],
 			[
 				'column' => 'is_deleted',
-				'activeRequestDataKey' => 'custom',
-				'activeRequestDataKeySubKey' => Constant::$NO
+				'activeDataKey' => 'custom',
+				'activeDataKeySubKey' => Constant::$NO
 			],
 			[
 				'column' => DatabaseTable::$customerUserGroupPrimaryKey,
-				'activeRequestDataKey' => 'routeParamArray',
-				'activeRequestDataKeySubKey' => 'id'
+				'activeDataKey' => 'routeParamArray',
+				'activeDataKeySubKey' => 'id'
 			],
 		],
 		'__MODE__' => 'singleRecordFormat'
 	]
-][isset($this->httpObject->httpRequestObject->activeRequestData['routeParamArray']['id'])?'single':'all'];
+][isset($this->httpObject->httpReqData['active']['routeParamArray']['id'])?'single':'all'];

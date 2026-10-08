@@ -211,8 +211,8 @@ class Start
 
 			if (
 				isset($Microservices->httpObject->httpRequestObject)
-				&& isset(Env::$config[$Microservices->httpObject->httpReqData['current']['customerId']])
-				&& Env::$config[$Microservices->httpObject->httpReqData['current']['customerId']]->OUTPUT_PERFORMANCE_STATS
+				&& isset(Env::$config[$Microservices->httpObject->httpReqData['active']['customerId']])
+				&& Env::$config[$Microservices->httpObject->httpReqData['active']['customerId']]->OUTPUT_PERFORMANCE_STATS
 			) {
 				$performanceData = $Microservices->httpObject->httpResponseObject->returnPerformance();
 				$errorArray = [

@@ -39,7 +39,7 @@ $publicHeaderArray = [];
 $publicHeaderArray[] = $cacheControl;
 $publicHeaderArray[] = $contentType;
 
-$token = Constant::$NULL;
+$apiToken = Constant::$NULL;
 $proceed = Constant::$FALSE;
 
 $response = [];

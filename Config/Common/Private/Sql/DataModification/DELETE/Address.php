@@ -36,20 +36,20 @@ return [
 	'__SET__' => [
 		[
 			'column' => 'is_deleted',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => Constant::$YES
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => Constant::$YES
 		]
 	],
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => Constant::$NO
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => Constant::$NO
 		],
 		[
 			'column' => DatabaseTable::$addressPrimaryKey,
-			'activeRequestDataKey' => 'routeParamArray',
-			'activeRequestDataKeySubKey' => 'id',
+			'activeDataKey' => 'routeParamArray',
+			'activeDataKeySubKey' => 'id',
 			'dataType' => DatabaseServerDataType::$PrimaryKey
 		]
 	],

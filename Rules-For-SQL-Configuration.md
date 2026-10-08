@@ -56,24 +56,24 @@ return [
 	'__SET__' => [
 		[
 			'column' => 'id',
-			'activeRequestDataKey' => 'routeParamArray', // Fetch value from parsed route
-			// 'activeRequestDataKey' => 'queryParamArray', // Fetch value from query string
-			// 'activeRequestDataKey' => 'payload', // Fetch value from payload
-			// 'activeRequestDataKey' => 'function', // Fetch value from function
-			// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-			// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
-			// 'activeRequestDataKey' => 'custom', // Static values
-			// 'activeRequestDataKey' => 'variables', // to fetch values as per __VARIABLE__ key's
-			'activeRequestDataKeySubKey' => 'id',          // key (id)
+			'activeDataKey' => 'routeParamArray', // Fetch value from parsed route
+			// 'activeDataKey' => 'queryParamArray', // Fetch value from query string
+			// 'activeDataKey' => 'payload', // Fetch value from payload
+			// 'activeDataKey' => 'function', // Fetch value from function
+			// 'activeDataKey' => 'customerData', // Fetch value from Customer Data
+			// 'activeDataKey' => 'customerUserData', // Fetch value from User Data session
+			// 'activeDataKey' => 'custom', // Static values
+			// 'activeDataKey' => 'variables', // to fetch values as per __VARIABLE__ key's
+			'activeDataKeySubKey' => 'id',          // key (id)
 			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 			'isRequired' => Constant::$REQUIRED              // Represents required field
 		],
 		[
 			// Fetch value from function
 			'column' => 'password',
-			'activeRequestDataKey' => 'function',                       // function
-			'activeRequestDataKeySubKey' => function(
-				$activeRequestData,
+			'activeDataKey' => 'function',                       // function
+			'activeDataKeySubKey' => function(
+				$activeData,
 				$payload
 			) {        // execute a function and return value
 				return 'value';
@@ -82,8 +82,8 @@ return [
 		[
 			// Fetch value of last insert IDs
 			'column' => 'is_deleted',
-			'activeRequestDataKey' => 'custom',                        // custom
-			'activeRequestDataKeySubKey' => Constant::$NO                        // Static values
+			'activeDataKey' => 'custom',                        // custom
+			'activeDataKeySubKey' => Constant::$NO                        // Static values
 		]
 	],
 
@@ -91,15 +91,15 @@ return [
 	'__WHERE__' => [
 		[
 			'column' => 'id',
-			'activeRequestDataKey' => 'routeParamArray', // Fetch value from parsed route
-			// 'activeRequestDataKey' => 'queryParamArray', // Fetch value from query string
-			// 'activeRequestDataKey' => 'payload', // Fetch value from payload
-			// 'activeRequestDataKey' => 'function', // Fetch value from function
-			// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-			// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
-			// 'activeRequestDataKey' => 'custom', // Static values
-			// 'activeRequestDataKey' => 'variables', // to fetch values as per __VARIABLE__ key's
-			'activeRequestDataKeySubKey' => 'id',                       // key (id)
+			'activeDataKey' => 'routeParamArray', // Fetch value from parsed route
+			// 'activeDataKey' => 'queryParamArray', // Fetch value from query string
+			// 'activeDataKey' => 'payload', // Fetch value from payload
+			// 'activeDataKey' => 'function', // Fetch value from function
+			// 'activeDataKey' => 'customerData', // Fetch value from Customer Data
+			// 'activeDataKey' => 'customerUserData', // Fetch value from User Data session
+			// 'activeDataKey' => 'custom', // Static values
+			// 'activeDataKey' => 'variables', // to fetch values as per __VARIABLE__ key's
+			'activeDataKeySubKey' => 'id',                       // key (id)
 			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 			'isRequired' => Constant::$REQUIRED              // Represents required field
 		],
@@ -110,22 +110,22 @@ return [
 	'__PAYLOAD__' => [
 		[
 			'column' => 'id',
-			'activeRequestDataKey' => 'routeParamArray', // Fetch value from parsed route
-			// 'activeRequestDataKey' => 'queryParamArray', // Fetch value from query string
-			// 'activeRequestDataKey' => 'payload', // Fetch value from payload
-			// 'activeRequestDataKey' => 'function', // Fetch value from function
-			// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-			// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
-			// 'activeRequestDataKey' => 'custom', // Static values
-			// 'activeRequestDataKey' => 'variables', // to fetch values as per __VARIABLE__ key's
-			'activeRequestDataKeySubKey' => 'id',                       // key (id)
+			'activeDataKey' => 'routeParamArray', // Fetch value from parsed route
+			// 'activeDataKey' => 'queryParamArray', // Fetch value from query string
+			// 'activeDataKey' => 'payload', // Fetch value from payload
+			// 'activeDataKey' => 'function', // Fetch value from function
+			// 'activeDataKey' => 'customerData', // Fetch value from Customer Data
+			// 'activeDataKey' => 'customerUserData', // Fetch value from User Data session
+			// 'activeDataKey' => 'custom', // Static values
+			// 'activeDataKey' => 'variables', // to fetch values as per __VARIABLE__ key's
+			'activeDataKeySubKey' => 'id',                       // key (id)
 			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 			'isRequired' => Constant::$REQUIRED              // Represents required field
 		],
 		[...]
 	],
 
-	// Last insert id to be made available as $activeRequestData['__INSERT-ID__'][uniqueParamString];
+	// Last insert id to be made available as $activeData['__INSERT-ID__'][uniqueParamString];
 	'__INSERT-ID__' => '<keyName>:id',
 
 	// mention primary key column name when using global counter
@@ -173,15 +173,15 @@ return [
 			'__SET__/__WHERE__' => [
 				[
 					'column' => 'id',
-					'activeRequestDataKey' => 'routeParamArray', // Fetch value from parsed route
-					// 'activeRequestDataKey' => 'queryParamArray', // Fetch value from query string
-					// 'activeRequestDataKey' => 'payload', // Fetch value from payload
-					// 'activeRequestDataKey' => 'function', // Fetch value from function
-					// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-					// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
-					// 'activeRequestDataKey' => 'custom', // Static values
-					// 'activeRequestDataKey' => 'variables', // to fetch values as per current module/<sub-key> __VARIABLE__ key's
-					'activeRequestDataKeySubKey' => 'id',                       // key (id)
+					'activeDataKey' => 'routeParamArray', // Fetch value from parsed route
+					// 'activeDataKey' => 'queryParamArray', // Fetch value from query string
+					// 'activeDataKey' => 'payload', // Fetch value from payload
+					// 'activeDataKey' => 'function', // Fetch value from function
+					// 'activeDataKey' => 'customerData', // Fetch value from Customer Data
+					// 'activeDataKey' => 'customerUserData', // Fetch value from User Data session
+					// 'activeDataKey' => 'custom', // Static values
+					// 'activeDataKey' => 'variables', // to fetch values as per current module/<sub-key> __VARIABLE__ key's
+					'activeDataKeySubKey' => 'id',                       // key (id)
 					'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 					'isRequired' => Constant::$REQUIRED              // Represents required field
 				],
@@ -190,31 +190,31 @@ return [
 				[
 					// Fetch value of last insert IDs
 					'column' => 'id',
-					'activeRequestDataKey' => '__INSERT-ID__',                // userData from session
-					'activeRequestDataKeySubKey' => '<saved-id-key>'            // previous Insert IDs
+					'activeDataKey' => '__INSERT-ID__',                // userData from session
+					'activeDataKeySubKey' => '<saved-id-key>'            // previous Insert IDs
 				],
 				[
 					// Fetch values of params from previous queries
 					'column' => 'id',
-					'activeRequestDataKey' => 'sqlParamArray',                     // sqlParamArray (with maintainHierarchy)
-					'activeRequestDataKeySubKey' => '<return:keys-separated-by-colon>'
+					'activeDataKey' => 'sqlParamArray',                     // sqlParamArray (with maintainHierarchy)
+					'activeDataKeySubKey' => '<return:keys-separated-by-colon>'
 				],
 				[
 					// Fetch values of Sql results from previous queries
 					'column' => 'id',
-					'activeRequestDataKey' => 'sqlResults',                    // sqlResults for DQL operations (with maintainHierarchy)
-					'activeRequestDataKeySubKey' => '<return:keys-separated-by-colon>'
+					'activeDataKey' => 'sqlResults',                    // sqlResults for DQL operations (with maintainHierarchy)
+					'activeDataKeySubKey' => '<return:keys-separated-by-colon>'
 				],
 				[
 					// Fetch values of Sql payload for previous queries
 					'column' => 'id',
-					'activeRequestDataKey' => 'previousPayload',                    // previousPayload (with maintainHierarchy)
-					'activeRequestDataKeySubKey' => '<return:keys-separated-by-colon>'
+					'activeDataKey' => 'previousPayload',                    // previousPayload (with maintainHierarchy)
+					'activeDataKeySubKey' => '<return:keys-separated-by-colon>'
 				],
 				[
 					'column' => 'any-table- column',
-					'activeRequestDataKey' => 'variables',      // custom
-					'activeRequestDataKeySubKey' => 'sub-var1'   // returns static sub-var1 value set in __VARIABLE__ of current module/<sub-key>
+					'activeDataKey' => 'variables',      // custom
+					'activeDataKeySubKey' => 'sub-var1'   // returns static sub-var1 value set in __VARIABLE__ of current module/<sub-key>
 				]
 			],
 			'__TRIGGER__' => [...],
@@ -236,34 +236,34 @@ return [
 		[
 			'__ROUTE__' => [
 				[
-					'activeRequestDataKey' => 'routeParamArray', // Fetch value from parsed route
-					// 'activeRequestDataKey' => 'queryParamArray', // Fetch value from query string
-					// 'activeRequestDataKey' => 'payload', // Fetch value from payload
-					// 'activeRequestDataKey' => 'function', // Fetch value from function
-					// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-					// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
-					// 'activeRequestDataKey' => 'custom', // Static values
-					// 'activeRequestDataKey' => '__INSERT-ID__', // Sql Insert IDs
-					'activeRequestDataKeySubKey' => 'address'
+					'activeDataKey' => 'routeParamArray', // Fetch value from parsed route
+					// 'activeDataKey' => 'queryParamArray', // Fetch value from query string
+					// 'activeDataKey' => 'payload', // Fetch value from payload
+					// 'activeDataKey' => 'function', // Fetch value from function
+					// 'activeDataKey' => 'customerData', // Fetch value from Customer Data
+					// 'activeDataKey' => 'customerUserData', // Fetch value from User Data session
+					// 'activeDataKey' => 'custom', // Static values
+					// 'activeDataKey' => '__INSERT-ID__', // Sql Insert IDs
+					'activeDataKeySubKey' => 'address'
 				],
 				[
 					// Sql Insert IDs
-					'activeRequestDataKey' => '__INSERT-ID__',
-					'activeRequestDataKeySubKey' => 'address:id'
+					'activeDataKey' => '__INSERT-ID__',
+					'activeDataKeySubKey' => 'address:id'
 				]
 			],
 			'__QUERY-STRING__' => [
 				[
 					'column' => 'param-1',
-					'activeRequestDataKey' => 'routeParamArray', // Fetch value from parsed route
-					// 'activeRequestDataKey' => 'queryParamArray', // Fetch value from query string
-					// 'activeRequestDataKey' => 'payload', // Fetch value from payload
-					// 'activeRequestDataKey' => 'function', // Fetch value from function
-					// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-					// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
-					// 'activeRequestDataKey' => 'custom', // Static values
-					// 'activeRequestDataKey' => '__INSERT-ID__', // Sql Insert IDs
-					'activeRequestDataKeySubKey' => 'address'
+					'activeDataKey' => 'routeParamArray', // Fetch value from parsed route
+					// 'activeDataKey' => 'queryParamArray', // Fetch value from query string
+					// 'activeDataKey' => 'payload', // Fetch value from payload
+					// 'activeDataKey' => 'function', // Fetch value from function
+					// 'activeDataKey' => 'customerData', // Fetch value from Customer Data
+					// 'activeDataKey' => 'customerUserData', // Fetch value from User Data session
+					// 'activeDataKey' => 'custom', // Static values
+					// 'activeDataKey' => '__INSERT-ID__', // Sql Insert IDs
+					'activeDataKeySubKey' => 'address'
 				],
 				[...]
 			],
@@ -271,15 +271,15 @@ return [
 			'__PAYLOAD__' => [
 				[
 					'column' => 'param-1',
-					'activeRequestDataKey' => 'routeParamArray', // Fetch value from parsed route
-					// 'activeRequestDataKey' => 'queryParamArray', // Fetch value from query string
-					// 'activeRequestDataKey' => 'payload', // Fetch value from payload
-					// 'activeRequestDataKey' => 'function', // Fetch value from function
-					// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-					// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
-					// 'activeRequestDataKey' => 'custom', // Static values
-					// 'activeRequestDataKey' => '__INSERT-ID__', // Sql Insert IDs
-					'activeRequestDataKeySubKey' => 'address'
+					'activeDataKey' => 'routeParamArray', // Fetch value from parsed route
+					// 'activeDataKey' => 'queryParamArray', // Fetch value from query string
+					// 'activeDataKey' => 'payload', // Fetch value from payload
+					// 'activeDataKey' => 'function', // Fetch value from function
+					// 'activeDataKey' => 'customerData', // Fetch value from Customer Data
+					// 'activeDataKey' => 'customerUserData', // Fetch value from User Data session
+					// 'activeDataKey' => 'custom', // Static values
+					// 'activeDataKey' => '__INSERT-ID__', // Sql Insert IDs
+					'activeDataKeySubKey' => 'address'
 				],
 				[...]
 			]
@@ -401,14 +401,14 @@ return [
 	'__WHERE__' => [
 		[
 			'column' => 'id',
-			'activeRequestDataKey' => 'routeParamArray', // Fetch value from parsed route
-			// 'activeRequestDataKey' => 'queryParamArray', // Fetch value from query string
-			// 'activeRequestDataKey' => 'payload', // Fetch value from payload
-			// 'activeRequestDataKey' => 'function', // Fetch value from function
-			// 'activeRequestDataKey' => 'customerData', // Fetch value from Customer Data
-			// 'activeRequestDataKey' => 'customerUserData', // Fetch value from User Data session
-			// 'activeRequestDataKey' => 'custom', // Static values
-			'activeRequestDataKeySubKey' => 'id',                       // key (id)
+			'activeDataKey' => 'routeParamArray', // Fetch value from parsed route
+			// 'activeDataKey' => 'queryParamArray', // Fetch value from query string
+			// 'activeDataKey' => 'payload', // Fetch value from payload
+			// 'activeDataKey' => 'function', // Fetch value from function
+			// 'activeDataKey' => 'customerData', // Fetch value from Customer Data
+			// 'activeDataKey' => 'customerUserData', // Fetch value from User Data session
+			// 'activeDataKey' => 'custom', // Static values
+			'activeDataKeySubKey' => 'id',                       // key (id)
 			'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 			'isRequired' => Constant::$REQUIRED              // Represents required field
 		],
@@ -425,9 +425,9 @@ return [
 - Dedicated database for respective customer can be configured
 - This can also handle Master / Slave implementaion respectively
 
-## activeRequestDataKey
+## activeDataKey
 
-- **activeRequestDataKey** is a Sql config feature where one can force the fetch from Master (Since usually it is Slave)
+- **activeDataKey** is a Sql config feature where one can force the fetch from Master (Since usually it is Slave)
 
 ## Defining Custom DataTypes
 

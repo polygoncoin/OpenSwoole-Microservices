@@ -20,13 +20,13 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__COUNT-SQL__' => "SELECT count(1) as `count` FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` WHERE __WHERE__",
-	'__SQL__' => "SELECT * FROM `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` WHERE __WHERE__",
+	'__COUNT-SQL__' => "SELECT count(1) as `count` FROM `{$this->httpObject->httpReqData['active']['customerData']['customer_user_table']}` WHERE __WHERE__",
+	'__SQL__' => "SELECT * FROM `{$this->httpObject->httpReqData['active']['customerData']['customer_user_table']}` WHERE __WHERE__",
 	'__WHERE__' => [
 		[
 			'column' => 'customer_user_is_deleted',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => Constant::$NO
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => Constant::$NO
 		]
 	],
 	'__MODE__' => 'multipleRecordFormat'

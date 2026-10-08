@@ -18,11 +18,11 @@ use Microservices\App\Constant;
 
 return [
 	'registration' => [
-		'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+		'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 			. DIRECTORY_SEPARATOR . 'Registration.php',
 	],
 	'registration-with-address' => [
-		'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+		'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 			. DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
 	],
 ];

@@ -154,9 +154,6 @@ CREATE TABLE `customer` (
     `customer_user_table` VARCHAR(255) NOT NULL,
     `customer_cidr` VARCHAR(250) DEFAULT NULL,
     `customer_comments` VARCHAR(255) DEFAULT NULL,
-    `customer_public_domain` VARCHAR(255) DEFAULT NULL,
-    `customer_private_session_domain` VARCHAR(255) DEFAULT NULL,
-    `customer_private_token_domain` VARCHAR(255) DEFAULT NULL,
     `customer_cron_cidr` VARCHAR(250) DEFAULT NULL,
     `customer_custom_cidr` VARCHAR(250) DEFAULT NULL,
     `customer_dropbox_cidr` VARCHAR(250) DEFAULT NULL,
@@ -230,11 +227,6 @@ INSERT INTO `customer` SET
     `customer_user_table` = 'customer_user',
     `customer_cidr` = NULL,
     `customer_comments` = NULL,
-
--- Customer level domain settings
-    `customer_public_domain` = 'customer001.localhost',
-    `customer_private_session_domain` = 'web.customer001.localhost',
-    `customer_private_token_domain` = 'api.customer001.localhost',
 
 -- CIDR columns at customer level
     `customer_cron_cidr` =  NULL,

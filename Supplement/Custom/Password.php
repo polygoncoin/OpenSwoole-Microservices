@@ -89,7 +89,7 @@ class Password implements CustomInterface
 		}
 
 		$oldPassword = $payload['old_password'];
-		$oldPasswordHash = $this->httpObject->httpRequestObject->activeRequestData['customerUserData']['password_hash'];
+		$oldPasswordHash = $this->httpObject->httpReqData['active']['customerUserData']['password_hash'];
 
 		if (
 			password_verify(
@@ -97,7 +97,7 @@ class Password implements CustomInterface
 				hash: $oldPasswordHash
 			)
 		) {
-			$userName = $this->httpObject->httpRequestObject->activeRequestData['customerUserData']['username'];
+			$userName = $this->httpObject->httpReqData['active']['customerUserData']['username'];
 			$newPassword = $payload['new_password'];
 			$newPasswordHash = password_hash(
 				password: $newPassword,
@@ -105,7 +105,7 @@ class Password implements CustomInterface
 			);
 
 			$sql = "
-				UPDATE `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}`
+				UPDATE `{$this->httpObject->httpReqData['active']['customerData']['customer_user_table']}`
 				SET password_hash = :password_hash
 				WHERE username = :username AND is_deleted = :is_deleted
 			";
@@ -122,17 +122,17 @@ class Password implements CustomInterface
 			$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
 
 			$cacheKey = CacheServerKey::customerUsername(
-				customerId: $this->httpObject->httpReqData['current']['customerId'],
+				customerId: $this->httpObject->httpReqData['active']['customerId'],
 				username: $userName
 			);
 			Reload::processUser(
 				httpRequestIp: $this->httpObject->httpReqData['server']['httpRequestIp'],
-				customerData: $this->httpObject->httpRequestObject->activeRequestData['customerData'],
-				customerUserId: $this->httpObject->httpReqData['current']['customerUserId']
+				customerData: $this->httpObject->httpReqData['active']['customerData'],
+				customerUserId: $this->httpObject->httpReqData['active']['customerUserId']
 			);
 			$this->httpObject->httpRequestObject->cacheServerObject->cacheDelete(
-				cacheKey: CacheServerKey::token(
-					token: $this->httpObject->httpRequestObject->activeRequestData['authId']
+				cacheKey: CacheServerKey::apiToken(
+					apiToken: $this->httpObject->httpReqData['active']['authId']
 				)
 			);
 

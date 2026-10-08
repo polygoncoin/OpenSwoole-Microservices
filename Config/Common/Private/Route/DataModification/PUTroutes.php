@@ -21,28 +21,28 @@ return [
 	'registration' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 				. DIRECTORY_SEPARATOR . 'Registration.php',
 		],
 	],
 	'address' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 				. DIRECTORY_SEPARATOR . 'Address.php',
 		],
 	],
 	'group' => [
 		'{customer_single_user_group_id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 				. DIRECTORY_SEPARATOR . 'Group.php',
 		],
 	],
 	'customer' => [
 		'{customer_id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 				. DIRECTORY_SEPARATOR . 'Customer.php',
 		],
 	]

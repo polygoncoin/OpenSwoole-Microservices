@@ -67,6 +67,7 @@ $server->on(
 		Env::init();
 
 		$httpReqData = [];
+		$httpReqData['active'] = [];
 
 		$httpReqData['streamData'] = Constant::$TRUE;
 		$httpReqData['server']['domainName'] = $DOMAIN_NAME;

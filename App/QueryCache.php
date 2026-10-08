@@ -70,7 +70,7 @@ class QueryCache
         }
 
 		$queryCacheServerCred = DbCommonFunction::getQueryCacheCred(
-			customerId: $this->httpObject->httpReqData['current']['customerId']
+			customerId: $this->httpObject->httpReqData['active']['customerId']
 		);
 		$this->queryCacheServerObject = new QueryCacheServer(
 			queryCacheServerMode: $queryCacheServerCred['cacheServerType'],
@@ -126,7 +126,7 @@ class QueryCache
 		}
 
 		$queryCacheKey = $this->queryCachePrepend(
-			customerId: $this->httpObject->httpReqData['current']['customerId'],
+			customerId: $this->httpObject->httpReqData['active']['customerId'],
 			queryCacheKey: $queryCacheKey
 		);
 
@@ -164,7 +164,7 @@ class QueryCache
 
 		$queryCacheKey = 'i:' . $queryCacheKey;
 		$queryCacheKey = $this->queryCachePrepend(
-			customerId: $this->httpObject->httpReqData['current']['customerId'],
+			customerId: $this->httpObject->httpReqData['active']['customerId'],
 			queryCacheKey: $queryCacheKey
 		);
 
@@ -196,12 +196,12 @@ class QueryCache
 		$delQueryCacheKey = 'i:' . $queryCacheKey;
 
 		$queryCacheKey = $this->queryCachePrepend(
-			customerId: $this->httpObject->httpReqData['current']['customerId'],
+			customerId: $this->httpObject->httpReqData['active']['customerId'],
 			queryCacheKey: $queryCacheKey
 		);
 
 		$delQueryCacheKey = $this->queryCachePrepend(
-			customerId: $this->httpObject->httpReqData['current']['customerId'],
+			customerId: $this->httpObject->httpReqData['active']['customerId'],
 			queryCacheKey: $delQueryCacheKey
 		);
 
@@ -233,7 +233,7 @@ class QueryCache
 		}
 
 		$queryCacheKey = $this->queryCachePrepend(
-			customerId: $this->httpObject->httpReqData['current']['customerId'],
+			customerId: $this->httpObject->httpReqData['active']['customerId'],
 			queryCacheKey: $queryCacheKey
 		);
 

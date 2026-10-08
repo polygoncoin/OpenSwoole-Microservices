@@ -1,4 +1,4 @@
-# PHP low code API generator
+PHP low code API generator
 
 This is a light & easy low code API generator using configuration arrays. It can be used to create API's in very short time once you are done with your database.
 
@@ -14,46 +14,50 @@ This is a light & easy low code API generator using configuration arrays. It can
 
 - **[JavaScript Examples](Microservices-JavaScript-Examples.md)**
 
-## SQL File
+## Sql File
 
-- **Sql/global.sql** Import this SQL file on your **MySql global** instance
-- **Sql/customer\_master.sql** Import this SQL file on your **MySql customer** instance
+- **Sql/global.sql** Import this Sql file on your **MySql global** instance
+- **Sql/customer\_master.sql** Import this Sql file on your **MySql customer** instance
 
-- **Note**: One can import both sql's in a single database to start with. Just configure the same details in the environment files.
+- **Note**: One can import both sql's in a single database to start with. Just configure the same detail in the environment files.
 
-## Folders
+## folders
 
-### File Folder
+### Openswoole
+
+- **openswoole_html** folder for Openswoole based application start files.
+
+### File folder
+
+- **Log** folder for application Log.
+- **TestCase** folder for Test Cases
+
+### Folders
 
 - **Config** Basic configuration folder
-- **File** Folder for uploaded files.
 - **Hook** Hook.
-- **Log** Folder for application Log.
+- **public\_html** Contains index.php file.
 - **Supplement** Customised coding for APIs
-- **TestCase** Folder for Test Cases
 - **Validation** Contains validation classes.
 
-#### /File Folder
-
-- **Dropbox/Public** Uploaded files for open to web
-- **Dropbox/Closed** Uploaded files by authorised user
-- **ServingFile/HTML** HTML files to be served with dynamic response (XSLT)
-- **ServingFile/PHP** PHP view files to be served with dynamic response
-- **ServingFile/XSLT** XSLT files to be served with dynamic response
-
-#### /Supplement Folder
+#### Supplement code folder
 
 - **Crons** Contains classes for cron API's
 - **Custom** Contains classes for custom API's
+- **Dropbox** Contains classes for third-party API's
+- **LegacyCode** Contains classes for third-party API's
 - **ThirdParty** Contains classes for third-party API's
 - **Upload** Contains classes for upload file API's
 
-### Route Folder
+### Route folder
 
-#### /Config/Route
+#### Config//&lt;CustomerFoldername&gt;/&lt;mode&gt;/Route
 
-- **/Config/Route/Private/&lt;GroupName&gt;**
-- **/Config/Route/Public**
+- **/Config/&lt;CustomerFoldername&gt;/Private/Route/&lt;GroupName&gt;/DataModification**
+- **/Config/&lt;CustomerFoldername&gt;/Private/Route/&lt;GroupName&gt;/DataRetrival**
+
+- **/Config/&lt;CustomerFoldername&gt;/Public/Route//DataModification**
+- **/Config/&lt;CustomerFoldername&gt;/Public/Route//DataRetrival**
 
 - **&lt;GroupName&gt;** is the group user belongs to for accessing the API's
 
@@ -65,23 +69,22 @@ This is a light & easy low code API generator using configuration arrays. It can
 - **/PATCHroutes.php** for all PATCH method routes configuration.
 - **/DELETEroutes.php** for all DELETE method routes configuration.
 
-### Sql Folder
+### Sql folder
 
 These files locations are used in routes config to be used for generating response.
 
-#### /Config/Sql
+#### Config/&lt;CustomerFoldername&gt;/Private/Sql
 
-- **/Config/Sql/Private/GlobalDB** for global database.
-- **/Config/Sql/Private/CustomerDB** for customer (including all hosts and their databases).
-- **/Config/Sql/Public** for Public to Web API's (No Authentication).
+- **/Config//&lt;CustomerFoldername&gt;/&lt;mode&gt;/Sql/DataModification**
+- **/Config//&lt;CustomerFoldername&gt;/&lt;mode&gt;/Sql/DataRetrival**
 
 #### File
 
-- **/GET/&lt;filenames&gt;.php** GET method SQL.
-- **/POST/&lt;filenames&gt;;.php** POST method SQL.
-- **/PUT/&lt;filenames&gt;.php** PUT method SQL.
-- **/PATCH/&lt;filenames&gt;.php** PATCH method SQL.
-- **/DELETE/&lt;filenames&gt;.php** DELETE method SQL.
+- **/GET/&lt;filenames&gt;.php** GET method Sql.
+- **/POST/&lt;filenames&gt;;.php** POST method Sql.
+- **/PUT/&lt;filenames&gt;.php** PUT method Sql.
+- **/PATCH/&lt;filenames&gt;.php** PATCH method Sql.
+- **/DELETE/&lt;filenames&gt;.php** DELETE method Sql.
 
 One can replace **&lt;filenames&gt;** tag with desired name as per functionality.
 
@@ -100,6 +103,21 @@ Below are route level CIDR settings for a set of system routes (starting / endin
 `customer`.`customer_routes_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
 `customer`.`customer_thirdparty_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
 `customer`.`customer_upload_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+```
+
+## Configuring in Database Tables
+
+To enable CIDR settings at Customer / Group / User level one can set them in respective table and record
+
+```SQL
+-- Customer level
+`customer`.`customer_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
+
+-- Group level
+`group`.`customer_user_group_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
+
+-- User level
+`user`.`customer_user_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
 ```
 
 ## Contributing

@@ -24,19 +24,19 @@ return [
 	'__SET__' => [
 		[
 			'column' => DatabaseTable::$customerPrimaryKey,
-			'activeRequestDataKey' => 'customerData',
-			'activeRequestDataKeySubKey' => DatabaseTable::$customerPrimaryKey
+			'activeDataKey' => 'customerData',
+			'activeDataKeySubKey' => DatabaseTable::$customerPrimaryKey
 		],
 		[
 			'column' => DatabaseTable::$customerUserPrimaryKey,
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'id',
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'id',
 			'dataType' => DatabaseServerDataType::$INT
 		],
 		[
 			'column' => 'address',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'address'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'address'
 		],
 	],
 	'__INSERT-ID__' => 'address:id',
@@ -45,32 +45,32 @@ return [
 	//     [
 	//         '__ROUTE__' => [
 	//             [
-	//                 'activeRequestDataKey' => 'custom',
-	//                 'activeRequestDataKeySubKey' => 'address'
+	//                 'activeDataKey' => 'custom',
+	//                 'activeDataKeySubKey' => 'address'
 	//             ],
 	//             [
-	//                 'activeRequestDataKey' => '__INSERT-ID__',
-	//                 'activeRequestDataKeySubKey' => 'address:id'
+	//                 'activeDataKey' => '__INSERT-ID__',
+	//                 'activeDataKeySubKey' => 'address:id'
 	//             ]
 	//         ],
 	//         '__QUERY-STRING__' => [
 	//             [
 	//                 'column' => 'param-1',
-	//                 'activeRequestDataKey' => 'custom',
-	//                 'activeRequestDataKeySubKey' => 'address'
+	//                 'activeDataKey' => 'custom',
+	//                 'activeDataKeySubKey' => 'address'
 	//             ],
 	//             [
 	//                 'column' => 'param-2',
-	//                 'activeRequestDataKey' => '__INSERT-ID__',
-	//                 'activeRequestDataKeySubKey' => 'address:id'
+	//                 'activeDataKey' => '__INSERT-ID__',
+	//                 'activeDataKeySubKey' => 'address:id'
 	//             ]
 	//         ],
 	//         '__METHOD__' => Constant::$PATCH,
 	//         '__PAYLOAD__' => [
 	//             [
 	//                 'column' => 'address',
-	//                 'activeRequestDataKey' => 'custom',
-	//                 'activeRequestDataKeySubKey' => 'updated-address'
+	//                 'activeDataKey' => 'custom',
+	//                 'activeDataKeySubKey' => 'updated-address'
 	//             ]
 	//         ]
 	//     ]

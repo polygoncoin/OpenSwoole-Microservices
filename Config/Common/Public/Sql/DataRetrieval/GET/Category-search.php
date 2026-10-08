@@ -19,8 +19,8 @@ return [
 	'__WHERE__' => [
 		[
 			'column' => 'name',
-			'activeRequestDataKey' => 'queryParamArray',
-			'activeRequestDataKeySubKey' => 'name'
+			'activeDataKey' => 'queryParamArray',
+			'activeDataKeySubKey' => 'name'
 		]
 	],
 	'__MODE__' => 'multipleRecordFormat',

@@ -24,18 +24,18 @@ return [
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => Constant::$NO
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => Constant::$NO
 		],
 		[
 			'column' => 'parent_id',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => 0
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => 0
 		],
 		[
 			'column' => DatabaseTable::$categoryPrimaryKey,
-			'activeRequestDataKey' => 'routeParamArray',
-			'activeRequestDataKeySubKey' => 'id'
+			'activeDataKey' => 'routeParamArray',
+			'activeDataKeySubKey' => 'id'
 		]
 	],
 	'__MODE__' => 'singleRecordFormat',
@@ -45,13 +45,13 @@ return [
 			'__WHERE__' => [
 				[
 					'column' => 'is_deleted',
-					'activeRequestDataKey' => 'custom',
-					'activeRequestDataKeySubKey' => Constant::$NO
+					'activeDataKey' => 'custom',
+					'activeDataKeySubKey' => Constant::$NO
 				],
 				[
 					'column' => 'parent_id',
-					'activeRequestDataKey' => 'sqlResults',
-					'activeRequestDataKeySubKey' => 'return:' . DatabaseTable::$categoryPrimaryKey
+					'activeDataKey' => 'sqlResults',
+					'activeDataKeySubKey' => 'return:' . DatabaseTable::$categoryPrimaryKey
 				],
 			],
 			'__MODE__' => 'multipleRecordFormat',
@@ -61,13 +61,13 @@ return [
 					'__WHERE__' => [
 						[
 							'column' => 'is_deleted',
-							'activeRequestDataKey' => 'custom',
-							'activeRequestDataKeySubKey' => Constant::$NO
+							'activeDataKey' => 'custom',
+							'activeDataKeySubKey' => Constant::$NO
 						],
 						[
 							'column' => 'parent_id',
-							'activeRequestDataKey' => 'sqlResults',
-							'activeRequestDataKeySubKey' => 'return:sub:' . DatabaseTable::$categoryPrimaryKey
+							'activeDataKey' => 'sqlResults',
+							'activeDataKeySubKey' => 'return:sub:' . DatabaseTable::$categoryPrimaryKey
 						],
 					],
 					'__MODE__' => 'multipleRecordFormat',
@@ -77,13 +77,13 @@ return [
 							'__WHERE__' => [
 								[
 									'column' => 'is_deleted',
-									'activeRequestDataKey' => 'custom',
-									'activeRequestDataKeySubKey' => Constant::$NO
+									'activeDataKey' => 'custom',
+									'activeDataKeySubKey' => Constant::$NO
 								],
 								[
 									'column' => 'parent_id',
-									'activeRequestDataKey' => 'sqlResults',
-									'activeRequestDataKeySubKey' => 'return:sub:subsub:' . DatabaseTable::$categoryPrimaryKey
+									'activeDataKey' => 'sqlResults',
+									'activeDataKeySubKey' => 'return:sub:subsub:' . DatabaseTable::$categoryPrimaryKey
 								],
 							],
 							'__MODE__' => 'multipleRecordFormat',

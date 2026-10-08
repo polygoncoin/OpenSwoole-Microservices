@@ -105,7 +105,7 @@ class Session
 		Env::loadEnv(
 			customerId: $this->customerId
 		);
-		$this->customerId = $this->httpObject->httpReqData['current']['customerId'];
+		$this->customerId = $this->httpObject->httpReqData['active']['customerId'];
 		$this->sessionName = Env::$config[$this->customerId]->SESSION_COOKIE_NAME;
 	}
 

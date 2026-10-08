@@ -120,7 +120,7 @@ class Cdn implements DropboxInterface
 			&& $this->httpObject->httpRequestObject !== Constant::$NULL
 			&& $this->httpObject->httpRequestObject->isPrivateRequest
 		) {
-			$this->DROPBOX_DIRECTORY .= DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['current']['customerId'];
+			$this->DROPBOX_DIRECTORY .= DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['active']['customerId'];
 			$this->validateFileRequest();
 		}
 		$this->fileLocation = $this->DROPBOX_DIRECTORY . $filePath;
@@ -142,7 +142,7 @@ class Cdn implements DropboxInterface
 	 */
 	public function validateFileRequest(): void
 	{
-		// check logic for user is allowed to access the file as per $this->httpObject->httpRequestObject->activeRequestData
+		// check logic for user is allowed to access the file as per $this->httpObject->httpReqData['active']
 		// $this->fileLocation;
 	}
 

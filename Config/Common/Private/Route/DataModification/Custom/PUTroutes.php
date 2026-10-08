@@ -19,7 +19,7 @@ use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 
 return [
-	Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOM_REQUEST_KEYWORD => [
+	Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOM_REQUEST_KEYWORD => [
 		'password' => [
 			'__FILE__' => Constant::$FALSE
 		],

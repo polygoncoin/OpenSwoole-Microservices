@@ -21,34 +21,34 @@ return [
 	'registration' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 				. DIRECTORY_SEPARATOR . 'Registration.php',
 		],
 	],
 	'address' => [
 		'{id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 				. DIRECTORY_SEPARATOR . 'Address.php',
 		],
 	],
 	'group' => [
 		'{customer_single_user_group_id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 				. DIRECTORY_SEPARATOR . 'Group.php',
 			'approve'  => [
-				'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+				'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 						. DIRECTORY_SEPARATOR . 'Approve'
 					. DIRECTORY_SEPARATOR . 'Group.php',
 			],
 			'disable'  => [
-				'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+				'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 						. DIRECTORY_SEPARATOR . 'Disable'
 					. DIRECTORY_SEPARATOR . 'Group.php',
 			],
 			'enable'  => [
-				'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+				'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 						. DIRECTORY_SEPARATOR . 'Enable'
 					. DIRECTORY_SEPARATOR . 'Group.php',
 			],
@@ -57,20 +57,20 @@ return [
 	'customer' => [
 		'{customer_id:int}'  => [
 			'dataType' => DatabaseServerDataType::$PrimaryKey,
-			'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 				. DIRECTORY_SEPARATOR . 'Customer.php',
 			'approve'  => [
-				'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+				'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 						. DIRECTORY_SEPARATOR . 'Approve'
 					. DIRECTORY_SEPARATOR . 'Customer.php',
 			],
 			'disable'  => [
-				'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+				'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 						. DIRECTORY_SEPARATOR . 'Disable'
 					. DIRECTORY_SEPARATOR . 'Customer.php',
 			],
 			'enable'  => [
-				'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+				'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 						. DIRECTORY_SEPARATOR . 'Enable'
 					. DIRECTORY_SEPARATOR . 'Customer.php',
 			],

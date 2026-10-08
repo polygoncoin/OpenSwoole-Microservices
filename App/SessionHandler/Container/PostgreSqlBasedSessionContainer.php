@@ -90,7 +90,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId
 	): bool|string {
 		$sql = "
-			SELECT session_data
+			SELECT *
 			FROM {$this->sessionServerTable}
 			WHERE session_id = $1 AND last_accessed > $2
 		";

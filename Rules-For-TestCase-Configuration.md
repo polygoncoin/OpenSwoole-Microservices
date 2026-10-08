@@ -78,8 +78,8 @@ If the code requires token; this can be done as below
 
 ```PHP
 $header = $defaultHeaderArray;
-if (isset($token)) {
-	$header[] = "Authorization: Bearer {$token}";
+if (isset($apiToken)) {
+	$header[] = "Authorization: Bearer {$apiToken}";
 
 	return Web::trigger(
 		homeURL: $homeURL,

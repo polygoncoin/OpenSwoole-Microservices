@@ -119,7 +119,7 @@ class Write
 		// Set Server mode to execute query on - Read / Write Server
 		if ($this->httpObject->httpRequestObject->databaseServerObject === Constant::$NULL) {
 			$this->httpObject->httpRequestObject->databaseServerObject = DbCommonFunction::connectDatabase(
-				customerId: $this->httpObject->httpReqData['current']['customerId'],
+				customerId: $this->httpObject->httpReqData['active']['customerId'],
 				fetchDbMode: $fetchDbMode
 			);
 		}
@@ -151,11 +151,11 @@ class Write
 		$writeOUTPUT_REPRESENTATION = CommonFunction::getOUTPUT_REPRESENTATION(
 			sqlConfig: $writeSqlConfig,
 			httpReqData: $this->httpObject->httpReqData,
-			customerId: $this->httpObject->httpReqData['current']['customerId']
+			customerId: $this->httpObject->httpReqData['active']['customerId']
 		);
 
 		// Set required fields
-		$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArrayCollection'] = $this->getRequired(
+		$this->httpObject->httpReqData['active']['requiredFieldArrayCollection'] = $this->getRequired(
 			sqlConfig: $writeSqlConfig,
 			maintainHierarchy: $writeMaintainHierarchy,
 			isFirstCall: Constant::$TRUE
@@ -213,8 +213,8 @@ class Write
 
 				$output = [];
 				$output['Status'] = HttpStatus::$Ok;
-				if (Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
-					$output[Env::$config[$this->httpObject->httpReqData['current']['customerId']]->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
+				if (Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
+					$output[Env::$config[$this->httpObject->httpReqData['active']['customerId']]->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
 						keyString: $this->getPayloadKey(
 							payloadKeyArray: $writePayloadKeyArray
 						)
@@ -227,7 +227,7 @@ class Write
 				$this->writeParent(
 					writeParentSqlConfig: $writeSqlConfig,
 					writeParentPayloadKeyArray: $writePayloadKeyArray,
-					writeParentRequiredFieldArray: $this->httpObject->httpRequestObject->activeRequestData['requiredFieldArrayCollection'],
+					writeParentRequiredFieldArray: $this->httpObject->httpReqData['active']['requiredFieldArrayCollection'],
 					writeParentResponse: $writeResponse,
 					writeParentMaintainHierarchy: $writeMaintainHierarchy,
 					writeParentOperateAsTransaction: $writeOperateAsTransaction
@@ -368,15 +368,15 @@ class Write
 			}
 		}
 
-		$mode = Env::$config[$this->httpObject->httpReqData['current']['customerId']]->MASTER_DB_PLACEHOLDER;
+		$mode = Env::$config[$this->httpObject->httpReqData['active']['customerId']]->MASTER_DB_PLACEHOLDER;
 		$function = "getSqlAndParam{$mode}Mode";
 
 		for ($index = 0; $index < $indexCount; $index++) {
 			// For Required Fields
 			if (count(value: $writeParentRequiredFieldArray)) {
-				$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray'] = $writeParentRequiredFieldArray;
+				$this->httpObject->httpReqData['active']['requiredFieldArray'] = $writeParentRequiredFieldArray;
 			} else {
-				$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray'] = [];
+				$this->httpObject->httpReqData['active']['requiredFieldArray'] = [];
 			}
 
 			// For payloadKeyArray
@@ -502,7 +502,7 @@ class Write
 					$writeParentCurrentResponse[$writeParentSqlConfig['__INSERT-ID__']][] = $insertId;
 				}
 
-				$this->httpObject->httpRequestObject->activeRequestData['__INSERT-ID__'][$writeParentSqlConfig['__INSERT-ID__']] = $insertId;
+				$this->httpObject->httpReqData['active']['__INSERT-ID__'][$writeParentSqlConfig['__INSERT-ID__']] = $insertId;
 			} else {
 				$affectedRecordCount = $this->httpObject->httpRequestObject->databaseServerObject->affectedRecordCount();
 				$writeParentCurrentResponse['affectedRecordCount'] = $affectedRecordCount;
@@ -515,7 +515,7 @@ class Write
 			if (isset($writeParentSqlConfig['__SUB-CONFIG__'])) {
 				if ($writeParentCurrentMaintainHierarchy) {
 					$this->resetFetchData(
-						activeRequestDataKey: 'previousPayload',
+						activeDataKey: 'previousPayload',
 						payloadKeyArray: $writeParentCurrentPayloadKeyArray,
 						record: $writeParentPayload
 					);
@@ -561,7 +561,7 @@ class Write
 				);
 				for ($index = 0; $index < $indexCount; $index++) {
 					$this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheDelete(
-						customerId: $this->httpObject->httpReqData['current']['customerId'],
+						customerId: $this->httpObject->httpReqData['active']['customerId'],
 						queryCacheKey: $writeParentSqlConfig['__AFFECTED-CACHE-KEY__'][$index]
 					);
 				}

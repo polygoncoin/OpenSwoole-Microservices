@@ -24,35 +24,35 @@ return [
 	'__SET__' => [
 		[
 			'column' => 'is_disabled',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => Constant::$YES
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => Constant::$YES
 		],
 		[
 			'column' => 'updated_by',
-			'activeRequestDataKey' => 'customerUserData',
-			'activeRequestDataKeySubKey' => DatabaseTable::$customerUserPrimaryKey
+			'activeDataKey' => 'customerUserData',
+			'activeDataKeySubKey' => DatabaseTable::$customerUserPrimaryKey
 		],
 		[
 			'column' => 'updated_on',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => date(format: 'Y-m-d H:i:s')
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => date(format: 'Y-m-d H:i:s')
 		]
 	],
 	'__WHERE__' => [
 		[
 			'column' => 'is_disabled',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => Constant::$NO
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => Constant::$NO
 		],
 		[
 			'column' => 'is_deleted',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => Constant::$NO
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => Constant::$NO
 		],
 		[
 			'column' => DatabaseTable::$customerPrimaryKey,
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'id',
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'id',
 			'dataType' => DatabaseServerDataType::$INT
 		]
 	],

@@ -24,13 +24,13 @@ return [
 	'__SET__' => [
 		[
 			'column' => 'name',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'name'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'name'
 		],
 		[
 			'column' => 'parent_id',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => 0
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => 0
 		],
 	],
 	'__INSERT-ID__' => 'category:id',
@@ -40,13 +40,13 @@ return [
 			'__SET__' => [
 				[
 					'column' => 'name',
-					'activeRequestDataKey' => 'payload',
-					'activeRequestDataKeySubKey' => 'subname'
+					'activeDataKey' => 'payload',
+					'activeDataKeySubKey' => 'subname'
 				],
 				[
 					'column' => 'parent_id',
-					'activeRequestDataKey' => '__INSERT-ID__',
-					'activeRequestDataKeySubKey' => 'category:id'
+					'activeDataKey' => '__INSERT-ID__',
+					'activeDataKeySubKey' => 'category:id'
 				],
 			],
 			'__INSERT-ID__' => 'sub:id',
@@ -56,13 +56,13 @@ return [
 					'__SET__' => [
 						[
 							'column' => 'name',
-							'activeRequestDataKey' => 'payload',
-							'activeRequestDataKeySubKey' => 'subsubname'
+							'activeDataKey' => 'payload',
+							'activeDataKeySubKey' => 'subsubname'
 						],
 						[
 							'column' => 'parent_id',
-							'activeRequestDataKey' => '__INSERT-ID__',
-							'activeRequestDataKeySubKey' => 'sub:id'
+							'activeDataKey' => '__INSERT-ID__',
+							'activeDataKeySubKey' => 'sub:id'
 						],
 					],
 					'__INSERT-ID__' => 'subsub:id',
@@ -72,7 +72,7 @@ return [
 	],
 	'__HIERARCHY__' => Constant::$TRUE,
 	'__AFFECTED-CACHE-KEY__' => [
-		$this->httpObject->httpRequestObject->activeRequestData['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
-		$this->httpObject->httpRequestObject->activeRequestData['customerData'][DatabaseTable::$customerPrimaryKey] . ':category1'
+		$this->httpObject->httpReqData['active']['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
+		$this->httpObject->httpReqData['active']['customerData'][DatabaseTable::$customerPrimaryKey] . ':category1'
 	]
 ];

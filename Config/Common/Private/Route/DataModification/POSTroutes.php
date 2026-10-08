@@ -18,27 +18,27 @@ use Microservices\App\Constant;
 
 return [
 	'category' => [
-		'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+		'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 			. DIRECTORY_SEPARATOR . 'Category.php',
 	],
 	'registration' => [
-		'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+		'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 			. DIRECTORY_SEPARATOR . 'Registration.php',
 	],
 	'address' => [
-		'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+		'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 			. DIRECTORY_SEPARATOR . 'Address.php',
 	],
 	'registration-with-address' => [
-		'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+		'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 			. DIRECTORY_SEPARATOR . 'Registration-With-Address.php',
 	],
 	'group' => [
-		'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+		'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 			. DIRECTORY_SEPARATOR . 'Group.php',
 	],
 	'customer' => [
-		'__FILE__' => $this->httpObject->httpReqData['current']['commonSqlDir']
+		'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
 			. DIRECTORY_SEPARATOR . 'Customer.php',
 	]
 ];

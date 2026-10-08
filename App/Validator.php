@@ -59,7 +59,7 @@ class Validator
 		Http &$httpObject
 	) {
 		$this->httpObject = &$httpObject;
-		if ($this->httpObject->httpRequestObject->databaseServerObject->dbServerDb === Env::$config[$this->httpObject->httpReqData['current']['customerId']]->DB_NAME) {
+		if ($this->httpObject->httpRequestObject->databaseServerObject->dbServerDb === Env::$config[$this->httpObject->httpReqData['active']['customerId']]->DB_NAME) {
 			$this->validatorObject = new GlobalValidator(
 				httpObject: $this->httpObject
 			);
@@ -81,9 +81,9 @@ class Validator
 		&$validationConfig
 	): array {
 		if (
-			isset(($this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray']))
+			isset(($this->httpObject->httpReqData['active']['requiredFieldArray']))
 			&& count(
-				value: $this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray']
+				value: $this->httpObject->httpReqData['active']['requiredFieldArray']
 			) > 0
 		) {
 			if (
@@ -117,16 +117,16 @@ class Validator
 		$isValidData = Constant::$TRUE;
 		$errorArray = [];
 		// Required fields payload validation
-		if (!empty($this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray']['payload'])) {
-			foreach ($this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray']['payload'] as $activeRequestDataKeySubKey) {
+		if (!empty($this->httpObject->httpReqData['active']['requiredFieldArray']['payload'])) {
+			foreach ($this->httpObject->httpReqData['active']['requiredFieldArray']['payload'] as $activeDataKeySubKey) {
 				if (
 					!in_array(
-						needle: $activeRequestDataKeySubKey,
-						haystack: $this->httpObject->httpRequestObject->activeRequestData['payload'],
+						needle: $activeDataKeySubKey,
+						haystack: $this->httpObject->httpReqData['active']['payload'],
 						strict: Constant::$TRUE
 					)
 				) {
-					$errorArray[] = 'Missing required payload: ' . $activeRequestDataKeySubKey;
+					$errorArray[] = 'Missing required payload: ' . $activeDataKeySubKey;
 					$isValidData = Constant::$FALSE;
 				}
 			}

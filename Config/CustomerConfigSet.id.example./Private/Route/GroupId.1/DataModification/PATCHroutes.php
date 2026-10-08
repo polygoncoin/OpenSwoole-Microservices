@@ -18,6 +18,6 @@ use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
 
 return array_merge(
-	require $this->httpObject->httpReqData['current']['commonRouteDir']
+	require $this->httpObject->httpReqData['active']['commonRouteDir']
 		. DIRECTORY_SEPARATOR . 'PATCHroutes.php',
 );

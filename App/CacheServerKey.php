@@ -54,13 +54,13 @@ class CacheServerKey
 	 * 
 	 * @return null|string
 	 */
-	public static function privateTokenDomain(
+	public static function privateApiDomain(
 		$domainName
 	): null|string {
 		if (empty($domainName)) {
 			return Constant::$NULL;
 		}
-		return "private:tokenDomain:{$domainName}";
+		return "private:apiDomain:{$domainName}";
 	}
 
 	/**
@@ -70,13 +70,13 @@ class CacheServerKey
 	 * 
 	 * @return null|string
 	 */
-	public static function privateSessionDomain(
+	public static function privateWebDomain(
 		$domainName
 	): null|string {
 		if (empty($domainName)) {
 			return Constant::$NULL;
 		}
-		return "private:sessionDomain:{$domainName}";
+		return "private:webDomain:{$domainName}";
 	}
 
 	/**
@@ -182,17 +182,17 @@ class CacheServerKey
 	/**
 	 * Get Token key
 	 * 
-	 * @param string $token Token
+	 * @param string $apiToken Token
 	 * 
 	 * @return null|string
 	 */
-	public static function token(
-		$token
+	public static function apiToken(
+		$apiToken
 	): null|string {
-		if (empty($token)) {
+		if (empty($apiToken)) {
 			return Constant::$NULL;
 		}
-		return "token:{$token}";
+		return "apiToken:{$apiToken}";
 	}
 
 	/**
@@ -203,7 +203,7 @@ class CacheServerKey
 	 * 
 	 * @return null|string
 	 */
-	public static function customerUserToken(
+	public static function customerUserApiToken(
 		$customerId,
 		$customerUserId
 	): null|string {
@@ -213,7 +213,7 @@ class CacheServerKey
 		) {
 			return Constant::$NULL;
 		}
-		return "customer:{$customerId}:user:{$customerUserId}:token";
+		return "customer:{$customerId}:user:{$customerUserId}:apiToken";
 	}
 
 	/**

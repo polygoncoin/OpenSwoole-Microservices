@@ -26,18 +26,18 @@ return [
 		'__WHERE__' => [
 			[
 				'column' => 'is_approved',
-				'activeRequestDataKey' => 'custom',
-				'activeRequestDataKeySubKey' => Constant::$YES
+				'activeDataKey' => 'custom',
+				'activeDataKeySubKey' => Constant::$YES
 			],
 			[
 				'column' => 'is_disabled',
-				'activeRequestDataKey' => 'custom',
-				'activeRequestDataKeySubKey' => Constant::$NO
+				'activeDataKey' => 'custom',
+				'activeDataKeySubKey' => Constant::$NO
 			],
 			[
 				'column' => 'is_deleted',
-				'activeRequestDataKey' => 'custom',
-				'activeRequestDataKeySubKey' => Constant::$NO
+				'activeDataKey' => 'custom',
+				'activeDataKeySubKey' => Constant::$NO
 			]
 		],
 		'__MODE__' => 'multipleRecordFormat'
@@ -47,25 +47,25 @@ return [
 		'__WHERE__' => [
 			[
 				'column' => 'is_approved',
-				'activeRequestDataKey' => 'custom',
-				'activeRequestDataKeySubKey' => Constant::$YES
+				'activeDataKey' => 'custom',
+				'activeDataKeySubKey' => Constant::$YES
 			],
 			[
 				'column' => 'is_disabled',
-				'activeRequestDataKey' => 'custom',
-				'activeRequestDataKeySubKey' => Constant::$NO
+				'activeDataKey' => 'custom',
+				'activeDataKeySubKey' => Constant::$NO
 			],
 			[
 				'column' => 'is_deleted',
-				'activeRequestDataKey' => 'custom',
-				'activeRequestDataKeySubKey' => Constant::$NO
+				'activeDataKey' => 'custom',
+				'activeDataKeySubKey' => Constant::$NO
 			],
 			[
 				'column' => DatabaseTable::$customerPrimaryKey,
-				'activeRequestDataKey' => 'routeParamArray',
-				'activeRequestDataKeySubKey' => 'id'
+				'activeDataKey' => 'routeParamArray',
+				'activeDataKeySubKey' => 'id'
 			]
 		],
 		'__MODE__' => 'singleRecordFormat'
 	],
-][isset($this->httpObject->httpRequestObject->activeRequestData['routeParamArray']['id'])?'single':'all'];
+][isset($this->httpObject->httpReqData['active']['routeParamArray']['id'])?'single':'all'];

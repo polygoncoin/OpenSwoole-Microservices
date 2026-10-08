@@ -341,7 +341,7 @@ class CommonFunction
 	public static function checkPrivateRequestCidr(
 		&$httpObject
 	): void {
-		if (!Env::$config[$httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_CIDR) {
+		if (!Env::$config[$httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_CIDR) {
 			return;
 		}
 
@@ -349,7 +349,7 @@ class CommonFunction
 			cacheObject: DbCommonFunction::$globalCacheServerObject,
 			ip: $httpObject->httpReqData['server']['httpRequestIp'],
 			cidrCacheKey: CacheServerKey::customerCidr(
-				customerId: $httpObject->httpReqData['current']['customerId']
+				customerId: $httpObject->httpReqData['active']['customerId']
 			)
 		);
 
@@ -358,8 +358,8 @@ class CommonFunction
 				cacheObject: $httpObject->httpRequestObject->cacheServerObject,
 				ip: $httpObject->httpReqData['server']['httpRequestIp'],
 				cidrCacheKey: CacheServerKey::customerGroupCidr(
-					customerId: $httpObject->httpReqData['current']['customerId'],
-					customerUserGroupId: $httpObject->httpReqData['current']['customerUserGroupId']
+					customerId: $httpObject->httpReqData['active']['customerId'],
+					customerUserGroupId: $httpObject->httpReqData['active']['customerUserGroupId']
 				)
 			);
 
@@ -367,8 +367,8 @@ class CommonFunction
 				cacheObject: $httpObject->httpRequestObject->cacheServerObject,
 				ip: $httpObject->httpReqData['server']['httpRequestIp'],
 				cidrCacheKey: CacheServerKey::customerUserCidr(
-					customerId: $httpObject->httpReqData['current']['customerId'],
-					customerUserId: $httpObject->httpReqData['current']['customerUserId']
+					customerId: $httpObject->httpReqData['active']['customerId'],
+					customerUserId: $httpObject->httpReqData['active']['customerUserId']
 				)
 			);
 		}

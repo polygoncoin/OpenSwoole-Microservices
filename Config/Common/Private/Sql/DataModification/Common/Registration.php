@@ -20,12 +20,12 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__SQL__' => "UPDATE `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` SET __SET__ WHERE __WHERE__",
+	'__SQL__' => "UPDATE `{$this->httpObject->httpReqData['active']['customerData']['customer_user_table']}` SET __SET__ WHERE __WHERE__",
 	'__VALIDATE__' => [
 		[
 			'function' => 'primaryKeyExist',
 			'functionArgs' => [
-				'table' => ['custom', $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']],
+				'table' => ['custom', $this->httpObject->httpReqData['active']['customerData']['customer_user_table']],
 				'primary' => ['custom', DatabaseTable::$customerUserPrimaryKey],
 				'id' => ['routeParamArray', 'id']
 			],

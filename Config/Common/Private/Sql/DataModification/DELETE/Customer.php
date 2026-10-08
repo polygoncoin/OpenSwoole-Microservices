@@ -24,25 +24,25 @@ return [
 	'__SET__' => [
 		[
 			'column' => 'updated_by',
-			'activeRequestDataKey' => 'customerUserData',
-			'activeRequestDataKeySubKey' => DatabaseTable::$customerUserPrimaryKey
+			'activeDataKey' => 'customerUserData',
+			'activeDataKeySubKey' => DatabaseTable::$customerUserPrimaryKey
 		],
 		[
 			'column' => 'updated_on',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => date('Y-m-d H:i:s')
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => date('Y-m-d H:i:s')
 		],
 	],
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => Constant::$NO
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => Constant::$NO
 		],
 		[
 			'column' => DatabaseTable::$customerPrimaryKey,
-			'activeRequestDataKey' => 'routeParamArray',
-			'activeRequestDataKeySubKey' => 'id',
+			'activeDataKey' => 'routeParamArray',
+			'activeDataKeySubKey' => 'id',
 			'dataType' => DatabaseServerDataType::$INT
 		]
 	],

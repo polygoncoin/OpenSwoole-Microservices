@@ -125,7 +125,7 @@ class Supplement
 		// Set Server mode to execute query on - Read / Write Server
 		if ($this->httpObject->httpRequestObject->databaseServerObject === Constant::$NULL) {
 			$this->httpObject->httpRequestObject->databaseServerObject = DbCommonFunction::connectDatabase(
-				customerId: $this->httpObject->httpReqData['current']['customerId'],
+				customerId: $this->httpObject->httpReqData['active']['customerId'],
 				fetchDbMode: $fetchDbMode
 			);
 		}
@@ -157,11 +157,11 @@ class Supplement
 		$supplementOUTPUT_REPRESENTATION = CommonFunction::getOUTPUT_REPRESENTATION(
 			sqlConfig: $supplementSqlConfig,
 			httpReqData: $this->httpObject->httpReqData,
-			customerId: $this->httpObject->httpReqData['current']['customerId']
+			customerId: $this->httpObject->httpReqData['active']['customerId']
 		);
 
 		// Set required fields
-		$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArrayCollection'] = $this->getRequired(
+		$this->httpObject->httpReqData['active']['requiredFieldArrayCollection'] = $this->getRequired(
 			sqlConfig: $supplementSqlConfig,
 			maintainHierarchy: $supplementMaintainHierarchy,
 			isFirstCall: Constant::$TRUE
@@ -220,8 +220,8 @@ class Supplement
 
 				$output = [];
 				$output['Status'] = HttpStatus::$Ok;
-				if (Env::$config[$this->httpObject->httpReqData['current']['customerId']]->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
-					$output[Env::$config[$this->httpObject->httpReqData['current']['customerId']]->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
+				if (Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
+					$output[Env::$config[$this->httpObject->httpReqData['active']['customerId']]->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
 						keyString: $this->getPayloadKey(
 							payloadKeyArray: $supplementPayloadKeyArray
 						)
@@ -234,7 +234,7 @@ class Supplement
 				$this->supplementParent(
 					supplementParentSqlConfig: $supplementSqlConfig,
 					supplementParentPayloadKeyArray: $supplementPayloadKeyArray,
-					supplementParentRequiredFieldArray: $this->httpObject->httpRequestObject->activeRequestData['requiredFieldArrayCollection'],
+					supplementParentRequiredFieldArray: $this->httpObject->httpReqData['active']['requiredFieldArrayCollection'],
 					supplementParentResponse: $supplementResponse,
 					supplementParentModule: '',
 					supplementParentMaintainHierarchy: $supplementMaintainHierarchy,
@@ -378,9 +378,9 @@ class Supplement
 		for ($index = 0; $index < $indexCount; $index++) {
 			// For Required Fields
 			if (count(value: $supplementParentRequiredFieldArray)) {
-				$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray'] = $supplementParentRequiredFieldArray;
+				$this->httpObject->httpReqData['active']['requiredFieldArray'] = $supplementParentRequiredFieldArray;
 			} else {
-				$this->httpObject->httpRequestObject->activeRequestData['requiredFieldArray'] = [];
+				$this->httpObject->httpReqData['active']['requiredFieldArray'] = [];
 			}
 
 			// For payloadKeyArray
@@ -463,7 +463,7 @@ class Supplement
 			if ($supplementParentModule === '') {
 				$processFunction  = 'process';
 			} else {
-				$processFunction  = "{$supplementParentModule}" . Env::$config[$this->httpObject->httpReqData['current']['customerId']]->APPEND_SUPPLEMENT_FUNCTION_KEYWORD;
+				$processFunction  = "{$supplementParentModule}" . Env::$config[$this->httpObject->httpReqData['active']['customerId']]->APPEND_SUPPLEMENT_FUNCTION_KEYWORD;
 			}
 
 			// For Execute
@@ -482,7 +482,7 @@ class Supplement
 			if (isset($supplementParentSqlConfig['__SUB-CONFIG__'])) {
 				if ($supplementParentCurrentMaintainHierarchy) {
 					$this->resetFetchData(
-						activeRequestDataKey: 'previousPayload',
+						activeDataKey: 'previousPayload',
 						payloadKeyArray: $supplementParentCurrentPayloadKeyArray,
 						record: $supplementParentPayload
 					);
@@ -527,7 +527,7 @@ class Supplement
 				);
 				for ($index = 0; $index < $indexCount; $index++) {
 					$this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheDelete(
-						customerId: $this->httpObject->httpReqData['current']['customerId'],
+						customerId: $this->httpObject->httpReqData['active']['customerId'],
 						queryCacheKey: $supplementParentSqlConfig['__AFFECTED-CACHE-KEY__'][$index]
 					);
 				}

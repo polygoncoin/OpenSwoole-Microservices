@@ -20,33 +20,33 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__SQL__' => "UPDATE `{$this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']}` SET __SET__ WHERE __WHERE__",
+	'__SQL__' => "UPDATE `{$this->httpObject->httpReqData['active']['customerData']['customer_user_table']}` SET __SET__ WHERE __WHERE__",
 	'__SET__' => [
 		[
 			'column' => 'customer_user_contact_name',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'firstname'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'firstname'
 		],
 		[
 			'column' => 'customer_user_contact_person',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'lastname'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'lastname'
 		],
 		[
 			'column' => 'customer_user_contact_email_address',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'email'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'email'
 		],
 		[
 			'column' => 'customer_user_username',
-			'activeRequestDataKey' => 'payload',
-			'activeRequestDataKeySubKey' => 'username'
+			'activeDataKey' => 'payload',
+			'activeDataKeySubKey' => 'username'
 		],
 		[
 			'column' => 'customer_user_password_hash',
-			'activeRequestDataKey' => 'function',
-			'activeRequestDataKeySubKey' => function(
-				$activeRequestData,
+			'activeDataKey' => 'function',
+			'activeDataKeySubKey' => function(
+				$activeData,
 				$payload
 			) {
 				if (isset($payload['password'])) {
@@ -61,13 +61,13 @@ return [
 	'__WHERE__' => [
 		[
 			'column' => 'customer_user_is_deleted',
-			'activeRequestDataKey' => 'custom',
-			'activeRequestDataKeySubKey' => Constant::$NO
+			'activeDataKey' => 'custom',
+			'activeDataKeySubKey' => Constant::$NO
 		],
 		[
 			'column' => DatabaseTable::$customerUserPrimaryKey,
-			'activeRequestDataKey' => 'routeParamArray',
-			'activeRequestDataKeySubKey' => 'id',
+			'activeDataKey' => 'routeParamArray',
+			'activeDataKeySubKey' => 'id',
 			'dataType' => DatabaseServerDataType::$PrimaryKey
 		]
 	],
@@ -77,20 +77,20 @@ return [
 			'__SET__' => [
 				[
 					'column' => 'address',
-					'activeRequestDataKey' => 'payload',
-					'activeRequestDataKeySubKey' => 'address'
+					'activeDataKey' => 'payload',
+					'activeDataKeySubKey' => 'address'
 				]
 			],
 			'__WHERE__' => [
 				[
 					'column' => 'is_deleted',
-					'activeRequestDataKey' => 'custom',
-					'activeRequestDataKeySubKey' => Constant::$NO
+					'activeDataKey' => 'custom',
+					'activeDataKeySubKey' => Constant::$NO
 				],
 				[
 					'column' => DatabaseTable::$addressPrimaryKey,
-					'activeRequestDataKey' => 'payload',
-					'activeRequestDataKeySubKey' => 'id',
+					'activeDataKey' => 'payload',
+					'activeDataKeySubKey' => 'id',
 					'dataType' => DatabaseServerDataType::$PrimaryKey
 				],
 			],
@@ -100,7 +100,7 @@ return [
 		[
 			'function' => 'primaryKeyExist',
 			'functionArgs' => [
-				'table' => ['custom', $this->httpObject->httpRequestObject->activeRequestData['customerData']['customer_user_table']],
+				'table' => ['custom', $this->httpObject->httpReqData['active']['customerData']['customer_user_table']],
 				'primary' => ['custom', DatabaseTable::$customerUserPrimaryKey],
 				'id' => ['routeParamArray', 'id']
 			],
