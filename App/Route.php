@@ -90,7 +90,7 @@ class Route
 	 */
 	public function init(): bool
 	{
-		if (Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_ROUTES_REQUEST) {
+		if ($this->httpObject->Env->CUSTOMER_ENABLE_ROUTES_REQUEST) {
 			return Constant::$TRUE;
 		}
 

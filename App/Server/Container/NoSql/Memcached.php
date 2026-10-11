@@ -53,7 +53,7 @@ class Memcached implements NoSqlInterface
 	 * 
 	 * @var null|\Memcached
 	 */
-	private $cacheServerObject = null;
+	private $cacheObject = null;
 
 	/**
 	 * Constructor
@@ -85,7 +85,7 @@ class Memcached implements NoSqlInterface
 	 */
 	public function connect(): void
 	{
-		if ($this->cacheServerObject !== Constant::$NULL) {
+		if ($this->cacheObject !== Constant::$NULL) {
 			return;
 		}
 
@@ -101,8 +101,8 @@ class Memcached implements NoSqlInterface
 		}
 
 		try {
-			$this->cacheServerObject = new \Memcached();
-			$this->cacheServerObject->addServer(
+			$this->cacheObject = new \Memcached();
+			$this->cacheObject->addServer(
 				$this->cacheServerHost,
 				$this->cacheServerPort
 			);
@@ -152,7 +152,7 @@ class Memcached implements NoSqlInterface
 		}
 
 		$return = CommonFunction::jsonDecode(
-			value: $this->cacheServerObject->get(
+			value: $this->cacheObject->get(
 				$key
 			)
 		);
@@ -185,12 +185,12 @@ class Memcached implements NoSqlInterface
 		);
 
 		if ($expire === Constant::$NULL) {
-			return $this->cacheServerObject->set(
+			return $this->cacheObject->set(
 				$key,
 				$value
 			);
 		} else {
-			return $this->cacheServerObject->set(
+			return $this->cacheObject->set(
 				$key,
 				$value,
 				$expire
@@ -216,7 +216,7 @@ class Memcached implements NoSqlInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->cacheServerObject->increment(
+		return $this->cacheObject->increment(
 			$key,
 			$offset
 		);
@@ -238,7 +238,7 @@ class Memcached implements NoSqlInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->cacheServerObject->delete(
+		return $this->cacheObject->delete(
 			$key
 		);
 	}

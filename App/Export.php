@@ -68,7 +68,7 @@ class Export
 	 * 
 	 * @var null|ExportDatabaseServer
 	 */
-	public $exportDbServerObject = null;
+	public $exportDbObject = null;
 
 	/**
 	 * HTTP object
@@ -91,7 +91,7 @@ class Export
 	) {
 		$this->httpObject = &$httpObject;
 		$this->dbServerType = $dbServerType;
-		$this->exportDbServerObject = new ExportDatabaseServer(
+		$this->exportDbObject = new ExportDatabaseServer(
 			dbServerType: $this->dbServerType
 		);
 	}
@@ -114,7 +114,7 @@ class Export
 		$dbServerPassword,
 		$dbServerDb
 	): void {
-		$this->exportDbServerObject->init(
+		$this->exportDbObject->init(
 			dbServerHost: $dbServerHost,
 			dbServerPort: $dbServerPort,
 			dbServerUser: $dbServerUser,
@@ -221,7 +221,7 @@ class Export
 		$paramArray = [],
 		$exportFile = null
 	): array {
-		$shellCommand = $this->exportDbServerObject->getShellCommand(
+		$shellCommand = $this->exportDbObject->getShellCommand(
 			sql: $sql,
 			paramArray: $paramArray
 		);

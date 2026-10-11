@@ -81,7 +81,7 @@ class RedisQueryCache implements QueryCacheServerInterface
 	 * 
 	 * @var null|QueryCache_Redis
 	 */
-	private $queryCacheServerObject = null;
+	private $queryCacheObject = null;
 
 	/**
 	 * Constructor
@@ -117,12 +117,12 @@ class RedisQueryCache implements QueryCacheServerInterface
 	 */
 	public function connectQueryCache(): void
 	{
-		if ($this->queryCacheServerObject !== Constant::$NULL) {
+		if ($this->queryCacheObject !== Constant::$NULL) {
 			return;
 		}
 
 		try {
-			$this->queryCacheServerObject = new QueryCache_Redis(
+			$this->queryCacheObject = new QueryCache_Redis(
 				cacheServerHost: $this->queryCacheServerHost,
 				cacheServerPort: $this->queryCacheServerPort,
 				cacheServerUser: $this->queryCacheServerUser,
@@ -154,7 +154,7 @@ class RedisQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheServerObject->cacheExist(
+		return $this->queryCacheObject->cacheExist(
 			cacheKey: $queryCacheKey
 		);
 	}
@@ -175,7 +175,7 @@ class RedisQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheServerObject->cacheGet(
+		return $this->queryCacheObject->cacheGet(
 			cacheKey: $queryCacheKey
 		);
 	}
@@ -198,7 +198,7 @@ class RedisQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheServerObject->cacheSet(
+		return $this->queryCacheObject->cacheSet(
 			cacheKey: $queryCacheKey,
 			cacheValue:  $queryCacheValue
 		);
@@ -222,7 +222,7 @@ class RedisQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheServerObject->cacheIncrement(
+		return $this->queryCacheObject->cacheIncrement(
 			cacheKey: $queryCacheKey,
 			cacheOffset: $queryCacheOffset
 		);
@@ -244,7 +244,7 @@ class RedisQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheServerObject->cacheDelete(
+		return $this->queryCacheObject->cacheDelete(
 			cacheKey: $queryCacheKey
 		);
 	}

@@ -74,7 +74,7 @@ class Redis implements NoSqlInterface
 	 * 
 	 * @var null|\Redis
 	 */
-	private $cacheServerObject = null;
+	private $cacheObject = null;
 
 	/**
 	 * Constructor
@@ -109,7 +109,7 @@ class Redis implements NoSqlInterface
 	 */
 	public function connect(): void
 	{
-		if ($this->cacheServerObject !== Constant::$NULL) {
+		if ($this->cacheObject !== Constant::$NULL) {
 			return;
 		}
 
@@ -130,17 +130,17 @@ class Redis implements NoSqlInterface
 					$this->cacheServerPassword
 				];
 			}
-			$this->cacheServerObject = new \Redis(
+			$this->cacheObject = new \Redis(
 				$connParamArray
 			);
 
 			if (!empty($this->cacheServerDb)) {
-				$this->cacheServerObject->select(
+				$this->cacheObject->select(
 					$this->cacheServerDb
 				);
 			}
 
-			if (!$this->cacheServerObject->ping()) {
+			if (!$this->cacheObject->ping()) {
 				throw new \Exception(
 					message: 'Unable to ping cache',
 					code: HttpStatus::$InternalServerError
@@ -170,7 +170,7 @@ class Redis implements NoSqlInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->cacheServerObject->exists(
+		return $this->cacheObject->exists(
 			$key
 		);
 	}
@@ -192,7 +192,7 @@ class Redis implements NoSqlInterface
 		}
 
 		$return = CommonFunction::jsonDecode(
-			value: $this->cacheServerObject->get(
+			value: $this->cacheObject->get(
 				$key
 			)
 		);
@@ -225,12 +225,12 @@ class Redis implements NoSqlInterface
 		);
 
 		if ($expire === Constant::$NULL) {
-			return $this->cacheServerObject->set(
+			return $this->cacheObject->set(
 				$key,
 				$value
 			);
 		} else {
-			return $this->cacheServerObject->set(
+			return $this->cacheObject->set(
 				$key,
 				$value,
 				$expire
@@ -256,7 +256,7 @@ class Redis implements NoSqlInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->cacheServerObject->incrBy(
+		return $this->cacheObject->incrBy(
 			$key,
 			$offset
 		);
@@ -278,7 +278,7 @@ class Redis implements NoSqlInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->cacheServerObject->del(
+		return $this->cacheObject->del(
 			$key
 		);
 	}

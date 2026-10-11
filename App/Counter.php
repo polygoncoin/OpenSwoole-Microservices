@@ -50,27 +50,20 @@ class Counter
 		switch (Env::$SYSTEM_LEVEL_PRIMARY_KEY_MODE) {
 			case 'Cache':
 				$cacheKey = Env::$SYSTEM_LEVEL_PRIMARY_KEY_NAME;
-				DbCommonFunction::connectGlobalCache(
-					customerId: 0
-				);
-				$id = (int)DbCommonFunction::$globalCacheServerObject->cacheIncrement(
+				$id = (int)DbCommonFunction::$globalCacheObject->cacheIncrement(
 					cacheKey: $cacheKey
 				);
 				break;
 			case 'Database':
-				DbCommonFunction::connectGlobalDb(
-					customerId: 0
-				);
-
-				$table = Env::$config[$this->httpObject->httpReqData['active']['customerId']]->DB_NAME . '.' . Env::$SYSTEM_LEVEL_PRIMARY_KEY_NAME;
+				$table = $this->httpObject->Env->DB_NAME . '.' . Env::$SYSTEM_LEVEL_PRIMARY_KEY_NAME;
 				$sql = "INSERT INTO {$table}() VALUES()";
 				$paramArray = [];
 
-				DbCommonFunction::$globalDbServerObject->execQuery(
+				DbCommonFunction::$globalDbObject->execQuery(
 					sql: $sql,
 					paramArray: $paramArray
 				);
-				$id = DbCommonFunction::$globalDbServerObject->lastInsertId();
+				$id = DbCommonFunction::$globalDbObject->lastInsertId();
 				break;
 		}
 

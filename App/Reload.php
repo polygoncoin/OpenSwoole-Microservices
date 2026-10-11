@@ -36,6 +36,21 @@ use Microservices\App\Env;
 class Reload
 {
 	/**
+	 * Initialize
+	 * 
+	 * @return void
+	 */
+	public static function init(): void
+	{
+		Env::loadEnv(
+			customerId: 0
+		);
+
+		DbCommonFunction::connectGlobalCache();
+		DbCommonFunction::connectGlobalDb();
+	}
+
+	/**
 	 * Process
 	 * 
 	 * @param string $httpRequestIp Request Ip
@@ -45,13 +60,6 @@ class Reload
 	public static function process(
 		$httpRequestIp
 	): bool {
-		DbCommonFunction::connectGlobalCache(
-			customerId: 0
-		);
-		DbCommonFunction::connectGlobalDb(
-			customerId: 0
-		);
-
 		return self::processCustomer(
 			httpRequestIp: $httpRequestIp
 		);
@@ -69,13 +77,6 @@ class Reload
 		$httpRequestIp,
 		$customerId = null
 	): bool {
-		DbCommonFunction::connectGlobalCache(
-			customerId: 0
-		);
-		DbCommonFunction::connectGlobalDb(
-			customerId: 0
-		);
-
 		$SYSTEM_CUSTOMER_TABLE = getenv(name: 'SYSTEM_CUSTOMER_TABLE');
 
 		$sql = "SELECT * FROM `{$SYSTEM_CUSTOMER_TABLE}` C";
@@ -86,12 +87,12 @@ class Reload
 			$paramArray[':customer_id'] = $customerId;
 		}
 
-		DbCommonFunction::$globalDbServerObject->execQuery(
+		DbCommonFunction::$globalDbObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$customerDataArray = DbCommonFunction::$globalDbServerObject->fetchAll();
-		DbCommonFunction::$globalDbServerObject->closeCursor();
+		$customerDataArray = DbCommonFunction::$globalDbObject->fetchAll();
+		DbCommonFunction::$globalDbObject->closeCursor();
 		foreach ($customerDataArray as $customerData) {
 			$customerId = $customerData['customer_id'];
 			Env::loadEnv(
@@ -106,7 +107,7 @@ class Reload
 				$privateApiDomainCacheKey = CacheServerKey::privateApiDomain(
 					domainName: Env::$config[$customerId]->PRIVATE_API_DOMAIN_NAME
 				);
-				DbCommonFunction::$globalCacheServerObject->cacheSet(
+				DbCommonFunction::$globalCacheObject->cacheSet(
 					cacheKey: $privateApiDomainCacheKey,
 					cacheValue: $customerData
 				);
@@ -116,17 +117,17 @@ class Reload
 				$privateWebDomainCacheKey = CacheServerKey::privateWebDomain(
 					domainName: Env::$config[$customerId]->PRIVATE_WEB_DOMAIN_NAME
 				);
-				DbCommonFunction::$globalCacheServerObject->cacheSet(
+				DbCommonFunction::$globalCacheObject->cacheSet(
 					cacheKey: $privateWebDomainCacheKey,
 					cacheValue: $customerData
 				);
 			}
 
-			if (!empty(Env::$config[$customerId]->PRIVATE_DOMAIN_NAME)) {
+			if (!empty(Env::$config[$customerId]->PUBLIC_DOMAIN_NAME)) {
 				$publicDomainCacheKey = CacheServerKey::publicDomain(
-					domainName: Env::$config[$customerId]->PRIVATE_DOMAIN_NAME
+					domainName: Env::$config[$customerId]->PUBLIC_DOMAIN_NAME
 				);
-				DbCommonFunction::$globalCacheServerObject->cacheSet(
+				DbCommonFunction::$globalCacheObject->cacheSet(
 					cacheKey: $publicDomainCacheKey,
 					cacheValue: $customerData
 				);
@@ -144,7 +145,7 @@ class Reload
 					$customerCidrCacheKey = CacheServerKey::customerCidr(
 						customerId: $customerId
 					);
-					DbCommonFunction::$globalCacheServerObject->cacheSet(
+					DbCommonFunction::$globalCacheObject->cacheSet(
 						cacheKey: $customerCidrCacheKey,
 						cacheValue: $customerCidrIpNumberRangeArray
 					);
@@ -182,10 +183,10 @@ class Reload
 			$customerId
 		);
 
-		$cacheServerObject = DbCommonFunction::connectCache(
+		$cacheObject = DbCommonFunction::connectCache(
 			customerId: $customerId
 		);
-		$databaseServerObject = DbCommonFunction::connectDatabase(
+		$databaseObject = DbCommonFunction::connectDatabase(
 			customerId: $customerId,
 			fetchDbMode: 'Master'
 		);
@@ -199,19 +200,19 @@ class Reload
 		}
 
 		// Groups
-		$databaseServerObject->execQuery(
+		$databaseObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$groupDataArray = $databaseServerObject->fetchAll();
-		$databaseServerObject->closeCursor();
+		$groupDataArray = $databaseObject->fetchAll();
+		$databaseObject->closeCursor();
 
 		foreach ($groupDataArray as $groupData) {
 			$g_key = CacheServerKey::customerGroup(
 				customerId: $customerId,
 				customerUserGroupId: $groupData['customer_user_group_id']
 			);
-			$cacheServerObject->cacheSet(
+			$cacheObject->cacheSet(
 				cacheKey: $g_key,
 				cacheValue: $groupData
 			);
@@ -228,7 +229,7 @@ class Reload
 						customerId: $customerId,
 						customerUserGroupId: $groupData['customer_user_group_id']
 					);
-					$cacheServerObject->cacheSet(
+					$cacheObject->cacheSet(
 						cacheKey: $groupCidrCacheKey,
 						cacheValue: $groupCidrIpNumberRangeArray
 					);
@@ -257,10 +258,10 @@ class Reload
 			$customerId
 		);
 
-		$cacheServerObject = DbCommonFunction::connectCache(
+		$cacheObject = DbCommonFunction::connectCache(
 			customerId: $customerId
 		);
-		$databaseServerObject = DbCommonFunction::connectDatabase(
+		$databaseObject = DbCommonFunction::connectDatabase(
 			customerId: $customerId,
 			fetchDbMode: 'Master'
 		);
@@ -274,12 +275,12 @@ class Reload
 		}
 
 		// Groups
-		$databaseServerObject->execQuery(
+		$databaseObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$userDataArray = $databaseServerObject->fetchAll();
-		$databaseServerObject->closeCursor();
+		$userDataArray = $databaseObject->fetchAll();
+		$databaseObject->closeCursor();
 		foreach ($userDataArray as $userData) {
 			if ($userData['customer_user_cidr'] !== Constant::$NULL) {
 				$userCidrIpNumberRangeArray = CommonFunction::cidrStringIpNumberRange(
@@ -294,7 +295,7 @@ class Reload
 						customerId: $customerId,
 						customerUserId: $userData['customer_user_id']
 					);
-					$cacheServerObject->cacheSet(
+					$cacheObject->cacheSet(
 						cacheKey: $userCidrCacheKey,
 						cacheValue: $userCidrIpNumberRangeArray
 					);
@@ -304,7 +305,7 @@ class Reload
 				customerId: $customerId,
 				username: $userData['customer_user_username']
 			);
-			$cacheServerObject->cacheSet(
+			$cacheObject->cacheSet(
 				cacheKey: $cu_key,
 				cacheValue: $userData
 			);
@@ -332,11 +333,11 @@ class Reload
 		$sql = "SELECT * FROM `{$SYSTEM_CUSTOMER_TABLE}` C WHERE customer_id = :customer_id";
 		$paramArray[':customer_id'] = $customerId;
 
-		DbCommonFunction::$globalDbServerObject->execQuery(
+		DbCommonFunction::$globalDbObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$customerData = DbCommonFunction::$globalDbServerObject->fetch();
+		$customerData = DbCommonFunction::$globalDbObject->fetch();
 
 		return $customerData;
 	}

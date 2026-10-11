@@ -81,7 +81,7 @@ class RedisCache implements CacheServerInterface
 	 * 
 	 * @var null|Cache_Redis
 	 */
-	private $noSqlServerObject = null;
+	private $noSqlObject = null;
 
 	/**
 	 * Constructor
@@ -117,12 +117,12 @@ class RedisCache implements CacheServerInterface
 	 */
 	public function connectCache(): void
 	{
-		if ($this->noSqlServerObject !== Constant::$NULL) {
+		if ($this->noSqlObject !== Constant::$NULL) {
 			return;
 		}
 
 		try {
-			$this->noSqlServerObject = new Cache_Redis(
+			$this->noSqlObject = new Cache_Redis(
 				cacheServerHost: $this->cacheServerHost,
 				cacheServerPort: $this->cacheServerPort,
 				cacheServerUser: $this->cacheServerUser,
@@ -154,7 +154,7 @@ class RedisCache implements CacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->noSqlServerObject->exist(
+		return $this->noSqlObject->exist(
 			key: $cacheKey
 		);
 	}
@@ -175,7 +175,7 @@ class RedisCache implements CacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->noSqlServerObject->get(
+		return $this->noSqlObject->get(
 			key: $cacheKey
 		);
 	}
@@ -200,7 +200,7 @@ class RedisCache implements CacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->noSqlServerObject->set(
+		return $this->noSqlObject->set(
 			key: $cacheKey,
 			value: $cacheValue,
 			expire: $cacheExpire
@@ -225,7 +225,7 @@ class RedisCache implements CacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->noSqlServerObject->increment(
+		return $this->noSqlObject->increment(
 			key: $cacheKey,
 			offset: $cacheOffset
 		);
@@ -247,7 +247,7 @@ class RedisCache implements CacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->noSqlServerObject->delete(
+		return $this->noSqlObject->delete(
 			key: $cacheKey
 		);
 	}

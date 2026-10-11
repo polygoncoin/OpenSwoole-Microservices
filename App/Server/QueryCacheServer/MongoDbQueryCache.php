@@ -85,7 +85,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 	 * 
 	 * @var null|QueryCache_MongoDb
 	 */
-	private $queryCacheServerObject = null;
+	private $queryCacheObject = null;
 
 	/**
 	 * Collection Object
@@ -128,12 +128,12 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 	 */
 	public function connectQueryCache(): void
 	{
-		if ($this->queryCacheServerObject !== Constant::$NULL) {
+		if ($this->queryCacheObject !== Constant::$NULL) {
 			return;
 		}
 
 		try {
-			$this->queryCacheServerObject = new QueryCache_MongoDb(
+			$this->queryCacheObject = new QueryCache_MongoDb(
 				cacheServerHost: $this->queryCacheServerHost,
 				cacheServerPort: $this->queryCacheServerPort,
 				cacheServerUser: $this->queryCacheServerUser,
@@ -165,7 +165,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheServerObject->cacheExist(
+		return $this->queryCacheObject->cacheExist(
 			cacheKey: $queryCacheKey
 		);
 	}
@@ -186,7 +186,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheServerObject->cacheGet(
+		return $this->queryCacheObject->cacheGet(
 			cacheKey: $queryCacheKey
 		);
 	}
@@ -209,7 +209,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheServerObject->cacheSet(
+		return $this->queryCacheObject->cacheSet(
 			cacheKey: $queryCacheKey,
 			cacheValue: $queryCacheValue
 		);
@@ -233,7 +233,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheServerObject->cacheIncrement(
+		return $this->queryCacheObject->cacheIncrement(
 			cacheKey: $queryCacheKey,
 			cacheOffset: $queryCacheOffset
 		);
@@ -255,7 +255,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheServerObject->cacheDelete(
+		return $this->queryCacheObject->cacheDelete(
 			cacheKey: $queryCacheKey
 		);
 	}

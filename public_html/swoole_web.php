@@ -92,7 +92,7 @@ $server->on(
 		}
 
 		$httpReqData['header'] = $request->header;
-		
+
 		if (isset($request->cookie)) {
 			$httpReqData['header']['cookie'] = $request->cookie;
 		} else {
@@ -104,7 +104,7 @@ $server->on(
 		} else {
 			$httpReqData['header']['contentType'] = '';
 		}
-		
+
 		$httpReqData['get'] = &$request->get;
 		if (isset($httpReqData['get'][ROUTE_URL_PARAM])) {
 			$httpReqData['get'][ROUTE_URL_PARAM] = '/' . trim(
@@ -162,6 +162,7 @@ $server->on(
 			}
 		} else {
 			if ($httpReqData['get'][ROUTE_URL_PARAM] === '/' . Env::$SYSTEM_RELOAD_REQUEST_KEYWORD) {
+				Reload::init();
 				Reload::process(
 					httpRequestIp: $httpReqData['server']['httpRequestIp']
 				);

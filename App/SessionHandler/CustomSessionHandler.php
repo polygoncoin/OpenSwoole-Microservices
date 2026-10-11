@@ -4,7 +4,7 @@
  * Custom Session Handler
  * php version 7
  *
- * @category  SessionHandler
+ * @category  CustomSessionHandler
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -16,7 +16,7 @@
 namespace Microservices\App\SessionHandler;
 
 use Microservices\App\Constant;
-use Microservices\App\SessionHandler\Container\SessionContainerInterface;
+use Microservices\App\SessionHandler\Containers\SessionContainerInterface;
 
 /**
  * Custom Session Handler
@@ -36,7 +36,7 @@ class CustomSessionHandler implements
 	\SessionUpdateTimestampHandlerInterface
 {
 	/**
-	 * Session Container
+	 * Session Containers
 	 * 
 	 * @var null|SessionContainerInterface
 	 */
@@ -116,7 +116,7 @@ class CustomSessionHandler implements
 		$this->sessionName = $sessionName;
 		$this->container->init(
 			sessionSavePath: $sessionSavePath,
-			sessionName: $sessionName
+			sessionName: $this->sessionName
 		);
 
 		return Constant::$TRUE;
@@ -155,15 +155,15 @@ class CustomSessionHandler implements
 			sessionId: $sessionId
 		);
 		if ($sessionData !== false) {
-			$foundSession = true;
+			$foundSession = Constant::$TRUE;
 		} else {
-			$foundSession = false;
+			$foundSession = Constant::$FALSE;
 		}
 
-		if ($this->creatingSessionId === true) {
+		if ($this->creatingSessionId === Constant::$TRUE) {
 			$foundSession = !$foundSession;
-			if ($foundSession === true) {
-				$this->creatingSessionId = false;
+			if ($foundSession === Constant::$TRUE) {
+				$this->creatingSessionId = Constant::$FALSE;
 			}
 		} else {
 			$this->foundSession = $foundSession;
@@ -188,7 +188,7 @@ class CustomSessionHandler implements
 	 */
 	public function create_sid(): string // phpcs:ignore
 	{
-		$this->creatingSessionId = true;
+		$this->creatingSessionId = Constant::$TRUE;
 
 		for (;true;) {
 			$sessionId = $this->getRandomString();
@@ -405,7 +405,7 @@ class CustomSessionHandler implements
 	 */
 	private function unsetSessionCookie(): void
 	{
-		if (!empty($this->sessionName)) {
+		if (!empty($_COOKIE[$this->sessionName])) {
 			setcookie(
 				name: $this->sessionName,
 				value: '',
@@ -413,9 +413,9 @@ class CustomSessionHandler implements
 				path: $this->container->sessionOptions['cookie_path']
 			);
 		}
-		if (!empty($this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME])) {
+		if (!empty($_COOKIE[$this->container->Env->SESSION_DATA_COOKIE_NAME])) {
 			setcookie(
-				name: $this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->customerId]->SESSION_DATA_COOKIE_NAME],
+				name: $this->container->Env->SESSION_DATA_COOKIE_NAME,
 				value: '',
 				expires_or_options: 1,
 				path: $this->container->sessionOptions['cookie_path']
@@ -449,7 +449,7 @@ class CustomSessionHandler implements
 					strpos(
 						haystack: $header,
 						needle: $this->sessionName
-					) !== Constant::$FALSE
+					) !== false
 				) {
 					unset($headerArray[$index]);
 					$headerFound = Constant::$TRUE;

@@ -117,8 +117,8 @@ class Write
 		$fetchDbMode = 'Master';
 
 		// Set Server mode to execute query on - Read / Write Server
-		if ($this->httpObject->httpRequestObject->databaseServerObject === Constant::$NULL) {
-			$this->httpObject->httpRequestObject->databaseServerObject = DbCommonFunction::connectDatabase(
+		if ($this->httpObject->databaseObject === Constant::$NULL) {
+			$this->httpObject->databaseObject = DbCommonFunction::connectDatabase(
 				customerId: $this->httpObject->httpReqData['active']['customerId'],
 				fetchDbMode: $fetchDbMode
 			);
@@ -148,7 +148,7 @@ class Write
 		$writeMaintainHierarchy,
 		$writeOperateAsTransaction
 	): void {
-		$writeOUTPUT_REPRESENTATION = CommonFunction::getOUTPUT_REPRESENTATION(
+		$writeOUTPUT_REPRESENTATION = CommonFunction::getOutputRepresentation(
 			sqlConfig: $writeSqlConfig,
 			httpReqData: $this->httpObject->httpReqData,
 			customerId: $this->httpObject->httpReqData['active']['customerId']
@@ -208,13 +208,13 @@ class Write
 			// For DML operation
 			if ($hashJson === Constant::$NULL) {
 				if ($writeOperateAsTransaction) {
-					$this->httpObject->httpRequestObject->databaseServerObject->begin();
+					$this->httpObject->databaseObject->begin();
 				}
 
 				$output = [];
 				$output['Status'] = HttpStatus::$Ok;
-				if (Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
-					$output[Env::$config[$this->httpObject->httpReqData['active']['customerId']]->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
+				if ($this->httpObject->Env->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
+					$output[$this->httpObject->Env->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
 						keyString: $this->getPayloadKey(
 							payloadKeyArray: $writePayloadKeyArray
 						)
@@ -236,9 +236,9 @@ class Write
 				if ($this->httpObject->httpResponseObject->httpStatus === HttpStatus::$Ok) {
 					if (
 						$writeOperateAsTransaction
-						&& ($this->httpObject->httpRequestObject->databaseServerObject->beganTransaction === Constant::$TRUE)
+						&& ($this->httpObject->databaseObject->beganTransaction === Constant::$TRUE)
 					) {
-						$this->httpObject->httpRequestObject->databaseServerObject->commit();
+						$this->httpObject->databaseObject->commit();
 					}
 					$output['PayloadResponse'] = $writeResponse;
 
@@ -246,7 +246,7 @@ class Write
 						$this->httpObject->httpRequestObject->isPrivateRequest
 						&& $idempotentWindow
 					) {
-						$this->httpObject->httpRequestObject->cacheServerObject->cacheSet(
+						$this->httpObject->cacheObject->cacheSet(
 							cacheKey: $hashKey,
 							cacheValue: $output,
 							cacheExpire: $idempotentWindow
@@ -368,7 +368,7 @@ class Write
 			}
 		}
 
-		$mode = Env::$config[$this->httpObject->httpReqData['active']['customerId']]->MASTER_DB_PLACEHOLDER;
+		$mode = $this->httpObject->Env->MASTER_DB_PLACEHOLDER;
 		$function = "getSqlAndParam{$mode}Mode";
 
 		for ($index = 0; $index < $indexCount; $index++) {
@@ -468,12 +468,12 @@ class Write
 
 			if (!empty($errorArray)) {
 				$writeParentCurrentResponse['Error'] = $errorArray;
-				$this->httpObject->httpRequestObject->databaseServerObject->rollBack();
+				$this->httpObject->databaseObject->rollBack();
 				return;
 			}
 
 			// Execute
-			$this->httpObject->httpRequestObject->databaseServerObject->execQuery(
+			$this->httpObject->databaseObject->execQuery(
 				sql: $sql,
 				paramArray: $paramArray
 			);
@@ -481,7 +481,7 @@ class Write
 			// For Rollback
 			if (
 				$writeParentCurrentOperateAsTransaction
-				&& !$this->httpObject->httpRequestObject->databaseServerObject->beganTransaction
+				&& !$this->httpObject->databaseObject->beganTransaction
 			) {
 				$writeParentCurrentResponse['Error'] = 'Something went wrong';
 				return;
@@ -490,7 +490,7 @@ class Write
 			// For Setting Data
 			if (isset($writeParentSqlConfig['__INSERT-ID__'])) {
 				if ($insertId === Constant::$NULL) {
-					$insertId = $this->httpObject->httpRequestObject->databaseServerObject->lastInsertId();
+					$insertId = $this->httpObject->databaseObject->lastInsertId();
 				}
 
 				if ($isObject) {
@@ -504,12 +504,12 @@ class Write
 
 				$this->httpObject->httpReqData['active']['__INSERT-ID__'][$writeParentSqlConfig['__INSERT-ID__']] = $insertId;
 			} else {
-				$affectedRecordCount = $this->httpObject->httpRequestObject->databaseServerObject->affectedRecordCount();
+				$affectedRecordCount = $this->httpObject->databaseObject->affectedRecordCount();
 				$writeParentCurrentResponse['affectedRecordCount'] = $affectedRecordCount;
 			}
 
 			// For Close Cursor
-			$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
+			$this->httpObject->databaseObject->closeCursor();
 
 			// For Child
 			if (isset($writeParentSqlConfig['__SUB-CONFIG__'])) {
@@ -560,7 +560,7 @@ class Write
 					value: $writeParentSqlConfig['__AFFECTED-CACHE-KEY__']
 				);
 				for ($index = 0; $index < $indexCount; $index++) {
-					$this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheDelete(
+					$this->httpObject->queryCacheObject->queryCacheDelete(
 						customerId: $this->httpObject->httpReqData['active']['customerId'],
 						queryCacheKey: $writeParentSqlConfig['__AFFECTED-CACHE-KEY__'][$index]
 					);

@@ -4,34 +4,32 @@
  * Custom Session Handler
  * php version 7
  *
- * @category  SessionHandler
+ * @category  SessionHandlerContainer
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Session-Handlers
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App\SessionHandler\Container;
+namespace Microservices\App\SessionHandler\Containers;
 
 use Microservices\App\Constant;
 use Microservices\App\Env;
-use Microservices\App\Http;
-use Microservices\App\HttpStatus;
-use Microservices\App\SessionHandler\Container\SessionContainerInterface;
-use Microservices\App\SessionHandler\Container\SessionContainerHelper;
+use Microservices\App\SessionHandler\Containers\SessionContainerInterface;
+use Microservices\App\SessionHandler\Containers\SessionContainerHelper;
 
 /**
  * Custom Session Handler File
  * php version 7
  *
- * @category  CustomSessionHandler_File
+ * @category  SessionHandlerContainer_File
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Session-Handlers
  * @since     Class available since Release 1.0.0
  */
 class FileBasedSessionContainer extends SessionContainerHelper implements
@@ -41,22 +39,12 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 
 	private $sessionFilePrefix = 'sess_';
 
-	/**
-	 * HTTP object
-	 * 
-	 * @var null|Http
-	 */
-	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
-	 * @param Http $httpObject
 	 */
-	public function __construct(
-		Http &$httpObject
-	) {
-		$this->httpObject = &$httpObject;
+	public function __construct() {
+
 	}
 
 	/**
@@ -79,7 +67,7 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 			mkdir(
 				directory: $sessionSavePath,
 				permissions: 0755,
-				recursive: Constant::$TRUE
+				recursive: true
 			);
 		}
 		$this->sessionSavePath = $sessionSavePath;
@@ -130,14 +118,6 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
-		$sessionDataArray = unserialize(
-			data: $sessionData
-		);
-
-		$sessionData = serialize(
-			value: $sessionDataArray
-		);
-
 		$filepath = $this->sessionSavePath . '/'
 			. $this->sessionFilePrefix . $sessionId;
 		if (
@@ -169,14 +149,6 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
-		$sessionDataArray = unserialize(
-			data: $sessionData
-		);
-
-		$sessionData = serialize(
-			value: $sessionDataArray
-		);
-
 		return $this->setSession(
 			sessionId: $sessionId,
 			sessionData: $sessionData
@@ -195,14 +167,6 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
-		$sessionDataArray = unserialize(
-			data: $sessionData
-		);
-
-		$sessionData = serialize(
-			value: $sessionDataArray
-		);
-
 		$filepath = $this->sessionSavePath . '/'
 			. $this->sessionFilePrefix . $sessionId;
 		return touch(
@@ -257,7 +221,7 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 	}
 
 	/**
-	 * Close File Container
+	 * Close Container
 	 * 
 	 * @return void
 	 */

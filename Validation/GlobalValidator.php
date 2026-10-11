@@ -107,12 +107,12 @@ class GlobalValidator implements ValidatorInterface
 		);
 		$sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
 		$paramArray = [$id];
-		$this->httpObject->httpRequestObject->databaseServerObject->execQuery(
+		$this->httpObject->databaseObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$record = $this->httpObject->httpRequestObject->databaseServerObject->fetch();
-		$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
+		$record = $this->httpObject->databaseObject->fetch();
+		$this->httpObject->databaseObject->closeCursor();
 		return (int)((isset($record['count']) && $record['count'] === 0) ? Constant::$FALSE : Constant::$TRUE);
 	}
 
@@ -138,12 +138,12 @@ class GlobalValidator implements ValidatorInterface
 			$columnValue,
 			$id
 		];
-		$this->httpObject->httpRequestObject->databaseServerObject->execQuery(
+		$this->httpObject->databaseObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$record = $this->httpObject->httpRequestObject->databaseServerObject->fetch();
-		$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
+		$record = $this->httpObject->databaseObject->fetch();
+		$this->httpObject->databaseObject->closeCursor();
 		return ($record['count'] === 0) ? Constant::$FALSE : Constant::$TRUE;
 	}
 }

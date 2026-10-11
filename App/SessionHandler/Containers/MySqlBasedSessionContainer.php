@@ -4,37 +4,35 @@
  * Custom Session Handler
  * php version 7
  *
- * @category  SessionHandler
+ * @category  SessionHandlerContainer
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Session-Handlers
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App\SessionHandler\Container;
+namespace Microservices\App\SessionHandler\Containers;
 
 use Microservices\App\Constant;
 use Microservices\App\Env;
-use Microservices\App\Http;
-use Microservices\App\HttpStatus;
-use Microservices\App\SessionHandler\Container\SessionContainerInterface;
-use Microservices\App\SessionHandler\Container\SessionContainerHelper;
+use Microservices\App\SessionHandler\Containers\SessionContainerInterface;
+use Microservices\App\SessionHandler\Containers\SessionContainerHelper;
 
 /**
- * Custom Session Handler using PostgreSql
+ * Custom Session Handler using MySQL
  * php version 7
  *
- * @category  CustomSessionHandler_PgSql
+ * @category  SessionHandlerContainer_MySQL
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Session-Handlers
  * @since     Class available since Release 1.0.0
  */
-class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
+class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	SessionContainerInterface
 {
 	public $sessionServerHost = null;
@@ -44,24 +42,14 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public $sessionServerDb = null;
 	public $sessionServerTable = null;
 
-	private $pgSqlServerObject = null;
+	private $sessionObject = null;
 
-	/**
-	 * HTTP object
-	 * 
-	 * @var null|Http
-	 */
-	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
-	 * @param Http $httpObject
 	 */
-	public function __construct(
-		Http &$httpObject
-	) {
-		$this->httpObject = &$httpObject;
+	public function __construct() {
+
 	}
 
 	/**
@@ -91,19 +79,22 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	): bool|string {
 		$sql = "
 			SELECT *
-			FROM {$this->sessionServerTable}
-			WHERE session_id = $1 AND last_accessed > $2
+			FROM `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
+			WHERE `session_id` = :session_id AND `last_accessed` > :last_accessed
 		";
 		$paramArray = [
-			$sessionId,
-			(Env::$timestamp - $this->sessionOptions['cookie_lifetime'])
+			':session_id' => $sessionId,
+			':last_accessed' => (Env::$timestamp - $this->sessionOptions['cookie_lifetime'])
 		];
-
-		$record = $this->getSql(
-			sql: $sql,
-			paramArray: $paramArray
-		);
-		if (isset($record['session_data'])) {
+		if (
+			(
+				$record = $this->getSql(
+					sql: $sql,
+					paramArray: $paramArray
+				)
+			)
+			&& isset($record['session_data'])
+		) {
 			$sessionData = $this->decryptData(
 				cipherText: $record['session_data']
 			);
@@ -124,25 +115,19 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
-		$sessionDataArray = unserialize(
-			data: $sessionData
-		);
-
-		
-		$sessionData = serialize(
-			value: $sessionDataArray
-		);
-
 		$sql = "
-			INSERT INTO {$this->sessionServerTable} (session_id, last_accessed, session_data)
-			VALUES ($1, $2, $3)
+			INSERT INTO `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
+			SET
+				`session_id` = :session_id,
+				`session_data` = :session_data,
+				`last_accessed` = :last_accessed
 		";
 		$paramArray = [
-			$sessionId,
-			Env::$timestamp,
-			$this->encryptData(
+			':session_id' => $sessionId,
+			':session_data' => $this->encryptData(
 				plainText: $sessionData
 			),
+			':last_accessed' => Env::$timestamp
 		];
 
 		return $this->execSql(
@@ -163,29 +148,20 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
-		$sessionDataArray = unserialize(
-			data: $sessionData
-		);
-
-		
-		$sessionData = serialize(
-			value: $sessionDataArray
-		);
-
 		$sql = "
-			UPDATE {$this->sessionServerTable}
+			UPDATE `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
 			SET
-				last_accessed = $1,
-				session_data = $2
+				`session_data` = :session_data,
+				`last_accessed` = :last_accessed
 			WHERE
-				session_id = $3
+				`session_id` = :session_id
 		";
 		$paramArray = [
-			Env::$timestamp,
-			$this->encryptData(
+			':session_id' => $sessionId,
+			':session_data' => $this->encryptData(
 				plainText: $sessionData
 			),
-			$sessionId
+			':last_accessed' => Env::$timestamp
 		];
 
 		return $this->execSql(
@@ -206,23 +182,14 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
-		$sessionDataArray = unserialize(
-			data: $sessionData
-		);
-
-		
-		$sessionData = serialize(
-			value: $sessionDataArray
-		);
-
 		$sql = "
-			UPDATE {$this->sessionServerTable}
-			SET last_accessed = $1
-			WHERE session_id = $2
+			UPDATE `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
+			SET `last_accessed` = :last_accessed
+			WHERE `session_id` = :session_id
 		";
 		$paramArray = [
-			Env::$timestamp,
-			$sessionId
+			':session_id' => $sessionId,
+			':last_accessed' => Env::$timestamp
 		];
 		return $this->execSql(
 			sql: $sql,
@@ -240,12 +207,13 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public function gcSession(
 		$sessionMaxLifetime
 	): bool {
+		$lastAccessed = Env::$timestamp - $sessionMaxLifetime;
 		$sql = "
-			DELETE FROM {$this->sessionServerTable}
-			WHERE last_accessed < $1
+			DELETE FROM `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
+			WHERE `last_accessed` < :last_accessed
 		";
 		$paramArray = [
-			(Env::$timestamp - $sessionMaxLifetime)
+			':last_accessed' => $lastAccessed
 		];
 		return $this->execSql(
 			sql: $sql,
@@ -264,11 +232,11 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId
 	): bool {
 		$sql = "
-			DELETE FROM {$this->sessionServerTable}
-			WHERE session_id = $1
+			DELETE FROM `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
+			WHERE `session_id` = :session_id
 		";
 		$paramArray = [
-			$sessionId
+			':session_id' => $sessionId
 		];
 		return $this->execSql(
 			sql: $sql,
@@ -277,16 +245,13 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	}
 
 	/**
-	 * Close File Container
+	 * Close Container
 	 * 
 	 * @return void
 	 */
 	public function closeSession(): void
 	{
-		pg_close(
-			$this->pgSqlServerObject
-		);
-		$this->pgSqlServerObject = Constant::$NULL;
+		$this->sessionObject = Constant::$NULL;
 	}
 
 	/**
@@ -297,17 +262,13 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	private function connect(): void
 	{
 		try {
-			$UP = '';
-			if (
-				$this->sessionServerUser !== Constant::$NULL
-				&& $this->sessionServerPassword !== Constant::$NULL
-			) {
-				$UP = "user={$this->sessionServerUser} password={$this->sessionServerPassword}";
-			}
-			$this->pgSqlServerObject = pg_connect(
-				"host={$this->sessionServerHost} "
-				. "port={$this->sessionServerPort} "
-				. "dbname={$this->sessionServerDb} {$UP}"
+			$this->sessionObject = new \PDO(
+				dsn: "mysql:host={$this->sessionServerHost}",
+				username: $this->sessionServerUser,
+				password: $this->sessionServerPassword,
+				options: [
+					\PDO::ATTR_EMULATE_PREPARES => false,
+				]
 			);
 		} catch (\Exception $e) {
 			$this->manageException(
@@ -326,36 +287,35 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	private function getSql(
 		$sql,
-		$paramArray
+		$paramArray = []
 	): mixed {
+		$record = [];
 		try {
-			// Execute the query with parameters
-			$result = pg_query_params(
-				$this->pgSqlServerObject,
-				$sql,
+			$stmt = $this->sessionObject->prepare(
+				query: $sql,
+				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
+			);
+			$stmt->execute(
 				$paramArray
 			);
-			if ($result) {
-				$record = [];
-				$rowsCount = pg_num_rows(
-					$result
-				);
-				if ($rowsCount === 1) {
-					$record = pg_fetch_assoc(
-						$result
-					);
-				}
-				pg_free_result(
-					$result
-				);
-				return $record;
+			switch ($stmt->rowCount()) {
+				case 0:
+					$record = [];
+					break;
+				case 1:
+					$record = $stmt->fetch();
+					break;
+				default:
+					$record = Constant::$FALSE;
+					break;
 			}
+			$stmt->closeCursor();
 		} catch (\Exception $e) {
 			$this->manageException(
 				e: $e
 			);
 		}
-		return Constant::$FALSE;
+		return $record;
 	}
 
 	/**
@@ -368,23 +328,23 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	private function execSql(
 		$sql,
-		$paramArray
+		$paramArray = []
 	): bool {
 		try {
-			$result = pg_query_params(
-				$this->pgSqlServerObject,
-				$sql,
+			$stmt = $this->sessionObject->prepare(
+				query: $sql,
+				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
+			);
+			$stmt->execute(
 				$paramArray
 			);
-			if ($result) {
-				return Constant::$TRUE;
-			}
+			$stmt->closeCursor();
 		} catch (\Exception $e) {
 			$this->manageException(
 				e: $e
 			);
 		}
-		return Constant::$FALSE;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -399,7 +359,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	): never {
 		throw new \Exception(
 			message: $e->getMessage(),
-			code: HttpStatus::$InternalServerError
+			code: 500
 		);
 	}
 }

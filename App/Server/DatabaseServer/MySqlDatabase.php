@@ -73,7 +73,7 @@ class MySqlDatabase implements DatabaseServerInterface
 	 * 
 	 * @var null|DB_MySql
 	 */
-	private $sqlServerObject = null;
+	private $sqlObject = null;
 
 	/**
 	 * Transaction started flag
@@ -112,11 +112,11 @@ class MySqlDatabase implements DatabaseServerInterface
 	 */
 	public function connectDb(): void
 	{
-		if ($this->sqlServerObject !== Constant::$NULL) {
+		if ($this->sqlObject !== Constant::$NULL) {
 			return;
 		}
 
-        $this->sqlServerObject = new DB_MySql(
+        $this->sqlObject = new DB_MySql(
             dbServerHost: $this->dbServerHost,
             dbServerPort: $this->dbServerPort,
             dbServerUser: $this->dbServerUser,
@@ -134,7 +134,7 @@ class MySqlDatabase implements DatabaseServerInterface
 	{
 		$this->connectDb();
 
-        $this->sqlServerObject->useDatabase();
+        $this->sqlObject->useDatabase();
 	}
 
 	/**
@@ -147,7 +147,7 @@ class MySqlDatabase implements DatabaseServerInterface
 		$this->connectDb();
 
 		$this->beganTransaction = Constant::$TRUE;
-        $this->sqlServerObject->begin();
+        $this->sqlObject->begin();
 	}
 
 	/**
@@ -159,7 +159,7 @@ class MySqlDatabase implements DatabaseServerInterface
 	{
 		if ($this->beganTransaction) {
 			$this->beganTransaction = Constant::$FALSE;
-			$this->sqlServerObject->commit();
+			$this->sqlObject->commit();
 		}
 	}
 
@@ -172,7 +172,7 @@ class MySqlDatabase implements DatabaseServerInterface
 	{
 		if ($this->beganTransaction) {
 			$this->beganTransaction = Constant::$FALSE;
-			$this->sqlServerObject->rollBack();
+			$this->sqlObject->rollBack();
 		}
 	}
 
@@ -184,7 +184,7 @@ class MySqlDatabase implements DatabaseServerInterface
 	public function affectedRecordCount(): bool|int
 	{
 		try {
-			return $this->sqlServerObject->affectedRecordCount();
+			return $this->sqlObject->affectedRecordCount();
 		} catch (\Exception $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
@@ -202,7 +202,7 @@ class MySqlDatabase implements DatabaseServerInterface
 	public function lastInsertId(): bool|int
 	{
 		try {
-			return $this->sqlServerObject->lastInsertId();
+			return $this->sqlObject->lastInsertId();
 		} catch (\Exception $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
@@ -228,7 +228,7 @@ class MySqlDatabase implements DatabaseServerInterface
 		$this->connectDb();
 
 		try {
-			$this->sqlServerObject->execQuery(
+			$this->sqlObject->execQuery(
 				sql: $sql,
 				paramArray: $paramArray,
 				pushPop: $pushPop
@@ -247,7 +247,7 @@ class MySqlDatabase implements DatabaseServerInterface
 	 */
 	public function fetch(): mixed
 	{
-        return $this->sqlServerObject->fetch();
+        return $this->sqlObject->fetch();
 	}
 
 	/**
@@ -257,7 +257,7 @@ class MySqlDatabase implements DatabaseServerInterface
 	 */
 	public function fetchAll(): array|bool
 	{
-        return $this->sqlServerObject->fetchAll();
+        return $this->sqlObject->fetchAll();
 	}
 
 	/**
@@ -270,7 +270,7 @@ class MySqlDatabase implements DatabaseServerInterface
 	public function closeCursor(
 		$pushPop = false
 	): void {
-        $this->sqlServerObject->closeCursor(
+        $this->sqlObject->closeCursor(
 			pushPop: $pushPop
 		);
 	}

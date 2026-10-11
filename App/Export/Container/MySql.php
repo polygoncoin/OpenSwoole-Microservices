@@ -94,7 +94,7 @@ class MySql implements ExportDatabaseServerInterface
 				);
 			}
 		}
-		$this->binaryLoc = Env::$config[$this->httpObject->httpReqData['active']['customerId']]->MYSQL_CLIENT_LOCATION;
+		$this->binaryLoc = $this->httpObject->Env->MYSQL_CLIENT_LOCATION;
 		if (
 			!file_exists(
 				filename: $this->binaryLoc

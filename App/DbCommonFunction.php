@@ -42,7 +42,7 @@ class DbCommonFunction
 	 * 
 	 * @var null|DatabaseServer
 	 */
-	public static $globalDbServerObject = null;
+	public static $globalDbObject = null;
 
 	/** Cache Connection */
 	/**
@@ -50,7 +50,7 @@ class DbCommonFunction
 	 * 
 	 * @var null|CacheServer
 	 */
-	public static $globalCacheServerObject = null;
+	public static $globalCacheObject = null;
 
 	/**
 	 * Connect Cache
@@ -137,28 +137,18 @@ class DbCommonFunction
 	/**
 	 * Connect global Cache
 	 * 
-	 * @param array $customerId Customer Data
-	 * 
 	 * @return void
 	 */
-	public static function connectGlobalCache(
-		$customerId
-	): void
+	public static function connectGlobalCache(): void
 	{
-		if (isset(Env::$config[$customerId])) {
-			return;
-		}
-		Env::loadEnv(
-			customerId: $customerId
-		);
-		self::$globalCacheServerObject = self::connectCacheServer(
-			cacheServerType: Env::$config[$customerId]->CACHE_MODE,
-			cacheServerHost: Env::$config[$customerId]->CACHE_HOST,
-			cacheServerPort: Env::$config[$customerId]->CACHE_PORT,
-			cacheServerUser: Env::$config[$customerId]->CACHE_USER,
-			cacheServerPassword: Env::$config[$customerId]->CACHE_PASSWORD,
-			cacheServerDb: Env::$config[$customerId]->CACHE_DB,
-			cacheServerTable: Env::$config[$customerId]->CACHE_TABLE
+		self::$globalCacheObject = self::connectCacheServer(
+			cacheServerType: Env::$config[0]->CACHE_MODE,
+			cacheServerHost: Env::$config[0]->CACHE_HOST,
+			cacheServerPort: Env::$config[0]->CACHE_PORT,
+			cacheServerUser: Env::$config[0]->CACHE_USER,
+			cacheServerPassword: Env::$config[0]->CACHE_PASSWORD,
+			cacheServerDb: Env::$config[0]->CACHE_DB,
+			cacheServerTable: Env::$config[0]->CACHE_TABLE
 		);
 	}
 
@@ -246,22 +236,15 @@ class DbCommonFunction
 	/**
 	 * Connect global Database
 	 * 
-	 * @param int $customerId Customer id
-	 * 
 	 * @return void
 	 */
-	public static function connectGlobalDb(
-		$customerId
-	): void {
-		// if (isset(Env::$config[$customerId])) {
-		// 	return;
-		// }
-
+	public static function connectGlobalDb(): void
+	{
 		$masterDatabaseServerCred = self::getMasterDatabaseCred(
-			customerId: $customerId
+			customerId: 0
 		);
 
-		self::$globalDbServerObject = self::connectDatabaseServer(
+		self::$globalDbObject = self::connectDatabaseServer(
 			dbServerType: $masterDatabaseServerCred['dbServerType'],
 			dbServerHost: $masterDatabaseServerCred['dbServerHost'],
 			dbServerPort: $masterDatabaseServerCred['dbServerPort'],
@@ -281,11 +264,6 @@ class DbCommonFunction
 	public static function getCacheCred(
 		$customerId
 	): array {
-		if (!isset(Env::$config[$customerId])) {
-			Env::loadEnv(
-				customerId: $customerId
-			);
-		}
 		return [
 			'cacheServerType' => Env::$config[$customerId]->CACHE_MODE,
 			'cacheServerHost' => Env::$config[$customerId]->CACHE_HOST,
@@ -307,11 +285,6 @@ class DbCommonFunction
 	public static function getQueryCacheCred(
 		$customerId
 	): array {
-		if (!isset(Env::$config[$customerId])) {
-			Env::loadEnv(
-				customerId: $customerId
-			);
-		}
 		return [
 			'cacheServerType' => Env::$config[$customerId]->QUERY_CACHE_MODE,
 			'cacheServerHost' => Env::$config[$customerId]->QUERY_CACHE_HOST,
@@ -333,11 +306,6 @@ class DbCommonFunction
 	public static function getMasterDatabaseCred(
 		$customerId
 	): array {
-		if (!isset(Env::$config[$customerId])) {
-			Env::loadEnv(
-				customerId: $customerId
-			);
-		}
 		return [
 			'dbServerType' => Env::$config[$customerId]->MASTER_DB_MODE,
 			'dbServerHost' => Env::$config[$customerId]->MASTER_DB_HOST,
@@ -358,11 +326,6 @@ class DbCommonFunction
 	public static function getSlaveDatabaseServerCred(
 		$customerId
 	): array {
-		if (!isset(Env::$config[$customerId])) {
-			Env::loadEnv(
-				customerId: $customerId
-			);
-		}
 		return [
 			'dbServerType' => Env::$config[$customerId]->SLAVE_DB_MODE,
 			'dbServerHost' => Env::$config[$customerId]->SLAVE_DB_HOST,

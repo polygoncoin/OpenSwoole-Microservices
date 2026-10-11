@@ -62,19 +62,16 @@ class Auth
 	 */
 	public function loadUserData(): void
 	{
-		if (isset($this->httpObject->httpReqData['active']['customerUserData'])) {
-			return;
-		}
-
 		if (
 			$this->httpObject->httpRequestObject->isPrivateWebDomain
-			&& isset($this->httpObject->httpReqData['header']['cookie'][Env::$config[$this->httpObject->httpReqData['active']['customerId']]->SESSION_COOKIE_NAME])
+			&& isset($this->httpObject->httpReqData['header']['cookie'][$this->httpObject->Env->SESSION_COOKIE_NAME])
 		) {
-			$this->httpObject->httpRequestObject->sessionObject = new Session(
+			$this->httpObject->sessionObject = new Session(
 				httpObject: $this->httpObject
 			);
-			$this->httpObject->httpRequestObject->sessionObject->initSessionHandler();
-			$this->httpObject->httpRequestObject->sessionObject->startReadonly();
+
+			$this->httpObject->sessionObject->initSessionHandler();
+			$this->httpObject->sessionObject->startReadonly();
 
 			$this->httpObject->httpReqData['active']['customerUserData'] = $_SESSION;
 		} elseif (
@@ -86,7 +83,7 @@ class Auth
 				apiToken: $this->httpObject->httpReqData['active']['authId']
 			);
 			if (
-				!$this->httpObject->httpRequestObject->cacheServerObject->cacheExist(
+				!$this->httpObject->cacheObject->cacheExist(
 					cacheKey: $apiTokenKey
 				)
 			) {
@@ -95,7 +92,7 @@ class Auth
 					code: HttpStatus::$BadRequest
 				);
 			}
-			$this->httpObject->httpReqData['active']['customerUserData'] = $this->httpObject->httpRequestObject->cacheServerObject->cacheGet(
+			$this->httpObject->httpReqData['active']['customerUserData'] = $this->httpObject->cacheObject->cacheGet(
 				cacheKey: $apiTokenKey
 			);
 		} else {
@@ -105,9 +102,20 @@ class Auth
 			);
 		}
 
-		if (($this->httpObject->httpReqData['active']['customerUserData']['authTimestamp'] + Constant::$TOKEN_EXPIRY_TIME) <= Env::$timestamp) {
+		$allowedTokenTimestamp = $this->httpObject->httpReqData['active']['customerUserData']['authTimestamp'] + $this->httpObject->Env->TOKEN_LIFETIME;
+		$allowedSesssionTimestamp = $this->httpObject->httpReqData['active']['customerUserData']['authTimestamp'] + $this->httpObject->Env->SESSION_LIFETIME;
+		if (
+			(
+				$this->httpObject->httpReqData['active']['customerUserData']['authMode'] === 'API Token'
+				&& $allowedTokenTimestamp <= Env::$timestamp
+			)
+			|| (
+				$this->httpObject->httpReqData['active']['customerUserData']['authMode'] === 'Web Session'
+				&& $allowedSesssionTimestamp <= Env::$timestamp
+			)
+		) {
 			throw new \Exception(
-				message: 'Login has timed out. Please login ' . $this->httpObject->httpReqData['active']['customerUserData']['authTimestamp'],
+				message: 'Login has timed out. Please login',
 				code: HttpStatus::$BadRequest
 			);
 		}
@@ -121,19 +129,6 @@ class Auth
 
 		$this->httpObject->httpReqData['active']['customerUserId'] = $this->httpObject->httpReqData['active']['customerUserData']['customer_user_id'];
 		$this->httpObject->httpReqData['active']['customerUserGroupId'] = $this->httpObject->httpReqData['active']['customerUserData']['customer_user_group_id'];
-	}
-
-	/**
-	 * Load Group Data
-	 * 
-	 * @return void
-	 * @throws \Exception
-	 */
-	public function loadGroupData(): void
-	{
-		if (isset($this->httpObject->httpReqData['active']['groupData'])) {
-			return;
-		}
 
 		// Load groupData
 		$groupCacheKey = CacheServerKey::customerGroup(
@@ -141,7 +136,7 @@ class Auth
 			customerUserGroupId: $this->httpObject->httpReqData['active']['customerUserGroupId']
 		);
 		if (
-			!$this->httpObject->httpRequestObject->cacheServerObject->cacheExist(
+			!$this->httpObject->cacheObject->cacheExist(
 				cacheKey: $groupCacheKey
 			)
 		) {
@@ -151,7 +146,7 @@ class Auth
 			);
 		}
 
-		$this->httpObject->httpReqData['active']['groupData'] = $this->httpObject->httpRequestObject->cacheServerObject->cacheGet(
+		$this->httpObject->httpReqData['active']['groupData'] = $this->httpObject->cacheObject->cacheGet(
 			cacheKey: $groupCacheKey
 		);
 	}

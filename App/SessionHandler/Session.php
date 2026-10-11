@@ -17,15 +17,16 @@ namespace Microservices\App\SessionHandler;
 
 use Microservices\App\Constant;
 use Microservices\App\Env;
+use Microservices\App\Environment;
 use Microservices\App\Http;
 use Microservices\App\SessionHandler\CustomSessionHandler;
-use Microservices\App\SessionHandler\Container\SessionContainerInterface;
+use Microservices\App\SessionHandler\Containers\SessionContainerInterface;
 
 /**
  * Custom Session Handler Config
  * php version 7
  *
- * @category  CustomSessionHandler_Config
+ * @category  SessionHandler_Config
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
@@ -35,50 +36,6 @@ use Microservices\App\SessionHandler\Container\SessionContainerInterface;
  */
 class Session
 {
-	/**
-	 * SET THESE TO ENABLE ENCRYPTION
-	 * ENCRYPTION PASS PHRASE
-	 * 
-	 * Value = base64_encode(openssl_random_pseudo_bytes(32))
-	 * Example: public $sessionEncryptionPassPhrase =
-	 * 'H7OO2m3qe9pHyAHFiERlYJKnlTMtCJs9ZbGphX9NO/c=';
-	 * 
-	 * @var null|string
-	 */
-	public $sessionEncryptionPassPhrase = null;
-
-	/**
-	 * SET THESE TO ENABLE ENCRYPTION
-	 * ENCRYPTION IV
-	 * 
-	 * Value = base64_encode(openssl_random_pseudo_bytes(16))
-	 * Example: public $sessionEncryptionIv = 'HnPG5az9Xaxam9G9tMuRaw==';
-	 * 
-	 * @var null|string
-	 */
-	public $sessionEncryptionIv = null;
-
-	/**
-	 * Session mode
-	 * 
-	 * @var null|string
-	 */
-	public $sessionMode = null;
-
-	/**
-	 * Session customer id
-	 * 
-	 * @var null|int
-	 */
-	public $customerId = null;
-
-	/**
-	 * Session cookie name
-	 * 
-	 * @var null|string
-	 */
-	public $sessionName = null;
-
 	/**
 	 * Session handler Container
 	 * 
@@ -94,6 +51,20 @@ class Session
 	private $httpObject = null;
 
 	/**
+	 * Http Cookies
+	 * 
+	 * @var null|array
+	 */
+	public $httpCookie = null;
+
+	/**
+	 * Environment data
+	 * 
+	 * @var null|Environment
+	 */
+	public $Env = null;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param Http $httpObject
@@ -102,11 +73,8 @@ class Session
 		Http &$httpObject
 	) {
 		$this->httpObject = &$httpObject;
-		Env::loadEnv(
-			customerId: $this->customerId
-		);
-		$this->customerId = $this->httpObject->httpReqData['active']['customerId'];
-		$this->sessionName = Env::$config[$this->customerId]->SESSION_COOKIE_NAME;
+		$this->Env = Env::$config[$this->httpObject->httpReqData['active']['customerId']];
+		$this->httpCookie = $this->httpObject->httpReqData['header']['cookie'];
 	}
 
 	/**
@@ -117,68 +85,63 @@ class Session
 	private function getSessionContainer(): SessionContainerInterface
 	{
 		// Initialize Container
-		$containerClassName = 'Microservices\\App\\SessionHandler\\Container\\'
-			. $this->sessionMode . 'BasedSessionContainer';
-		$this->sessionContainer = new $containerClassName(
-			httpObject: $this->httpObject
-		);
-
-		// Setting required parameters as per session Mode / Type
-		switch ($this->sessionMode) {
-			case 'MySql':
-				$this->sessionContainer->mySqlServerHost = Env::$config[$this->customerId]->SESSION_MYSQL_HOST;
-				$this->sessionContainer->mySqlServerPort = Env::$config[$this->customerId]->SESSION_MYSQL_PORT;
-				$this->sessionContainer->mySqlServerUser = Env::$config[$this->customerId]->SESSION_MYSQL_USER;
-				$this->sessionContainer->mySqlServerPassword = Env::$config[$this->customerId]->SESSION_MYSQL_PASSWORD;
-				$this->sessionContainer->mySqlServerDb = Env::$config[$this->customerId]->SESSION_MYSQL_DB;
-				$this->sessionContainer->mySqlServerTable = Env::$config[$this->customerId]->SESSION_MYSQL_TABLE;
-				break;
-			case 'PostgreSql':
-				$this->sessionContainer->pgSqlServerHost = Env::$config[$this->customerId]->SESSION_PGSQL_HOST;
-				$this->sessionContainer->pgSqlServerPort = Env::$config[$this->customerId]->SESSION_PGSQL_PORT;
-				$this->sessionContainer->pgSqlServerUser = Env::$config[$this->customerId]->SESSION_PGSQL_USER;
-				$this->sessionContainer->pgSqlServerPassword = Env::$config[$this->customerId]->SESSION_PGSQL_PASSWORD;
-				$this->sessionContainer->pgSqlServerDb = Env::$config[$this->customerId]->SESSION_PGSQL_DB;
-				$this->sessionContainer->pgSqlServerTable = Env::$config[$this->customerId]->SESSION_PGSQL_TABLE;
-				break;
-			case 'MongoDb':
-				$this->sessionContainer->mongoDbServerHost = Env::$config[$this->customerId]->SESSION_MONGO_HOST;
-				$this->sessionContainer->mongoDbServerPort = Env::$config[$this->customerId]->SESSION_MONGO_PORT;
-				$this->sessionContainer->mongoDbServerUser = Env::$config[$this->customerId]->SESSION_MONGO_USER;
-				$this->sessionContainer->mongoDbServerPassword = Env::$config[$this->customerId]->SESSION_MONGO_PASSWORD;
-				$this->sessionContainer->mongoDbServerDb = Env::$config[$this->customerId]->SESSION_MONGO_DB;
-				$this->sessionContainer->mongoDbServerCollection = Env::$config[$this->customerId]->SESSION_MONGO_TABLE;
-				break;
-			case 'Redis':
-				$this->sessionContainer->redisServerHost = Env::$config[$this->customerId]->SESSION_REDIS_HOST;
-				$this->sessionContainer->redisServerPort = Env::$config[$this->customerId]->SESSION_REDIS_PORT;
-				$this->sessionContainer->redisServerUser = Env::$config[$this->customerId]->SESSION_REDIS_USER;
-				$this->sessionContainer->redisServerPassword = Env::$config[$this->customerId]->SESSION_REDIS_PASSWORD;
-				$this->sessionContainer->redisServerDb = Env::$config[$this->customerId]->SESSION_REDIS_DB;
-				break;
-			case 'Memcached':
-				$this->sessionContainer->memcachedServerHost = Env::$config[$this->customerId]->SESSION_MEMCACHE_HOST;
-				$this->sessionContainer->memcachedServerPort = Env::$config[$this->customerId]->SESSION_MEMCACHE_PORT;
-				break;
-			case 'Cookie':
-				break;
-		}
+		$containerClassName = 'Microservices\\App\\SessionHandler\\Containers\\'
+			. ucfirst($this->Env->SESSION_STORE_MODE) . 'BasedSessionContainer';
+		$this->sessionContainer = new $containerClassName();
 
 		// Setting encryption parameters
-		if (
-			!empty($this->sessionEncryptionPassPhrase)
-			&& !empty($this->sessionEncryptionIv)
-		) {
-			$this->sessionContainer->passphrase = base64_decode(
-				string: $this->sessionEncryptionPassPhrase
-			);
-			$this->sessionContainer->iv = base64_decode(
-				string: $this->sessionEncryptionIv
-			);
+		$this->sessionContainer->SESSION_ENCRYPTION_PASS_PHRASE = base64_decode(
+			string: $this->Env->SESSION_ENCRYPTION_PASS_PHRASE
+		);
+
+		$this->sessionContainer->SESSION_ENCRYPTION_IV = base64_decode(
+			string: $this->Env->SESSION_ENCRYPTION_IV
+		);
+
+		$this->sessionContainer->sessionName = $this->Env->SESSION_COOKIE_NAME;
+		$this->sessionContainer->Env = $this->Env;
+
+		// Setting required parameters as per session Mode / Type
+		switch ($this->Env->SESSION_STORE_MODE) {
+			case 'MySql':
+				$this->sessionContainer->sessionServerHost = $this->Env->SESSION_MYSQL_HOST;
+				$this->sessionContainer->sessionServerPort = $this->Env->SESSION_MYSQL_PORT;
+				$this->sessionContainer->sessionServerUser = $this->Env->SESSION_MYSQL_USER;
+				$this->sessionContainer->sessionServerPassword = $this->Env->SESSION_MYSQL_PASSWORD;
+				$this->sessionContainer->sessionServerDb = $this->Env->SESSION_MYSQL_DB;
+				$this->sessionContainer->sessionServerTable = $this->Env->SESSION_MYSQL_TABLE;
+				break;
+			case 'PostgreSql':
+				$this->sessionContainer->sessionServerHost = $this->Env->SESSION_PGSQL_HOST;
+				$this->sessionContainer->sessionServerPort = $this->Env->SESSION_PGSQL_PORT;
+				$this->sessionContainer->sessionServerUser = $this->Env->SESSION_PGSQL_USER;
+				$this->sessionContainer->sessionServerPassword = $this->Env->SESSION_PGSQL_PASSWORD;
+				$this->sessionContainer->sessionServerDb = $this->Env->SESSION_PGSQL_DB;
+				$this->sessionContainer->sessionServerTable = $this->Env->SESSION_PGSQL_TABLE;
+				break;
+			case 'MongoDb':
+				$this->sessionContainer->sessionServerHost = $this->Env->SESSION_MONGO_HOST;
+				$this->sessionContainer->sessionServerPort = $this->Env->SESSION_MONGO_PORT;
+				$this->sessionContainer->sessionServerUser = $this->Env->SESSION_MONGO_USER;
+				$this->sessionContainer->sessionServerPassword = $this->Env->SESSION_MONGO_PASSWORD;
+				$this->sessionContainer->sessionServerDb = $this->Env->SESSION_MONGO_DB;
+				$this->sessionContainer->sessionServerCollection = $this->Env->SESSION_MONGO_TABLE;
+				break;
+			case 'Redis':
+				$this->sessionContainer->sessionServerHost = $this->Env->SESSION_REDIS_HOST;
+				$this->sessionContainer->sessionServerPort = $this->Env->SESSION_REDIS_PORT;
+				$this->sessionContainer->sessionServerUser = $this->Env->SESSION_REDIS_USER;
+				$this->sessionContainer->sessionServerPassword = $this->Env->SESSION_REDIS_PASSWORD;
+				$this->sessionContainer->sessionServerDb = $this->Env->SESSION_REDIS_DB;
+				break;
+			case 'Memcached':
+				$this->sessionContainer->sessionServerHost = $this->Env->SESSION_MEMCACHED_HOST;
+				$this->sessionContainer->sessionServerPort = $this->Env->SESSION_MEMCACHED_PORT;
+				break;
+			case 'Cookie':
+                $this->sessionContainer->sessionDataCookieName = $this->Env->SESSION_DATA_COOKIE_NAME;
+				break;
 		}
-		
-		$this->sessionContainer->customerId = $this->customerId;
-		$this->sessionContainer->sessionName = $this->sessionName;
 
 		return $this->sessionContainer;
 	}
@@ -196,18 +159,18 @@ class Session
 		$options = [ // always required.
 			'use_strict_mode' => Constant::$TRUE,
 			'use_cookies' => Constant::$TRUE,
-			'name' => Env::$config[$this->customerId]->SESSION_COOKIE_NAME,
+			'name' => $this->Env->SESSION_COOKIE_NAME,
 			'serialize_handler' => 'php_serialize',
 			'lazy_write' => Constant::$TRUE,
-			'cookie_lifetime' => (int)Env::$config[$this->customerId]->SESSION_LIFETIME,
-			'cookie_path' => Env::$config[$this->customerId]->SESSION_COOKIE_PATH,
-			'cookie_secure' => (bool)Env::$config[$this->customerId]->SESSION_COOKIE_SECURE,
-			'cookie_httponly' => (bool)Env::$config[$this->customerId]->SESSION_COOKIE_HTTPONLY,
-			'cookie_samesite' => Env::$config[$this->customerId]->SESSION_COOKIE_SAMESITE,
+			'cookie_lifetime' => (int)$this->Env->SESSION_LIFETIME,
+			'cookie_path' => $this->Env->SESSION_COOKIE_PATH,
+			'cookie_secure' => (bool)$this->Env->SESSION_COOKIE_SECURE,
+			'cookie_httponly' => (bool)$this->Env->SESSION_COOKIE_HTTPONLY,
+			'cookie_samesite' => $this->Env->SESSION_COOKIE_SAMESITE,
 		];
 
-		if ($this->sessionMode === 'File') {
-			$options['save_path'] = Env::$config[$this->customerId]->SESSION_STORE_PATH;
+		if ($this->Env->SESSION_STORE_MODE === 'File') {
+			$options['save_path'] = $this->Env->SESSION_STORE_PATH;
 		}
 
 		if ($readonly === Constant::$TRUE) {
@@ -227,8 +190,6 @@ class Session
 	 */
 	public function initSessionHandler(): void
 	{
-		$this->sessionMode = Env::$config[$this->customerId]->SESSION_STORE_MODE;
-
 		// Initialize container
 		$this->sessionContainer = $this->getSessionContainer();
 
@@ -265,13 +226,13 @@ class Session
 		$this->closeActiveSession();
 
 		if (
-			!isset($this->httpObject->httpReqData['header']['cookie'][$this->sessionName])
-			|| empty($this->httpObject->httpReqData['header']['cookie'][$this->sessionName])
+			!isset($this->httpCookie[$this->Env->SESSION_COOKIE_NAME])
+			|| empty($this->httpCookie[$this->Env->SESSION_COOKIE_NAME])
 		) {
 			return Constant::$FALSE;
 		}
 
-		$currentSessionId = $this->httpObject->httpReqData['header']['cookie'][$this->sessionName];
+		$currentSessionId = $this->httpCookie[$this->Env->SESSION_COOKIE_NAME];
 		session_id($currentSessionId);
 
 		return session_start(
@@ -291,10 +252,10 @@ class Session
 		$this->closeActiveSession();
 
 		if (
-			isset($this->httpObject->httpReqData['header']['cookie'][$this->sessionName])
-			|| !empty($this->httpObject->httpReqData['header']['cookie'][$this->sessionName])
+			isset($this->httpCookie[$this->Env->SESSION_COOKIE_NAME])
+			|| !empty($this->httpCookie[$this->Env->SESSION_COOKIE_NAME])
 		) {
-			$currentSessionId = $this->httpObject->httpReqData['header']['cookie'][$this->sessionName];
+			$currentSessionId = $this->httpCookie[$this->Env->SESSION_COOKIE_NAME];
 			session_id($currentSessionId);
 		}
 

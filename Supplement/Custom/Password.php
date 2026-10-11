@@ -115,22 +115,23 @@ class Password implements CustomInterface
 				':is_deleted' => Constant::$NO,
 			];
 
-			$this->httpObject->httpRequestObject->databaseServerObject->execQuery(
+			$this->httpObject->databaseObject->execQuery(
 				sql: $sql,
 				paramArray: $paramArray
 			);
-			$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
+			$this->httpObject->databaseObject->closeCursor();
 
 			$cacheKey = CacheServerKey::customerUsername(
 				customerId: $this->httpObject->httpReqData['active']['customerId'],
 				username: $userName
 			);
+			Reload::init();
 			Reload::processUser(
 				httpRequestIp: $this->httpObject->httpReqData['server']['httpRequestIp'],
 				customerData: $this->httpObject->httpReqData['active']['customerData'],
 				customerUserId: $this->httpObject->httpReqData['active']['customerUserId']
 			);
-			$this->httpObject->httpRequestObject->cacheServerObject->cacheDelete(
+			$this->httpObject->cacheObject->cacheDelete(
 				cacheKey: CacheServerKey::apiToken(
 					apiToken: $this->httpObject->httpReqData['active']['authId']
 				)

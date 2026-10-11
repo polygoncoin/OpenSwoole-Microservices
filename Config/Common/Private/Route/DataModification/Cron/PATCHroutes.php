@@ -19,7 +19,7 @@ use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 
 return [
-	Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CRON_REQUEST_KEYWORD => [
+	$this->httpObject->Env->CRON_REQUEST_KEYWORD => [
 		'{cron:string}' => [
 			'dataType' => DatabaseServerDataType::$Default,
 			'{id:int}'  => [

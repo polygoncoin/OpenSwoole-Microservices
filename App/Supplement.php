@@ -123,8 +123,8 @@ class Supplement
 		$fetchDbMode = $sqlConfig['__FETCH-MODE__'] ?? 'Master';
 
 		// Set Server mode to execute query on - Read / Write Server
-		if ($this->httpObject->httpRequestObject->databaseServerObject === Constant::$NULL) {
-			$this->httpObject->httpRequestObject->databaseServerObject = DbCommonFunction::connectDatabase(
+		if ($this->httpObject->databaseObject === Constant::$NULL) {
+			$this->httpObject->databaseObject = DbCommonFunction::connectDatabase(
 				customerId: $this->httpObject->httpReqData['active']['customerId'],
 				fetchDbMode: $fetchDbMode
 			);
@@ -154,7 +154,7 @@ class Supplement
 		$supplementMaintainHierarchy,
 		$supplementOperateAsTransaction
 	): void {
-		$supplementOUTPUT_REPRESENTATION = CommonFunction::getOUTPUT_REPRESENTATION(
+		$supplementOUTPUT_REPRESENTATION = CommonFunction::getOutputRepresentation(
 			sqlConfig: $supplementSqlConfig,
 			httpReqData: $this->httpObject->httpReqData,
 			customerId: $this->httpObject->httpReqData['active']['customerId']
@@ -215,13 +215,13 @@ class Supplement
 			if ($hashJson === Constant::$NULL) {
 
 				if ($supplementOperateAsTransaction) {
-					$this->httpObject->httpRequestObject->databaseServerObject->begin();
+					$this->httpObject->databaseObject->begin();
 				}
 
 				$output = [];
 				$output['Status'] = HttpStatus::$Ok;
-				if (Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
-					$output[Env::$config[$this->httpObject->httpReqData['active']['customerId']]->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
+				if ($this->httpObject->Env->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
+					$output[$this->httpObject->Env->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
 						keyString: $this->getPayloadKey(
 							payloadKeyArray: $supplementPayloadKeyArray
 						)
@@ -244,14 +244,14 @@ class Supplement
 				if ($this->httpObject->httpResponseObject->httpStatus === HttpStatus::$Ok) {
 					if (
 						$supplementOperateAsTransaction
-						&& ($this->httpObject->httpRequestObject->databaseServerObject->beganTransaction === Constant::$TRUE)
+						&& ($this->httpObject->databaseObject->beganTransaction === Constant::$TRUE)
 					) {
-						$this->httpObject->httpRequestObject->databaseServerObject->commit();
+						$this->httpObject->databaseObject->commit();
 					}
 					$output['PayloadResponse'] = $supplementResponse;
 
 					if ($idempotentWindow) {
-						$this->httpObject->httpRequestObject->cacheServerObject->cacheSet(
+						$this->httpObject->cacheObject->cacheSet(
 							cacheKey: $hashKey,
 							cacheValue: $output,
 							cacheExpire: $idempotentWindow
@@ -463,7 +463,7 @@ class Supplement
 			if ($supplementParentModule === '') {
 				$processFunction  = 'process';
 			} else {
-				$processFunction  = "{$supplementParentModule}" . Env::$config[$this->httpObject->httpReqData['active']['customerId']]->APPEND_SUPPLEMENT_FUNCTION_KEYWORD;
+				$processFunction  = "{$supplementParentModule}" . $this->httpObject->Env->APPEND_SUPPLEMENT_FUNCTION_KEYWORD;
 			}
 
 			// For Execute
@@ -472,7 +472,7 @@ class Supplement
 			// For Rollback
 			if (
 				$supplementParentCurrentOperateAsTransaction
-				&& !$this->httpObject->httpRequestObject->databaseServerObject->beganTransaction
+				&& !$this->httpObject->databaseObject->beganTransaction
 			) {
 				$supplementParentCurrentResponse['Error'] = 'Something went wrong';
 				return;
@@ -526,7 +526,7 @@ class Supplement
 					value: $supplementParentSqlConfig['__AFFECTED-CACHE-KEY__']
 				);
 				for ($index = 0; $index < $indexCount; $index++) {
-					$this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheDelete(
+					$this->httpObject->queryCacheObject->queryCacheDelete(
 						customerId: $this->httpObject->httpReqData['active']['customerId'],
 						queryCacheKey: $supplementParentSqlConfig['__AFFECTED-CACHE-KEY__'][$index]
 					);

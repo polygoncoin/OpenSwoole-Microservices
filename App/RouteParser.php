@@ -152,10 +152,10 @@ class RouteParser
 
 		if (
 			isset($this->routeElementArray[1])
-			&& $this->routeElementArray[1] === Env::$config[$this->httpObject->httpReqData['active']['customerId']]->DROPBOX_REQUEST_KEYWORD
+			&& $this->routeElementArray[1] === $this->httpObject->Env->DROPBOX_REQUEST_KEYWORD
 		) {
 			if ($this->httpObject->httpRequestObject->isPrivateRequest) {
-				if (!Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_DROPBOX_REQUEST) {
+				if (!$this->httpObject->Env->CUSTOMER_ENABLE_DROPBOX_REQUEST) {
 					throw new \Exception(
 						message: 'Route not supported',
 						code: HttpStatus::$BadRequest
@@ -167,7 +167,7 @@ class RouteParser
 				);
 			}
 			$this->routeStartingWithReservedKeywordFlag = Constant::$TRUE;
-			$this->routeStartingReservedKeyword = Env::$config[$this->httpObject->httpReqData['active']['customerId']]->DROPBOX_REQUEST_KEYWORD;
+			$this->routeStartingReservedKeyword = $this->httpObject->Env->DROPBOX_REQUEST_KEYWORD;
 
 			$this->configuredRoute = '/' . implode(
 				separator: '/',
@@ -176,8 +176,8 @@ class RouteParser
 
 			return;
 		}
-		if ($this->routeElementArray[0] === Env::$SYSTEM_KEYWORD) {
-			if (!Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_ROUTES_REQUEST) {
+		if ($this->routeElementArray[0] === Env::$SYSTEM_ROUTES_KEYWORD) {
+			if (!$this->httpObject->Env->CUSTOMER_ENABLE_ROUTES_REQUEST) {
 				throw new \Exception(
 					message: 'Route not supported',
 					code: HttpStatus::$BadRequest
@@ -189,7 +189,7 @@ class RouteParser
 			);
 
 			$this->routeStartingWithReservedKeywordFlag = Constant::$TRUE;
-			$this->routeStartingReservedKeyword = Env::$SYSTEM_KEYWORD;
+			$this->routeStartingReservedKeyword = Env::$SYSTEM_ROUTES_KEYWORD;
 
 			$this->configuredRoute = '/' . implode(
 				separator: '/',
@@ -202,7 +202,7 @@ class RouteParser
 		$routeLastElementPos = count(
 			value: $this->routeElementArray
 		) - 1;
-		// if ($this->routeElementArray[$routeLastElementPos] === Env::$config[$this->httpObject->httpReqData['active']['customerId']]->IMPORT_SAMPLE_REQUEST_KEYWORD) {
+		// if ($this->routeElementArray[$routeLastElementPos] === $this->httpObject->Env->IMPORT_SAMPLE_REQUEST_KEYWORD) {
 		//     if (isset($this->httpObject->httpReqData['server']['httpRequestMethod'])) {
 		//         $this->httpObject->httpReqData['server']['httpRequestMethod'] = $this->httpObject->httpReqData['server']['httpRequestMethod'];
 		//     }
@@ -334,7 +334,7 @@ class RouteParser
 		// Input data representation over rides global and routes settings
 		// Switch Input data representation if set in URL param
 		if (
-			Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_INPUT_REPRESENTATION_IN_QUERY_STRING
+			$this->httpObject->Env->CUSTOMER_ENABLE_INPUT_REPRESENTATION_IN_QUERY_STRING
 			&& isset($this->httpObject->httpReqData['get']['inputRepresentation'])
 			&& Env::isValidDataRep(
 				dataRepresentation: $this->httpObject->httpReqData['get']['inputRepresentation'],
@@ -374,7 +374,7 @@ class RouteParser
 		) {
 			$this->routeStartingWithReservedKeywordFlag = Constant::$TRUE;
 			$this->routeStartingReservedKeyword = $routeStartingKeyword;
-			if (Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_CIDR) {
+			if ($this->httpObject->Env->CUSTOMER_ENABLE_CIDR) {
 				if (isset($this->reservedRoutesCidrString[$routeStartingKeyword])) {
 					CommonFunction::checkCidr(
 						ip: $this->httpObject->httpReqData['server']['httpRequestIp'],
@@ -400,25 +400,25 @@ class RouteParser
 		$return = Constant::$FALSE;
 
 		if (
-			Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_EXPLAIN_REQUEST
-			&& Env::$config[$this->httpObject->httpReqData['active']['customerId']]->EXPLAIN_REQUEST_KEYWORD === $routeEndingKeyword
+			$this->httpObject->Env->CUSTOMER_ENABLE_EXPLAIN_REQUEST
+			&& $this->httpObject->Env->EXPLAIN_REQUEST_KEYWORD === $routeEndingKeyword
 		) {
 			$this->routeEndingWithReservedKeywordFlag = Constant::$TRUE;
-			$this->routeEndingReservedKeyword = Env::$config[$this->httpObject->httpReqData['active']['customerId']]->EXPLAIN_REQUEST_KEYWORD;
+			$this->routeEndingReservedKeyword = $this->httpObject->Env->EXPLAIN_REQUEST_KEYWORD;
 			$return = Constant::$TRUE;
 		} elseif (
-			Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_IMPORT_REQUEST
-			&& Env::$config[$this->httpObject->httpReqData['active']['customerId']]->IMPORT_REQUEST_KEYWORD === $routeEndingKeyword
+			$this->httpObject->Env->CUSTOMER_ENABLE_IMPORT_REQUEST
+			&& $this->httpObject->Env->IMPORT_REQUEST_KEYWORD === $routeEndingKeyword
 		) {
 			$this->routeEndingWithReservedKeywordFlag = Constant::$TRUE;
-			$this->routeEndingReservedKeyword = Env::$config[$this->httpObject->httpReqData['active']['customerId']]->IMPORT_REQUEST_KEYWORD;
+			$this->routeEndingReservedKeyword = $this->httpObject->Env->IMPORT_REQUEST_KEYWORD;
 			$return = Constant::$TRUE;
 		} elseif (
-			Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_IMPORT_SAMPLE_REQUEST
-			&& Env::$config[$this->httpObject->httpReqData['active']['customerId']]->IMPORT_SAMPLE_REQUEST_KEYWORD === $routeEndingKeyword
+			$this->httpObject->Env->CUSTOMER_ENABLE_IMPORT_SAMPLE_REQUEST
+			&& $this->httpObject->Env->IMPORT_SAMPLE_REQUEST_KEYWORD === $routeEndingKeyword
 		) {
 			$this->routeEndingWithReservedKeywordFlag = Constant::$TRUE;
-			$this->routeEndingReservedKeyword = Env::$config[$this->httpObject->httpReqData['active']['customerId']]->IMPORT_SAMPLE_REQUEST_KEYWORD;
+			$this->routeEndingReservedKeyword = $this->httpObject->Env->IMPORT_SAMPLE_REQUEST_KEYWORD;
 			$return = Constant::$TRUE;
 		}
 
@@ -655,28 +655,28 @@ class RouteParser
 	private function setReservedRouteArray(): void
 	{
 		$this->reservedRoutesPrefix = [
-			Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CRON_REQUEST_KEYWORD,
+			$this->httpObject->Env->CRON_REQUEST_KEYWORD,
 			Env::$SYSTEM_RELOAD_REQUEST_KEYWORD,
-			Env::$SYSTEM_KEYWORD
+			Env::$SYSTEM_ROUTES_KEYWORD
 		];
 
 		$this->reservedRoutesCidrString = [
-			Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CRON_REQUEST_KEYWORD => $this->httpObject->httpReqData['active']['customerData']['customer_cron_cidr'],
-			Env::$SYSTEM_RELOAD_REQUEST_KEYWORD => Env::$config[$this->httpObject->httpReqData['active']['customerId']]->RELOAD_CACHE_CIDR,
-			Env::$SYSTEM_KEYWORD => $this->httpObject->httpReqData['active']['customerData']['customer_routes_cidr']
+			$this->httpObject->Env->CRON_REQUEST_KEYWORD => $this->httpObject->httpReqData['active']['customerData']['customer_cron_cidr'],
+			Env::$SYSTEM_RELOAD_REQUEST_KEYWORD => $this->httpObject->Env->RELOAD_CACHE_CIDR,
+			Env::$SYSTEM_ROUTES_KEYWORD => $this->httpObject->httpReqData['active']['customerData']['customer_routes_cidr']
 		];
 
-		if (Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_CUSTOM_REQUEST) {
-			$this->reservedRoutesPrefix[] = Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOM_REQUEST_KEYWORD;
-			$this->reservedRoutesCidrString[Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOM_REQUEST_KEYWORD] = $this->httpObject->httpReqData['active']['customerData']['customer_custom_cidr'];
+		if ($this->httpObject->Env->CUSTOMER_ENABLE_CUSTOM_REQUEST) {
+			$this->reservedRoutesPrefix[] = $this->httpObject->Env->CUSTOM_REQUEST_KEYWORD;
+			$this->reservedRoutesCidrString[$this->httpObject->Env->CUSTOM_REQUEST_KEYWORD] = $this->httpObject->httpReqData['active']['customerData']['customer_custom_cidr'];
 		}
-		if (Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_THIRDPARTY_REQUEST) {
-			$this->reservedRoutesPrefix[] = Env::$config[$this->httpObject->httpReqData['active']['customerId']]->THIRD_PARTY_REQUEST_KEYWORD;
-			$this->reservedRoutesCidrString[Env::$config[$this->httpObject->httpReqData['active']['customerId']]->THIRD_PARTY_REQUEST_KEYWORD] = $this->httpObject->httpReqData['active']['customerData']['customer_thirdparty_cidr'];
+		if ($this->httpObject->Env->CUSTOMER_ENABLE_THIRDPARTY_REQUEST) {
+			$this->reservedRoutesPrefix[] = $this->httpObject->Env->THIRD_PARTY_REQUEST_KEYWORD;
+			$this->reservedRoutesCidrString[$this->httpObject->Env->THIRD_PARTY_REQUEST_KEYWORD] = $this->httpObject->httpReqData['active']['customerData']['customer_thirdparty_cidr'];
 		}
-		if (Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_UPLOAD_REQUEST) {
-			$this->reservedRoutesPrefix[] = Env::$config[$this->httpObject->httpReqData['active']['customerId']]->UPLOAD_REQUEST_KEYWORD;
-			$this->reservedRoutesCidrString[Env::$config[$this->httpObject->httpReqData['active']['customerId']]->UPLOAD_REQUEST_KEYWORD] = $this->httpObject->httpReqData['active']['customerData']['customer_upload_cidr'];
+		if ($this->httpObject->Env->CUSTOMER_ENABLE_UPLOAD_REQUEST) {
+			$this->reservedRoutesPrefix[] = $this->httpObject->Env->UPLOAD_REQUEST_KEYWORD;
+			$this->reservedRoutesCidrString[$this->httpObject->Env->UPLOAD_REQUEST_KEYWORD] = $this->httpObject->httpReqData['active']['customerData']['customer_upload_cidr'];
 		}
 	}
 }

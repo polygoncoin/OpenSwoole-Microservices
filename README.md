@@ -32,7 +32,7 @@ This is a light & easy low code API generator using configuration arrays. It can
 - **Log** folder for application Log.
 - **TestCase** folder for Test Cases
 
-### Folders
+### Folder
 
 - **Config** Basic configuration folder
 - **Hook** Hook.
@@ -40,7 +40,7 @@ This is a light & easy low code API generator using configuration arrays. It can
 - **Supplement** Customised coding for APIs
 - **Validation** Contains validation classes.
 
-#### Supplement code folder
+#### Supplement folder
 
 - **Crons** Contains classes for cron API's
 - **Custom** Contains classes for custom API's
@@ -73,7 +73,7 @@ This is a light & easy low code API generator using configuration arrays. It can
 
 These files locations are used in routes config to be used for generating response.
 
-#### Config/&lt;CustomerFoldername&gt;/Private/Sql
+#### /Config/&lt;CustomerFoldername&gt;/Private/Sql
 
 - **/Config//&lt;CustomerFoldername&gt;/&lt;mode&gt;/Sql/DataModification**
 - **/Config//&lt;CustomerFoldername&gt;/&lt;mode&gt;/Sql/DataRetrival**

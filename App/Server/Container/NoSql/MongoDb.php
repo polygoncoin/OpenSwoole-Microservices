@@ -86,7 +86,7 @@ class MongoDb implements NoSqlInterface
 	 * 
 	 * @var null|\MongoDB\Customer
 	 */
-	private $cacheServerObject = null;
+	private $cacheObject = null;
 
 	/**
 	 * Database Object
@@ -136,7 +136,7 @@ class MongoDb implements NoSqlInterface
 	 */
 	public function connect(): void
 	{
-		if ($this->cacheServerObject !== Constant::$NULL) {
+		if ($this->cacheObject !== Constant::$NULL) {
 			return;
 		}
 
@@ -152,12 +152,12 @@ class MongoDb implements NoSqlInterface
 				$this->uri = 'mongodb://' . $UP
 					. $this->cacheServerHost . ':' . $this->cacheServerPort;
 			}
-			$this->cacheServerObject = new \MongoDB\Customer(
+			$this->cacheObject = new \MongoDB\Customer(
 				$this->uri
 			);
 
 			// Select a database
-			$this->cacheServerDbObject = $this->cacheServerObject->selectDatabase(
+			$this->cacheServerDbObject = $this->cacheObject->selectDatabase(
 				$this->cacheServerDb
 			);
 

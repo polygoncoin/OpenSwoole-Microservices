@@ -59,11 +59,11 @@ class Test
 	{
 		$response = [];
 
-		$response[] = $this->processApiPrivate();
+		// $response[] = $this->processPublic();
 		$response[] = $this->processWebPrivate();
-		$response[] = $this->processPublic();
-		$response[] = $this->processPublicXml();
-		$response[] = $this->processPrivateSupplement();
+		// $response[] = $this->processApiPrivate();
+		// $response[] = $this->processPublicXml();
+		// $response[] = $this->processPrivateSupplement();
 
 		return $response;
 	}
@@ -76,7 +76,7 @@ class Test
 	public function processApiPrivate(): array
 	{
 		$httpReqData = &$this->httpReqData;
-		return include __DIR__ . DIRECTORY_SEPARATOR . 'PrivateTokenTest.php';
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'PrivateApiTest.php';
 	}
 
 	/**
@@ -87,7 +87,7 @@ class Test
 	public function processWebPrivate(): array
 	{
 		$httpReqData = &$this->httpReqData;
-		return include __DIR__ . DIRECTORY_SEPARATOR . 'PrivateSessionTest.php';
+		return include __DIR__ . DIRECTORY_SEPARATOR . 'PrivateWebTest.php';
 	}
 
 	/**

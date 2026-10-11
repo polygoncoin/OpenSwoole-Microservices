@@ -73,7 +73,7 @@ class MySql implements SqlInterface
 	 * 
 	 * @var null|\PDO
 	 */
-	private $mysqlServerObject = null;
+	private $mysqlObject = null;
 
 	/**
 	 * Executed query statement
@@ -126,12 +126,12 @@ class MySql implements SqlInterface
 	 */
 	public function connect(): void
 	{
-		if ($this->mysqlServerObject !== Constant::$NULL) {
+		if ($this->mysqlObject !== Constant::$NULL) {
 			return;
 		}
-		
+
 		try {
-			$this->mysqlServerObject = new \PDO(
+			$this->mysqlObject = new \PDO(
 				dsn: "mysql:host={$this->dbServerHost};port={$this->dbServerPort}",
 				username: $this->dbServerUser,
 				password: $this->dbServerPassword,
@@ -145,7 +145,7 @@ class MySql implements SqlInterface
 				$this->useDatabase();
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObject->errorCode()) {
+			if ((int)$this->mysqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -164,12 +164,12 @@ class MySql implements SqlInterface
 
 		try {
 			if ($this->dbServerDb !== Constant::$NULL) {
-				$this->mysqlServerObject->exec(
+				$this->mysqlObject->exec(
 					statement: "USE `{$this->dbServerDb}`"
 				);
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObject->errorCode()) {
+			if ((int)$this->mysqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -189,9 +189,9 @@ class MySql implements SqlInterface
 
 		$this->beganTransaction = Constant::$TRUE;
 		try {
-			$this->mysqlServerObject->beginTransaction();
+			$this->mysqlObject->beginTransaction();
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObject->errorCode()) {
+			if ((int)$this->mysqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -209,10 +209,10 @@ class MySql implements SqlInterface
 		try {
 			if ($this->beganTransaction) {
 				$this->beganTransaction = Constant::$FALSE;
-				$this->mysqlServerObject->commit();
+				$this->mysqlObject->commit();
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObject->errorCode()) {
+			if ((int)$this->mysqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -230,10 +230,10 @@ class MySql implements SqlInterface
 		try {
 			if ($this->beganTransaction) {
 				$this->beganTransaction = Constant::$FALSE;
-				$this->mysqlServerObject->rollBack();
+				$this->mysqlObject->rollBack();
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObject->errorCode()) {
+			if ((int)$this->mysqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -256,7 +256,7 @@ class MySql implements SqlInterface
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->mysqlServerObject->errorCode()) {
+			if ((int)$this->mysqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -273,14 +273,14 @@ class MySql implements SqlInterface
 	public function lastInsertId(): bool|int
 	{
 		try {
-			if (($lastInsertId = $this->mysqlServerObject->lastInsertId()) !== Constant::$FALSE) {
+			if (($lastInsertId = $this->mysqlObject->lastInsertId()) !== Constant::$FALSE) {
 				return $lastInsertId;
 			}
 		} catch (\PDOException $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->mysqlServerObject->errorCode()) {
+			if ((int)$this->mysqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -315,7 +315,7 @@ class MySql implements SqlInterface
 					$this->stmt
 				);
 			}
-			$this->stmt = $this->mysqlServerObject->prepare(
+			$this->stmt = $this->mysqlObject->prepare(
 				query: $sql,
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
@@ -339,7 +339,7 @@ class MySql implements SqlInterface
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->mysqlServerObject->errorCode()) {
+			if ((int)$this->mysqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -361,7 +361,7 @@ class MySql implements SqlInterface
 				);
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObject->errorCode()) {
+			if ((int)$this->mysqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -384,7 +384,7 @@ class MySql implements SqlInterface
 				);
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObject->errorCode()) {
+			if ((int)$this->mysqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -418,7 +418,7 @@ class MySql implements SqlInterface
 				}
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->mysqlServerObject->errorCode()) {
+			if ((int)$this->mysqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);

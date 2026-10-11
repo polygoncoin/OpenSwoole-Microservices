@@ -59,7 +59,7 @@ class Validator
 		Http &$httpObject
 	) {
 		$this->httpObject = &$httpObject;
-		if ($this->httpObject->httpRequestObject->databaseServerObject->dbServerDb === Env::$config[$this->httpObject->httpReqData['active']['customerId']]->DB_NAME) {
+		if ($this->httpObject->databaseObject->dbServerDb === $this->httpObject->Env->DB_NAME) {
 			$this->validatorObject = new GlobalValidator(
 				httpObject: $this->httpObject
 			);

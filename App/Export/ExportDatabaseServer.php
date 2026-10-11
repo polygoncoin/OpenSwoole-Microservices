@@ -50,7 +50,7 @@ class ExportDatabaseServer
 	 * 
 	 * @var null|ExportDatabaseServerInterface
 	 */
-	public $exportDbServerObject = null;
+	public $exportDbObject = null;
 
 	/**
 	 * Constructor
@@ -62,7 +62,7 @@ class ExportDatabaseServer
 	) {
 		$this->dbServerType = $dbServerType;
 		$class = "Microservices\\App\\Export\\Container\\" . $this->dbServerType;
-		$this->exportDbServerObject = new $class();
+		$this->exportDbObject = new $class();
 	}
 
 	/**
@@ -84,7 +84,7 @@ class ExportDatabaseServer
 		$dbServerPassword,
 		$dbServerDb
 	): void {
-		$this->exportDbServerObject->init(
+		$this->exportDbObject->init(
 			dbServerHost: $dbServerHost,
 			dbServerPort: $dbServerPort,
 			dbServerUser: $dbServerUser,
@@ -112,7 +112,7 @@ class ExportDatabaseServer
 			);
 		}
 
-		return $this->exportDbServerObject->getShellCommand(
+		return $this->exportDbObject->getShellCommand(
 			sql: $sql,
 			paramArray: $paramArray
 		);

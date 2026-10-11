@@ -4,60 +4,58 @@
  * Custom Session Handler
  * php version 7
  *
- * @category  SessionHandler
+ * @category  SessionHandlerContainer
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Session-Handlers
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App\SessionHandler\Container;
+namespace Microservices\App\SessionHandler\Containers;
 
 use Microservices\App\Constant;
 use Microservices\App\Env;
-use Microservices\App\Http;
-use Microservices\App\HttpStatus;
-use Microservices\App\SessionHandler\Container\SessionContainerInterface;
-use Microservices\App\SessionHandler\Container\SessionContainerHelper;
+use Microservices\App\SessionHandler\Containers\SessionContainerInterface;
+use Microservices\App\SessionHandler\Containers\SessionContainerHelper;
 
 /**
- * Custom Session Handler using Memcached
+ * Custom Session Handler using Redis
  * php version 7
  *
- * @category  CustomSessionHandler_MemcacheD
+ * @category  SessionHandlerContainer_MongoDb
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Session-Handlers
  * @since     Class available since Release 1.0.0
  */
-class MemcachedBasedSessionContainer extends SessionContainerHelper implements
+class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	SessionContainerInterface
 {
+	// "mongodb://<username>:<password>@<cluster-url>:<port>/<database-name>
+	// ?retryWrites=true&w=majority"
+	public $mongoDbServerUri = null;
+
 	public $sessionServerHost = null;
 	public $sessionServerPort = null;
+	public $sessionServerUser = null;
+	public $sessionServerPassword = null;
+	public $sessionServerDb = null;
+	public $sessionServerTable = null;
 
-	private $memcachedServerObject = null;
+	private $sessionObject = null;
+	private $dbObject = null;
+	private $collectionObject = null;
 
-	/**
-	 * HTTP object
-	 * 
-	 * @var null|Http
-	 */
-	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
-	 * @param Http $httpObject
 	 */
-	public function __construct(
-		Http &$httpObject
-	) {
-		$this->httpObject = &$httpObject;
+	public function __construct() {
+
 	}
 
 	/**
@@ -86,11 +84,16 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId
 	): bool|string {
 		try {
-			if ($data = $this->memcachedServerObject->get($sessionId)) {
-				$sessionData = $this->decryptData(
-					cipherText: $data
-				);
-				return $sessionData;
+			$filter = ['sessionId' => $sessionId];
+
+			if ($document = $this->collectionObject->findOne($filter)) {
+				$lastAccessed = Env::$timestamp - $this->sessionOptions['cookie_lifetime'];
+				if ($document['lastAccessed'] > $lastAccessed) {
+					$sessionData = $this->decryptData(
+						cipherText: $document['sessionData']
+					);
+					return $sessionData;
+				}
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
@@ -112,25 +115,15 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
-		$sessionDataArray = unserialize(
-			data: $sessionData
-		);
-
-		
-		$sessionData = serialize(
-			value: $sessionDataArray
-		);
-
 		try {
-			if (
-				$this->memcachedServerObject->set(
-					$sessionId,
-					$this->encryptData(
-						plainText: $sessionData
-					),
-					$this->sessionOptions['cookie_lifetime']
+			$document = [
+				"sessionId" => $sessionId,
+				"lastAccessed" => Env::$timestamp,
+				"sessionData" => $this->encryptData(
+					plainText: $sessionData
 				)
-			) {
+			];
+			if ($this->collectionObject->insertOne($document)) {
 				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
@@ -153,19 +146,30 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
-		$sessionDataArray = unserialize(
-			data: $sessionData
-		);
-
-		
-		$sessionData = serialize(
-			value: $sessionDataArray
-		);
-
-		return $this->setSession(
-			sessionId: $sessionId,
-			sessionData: $sessionData
-		);
+		try {
+			$filter = ['sessionId' => $sessionId];
+			$update = [
+				'$set' => [
+					'lastAccessed' => Env::$timestamp,
+					"sessionData" => $this->encryptData(
+						plainText: $sessionData
+					)
+				]
+			];
+			if (
+				$this->collectionObject->updateOne(
+					$filter,
+					$update
+				)
+			) {
+				return Constant::$TRUE;
+			}
+		} catch (\Exception $e) {
+			$this->manageException(
+				e: $e
+			);
+		}
+		return Constant::$FALSE;
 	}
 
 	/**
@@ -180,20 +184,18 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
-		$sessionDataArray = unserialize(
-			data: $sessionData
-		);
-
-		
-		$sessionData = serialize(
-			value: $sessionDataArray
-		);
-
 		try {
+			$filter = ['sessionId' => $sessionId];
+			$update = [
+				'$set' => [
+					'lastAccessed' => Env::$timestamp
+				]
+			];
+
 			if (
-				$this->memcachedServerObject->touch(
-					$sessionId,
-					$this->sessionOptions['cookie_lifetime']
+				$this->collectionObject->updateOne(
+					$filter,
+					$update
 				)
 			) {
 				return Constant::$TRUE;
@@ -230,7 +232,9 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId
 	): bool {
 		try {
-			if ($this->memcachedServerObject->delete($sessionId)) {
+			$filter = ['sessionId' => $sessionId];
+
+			if ($this->collectionObject->deleteOne($filter)) {
 				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
@@ -242,13 +246,13 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	}
 
 	/**
-	 * Close File Container
+	 * Close Container
 	 * 
 	 * @return void
 	 */
 	public function closeSession(): void
 	{
-		$this->memcachedServerObject = Constant::$NULL;
+		$this->sessionObject = Constant::$NULL;
 	}
 
 	/**
@@ -259,21 +263,29 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	private function connect(): void
 	{
 		try {
-			if (
-				!extension_loaded(
-					extension: 'memcached'
-				)
-			) {
-				throw new \Exception(
-					message: "Unable to find Memcached extension",
-					code: HttpStatus::$InternalServerError
-				);
+			if ($this->mongoDbServerUri === Constant::$NULL) {
+				$UP = '';
+				if (
+					$this->sessionServerUser !== null
+					&& $this->sessionServerPassword !== null
+				) {
+					$UP = "{$this->sessionServerUser}:{$this->sessionServerPassword}@";
+				}
+				$this->mongoDbServerUri = 'mongodb://' . $UP
+					. $this->sessionServerHost . ':' . $this->sessionServerPort;
 			}
+			$this->sessionObject = new \MongoDB\Customer(
+				$this->mongoDbServerUri
+			);
 
-			$this->memcachedServerObject = new \Memcached(); // phpcs:ignore
-			$this->memcachedServerObject->addServer(
-				$this->sessionServerHost,
-				$this->sessionServerPort
+			// Select a database
+			$this->dbObject = $this->sessionObject->selectDatabase(
+				$this->sessionServerDb
+			);
+
+			// Select a collection
+			$this->collectionObject = $this->dbObject->selectCollection(
+				$this->sessionServerTable
 			);
 		} catch (\Exception $e) {
 			$this->manageException(
@@ -294,7 +306,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	): never {
 		throw new \Exception(
 			message: $e->getMessage(),
-			code: HttpStatus::$InternalServerError
+			code: 500
 		);
 	}
 }

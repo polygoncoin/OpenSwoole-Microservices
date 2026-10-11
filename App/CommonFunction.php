@@ -346,7 +346,7 @@ class CommonFunction
 		}
 
 		self::checkCacheCidr(
-			cacheObject: DbCommonFunction::$globalCacheServerObject,
+			cacheObject: DbCommonFunction::$globalCacheObject,
 			ip: $httpObject->httpReqData['server']['httpRequestIp'],
 			cidrCacheKey: CacheServerKey::customerCidr(
 				customerId: $httpObject->httpReqData['active']['customerId']
@@ -355,7 +355,7 @@ class CommonFunction
 
 		if ($httpObject !== Constant::$NULL) {
 			self::checkCacheCidr(
-				cacheObject: $httpObject->httpRequestObject->cacheServerObject,
+				cacheObject: $httpObject->cacheObject,
 				ip: $httpObject->httpReqData['server']['httpRequestIp'],
 				cidrCacheKey: CacheServerKey::customerGroupCidr(
 					customerId: $httpObject->httpReqData['active']['customerId'],
@@ -364,7 +364,7 @@ class CommonFunction
 			);
 
 			self::checkCacheCidr(
-				cacheObject: $httpObject->httpRequestObject->cacheServerObject,
+				cacheObject: $httpObject->cacheObject,
 				ip: $httpObject->httpReqData['server']['httpRequestIp'],
 				cidrCacheKey: CacheServerKey::customerUserCidr(
 					customerId: $httpObject->httpReqData['active']['customerId'],
@@ -412,12 +412,12 @@ class CommonFunction
 	 * 
 	 * @return null|array
 	 */
-	public static function getOUTPUT_REPRESENTATION(
+	public static function getOutputRepresentation(
 		$sqlConfig,
 		$httpReqData,
 		$customerId
 	): null|array {
-		$returnOUTPUT_REPRESENTATION = [];
+		$returnOutputRepresentation = [];
 		switch (Constant::$TRUE) {
 			case isset($httpReqData['get']['OUTPUT_REPRESENTATION'])
 				&& in_array(
@@ -425,7 +425,7 @@ class CommonFunction
 					haystack: ['JSON', 'XML'],
 					strict: Constant::$TRUE
 				):
-				$returnOUTPUT_REPRESENTATION = [
+				$returnOutputRepresentation = [
 					'OUTPUT_REPRESENTATION' => $httpReqData['get']['OUTPUT_REPRESENTATION'],
 					'OUTPUT_REPRESENTATION_FILE' => Constant::$FALSE
 				];
@@ -441,19 +441,16 @@ class CommonFunction
 					strict: Constant::$TRUE
 				)
 				&& isset($sqlConfig['OUTPUT_REPRESENTATION_FILE']):
-				$returnOUTPUT_REPRESENTATION = [
+				$returnOutputRepresentation = [
 					'OUTPUT_REPRESENTATION' => $sqlConfig['OUTPUT_REPRESENTATION'],
 					'OUTPUT_REPRESENTATION_FILE' => $sqlConfig['OUTPUT_REPRESENTATION_FILE']
 				];
 				break;
 			default:
-				Env::loadEnv(
-					customerId: $customerId
-				);
-				$returnOUTPUT_REPRESENTATION = Env::$config[$customerId]->OUTPUT_REPRESENTATION;
+				$returnOutputRepresentation = Env::$config[$customerId]->OUTPUT_REPRESENTATION;
 				break;
 		}
 
-		return $returnOUTPUT_REPRESENTATION;
+		return $returnOutputRepresentation;
 	}
 }

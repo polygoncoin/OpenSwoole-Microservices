@@ -958,7 +958,7 @@ trait AppTrait
 	): void {
 		if (
 			$this->httpObject->httpRequestObject->isPublicRequest
-			|| !Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_LIMITING
+			|| !$this->httpObject->Env->CUSTOMER_ENABLE_LIMITING
 			|| !isset($sqlConfig['rateLimitMaxRequest'])
 			|| !isset($sqlConfig['rateLimitMaxRequestWindow'])
 		) {
@@ -986,7 +986,7 @@ trait AppTrait
 
 		// @throws \Exception
 		$this->httpObject->httpRequestObject->rateLimiterObject->checkRateLimit(
-			rateLimitPrefix: Env::$config[$this->httpObject->httpReqData['active']['customerId']]->RATE_LIMIT_ROUTE_PREFIX,
+			rateLimitPrefix: $this->httpObject->Env->RATE_LIMIT_ROUTE_PREFIX,
 			rateLimitMaxRequest: $sqlConfig['rateLimitMaxRequest'],
 			rateLimitMaxRequestWindow: $sqlConfig['rateLimitMaxRequestWindow'],
 			rateLimitKey: $rateLimitKey
@@ -1019,7 +1019,7 @@ trait AppTrait
 			) > 0
 		) {
 			if (
-				!$this->httpObject->httpRequestObject->cacheServerObject->cacheExist(
+				!$this->httpObject->cacheObject->cacheExist(
 					cacheKey: $customerUserReferrerLagKey
 				)
 			) {
@@ -1028,7 +1028,7 @@ trait AppTrait
 					code: HttpStatus::$BadRequest
 				);
 			}
-			$referrerLagData = $this->httpObject->httpRequestObject->cacheServerObject->cacheGet(
+			$referrerLagData = $this->httpObject->cacheObject->cacheGet(
 				cacheKey: $customerUserReferrerLagKey
 			);
 			if (
@@ -1047,7 +1047,7 @@ trait AppTrait
 								if ($tsDiff <= $referrerSqlConfig['maximumReferrerLagWindow']) {
 									$found = Constant::$TRUE;
 								} else {
-									$this->httpObject->httpRequestObject->cacheServerObject->cacheDelete(
+									$this->httpObject->cacheObject->cacheDelete(
 										cacheKey: $customerUserReferrerLagKey
 									);
 								}
@@ -1055,7 +1055,7 @@ trait AppTrait
 								$found = Constant::$TRUE;
 							}
 						} else {
-							$this->httpObject->httpRequestObject->cacheServerObject->cacheDelete(
+							$this->httpObject->cacheObject->cacheDelete(
 								cacheKey: $customerUserReferrerLagKey
 							);
 						}
@@ -1075,11 +1075,11 @@ trait AppTrait
 			&& $sqlConfig['enableReferrerLag'] === Constant::$YES
 		) {
 			if (
-				!$this->httpObject->httpRequestObject->cacheServerObject->cacheExist(
+				!$this->httpObject->cacheObject->cacheExist(
 					cacheKey: $customerUserReferrerLagKey
 				)
 			) {
-				$this->httpObject->httpRequestObject->cacheServerObject->cacheSet(
+				$this->httpObject->cacheObject->cacheSet(
 					cacheKey: $customerUserReferrerLagKey,
 					cacheValue: [
 						'initRoute' => $this->httpObject->httpRequestObject->routeParserObject->configuredRoute,
@@ -1120,7 +1120,7 @@ trait AppTrait
 			$idempotentWindow = (int)$sqlConfig['idempotentWindow'];
 			if ($idempotentWindow) {
 				$payloadSignature = [
-					'SECRET' => Env::$config[$this->httpObject->httpReqData['active']['customerId']]->SECRET,
+					'SECRET' => $this->httpObject->Env->SECRET,
 					'idempotentWindow' => $idempotentWindow,
 					'httpRequestIp' => $this->httpObject->httpReqData['server']['httpRequestIp'],
 					'customerId' => $this->httpObject->httpReqData['active']['customerId'],
@@ -1148,14 +1148,14 @@ trait AppTrait
 				);
 				if (
 					$this->httpObject->httpRequestObject->isPrivateRequest
-					&& $this->httpObject->httpRequestObject->cacheServerObject->cacheExist(
+					&& $this->httpObject->cacheObject->cacheExist(
 						cacheKey: $hashKey
 					)
 				) {
 					$hashJson = str_replace(
 						search: 'JSON',
 						replace: json_encode(
-							value: $this->httpObject->httpRequestObject->cacheServerObject->cacheGet(
+							value: $this->httpObject->cacheObject->cacheGet(
 								cacheKey: $hashKey
 							)
 						),
@@ -1210,18 +1210,18 @@ trait AppTrait
 		);
 
 		if (
-			$this->httpObject->httpRequestObject->cacheServerObject->cacheExist(
+			$this->httpObject->cacheObject->cacheExist(
 				cacheKey: $hashKey
 			)
 		) {
-			$currentNoOfRequest = $this->httpObject->httpRequestObject->cacheServerObject->cacheGet(
+			$currentNoOfRequest = $this->httpObject->cacheObject->cacheGet(
 				cacheKey: $hashKey
 			);
 		} else {
 			$currentNoOfRequest = 0;
 		}
 
-		$this->httpObject->httpRequestObject->cacheServerObject->cacheSet(
+		$this->httpObject->cacheObject->cacheSet(
 			cacheKey: $hashKey,
 			cacheValue: ++$noOfRequest,
 			cacheExpire: $sqlConfig['responseLagWindow']
@@ -1612,8 +1612,8 @@ trait AppTrait
 
 		if (
 			$this->httpObject->httpRequestObject->routeParserObject->routeEndingWithReservedKeywordFlag
-			&& Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_EXPLAIN_REQUEST
-			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpReqData['active']['customerId']]->EXPLAIN_REQUEST_KEYWORD
+			&& $this->httpObject->Env->CUSTOMER_ENABLE_EXPLAIN_REQUEST
+			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === $this->httpObject->Env->EXPLAIN_REQUEST_KEYWORD
 		) {
 			return $this->explain(
 				sqlConfig: $sqlConfig,
@@ -1658,8 +1658,8 @@ trait AppTrait
 
 		if (
 			$this->httpObject->httpRequestObject->routeParserObject->routeEndingWithReservedKeywordFlag
-			&& Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_EXPLAIN_REQUEST
-			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpReqData['active']['customerId']]->EXPLAIN_REQUEST_KEYWORD
+			&& $this->httpObject->Env->CUSTOMER_ENABLE_EXPLAIN_REQUEST
+			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === $this->httpObject->Env->EXPLAIN_REQUEST_KEYWORD
 		) {
 			return $this->explain(
 				sqlConfig: $sqlConfig,
@@ -1669,7 +1669,7 @@ trait AppTrait
 
 		if (
 			$this->httpObject->httpRequestObject->routeParserObject->routeEndingWithReservedKeywordFlag
-			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === Env::$config[$this->httpObject->httpReqData['active']['customerId']]->IMPORT_SAMPLE_REQUEST_KEYWORD
+			&& $this->httpObject->httpRequestObject->routeParserObject->routeEndingReservedKeyword === $this->httpObject->Env->IMPORT_SAMPLE_REQUEST_KEYWORD
 		) {
 			return $this->generateImportSampleCsv(
 				sqlConfig: $sqlConfig,
@@ -1692,14 +1692,14 @@ trait AppTrait
 	): bool {
 		$toBeCached = Constant::$FALSE;
 		if (
-			Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_RESPONSE_CACHING
+			$this->httpObject->Env->CUSTOMER_ENABLE_RESPONSE_CACHING
 			&& isset($sqlConfig['__CACHE-KEY__'])
 			&& !isset($this->httpObject->httpReqData['active']['queryParamArray']['orderBy'])
 		) {
 			$cacheReqCount = 0;
 			$queryCacheReqFlag = Constant::$FALSE;
 			for ($index = 0;$index < 5; $index++) {
-				$json = $this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheGet(
+				$json = $this->httpObject->queryCacheObject->queryCacheGet(
 					customerId: $this->httpObject->httpReqData['active']['customerId'],
 					queryCacheKey: $sqlConfig['__CACHE-KEY__']
 				);
@@ -1715,7 +1715,7 @@ trait AppTrait
 					return Constant::$TRUE;
 				} else {
 					if (!$queryCacheReqFlag) {
-						$cacheReqCount = $this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheIncrement(
+						$cacheReqCount = $this->httpObject->queryCacheObject->queryCacheIncrement(
 							customerId: $this->httpObject->httpReqData['active']['customerId'],
 							queryCacheKey: $sqlConfig['__CACHE-KEY__']
 						);

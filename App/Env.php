@@ -47,7 +47,7 @@ class Env
 	public static $SYSTEM_ENABLE_RELOAD_CACHE = null;
     public static $SYSTEM_RELOAD_REQUEST_KEYWORD = null;
 
-	public static $SYSTEM_KEYWORD = null;
+	public static $SYSTEM_ROUTES_KEYWORD = null;
 
 	public static $SYSTEM_INPUT_REPRESENTATION = null;
 	public static $SYSTEM_OUTPUT_REPRESENTATION = null;
@@ -81,7 +81,7 @@ class Env
 		self::$SYSTEM_ENABLE_RELOAD_CACHE = (bool)getenv(name: 'SYSTEM_ENABLE_RELOAD_CACHE');
 		self::$SYSTEM_RELOAD_REQUEST_KEYWORD = getenv(name: 'SYSTEM_RELOAD_REQUEST_KEYWORD');
 
-		self::$SYSTEM_KEYWORD = getenv(name: 'SYSTEM_KEYWORD');
+		self::$SYSTEM_ROUTES_KEYWORD = getenv(name: 'SYSTEM_ROUTES_KEYWORD');
 
 		self::$SYSTEM_INPUT_REPRESENTATION = getenv(name: 'SYSTEM_INPUT_REPRESENTATION');
 		self::$SYSTEM_OUTPUT_REPRESENTATION = [

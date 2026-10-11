@@ -45,7 +45,7 @@ class QueryCache
 	 * 
 	 * @var null|QueryCacheServer
 	 */
-	private $queryCacheServerObject = null;
+	private $queryCacheObject = null;
 
 	/**
 	 * Constructor
@@ -65,14 +65,14 @@ class QueryCache
 	 */
 	public function connectQueryCache(): void
 	{
-        if ($this->queryCacheServerObject !== Constant::$NULL) {
+        if ($this->queryCacheObject !== Constant::$NULL) {
             return;
         }
 
 		$queryCacheServerCred = DbCommonFunction::getQueryCacheCred(
 			customerId: $this->httpObject->httpReqData['active']['customerId']
 		);
-		$this->queryCacheServerObject = new QueryCacheServer(
+		$this->queryCacheObject = new QueryCacheServer(
 			queryCacheServerMode: $queryCacheServerCred['cacheServerType'],
 			queryCacheServerHost: $queryCacheServerCred['cacheServerHost'],
 			queryCacheServerPort: $queryCacheServerCred['cacheServerPort'],
@@ -132,11 +132,11 @@ class QueryCache
 
 		$json = Constant::$NULL;
 		if (
-			$this->queryCacheServerObject->queryCacheExist(
+			$this->queryCacheObject->queryCacheExist(
 				queryCacheKey: $queryCacheKey
 			)
 		) {
-			$json = $this->queryCacheServerObject->queryCacheGet(
+			$json = $this->queryCacheObject->queryCacheGet(
 				queryCacheKey: $queryCacheKey
 			);
 		}
@@ -168,7 +168,7 @@ class QueryCache
 			queryCacheKey: $queryCacheKey
 		);
 
-		return $this->queryCacheServerObject->queryCacheIncrement(
+		return $this->queryCacheObject->queryCacheIncrement(
 			queryCacheKey: $queryCacheKey
 		);
 	}
@@ -205,10 +205,10 @@ class QueryCache
 			queryCacheKey: $delQueryCacheKey
 		);
 
-		$this->queryCacheServerObject->queryCacheDelete(
+		$this->queryCacheObject->queryCacheDelete(
 			queryCacheKey: $delQueryCacheKey
 		);
-		return $this->queryCacheServerObject->queryCacheSet(
+		return $this->queryCacheObject->queryCacheSet(
 			queryCacheKey: $queryCacheKey,
 			queryCacheValue: $queryCacheValue
 		);
@@ -237,7 +237,7 @@ class QueryCache
 			queryCacheKey: $queryCacheKey
 		);
 
-		return $this->queryCacheServerObject->queryCacheDelete(
+		return $this->queryCacheObject->queryCacheDelete(
 			queryCacheKey: $queryCacheKey
 		);
 	}

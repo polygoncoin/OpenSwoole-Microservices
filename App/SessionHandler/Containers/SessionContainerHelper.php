@@ -4,49 +4,50 @@
  * Custom Session Handler
  * php version 7
  *
- * @category  SessionHandler
+ * @category  SessionHandlerContainer
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Session-Handlers
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App\SessionHandler\Container;
+namespace Microservices\App\SessionHandler\Containers;
+
+use Microservices\App\Environment;
 
 /**
  * Custom Session Handler Helper
  * php version 7
  *
- * @category  CustomSessionHandler_Helper
+ * @category  SessionHandlerContainer_Helper
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Session-Handlers
  * @since     Class available since Release 1.0.0
  */
 class SessionContainerHelper
 {
-	// The cipher method
-	public $customerId = '';
-
-	// Session cookie name
-	public $sessionName = null;
+	public $Env = null;
 
 	// Bitwise disjunction of the flags OPENSSL_RAW_DATA,
 	// and OPENSSL_ZERO_PADDING or OPENSSL_DON'T_ZERO_PAD_KEY */
-	private $encryptionOptions = OPENSSL_RAW_DATA;
+	private $encryptionOption = OPENSSL_RAW_DATA;
 
-	// Usually 256-bit passphrase
-	public $passphrase = null;
+	// Usually 256-bit SESSION_ENCRYPTION_PASS_PHRASE
+	public $SESSION_ENCRYPTION_PASS_PHRASE = null;
 
-	// Usually 128-bit iv
-	public $iv = null;
+	// Usually 128-bit SESSION_ENCRYPTION_IV
+	public $SESSION_ENCRYPTION_IV = null;
 
 	// Session Start $options param
 	public $sessionOptions = null;
+
+	// Session cookie name
+	public $sessionName = null;
 
 	/**
 	 * Encryption
@@ -59,16 +60,16 @@ class SessionContainerHelper
 		$plainText
 	): string {
 		if (
-			!empty($this->passphrase)
-			&& !empty($this->iv)
+			!empty($this->SESSION_ENCRYPTION_PASS_PHRASE)
+			&& !empty($this->SESSION_ENCRYPTION_IV)
 		) {
 			return base64_encode(
 				string: openssl_encrypt(
 					data: $plainText,
-					cipher_algo: $this->cipher_algo,
-					passphrase: $this->passphrase,
-					options: $this->encryptionOptions,
-					iv: $this->iv
+					cipher_algo: 'aes-256-cbc',
+					passphrase: $this->SESSION_ENCRYPTION_PASS_PHRASE,
+					options: $this->encryptionOption,
+					iv: $this->SESSION_ENCRYPTION_IV
 				)
 			);
 		}
@@ -86,17 +87,17 @@ class SessionContainerHelper
 		$cipherText
 	): bool|string {
 		if (
-			!empty($this->passphrase)
-			&& !empty($this->iv)
+			!empty($this->SESSION_ENCRYPTION_PASS_PHRASE)
+			&& !empty($this->SESSION_ENCRYPTION_IV)
 		) {
 			return openssl_decrypt(
 				data: base64_decode(
 					string: $cipherText
 				),
-				cipher_algo: $this->cipher_algo,
-				passphrase: $this->passphrase,
-				options: $this->encryptionOptions,
-				iv: $this->iv
+				cipher_algo: 'aes-256-cbc',
+				passphrase: $this->SESSION_ENCRYPTION_PASS_PHRASE,
+				options: $this->encryptionOption,
+				iv: $this->SESSION_ENCRYPTION_IV
 			);
 		}
 		return $cipherText;

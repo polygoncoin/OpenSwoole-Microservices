@@ -110,7 +110,7 @@ class Read
 			return $return;
 		}
 
-		$OUTPUT_REPRESENTATION = CommonFunction::getOUTPUT_REPRESENTATION(
+		$OUTPUT_REPRESENTATION = CommonFunction::getOutputRepresentation(
 			sqlConfig: $sqlConfig,
 			httpReqData: $this->httpObject->httpReqData,
 			customerId: $this->httpObject->httpReqData['active']['customerId']
@@ -128,7 +128,7 @@ class Read
 		);
 
 		if (
-			Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_RESPONSE_CACHING
+			$this->httpObject->Env->CUSTOMER_ENABLE_RESPONSE_CACHING
 			&& $toBeCached
 		) {
 			$this->dataEncodeObject = new DataEncode(
@@ -145,8 +145,8 @@ class Read
 		// Set Server mode to execute query on - Read / Write Server
 		$fetchDbMode = $sqlConfig['__FETCH-MODE__'] ?? 'Slave';
 		$placeholderModeKey = strtoupper($fetchDbMode) . '_DB_PLACEHOLDER';
-		$this->placeholderMode = Env::$config[$this->httpObject->httpReqData['active']['customerId']]->$placeholderModeKey;
-		$this->httpObject->httpRequestObject->databaseServerObject = DbCommonFunction::connectDatabase(
+		$this->placeholderMode = $this->httpObject->Env->$placeholderModeKey;
+		$this->httpObject->databaseObject = DbCommonFunction::connectDatabase(
 			customerId: $this->httpObject->httpReqData['active']['customerId'],
 			fetchDbMode: $fetchDbMode
 		);
@@ -158,11 +158,11 @@ class Read
 		);
 
 		if (
-			Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_RESPONSE_CACHING
+			$this->httpObject->Env->CUSTOMER_ENABLE_RESPONSE_CACHING
 			&& $toBeCached
 		) {
 			$json = $this->dataEncodeObject->getData();
-			$this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheSet(
+			$this->httpObject->queryCacheObject->queryCacheSet(
 				customerId: $this->httpObject->httpReqData['active']['customerId'],
 				queryCacheKey: $sqlConfig['__CACHE-KEY__'],
 				queryCacheValue: $json
@@ -242,13 +242,13 @@ class Read
 				$this->dataEncodeObject->startObject($index);
 			}
 
-			if (Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
+			if ($this->httpObject->Env->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
 				$readPayloadKey = $this->getPayloadKey(
 					payloadKeyArray: $readPayloadKeyArray
 				);
 
 				$this->dataEncodeObject->addKeyData(
-					objectKey: Env::$config[$this->httpObject->httpReqData['active']['customerId']]->PAYLOAD_IN_RESPONSE,
+					objectKey: $this->httpObject->Env->PAYLOAD_IN_RESPONSE,
 					data: $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
 						keyString: $readPayloadKey
 					)
@@ -328,7 +328,7 @@ class Read
 			}
 		}
 
-		$mode = Env::$config[$this->httpObject->httpReqData['active']['customerId']]->MASTER_DB_PLACEHOLDER;
+		$mode = $this->httpObject->Env->MASTER_DB_PLACEHOLDER;
 		$function = "getSqlAndParam{$mode}Mode";
 
 		// For Required Fields
@@ -449,7 +449,7 @@ class Read
 						}
 						if (isset($readParentSqlConfig['__COUNT-SQL__'])) {
 							$page  = $readParentPayload['page'] ?? 1;
-							$perPage  = $readParentPayload['perPage'] ?? Env::$config[$this->httpObject->httpReqData['active']['customerId']]->DEFAULT_PER_PAGE_COUNT;
+							$perPage  = $readParentPayload['perPage'] ?? $this->httpObject->Env->DEFAULT_PER_PAGE_COUNT;
 							$start = $this->fetchRecordCount(
 								readSqlConfig: $readParentSqlConfig,
 								readPayload: $readParentPayload,
@@ -518,7 +518,7 @@ class Read
 					value: $readParentSqlConfig['__AFFECTED-CACHE-KEY__']
 				);
 				for ($index = 0; $index < $indexCount; $index++) {
-					$this->httpObject->httpRequestObject->queryCacheServerObject->queryCacheDelete(
+					$this->httpObject->queryCacheObject->queryCacheDelete(
 						customerId: $this->httpObject->httpReqData['active']['customerId'],
 						queryCacheKey: $readParentSqlConfig['__AFFECTED-CACHE-KEY__'][$index]
 					);
@@ -683,9 +683,9 @@ class Read
 		unset($readSqlConfig['__COUNT-SQL-COMMENT__']);
 		unset($readSqlConfig['__COUNT-SQL__']);
 
-		if ($perPage > Env::$config[$this->httpObject->httpReqData['active']['customerId']]->MAX_PER_PAGE_COUNT) {
+		if ($perPage > $this->httpObject->Env->MAX_PER_PAGE_COUNT) {
 			throw new \Exception(
-				message: 'perPage exceeds max perPage value of ' . Env::$config[$this->httpObject->httpReqData['active']['customerId']]->MAX_PER_PAGE_COUNT,
+				message: 'perPage exceeds max perPage value of ' . $this->httpObject->Env->MAX_PER_PAGE_COUNT,
 				code: HttpStatus::$Forbidden
 			);
 		}
@@ -712,12 +712,12 @@ class Read
 			);
 		}
 
-		$this->httpObject->httpRequestObject->databaseServerObject->execQuery(
+		$this->httpObject->databaseObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$dbFetchedRecord = $this->httpObject->httpRequestObject->databaseServerObject->fetch();
-		$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
+		$dbFetchedRecord = $this->httpObject->databaseObject->fetch();
+		$this->httpObject->databaseObject->closeCursor();
 
 		$totalRecordsCount = isset($dbFetchedRecord['count']) ? $dbFetchedRecord['count'] : 0;
 		$totalPages = ceil(
@@ -784,11 +784,11 @@ class Read
 			);
 		}
 
-		$this->httpObject->httpRequestObject->databaseServerObject->execQuery(
+		$this->httpObject->databaseObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		if ($dbFetchedRecord = $this->httpObject->httpRequestObject->databaseServerObject->fetch()) {
+		if ($dbFetchedRecord = $this->httpObject->databaseObject->fetch()) {
 			foreach ($dbFetchedRecord as $objectKey => &$objectKeyValue) {
 				$this->dataEncodeObject->addKeyData(
 					objectKey: $objectKey,
@@ -822,7 +822,7 @@ class Read
 				return;
 			}
 		}
-		$this->httpObject->httpRequestObject->databaseServerObject->closeCursor();
+		$this->httpObject->databaseObject->closeCursor();
 
 		// For Child
 		if (isset($readSqlConfig['__SUB-CONFIG__'])) {
@@ -923,14 +923,14 @@ class Read
 		}
 
 		$pushPop = Constant::$TRUE;
-		$this->httpObject->httpRequestObject->databaseServerObject->execQuery(
+		$this->httpObject->databaseObject->execQuery(
 			sql: $sql,
 			paramArray: $paramArray,
 			pushPop: $pushPop
 		);
 
 		$singleColumn = Constant::$FALSE;
-		for ($index = 0; $dbFetchedRecord = $this->httpObject->httpRequestObject->databaseServerObject->fetch(); $index++) {
+		for ($index = 0; $dbFetchedRecord = $this->httpObject->databaseObject->fetch(); $index++) {
 			if ($index === 0) {
 				if (
 					count(
@@ -973,7 +973,7 @@ class Read
 				);
 			}
 		}
-		$this->httpObject->httpRequestObject->databaseServerObject->closeCursor(
+		$this->httpObject->databaseObject->closeCursor(
 			pushPop: $pushPop
 		);
 	}
@@ -990,7 +990,7 @@ class Read
 	): array {
 		$return = [[], '', HttpStatus::$Ok];
 
-		if (!Env::$config[$this->httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_DOWNLOAD_REQUEST) {
+		if (!$this->httpObject->Env->CUSTOMER_ENABLE_DOWNLOAD_REQUEST) {
 			return [[], '', HttpStatus::$NotFound];
 		}
 

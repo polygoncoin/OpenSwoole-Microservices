@@ -69,11 +69,11 @@ CREATE TABLE `import_file_detail` (
 
 DROP TABLE IF EXISTS `session`;
 CREATE TABLE `session` (
-    `sessionId` VARCHAR(250) NOT NULL,
-    `customerId` INT UNSIGNED,
-    `sessionData` TEXT NOT NULL,
-    `lastAccessed` INT UNSIGNED,
-    UNIQUE KEY (`sessionId`)
+    `session_id` CHAR(64) NOT NULL,
+--    `customer_id` INT UNSIGNED,
+    `last_accessed` INT UNSIGNED NOT NULL,
+    `session_data` MEDIUMBLOB,
+    PRIMARY KEY (`session_id`)
 ) ENGINE = InnoDB;
 -- ----------- Tables Customer level (Customer Entered Data) --------------
 

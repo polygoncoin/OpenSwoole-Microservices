@@ -16,8 +16,12 @@
 namespace Microservices\App;
 
 use Microservices\App\Constant;
+use Microservices\App\Environment;
 use Microservices\App\HttpRequest;
 use Microservices\App\HttpResponse;
+use Microservices\App\Server\CacheServer;
+use Microservices\App\Server\DatabaseServer;
+use Microservices\App\SessionHandler\Session;
 
 /**
  * HTTP Class
@@ -34,6 +38,20 @@ use Microservices\App\HttpResponse;
 class Http
 {
 	/**
+	 * HTTP request data
+	 * 
+	 * @var null|array
+	 */
+	public $httpReqData = null;
+
+	/**
+	 * Environment data
+	 * 
+	 * @var null|Environment
+	 */
+	public $Env = null;
+
+	/**
 	 * Microservices HTTP request
 	 * 
 	 * @var null|HttpRequest
@@ -48,11 +66,32 @@ class Http
 	public $httpResponseObject = null;
 
 	/**
-	 * HTTP request data
+	 * Session object
 	 * 
-	 * @var null|array
+	 * @var null|Session
 	 */
-	public $httpReqData = null;
+	public $sessionObject = null;
+
+	/**
+	 * Customer Cache Object
+	 * 
+	 * @var null|CacheServer
+	 */
+	public $cacheObject = null;
+
+	/**
+	 * Customer Database Object
+	 * 
+	 * @var null|DatabaseServer
+	 */
+	public $databaseObject = null;
+
+	/**
+	 * Customer Query Cache Object
+	 * 
+	 * @var null|CacheServer
+	 */
+	public $queryCacheObject = null;
 
 	/**
 	 * Constructor

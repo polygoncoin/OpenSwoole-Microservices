@@ -80,7 +80,7 @@ class DatabaseServer
 	 * 
 	 * @var null|DatabaseServerInterface
 	 */
-	private $dbServerObject = null;
+	private $dbObject = null;
 
 	/**
 	 * Transaction started flag
@@ -122,7 +122,7 @@ class DatabaseServer
 	 */
 	public function connectDb(): void
 	{
-		if ($this->dbServerObject !== Constant::$NULL) {
+		if ($this->dbObject !== Constant::$NULL) {
 			return;
 		}
 
@@ -142,7 +142,7 @@ class DatabaseServer
 		$dbServerNS = 'Microservices\\App\\Server\\DatabaseServer\\'
             . $this->dbServerType . 'Database';
 
-		$this->dbServerObject = new $dbServerNS(
+		$this->dbObject = new $dbServerNS(
 			dbServerHost: $this->dbServerHost,
 			dbServerPort: $this->dbServerPort,
 			dbServerUser: $this->dbServerUser,
@@ -160,7 +160,7 @@ class DatabaseServer
 	{
 		$this->connectDb();
 
-        $this->dbServerObject->useDatabase();
+        $this->dbObject->useDatabase();
 	}
 
 	/**
@@ -173,7 +173,7 @@ class DatabaseServer
 		$this->connectDb();
 
 		$this->beganTransaction = Constant::$TRUE;
-        $this->dbServerObject->begin();
+        $this->dbObject->begin();
 	}
 
 	/**
@@ -185,7 +185,7 @@ class DatabaseServer
 	{
 		if ($this->beganTransaction) {
 			$this->beganTransaction = Constant::$FALSE;
-			$this->dbServerObject->commit();
+			$this->dbObject->commit();
 		}
 	}
 
@@ -198,7 +198,7 @@ class DatabaseServer
 	{
 		if ($this->beganTransaction) {
 			$this->beganTransaction = Constant::$FALSE;
-			$this->dbServerObject->rollBack();
+			$this->dbObject->rollBack();
 		}
 	}
 
@@ -210,7 +210,7 @@ class DatabaseServer
 	public function affectedRecordCount(): bool|int
 	{
 		try {
-			return $this->dbServerObject->affectedRecordCount();
+			return $this->dbObject->affectedRecordCount();
 		} catch (\Exception $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
@@ -228,7 +228,7 @@ class DatabaseServer
 	public function lastInsertId(): bool|int
 	{
 		try {
-			return $this->dbServerObject->lastInsertId();
+			return $this->dbObject->lastInsertId();
 		} catch (\Exception $e) {
 			if ($this->beganTransaction) {
 				$this->rollBack();
@@ -254,7 +254,7 @@ class DatabaseServer
 		$this->connectDb();
 
 		try {
-			$this->dbServerObject->execQuery(
+			$this->dbObject->execQuery(
 				sql: $sql,
 				paramArray: $paramArray,
 				pushPop: $pushPop
@@ -273,7 +273,7 @@ class DatabaseServer
 	 */
 	public function fetch(): mixed
 	{
-        return $this->dbServerObject->fetch();
+        return $this->dbObject->fetch();
 	}
 
 	/**
@@ -283,7 +283,7 @@ class DatabaseServer
 	 */
 	public function fetchAll(): array|bool
 	{
-        return $this->dbServerObject->fetchAll();
+        return $this->dbObject->fetchAll();
 	}
 
 	/**
@@ -296,7 +296,7 @@ class DatabaseServer
 	public function closeCursor(
 		$pushPop = false
 	): void {
-        $this->dbServerObject->closeCursor(
+        $this->dbObject->closeCursor(
 			pushPop: $pushPop
 		);
 	}

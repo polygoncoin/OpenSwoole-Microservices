@@ -73,7 +73,7 @@ class PostgreSql implements SqlInterface
 	 * 
 	 * @var null|\PDO
 	 */
-	private $pgsqlServerObject = null;
+	private $pgsqlObject = null;
 
 	/**
 	 * Executed query statement
@@ -126,27 +126,27 @@ class PostgreSql implements SqlInterface
 	 */
 	public function connect(): void
 	{
-		if ($this->pgsqlServerObject !== Constant::$NULL) {
+		if ($this->pgsqlObject !== Constant::$NULL) {
 			return;
 		}
 
 		try {
-			$pgsqlServerObject = new PDO(
+			$pgsqlObject = new PDO(
 				$dsn,
 				$user,
 				$dbServerPassword
 			);
-			$this->pgsqlServerObject = new \PDO(
+			$this->pgsqlObject = new \PDO(
 				dsn: "pgsql:host={$this->dbServerHost};port={$this->dbServerPort};dbname={$this->dbServerDb}",
 				username: $this->dbServerUser,
 				password: $this->dbServerPassword,
 			);
-			$pgsqlServerObject->setAttribute(
+			$pgsqlObject->setAttribute(
 				\PDO::ATTR_ERRMODE,
 				\PDO::ERRMODE_EXCEPTION
 			);
 		} catch (\PDOException $e) {
-			if ((int)$this->pgsqlServerObject->errorCode()) {
+			if ((int)$this->pgsqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -175,9 +175,9 @@ class PostgreSql implements SqlInterface
 
 		$this->beganTransaction = Constant::$TRUE;
 		try {
-			$this->pgsqlServerObject->beginTransaction();
+			$this->pgsqlObject->beginTransaction();
 		} catch (\PDOException $e) {
-			if ((int)$this->pgsqlServerObject->errorCode()) {
+			if ((int)$this->pgsqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -195,10 +195,10 @@ class PostgreSql implements SqlInterface
 		try {
 			if ($this->beganTransaction) {
 				$this->beganTransaction = Constant::$FALSE;
-				$this->pgsqlServerObject->commit();
+				$this->pgsqlObject->commit();
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->pgsqlServerObject->errorCode()) {
+			if ((int)$this->pgsqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -216,10 +216,10 @@ class PostgreSql implements SqlInterface
 		try {
 			if ($this->beganTransaction) {
 				$this->beganTransaction = Constant::$FALSE;
-				$this->pgsqlServerObject->rollBack();
+				$this->pgsqlObject->rollBack();
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->pgsqlServerObject->errorCode()) {
+			if ((int)$this->pgsqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -242,7 +242,7 @@ class PostgreSql implements SqlInterface
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->pgsqlServerObject->errorCode()) {
+			if ((int)$this->pgsqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -266,7 +266,7 @@ class PostgreSql implements SqlInterface
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->pgsqlServerObject->errorCode()) {
+			if ((int)$this->pgsqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -301,7 +301,7 @@ class PostgreSql implements SqlInterface
 					$this->stmt
 				);
 			}
-			$this->stmt = $this->pgsqlServerObject->prepare(
+			$this->stmt = $this->pgsqlObject->prepare(
 				query: $sql,
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
@@ -314,7 +314,7 @@ class PostgreSql implements SqlInterface
 			if ($this->beganTransaction) {
 				$this->rollBack();
 			}
-			if ((int)$this->pgsqlServerObject->errorCode()) {
+			if ((int)$this->pgsqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -336,7 +336,7 @@ class PostgreSql implements SqlInterface
 				);
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->pgsqlServerObject->errorCode()) {
+			if ((int)$this->pgsqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -359,7 +359,7 @@ class PostgreSql implements SqlInterface
 				);
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->pgsqlServerObject->errorCode()) {
+			if ((int)$this->pgsqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);
@@ -393,7 +393,7 @@ class PostgreSql implements SqlInterface
 				}
 			}
 		} catch (\PDOException $e) {
-			if ((int)$this->pgsqlServerObject->errorCode()) {
+			if ((int)$this->pgsqlObject->errorCode()) {
 				$this->manageException(
 					e: $e
 				);

@@ -102,12 +102,18 @@ $server->on(
 
 		$httpReqData['header'] = $request->header;
 
+		if (isset($request->cookie)) {
+			$httpReqData['header']['cookie'] = $request->cookie;
+		} else {
+			$httpReqData['header']['cookie'] = null;
+		}
+
 		if (isset($httpReqData['header']['content-type'])) {
 			$httpReqData['header']['contentType'] = $httpReqData['header']['content-type'];
 		} else {
 			$httpReqData['header']['contentType'] = '';
 		}
-		
+
 		if (isset($request->header['authorization'])) {
 			if (
 				!preg_match(
@@ -181,6 +187,7 @@ $server->on(
 			}
 		} else {
 			if ($httpReqData['get'][ROUTE_URL_PARAM] === '/' . Env::$SYSTEM_RELOAD_REQUEST_KEYWORD) {
+				Reload::init();
 				Reload::process(
 					httpRequestIp: $httpReqData['server']['httpRequestIp']
 				);

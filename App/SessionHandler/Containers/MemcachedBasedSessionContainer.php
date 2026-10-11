@@ -4,63 +4,46 @@
  * Custom Session Handler
  * php version 7
  *
- * @category  SessionHandler
+ * @category  SessionHandlerContainer
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Session-Handlers
  * @since     Class available since Release 1.0.0
  */
 
-namespace Microservices\App\SessionHandler\Container;
+namespace Microservices\App\SessionHandler\Containers;
 
-use Microservices\App\Constant;
-use Microservices\App\Env;
-use Microservices\App\Http;
-use Microservices\App\HttpStatus;
-use Microservices\App\SessionHandler\Container\SessionContainerInterface;
-use Microservices\App\SessionHandler\Container\SessionContainerHelper;
+use Microservices\App\SessionHandler\Containers\SessionContainerInterface;
+use Microservices\App\SessionHandler\Containers\SessionContainerHelper;
 
 /**
- * Custom Session Handler using Redis
+ * Custom Session Handler using Memcached
  * php version 7
  *
- * @category  CustomSessionHandler_Redis
+ * @category  SessionHandlerContainer_MemcacheD
  * @package   Openswoole-Microservices
  * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
  * @copyright © 2026 Ramesh N. Jangid (Sharma)
  * @license   MIT https://opensource.org/license/mit
- * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @link      https://github.com/polygoncoin/Session-Handlers
  * @since     Class available since Release 1.0.0
  */
-class RedisBasedSessionContainer extends SessionContainerHelper implements
+class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	SessionContainerInterface
 {
 	public $sessionServerHost = null;
 	public $sessionServerPort = null;
-	public $sessionServerUser = null;
-	public $sessionServerPassword = null;
-	public $sessionServerDb = null;
 
-	private $redisServerObject = null;
+	private $sessionObject = null;
 
-	/**
-	 * HTTP object
-	 * 
-	 * @var null|Http
-	 */
-	private $httpObject = null;
 
 	/**
 	 * Constructor
-	 * 
-	 * @param Http $httpObject
 	 */
-	public function __construct(
-		Http &$httpObject
-	) {
-		$this->httpObject = &$httpObject;
+	public function __construct() {
+
 	}
 
 	/**
@@ -89,10 +72,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId
 	): bool|string {
 		try {
-			if (
-				$this->redisServerObject->exists($sessionId)
-				&& ($data = $this->redisServerObject->get($sessionId))
-			) {
+			if ($data = $this->sessionObject->get($sessionId)) {
 				$sessionData = $this->decryptData(
 					cipherText: $data
 				);
@@ -118,18 +98,9 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
-		$sessionDataArray = unserialize(
-			data: $sessionData
-		);
-
-		
-		$sessionData = serialize(
-			value: $sessionDataArray
-		);
-
 		try {
 			if (
-				$this->redisServerObject->set(
+				$this->sessionObject->set(
 					$sessionId,
 					$this->encryptData(
 						plainText: $sessionData
@@ -159,15 +130,6 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
-		$sessionDataArray = unserialize(
-			data: $sessionData
-		);
-
-		
-		$sessionData = serialize(
-			value: $sessionDataArray
-		);
-
 		return $this->setSession(
 			sessionId: $sessionId,
 			sessionData: $sessionData
@@ -186,18 +148,9 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
-		$sessionDataArray = unserialize(
-			data: $sessionData
-		);
-
-		
-		$sessionData = serialize(
-			value: $sessionDataArray
-		);
-
 		try {
 			if (
-				$this->redisServerObject->expire(
+				$this->sessionObject->touch(
 					$sessionId,
 					$this->sessionOptions['cookie_lifetime']
 				)
@@ -236,7 +189,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId
 	): bool {
 		try {
-			if ($this->redisServerObject->del($sessionId)) {
+			if ($this->sessionObject->delete($sessionId)) {
 				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
@@ -248,13 +201,13 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	}
 
 	/**
-	 * Close File Container
+	 * Close Container
 	 * 
 	 * @return void
 	 */
 	public function closeSession(): void
 	{
-		$this->redisServerObject = Constant::$NULL;
+		$this->sessionObject = Constant::$NULL;
 	}
 
 	/**
@@ -267,36 +220,19 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 		try {
 			if (
 				!extension_loaded(
-					extension: 'redis'
+					extension: 'memcached'
 				)
 			) {
 				throw new \Exception(
-					message: "Unable to find Redis extension",
-					code: HttpStatus::$InternalServerError
+					message: "Unable to find Memcached extension",
+					code: 500
 				);
 			}
 
-			$connParamArray = [
-				'host' => $this->sessionServerHost,
-				'port' => (int)$this->sessionServerPort,
-				'connectTimeout' => 2.5
-			];
-
-			if (
-				$this->sessionServerUser !== Constant::$NULL
-				&& $this->sessionServerPassword !== Constant::$NULL
-			) {
-				$connParamArray['auth'] = [
-					$this->sessionServerUser,
-					$this->sessionServerPassword
-				];
-			}
-
-			$this->redisServerObject = new \Redis( // phpcs:ignore
-				$connParamArray
-			);
-			$this->redisServerObject->select(
-				$this->sessionServerDb
+			$this->sessionObject = new \Memcached(); // phpcs:ignore
+			$this->sessionObject->addServer(
+				$this->sessionServerHost,
+				$this->sessionServerPort
 			);
 		} catch (\Exception $e) {
 			$this->manageException(
@@ -317,7 +253,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	): never {
 		throw new \Exception(
 			message: $e->getMessage(),
-			code: HttpStatus::$InternalServerError
+			code: 500
 		);
 	}
 }
