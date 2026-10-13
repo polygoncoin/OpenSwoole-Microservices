@@ -21,6 +21,7 @@ use Microservices\App\Env;
 use Microservices\App\Hook;
 use Microservices\App\Http;
 use Microservices\App\HttpStatus;
+use Microservices\App\Reload;
 use Microservices\App\Supplement;
 
 /**
@@ -235,7 +236,8 @@ class Api
 				case Constant::$GET:
 				case Constant::$QUERY:
 					if (
-						$this->checkSupplement(
+						$this->httpObject->Env->ENABLE_DROPBOX
+						&& $this->checkSupplement(
 							$this->httpObject->Env->DROPBOX_KEYWORD
 						)
 					) {
@@ -254,11 +256,17 @@ class Api
 							$class = Constant::$SUPPLEMENT_NS . '\\Dropbox\\' . $classFileName;
 						}
 					} elseif (
-						$this->checkSupplement(
+						$this->httpObject->Env->ENABLE_ROUTES
+						&& $this->checkSupplement(
 							$this->httpObject->Env->ROUTES_KEYWORD
 						)
 					) {
 						$class = __NAMESPACE__ . '\\Route';
+					} elseif (
+						$this->httpObject->Env->ENABLE_RELOAD
+						&& $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM] === '/' . $this->httpObject->Env->RELOAD_KEYWORD
+					) {
+						$class = __NAMESPACE__ . '\\Reload';
 					} else {
 						$class = __NAMESPACE__ . '\\Read';
 					}

@@ -51,7 +51,7 @@ if (!defined('PRIVATE_GET')) {
 	define('PRIVATE_GET', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$GET);
 }
 
-$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Reload.php';
+$response[] = include PUBLIC_GET . DIRECTORY_SEPARATOR . 'SystemReload.php';
 
 $response[] = include PUBLIC_POST . DIRECTORY_SEPARATOR . 'Registration.php';
 $response[] = include PUBLIC_POST . DIRECTORY_SEPARATOR . 'RegistrationWithAddress.php';

@@ -35,12 +35,31 @@ use Microservices\App\Env;
  */
 class Reload
 {
+
+	/**
+	 * HTTP object
+	 * 
+	 * @var null|Http
+	 */
+	private $httpObject = null;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param Http $httpObject
+	 */
+	public function __construct(
+		Http &$httpObject
+	) {
+		$this->httpObject = &$httpObject;
+	}
+
 	/**
 	 * Initialize
 	 * 
-	 * @return void
+	 * @return bool
 	 */
-	public static function init(): void
+	public function init(): bool
 	{
 		Env::loadEnv(
 			customerId: 0
@@ -48,6 +67,8 @@ class Reload
 
 		DbCommonFunction::connectGlobalCache();
 		DbCommonFunction::connectGlobalDb();
+
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -55,28 +76,28 @@ class Reload
 	 * 
 	 * @param string $httpRequestIp Request Ip
 	 * 
-	 * @return bool
+	 * @return mixed
 	 */
-	public static function process(
-		$httpRequestIp
-	): bool {
-		return self::processCustomer(
-			httpRequestIp: $httpRequestIp
-		);
+	public function process(): mixed
+	{
+		return self::processCustomer();
 	}
 
 	/**
 	 * Cache Customer Data
 	 * 
-	 * @param string   $httpRequestIp Request ip
-	 * @param null|int $customerId    Customer id
+	 * @param string $httpRequestIp Request ip
 	 * 
 	 * @return bool
 	 */
-	public static function processCustomer(
-		$httpRequestIp,
-		$customerId = null
-	): bool {
+	public function processCustomer(): bool {
+		$customerId = null;
+		$httpRequestIp = $this->httpObject->httpReqData['server']['httpRequestIp'];
+
+		if (isset($this->httpObject->httpReqData['active']['customerId'])) {
+			$customerId = $this->httpObject->httpReqData['active']['customerId'];
+		}
+
 		$SYSTEM_CUSTOMER_TABLE = Env::$SYSTEM_CUSTOMER_TABLE;
 
 		$sql = "SELECT * FROM `{$SYSTEM_CUSTOMER_TABLE}` C";
@@ -133,33 +154,8 @@ class Reload
 				);
 			}
 
-			if ($customerData['customer_cidr'] !== Constant::$NULL) {
-				$customerCidrIpNumberRangeArray = CommonFunction::cidrStringIpNumberRange(
-					cidrString: $customerData['customer_cidr']
-				);
-				if (
-					count(
-						value: $customerCidrIpNumberRangeArray
-					) > 0
-				) {
-					$customerCidrCacheKey = CacheServerKey::customerCidr(
-						customerId: $customerId
-					);
-					DbCommonFunction::$globalCacheObject->cacheSet(
-						cacheKey: $customerCidrCacheKey,
-						cacheValue: $customerCidrIpNumberRangeArray
-					);
-				}
-			}
-
-			self::processGroup(
-				httpRequestIp: $httpRequestIp,
-				customerId: $customerId
-			);
-			self::processUser(
-				httpRequestIp: $httpRequestIp,
-				customerId: $customerId
-			);
+			self::processGroup();
+			self::processUser();
 		}
 
 		return Constant::$TRUE;
@@ -168,17 +164,22 @@ class Reload
 	/**
 	 * Cache Group Data
 	 * 
-	 * @param string   $httpRequestIp       Request ip
-	 * @param null|int $customerId          Customer id
-	 * @param null|int $customerUserGroupId Customer user group id
-	 * 
 	 * @return bool
 	 */
-	public static function processGroup(
-		$httpRequestIp,
-		$customerId,
-		$customerUserGroupId = null
-	): bool {
+	public function processGroup(): bool
+	{
+		$customerId = null;
+		$customerUserGroupId = null;
+		
+		$httpRequestIp = $this->httpObject->httpReqData['server']['httpRequestIp'];
+
+		if (isset($this->httpObject->httpReqData['active']['customerId'])) {
+			$customerId = $this->httpObject->httpReqData['active']['customerId'];
+		}
+		if (isset($this->httpObject->httpReqData['active']['customerUserGroupId'])) {
+			$customerUserGroupId = $this->httpObject->httpReqData['active']['customerUserGroupId'];
+		}
+
 		$customerData = self::getCustomerData(
 			$customerId
 		);
@@ -216,25 +217,6 @@ class Reload
 				cacheKey: $g_key,
 				cacheValue: $groupData
 			);
-			if ($groupData['customer_user_group_cidr'] !== Constant::$NULL) {
-				$groupCidrIpNumberRangeArray = CommonFunction::cidrStringIpNumberRange(
-					cidrString: $groupData['customer_user_group_cidr']
-				);
-				if (
-					count(
-						value: $groupCidrIpNumberRangeArray
-					) > 0
-				) {
-					$groupCidrCacheKey = CacheServerKey::customerGroupCidr(
-						customerId: $customerId,
-						customerUserGroupId: $groupData['customer_user_group_id']
-					);
-					$cache->cacheSet(
-						cacheKey: $groupCidrCacheKey,
-						cacheValue: $groupCidrIpNumberRangeArray
-					);
-				}
-			}
 		}
 
 		return Constant::$TRUE;
@@ -243,17 +225,22 @@ class Reload
 	/**
 	 * Cache User Data
 	 * 
-	 * @param string   $httpRequestIp  Request ip
-	 * @param null|int $customerId     Customer id
-	 * @param null|int $customerUserId Customer user id
-	 * 
 	 * @return bool
 	 */
-	public static function processUser(
-		$httpRequestIp,
-		$customerId,
-		$customerUserId = null
-	): bool {
+	public function processUser(): bool
+	{
+		$customerId = null;
+		$customerUserId = null;
+		
+		$httpRequestIp = $this->httpObject->httpReqData['server']['httpRequestIp'];
+
+		if (isset($this->httpObject->httpReqData['active']['customerId'])) {
+			$customerId = $this->httpObject->httpReqData['active']['customerId'];
+		}
+		if (isset($this->httpObject->httpReqData['active']['customerUserId'])) {
+			$customerUserId = $this->httpObject->httpReqData['active']['customerUserId'];
+		}
+
 		$customerData = self::getCustomerData(
 			$customerId
 		);
@@ -282,25 +269,6 @@ class Reload
 		$userDataArray = $db->fetchAll();
 		$db->closeCursor();
 		foreach ($userDataArray as $userData) {
-			if ($userData['customer_user_cidr'] !== Constant::$NULL) {
-				$userCidrIpNumberRangeArray = CommonFunction::cidrStringIpNumberRange(
-					cidrString: $userData['customer_user_cidr']
-				);
-				if (
-					count(
-						value: $userCidrIpNumberRangeArray
-					) > 0
-				) {
-					$userCidrCacheKey = CacheServerKey::customerUserCidr(
-						customerId: $customerId,
-						customerUserId: $userData['customer_user_id']
-					);
-					$cache->cacheSet(
-						cacheKey: $userCidrCacheKey,
-						cacheValue: $userCidrIpNumberRangeArray
-					);
-				}
-			}
 			$cu_key = CacheServerKey::customerUsername(
 				customerId: $customerId,
 				username: $userData['customer_user_username']
@@ -321,7 +289,7 @@ class Reload
 	 * 
 	 * @return array
 	 */
-	public static function getCustomerData(
+	public function getCustomerData(
 		$customerId
 	): array {
 		if (strlen($customerId) === 0) {

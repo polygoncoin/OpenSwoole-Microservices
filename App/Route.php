@@ -90,11 +90,7 @@ class Route
 	 */
 	public function init(): bool
 	{
-		if ($this->httpObject->Env->ENABLE_ROUTES) {
-			return Constant::$TRUE;
-		}
-
-		return Constant::$FALSE;
+		return Constant::$TRUE;
 	}
 
 	/**
@@ -105,18 +101,83 @@ class Route
 	public function process(): mixed
 	{
 		$httpRouteArray = [];
-		if ($this->httpObject->request->isPublicRequest) {
-			$userRoutesFolder = Constant::$WWW . $this->routesFolder
-				. DIRECTORY_SEPARATOR . 'Public';
-		} else {
-			$userRoutesFolder = Constant::$WWW . $this->routesFolder
-				. DIRECTORY_SEPARATOR . 'Private'
-				. DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['active']['groupData']['customer_user_group_name'];
-		}
-
+		
 		foreach ($this->httpMethodArray as $httpRequestMethod) {
+			$configDir = Constant::$CONFIG_DIRECTORY
+				. DIRECTORY_SEPARATOR . $this->httpObject->Env->CUSTOMER_CONFIG_DIRECTORY;
+			$commonConfigDir = Constant::$CONFIG_DIRECTORY
+				. DIRECTORY_SEPARATOR . 'Common';
+
+			if (
+				$this->httpObject->request->isPrivateWebRequest
+				|| $this->httpObject->request->isPrivateApiRequest
+			) {
+				$configDir .= DIRECTORY_SEPARATOR . 'Private';
+				$commonConfigDir .= DIRECTORY_SEPARATOR . 'Private';
+
+				$servingFileDir = $configDir . DIRECTORY_SEPARATOR . 'ServingFile';
+				$routeDir = $configDir . DIRECTORY_SEPARATOR . 'Route'
+					. DIRECTORY_SEPARATOR . "GroupId.{$this->httpObject->httpReqData['active']['customerUserGroupId']}"
+					. DIRECTORY_SEPARATOR . $this->httpObject->request->getDataMode(
+						httpRequestMethod: $httpRequestMethod
+					);
+				$sqlDir = $configDir . DIRECTORY_SEPARATOR . 'Sql'
+					. DIRECTORY_SEPARATOR . "GroupId.{$this->httpObject->httpReqData['active']['customerUserGroupId']}"
+					. DIRECTORY_SEPARATOR . $this->httpObject->request->getDataMode(
+						httpRequestMethod: $httpRequestMethod
+					)
+					. DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['server']['httpRequestMethod'];
+
+				$commonRouteDir = $commonConfigDir . DIRECTORY_SEPARATOR . 'Route'
+					. DIRECTORY_SEPARATOR . $this->httpObject->request->getDataMode(
+						httpRequestMethod: $httpRequestMethod
+					);
+				$commonSqlDir = $commonConfigDir . DIRECTORY_SEPARATOR . 'Sql'
+					. DIRECTORY_SEPARATOR . $this->httpObject->request->getDataMode(
+						httpRequestMethod: $httpRequestMethod
+					)
+					. DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['server']['httpRequestMethod'];
+			} else {
+				$configDir .= DIRECTORY_SEPARATOR . 'Public';
+				$commonConfigDir .= DIRECTORY_SEPARATOR . 'Public';
+
+				$servingFileDir = $configDir . DIRECTORY_SEPARATOR . 'ServingFile';
+				$routeDir = $configDir . DIRECTORY_SEPARATOR . 'Route'
+					. DIRECTORY_SEPARATOR . $this->httpObject->request->getDataMode(
+						httpRequestMethod: $httpRequestMethod
+					);
+				$sqlDir = $configDir . DIRECTORY_SEPARATOR . 'Sql'
+					. DIRECTORY_SEPARATOR . $this->httpObject->request->getDataMode(
+						httpRequestMethod: $httpRequestMethod
+					)
+					. DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['server']['httpRequestMethod'];
+
+				$commonRouteDir = $commonConfigDir . DIRECTORY_SEPARATOR . 'Route'
+					. DIRECTORY_SEPARATOR . $this->httpObject->request->getDataMode(
+						httpRequestMethod: $httpRequestMethod
+					);
+				$commonSqlDir = $commonConfigDir . DIRECTORY_SEPARATOR . 'Sql'
+					. DIRECTORY_SEPARATOR . $this->httpObject->request->getDataMode(
+						httpRequestMethod: $httpRequestMethod
+					)
+					. DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['server']['httpRequestMethod'];
+			}
+
+			$this->httpObject->httpReqData['active']['servingFileDir'] = $servingFileDir;
+			$this->httpObject->httpReqData['active']['configDir'] = $configDir;
+			$this->httpObject->httpReqData['active']['routeDir'] = $routeDir;
+			$this->httpObject->httpReqData['active']['sqlDir'] = $sqlDir;
+
+			$this->httpObject->httpReqData['active']['commonServingFileDir'] = $servingFileDir;
+			$this->httpObject->httpReqData['active']['commonConfigDir'] = $configDir;
+			$this->httpObject->httpReqData['active']['commonRouteDir'] = $commonRouteDir;
+			$this->httpObject->httpReqData['active']['commonSqlDir'] = $commonSqlDir;
+
 			$httpRouteArray[$httpRequestMethod] = [];
-			$routeFileLocation =  $userRoutesFolder
+			if (!is_dir($this->httpObject->httpReqData['active']['routeDir'])) {
+				continue;
+			}
+			$routeFileLocation = $this->httpObject->httpReqData['active']['routeDir']
 				. DIRECTORY_SEPARATOR . $httpRequestMethod . 'routes.php';
 			if (
 				!file_exists(
@@ -124,7 +185,7 @@ class Route
 				)
 			) {
 				throw new \Exception(
-					message: 'Route file missing',
+					message: 'Route file missing: '. $routeFileLocation,
 					code: HttpStatus::$BadRequest
 				);
 				continue;

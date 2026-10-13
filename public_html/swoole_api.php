@@ -22,7 +22,7 @@ use Openswoole\Http\Response;
 use Microservices\App\Constant;
 use Microservices\App\Env;
 use Microservices\App\HttpStatus;
-use Microservices\App\Reload;
+use Microservices\App\SystemReload;
 use Microservices\App\Start;
 use Microservices\TestCase\Test;
 
@@ -190,11 +190,10 @@ $server->on(
 				Env::$SYSTEM_ENABLE_RELOAD
 				&& $httpReqData['get'][ROUTE_URL_PARAM] === '/' . Env::$SYSTEM_RELOAD_KEYWORD
 			) {
-				Reload::init();
-				Reload::process(
+				SystemReload::init();
+				SystemReload::process(
 					httpRequestIp: $httpReqData['server']['httpRequestIp']
 				);
-				$response->end();
 			} else {
 				ob_start();
 				[

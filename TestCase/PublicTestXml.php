@@ -51,7 +51,7 @@ if (!defined('PRIVATE_GET')) {
 	define('PRIVATE_GET', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$GET);
 }
 
-$response[] = include PRIVATE_GET . DIRECTORY_SEPARATOR . 'Reload.php';
+$response[] = include PUBLIC_GET . DIRECTORY_SEPARATOR . 'SystemReload.php';
 
 $paramArray = [
 	'Payload' => [

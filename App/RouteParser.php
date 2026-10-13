@@ -158,12 +158,6 @@ class RouteParser
 				$this->httpObject->request->isPrivateWebRequest
 				|| $this->httpObject->request->isPrivateApiRequest
 			) {
-				if (!$this->httpObject->Env->ENABLE_DROPBOX) {
-					throw new \Exception(
-						message: 'Route not supported',
-						code: HttpStatus::$BadRequest
-					);
-				}
 				CommonFunction::checkCidr(
 					ip: $this->httpObject->httpReqData['server']['httpRequestIp'],
 					cidrString: $this->httpObject->httpReqData['active']['customerData']['customer_dropbox_cidr']
@@ -180,12 +174,6 @@ class RouteParser
 			return;
 		}
 		if ($this->routeElementArray[0] === $this->httpObject->Env->RELOAD_KEYWORD) {
-			if (!$this->httpObject->Env->ENABLE_RELOAD) {
-				throw new \Exception(
-					message: 'Route not supported',
-					code: HttpStatus::$BadRequest
-				);
-			}
 			CommonFunction::checkCidr(
 				ip: $this->httpObject->httpReqData['server']['httpRequestIp'],
 				cidrString: $this->httpObject->httpReqData['active']['customerData']['customer_reload_cidr']
@@ -203,12 +191,6 @@ class RouteParser
 		}
 
 		if ($this->routeElementArray[0] === $this->httpObject->Env->ROUTES_KEYWORD) {
-			if (!$this->httpObject->Env->ENABLE_ROUTES) {
-				throw new \Exception(
-					message: 'Route not supported',
-					code: HttpStatus::$BadRequest
-				);
-			}
 			CommonFunction::checkCidr(
 				ip: $this->httpObject->httpReqData['server']['httpRequestIp'],
 				cidrString: $this->httpObject->httpReqData['active']['customerData']['customer_routes_cidr']
@@ -245,8 +227,7 @@ class RouteParser
 			)
 		) {
 			throw new \Exception(
-				message: 'Route file missing: HTTP ' . $this->httpObject->httpReqData['server']['httpRequestMethod'] . ' method',
-				// message: 'Route file missing: ' . $routeFileLocation,
+				message: 'Route file missing',
 				code: HttpStatus::$InternalServerError
 			);
 		}
@@ -390,9 +371,12 @@ class RouteParser
 	private function isStartingWithReservedRouteKeyword(
 		$routeStartingKeyword
 	) :bool {
-		$this->setReservedRouteArray();
+		$this->setReservedRouteArray(
+			routeStartingKeyword: $routeStartingKeyword
+		);
 		if (
-			in_array(
+			is_array($this->reservedRoutesPrefix)
+			&& in_array(
 				needle: $routeStartingKeyword,
 				haystack: $this->reservedRoutesPrefix,
 				strict: Constant::$TRUE
@@ -677,26 +661,30 @@ class RouteParser
 	/**
 	 * Set Reserved Route
 	 * 
+	 * @param string $routeStartingKeyword Route starting keyword
+	 * 
 	 * @return void
 	 */
-	private function setReservedRouteArray(): void
-	{
-		if ($this->httpObject->Env->ENABLE_CRON) {
-			$this->reservedRoutesPrefix[] = $this->httpObject->Env->CRON_KEYWORD;
-			$this->reservedRoutesCidrString[$this->httpObject->Env->CRON_KEYWORD] = $this->httpObject->httpReqData['active']['customerData']['customer_cron_cidr'];
-		};
-
-		if ($this->httpObject->Env->ENABLE_CUSTOM) {
-			$this->reservedRoutesPrefix[] = $this->httpObject->Env->CUSTOM_KEYWORD;
-			$this->reservedRoutesCidrString[$this->httpObject->Env->CUSTOM_KEYWORD] = $this->httpObject->httpReqData['active']['customerData']['customer_custom_cidr'];
-		}
-		if ($this->httpObject->Env->ENABLE_THIRDPARTY) {
-			$this->reservedRoutesPrefix[] = $this->httpObject->Env->THIRDPARTY_KEYWORD;
-			$this->reservedRoutesCidrString[$this->httpObject->Env->THIRDPARTY_KEYWORD] = $this->httpObject->httpReqData['active']['customerData']['customer_thirdparty_cidr'];
-		}
-		if ($this->httpObject->Env->ENABLE_UPLOAD) {
-			$this->reservedRoutesPrefix[] = $this->httpObject->Env->UPLOAD_KEYWORD;
-			$this->reservedRoutesCidrString[$this->httpObject->Env->UPLOAD_KEYWORD] = $this->httpObject->httpReqData['active']['customerData']['customer_upload_cidr'];
+	private function setReservedRouteArray(
+		$routeStartingKeyword
+	): void {
+		switch ($routeStartingKeyword) {
+			case $this->httpObject->Env->CRON_KEYWORD:
+				$this->reservedRoutesPrefix[] = $this->httpObject->Env->CRON_KEYWORD;
+				$this->reservedRoutesCidrString[$this->httpObject->Env->CRON_KEYWORD] = $this->httpObject->httpReqData['active']['customerData']['customer_cron_cidr'];
+				break;
+			case $this->httpObject->Env->CUSTOM_KEYWORD:
+				$this->reservedRoutesPrefix[] = $this->httpObject->Env->CUSTOM_KEYWORD;
+				$this->reservedRoutesCidrString[$this->httpObject->Env->CUSTOM_KEYWORD] = $this->httpObject->httpReqData['active']['customerData']['customer_custom_cidr'];
+				break;
+			case $this->httpObject->Env->THIRDPARTY_KEYWORD:
+				$this->reservedRoutesPrefix[] = $this->httpObject->Env->THIRDPARTY_KEYWORD;
+				$this->reservedRoutesCidrString[$this->httpObject->Env->THIRDPARTY_KEYWORD] = $this->httpObject->httpReqData['active']['customerData']['customer_thirdparty_cidr'];
+				break;
+			case $this->httpObject->Env->UPLOAD_KEYWORD:
+				$this->reservedRoutesPrefix[] = $this->httpObject->Env->UPLOAD_KEYWORD;
+				$this->reservedRoutesCidrString[$this->httpObject->Env->UPLOAD_KEYWORD] = $this->httpObject->httpReqData['active']['customerData']['customer_upload_cidr'];
+				break;
 		}
 	}
 }

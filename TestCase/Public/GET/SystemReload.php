@@ -1,0 +1,28 @@
+<?php
+
+/**
+ * Test Case
+ * php version 8.3
+ *
+ * @category  Test Case
+ * @package   Openswoole-Microservices
+ * @author    Ramesh N. Jangid (Sharma) <polygon.co.in@gmail.com>
+ * @copyright © 2026 Ramesh N. Jangid (Sharma)
+ * @license   MIT https://opensource.org/license/mit
+ * @link      https://github.com/polygoncoin/Openswoole-Microservices
+ * @since     Class available since Release 1.0.0
+ */
+
+namespace Microservices\TestCase\Private\GET;
+
+use Microservices\App\Constant;
+use Microservices\App\Env;
+use Microservices\App\Web;
+
+return Web::trigger(
+	homeURL: $homeURL,
+	httpRequestMethod: Constant::$GET,
+	route: '/system-reload',
+	header: $publicHeaderArray,
+	payload: ''
+);
