@@ -87,7 +87,7 @@ class CacheServer
 	 * 
 	 * @var null|CacheServerInterface
 	 */
-	private $cacheObject = null;
+	private $cache = null;
 
 	/**
 	 * Constructor
@@ -125,7 +125,7 @@ class CacheServer
 	 */
 	public function connectCache(): void
 	{
-		if ($this->cacheObject !== Constant::$NULL) {
+		if ($this->cache !== Constant::$NULL) {
 			return;
 		}
 
@@ -149,7 +149,7 @@ class CacheServer
 		$cacheServerNS = 'Microservices\\App\\Server\\CacheServer\\'
             . $this->cacheServerType . 'Cache';
 
-		$this->cacheObject = new $cacheServerNS(
+		$this->cache = new $cacheServerNS(
 			cacheServerHost: $this->cacheServerHost,
 			cacheServerPort: $this->cacheServerPort,
 			cacheServerUser: $this->cacheServerUser,
@@ -175,7 +175,7 @@ class CacheServer
 			return Constant::$FALSE;
 		}
 
-		return $this->cacheObject->cacheExist(
+		return $this->cache->cacheExist(
 			cacheKey: $cacheKey
 		);
 	}
@@ -196,7 +196,7 @@ class CacheServer
 			return Constant::$FALSE;
 		}
 
-		return $this->cacheObject->cacheGet(
+		return $this->cache->cacheGet(
 			cacheKey: $cacheKey
 		);
 	}
@@ -221,7 +221,7 @@ class CacheServer
 			return Constant::$FALSE;
 		}
 
-		return $this->cacheObject->cacheSet(
+		return $this->cache->cacheSet(
 			cacheKey: $cacheKey,
 			cacheValue: $cacheValue,
 			cacheExpire: $cacheExpire
@@ -246,7 +246,7 @@ class CacheServer
 			return Constant::$FALSE;
 		}
 
-		return $this->cacheObject->cacheIncrement(
+		return $this->cache->cacheIncrement(
 			cacheKey: $cacheKey,
 			cacheOffset: $cacheOffset
 		);
@@ -268,7 +268,7 @@ class CacheServer
 			return Constant::$FALSE;
 		}
 
-		return $this->cacheObject->cacheDelete(
+		return $this->cache->cacheDelete(
 			cacheKey: $cacheKey
 		);
 	}

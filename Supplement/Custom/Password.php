@@ -63,7 +63,7 @@ class Password implements CustomInterface
 	 */
 	public function init(): bool
 	{
-		$this->httpObject->httpRequestObject->loadPayload();
+		$this->httpObject->request->loadPayload();
 
 		return Constant::$TRUE;
 	}
@@ -75,16 +75,16 @@ class Password implements CustomInterface
 	 */
 	public function process(): mixed
 	{
-		$payloadDataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+		$payloadDataType = $this->httpObject->request->dataDecodeObject->dataType(
 			keyString: Constant::$NULL
 		);
 
 		switch ($payloadDataType) {
 			case 'Array':
-				$payload = $this->httpObject->httpRequestObject->dataDecodeObject->getObject('0');
+				$payload = $this->httpObject->request->dataDecodeObject->getObject('0');
 				break;
 			case 'Object':
-				$payload = $this->httpObject->httpRequestObject->dataDecodeObject->getObject();
+				$payload = $this->httpObject->request->dataDecodeObject->getObject();
 				break;
 		}
 
@@ -115,11 +115,11 @@ class Password implements CustomInterface
 				':is_deleted' => Constant::$NO,
 			];
 
-			$this->httpObject->databaseObject->execQuery(
+			$this->httpObject->db->execQuery(
 				sql: $sql,
 				paramArray: $paramArray
 			);
-			$this->httpObject->databaseObject->closeCursor();
+			$this->httpObject->db->closeCursor();
 
 			$cacheKey = CacheServerKey::customerUsername(
 				customerId: $this->httpObject->httpReqData['active']['customerId'],
@@ -131,13 +131,13 @@ class Password implements CustomInterface
 				customerData: $this->httpObject->httpReqData['active']['customerData'],
 				customerUserId: $this->httpObject->httpReqData['active']['customerUserId']
 			);
-			$this->httpObject->cacheObject->cacheDelete(
+			$this->httpObject->cache->cacheDelete(
 				cacheKey: CacheServerKey::apiToken(
 					apiToken: $this->httpObject->httpReqData['active']['authId']
 				)
 			);
 
-			$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
+			$this->httpObject->response->dataEncodeObject->addKeyData(
 				objectKey: 'Results',
 				data: 'Password changed successfully. Please login'
 			);

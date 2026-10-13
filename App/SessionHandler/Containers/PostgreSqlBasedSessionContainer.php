@@ -42,7 +42,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public $sessionServerDb = null;
 	public $sessionServerTable = null;
 
-	private $sessionObject = null;
+	private $webSession = null;
 
 
 	/**
@@ -245,9 +245,9 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public function closeSession(): void
 	{
 		pg_close(
-			$this->sessionObject
+			$this->webSession
 		);
-		$this->sessionObject = Constant::$NULL;
+		$this->webSession = Constant::$NULL;
 	}
 
 	/**
@@ -265,7 +265,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 			) {
 				$UP = "user={$this->sessionServerUser} password={$this->sessionServerPassword}";
 			}
-			$this->sessionObject = pg_connect(
+			$this->webSession = pg_connect(
 				"host={$this->sessionServerHost} "
 				. "port={$this->sessionServerPort} "
 				. "dbname={$this->sessionServerDb} {$UP}"
@@ -292,7 +292,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		try {
 			// Execute the query with parameters
 			$result = pg_query_params(
-				$this->sessionObject,
+				$this->webSession,
 				$sql,
 				$paramArray
 			);
@@ -333,7 +333,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	): bool {
 		try {
 			$result = pg_query_params(
-				$this->sessionObject,
+				$this->webSession,
 				$sql,
 				$paramArray
 			);

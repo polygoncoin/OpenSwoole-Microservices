@@ -114,11 +114,11 @@ class Start
 				$data = $Microservices->returnResults();
 				if (
 					$Microservices->httpObject === Constant::$NULL
-					|| $Microservices->httpObject->httpResponseObject === Constant::$NULL
+					|| $Microservices->httpObject->response === Constant::$NULL
 				) {
 					$status = HttpStatus::$Ok;
 				} else {
-					$status = $Microservices->httpObject->httpResponseObject->httpStatus;
+					$status = $Microservices->httpObject->response->httpStatus;
 				}
 
 				return [
@@ -165,10 +165,10 @@ class Start
 
 				$payload = [];
 				if (
-					isset($Microservices->httpObject->httpRequestObject)
-					&& isset($Microservices->httpObject->httpRequestObject->dataDecodeObject)
+					isset($Microservices->httpObject->request)
+					&& isset($Microservices->httpObject->request->dataDecodeObject)
 				) {
-					$payload = $Microservices->httpObject->httpRequestObject->dataDecodeObject->get();
+					$payload = $Microservices->httpObject->request->dataDecodeObject->get();
 				}
 				$logId = $logObject->log(
 					logData: $logData,
@@ -210,11 +210,11 @@ class Start
 			// $data = $dataEncodeObject->getData();
 
 			if (
-				isset($Microservices->httpObject->httpRequestObject)
+				isset($Microservices->httpObject->request)
 				&& isset(Env::$config[$Microservices->httpObject->httpReqData['active']['customerId']])
 				&& Env::$config[$Microservices->httpObject->httpReqData['active']['customerId']]->OUTPUT_PERFORMANCE_STATS
 			) {
-				$performanceData = $Microservices->httpObject->httpResponseObject->returnPerformance();
+				$performanceData = $Microservices->httpObject->response->returnPerformance();
 				$errorArray = [
 					'Error' => $arr,
 					'Status' => $e->getCode(),

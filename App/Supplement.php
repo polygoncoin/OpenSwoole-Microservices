@@ -79,7 +79,7 @@ class Supplement
 		Http &$httpObject
 	) {
 		$this->httpObject = &$httpObject;
-		$this->dataEncodeObject = &$this->httpObject->httpResponseObject->dataEncodeObject;
+		$this->dataEncodeObject = &$this->httpObject->response->dataEncodeObject;
 	}
 
 	/**
@@ -106,7 +106,7 @@ class Supplement
 	public function process(): mixed
 	{
 		// Load Sql
-		$sqlConfig = &$this->httpObject->httpRequestObject->routeParserObject->sqlConfig;
+		$sqlConfig = &$this->httpObject->httpReqData['active']['sqlConfigData'];
 
 		$return = $this->writeBasics(
 			$sqlConfig,
@@ -123,8 +123,8 @@ class Supplement
 		$fetchDbMode = $sqlConfig['__FETCH-MODE__'] ?? 'Master';
 
 		// Set Server mode to execute query on - Read / Write Server
-		if ($this->httpObject->databaseObject === Constant::$NULL) {
-			$this->httpObject->databaseObject = DbCommonFunction::connectDatabase(
+		if ($this->httpObject->db === Constant::$NULL) {
+			$this->httpObject->db = DbCommonFunction::connectDatabase(
 				customerId: $this->httpObject->httpReqData['active']['customerId'],
 				fetchDbMode: $fetchDbMode
 			);
@@ -171,7 +171,7 @@ class Supplement
 			objectKey: 'Results'
 		);
 
-		$supplementPayloadDataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+		$supplementPayloadDataType = $this->httpObject->request->dataDecodeObject->dataType(
 			keyString: Constant::$NULL
 		);
 
@@ -191,7 +191,7 @@ class Supplement
 
 		// For indexCount
 		$indexCount = $supplementPayloadDataType === 'Array'
-			? $this->httpObject->httpRequestObject->dataDecodeObject->count() : 1;
+			? $this->httpObject->request->dataDecodeObject->count() : 1;
 
 		for ($index = 0; $index < $indexCount; $index++) {
 			$supplementPayloadKeyArray = Constant::$NULL;
@@ -215,13 +215,13 @@ class Supplement
 			if ($hashJson === Constant::$NULL) {
 
 				if ($supplementOperateAsTransaction) {
-					$this->httpObject->databaseObject->begin();
+					$this->httpObject->db->begin();
 				}
 
 				$output = [];
 				$output['Status'] = HttpStatus::$Ok;
-				if ($this->httpObject->Env->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
-					$output[$this->httpObject->Env->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
+				if ($this->httpObject->Env->ENABLE_PAYLOAD_IN_RESPONSE) {
+					$output[$this->httpObject->Env->PAYLOAD_KEY_IN_RESPONSE] = $this->httpObject->request->dataDecodeObject->getCompleteArray(
 						keyString: $this->getPayloadKey(
 							payloadKeyArray: $supplementPayloadKeyArray
 						)
@@ -241,24 +241,24 @@ class Supplement
 					supplementParentOperateAsTransaction: $supplementOperateAsTransaction
 				);
 
-				if ($this->httpObject->httpResponseObject->httpStatus === HttpStatus::$Ok) {
+				if ($this->httpObject->response->httpStatus === HttpStatus::$Ok) {
 					if (
 						$supplementOperateAsTransaction
-						&& ($this->httpObject->databaseObject->beganTransaction === Constant::$TRUE)
+						&& ($this->httpObject->db->beganTransaction === Constant::$TRUE)
 					) {
-						$this->httpObject->databaseObject->commit();
+						$this->httpObject->db->commit();
 					}
 					$output['PayloadResponse'] = $supplementResponse;
 
 					if ($idempotentWindow) {
-						$this->httpObject->cacheObject->cacheSet(
+						$this->httpObject->cache->cacheSet(
 							cacheKey: $hashKey,
 							cacheValue: $output,
 							cacheExpire: $idempotentWindow
 						);
 					}
 				} else { // Failure
-					$output['Status'] = $this->httpObject->httpResponseObject->httpStatus;
+					$output['Status'] = $this->httpObject->response->httpStatus;
 					$output['Error'] = $supplementResponse;
 				}
 			} else {
@@ -344,7 +344,7 @@ class Supplement
 		);
 
 		// For isObject
-		$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+		$dataType = $this->httpObject->request->dataDecodeObject->dataType(
 			keyString: $supplementParentPayloadKey
 		);
 		if ($dataType === Constant::$NULL) {
@@ -354,7 +354,7 @@ class Supplement
 
 		// For indexCount
 		$indexCount = ($isObject)
-			? 1 : $this->httpObject->httpRequestObject->dataDecodeObject->count(
+			? 1 : $this->httpObject->request->dataDecodeObject->count(
 				keyString: $supplementParentPayloadKey
 			);
 
@@ -412,7 +412,7 @@ class Supplement
 			// For Validating Hierarchy
 			if (
 				$supplementParentCurrentMaintainHierarchy
-				&& !$this->httpObject->httpRequestObject->dataDecodeObject->isset(
+				&& !$this->httpObject->request->dataDecodeObject->isset(
 					keyString: $supplementParentCurrentPayloadKey
 				)
 			) {
@@ -423,7 +423,7 @@ class Supplement
 			}
 
 			// For isObject
-			$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+			$dataType = $this->httpObject->request->dataDecodeObject->dataType(
 				keyString: $supplementParentCurrentPayloadKey
 			);
 			if ($dataType === Constant::$NULL) {
@@ -432,7 +432,7 @@ class Supplement
 			$isObject = $dataType === 'Object';
 
 			// For Payload
-			$supplementParentPayload = $this->httpObject->httpRequestObject->dataDecodeObject->getObject(
+			$supplementParentPayload = $this->httpObject->request->dataDecodeObject->getObject(
 				keyString: $supplementParentCurrentPayloadKey
 			);
 
@@ -472,7 +472,7 @@ class Supplement
 			// For Rollback
 			if (
 				$supplementParentCurrentOperateAsTransaction
-				&& !$this->httpObject->databaseObject->beganTransaction
+				&& !$this->httpObject->db->beganTransaction
 			) {
 				$supplementParentCurrentResponse['Error'] = 'Something went wrong';
 				return;
@@ -526,7 +526,7 @@ class Supplement
 					value: $supplementParentSqlConfig['__AFFECTED-CACHE-KEY__']
 				);
 				for ($index = 0; $index < $indexCount; $index++) {
-					$this->httpObject->queryCacheObject->queryCacheDelete(
+					$this->httpObject->queryCache->queryCacheDelete(
 						customerId: $this->httpObject->httpReqData['active']['customerId'],
 						queryCacheKey: $supplementParentSqlConfig['__AFFECTED-CACHE-KEY__'][$index]
 					);
@@ -590,7 +590,7 @@ class Supplement
 			// For Validating Hierarchy
 			if (
 				$supplementChildModuleMaintainHierarchy
-				&& !$this->httpObject->httpRequestObject->dataDecodeObject->isset(
+				&& !$this->httpObject->request->dataDecodeObject->isset(
 					keyString: $supplementChildModulePayloadKey
 				)
 			) {
@@ -601,7 +601,7 @@ class Supplement
 			}
 
 			// For isObject
-			$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+			$dataType = $this->httpObject->request->dataDecodeObject->dataType(
 				keyString: $supplementChildModulePayloadKey
 			);
 			if ($dataType === Constant::$NULL) {
@@ -611,7 +611,7 @@ class Supplement
 
 			// For indexCount
 			$indexCount = ($isObject || $isObject === Constant::$NULL)
-				? 1 : $this->httpObject->httpRequestObject->dataDecodeObject->count(
+				? 1 : $this->httpObject->request->dataDecodeObject->count(
 					keyString: $supplementChildModulePayloadKey
 				);
 
@@ -648,7 +648,7 @@ class Supplement
 				// For Validating Hierarchy
 				if (
 					$supplementChildModuleCurrentMaintainHierarchy
-					&& !$this->httpObject->httpRequestObject->dataDecodeObject->isset(
+					&& !$this->httpObject->request->dataDecodeObject->isset(
 						keyString: $supplementChildModuleCurrentPayloadKey
 					)
 				) {
@@ -699,7 +699,7 @@ class Supplement
 		// 		validationConfig: $sqlConfig['__VALIDATE__']
 		// 	);
 		// 	if ($isValidData !== Constant::$TRUE) {
-		// 		$this->httpObject->httpResponseObject->httpStatus = HttpStatus::$BadRequest;
+		// 		$this->httpObject->response->httpStatus = HttpStatus::$BadRequest;
 		// 		$response['Error'] = $errorArray;
 		// 		$return = Constant::$FALSE;
 		// 	}

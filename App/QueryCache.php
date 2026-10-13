@@ -45,7 +45,7 @@ class QueryCache
 	 * 
 	 * @var null|QueryCacheServer
 	 */
-	private $queryCacheObject = null;
+	private $queryCache = null;
 
 	/**
 	 * Constructor
@@ -65,14 +65,14 @@ class QueryCache
 	 */
 	public function connectQueryCache(): void
 	{
-        if ($this->queryCacheObject !== Constant::$NULL) {
+        if ($this->queryCache !== Constant::$NULL) {
             return;
         }
 
 		$queryCacheServerCred = DbCommonFunction::getQueryCacheCred(
 			customerId: $this->httpObject->httpReqData['active']['customerId']
 		);
-		$this->queryCacheObject = new QueryCacheServer(
+		$this->queryCache = new QueryCacheServer(
 			queryCacheServerMode: $queryCacheServerCred['cacheServerType'],
 			queryCacheServerHost: $queryCacheServerCred['cacheServerHost'],
 			queryCacheServerPort: $queryCacheServerCred['cacheServerPort'],
@@ -132,11 +132,11 @@ class QueryCache
 
 		$json = Constant::$NULL;
 		if (
-			$this->queryCacheObject->queryCacheExist(
+			$this->queryCache->queryCacheExist(
 				queryCacheKey: $queryCacheKey
 			)
 		) {
-			$json = $this->queryCacheObject->queryCacheGet(
+			$json = $this->queryCache->queryCacheGet(
 				queryCacheKey: $queryCacheKey
 			);
 		}
@@ -168,7 +168,7 @@ class QueryCache
 			queryCacheKey: $queryCacheKey
 		);
 
-		return $this->queryCacheObject->queryCacheIncrement(
+		return $this->queryCache->queryCacheIncrement(
 			queryCacheKey: $queryCacheKey
 		);
 	}
@@ -205,10 +205,10 @@ class QueryCache
 			queryCacheKey: $delQueryCacheKey
 		);
 
-		$this->queryCacheObject->queryCacheDelete(
+		$this->queryCache->queryCacheDelete(
 			queryCacheKey: $delQueryCacheKey
 		);
-		return $this->queryCacheObject->queryCacheSet(
+		return $this->queryCache->queryCacheSet(
 			queryCacheKey: $queryCacheKey,
 			queryCacheValue: $queryCacheValue
 		);
@@ -237,7 +237,7 @@ class QueryCache
 			queryCacheKey: $queryCacheKey
 		);
 
-		return $this->queryCacheObject->queryCacheDelete(
+		return $this->queryCache->queryCacheDelete(
 			queryCacheKey: $queryCacheKey
 		);
 	}

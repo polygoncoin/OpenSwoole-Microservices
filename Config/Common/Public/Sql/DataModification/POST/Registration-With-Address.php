@@ -96,8 +96,8 @@ return [
 			'__MAX-PAYLOAD-OBJECT__' => 2
 		]
 	],
-	'rateLimitMaxRequest' => 100,
-	'rateLimitMaxRequestWindow' => 3600,
+	'rateLimitRequestCount' => 100,
+	'rateLimitRequestWindow' => 3600,
 	'__HIERARCHY__' => Constant::$TRUE,
 	'__PAYLOAD-TYPE__' => 'Object',
 	'idempotentWindow' => 10,

@@ -104,39 +104,25 @@ class Session
 		// Setting required parameters as per session Mode / Type
 		switch ($this->Env->SESSION_STORE_MODE) {
 			case 'MySql':
-				$this->sessionContainer->sessionServerHost = $this->Env->SESSION_MYSQL_HOST;
-				$this->sessionContainer->sessionServerPort = $this->Env->SESSION_MYSQL_PORT;
-				$this->sessionContainer->sessionServerUser = $this->Env->SESSION_MYSQL_USER;
-				$this->sessionContainer->sessionServerPassword = $this->Env->SESSION_MYSQL_PASSWORD;
-				$this->sessionContainer->sessionServerDb = $this->Env->SESSION_MYSQL_DB;
-				$this->sessionContainer->sessionServerTable = $this->Env->SESSION_MYSQL_TABLE;
-				break;
 			case 'PostgreSql':
-				$this->sessionContainer->sessionServerHost = $this->Env->SESSION_PGSQL_HOST;
-				$this->sessionContainer->sessionServerPort = $this->Env->SESSION_PGSQL_PORT;
-				$this->sessionContainer->sessionServerUser = $this->Env->SESSION_PGSQL_USER;
-				$this->sessionContainer->sessionServerPassword = $this->Env->SESSION_PGSQL_PASSWORD;
-				$this->sessionContainer->sessionServerDb = $this->Env->SESSION_PGSQL_DB;
-				$this->sessionContainer->sessionServerTable = $this->Env->SESSION_PGSQL_TABLE;
-				break;
 			case 'MongoDb':
-				$this->sessionContainer->sessionServerHost = $this->Env->SESSION_MONGO_HOST;
-				$this->sessionContainer->sessionServerPort = $this->Env->SESSION_MONGO_PORT;
-				$this->sessionContainer->sessionServerUser = $this->Env->SESSION_MONGO_USER;
-				$this->sessionContainer->sessionServerPassword = $this->Env->SESSION_MONGO_PASSWORD;
-				$this->sessionContainer->sessionServerDb = $this->Env->SESSION_MONGO_DB;
-				$this->sessionContainer->sessionServerCollection = $this->Env->SESSION_MONGO_TABLE;
+				$this->sessionContainer->sessionServerHost = $this->Env->SESSION_HOST;
+				$this->sessionContainer->sessionServerPort = $this->Env->SESSION_PORT;
+				$this->sessionContainer->sessionServerUser = $this->Env->SESSION_USER;
+				$this->sessionContainer->sessionServerPassword = $this->Env->SESSION_PASSWORD;
+				$this->sessionContainer->sessionServerDb = $this->Env->SESSION_DB;
+				$this->sessionContainer->sessionServerTable = $this->Env->SESSION_TABLE;
 				break;
 			case 'Redis':
-				$this->sessionContainer->sessionServerHost = $this->Env->SESSION_REDIS_HOST;
-				$this->sessionContainer->sessionServerPort = $this->Env->SESSION_REDIS_PORT;
-				$this->sessionContainer->sessionServerUser = $this->Env->SESSION_REDIS_USER;
-				$this->sessionContainer->sessionServerPassword = $this->Env->SESSION_REDIS_PASSWORD;
-				$this->sessionContainer->sessionServerDb = $this->Env->SESSION_REDIS_DB;
+				$this->sessionContainer->sessionServerHost = $this->Env->SESSION_HOST;
+				$this->sessionContainer->sessionServerPort = $this->Env->SESSION_PORT;
+				$this->sessionContainer->sessionServerUser = $this->Env->SESSION_USER;
+				$this->sessionContainer->sessionServerPassword = $this->Env->SESSION_PASSWORD;
+				$this->sessionContainer->sessionServerDb = $this->Env->SESSION_DB;
 				break;
 			case 'Memcached':
-				$this->sessionContainer->sessionServerHost = $this->Env->SESSION_MEMCACHED_HOST;
-				$this->sessionContainer->sessionServerPort = $this->Env->SESSION_MEMCACHED_PORT;
+				$this->sessionContainer->sessionServerHost = $this->Env->SESSION_HOST;
+				$this->sessionContainer->sessionServerPort = $this->Env->SESSION_PORT;
 				break;
 			case 'Cookie':
                 $this->sessionContainer->sessionDataCookieName = $this->Env->SESSION_DATA_COOKIE_NAME;

@@ -53,7 +53,7 @@ class Category implements CustomInterface
 		Http &$httpObject
 	) {
 		$this->httpObject = &$httpObject;
-		$this->httpObject->databaseObject = DbCommonFunction::connectDatabase(
+		$this->httpObject->db = DbCommonFunction::connectDatabase(
 			customerId: $this->httpObject->httpReqData['active']['customerId'],
 			fetchDbMode: 'Slave'
 		);
@@ -85,13 +85,13 @@ class Category implements CustomInterface
 			':is_deleted' => Constant::$NO,
 			':parent_id' => 0,
 		];
-		$this->httpObject->databaseObject->execQuery(
+		$this->httpObject->db->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$rowArray = $this->httpObject->databaseObject->fetchAll();
-		$this->httpObject->databaseObject->closeCursor();
-		$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
+		$rowArray = $this->httpObject->db->fetchAll();
+		$this->httpObject->db->closeCursor();
+		$this->httpObject->response->dataEncodeObject->addKeyData(
 			objectKey: 'Results',
 			data: $rowArray
 		);

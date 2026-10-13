@@ -122,64 +122,6 @@ class CacheServerKey
 	}
 
 	/**
-	 * Get Customer CIDR key
-	 * 
-	 * @param int $customerId Customer Id
-	 * 
-	 * @return null|string
-	 */
-	public static function customerCidr(
-		$customerId
-	): null|string {
-		if (empty($customerId)) {
-			return Constant::$NULL;
-		}
-		return "customer:{$customerId}:CIDR";
-	}
-
-	/**
-	 * Get Customer group CIDR key
-	 * 
-	 * @param int $customerId          Customer Id
-	 * @param int $customerUserGroupId Customer User Group Id
-	 * 
-	 * @return null|string
-	 */
-	public static function customerGroupCidr(
-		$customerId,
-		$customerUserGroupId
-	): null|string {
-		if (
-			strlen($customerId) === 0
-			|| strlen($customerUserGroupId) === 0
-		) {
-			return Constant::$NULL;
-		}
-		return "customer:{$customerId}:group:{$customerUserGroupId}:CIDR";
-	}
-
-	/**
-	 * Get Customer user CIDR key
-	 * 
-	 * @param int $customerId     Customer Id
-	 * @param int $customerUserId Customer User Id
-	 * 
-	 * @return null|string
-	 */
-	public static function customerUserCidr(
-		$customerId,
-		$customerUserId
-	): null|string {
-		if (
-			strlen($customerId) === 0
-			|| strlen($customerUserId) === 0
-		) {
-			return Constant::$NULL;
-		}
-		return "customer:{$customerId}:user:{$customerUserId}:CIDR";
-	}
-
-	/**
 	 * Get Token key
 	 * 
 	 * @param string $apiToken Token

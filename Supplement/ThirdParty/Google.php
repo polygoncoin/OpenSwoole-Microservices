@@ -100,7 +100,7 @@ class Google implements ThirdPartyInterface
 		);
 		if (empty($output)) {
 			$output = ['Error' => 'Nothing returned by ipify'];
-			$this->httpObject->httpResponseObject->httpStatus = HttpStatus::$InternalServerError;
+			$this->httpObject->response->httpStatus = HttpStatus::$InternalServerError;
 		} else {
 			$output = CommonFunction::jsonDecode(
 				value: $output
@@ -124,7 +124,7 @@ class Google implements ThirdPartyInterface
 	private function endProcess(
 		$output
 	): void {
-		$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
+		$this->httpObject->response->dataEncodeObject->addKeyData(
 			objectKey: 'Results',
 			data: $output
 		);

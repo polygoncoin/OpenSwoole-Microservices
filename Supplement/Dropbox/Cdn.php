@@ -92,7 +92,10 @@ class Cdn implements DropboxInterface
 	 */
 	public function init(): bool
 	{
-		if ($this->httpObject->httpRequestObject->isPrivateRequest) {
+		if (
+			$this->httpObject->request->isPrivateWebRequest
+			|| $this->httpObject->request->isPrivateApiRequest
+		) {
 			$this->DROPBOX_DIRECTORY = Constant::$DROPBOX_PRIVATE_DIRECTORY;
 		} else {
 			$this->DROPBOX_DIRECTORY = Constant::$DROPBOX_PUBLIC_DIRECTORY;
@@ -101,7 +104,7 @@ class Cdn implements DropboxInterface
 		$configuredRoute = str_replace(
 			'/dropbox/cdn',
 			'',
-			$this->httpObject->httpRequestObject->routeParserObject->configuredRoute
+			$this->httpObject->request->routeParser->configuredRoute
 		);
 
 		$filePath = DIRECTORY_SEPARATOR . trim(
@@ -117,8 +120,11 @@ class Cdn implements DropboxInterface
 
 		if (
 			$this->httpObject !== Constant::$NULL
-			&& $this->httpObject->httpRequestObject !== Constant::$NULL
-			&& $this->httpObject->httpRequestObject->isPrivateRequest
+			&& $this->httpObject->request !== Constant::$NULL
+			&& (
+				$this->httpObject->request->isPrivateWebRequest
+				|| $this->httpObject->request->isPrivateApiRequest
+			)
 		) {
 			$this->DROPBOX_DIRECTORY .= DIRECTORY_SEPARATOR . $this->httpObject->httpReqData['active']['customerId'];
 			$this->validateFileRequest();

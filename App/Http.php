@@ -19,8 +19,10 @@ use Microservices\App\Constant;
 use Microservices\App\Environment;
 use Microservices\App\HttpRequest;
 use Microservices\App\HttpResponse;
+use Microservices\App\RateLimiter;
 use Microservices\App\Server\CacheServer;
 use Microservices\App\Server\DatabaseServer;
+use Microservices\App\Server\QueryCacheServer;
 use Microservices\App\SessionHandler\Session;
 
 /**
@@ -56,42 +58,49 @@ class Http
 	 * 
 	 * @var null|HttpRequest
 	 */
-	public $httpRequestObject = null;
+	public $request = null;
 
 	/**
 	 * Microservices HTTP response
 	 * 
 	 * @var null|HttpResponse
 	 */
-	public $httpResponseObject = null;
+	public $response = null;
 
 	/**
 	 * Session object
 	 * 
 	 * @var null|Session
 	 */
-	public $sessionObject = null;
+	public $webSession = null;
 
 	/**
 	 * Customer Cache Object
 	 * 
 	 * @var null|CacheServer
 	 */
-	public $cacheObject = null;
+	public $cache = null;
 
 	/**
 	 * Customer Database Object
 	 * 
 	 * @var null|DatabaseServer
 	 */
-	public $databaseObject = null;
+	public $db = null;
 
 	/**
 	 * Customer Query Cache Object
 	 * 
-	 * @var null|CacheServer
+	 * @var null|QueryCacheServer
 	 */
-	public $queryCacheObject = null;
+	public $queryCache = null;
+
+	/**
+	 * Rate Limiter
+	 * 
+	 * @var null|RateLimiter
+	 */
+	public $rateLimiter = null;
 
 	/**
 	 * Constructor
@@ -111,10 +120,10 @@ class Http
 	 */
 	public function init(): bool
 	{
-		$this->httpRequestObject = new HttpRequest(
+		$this->request = new HttpRequest(
 			httpObject: $this
 		);
-		$this->httpResponseObject = new HttpResponse(
+		$this->response = new HttpResponse(
 			httpObject: $this
 		);
 
@@ -128,7 +137,7 @@ class Http
 	 */
 	public function initRequest(): void
 	{
-		$this->httpRequestObject->init();
+		$this->request->init();
 	}
 
 	/**
@@ -138,6 +147,6 @@ class Http
 	 */
 	public function initResponse(): void
 	{
-		$this->httpResponseObject->init();
+		$this->response->init();
 	}
 }

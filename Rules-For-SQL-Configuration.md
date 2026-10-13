@@ -335,8 +335,8 @@ return [
 	'OUTPUT_REPRESENTATION_FILE' => 'file-path',
 
 	// Rate Limiting Route access
-	'rateLimitMaxRequest' => 1, // Allowed number of request in defined seconds window
-	'rateLimitMaxRequestWindow' => 3600, // Seconds Window for restricting number of request
+	'rateLimitRequestCount' => 1, // Allowed number of request in defined seconds window
+	'rateLimitRequestWindow' => 3600, // Seconds Window for restricting number of request
 
 	// Maintain responseLag for window
 	'responseLagWindow' => 3600,
@@ -396,7 +396,7 @@ return [
 return [
 	// Query to perform task
 	'__SQL-COMMENT__' => 'Comment prepended to query for monitoring queries in logs',
-	'__DOWNLOAD__' => 'SELECT columns FROM TableName WHERE __WHERE__',
+	'__EXPORT__' => 'SELECT columns FROM TableName WHERE __WHERE__',
 	// Where clause of the Query to perform task
 	'__WHERE__' => [
 		[

@@ -36,7 +36,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	public $sessionServerHost = null;
 	public $sessionServerPort = null;
 
-	private $sessionObject = null;
+	private $webSession = null;
 
 
 	/**
@@ -72,7 +72,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId
 	): bool|string {
 		try {
-			if ($data = $this->sessionObject->get($sessionId)) {
+			if ($data = $this->webSession->get($sessionId)) {
 				$sessionData = $this->decryptData(
 					cipherText: $data
 				);
@@ -100,7 +100,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	): bool|int {
 		try {
 			if (
-				$this->sessionObject->set(
+				$this->webSession->set(
 					$sessionId,
 					$this->encryptData(
 						plainText: $sessionData
@@ -150,7 +150,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	): bool {
 		try {
 			if (
-				$this->sessionObject->touch(
+				$this->webSession->touch(
 					$sessionId,
 					$this->sessionOptions['cookie_lifetime']
 				)
@@ -189,7 +189,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId
 	): bool {
 		try {
-			if ($this->sessionObject->delete($sessionId)) {
+			if ($this->webSession->delete($sessionId)) {
 				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
@@ -207,7 +207,7 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	public function closeSession(): void
 	{
-		$this->sessionObject = Constant::$NULL;
+		$this->webSession = Constant::$NULL;
 	}
 
 	/**
@@ -229,8 +229,8 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 				);
 			}
 
-			$this->sessionObject = new \Memcached(); // phpcs:ignore
-			$this->sessionObject->addServer(
+			$this->webSession = new \Memcached(); // phpcs:ignore
+			$this->webSession->addServer(
 				$this->sessionServerHost,
 				$this->sessionServerPort
 			);

@@ -53,7 +53,7 @@ return [
 					. DIRECTORY_SEPARATOR . 'Registration-With-Address-single.php',
 		],
 	],
-	Env::$SYSTEM_ROUTES_KEYWORD => [
+	$this->httpObject->Env->ROUTES_KEYWORD => [
 		'__FILE__' => Constant::$FALSE,
 		'{method:string}' => [
 			'dataType' => DatabaseServerDataType::$HttpMethod,

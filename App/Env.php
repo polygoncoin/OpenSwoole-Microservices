@@ -44,10 +44,13 @@ class Env
 	public static $SYSTEM_MASTER_DB = null;
 	public static $SYSTEM_CUSTOMER_TABLE = null;
 
-	public static $SYSTEM_ENABLE_RELOAD_CACHE = null;
-    public static $SYSTEM_RELOAD_REQUEST_KEYWORD = null;
+	public static $SYSTEM_ENABLE_RELOAD = null;
+    public static $SYSTEM_ENABLE_ROUTES = null;
 
+	public static $SYSTEM_RELOAD_KEYWORD = null;
 	public static $SYSTEM_ROUTES_KEYWORD = null;
+
+	public static $SYSTEM_RELOAD_CACHE_CIDR = null;
 
 	public static $SYSTEM_INPUT_REPRESENTATION = null;
 	public static $SYSTEM_OUTPUT_REPRESENTATION = null;
@@ -78,9 +81,12 @@ class Env
 		self::$SYSTEM_MASTER_DB = getenv(name: 'SYSTEM_MASTER_DB');
 		self::$SYSTEM_CUSTOMER_TABLE = getenv(name: 'SYSTEM_CUSTOMER_TABLE');
 
-		self::$SYSTEM_ENABLE_RELOAD_CACHE = (bool)getenv(name: 'SYSTEM_ENABLE_RELOAD_CACHE');
-		self::$SYSTEM_RELOAD_REQUEST_KEYWORD = getenv(name: 'SYSTEM_RELOAD_REQUEST_KEYWORD');
+		self::$SYSTEM_ENABLE_RELOAD = (bool)getenv(name: 'SYSTEM_ENABLE_RELOAD');
+		self::$SYSTEM_ENABLE_ROUTES = getenv(name: 'SYSTEM_ENABLE_ROUTES');
 
+		self::$SYSTEM_RELOAD_CACHE_CIDR = getenv(name: 'SYSTEM_RELOAD_CACHE_CIDR');
+
+		self::$SYSTEM_RELOAD_KEYWORD = getenv(name: 'SYSTEM_RELOAD_KEYWORD');
 		self::$SYSTEM_ROUTES_KEYWORD = getenv(name: 'SYSTEM_ROUTES_KEYWORD');
 
 		self::$SYSTEM_INPUT_REPRESENTATION = getenv(name: 'SYSTEM_INPUT_REPRESENTATION');

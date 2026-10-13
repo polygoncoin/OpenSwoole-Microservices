@@ -90,7 +90,7 @@ class Route
 	 */
 	public function init(): bool
 	{
-		if ($this->httpObject->Env->CUSTOMER_ENABLE_ROUTES_REQUEST) {
+		if ($this->httpObject->Env->ENABLE_ROUTES) {
 			return Constant::$TRUE;
 		}
 
@@ -105,7 +105,7 @@ class Route
 	public function process(): mixed
 	{
 		$httpRouteArray = [];
-		if ($this->httpObject->httpRequestObject->isPublicRequest) {
+		if ($this->httpObject->request->isPublicRequest) {
 			$userRoutesFolder = Constant::$WWW . $this->routesFolder
 				. DIRECTORY_SEPARATOR . 'Public';
 		} else {
@@ -140,7 +140,7 @@ class Route
 				httpRouteArray: $httpRouteArray[$httpRequestMethod]
 			);
 		}
-		$this->httpObject->httpResponseObject->dataEncodeObject->addKeyData(
+		$this->httpObject->response->dataEncodeObject->addKeyData(
 			objectKey: 'Results',
 			data: $httpRouteArray
 		);

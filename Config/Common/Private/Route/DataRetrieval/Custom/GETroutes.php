@@ -19,7 +19,7 @@ use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 
 return [
-	$this->httpObject->Env->CUSTOM_REQUEST_KEYWORD => [
+	$this->httpObject->Env->CUSTOM_KEYWORD => [
 		'{custom:string}' => [
 			'dataType' => DatabaseServerDataType::$Default,
 			'__FILE__' => Constant::$FALSE,

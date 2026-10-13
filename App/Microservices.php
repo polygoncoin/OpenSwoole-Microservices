@@ -113,7 +113,7 @@ class Microservices
 		try {
 			if ($class !== Constant::$NULL) {
 				$this->httpObject->initResponse();
-				$this->httpObject->httpResponseObject->startData();
+				$this->httpObject->response->startData();
 
 				$api = new $class(
 					httpObject: $this->httpObject
@@ -131,9 +131,9 @@ class Microservices
 						return $return;
 					}
 				}
-				$this->httpObject->httpResponseObject->addStatus();
-				$this->httpObject->httpResponseObject->addPerformance();
-				$this->httpObject->httpResponseObject->endData();
+				$this->httpObject->response->addStatus();
+				$this->httpObject->response->addPerformance();
+				$this->httpObject->response->endData();
 			}
 		} catch (\Exception $e) {
 			$this->manageException(
@@ -151,11 +151,11 @@ class Microservices
 	 */
 	public function outputResults(): void
 	{
-		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
+		if ($this->httpObject->response === Constant::$NULL) {
 			return;
 		}
-		http_response_code(response_code: $this->httpObject->httpResponseObject->httpStatus);
-		$this->httpObject->httpResponseObject->dataEncodeObject->streamData();
+		http_response_code(response_code: $this->httpObject->response->httpStatus);
+		$this->httpObject->response->dataEncodeObject->streamData();
 	}
 
 	/**
@@ -165,10 +165,10 @@ class Microservices
 	 */
 	public function returnResults(): bool|string
 	{
-		if ($this->httpObject->httpResponseObject === Constant::$NULL) {
+		if ($this->httpObject->response === Constant::$NULL) {
 			return Constant::$FALSE;
 		}
-		return $this->httpObject->httpResponseObject->dataEncodeObject->getData();
+		return $this->httpObject->response->dataEncodeObject->getData();
 	}
 
 	/**
@@ -198,13 +198,13 @@ class Microservices
 			$headerArray['Access-Control-Allow-Methods'] = $methods;
 		} else {
 			if (
-				$this->httpObject->httpResponseObject === Constant::$NULL
-				|| !isset($this->httpObject->httpRequestObject->routeParserObject->sqlConfig)
+				$this->httpObject->response === Constant::$NULL
+				|| !isset($this->httpObject->httpReqData['active']['sqlConfigData'])
 			) {
 				$OUTPUT_REPRESENTATION = Env::$SYSTEM_OUTPUT_REPRESENTATION;
 			} else {
 				$OUTPUT_REPRESENTATION = CommonFunction::getOutputRepresentation(
-					sqlConfig: $this->httpObject->httpRequestObject->routeParserObject->sqlConfig,
+					sqlConfig: $this->httpObject->httpReqData['active']['sqlConfigData'],
 					httpReqData: $this->httpObject->httpReqData,
 					customerId: $this->httpObject->httpReqData['active']['customerId']
 				);

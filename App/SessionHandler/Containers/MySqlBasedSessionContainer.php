@@ -42,7 +42,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	public $sessionServerDb = null;
 	public $sessionServerTable = null;
 
-	private $sessionObject = null;
+	private $webSession = null;
 
 
 	/**
@@ -251,7 +251,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	public function closeSession(): void
 	{
-		$this->sessionObject = Constant::$NULL;
+		$this->webSession = Constant::$NULL;
 	}
 
 	/**
@@ -262,7 +262,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	private function connect(): void
 	{
 		try {
-			$this->sessionObject = new \PDO(
+			$this->webSession = new \PDO(
 				dsn: "mysql:host={$this->sessionServerHost}",
 				username: $this->sessionServerUser,
 				password: $this->sessionServerPassword,
@@ -291,7 +291,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	): mixed {
 		$record = [];
 		try {
-			$stmt = $this->sessionObject->prepare(
+			$stmt = $this->webSession->prepare(
 				query: $sql,
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);
@@ -331,7 +331,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 		$paramArray = []
 	): bool {
 		try {
-			$stmt = $this->sessionObject->prepare(
+			$stmt = $this->webSession->prepare(
 				query: $sql,
 				options: [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
 			);

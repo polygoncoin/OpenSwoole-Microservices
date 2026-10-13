@@ -46,8 +46,8 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	public $sessionServerDb = null;
 	public $sessionServerTable = null;
 
-	private $sessionObject = null;
-	private $dbObject = null;
+	private $webSession = null;
+	private $db = null;
 	private $collectionObject = null;
 
 
@@ -252,7 +252,7 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	public function closeSession(): void
 	{
-		$this->sessionObject = Constant::$NULL;
+		$this->webSession = Constant::$NULL;
 	}
 
 	/**
@@ -274,17 +274,17 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 				$this->mongoDbServerUri = 'mongodb://' . $UP
 					. $this->sessionServerHost . ':' . $this->sessionServerPort;
 			}
-			$this->sessionObject = new \MongoDB\Customer(
+			$this->webSession = new \MongoDB\Customer(
 				$this->mongoDbServerUri
 			);
 
 			// Select a database
-			$this->dbObject = $this->sessionObject->selectDatabase(
+			$this->db = $this->webSession->selectDatabase(
 				$this->sessionServerDb
 			);
 
 			// Select a collection
-			$this->collectionObject = $this->dbObject->selectCollection(
+			$this->collectionObject = $this->db->selectCollection(
 				$this->sessionServerTable
 			);
 		} catch (\Exception $e) {

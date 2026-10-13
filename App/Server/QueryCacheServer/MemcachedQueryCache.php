@@ -81,7 +81,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 	 * 
 	 * @var null|QueryCache_Memcached
 	 */
-	private $queryCacheObject = null;
+	private $queryCache = null;
 
 	/**
 	 * Constructor
@@ -117,12 +117,12 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 	 */
 	public function connectQueryCache(): void
 	{
-		if ($this->queryCacheObject !== Constant::$NULL) {
+		if ($this->queryCache !== Constant::$NULL) {
 			return;
 		}
 
 		try {
-			$this->queryCacheObject = new QueryCache_Memcached(
+			$this->queryCache = new QueryCache_Memcached(
 				cacheServerHost: $this->queryCacheServerHost,
 				cacheServerPort: $this->queryCacheServerPort,
 				cacheServerUser: $this->queryCacheServerUser,
@@ -154,7 +154,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->cacheExist(
+		return $this->queryCache->cacheExist(
 			cacheKey: $queryCacheKey
 		);
 	}
@@ -175,7 +175,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->cacheGet(
+		return $this->queryCache->cacheGet(
 			cacheKey: $queryCacheKey
 		);
 	}
@@ -198,7 +198,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->cacheSet(
+		return $this->queryCache->cacheSet(
 			cacheKey: $queryCacheKey,
 			cacheValue: $queryCacheValue
 		);
@@ -222,7 +222,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->cacheIncrement(
+		return $this->queryCache->cacheIncrement(
 			cacheKey: $queryCacheKey,
 			cacheOffset: $queryCacheOffset
 		);
@@ -244,7 +244,7 @@ class MemcachedQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->cacheDelete(
+		return $this->queryCache->cacheDelete(
 			cacheKey: $queryCacheKey
 		);
 	}

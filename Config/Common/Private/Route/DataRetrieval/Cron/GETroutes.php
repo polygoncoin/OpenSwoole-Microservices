@@ -19,7 +19,7 @@ use Microservices\App\DatabaseServerDataType;
 use Microservices\App\Env;
 
 return [
-	$this->httpObject->Env->CRON_REQUEST_KEYWORD => [
+	$this->httpObject->Env->CRON_KEYWORD => [
 		'{cron:string}' => [
 			'dataType' => DatabaseServerDataType::$Default,
 			'__FILE__' => Constant::$FALSE,

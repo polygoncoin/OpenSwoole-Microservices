@@ -77,7 +77,7 @@ class Reload
 		$httpRequestIp,
 		$customerId = null
 	): bool {
-		$SYSTEM_CUSTOMER_TABLE = getenv(name: 'SYSTEM_CUSTOMER_TABLE');
+		$SYSTEM_CUSTOMER_TABLE = Env::$SYSTEM_CUSTOMER_TABLE;
 
 		$sql = "SELECT * FROM `{$SYSTEM_CUSTOMER_TABLE}` C";
 		$paramArray = [];
@@ -100,7 +100,7 @@ class Reload
 			);
 			CommonFunction::checkCidr(
 				ip: $httpRequestIp,
-				cidrString: Env::$config[$customerId]->RELOAD_CACHE_CIDR
+				cidrString: Env::$SYSTEM_RELOAD_CACHE_CIDR
 			);
 
 			if (!empty(Env::$config[$customerId]->PRIVATE_API_DOMAIN_NAME)) {
@@ -183,10 +183,10 @@ class Reload
 			$customerId
 		);
 
-		$cacheObject = DbCommonFunction::connectCache(
+		$cache = DbCommonFunction::connectCache(
 			customerId: $customerId
 		);
-		$databaseObject = DbCommonFunction::connectDatabase(
+		$db = DbCommonFunction::connectDatabase(
 			customerId: $customerId,
 			fetchDbMode: 'Master'
 		);
@@ -200,19 +200,19 @@ class Reload
 		}
 
 		// Groups
-		$databaseObject->execQuery(
+		$db->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$groupDataArray = $databaseObject->fetchAll();
-		$databaseObject->closeCursor();
+		$groupDataArray = $db->fetchAll();
+		$db->closeCursor();
 
 		foreach ($groupDataArray as $groupData) {
 			$g_key = CacheServerKey::customerGroup(
 				customerId: $customerId,
 				customerUserGroupId: $groupData['customer_user_group_id']
 			);
-			$cacheObject->cacheSet(
+			$cache->cacheSet(
 				cacheKey: $g_key,
 				cacheValue: $groupData
 			);
@@ -229,7 +229,7 @@ class Reload
 						customerId: $customerId,
 						customerUserGroupId: $groupData['customer_user_group_id']
 					);
-					$cacheObject->cacheSet(
+					$cache->cacheSet(
 						cacheKey: $groupCidrCacheKey,
 						cacheValue: $groupCidrIpNumberRangeArray
 					);
@@ -258,10 +258,10 @@ class Reload
 			$customerId
 		);
 
-		$cacheObject = DbCommonFunction::connectCache(
+		$cache = DbCommonFunction::connectCache(
 			customerId: $customerId
 		);
-		$databaseObject = DbCommonFunction::connectDatabase(
+		$db = DbCommonFunction::connectDatabase(
 			customerId: $customerId,
 			fetchDbMode: 'Master'
 		);
@@ -275,12 +275,12 @@ class Reload
 		}
 
 		// Groups
-		$databaseObject->execQuery(
+		$db->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$userDataArray = $databaseObject->fetchAll();
-		$databaseObject->closeCursor();
+		$userDataArray = $db->fetchAll();
+		$db->closeCursor();
 		foreach ($userDataArray as $userData) {
 			if ($userData['customer_user_cidr'] !== Constant::$NULL) {
 				$userCidrIpNumberRangeArray = CommonFunction::cidrStringIpNumberRange(
@@ -295,7 +295,7 @@ class Reload
 						customerId: $customerId,
 						customerUserId: $userData['customer_user_id']
 					);
-					$cacheObject->cacheSet(
+					$cache->cacheSet(
 						cacheKey: $userCidrCacheKey,
 						cacheValue: $userCidrIpNumberRangeArray
 					);
@@ -305,7 +305,7 @@ class Reload
 				customerId: $customerId,
 				username: $userData['customer_user_username']
 			);
-			$cacheObject->cacheSet(
+			$cache->cacheSet(
 				cacheKey: $cu_key,
 				cacheValue: $userData
 			);

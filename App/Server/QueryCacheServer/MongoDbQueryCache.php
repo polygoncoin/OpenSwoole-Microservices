@@ -85,7 +85,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 	 * 
 	 * @var null|QueryCache_MongoDb
 	 */
-	private $queryCacheObject = null;
+	private $queryCache = null;
 
 	/**
 	 * Collection Object
@@ -128,12 +128,12 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 	 */
 	public function connectQueryCache(): void
 	{
-		if ($this->queryCacheObject !== Constant::$NULL) {
+		if ($this->queryCache !== Constant::$NULL) {
 			return;
 		}
 
 		try {
-			$this->queryCacheObject = new QueryCache_MongoDb(
+			$this->queryCache = new QueryCache_MongoDb(
 				cacheServerHost: $this->queryCacheServerHost,
 				cacheServerPort: $this->queryCacheServerPort,
 				cacheServerUser: $this->queryCacheServerUser,
@@ -165,7 +165,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->cacheExist(
+		return $this->queryCache->cacheExist(
 			cacheKey: $queryCacheKey
 		);
 	}
@@ -186,7 +186,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->cacheGet(
+		return $this->queryCache->cacheGet(
 			cacheKey: $queryCacheKey
 		);
 	}
@@ -209,7 +209,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->cacheSet(
+		return $this->queryCache->cacheSet(
 			cacheKey: $queryCacheKey,
 			cacheValue: $queryCacheValue
 		);
@@ -233,7 +233,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->cacheIncrement(
+		return $this->queryCache->cacheIncrement(
 			cacheKey: $queryCacheKey,
 			cacheOffset: $queryCacheOffset
 		);
@@ -255,7 +255,7 @@ class MongoDbQueryCache implements QueryCacheServerInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->cacheDelete(
+		return $this->queryCache->cacheDelete(
 			cacheKey: $queryCacheKey
 		);
 	}

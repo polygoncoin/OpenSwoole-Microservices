@@ -79,7 +79,7 @@ class Write
 		Http &$httpObject
 	) {
 		$this->httpObject = &$httpObject;
-		$this->dataEncodeObject = &$this->httpObject->httpResponseObject->dataEncodeObject;
+		$this->dataEncodeObject = &$this->httpObject->response->dataEncodeObject;
 	}
 
 	/**
@@ -100,7 +100,7 @@ class Write
 	public function process(): mixed
 	{
 		// Load Sql
-		$sqlConfig = &$this->httpObject->httpRequestObject->routeParserObject->sqlConfig;
+		$sqlConfig = &$this->httpObject->httpReqData['active']['sqlConfigData'];
 
 		$return = $this->writeBasics(
 			sqlConfig: $sqlConfig,
@@ -117,8 +117,8 @@ class Write
 		$fetchDbMode = 'Master';
 
 		// Set Server mode to execute query on - Read / Write Server
-		if ($this->httpObject->databaseObject === Constant::$NULL) {
-			$this->httpObject->databaseObject = DbCommonFunction::connectDatabase(
+		if ($this->httpObject->db === Constant::$NULL) {
+			$this->httpObject->db = DbCommonFunction::connectDatabase(
 				customerId: $this->httpObject->httpReqData['active']['customerId'],
 				fetchDbMode: $fetchDbMode
 			);
@@ -165,7 +165,7 @@ class Write
 			objectKey: 'Results'
 		);
 
-		$writePayloadDataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+		$writePayloadDataType = $this->httpObject->request->dataDecodeObject->dataType(
 			keyString: Constant::$NULL
 		);
 
@@ -185,7 +185,7 @@ class Write
 
 		// For indexCount
 		$indexCount = $writePayloadDataType === 'Array'
-			? $this->httpObject->httpRequestObject->dataDecodeObject->count() : 1;
+			? $this->httpObject->request->dataDecodeObject->count() : 1;
 
 		for ($index = 0; $index < $indexCount; $index++) {
 			$writePayloadKeyArray = Constant::$NULL;
@@ -208,13 +208,13 @@ class Write
 			// For DML operation
 			if ($hashJson === Constant::$NULL) {
 				if ($writeOperateAsTransaction) {
-					$this->httpObject->databaseObject->begin();
+					$this->httpObject->db->begin();
 				}
 
 				$output = [];
 				$output['Status'] = HttpStatus::$Ok;
-				if ($this->httpObject->Env->CUSTOMER_ENABLE_PAYLOAD_IN_RESPONSE) {
-					$output[$this->httpObject->Env->PAYLOAD_IN_RESPONSE] = $this->httpObject->httpRequestObject->dataDecodeObject->getCompleteArray(
+				if ($this->httpObject->Env->ENABLE_PAYLOAD_IN_RESPONSE) {
+					$output[$this->httpObject->Env->PAYLOAD_KEY_IN_RESPONSE] = $this->httpObject->request->dataDecodeObject->getCompleteArray(
 						keyString: $this->getPayloadKey(
 							payloadKeyArray: $writePayloadKeyArray
 						)
@@ -233,27 +233,29 @@ class Write
 					writeParentOperateAsTransaction: $writeOperateAsTransaction
 				);
 
-				if ($this->httpObject->httpResponseObject->httpStatus === HttpStatus::$Ok) {
+				if ($this->httpObject->response->httpStatus === HttpStatus::$Ok) {
 					if (
 						$writeOperateAsTransaction
-						&& ($this->httpObject->databaseObject->beganTransaction === Constant::$TRUE)
+						&& ($this->httpObject->db->beganTransaction === Constant::$TRUE)
 					) {
-						$this->httpObject->databaseObject->commit();
+						$this->httpObject->db->commit();
 					}
 					$output['PayloadResponse'] = $writeResponse;
 
 					if (
-						$this->httpObject->httpRequestObject->isPrivateRequest
-						&& $idempotentWindow
+						(
+							$this->httpObject->request->isPrivateWebRequest
+							|| $this->httpObject->request->isPrivateApiRequest
+						) && $idempotentWindow
 					) {
-						$this->httpObject->cacheObject->cacheSet(
+						$this->httpObject->cache->cacheSet(
 							cacheKey: $hashKey,
 							cacheValue: $output,
 							cacheExpire: $idempotentWindow
 						);
 					}
 				} else { // Failure
-					$output['Status'] = $this->httpObject->httpResponseObject->httpStatus;
+					$output['Status'] = $this->httpObject->response->httpStatus;
 					$output['Error'] = $writeResponse;
 				}
 			} else {
@@ -337,7 +339,7 @@ class Write
 		);
 
 		// For isObject
-		$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+		$dataType = $this->httpObject->request->dataDecodeObject->dataType(
 			keyString: $writeParentPayloadKey
 		);
 		if ($dataType === Constant::$NULL) {
@@ -347,7 +349,7 @@ class Write
 
 		// For indexCount
 		$indexCount = ($isObject || $isObject === Constant::$NULL)
-			? 1 : $this->httpObject->httpRequestObject->dataDecodeObject->count(
+			? 1 : $this->httpObject->request->dataDecodeObject->count(
 				keyString: $writeParentPayloadKey
 			);
 
@@ -408,7 +410,7 @@ class Write
 			// For Validating Hierarchy
 			if (
 				$writeParentCurrentMaintainHierarchy
-				&& !$this->httpObject->httpRequestObject->dataDecodeObject->isset(
+				&& !$this->httpObject->request->dataDecodeObject->isset(
 					keyString: $writeParentCurrentPayloadKey
 				)
 			) {
@@ -419,7 +421,7 @@ class Write
 			}
 
 			// For isObject
-			$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+			$dataType = $this->httpObject->request->dataDecodeObject->dataType(
 				keyString: $writeParentCurrentPayloadKey
 			);
 			if ($dataType === Constant::$NULL) {
@@ -428,7 +430,7 @@ class Write
 			$isObject = $dataType === 'Object';
 
 			// Load Payload
-			$writeParentPayload = $this->httpObject->httpRequestObject->dataDecodeObject->getObject(
+			$writeParentPayload = $this->httpObject->request->dataDecodeObject->getObject(
 				keyString: $writeParentCurrentPayloadKey
 			);
 
@@ -468,12 +470,12 @@ class Write
 
 			if (!empty($errorArray)) {
 				$writeParentCurrentResponse['Error'] = $errorArray;
-				$this->httpObject->databaseObject->rollBack();
+				$this->httpObject->db->rollBack();
 				return;
 			}
 
 			// Execute
-			$this->httpObject->databaseObject->execQuery(
+			$this->httpObject->db->execQuery(
 				sql: $sql,
 				paramArray: $paramArray
 			);
@@ -481,7 +483,7 @@ class Write
 			// For Rollback
 			if (
 				$writeParentCurrentOperateAsTransaction
-				&& !$this->httpObject->databaseObject->beganTransaction
+				&& !$this->httpObject->db->beganTransaction
 			) {
 				$writeParentCurrentResponse['Error'] = 'Something went wrong';
 				return;
@@ -490,7 +492,7 @@ class Write
 			// For Setting Data
 			if (isset($writeParentSqlConfig['__INSERT-ID__'])) {
 				if ($insertId === Constant::$NULL) {
-					$insertId = $this->httpObject->databaseObject->lastInsertId();
+					$insertId = $this->httpObject->db->lastInsertId();
 				}
 
 				if ($isObject) {
@@ -504,12 +506,12 @@ class Write
 
 				$this->httpObject->httpReqData['active']['__INSERT-ID__'][$writeParentSqlConfig['__INSERT-ID__']] = $insertId;
 			} else {
-				$affectedRecordCount = $this->httpObject->databaseObject->affectedRecordCount();
+				$affectedRecordCount = $this->httpObject->db->affectedRecordCount();
 				$writeParentCurrentResponse['affectedRecordCount'] = $affectedRecordCount;
 			}
 
 			// For Close Cursor
-			$this->httpObject->databaseObject->closeCursor();
+			$this->httpObject->db->closeCursor();
 
 			// For Child
 			if (isset($writeParentSqlConfig['__SUB-CONFIG__'])) {
@@ -560,7 +562,7 @@ class Write
 					value: $writeParentSqlConfig['__AFFECTED-CACHE-KEY__']
 				);
 				for ($index = 0; $index < $indexCount; $index++) {
-					$this->httpObject->queryCacheObject->queryCacheDelete(
+					$this->httpObject->queryCache->queryCacheDelete(
 						customerId: $this->httpObject->httpReqData['active']['customerId'],
 						queryCacheKey: $writeParentSqlConfig['__AFFECTED-CACHE-KEY__'][$index]
 					);
@@ -624,7 +626,7 @@ class Write
 			// For Validating Hierarchy
 			if (
 				$writeChildModuleMaintainHierarchy
-				&& !$this->httpObject->httpRequestObject->dataDecodeObject->isset(
+				&& !$this->httpObject->request->dataDecodeObject->isset(
 					keyString: $writeChildModulePayloadKey
 				)
 			) {
@@ -635,7 +637,7 @@ class Write
 			}
 
 			// For isObject
-			$dataType = $this->httpObject->httpRequestObject->dataDecodeObject->dataType(
+			$dataType = $this->httpObject->request->dataDecodeObject->dataType(
 				keyString: $writeChildModulePayloadKey
 			);
 			if ($dataType === Constant::$NULL) {
@@ -645,7 +647,7 @@ class Write
 
 			// For indexCount
 			$indexCount = ($isObject)
-				? 1 : $this->httpObject->httpRequestObject->dataDecodeObject->count(
+				? 1 : $this->httpObject->request->dataDecodeObject->count(
 					keyString: $writeChildModulePayloadKey
 				);
 
@@ -682,7 +684,7 @@ class Write
 				// For Validating Hierarchy
 				if (
 					$writeChildModuleCurrentMaintainHierarchy
-					&& !$this->httpObject->httpRequestObject->dataDecodeObject->isset(
+					&& !$this->httpObject->request->dataDecodeObject->isset(
 						keyString: $writeChildModuleCurrentPayloadKey
 					)
 				) {
@@ -732,7 +734,7 @@ class Write
 		// 		validationConfig: $sqlConfig['__VALIDATE__']
 		// 	);
 		// 	if ($isValidData !== Constant::$TRUE) {
-		// 		$this->httpObject->httpResponseObject->httpStatus = HttpStatus::$BadRequest;
+		// 		$this->httpObject->response->httpStatus = HttpStatus::$BadRequest;
 		// 		$response = $errorArray;
 		// 		$return = Constant::$FALSE;
 		// 	}

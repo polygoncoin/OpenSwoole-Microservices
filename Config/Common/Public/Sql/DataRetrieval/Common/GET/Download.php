@@ -20,7 +20,7 @@ use Microservices\App\Env;
 use Microservices\DatabaseTable;
 
 return [
-	'__DOWNLOAD__' => 'SELECT * FROM `category` WHERE __WHERE__',
+	'__EXPORT__' => 'SELECT * FROM `category` WHERE __WHERE__',
 	'__WHERE__' => [
 		[
 			'column' => 'is_deleted',

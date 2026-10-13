@@ -35,84 +35,62 @@ use Microservices\App\HttpStatus;
 class RateLimiter
 {
 	/**
-	 * Cache object
+	 * HTTP object
 	 * 
-	 * @var null|object
+	 * @var null|Http
 	 */
-	private $cacheObject = null;
+	private $httpObject = null;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param object $cacheObject
+	 * @param Http $httpObject
 	 */
 	public function __construct(
-		&$cacheObject
+		Http &$httpObject
 	) {
-		$this->cacheObject = &$cacheObject;
+		$this->httpObject = &$httpObject;
 	}
 
 	/**
 	 * Check rate limit is valid
 	 * 
-	 * @param string $rateLimitPrefix           Prefix
-	 * @param int    $rateLimitMaxRequest       Max request
-	 * @param int    $rateLimitMaxRequestWindow Window in seconds
-	 * @param string $rateLimitKey              Rate Limit Key
+	 * @param array $rateLimitDetail Rate Limit detail
 	 * 
 	 * @return array
 	 */
 	public function check(
-		$rateLimitPrefix,
-		$rateLimitMaxRequest,
-		$rateLimitMaxRequestWindow,
-		$rateLimitKey
+		$rateLimitDetail
 	): array {
-		if (
-			empty($rateLimitPrefix)
-			|| empty($rateLimitMaxRequest)
-			|| empty($rateLimitMaxRequestWindow)
-			|| empty($rateLimitKey)
-		) {
+		if (!$this->httpObject->Env->ENABLE_RATE_LIMITING) {
+			return [];
+		}
+
+		if ($this->httpObject->cache === Constant::$NULL) {
 			throw new \Exception(
-				message: 'Invalid Rate Limiter Data 1 '.json_encode(
-					[
-						$rateLimitPrefix,
-						$rateLimitMaxRequest,
-						$rateLimitMaxRequestWindow,
-						$rateLimitKey
-					]
-				),
+				message: 'Rate Limiter: Cache object not initialized.',
 				code: HttpStatus::$InternalServerError
 			);
 		}
 
-		if ($this->cacheObject === Constant::$NULL) {
-			throw new \Exception(
-				message: 'Invalid Rate Limiter Cache object',
-				code: HttpStatus::$InternalServerError
-			);
-		}
+		$rateLimitKey = $rateLimitDetail['rateLimitKey'];
+		$rateLimitRequestCount = (int)$rateLimitDetail['rateLimitRequestCount'];
+		$rateLimitRequestWindow = (int)$rateLimitDetail['rateLimitRequestWindow'];
 
-		$rateLimitMaxRequest = (int)$rateLimitMaxRequest;
-		$rateLimitMaxRequestWindow = (int)$rateLimitMaxRequestWindow;
-
-		$remainder = Env::$timestamp % $rateLimitMaxRequestWindow;
-		$remainder = $remainder !== 0 ? $remainder : $rateLimitMaxRequestWindow;
-
-		$rateLimitCacheKey = $rateLimitPrefix . $rateLimitKey;
+		$remainder = Env::$timestamp % $rateLimitRequestWindow;
+		$remainder = $remainder !== 0 ? $remainder : $rateLimitRequestWindow;
 
 		if (
-			$this->cacheObject->cacheExist(
+			$this->httpObject->cache->cacheExist(
 				cacheKey: $rateLimitKey
 			)
 		) {
-			$requestCount = (int)$this->cacheObject->cacheGet(
-				cacheKey: $rateLimitCacheKey
+			$requestCount = (int)$this->httpObject->cache->cacheGet(
+				cacheKey: $rateLimitKey
 			);
 		} else {
 			$requestCount = 0;
-			$this->cacheObject->cacheSet(
+			$this->httpObject->cache->cacheSet(
 				cacheKey: $rateLimitKey,
 				cacheValue: $requestCount,
 				cacheExpire: $remainder
@@ -120,15 +98,15 @@ class RateLimiter
 		}
 		$requestCount++;
 
-		$allowed = $requestCount <= $rateLimitMaxRequest;
+		$allowed = $requestCount <= $rateLimitRequestCount;
 		$remaining = max(
 			0,
-			$rateLimitMaxRequest - $requestCount
+			$rateLimitRequestCount - $requestCount
 		);
 		$resetOn = Env::$timestamp + $remainder;
 
 		if ($allowed) {
-			$this->cacheObject->cacheIncrement(
+			$this->httpObject->cache->cacheIncrement(
 				cacheKey: $rateLimitKey
 			);
 		}
@@ -141,47 +119,22 @@ class RateLimiter
 	}
 
 	/**
-	 * Check Rate limit
+	 * Rate limit feature
 	 * 
-	 * @param string $rateLimitPrefix           Prefix
-	 * @param int    $rateLimitMaxRequest       Max request
-	 * @param int    $rateLimitMaxRequestWindow Window in seconds
-	 * @param string $rateLimitKey              Rate limit key
+	 * @param string $feature Feature
 	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
-	public function checkRateLimit(
-		$rateLimitPrefix,
-		$rateLimitMaxRequest,
-		$rateLimitMaxRequestWindow,
-		$rateLimitKey
+	public function rateLimitFeature(
+		$feature
 	): void {
-		if (
-			empty($rateLimitPrefix)
-			|| empty($rateLimitMaxRequest)
-			|| empty($rateLimitMaxRequestWindow)
-			|| empty($rateLimitKey)
-		) {
-			throw new \Exception(
-				message: 'Invalid Rate Limiter Data 2 '.json_encode(
-					[
-						$rateLimitPrefix,
-						$rateLimitMaxRequest,
-						$rateLimitMaxRequestWindow,
-						$rateLimitKey
-					]
-				),
-				code: HttpStatus::$InternalServerError
-			);
-		}
-
+		$rateLimitDetail = $this->getRateLimitDetail(
+			feature: $feature
+		);
 		try {
 			$result = $this->check(
-				rateLimitPrefix: $rateLimitPrefix,
-				rateLimitMaxRequest: $rateLimitMaxRequest,
-				rateLimitMaxRequestWindow: $rateLimitMaxRequestWindow,
-				rateLimitKey: $rateLimitKey
+				rateLimitDetail: $rateLimitDetail
 			);
 
 			if ($result['allowed']) {
@@ -202,4 +155,170 @@ class RateLimiter
 			);
 		}
 	}
+
+	/**
+	 * Get Rate Limit detail
+	 * 
+	 * @param string $feature Feature
+	 * 
+	 * @return array
+	 */
+	public function getRateLimitDetail(
+		$feature
+	): array {
+        $rateLimitDetail = null;
+
+        $enableKey = "ENABLE_RATE_LIMITING_{$feature}";
+        
+        if (!$this->httpObject->Env->$enableKey) {
+            return $rateLimitDetail;
+        }
+
+        $httpRequestIp = &$this->httpObject->httpReqData['server']['httpRequestIp'];
+        $httpRequestMethod = &$this->httpObject->httpReqData['server']['httpRequestMethod'];
+        $route = &$this->httpObject->httpReqData['get'][ROUTE_URL_PARAM];
+		$customerData = &$this->httpObject->httpReqData['active']['customerData'];
+
+		$customerData = &$this->httpObject->httpReqData['active']['customerData'];
+		$customerUserData = &$this->httpObject->httpReqData['active']['customerUserData'];
+		$customerUserGroupData = &$this->httpObject->httpReqData['active']['customerUserGroupData'];
+		$sqlConfigData = &$this->httpObject->httpReqData['active']['sqlConfigData'];
+
+        $customerId = &$this->httpObject->httpReqData['active']['customerId'];
+        $customerUserId = &$this->httpObject->httpReqData['active']['customerUserId'];
+        $customerUserGroupId = &$this->httpObject->httpReqData['active']['customerUserGroupId'];
+
+        switch ($feature) {
+            case 'CUSTOMER':
+                $rateLimitKey = "RL:C:{$customerId}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $customerData['customer_limit_count'],
+					'rateLimitRequestWindow' => $customerData['customer_limit_window']
+				];
+                break;
+            case 'CUSTOMER_IP':
+                $rateLimitKey = "RL:C:{$customerId}:IP:{$httpRequestIp}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $customerData['customer_limit_ip_count'],
+					'rateLimitRequestWindow' => $customerData['customer_limit_ip_window']
+				];
+                break;
+            case 'ROUTE':
+                $rateLimitKey = "RL:C:{$customerId}:R:{$route}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $sqlConfigData['rateLimitRequestCount'],
+					'rateLimitRequestWindow' => $sqlConfigData['rateLimitRequestWindow'],
+				];
+                break;
+            case 'ROUTE_IP':
+                $rateLimitKey = "RL:C:{$customerId}:R:{$route}:IP:{$httpRequestIp}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $sqlConfigData['rateLimitRequestCount'],
+					'rateLimitRequestWindow' => $sqlConfigData['rateLimitRequestWindow'],
+				];
+                break;
+            case 'GROUP':
+                $rateLimitKey = "RL:C:{$customerId}:G:{$customerUserGroupId}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $customerUserGroupData['customer_user_group_limit_count'],
+					'rateLimitRequestWindow' => $customerUserGroupData['customer_user_group_limit_window']
+				];
+                break;
+            case 'GROUP_IP':
+                $rateLimitKey = "RL:C:{$customerId}:G:{$customerUserGroupId}:IP:{$httpRequestIp}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $customerUserGroupData['customer_user_group_limit_ip_count'],
+					'rateLimitRequestWindow' => $customerUserGroupData['customer_user_group_limit_ip_window']
+				];
+                break;
+            case 'GROUP_ROUTE':
+                $rateLimitKey = "RL:C:{$customerId}:G:{$customerUserGroupId}:R:{$route}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $customerUserGroupData['customer_user_group_limit_route_count'],
+					'rateLimitRequestWindow' => $customerUserGroupData['customer_user_group_limit_route_window']
+				];
+                break;
+            case 'GROUP_ROUTE_IP':
+                $rateLimitKey = "RL:C:{$customerId}:G:{$customerUserGroupId}::R:{$route}:IP:{$httpRequestIp}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $customerUserGroupData['customer_user_group_limit_route_ip_count'],
+					'rateLimitRequestWindow' => $customerUserGroupData['customer_user_group_limit_route_ip_window']
+				];
+                break;
+            case 'USER':
+                $rateLimitKey = "RL:C:{$customerId}:U:{$customerUserId}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $customerUserData['customer_user_limit_count'],
+					'rateLimitRequestWindow' => $customerUserData['customer_user_limit_window']
+				];
+                break;
+            case 'USER_IP':
+                $rateLimitKey = "RL:C:{$customerId}:U:{$customerUserId}:IP:{$httpRequestIp}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $customerUserData['customer_user_limit_ip_count'],
+					'rateLimitRequestWindow' => $customerUserData['customer_user_limit_ip_window']
+				];
+                break;
+            case 'USER_ROUTE':
+                $rateLimitKey = "RL:C:{$customerId}:U:{$customerUserId}:R:{$route}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $customerUserData['customer_user_limit_route_count'],
+					'rateLimitRequestWindow' => $customerUserData['customer_user_limit_route_window']
+				];
+                break;
+            case 'USER_ROUTE_IP':
+                $rateLimitKey = "RL:C:{$customerId}:U:{$customerUserId}:R:{$route}:IP:{$httpRequestIp}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $customerUserData['customer_user_limit_route_ip_count'],
+					'rateLimitRequestWindow' => $customerUserData['customer_user_limit_route_ip_window']
+				];
+                break;
+            case 'LOGIN':
+                $rateLimitKey = "RL:C:{$customerId}:L";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $customerData['customer_limit_login_count'],
+					'rateLimitRequestWindow' => $customerData['customer_limit_login_window']
+				];
+                break;
+            case 'LOGIN_IP':
+                $rateLimitKey = "RL:C:{$customerId}:L:IP:{$httpRequestIp}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $customerData['customer_limit_login_ip_count'],
+					'rateLimitRequestWindow' => $customerData['customer_limit_login_ip_window']
+				];
+                break;
+            case 'EACH_USER_LOGIN':
+                $rateLimitKey = "RL:C:{$customerId}:L:U:{$customerUserId}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $customerData['customer_limit_each_user_login_count'],
+					'rateLimitRequestWindow' => $customerData['customer_limit_each_user_login_window']
+				];
+                break;
+            case 'EACH_USER_LOGIN_IP':
+                $rateLimitKey = "RL:C:{$customerId}:L:U:{$customerUserId}:IP:{$httpRequestIp}";
+				$rateLimitDetail = [
+					'rateLimitKey' => $rateLimitKey,
+					'rateLimitRequestCount' => $customerData['customer_limit_each_user_login_ip_count'],
+					'rateLimitRequestWindow' => $customerData['customer_limit_each_user_login_ip_window']
+				];
+                break;
+        }
+
+        return $rateLimitDetail;
+    }
 }

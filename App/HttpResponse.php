@@ -91,7 +91,7 @@ class HttpResponse
 	 */
 	public function init(): bool
 	{
-		$sqlConfig = $this->httpObject->httpRequestObject->routeParserObject->sqlConfig ?? [];
+		$sqlConfig = $this->httpObject->httpReqData['active']['sqlConfigData'] ?? [];
 
 		$OUTPUT_REPRESENTATION = CommonFunction::getOutputRepresentation(
 			sqlConfig: $sqlConfig,

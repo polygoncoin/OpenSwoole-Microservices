@@ -39,7 +39,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	public $sessionServerPassword = null;
 	public $sessionServerDb = null;
 
-	private $sessionObject = null;
+	private $webSession = null;
 
 
 	/**
@@ -76,8 +76,8 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	): bool|string {
 		try {
 			if (
-				$this->sessionObject->exists($sessionId)
-				&& ($data = $this->sessionObject->get($sessionId))
+				$this->webSession->exists($sessionId)
+				&& ($data = $this->webSession->get($sessionId))
 			) {
 				$sessionData = $this->decryptData(
 					cipherText: $data
@@ -106,7 +106,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	): bool|int {
 		try {
 			if (
-				$this->sessionObject->set(
+				$this->webSession->set(
 					$sessionId,
 					$this->encryptData(
 						plainText: $sessionData
@@ -156,7 +156,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	): bool {
 		try {
 			if (
-				$this->sessionObject->expire(
+				$this->webSession->expire(
 					$sessionId,
 					$this->sessionOptions['cookie_lifetime']
 				)
@@ -195,7 +195,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId
 	): bool {
 		try {
-			if ($this->sessionObject->del($sessionId)) {
+			if ($this->webSession->del($sessionId)) {
 				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
@@ -213,7 +213,7 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	 */
 	public function closeSession(): void
 	{
-		$this->sessionObject = Constant::$NULL;
+		$this->webSession = Constant::$NULL;
 	}
 
 	/**
@@ -251,10 +251,10 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 				];
 			}
 
-			$this->sessionObject = new \Redis( // phpcs:ignore
+			$this->webSession = new \Redis( // phpcs:ignore
 				$connParamArray
 			);
-			$this->sessionObject->select(
+			$this->webSession->select(
 				$this->sessionServerDb
 			);
 		} catch (\Exception $e) {

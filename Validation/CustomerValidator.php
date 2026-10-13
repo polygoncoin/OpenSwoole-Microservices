@@ -107,18 +107,18 @@ class CustomerValidator implements ValidatorInterface
 		$primary,
 		&$id
 	): int {
-		$dbServerDb = $this->httpObject->databaseObject->dbServerDb;
+		$dbServerDb = $this->httpObject->db->dbServerDb;
 		$sql = "
 			SELECT count(1) as `count`
 			FROM `{$dbServerDb}`.`{$table}`
 			WHERE `{$primary}` = ?
 		";
 		$paramArray = [$id];
-		$this->httpObject->databaseObject->execQuery(
+		$this->httpObject->db->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		return (int)($this->httpObject->databaseObject->fetch())['count'];
+		return (int)($this->httpObject->db->fetch())['count'];
 	}
 
 	/**
@@ -136,12 +136,12 @@ class CustomerValidator implements ValidatorInterface
 		);
 		$sql = "SELECT count(1) as `count` FROM `{$table}` WHERE `{$primary}` = ?";
 		$paramArray = [$id];
-		$this->httpObject->databaseObject->execQuery(
+		$this->httpObject->db->execQuery(
 			sql: $sql,
 			paramArray: $paramArray
 		);
-		$record = $this->httpObject->databaseObject->fetch();
-		$this->httpObject->databaseObject->closeCursor();
+		$record = $this->httpObject->db->fetch();
+		$this->httpObject->db->closeCursor();
 		return (isset($record['count']) && $record['count'] === 0) ? Constant::$FALSE : Constant::$TRUE;
 	}
 }

@@ -74,7 +74,7 @@ class Redis implements NoSqlInterface
 	 * 
 	 * @var null|\Redis
 	 */
-	private $cacheObject = null;
+	private $cache = null;
 
 	/**
 	 * Constructor
@@ -109,7 +109,7 @@ class Redis implements NoSqlInterface
 	 */
 	public function connect(): void
 	{
-		if ($this->cacheObject !== Constant::$NULL) {
+		if ($this->cache !== Constant::$NULL) {
 			return;
 		}
 
@@ -130,17 +130,17 @@ class Redis implements NoSqlInterface
 					$this->cacheServerPassword
 				];
 			}
-			$this->cacheObject = new \Redis(
+			$this->cache = new \Redis(
 				$connParamArray
 			);
 
 			if (!empty($this->cacheServerDb)) {
-				$this->cacheObject->select(
+				$this->cache->select(
 					$this->cacheServerDb
 				);
 			}
 
-			if (!$this->cacheObject->ping()) {
+			if (!$this->cache->ping()) {
 				throw new \Exception(
 					message: 'Unable to ping cache',
 					code: HttpStatus::$InternalServerError
@@ -170,7 +170,7 @@ class Redis implements NoSqlInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->cacheObject->exists(
+		return $this->cache->exists(
 			$key
 		);
 	}
@@ -192,7 +192,7 @@ class Redis implements NoSqlInterface
 		}
 
 		$return = CommonFunction::jsonDecode(
-			value: $this->cacheObject->get(
+			value: $this->cache->get(
 				$key
 			)
 		);
@@ -225,12 +225,12 @@ class Redis implements NoSqlInterface
 		);
 
 		if ($expire === Constant::$NULL) {
-			return $this->cacheObject->set(
+			return $this->cache->set(
 				$key,
 				$value
 			);
 		} else {
-			return $this->cacheObject->set(
+			return $this->cache->set(
 				$key,
 				$value,
 				$expire
@@ -256,7 +256,7 @@ class Redis implements NoSqlInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->cacheObject->incrBy(
+		return $this->cache->incrBy(
 			$key,
 			$offset
 		);
@@ -278,7 +278,7 @@ class Redis implements NoSqlInterface
 			return Constant::$FALSE;
 		}
 
-		return $this->cacheObject->del(
+		return $this->cache->del(
 			$key
 		);
 	}

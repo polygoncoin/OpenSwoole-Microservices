@@ -87,7 +87,7 @@ class QueryCacheServer
 	 * 
 	 * @var null|QueryCacheServerInterface
 	 */
-	private $queryCacheObject = null;
+	private $queryCache = null;
 
 	/**
 	 * Constructor
@@ -125,7 +125,7 @@ class QueryCacheServer
 	 */
 	public function connectQueryCache(): void
 	{
-		if ($this->queryCacheObject !== Constant::$NULL) {
+		if ($this->queryCache !== Constant::$NULL) {
 			return;
 		}
 
@@ -149,7 +149,7 @@ class QueryCacheServer
 		$queryCacheServerNS = 'Microservices\\App\\Server\\QueryCacheServer\\'
             . $this->queryCacheServerMode . 'QueryCache';
 
-		$this->queryCacheObject = new $queryCacheServerNS(
+		$this->queryCache = new $queryCacheServerNS(
 			queryCacheServerHost: $this->queryCacheServerHost,
 			queryCacheServerPort: $this->queryCacheServerPort,
 			queryCacheServerUser: $this->queryCacheServerUser,
@@ -175,7 +175,7 @@ class QueryCacheServer
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->queryCacheExist(
+		return $this->queryCache->queryCacheExist(
 			queryCacheKey: $queryCacheKey
 		);
 	}
@@ -196,7 +196,7 @@ class QueryCacheServer
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->queryCacheGet(
+		return $this->queryCache->queryCacheGet(
 			queryCacheKey: $queryCacheKey
 		);
 	}
@@ -219,7 +219,7 @@ class QueryCacheServer
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->queryCacheSet(
+		return $this->queryCache->queryCacheSet(
 			queryCacheKey: $queryCacheKey,
 			queryCacheValue:  $queryCacheValue
 		);
@@ -243,7 +243,7 @@ class QueryCacheServer
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->queryCacheIncrement(
+		return $this->queryCache->queryCacheIncrement(
 			queryCacheKey: $queryCacheKey,
 			queryCacheOffset: $queryCacheOffset
 		);
@@ -265,7 +265,7 @@ class QueryCacheServer
 			return Constant::$FALSE;
 		}
 
-		return $this->queryCacheObject->queryCacheDelete(
+		return $this->queryCache->queryCacheDelete(
 			queryCacheKey: $queryCacheKey
 		);
 	}

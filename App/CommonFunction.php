@@ -213,44 +213,6 @@ class CommonFunction
 	}
 
 	/**
-	 * Check IP with CIDR based on cache key containing start and end IP number
-	 * 
-	 * @param CacheServerInterface $cacheObject  Cache Server object
-	 * @param string               $ip           Request Ip
-	 * @param string               $cidrCacheKey Cache Key(s)
-	 * 
-	 * @return void
-	 * @throws \Exception
-	 */
-	public static function checkCacheCidr(
-		$cacheObject,
-		$ip,
-		$cidrCacheKey
-	): void {
-		if (
-			!$cacheObject->cacheExist(
-				cacheKey: $cidrCacheKey
-			)
-		) {
-			return;
-		}
-
-		$cidrIpNumberRangeArray = $cacheObject->cacheGet(
-			cacheKey: $cidrCacheKey
-		);
-		$isValidIp = self::belongsToCidrIpNumberRange(
-			ip: $ip,
-			cidrIpNumberRangeArray: $cidrIpNumberRangeArray
-		);
-		if (!$isValidIp) {
-			throw new \Exception(
-				message: 'IP not supported',
-				code: HttpStatus::$BadRequest
-			);
-		}
-	}
-
-	/**
 	 * Check IP with CIDR
 	 * 
 	 * @param string $ip         Request Ip
@@ -329,49 +291,6 @@ class CommonFunction
 		}
 
 		return $isValidIp;
-	}
-
-	/**
-	 * Validate remote IP
-	 * 
-	 * @param Http $httpObject
-	 * 
-	 * @return void
-	 */
-	public static function checkPrivateRequestCidr(
-		&$httpObject
-	): void {
-		if (!Env::$config[$httpObject->httpReqData['active']['customerId']]->CUSTOMER_ENABLE_CIDR) {
-			return;
-		}
-
-		self::checkCacheCidr(
-			cacheObject: DbCommonFunction::$globalCacheObject,
-			ip: $httpObject->httpReqData['server']['httpRequestIp'],
-			cidrCacheKey: CacheServerKey::customerCidr(
-				customerId: $httpObject->httpReqData['active']['customerId']
-			)
-		);
-
-		if ($httpObject !== Constant::$NULL) {
-			self::checkCacheCidr(
-				cacheObject: $httpObject->cacheObject,
-				ip: $httpObject->httpReqData['server']['httpRequestIp'],
-				cidrCacheKey: CacheServerKey::customerGroupCidr(
-					customerId: $httpObject->httpReqData['active']['customerId'],
-					customerUserGroupId: $httpObject->httpReqData['active']['customerUserGroupId']
-				)
-			);
-
-			self::checkCacheCidr(
-				cacheObject: $httpObject->cacheObject,
-				ip: $httpObject->httpReqData['server']['httpRequestIp'],
-				cidrCacheKey: CacheServerKey::customerUserCidr(
-					customerId: $httpObject->httpReqData['active']['customerId'],
-					customerUserId: $httpObject->httpReqData['active']['customerUserId']
-				)
-			);
-		}
 	}
 
 	/**
