@@ -91,7 +91,7 @@ class Category implements CustomInterface
 		);
 		$rowArray = $this->httpObject->db->fetchAll();
 		$this->httpObject->db->closeCursor();
-		$this->httpObject->response->dataEncodeObject->addKeyData(
+		$this->httpObject->response->encodeObject->addKeyData(
 			objectKey: 'Results',
 			data: $rowArray
 		);

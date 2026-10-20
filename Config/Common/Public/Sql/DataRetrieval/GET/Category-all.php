@@ -89,7 +89,7 @@ return [
 			],
 		]
 	],
-	'__HIERARCHY__' => Constant::$TRUE,
+	'__FOLLOW-SQL_CONFIG-THREAD__' => Constant::$TRUE,
 	'__FETCH-MODE__' => 'Master',
 	'__CACHE-KEY__' => $this->httpObject->httpReqData['active']['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
 	'responseLagWindow' => 3600,
@@ -99,7 +99,8 @@ return [
 			'lagResponse' => 0
 		]
 	],
-	'OUTPUT_REPRESENTATION_FILE' => $this->httpObject->httpReqData['active']['commonServingFileDir']
+	'__OUTPUT_REPRESENTATION__' => 'XSLT',
+	'__OUTPUT_REPRESENTATION_FILE__' => $this->httpObject->httpReqData['active']['commonServingFileDir']
 		. DIRECTORY_SEPARATOR . 'XSLT'
 		. DIRECTORY_SEPARATOR . 'Category.xls'
 ];

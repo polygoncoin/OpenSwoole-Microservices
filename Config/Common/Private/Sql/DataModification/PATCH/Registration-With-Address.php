@@ -87,6 +87,6 @@ return [
 			'errorMessage' => 'Invalid registration id'
 		],
 	],
-	'__HIERARCHY__' => Constant::$TRUE,
+	'__FOLLOW-SQL_CONFIG-THREAD__' => Constant::$TRUE,
 	'idempotentWindow' => 10
 ];

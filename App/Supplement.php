@@ -54,7 +54,7 @@ class Supplement
 	 * 
 	 * @var null|DataEncode
 	 */
-	public $dataEncodeObject = null;
+	public $encodeObject = null;
 
 	/**
 	 * Supplement Class object
@@ -79,7 +79,7 @@ class Supplement
 		Http &$httpObject
 	) {
 		$this->httpObject = &$httpObject;
-		$this->dataEncodeObject = &$this->httpObject->response->dataEncodeObject;
+		$this->encodeObject = &$this->httpObject->response->encodeObject;
 	}
 
 	/**
@@ -106,11 +106,11 @@ class Supplement
 	public function process(): mixed
 	{
 		// Load Sql
-		$sqlConfig = &$this->httpObject->httpReqData['active']['sqlConfigData'];
+		$sqlConfig = &$this->httpObject->httpReqData['active']['sqlData']['Config'];
 
 		$return = $this->writeBasics(
 			$sqlConfig,
-			$maintainHierarchy
+			$followSqlConfigThread
 		);
 
 		$operateAsTransaction = isset($sqlConfig['__TRANSACTION__'])
@@ -132,8 +132,8 @@ class Supplement
 
 		$this->supplement(
 			supplementSqlConfig: $sqlConfig,
-			supplementMaintainHierarchy: $maintainHierarchy,
-			supplementOperateAsTransaction: $operateAsTransaction
+			supplementFollowSqlConfigThread: $followSqlConfigThread,
+			supplementTransaction: $operateAsTransaction
 		);
 
 		return Constant::$TRUE;
@@ -142,48 +142,47 @@ class Supplement
 	/**
 	 * Process Function to insert/update
 	 * 
-	 * @param array $supplementSqlConfig            Sql config
-	 * @param bool  $supplementMaintainHierarchy    If true - Uses parent payload/results in child
-	 * @param bool  $supplementOperateAsTransaction If true - Operates as transaction
+	 * @param array $supplementSqlConfig             Sql config
+	 * @param bool  $supplementFollowSqlConfigThread Follow Sql Config Thread
+	 * @param bool  $supplementTransaction           If true - Operates as transaction
 	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
 	private function supplement(
 		&$supplementSqlConfig,
-		$supplementMaintainHierarchy,
-		$supplementOperateAsTransaction
+		$supplementFollowSqlConfigThread,
+		$supplementTransaction
 	): void {
-		$supplementOUTPUT_REPRESENTATION = CommonFunction::getOutputRepresentation(
+		$supplementOutputRepresentation = CommonFunction::getOutputRepresentation(
 			sqlConfig: $supplementSqlConfig,
-			httpReqData: $this->httpObject->httpReqData,
-			customerId: $this->httpObject->httpReqData['active']['customerId']
+			httpObject: $this->httpObject
 		);
 
 		// Set required fields
 		$this->httpObject->httpReqData['active']['requiredFieldArrayCollection'] = $this->getRequired(
 			sqlConfig: $supplementSqlConfig,
-			maintainHierarchy: $supplementMaintainHierarchy,
+			followSqlConfigThread: $supplementFollowSqlConfigThread,
 			isFirstCall: Constant::$TRUE
 		);
 
-		$this->dataEncodeObject->startObject(
+		$this->encodeObject->startObject(
 			objectKey: 'Results'
 		);
 
-		$supplementPayloadDataType = $this->httpObject->request->dataDecodeObject->dataType(
+		$supplementPayloadDataType = $this->httpObject->request->decodeObject->dataType(
 			keyString: Constant::$NULL
 		);
 
 		if ($supplementPayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $supplementOUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'],
+					needle: $supplementOutputRepresentation['outputRepresentation'],
 					haystack: ['XML', 'XSLT', 'HTML'],
 					strict: Constant::$TRUE
 				)
 			) {
-				$this->dataEncodeObject->startArray(
+				$this->encodeObject->startArray(
 					objectKey: 'Records'
 				);
 			}
@@ -191,7 +190,7 @@ class Supplement
 
 		// For indexCount
 		$indexCount = $supplementPayloadDataType === 'Array'
-			? $this->httpObject->request->dataDecodeObject->count() : 1;
+			? $this->httpObject->request->decodeObject->count() : 1;
 
 		for ($index = 0; $index < $indexCount; $index++) {
 			$supplementPayloadKeyArray = Constant::$NULL;
@@ -214,14 +213,14 @@ class Supplement
 			// For DML operation
 			if ($hashJson === Constant::$NULL) {
 
-				if ($supplementOperateAsTransaction) {
+				if ($supplementTransaction) {
 					$this->httpObject->db->begin();
 				}
 
 				$output = [];
 				$output['Status'] = HttpStatus::$Ok;
 				if ($this->httpObject->Env->ENABLE_PAYLOAD_IN_RESPONSE) {
-					$output[$this->httpObject->Env->PAYLOAD_KEY_IN_RESPONSE] = $this->httpObject->request->dataDecodeObject->getCompleteArray(
+					$output[$this->httpObject->Env->PAYLOAD_KEY_IN_RESPONSE] = $this->httpObject->request->decodeObject->getCompleteArray(
 						keyString: $this->getPayloadKey(
 							payloadKeyArray: $supplementPayloadKeyArray
 						)
@@ -237,13 +236,13 @@ class Supplement
 					supplementParentRequiredFieldArray: $this->httpObject->httpReqData['active']['requiredFieldArrayCollection'],
 					supplementParentResponse: $supplementResponse,
 					supplementParentModule: '',
-					supplementParentMaintainHierarchy: $supplementMaintainHierarchy,
-					supplementParentOperateAsTransaction: $supplementOperateAsTransaction
+					supplementParentFollowSqlConfigThread: $supplementFollowSqlConfigThread,
+					supplementParentTransaction: $supplementTransaction
 				);
 
 				if ($this->httpObject->response->httpStatus === HttpStatus::$Ok) {
 					if (
-						$supplementOperateAsTransaction
+						$supplementTransaction
 						&& ($this->httpObject->db->beganTransaction === Constant::$TRUE)
 					) {
 						$this->httpObject->db->commit();
@@ -269,7 +268,7 @@ class Supplement
 
 			if ($supplementPayloadKeyArray === Constant::$NULL) {
 				foreach ($output as $outputKey => &$outputKeyValue) {
-					$this->dataEncodeObject->addKeyData(
+					$this->encodeObject->addKeyData(
 						objectKey: $outputKey,
 						data: $outputKeyValue
 					);
@@ -277,23 +276,23 @@ class Supplement
 			} else {
 				if (
 					in_array(
-						needle: $supplementOUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'],
+						needle: $supplementOutputRepresentation['outputRepresentation'],
 						haystack: ['XML', 'XSLT', 'HTML'],
 						strict: Constant::$TRUE
 					)
 				) {
-					$this->dataEncodeObject->startObject(
+					$this->encodeObject->startObject(
 						objectKey: 'Record'
 					);
 					foreach ($output as $outputKey => &$outputKeyValue) {
-						$this->dataEncodeObject->addKeyData(
+						$this->encodeObject->addKeyData(
 							objectKey: $outputKey,
 							data: $outputKeyValue
 						);
 					}
-					$this->dataEncodeObject->endObject();
+					$this->encodeObject->endObject();
 				} else {
-					$this->dataEncodeObject->addKeyData(
+					$this->encodeObject->addKeyData(
 						objectKey: $index,
 						data: $output
 					);
@@ -304,27 +303,27 @@ class Supplement
 		if ($supplementPayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $supplementOUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'],
+					needle: $supplementOutputRepresentation['outputRepresentation'],
 					haystack: ['XML', 'XSLT', 'HTML'],
 					strict: Constant::$TRUE
 				)
 			) {
-				$this->dataEncodeObject->endArray();
+				$this->encodeObject->endArray();
 			}
 		}
-		$this->dataEncodeObject->endObject();
+		$this->encodeObject->endObject();
 	}
 
 	/**
 	 * Supplement Parent Function
 	 * 
-	 * @param array  $supplementParentSqlConfig            Sql config
-	 * @param array  $supplementParentPayloadKeyArray      Payload Indexes
-	 * @param array  $supplementParentRequiredFieldArray   Required fields
-	 * @param array  $supplementParentResponse             Response by reference
-	 * @param string $supplementParentModule               Parent Module
-	 * @param bool   $supplementParentMaintainHierarchy    If true - Uses parent payload/results in child
-	 * @param bool   $supplementParentOperateAsTransaction If true - Operates as transaction
+	 * @param array  $supplementParentSqlConfig             Sql config
+	 * @param array  $supplementParentPayloadKeyArray       Payload Indexes
+	 * @param array  $supplementParentRequiredFieldArray    Required fields
+	 * @param array  $supplementParentResponse              Response by reference
+	 * @param string $supplementParentModule                Parent Module
+	 * @param bool   $supplementParentFollowSqlConfigThread Follow Sql Config Thread
+	 * @param bool   $supplementParentTransaction           If true - Operates as transaction
 	 * 
 	 * @return void
 	 * @throws \Exception
@@ -335,8 +334,8 @@ class Supplement
 		&$supplementParentRequiredFieldArray,
 		&$supplementParentResponse,
 		$supplementParentModule,
-		$supplementParentMaintainHierarchy,
-		$supplementParentOperateAsTransaction
+		$supplementParentFollowSqlConfigThread,
+		$supplementParentTransaction
 	): void {
 		// For payloadKey
 		$supplementParentPayloadKey = $this->getPayloadKey(
@@ -344,7 +343,7 @@ class Supplement
 		);
 
 		// For isObject
-		$dataType = $this->httpObject->request->dataDecodeObject->dataType(
+		$dataType = $this->httpObject->request->decodeObject->dataType(
 			keyString: $supplementParentPayloadKey
 		);
 		if ($dataType === Constant::$NULL) {
@@ -354,7 +353,7 @@ class Supplement
 
 		// For indexCount
 		$indexCount = ($isObject)
-			? 1 : $this->httpObject->request->dataDecodeObject->count(
+			? 1 : $this->httpObject->request->decodeObject->count(
 				keyString: $supplementParentPayloadKey
 			);
 
@@ -406,13 +405,13 @@ class Supplement
 			}
 
 			// For Setting Current Values
-			$supplementParentCurrentOperateAsTransaction = $supplementParentOperateAsTransaction;
-			$supplementParentCurrentMaintainHierarchy = $supplementParentMaintainHierarchy;
+			$supplementParentCurrentTransaction = $supplementParentTransaction;
+			$supplementParentCurrentFollowSqlConfigThread = $supplementParentFollowSqlConfigThread;
 
-			// For Validating Hierarchy
+			// For Validating Sql Thread
 			if (
-				$supplementParentCurrentMaintainHierarchy
-				&& !$this->httpObject->request->dataDecodeObject->isset(
+				$supplementParentCurrentFollowSqlConfigThread
+				&& !$this->httpObject->request->decodeObject->isset(
 					keyString: $supplementParentCurrentPayloadKey
 				)
 			) {
@@ -423,7 +422,7 @@ class Supplement
 			}
 
 			// For isObject
-			$dataType = $this->httpObject->request->dataDecodeObject->dataType(
+			$dataType = $this->httpObject->request->decodeObject->dataType(
 				keyString: $supplementParentCurrentPayloadKey
 			);
 			if ($dataType === Constant::$NULL) {
@@ -432,7 +431,7 @@ class Supplement
 			$isObject = $dataType === 'Object';
 
 			// For Payload
-			$supplementParentPayload = $this->httpObject->request->dataDecodeObject->getObject(
+			$supplementParentPayload = $this->httpObject->request->decodeObject->getObject(
 				keyString: $supplementParentCurrentPayloadKey
 			);
 
@@ -471,7 +470,7 @@ class Supplement
 
 			// For Rollback
 			if (
-				$supplementParentCurrentOperateAsTransaction
+				$supplementParentCurrentTransaction
 				&& !$this->httpObject->db->beganTransaction
 			) {
 				$supplementParentCurrentResponse['Error'] = 'Something went wrong';
@@ -480,7 +479,7 @@ class Supplement
 
 			// For Child
 			if (isset($supplementParentSqlConfig['__SUB-CONFIG__'])) {
-				if ($supplementParentCurrentMaintainHierarchy) {
+				if ($supplementParentCurrentFollowSqlConfigThread) {
 					$this->resetFetchData(
 						activeDataKey: 'previousPayload',
 						payloadKeyArray: $supplementParentCurrentPayloadKeyArray,
@@ -492,14 +491,14 @@ class Supplement
 					supplementChildPayloadKeyArray: $supplementParentCurrentPayloadKeyArray,
 					supplementChildRequiredFieldArray: $supplementParentRequiredFieldArray,
 					supplementChildResponse: $supplementParentCurrentResponse,
-					supplementChildMaintainHierarchy: $supplementParentCurrentMaintainHierarchy,
-					supplementChildOperateAsTransaction: $supplementParentCurrentOperateAsTransaction
+					supplementChildFollowSqlConfigThread: $supplementParentCurrentFollowSqlConfigThread,
+					supplementChildTransaction: $supplementParentCurrentTransaction
 				);
 			}
 
 			// For Triggers
 			if (isset($supplementParentSqlConfig['__TRIGGER__'])) {
-				$this->dataEncodeObject->addKeyData(
+				$this->encodeObject->addKeyData(
 					objectKey: '__TRIGGER__',
 					data: $this->getTriggerData(
 						triggerConfig: $supplementParentSqlConfig['__TRIGGER__'],
@@ -538,12 +537,12 @@ class Supplement
 	/**
 	 * Write Child Function
 	 * 
-	 * @param array  $supplementChildSqlConfig            Sql config
-	 * @param array  $supplementChildPayloadKeyArray      Payload Indexes
-	 * @param array  $supplementChildRequiredFieldArray   Required fields
-	 * @param array  $supplementChildResponse             Response by reference
-	 * @param bool   $supplementChildMaintainHierarchy    If true - Uses parent payload/results in child
-	 * @param bool   $supplementChildOperateAsTransaction If true - Operates as transaction
+	 * @param array  $supplementChildSqlConfig             Sql config
+	 * @param array  $supplementChildPayloadKeyArray       Payload Indexes
+	 * @param array  $supplementChildRequiredFieldArray    Required fields
+	 * @param array  $supplementChildResponse              Response by reference
+	 * @param bool   $supplementChildFollowSqlConfigThread Follow Sql Config Thread
+	 * @param bool   $supplementChildTransaction           If true - Operates as transaction
 	 * 
 	 * @return void
 	 */
@@ -552,8 +551,8 @@ class Supplement
 		&$supplementChildPayloadKeyArray,
 		&$supplementChildRequiredFieldArray,
 		&$supplementChildResponse,
-		$supplementChildMaintainHierarchy,
-		$supplementChildOperateAsTransaction
+		$supplementChildFollowSqlConfigThread,
+		$supplementChildTransaction
 	): void {
 		if (
 			isset($supplementChildPayloadKeyArray[0])
@@ -581,16 +580,16 @@ class Supplement
 			);
 
 			// For Setting Current Values
-			$supplementChildModuleOperateAsTransaction = $supplementChildOperateAsTransaction ?? isset($supplementChildModuleSqlConfig['__TRANSACTION__'])
+			$supplementChildModuleTransaction = $supplementChildTransaction ?? isset($supplementChildModuleSqlConfig['__TRANSACTION__'])
 				? $supplementChildModuleSqlConfig['__TRANSACTION__'] : Constant::$FALSE;
-			$supplementChildModuleMaintainHierarchy = $supplementChildMaintainHierarchy ?? $this->getMaintainHierarchy(
+			$supplementChildModuleFollowSqlConfigThread = $supplementChildFollowSqlConfigThread ?? $this->getFollowSqlConfigThread(
 				sqlConfig: $supplementChildModuleSqlConfig
 			);
 
-			// For Validating Hierarchy
+			// For Validating Sql Thread
 			if (
-				$supplementChildModuleMaintainHierarchy
-				&& !$this->httpObject->request->dataDecodeObject->isset(
+				$supplementChildModuleFollowSqlConfigThread
+				&& !$this->httpObject->request->decodeObject->isset(
 					keyString: $supplementChildModulePayloadKey
 				)
 			) {
@@ -601,7 +600,7 @@ class Supplement
 			}
 
 			// For isObject
-			$dataType = $this->httpObject->request->dataDecodeObject->dataType(
+			$dataType = $this->httpObject->request->decodeObject->dataType(
 				keyString: $supplementChildModulePayloadKey
 			);
 			if ($dataType === Constant::$NULL) {
@@ -611,7 +610,7 @@ class Supplement
 
 			// For indexCount
 			$indexCount = ($isObject || $isObject === Constant::$NULL)
-				? 1 : $this->httpObject->request->dataDecodeObject->count(
+				? 1 : $this->httpObject->request->decodeObject->count(
 					keyString: $supplementChildModulePayloadKey
 				);
 
@@ -642,13 +641,13 @@ class Supplement
 				);
 
 				// For Setting Current Values
-				$supplementChildModuleCurrentOperateAsTransaction = $supplementChildModuleOperateAsTransaction;
-				$supplementChildModuleCurrentMaintainHierarchy = $supplementChildModuleMaintainHierarchy;
+				$supplementChildModuleCurrentTransaction = $supplementChildModuleTransaction;
+				$supplementChildModuleCurrentFollowSqlConfigThread = $supplementChildModuleFollowSqlConfigThread;
 
-				// For Validating Hierarchy
+				// For Validating Sql Thread
 				if (
-					$supplementChildModuleCurrentMaintainHierarchy
-					&& !$this->httpObject->request->dataDecodeObject->isset(
+					$supplementChildModuleCurrentFollowSqlConfigThread
+					&& !$this->httpObject->request->decodeObject->isset(
 						keyString: $supplementChildModuleCurrentPayloadKey
 					)
 				) {
@@ -673,8 +672,8 @@ class Supplement
 					supplementParentRequiredFieldArray: $supplementChildModuleRequiredFieldArray,
 					supplementParentResponse: $supplementChildModuleCurrentResponse,
 					supplementParentModule: $supplementModule,
-					supplementParentMaintainHierarchy: $supplementChildModuleCurrentMaintainHierarchy,
-					supplementParentOperateAsTransaction: $supplementChildModuleCurrentOperateAsTransaction
+					supplementParentFollowSqlConfigThread: $supplementChildModuleCurrentFollowSqlConfigThread,
+					supplementParentTransaction: $supplementChildModuleCurrentTransaction
 				);
 			}
 		}

@@ -59,11 +59,11 @@ class Test
 	{
 		$response = [];
 
-		// $response[] = $this->processPublic();
+		$response[] = $this->processPublic();
 		$response[] = $this->processWebPrivate();
-		// $response[] = $this->processApiPrivate();
-		// $response[] = $this->processPublicXml();
-		// $response[] = $this->processPrivateSupplement();
+		$response[] = $this->processApiPrivate();
+		$response[] = $this->processPublicXml();
+		$response[] = $this->processPrivateSupplement();
 
 		return $response;
 	}

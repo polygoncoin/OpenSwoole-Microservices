@@ -51,7 +51,7 @@ This is a light & easy low code API generator using configuration arrays. It can
 
 ### Route folder
 
-#### Config//&lt;CustomerFoldername&gt;/&lt;mode&gt;/Route
+#### /Config/&lt;CustomerFoldername&gt;/&lt;mode&gt;/Route
 
 - **/Config/&lt;CustomerFoldername&gt;/Private/Route/&lt;GroupName&gt;/DataModification**
 - **/Config/&lt;CustomerFoldername&gt;/Private/Route/&lt;GroupName&gt;/DataRetrival**
@@ -75,8 +75,8 @@ These files locations are used in routes config to be used for generating respon
 
 #### /Config/&lt;CustomerFoldername&gt;/Private/Sql
 
-- **/Config//&lt;CustomerFoldername&gt;/&lt;mode&gt;/Sql/DataModification**
-- **/Config//&lt;CustomerFoldername&gt;/&lt;mode&gt;/Sql/DataRetrival**
+- **/Config/&lt;CustomerFoldername&gt;/&lt;mode&gt;/Sql/DataModification**
+- **/Config/&lt;CustomerFoldername&gt;/&lt;mode&gt;/Sql/DataRetrival**
 
 #### File
 
@@ -93,16 +93,17 @@ One can replace **&lt;filenames&gt;** tag with desired name as per functionality
 Below are route level CIDR settings for a set of system routes (starting / ending with)
 
 ```SQL
-`customer`.`customer_cron_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`customer_custom_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`customer_dropbox_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`customer_explain_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`customer_download_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`customer_import_sample_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`customer_import_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`customer_routes_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`customer_thirdparty_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
-`customer`.`customer_upload_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0'
+`customer`.`customer_cron_cidr` VARCHAR(250) DEFAULT NULL
+`customer`.`customer_custom_cidr` VARCHAR(250) DEFAULT NULL
+`customer`.`customer_dropbox_cidr` VARCHAR(250) DEFAULT NULL
+`customer`.`customer_explain_cidr` VARCHAR(250) DEFAULT NULL
+`customer`.`customer_export_cidr` VARCHAR(250) DEFAULT NULL
+`customer`.`customer_import_sample_cidr` VARCHAR(250) DEFAULT NULL
+`customer`.`customer_import_cidr` VARCHAR(250) DEFAULT NULL
+`customer`.`customer_reload_cidr` VARCHAR(250) DEFAULT NULL
+`customer`.`customer_routes_cidr` VARCHAR(250) DEFAULT NULL
+`customer`.`customer_thirdparty_cidr` VARCHAR(250) DEFAULT NULL
+`customer`.`customer_upload_cidr` VARCHAR(250) DEFAULT NULL
 ```
 
 ## Configuring in Database Tables
@@ -111,13 +112,13 @@ To enable CIDR settings at Customer / Group / User level one can set them in res
 
 ```SQL
 -- Customer level
-`customer`.`customer_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
+`customer`.`customer_cidr` VARCHAR(250) DEFAULT NULL,
 
 -- Group level
-`group`.`customer_user_group_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
+`group`.`customer_user_group_cidr` VARCHAR(250) DEFAULT NULL,
 
 -- User level
-`user`.`customer_user_cidr` VARCHAR(250) DEFAULT '0.0.0.0/0',
+`user`.`customer_user_cidr` VARCHAR(250) DEFAULT NULL,
 ```
 
 ## Contributing

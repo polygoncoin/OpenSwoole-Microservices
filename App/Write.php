@@ -61,7 +61,7 @@ class Write
 	 * 
 	 * @var null|DataEncode
 	 */
-	public $dataEncodeObject = null;
+	public $encodeObject = null;
 
 	/**
 	 * HTTP object
@@ -79,7 +79,7 @@ class Write
 		Http &$httpObject
 	) {
 		$this->httpObject = &$httpObject;
-		$this->dataEncodeObject = &$this->httpObject->response->dataEncodeObject;
+		$this->encodeObject = &$this->httpObject->response->encodeObject;
 	}
 
 	/**
@@ -100,11 +100,11 @@ class Write
 	public function process(): mixed
 	{
 		// Load Sql
-		$sqlConfig = &$this->httpObject->httpReqData['active']['sqlConfigData'];
+		$sqlConfig = &$this->httpObject->httpReqData['active']['sqlData']['Config'];
 
 		$return = $this->writeBasics(
 			sqlConfig: $sqlConfig,
-			maintainHierarchy: $maintainHierarchy
+			followSqlConfigThread: $followSqlConfigThread
 		);
 
 		$operateAsTransaction = isset($sqlConfig['__TRANSACTION__'])
@@ -126,8 +126,8 @@ class Write
 
 		$this->write(
 			writeSqlConfig: $sqlConfig,
-			writeMaintainHierarchy: $maintainHierarchy,
-			writeOperateAsTransaction: $operateAsTransaction
+			writeFollowSqlConfigThread: $followSqlConfigThread,
+			writeTransaction: $operateAsTransaction
 		);
 
 		return Constant::$TRUE;
@@ -136,48 +136,47 @@ class Write
 	/**
 	 * Perform write operation
 	 * 
-	 * @param array $writeSqlConfig            Sql config
-	 * @param bool  $writeMaintainHierarchy    If true - Uses parent payload/results in child
-	 * @param bool  $writeOperateAsTransaction If true - Operates as transaction
+	 * @param array $writeSqlConfig             Sql config
+	 * @param bool  $writeFollowSqlConfigThread Follow Sql Config Thread
+	 * @param bool  $writeTransaction           If true - Operates as transaction
 	 * 
 	 * @return void
 	 * @throws \Exception
 	 */
 	private function write(
 		&$writeSqlConfig,
-		$writeMaintainHierarchy,
-		$writeOperateAsTransaction
+		$writeFollowSqlConfigThread,
+		$writeTransaction
 	): void {
-		$writeOUTPUT_REPRESENTATION = CommonFunction::getOutputRepresentation(
+		$writeOutputRepresentation = CommonFunction::getOutputRepresentation(
 			sqlConfig: $writeSqlConfig,
-			httpReqData: $this->httpObject->httpReqData,
-			customerId: $this->httpObject->httpReqData['active']['customerId']
+			httpObject: $this->httpObject
 		);
 
 		// Set required fields
 		$this->httpObject->httpReqData['active']['requiredFieldArrayCollection'] = $this->getRequired(
 			sqlConfig: $writeSqlConfig,
-			maintainHierarchy: $writeMaintainHierarchy,
+			followSqlConfigThread: $writeFollowSqlConfigThread,
 			isFirstCall: Constant::$TRUE
 		);
 
-		$this->dataEncodeObject->startObject(
+		$this->encodeObject->startObject(
 			objectKey: 'Results'
 		);
 
-		$writePayloadDataType = $this->httpObject->request->dataDecodeObject->dataType(
+		$writePayloadDataType = $this->httpObject->request->decodeObject->dataType(
 			keyString: Constant::$NULL
 		);
 
 		if ($writePayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $writeOUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'],
+					needle: $writeOutputRepresentation['outputRepresentation'],
 					haystack: ['XML', 'XSLT', 'HTML'],
 					strict: Constant::$TRUE
 				)
 			) {
-				$this->dataEncodeObject->startArray(
+				$this->encodeObject->startArray(
 					objectKey: 'Records'
 				);
 			}
@@ -185,7 +184,7 @@ class Write
 
 		// For indexCount
 		$indexCount = $writePayloadDataType === 'Array'
-			? $this->httpObject->request->dataDecodeObject->count() : 1;
+			? $this->httpObject->request->decodeObject->count() : 1;
 
 		for ($index = 0; $index < $indexCount; $index++) {
 			$writePayloadKeyArray = Constant::$NULL;
@@ -207,14 +206,14 @@ class Write
 
 			// For DML operation
 			if ($hashJson === Constant::$NULL) {
-				if ($writeOperateAsTransaction) {
+				if ($writeTransaction) {
 					$this->httpObject->db->begin();
 				}
 
 				$output = [];
 				$output['Status'] = HttpStatus::$Ok;
 				if ($this->httpObject->Env->ENABLE_PAYLOAD_IN_RESPONSE) {
-					$output[$this->httpObject->Env->PAYLOAD_KEY_IN_RESPONSE] = $this->httpObject->request->dataDecodeObject->getCompleteArray(
+					$output[$this->httpObject->Env->PAYLOAD_KEY_IN_RESPONSE] = $this->httpObject->request->decodeObject->getCompleteArray(
 						keyString: $this->getPayloadKey(
 							payloadKeyArray: $writePayloadKeyArray
 						)
@@ -229,13 +228,13 @@ class Write
 					writeParentPayloadKeyArray: $writePayloadKeyArray,
 					writeParentRequiredFieldArray: $this->httpObject->httpReqData['active']['requiredFieldArrayCollection'],
 					writeParentResponse: $writeResponse,
-					writeParentMaintainHierarchy: $writeMaintainHierarchy,
-					writeParentOperateAsTransaction: $writeOperateAsTransaction
+					writeParentFollowSqlConfigThread: $writeFollowSqlConfigThread,
+					writeParentTransaction: $writeTransaction
 				);
 
 				if ($this->httpObject->response->httpStatus === HttpStatus::$Ok) {
 					if (
-						$writeOperateAsTransaction
+						$writeTransaction
 						&& ($this->httpObject->db->beganTransaction === Constant::$TRUE)
 					) {
 						$this->httpObject->db->commit();
@@ -266,7 +265,7 @@ class Write
 
 			if ($writePayloadKeyArray === Constant::$NULL) {
 				foreach ($output as $outputKey => &$outputKeyValue) {
-					$this->dataEncodeObject->addKeyData(
+					$this->encodeObject->addKeyData(
 						objectKey: $outputKey,
 						data: $outputKeyValue
 					);
@@ -274,23 +273,23 @@ class Write
 			} else {
 				if (
 					in_array(
-						needle: $writeOUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'],
+						needle: $writeOutputRepresentation['outputRepresentation'],
 						haystack: ['XML', 'XSLT', 'HTML'],
 						strict: Constant::$TRUE
 					)
 				) {
-					$this->dataEncodeObject->startObject(
+					$this->encodeObject->startObject(
 						objectKey: 'Record'
 					);
 					foreach ($output as $outputKey => &$outputKeyValue) {
-						$this->dataEncodeObject->addKeyData(
+						$this->encodeObject->addKeyData(
 							objectKey: $outputKey,
 							data: $outputKeyValue
 						);
 					}
-					$this->dataEncodeObject->endObject();
+					$this->encodeObject->endObject();
 				} else {
-					$this->dataEncodeObject->addKeyData(
+					$this->encodeObject->addKeyData(
 						objectKey: $index,
 						data: $output
 					);
@@ -301,26 +300,26 @@ class Write
 		if ($writePayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $writeOUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'],
+					needle: $writeOutputRepresentation['outputRepresentation'],
 					haystack: ['XML', 'XSLT', 'HTML'],
 					strict: Constant::$TRUE
 				)
 			) {
-				$this->dataEncodeObject->endArray();
+				$this->encodeObject->endArray();
 			}
 		}
-		$this->dataEncodeObject->endObject();
+		$this->encodeObject->endObject();
 	}
 
 	/**
 	 * Write Parent Function
 	 * 
-	 * @param array $writeParentSqlConfig            Sql config
-	 * @param array $writeParentPayloadKeyArray      Payload Indexes
-	 * @param array $writeParentRequiredFieldArray   Required fields
-	 * @param array $writeParentResponse             Response by reference
-	 * @param bool  $writeParentMaintainHierarchy    If true - Uses parent payload/results in child
-	 * @param bool  $writeParentOperateAsTransaction If true - Operates as transaction
+	 * @param array $writeParentSqlConfig             Sql config
+	 * @param array $writeParentPayloadKeyArray       Payload Indexes
+	 * @param array $writeParentRequiredFieldArray    Required fields
+	 * @param array $writeParentResponse              Response by reference
+	 * @param bool  $writeParentFollowSqlConfigThread Follow Sql Config Thread
+	 * @param bool  $writeParentTransaction           If true - Operates as transaction
 	 * 
 	 * @return void
 	 * @throws \Exception
@@ -330,8 +329,8 @@ class Write
 		&$writeParentPayloadKeyArray,
 		&$writeParentRequiredFieldArray,
 		&$writeParentResponse,
-		$writeParentMaintainHierarchy,
-		$writeParentOperateAsTransaction
+		$writeParentFollowSqlConfigThread,
+		$writeParentTransaction
 	): void {
 		// For payloadKey
 		$writeParentPayloadKey = $this->getPayloadKey(
@@ -339,7 +338,7 @@ class Write
 		);
 
 		// For isObject
-		$dataType = $this->httpObject->request->dataDecodeObject->dataType(
+		$dataType = $this->httpObject->request->decodeObject->dataType(
 			keyString: $writeParentPayloadKey
 		);
 		if ($dataType === Constant::$NULL) {
@@ -349,7 +348,7 @@ class Write
 
 		// For indexCount
 		$indexCount = ($isObject || $isObject === Constant::$NULL)
-			? 1 : $this->httpObject->request->dataDecodeObject->count(
+			? 1 : $this->httpObject->request->decodeObject->count(
 				keyString: $writeParentPayloadKey
 			);
 
@@ -404,13 +403,13 @@ class Write
 			}
 
 			// For Setting Current Values
-			$writeParentCurrentOperateAsTransaction = $writeParentOperateAsTransaction;
-			$writeParentCurrentMaintainHierarchy = $writeParentMaintainHierarchy;
+			$writeParentCurrentTransaction = $writeParentTransaction;
+			$writeParentCurrentFollowSqlConfigThread = $writeParentFollowSqlConfigThread;
 
-			// For Validating Hierarchy
+			// For Validating Sql Thread
 			if (
-				$writeParentCurrentMaintainHierarchy
-				&& !$this->httpObject->request->dataDecodeObject->isset(
+				$writeParentCurrentFollowSqlConfigThread
+				&& !$this->httpObject->request->decodeObject->isset(
 					keyString: $writeParentCurrentPayloadKey
 				)
 			) {
@@ -421,7 +420,7 @@ class Write
 			}
 
 			// For isObject
-			$dataType = $this->httpObject->request->dataDecodeObject->dataType(
+			$dataType = $this->httpObject->request->decodeObject->dataType(
 				keyString: $writeParentCurrentPayloadKey
 			);
 			if ($dataType === Constant::$NULL) {
@@ -430,7 +429,7 @@ class Write
 			$isObject = $dataType === 'Object';
 
 			// Load Payload
-			$writeParentPayload = $this->httpObject->request->dataDecodeObject->getObject(
+			$writeParentPayload = $this->httpObject->request->decodeObject->getObject(
 				keyString: $writeParentCurrentPayloadKey
 			);
 
@@ -482,7 +481,7 @@ class Write
 
 			// For Rollback
 			if (
-				$writeParentCurrentOperateAsTransaction
+				$writeParentCurrentTransaction
 				&& !$this->httpObject->db->beganTransaction
 			) {
 				$writeParentCurrentResponse['Error'] = 'Something went wrong';
@@ -515,7 +514,7 @@ class Write
 
 			// For Child
 			if (isset($writeParentSqlConfig['__SUB-CONFIG__'])) {
-				if ($writeParentCurrentMaintainHierarchy) {
+				if ($writeParentCurrentFollowSqlConfigThread) {
 					$this->resetFetchData(
 						activeDataKey: 'previousPayload',
 						payloadKeyArray: $writeParentCurrentPayloadKeyArray,
@@ -528,14 +527,14 @@ class Write
 					writeChildPayloadKeyArray: $writeParentCurrentPayloadKeyArray,
 					writeChildRequiredFieldArray: $writeParentRequiredFieldArray,
 					writeChildResponse: $writeParentCurrentResponse,
-					writeChildMaintainHierarchy: $writeParentCurrentMaintainHierarchy,
-					writeChildOperateAsTransaction: $writeParentCurrentOperateAsTransaction
+					writeChildFollowSqlConfigThread: $writeParentCurrentFollowSqlConfigThread,
+					writeChildTransaction: $writeParentCurrentTransaction
 				);
 			}
 
 			// For Triggers
 			if (isset($writeParentSqlConfig['__TRIGGER__'])) {
-				$this->dataEncodeObject->addKeyData(
+				$this->encodeObject->addKeyData(
 					objectKey: '__TRIGGER__',
 					data: $this->getTriggerData(
 						triggerConfig: $writeParentSqlConfig['__TRIGGER__'],
@@ -574,12 +573,12 @@ class Write
 	/**
 	 * Write Child Function
 	 * 
-	 * @param array $writeChildSqlConfig            Sql config
-	 * @param array $writeChildPayloadKeyArray      Payload Key's
-	 * @param array $writeChildRequiredFieldArray   Required fields
-	 * @param array $writeChildResponse             Response by reference
-	 * @param bool  $writeChildMaintainHierarchy    If true - Uses parent payload/results in child
-	 * @param bool  $writeChildOperateAsTransaction If true - Operates as transaction
+	 * @param array $writeChildSqlConfig             Sql config
+	 * @param array $writeChildPayloadKeyArray       Payload Key's
+	 * @param array $writeChildRequiredFieldArray    Required fields
+	 * @param array $writeChildResponse              Response by reference
+	 * @param bool  $writeChildFollowSqlConfigThread Follow Sql Config Thread
+	 * @param bool  $writeChildTransaction           If true - Operates as transaction
 	 * 
 	 * @return void
 	 */
@@ -588,8 +587,8 @@ class Write
 		&$writeChildPayloadKeyArray,
 		&$writeChildRequiredFieldArray,
 		&$writeChildResponse,
-		$writeChildMaintainHierarchy,
-		$writeChildOperateAsTransaction
+		$writeChildFollowSqlConfigThread,
+		$writeChildTransaction
 	): void {
 		if (
 			isset($writeChildPayloadKeyArray[0])
@@ -617,16 +616,16 @@ class Write
 			);
 
 			// For Setting Current Values
-			$writeChildModuleOperateAsTransaction = $writeChildOperateAsTransaction ?? isset($writeChildModuleSqlConfig['__TRANSACTION__'])
+			$writeChildModuleTransaction = $writeChildTransaction ?? isset($writeChildModuleSqlConfig['__TRANSACTION__'])
 				? $writeChildModuleSqlConfig['__TRANSACTION__'] : Constant::$FALSE;
-			$writeChildModuleMaintainHierarchy = $writeChildMaintainHierarchy ?? $this->getMaintainHierarchy(
+			$writeChildModuleFollowSqlConfigThread = $writeChildFollowSqlConfigThread ?? $this->getFollowSqlConfigThread(
 				sqlConfig: $writeChildModuleSqlConfig
 			);
 
-			// For Validating Hierarchy
+			// For Validating Sql Thread
 			if (
-				$writeChildModuleMaintainHierarchy
-				&& !$this->httpObject->request->dataDecodeObject->isset(
+				$writeChildModuleFollowSqlConfigThread
+				&& !$this->httpObject->request->decodeObject->isset(
 					keyString: $writeChildModulePayloadKey
 				)
 			) {
@@ -637,7 +636,7 @@ class Write
 			}
 
 			// For isObject
-			$dataType = $this->httpObject->request->dataDecodeObject->dataType(
+			$dataType = $this->httpObject->request->decodeObject->dataType(
 				keyString: $writeChildModulePayloadKey
 			);
 			if ($dataType === Constant::$NULL) {
@@ -647,7 +646,7 @@ class Write
 
 			// For indexCount
 			$indexCount = ($isObject)
-				? 1 : $this->httpObject->request->dataDecodeObject->count(
+				? 1 : $this->httpObject->request->decodeObject->count(
 					keyString: $writeChildModulePayloadKey
 				);
 
@@ -678,13 +677,13 @@ class Write
 				);
 
 				// For Setting Current Values
-				$writeChildModuleCurrentOperateAsTransaction = $writeChildModuleOperateAsTransaction;
-				$writeChildModuleCurrentMaintainHierarchy = $writeChildModuleMaintainHierarchy;
+				$writeChildModuleCurrentTransaction = $writeChildModuleTransaction;
+				$writeChildModuleCurrentFollowSqlConfigThread = $writeChildModuleFollowSqlConfigThread;
 
-				// For Validating Hierarchy
+				// For Validating Sql Thread
 				if (
-					$writeChildModuleCurrentMaintainHierarchy
-					&& !$this->httpObject->request->dataDecodeObject->isset(
+					$writeChildModuleCurrentFollowSqlConfigThread
+					&& !$this->httpObject->request->decodeObject->isset(
 						keyString: $writeChildModuleCurrentPayloadKey
 					)
 				) {
@@ -708,8 +707,8 @@ class Write
 					writeParentPayloadKeyArray: $writeChildModuleCurrentPayloadKeyArray,
 					writeParentRequiredFieldArray: $writeChildModuleRequiredFieldArray,
 					writeParentResponse: $writeChildModuleCurrentResponse,
-					writeParentMaintainHierarchy: $writeChildModuleCurrentMaintainHierarchy,
-					writeParentOperateAsTransaction: $writeChildModuleCurrentOperateAsTransaction
+					writeParentFollowSqlConfigThread: $writeChildModuleCurrentFollowSqlConfigThread,
+					writeParentTransaction: $writeChildModuleCurrentTransaction
 				);
 			}
 		}

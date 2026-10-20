@@ -89,11 +89,11 @@ return [
 			],
 		]
 	],
-	'__HIERARCHY__' => Constant::$TRUE,
+	'__FOLLOW-SQL_CONFIG-THREAD__' => Constant::$TRUE,
 	'__FETCH-MODE__' => 'Master',
 	// '__CACHE-KEY__' => $this->httpObject->httpReqData['active']['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
-	'OUTPUT_REPRESENTATION' => 'PHP',
-	'OUTPUT_REPRESENTATION_FILE' => $this->httpObject->httpReqData['active']['commonServingFileDir']
+	'__OUTPUT_REPRESENTATION__' => 'PHP',
+	'__OUTPUT_REPRESENTATION_FILE__' => $this->httpObject->httpReqData['active']['commonServingFileDir']
 		. DIRECTORY_SEPARATOR . 'PHP'
 		. DIRECTORY_SEPARATOR . 'index.php'
 ];

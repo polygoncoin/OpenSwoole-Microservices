@@ -66,13 +66,13 @@ For **GET** method, the **$\_GET** is the payload.
 - **$activeData\['__INSERT-ID__'\]** Insert IDs Data as per configuration.
 >For **POST/PUT/PATCH/DELETE** we perform both INSERT as well as UPDATE operation. The insertID contains the insert IDs of the executed INSERT queries.
 
-- **$activeData\['sqlResults'\]** Hierarchy data.
->For **GET** method, one can use previous query results if configured to use hierarchy.
+- **$activeData\['sqlResults'\]** Sql Thread data.
+>For **GET** method, one can use previous query results if configured to use Sql Thread.
 
-## Hierarchy Configs
+## Sql Thread Configs
 
 - Config/Sql/CustomerDB/GET/Category.php
->In this file one can confirm how previous select data is used recursively in subQuery select as indicated by maintainHierarchy flag.
+>In this file one can confirm how previous select data is used recursively in subQuery select as indicated by FollowSqlConfigThread flag.
 
 ```PHP
 [
@@ -82,7 +82,7 @@ For **GET** method, the **$\_GET** is the payload.
 ],
 ```
 
-- Config/Sql/CustomerDB/POST/Category.php .Here a request can handle the hierarchy for write operations.
+- Config/Sql/CustomerDB/POST/Category.php .Here a request can handle the Sql Thread for write operations.
 
 ```PHP
 return [
@@ -102,11 +102,11 @@ return [
             '__INSERT-ID__' => 'sub:id',
         ]
     ],
-    '__HIERARCHY__' => Constant::$TRUE
+    '__FOLLOW-SQL_CONFIG-THREAD__' => Constant::$TRUE
 ];
 ```
 
-### Hierarchy request
+### Sql Thread request
 
 - request - 1: Single object.
 

@@ -61,7 +61,7 @@ class HttpResponse
 	 * 
 	 * @var null|DataEncode
 	 */
-	public $dataEncodeObject = null;
+	public $encodeObject = null;
 
 	/**
 	 * HTTP object
@@ -91,19 +91,18 @@ class HttpResponse
 	 */
 	public function init(): bool
 	{
-		$sqlConfig = $this->httpObject->httpReqData['active']['sqlConfigData'] ?? [];
+		$sqlConfig = $this->httpObject->httpReqData['active']['sqlData']['Config'] ?? [];
 
-		$OUTPUT_REPRESENTATION = CommonFunction::getOutputRepresentation(
+		$outputRepresentation = CommonFunction::getOutputRepresentation(
 			sqlConfig: $sqlConfig,
-			httpReqData: $this->httpObject->httpReqData,
-			customerId: $this->httpObject->httpReqData['active']['customerId']
+			httpObject: $this->httpObject
 		);
-		$this->dataEncodeObject = new DataEncode(
+		$this->encodeObject = new DataEncode(
 			httpObject: $this->httpObject,
-			OUTPUT_REPRESENTATION: $OUTPUT_REPRESENTATION
+			outputRepresentation: $outputRepresentation
 		);
 
-		$this->dataEncodeObject->init();
+		$this->encodeObject->init();
 
 		return Constant::$TRUE;
 	}
@@ -116,7 +115,7 @@ class HttpResponse
 	 */
 	public function startData(): void
 	{
-		$this->dataEncodeObject->startObject();
+		$this->encodeObject->startObject();
 	}
 
 	/**
@@ -126,8 +125,8 @@ class HttpResponse
 	 */
 	public function endData(): void
 	{
-		$this->dataEncodeObject->endObject();
-		$this->dataEncodeObject->end();
+		$this->encodeObject->endObject();
+		$this->encodeObject->end();
 	}
 
 	/**
@@ -137,7 +136,7 @@ class HttpResponse
 	 */
 	public function addStatus(): void
 	{
-		$this->dataEncodeObject->addKeyData(
+		$this->encodeObject->addKeyData(
 			objectKey: 'Status',
 			data: $this->httpStatus
 		);
@@ -159,26 +158,26 @@ class HttpResponse
 				num: memory_get_peak_usage() / 1000
 			);
 
-			$this->dataEncodeObject->startObject(
+			$this->encodeObject->startObject(
 				objectKey: 'Stats'
 			);
-			$this->dataEncodeObject->startObject(
+			$this->encodeObject->startObject(
 				objectKey: 'Performance'
 			);
-			$this->dataEncodeObject->addKeyData(
+			$this->encodeObject->addKeyData(
 				objectKey: 'total-time-taken',
 				data: "{$time} ms"
 			);
-			$this->dataEncodeObject->addKeyData(
+			$this->encodeObject->addKeyData(
 				objectKey: 'peak-memory-usage',
 				data: "{$memory} KB"
 			);
-			$this->dataEncodeObject->endObject();
-			$this->dataEncodeObject->addKeyData(
+			$this->encodeObject->endObject();
+			$this->encodeObject->addKeyData(
 				objectKey: 'getrusage',
 				data: getrusage()
 			);
-			$this->dataEncodeObject->endObject();
+			$this->encodeObject->endObject();
 		}
 	}
 

@@ -62,16 +62,16 @@ trait AppTrait
 	/**
 	 * Get required payload
 	 * 
-	 * @param array $sqlConfig         Sql config
-	 * @param bool  $maintainHierarchy Maintain Hierarchy
-	 * @param bool  $isFirstCall       true to represent the first call in recursion
+	 * @param array $sqlConfig             Sql config
+	 * @param bool  $followSqlConfigThread Follow Sql Config Thread
+	 * @param bool  $isFirstCall           true to represent the first call in recursion
 	 * 
 	 * @return array
 	 * @throws \Exception
 	 */
 	private function getRequired(
 		&$sqlConfig,
-		$maintainHierarchy,
+		$followSqlConfigThread,
 		$isFirstCall
 	): array {
 		$requiredFieldArray = [];
@@ -106,8 +106,8 @@ trait AppTrait
 			}
 		}
 
-		// Check for hierarchy setting
-		$foundHierarchy = Constant::$FALSE;
+		// Check for Sql Thread setting
+		$foundFollowSqlConfigThread = Constant::$FALSE;
 		if (isset($sqlConfig['__WHERE__'])) {
 			foreach ($sqlConfig['__WHERE__'] as $sqlParamConfig) {
 				$activeDataKey = $sqlParamConfig['activeDataKey'];
@@ -133,14 +133,14 @@ trait AppTrait
 						strict: Constant::$TRUE
 					)
 				) {
-					$foundHierarchy = Constant::$TRUE;
+					$foundFollowSqlConfigThread = Constant::$TRUE;
 					break;
 				}
 			}
 			// if (
 			// 	!$isFirstCall
-			// 	&& $maintainHierarchy
-			// 	&& !$foundHierarchy
+			// 	&& $followSqlConfigThread
+			// 	&& !$foundFollowSqlConfigThread
 			// ) {
 			//     throw new \Exception(
 			//          message: 'Invalid config: missing ' . $activeDataKey,
@@ -179,15 +179,15 @@ trait AppTrait
 			foreach (['__SUB-CONFIG__', '__SUB-CONFIG__'] as $option) {
 				if (isset($sqlConfig[$option])) {
 					foreach ($sqlConfig[$option] as $module => &$moduleSqlConfig) {
-						$maintainHierarchy = ($maintainHierarchy) ?? $this->getMaintainHierarchy(
+						$followSqlConfigThread = ($followSqlConfigThread) ?? $this->getFollowSqlConfigThread(
 							sqlConfig: $moduleSqlConfig
 						);
 						$moduleRequiredFieldArray = $this->getRequired(
 							sqlConfig: $moduleSqlConfig,
-							maintainHierarchy: $maintainHierarchy,
+							followSqlConfigThread: $followSqlConfigThread,
 							isFirstCall: Constant::$FALSE
 						);
-						if ($maintainHierarchy) {
+						if ($followSqlConfigThread) {
 							$requiredFieldArray[$module] = $moduleRequiredFieldArray;
 						} else {
 							foreach ($moduleRequiredFieldArray as $activeDataKey => &$activeDataKeySubKeyArray) {
@@ -759,16 +759,16 @@ trait AppTrait
 	/**
 	 * Use results in where clause of sub queries recursively
 	 * 
-	 * @param array  $sqlConfig Sql config
+	 * @param array $sqlConfig Sql config
 	 * 
 	 * @return bool
 	 */
-	private function getMaintainHierarchy(
+	private function getFollowSqlConfigThread(
 		&$sqlConfig
 	): bool {
 		if (
-			isset($sqlConfig['__HIERARCHY__'])
-			&& $sqlConfig['__HIERARCHY__'] === Constant::$TRUE
+			isset($sqlConfig['__FOLLOW-SQL_CONFIG-THREAD__'])
+			&& $sqlConfig['__FOLLOW-SQL_CONFIG-THREAD__'] === Constant::$TRUE
 		) {
 			return Constant::$TRUE;
 		}
@@ -778,16 +778,16 @@ trait AppTrait
 	/**
 	 * Return explain params recursively
 	 * 
-	 * @param array $sqlConfig         Sql config
-	 * @param bool  $maintainHierarchy Maintain Hierarchy flag
-	 * @param bool  $isFirstCall       Flag to check if this is first request
+	 * @param array $sqlConfig             Sql config
+	 * @param bool  $followSqlConfigThread Follow Sql Config Thread
+	 * @param bool  $isFirstCall           Flag to check if this is first request
 	 * 
 	 * @return array
 	 * @throws \Exception
 	 */
 	private function getExplainParam(
 		&$sqlConfig,
-		$maintainHierarchy,
+		$followSqlConfigThread,
 		$isFirstCall
 	): array {
 		$explainParamArray = [];
@@ -851,8 +851,8 @@ trait AppTrait
 			}
 		}
 
-		// Check for hierarchy
-		$foundHierarchy = Constant::$FALSE;
+		// Check for Sql Thread
+		$foundFollowSqlConfigThread = Constant::$FALSE;
 		if (isset($sqlConfig['__WHERE__'])) {
 			foreach ($sqlConfig['__WHERE__'] as $sqlParamConfig) {
 				$activeDataKey = $sqlParamConfig['activeDataKey'];
@@ -864,14 +864,14 @@ trait AppTrait
 						strict: Constant::$TRUE
 					)
 				) {
-					$foundHierarchy = Constant::$TRUE;
+					$foundFollowSqlConfigThread = Constant::$TRUE;
 					break;
 				}
 			}
 			if (
 				!$isFirstCall
-				&& $maintainHierarchy
-				&& !$foundHierarchy
+				&& $followSqlConfigThread
+				&& !$foundFollowSqlConfigThread
 			) {
 				throw new \Exception(
 					message: 'Invalid config: missing ' . $activeDataKey,
@@ -884,15 +884,15 @@ trait AppTrait
 		foreach (['__SUB-CONFIG__', '__SUB-CONFIG__'] as $option) {
 			if (isset($sqlConfig[$option])) {
 				foreach ($sqlConfig[$option] as $module => &$moduleSqlConfig) {
-					$maintainHierarchy = ($maintainHierarchy) ?? $this->getMaintainHierarchy(
+					$followSqlConfigThread = ($followSqlConfigThread) ?? $this->getFollowSqlConfigThread(
 						sqlConfig: $moduleSqlConfig
 					);
 					$moduleExplainParamArray = $this->getExplainParam(
 						sqlConfig: $moduleSqlConfig,
-						maintainHierarchy: $maintainHierarchy,
+						followSqlConfigThread: $followSqlConfigThread,
 						isFirstCall: Constant::$FALSE
 					);
-					if ($maintainHierarchy) {
+					if ($followSqlConfigThread) {
 						if (!empty($moduleExplainParamArray)) {
 							$explainParamArray[$module] = $moduleExplainParamArray;
 						}
@@ -913,9 +913,9 @@ trait AppTrait
 	/**
 	 * Function to reset data for module key wise
 	 * 
-	 * @param string $activeDataKey sqlResults / sqlParamArray / previousPayload
-	 * @param array  $payloadKeyArray      Module key's in recursion
-	 * @param array  $record               Record data fetched from DB
+	 * @param string $activeDataKey   sqlResults / sqlParamArray / previousPayload
+	 * @param array  $payloadKeyArray Module key's in recursion
+	 * @param array  $record          Record data fetched from DB
 	 * 
 	 * @return void
 	 */
@@ -1095,7 +1095,7 @@ trait AppTrait
 					'customerUserId' => $this->httpObject->httpReqData['active']['customerUserId'],
 					'httpRequestMethod' => $this->httpObject->httpReqData['server']['httpRequestMethod'],
 					'Route' => $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM],
-					'payload' => $this->httpObject->request->dataDecodeObject->get(
+					'payload' => $this->httpObject->request->decodeObject->get(
 						keyString: $this->getPayloadKey(
 							payloadKeyArray: $payloadKeyArray
 						)
@@ -1409,7 +1409,7 @@ trait AppTrait
 				foreach ($activeDataKeySubKeyArray as $_activeDataKeySubKey) {
 					if (!isset($value[$_activeDataKeySubKey])) {
 						throw new \Exception(
-							message: 'Invalid hierarchy:  Missing hierarchy data',
+							message: 'Invalid Sql Thread:  Missing Sql Thread data',
 							code: HttpStatus::$InternalServerError
 						);
 					}
@@ -1452,14 +1452,14 @@ trait AppTrait
 	/**
 	 * Process import function of configuration
 	 * 
-	 * @param array $sqlConfig         Sql config
-	 * @param bool  $maintainHierarchy If true - Uses parent payload/results in child
+	 * @param array $sqlConfig             Sql config
+	 * @param bool  $followSqlConfigThread Follow Sql Config Thread
 	 * 
 	 * @return string
 	 */
 	private function generateImportSampleCsv(
 		&$sqlConfig,
-		$maintainHierarchy
+		$followSqlConfigThread
 	): string {
 		CommonFunction::checkCidr(
 			ip: $this->httpObject->httpReqData['server']['httpRequestIp'],
@@ -1467,7 +1467,7 @@ trait AppTrait
 		);
 		$explainParamArray = $this->getExplainParam(
 			sqlConfig: $sqlConfig,
-			maintainHierarchy: $maintainHierarchy,
+			followSqlConfigThread: $followSqlConfigThread,
 			isFirstCall: Constant::$TRUE
 		);
 		$paramArray = $this->genCsvHelper(
@@ -1560,14 +1560,14 @@ trait AppTrait
 	/**
 	 * Basic Read Processes for process Function
 	 * 
-	 * @param array $sqlConfig         Sql config
-	 * @param bool  $maintainHierarchy If true - Uses parent payload/results in child
+	 * @param array $sqlConfig             Sql config
+	 * @param bool  $followSqlConfigThread Follow Sql Config Thread
 	 * 
 	 * @return array
 	 */
 	private function readBasics(
 		&$sqlConfig,
-		&$maintainHierarchy
+		&$followSqlConfigThread
 	) {
 		// Rate Limiting request if configured for Route Sql.
 		$this->rateLimitRoute(
@@ -1580,7 +1580,7 @@ trait AppTrait
 		);
 
 		// Use results in where clause of sub queries recursively
-		$maintainHierarchy = $this->getMaintainHierarchy(
+		$followSqlConfigThread = $this->getFollowSqlConfigThread(
 			sqlConfig: $sqlConfig
 		);
 
@@ -1591,7 +1591,7 @@ trait AppTrait
 		) {
 			return $this->explain(
 				sqlConfig: $sqlConfig,
-				maintainHierarchy: $maintainHierarchy
+				followSqlConfigThread: $followSqlConfigThread
 			);
 		}
 
@@ -1601,14 +1601,14 @@ trait AppTrait
 	/**
 	 * Basic Write Processes for process Function (Supplement is considered as Write)
 	 * 
-	 * @param array $sqlConfig         Sql config
-	 * @param bool  $maintainHierarchy If true - Uses parent payload/results in child
+	 * @param array $sqlConfig             Sql config
+	 * @param bool  $followSqlConfigThread Follow Sql Config Thread
 	 * 
 	 * @return bool
 	 */
 	private function writeBasics(
 		&$sqlConfig,
-		&$maintainHierarchy
+		&$followSqlConfigThread
 	): bool {
 		// Lag response
 		$this->lagResponse(
@@ -1626,7 +1626,7 @@ trait AppTrait
 		);
 
 		// Use results in where clause of sub queries recursively
-		$maintainHierarchy = $this->getMaintainHierarchy(
+		$followSqlConfigThread = $this->getFollowSqlConfigThread(
 			sqlConfig: $sqlConfig
 		);
 
@@ -1637,7 +1637,7 @@ trait AppTrait
 		) {
 			return $this->explain(
 				sqlConfig: $sqlConfig,
-				maintainHierarchy: $maintainHierarchy
+				followSqlConfigThread: $followSqlConfigThread
 			);
 		}
 
@@ -1647,7 +1647,7 @@ trait AppTrait
 		) {
 			return $this->generateImportSampleCsv(
 				sqlConfig: $sqlConfig,
-				maintainHierarchy: $maintainHierarchy
+				followSqlConfigThread: $followSqlConfigThread
 			);
 		}
 
@@ -1683,11 +1683,11 @@ trait AppTrait
 				);
 				if ($json !== Constant::$NULL) {
 					$cacheHit = 'true';
-					$this->httpObject->response->dataEncodeObject->appendKeyData(
+					$this->httpObject->response->encodeObject->appendKeyData(
 						objectKey: 'cacheHit',
 						data: $cacheHit
 					);
-					$this->httpObject->response->dataEncodeObject->appendData(
+					$this->httpObject->response->encodeObject->appendData(
 						data: $json
 					);
 					return Constant::$TRUE;
@@ -1726,39 +1726,39 @@ trait AppTrait
 	/**
 	 * Explain configuration
 	 * 
-	 * @param array $sqlConfig         Sql config
-	 * @param bool  $maintainHierarchy If true - Uses parent payload/results in child
+	 * @param array $sqlConfig             Sql config
+	 * @param bool  $followSqlConfigThread Follow Sql Config Thread
 	 * 
 	 * @return bool
 	 */
 	private function explain(
 		&$sqlConfig,
-		$maintainHierarchy
+		$followSqlConfigThread
 	): bool {
 		CommonFunction::checkCidr(
 			ip: $this->httpObject->httpReqData['server']['httpRequestIp'],
 			cidrString: $this->httpObject->httpReqData['active']['customerData']['customer_explain_cidr']
 		);
-		$this->dataEncodeObject->startObject(
+		$this->encodeObject->startObject(
 			objectKey: 'Config'
 		);
-		$this->dataEncodeObject->addKeyData(
+		$this->encodeObject->addKeyData(
 			objectKey: 'Route',
 			data: $this->httpObject->request->routeParser->configuredRoute
 		);
-		$this->dataEncodeObject->addKeyData(
+		$this->encodeObject->addKeyData(
 			objectKey: 'HttpMethod',
 			data: $this->httpObject->httpReqData['server']['httpRequestMethod']
 		);
-		$this->dataEncodeObject->addKeyData(
+		$this->encodeObject->addKeyData(
 			objectKey: 'Payload',
 			data: $this->getExplainParam(
 				sqlConfig: $sqlConfig,
-				maintainHierarchy: $maintainHierarchy,
+				followSqlConfigThread: $followSqlConfigThread,
 				isFirstCall: Constant::$TRUE
 			)
 		);
-		$this->dataEncodeObject->endObject();
+		$this->encodeObject->endObject();
 
 		return Constant::$TRUE;
 	}

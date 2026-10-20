@@ -182,7 +182,7 @@ class RateLimiter
 		$customerData = &$this->httpObject->httpReqData['active']['customerData'];
 		$customerUserData = &$this->httpObject->httpReqData['active']['customerUserData'];
 		$customerUserGroupData = &$this->httpObject->httpReqData['active']['customerUserGroupData'];
-		$sqlConfigData = &$this->httpObject->httpReqData['active']['sqlConfigData'];
+		$sqlConfigData = &$this->httpObject->httpReqData['active']['sqlData']['Config'];
 
         $customerId = &$this->httpObject->httpReqData['active']['customerId'];
         $customerUserId = &$this->httpObject->httpReqData['active']['customerUserId'];

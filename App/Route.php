@@ -201,7 +201,7 @@ class Route
 				httpRouteArray: $httpRouteArray[$httpRequestMethod]
 			);
 		}
-		$this->httpObject->response->dataEncodeObject->addKeyData(
+		$this->httpObject->response->encodeObject->addKeyData(
 			objectKey: 'Results',
 			data: $httpRouteArray
 		);

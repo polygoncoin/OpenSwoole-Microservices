@@ -22,14 +22,13 @@ return [
 	 * 
 	 * __SUB-CONFIG__, - for all
 	 * __TRANSACTION__, - for all
-	 * __HIERARCHY__, - for all
 	 * __FETCH-MODE__, - for all
 	 * __TRIGGER__, - for all
 	 * __VALIDATE__, - for all
 	 * __PAYLOAD-TYPE__, - for all
 	 * __MAX-PAYLOAD-OBJECT__, - for all
 	 * __TRANSACTION__, - for all
-	 * __HIERARCHY__, - for all
+	 * __FOLLOW-SQL_CONFIG-THREAD__, - for all
 	 * __CACHE-KEY__, - for all
 	 * __AFFECTED-CACHE-KEY__, - for all
 	 * 
@@ -149,14 +148,12 @@ return [
 		 * 
 		 * __SUB-CONFIG__, - for all
 		 * __TRANSACTION__, - for all
-		 * __HIERARCHY__, - for all
+		 * __FOLLOW-SQL_CONFIG-THREAD__, - for all
 		 * __FETCH-MODE__, - for all
 		 * __TRIGGER__, - for all
 		 * __VALIDATE__, - for all
 		 * __PAYLOAD-TYPE__, - for all
 		 * __MAX-PAYLOAD-OBJECT__, - for all
-		 * __TRANSACTION__, - for all
-		 * __HIERARCHY__, - for all
 		 * __CACHE-KEY__, - for all
 		 * __AFFECTED-CACHE-KEY__, - for all
 		 * 
@@ -185,7 +182,7 @@ return [
 					'dataType' => DatabaseServerDataType::$PrimaryKey,   // key data type
 					'isRequired' => Constant::$REQUIRED              // Represents required field
 				],
-				// Database DataTypes settings required when maintainHierarchy is true
+				// Database DataTypes settings required when FollowSqlConfigThread is true
 				// to validate each data set before procedding forward
 				[
 					// Fetch value of last insert IDs
@@ -196,19 +193,19 @@ return [
 				[
 					// Fetch values of params from previous queries
 					'column' => 'id',
-					'activeDataKey' => 'sqlParamArray',                     // sqlParamArray (with maintainHierarchy)
+					'activeDataKey' => 'sqlParamArray',                     // sqlParamArray (with FollowSqlConfigThread)
 					'activeDataKeySubKey' => '<return:keys-separated-by-colon>'
 				],
 				[
 					// Fetch values of Sql results from previous queries
 					'column' => 'id',
-					'activeDataKey' => 'sqlResults',                    // sqlResults for DQL operations (with maintainHierarchy)
+					'activeDataKey' => 'sqlResults',                    // sqlResults for DQL operations (with FollowSqlConfigThread)
 					'activeDataKeySubKey' => '<return:keys-separated-by-colon>'
 				],
 				[
 					// Fetch values of Sql payload for previous queries
 					'column' => 'id',
-					'activeDataKey' => 'previousPayload',                    // previousPayload (with maintainHierarchy)
+					'activeDataKey' => 'previousPayload',                    // previousPayload (with FollowSqlConfigThread)
 					'activeDataKeySubKey' => '<return:keys-separated-by-colon>'
 				],
 				[
@@ -314,7 +311,7 @@ return [
 
 	'__TRANSACTION__' => Constant::$FALSE, // Flag to follow transaction Begin, Commit and rollback on error
 
-	'__HIERARCHY__' => Constant::$TRUE, // For DML
+	'__FOLLOW-SQL_CONFIG-THREAD__' => Constant::$TRUE, // For DML
 
 	// Optional custom configuration to connect to master / slave Database
 	'__FETCH-MODE__' => 'Slave' // values - Master / Slave
@@ -328,11 +325,14 @@ return [
 		'...'
 	],
 
-	// Data Representation
-	'OUTPUT_REPRESENTATION' => 'XML', // JSON/XML/XSLT/HTML/PHP - Defaults to JSON
+	// Input Data Representation
+	'__INPUT_REPRESENTATION__' => 'XML', // JSON/XML/XSLT/HTML/PHP - Defaults to JSON
+
+	// Output Data Representation
+	'__OUTPUT_REPRESENTATION__' => 'XML', // JSON/XML/XSLT/HTML/PHP - Defaults to JSON
 
 	// Respective Data Representation File (XSLT/HTML/PHP)
-	'OUTPUT_REPRESENTATION_FILE' => 'file-path',
+	'__OUTPUT_REPRESENTATION_FILE__' => 'file-path',
 
 	// Rate Limiting Route access
 	'rateLimitRequestCount' => 1, // Allowed number of request in defined seconds window
@@ -377,7 +377,7 @@ return [
 ];
 ```
 
-- **Note**: '__HIERARCHY__' => Constant::$TRUE also includes '__HIERARCHY__' => Constant::$TRUE feature.
+- **Note**: '__FOLLOW-SQL_CONFIG-THREAD__' => Constant::$TRUE also includes '__FOLLOW-SQL_CONFIG-THREAD__' => Constant::$TRUE feature.
 
 - If there are repeated modules or configurations; one can reuse them by palcing them in a separate file and including as below.
 

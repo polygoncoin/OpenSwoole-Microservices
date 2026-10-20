@@ -155,7 +155,7 @@ class Microservices
 			return;
 		}
 		http_response_code(response_code: $this->httpObject->response->httpStatus);
-		$this->httpObject->response->dataEncodeObject->streamData();
+		$this->httpObject->response->encodeObject->streamData();
 	}
 
 	/**
@@ -168,7 +168,7 @@ class Microservices
 		if ($this->httpObject->response === Constant::$NULL) {
 			return Constant::$FALSE;
 		}
-		return $this->httpObject->response->dataEncodeObject->getData();
+		return $this->httpObject->response->encodeObject->getData();
 	}
 
 	/**
@@ -199,17 +199,19 @@ class Microservices
 		} else {
 			if (
 				$this->httpObject->response === Constant::$NULL
-				|| !isset($this->httpObject->httpReqData['active']['sqlConfigData'])
+				|| !isset($this->httpObject->httpReqData['active']['sqlData']['Config'])
 			) {
-				$OUTPUT_REPRESENTATION = Env::$SYSTEM_OUTPUT_REPRESENTATION;
+				$outputRepresentation = [
+					'outputRepresentation' => Env::$SYSTEM_OUTPUT_REPRESENTATION,
+					'outputRepresentationFile' => Constant::$FALSE
+				];
 			} else {
-				$OUTPUT_REPRESENTATION = CommonFunction::getOutputRepresentation(
-					sqlConfig: $this->httpObject->httpReqData['active']['sqlConfigData'],
-					httpReqData: $this->httpObject->httpReqData,
-					customerId: $this->httpObject->httpReqData['active']['customerId']
+				$outputRepresentation = CommonFunction::getOutputRepresentation(
+					sqlConfig: $this->httpObject->httpReqData['active']['sqlData']['Config'],
+					httpObject: $this->httpObject
 				);
 			}
-			switch ($OUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION']) {
+			switch ($outputRepresentation['outputRepresentation']) {
 				case 'XML':
 				case 'XSLT':
 					$headerArray['Content-Type'] = 'text/xml; charset=utf-8';

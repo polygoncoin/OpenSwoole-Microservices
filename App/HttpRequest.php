@@ -47,7 +47,7 @@ class HttpRequest
 	 * 
 	 * @var null|string
 	 */
-	public $INPUT_REPRESENTATION = null;
+	public $inputRepresentation = null;
 
 	/**
 	 * Input Representation
@@ -75,7 +75,7 @@ class HttpRequest
 	 * 
 	 * @var null|DataDecode
 	 */
-	public $dataDecodeObject = null;
+	public $decodeObject = null;
 
 	/**
 	 * Public domain cache key exist flag
@@ -135,7 +135,7 @@ class HttpRequest
 		Http &$httpObject
 	) {
 		$this->httpObject = &$httpObject;
-		$this->INPUT_REPRESENTATION = Env::$SYSTEM_INPUT_REPRESENTATION;
+		$this->inputRepresentation = Env::$SYSTEM_INPUT_REPRESENTATION;
 
 		Env::loadEnv(
 			customerId: 0
@@ -386,13 +386,13 @@ class HttpRequest
 		);
 		$payloadJson = $this->setPayloadStream();
 
-		$this->dataDecodeObject = new DataDecode(
-			INPUT_REPRESENTATION: $this->INPUT_REPRESENTATION,
+		$this->decodeObject = new DataDecode(
+			inputRepresentation: $this->inputRepresentation,
 			dataFileHandle: $this->payloadStream
 		);
 
-		$this->dataDecodeObject->init();
-		$this->dataDecodeObject->indexData();
+		$this->decodeObject->init();
+		$this->decodeObject->indexData();
 	}
 
 	/**
@@ -472,7 +472,7 @@ class HttpRequest
 							csvFile: $this->httpObject->httpReqData['files']['file']['tmp_name']
 						);
 						break;
-					case $this->INPUT_REPRESENTATION === 'XML':
+					case $this->inputRepresentation === 'XML':
 						$payloadJson = $this->convertXmlToJson(
 							xmlString: $this->httpObject->httpReqData['post']
 						);
@@ -633,8 +633,8 @@ class HttpRequest
 			$paramArray[':request_route'] = $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM];
 			$paramArray[':request_method'] = $this->httpObject->httpReqData['server']['httpRequestMethod'];
 			$paramArray[':request_payload_json'] = $payloadJson;
-			$paramArray[':request_config_json'] = isset($this->httpObject->httpReqData['active']['sqlConfigData']) ? json_encode(
-				value: $this->httpObject->httpReqData['active']['sqlConfigData']
+			$paramArray[':request_config_json'] = isset($this->httpObject->httpReqData['active']['sqlData']['Config']) ? json_encode(
+				value: $this->httpObject->httpReqData['active']['sqlData']['Config']
 			) : '{}';
 			$paramArray[':request_session_json'] = isset($this->httpObject->httpReqData['active']) ? json_encode(
 				value: $this->httpObject->httpReqData['active']
@@ -689,8 +689,8 @@ class HttpRequest
 			$paramArray[':request_route'] = $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM];
 			$paramArray[':request_method'] = $this->httpObject->httpReqData['server']['httpRequestMethod'];
 			$paramArray[':request_payload_json'] = $payloadJson;
-			$paramArray[':request_config_json'] = isset($this->httpObject->httpReqData['active']['sqlConfigData']) ? json_encode(
-				value: $this->httpObject->httpReqData['active']['sqlConfigData']
+			$paramArray[':request_config_json'] = isset($this->httpObject->httpReqData['active']['sqlData']['Config']) ? json_encode(
+				value: $this->httpObject->httpReqData['active']['sqlData']['Config']
 			) : '{}';
 			$paramArray[':request_session_json'] = isset($this->httpObject->httpReqData['active']) ? json_encode(
 				value: $this->httpObject->httpReqData['active']
@@ -863,13 +863,13 @@ class HttpRequest
 	public function formatCsvPayload(
 		$csvFile
 	): string {
-		$dataEncodeObject = new DataEncode(
+		$encodeObject = new DataEncode(
 			httpObject: $this->httpObject
 		);
-		$dataEncodeObject->init(
+		$encodeObject->init(
 			header: Constant::$FALSE
 		);
-		$dataEncodeObject->startObject();
+		$encodeObject->startObject();
 
 		$csvHeaderData = Constant::$FALSE;
 		$counter = Constant::$NULL;
@@ -925,12 +925,12 @@ class HttpRequest
 
 			if ($counter === 0) {
 				$headerModeArray = $currentModeArray;
-				$dataEncodeObject->startArray(
+				$encodeObject->startArray(
 					objectKey: $currentModeArray[0]
 				);
-				$dataEncodeObject->startObject();
+				$encodeObject->startObject();
 				foreach ($csvFieldRecordArray as $objectKey => &$objectKeyValue) {
-					$dataEncodeObject->addKeyData(
+					$encodeObject->addKeyData(
 						objectKey: $objectKey,
 						data: $objectKeyValue
 					);
@@ -940,8 +940,8 @@ class HttpRequest
 			}
 
 			if ($headerModeArray === $currentModeArray) {
-				$dataEncodeObject->endObject();
-				$dataEncodeObject->startObject();
+				$encodeObject->endObject();
+				$encodeObject->startObject();
 			} else {
 				$_headerModeArray = [];
 				$headerModeCount = count(
@@ -966,37 +966,37 @@ class HttpRequest
 				}
 				if ($currentModeCount < $headerModeCount) {
 					for ($_i = $currentModeCount; $_i < $headerModeCount; $_i++) {
-						$dataEncodeObject->endObject();
-						$dataEncodeObject->endArray();
+						$encodeObject->endObject();
+						$encodeObject->endArray();
 					}
-					$dataEncodeObject->endObject();
-					$dataEncodeObject->startObject();
+					$encodeObject->endObject();
+					$encodeObject->startObject();
 				}
 				if ($index < $currentModeCount) {
 					for ($_i = $index; $_i < $headerModeCount; $_i++) {
-						$dataEncodeObject->endObject();
-						$dataEncodeObject->endArray();
+						$encodeObject->endObject();
+						$encodeObject->endArray();
 					}
 					for ($_i = $index; $_i < $currentModeCount; $_i++) {
 						$_headerModeArray[$_i] = $currentModeArray[$_i];
-						$dataEncodeObject->startArray(
+						$encodeObject->startArray(
 							objectKey: $currentModeArray[$_i]
 						);
-						$dataEncodeObject->startObject();
+						$encodeObject->startObject();
 					}
 				}
 				$headerModeArray = $_headerModeArray;
 			}
 			foreach ($csvFieldRecordArray as $objectKey => &$objectKeyValue) {
-				$dataEncodeObject->addKeyData(
+				$encodeObject->addKeyData(
 					objectKey: $objectKey,
 					data: $objectKeyValue
 				);
 			}
 		}
-		$dataEncodeObject->endObject();
-		$json = $dataEncodeObject->getData();
-		$dataEncodeObject = Constant::$NULL;
+		$encodeObject->endObject();
+		$json = $encodeObject->getData();
+		$encodeObject = Constant::$NULL;
 		$json = substr(
 			string: $json,
 			offset: 7,

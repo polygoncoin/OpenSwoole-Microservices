@@ -28,6 +28,16 @@ if (!defined('PUBLIC_GET')) {
 	define('PUBLIC_DELETE', PUBLIC_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$DELETE);
 }
 
+if (!defined('PRIVATE_GET')) {
+	define('PRIVATE_DIRECTORY', __DIR__ . DIRECTORY_SEPARATOR . 'Private');
+	define('PRIVATE_GET', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$GET);
+	define('PRIVATE_QUERY', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$QUERY);
+	define('PRIVATE_POST', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$POST);
+	define('PRIVATE_PUT', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$PUT);
+	define('PRIVATE_PATCH', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$PATCH);
+	define('PRIVATE_DELETE', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$DELETE);
+}
+
 // $apiVersion = 'X-API-Version: v1.0.0';
 $cacheControl = 'Cache-Control: no-cache';
 // $contentType = 'Content-Type: application/x-www-form-urlencoded; charset=utf-8';
@@ -45,11 +55,6 @@ $proceed = Constant::$FALSE;
 $response = [];
 
 $homeURL = 'http://127.0.0.1:9501';
-
-if (!defined('PRIVATE_GET')) {
-	define('PRIVATE_DIRECTORY', __DIR__ . DIRECTORY_SEPARATOR . 'Private');
-	define('PRIVATE_GET', PRIVATE_DIRECTORY . DIRECTORY_SEPARATOR . Constant::$GET);
-}
 
 $response[] = include PUBLIC_GET . DIRECTORY_SEPARATOR . 'SystemReload.php';
 

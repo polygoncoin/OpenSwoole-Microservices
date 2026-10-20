@@ -54,14 +54,14 @@ class DataEncode
 	 * 
 	 * @var null|string
 	 */
-	private $OUTPUT_REPRESENTATION = null;
+	private $outputRepresentation = null;
 
 	/**
 	 * Output Representation File
 	 * 
 	 * @var null|string
 	 */
-	public $OUTPUT_REPRESENTATION_FILE = null;
+	public $outputRepresentationFile = null;
 
 	/**
 	 * Temporary Stream
@@ -74,22 +74,22 @@ class DataEncode
 	 * Constructor
 	 * 
 	 * @param Http       $httpObject
-	 * @param null|array $OUTPUT_REPRESENTATION
+	 * @param null|array $outputRepresentation
 	 */
 	public function __construct(
 		Http &$httpObject,
-		$OUTPUT_REPRESENTATION = null
+		$outputRepresentation = null
 	) {
 		$this->httpObject = &$httpObject;
 
-		if ($OUTPUT_REPRESENTATION === Constant::$NULL) {
-			$OUTPUT_REPRESENTATION = [
-				'OUTPUT_REPRESENTATION' => 'JSON',
-				'OUTPUT_REPRESENTATION_FILE' => Constant::$FALSE
+		if ($outputRepresentation === Constant::$NULL) {
+			$outputRepresentation = [
+				'outputRepresentation' => 'JSON',
+				'outputRepresentationFile' => Constant::$FALSE
 			];
 		}
-		$this->OUTPUT_REPRESENTATION = $OUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION'];
-		$this->OUTPUT_REPRESENTATION_FILE = $OUTPUT_REPRESENTATION['OUTPUT_REPRESENTATION_FILE'];
+		$this->outputRepresentation = $outputRepresentation['outputRepresentation'];
+		$this->outputRepresentationFile = $outputRepresentation['outputRepresentationFile'];
 	}
 
 	/**
@@ -103,7 +103,7 @@ class DataEncode
 		$header = true
 	): void {
 		if ($this->httpObject->httpReqData['server']['httpRequestMethod'] === Constant::$GET) {
-			if ($this->OUTPUT_REPRESENTATION === 'PHP') {
+			if ($this->outputRepresentation === 'PHP') {
 				$this->tempStream = [];
 			} else {
 				$this->tempStream = fopen(
@@ -112,7 +112,7 @@ class DataEncode
 				);
 			}
 		} else {
-			if ($this->OUTPUT_REPRESENTATION === 'PHP') {
+			if ($this->outputRepresentation === 'PHP') {
 				$this->tempStream = [];
 			} else {
 				$this->tempStream = fopen(
@@ -122,7 +122,7 @@ class DataEncode
 			}
 		}
 
-		switch ($this->OUTPUT_REPRESENTATION) {
+		switch ($this->outputRepresentation) {
 			case 'JSON':
 				$this->dataEncoderObject = new JsonEncode(
 					tempStream: $this->tempStream,
@@ -303,42 +303,42 @@ class DataEncode
 
 		switch (Constant::$TRUE) {
 			case (
-					$this->OUTPUT_REPRESENTATION === 'XSLT'
-					&& $this->OUTPUT_REPRESENTATION_FILE !== Constant::$NULL
+					$this->outputRepresentation === 'XSLT'
+					&& $this->outputRepresentationFile !== Constant::$NULL
 					&& file_exists(
-						filename: $this->OUTPUT_REPRESENTATION_FILE
+						filename: $this->outputRepresentationFile
 					)
 				):
 				echo $this->processPublicXml(
-					xmlFile: $this->OUTPUT_REPRESENTATION_FILE
+					xmlFile: $this->outputRepresentationFile
 				);
 				fclose(
 					stream: $this->tempStream
 				);
 				break;
 			case (
-					$this->OUTPUT_REPRESENTATION === 'HTML'
-					&& $this->OUTPUT_REPRESENTATION_FILE !== Constant::$NULL
+					$this->outputRepresentation === 'HTML'
+					&& $this->outputRepresentationFile !== Constant::$NULL
 					&& file_exists(
-						filename: $this->OUTPUT_REPRESENTATION_FILE
+						filename: $this->outputRepresentationFile
 					)
 				):
 				echo $this->processPublicXml(
-					xmlFile: $this->OUTPUT_REPRESENTATION_FILE
+					xmlFile: $this->outputRepresentationFile
 				);
 				fclose(
 					stream: $this->tempStream
 				);
 				break;
 			case (
-					$this->OUTPUT_REPRESENTATION === 'PHP'
-					&& $this->OUTPUT_REPRESENTATION_FILE !== Constant::$NULL
+					$this->outputRepresentation === 'PHP'
+					&& $this->outputRepresentationFile !== Constant::$NULL
 					&& file_exists(
-						filename: $this->OUTPUT_REPRESENTATION_FILE
+						filename: $this->outputRepresentationFile
 					)
 				):
 				$finalArray = &$this->tempStream->finalArray;
-				include_once $this->OUTPUT_REPRESENTATION_FILE;
+				include_once $this->outputRepresentationFile;
 				$this->tempStream = Constant::$NULL;
 				break;
 			default:
@@ -373,46 +373,46 @@ class DataEncode
 		$this->end();
 
 		switch (Constant::$TRUE) {
-			case $this->OUTPUT_REPRESENTATION === 'XSLT':
+			case $this->outputRepresentation === 'XSLT':
 				if (
-					$this->OUTPUT_REPRESENTATION_FILE !== Constant::$NULL
+					$this->outputRepresentationFile !== Constant::$NULL
 					&& file_exists(
-						filename: $this->OUTPUT_REPRESENTATION_FILE
+						filename: $this->outputRepresentationFile
 					)
 				) {
 					$streamContent = $this->processPublicXml(
-						xmlFile: $this->OUTPUT_REPRESENTATION_FILE
+						xmlFile: $this->outputRepresentationFile
 					);
 					fclose(
 						stream: $this->tempStream
 					);
 				}
 				break;
-			case $this->OUTPUT_REPRESENTATION === 'HTML':
+			case $this->outputRepresentation === 'HTML':
 				if (
-					$this->OUTPUT_REPRESENTATION_FILE !== Constant::$NULL
+					$this->outputRepresentationFile !== Constant::$NULL
 					&& file_exists(
-						filename: $this->OUTPUT_REPRESENTATION_FILE
+						filename: $this->outputRepresentationFile
 					)
 				) {
 					$streamContent = $this->processPublicXml(
-						xmlFile: $this->OUTPUT_REPRESENTATION_FILE
+						xmlFile: $this->outputRepresentationFile
 					);
 					fclose(
 						stream: $this->tempStream
 					);
 				}
 				break;
-			case $this->OUTPUT_REPRESENTATION === 'PHP':
+			case $this->outputRepresentation === 'PHP':
 				if (
-					$this->OUTPUT_REPRESENTATION_FILE !== Constant::$NULL
+					$this->outputRepresentationFile !== Constant::$NULL
 					&& file_exists(
-						filename: $this->OUTPUT_REPRESENTATION_FILE
+						filename: $this->outputRepresentationFile
 					)
 				) {
 					$finalArray = &$this->dataEncoderObject->finalArray;
 					@ob_clean();
-					include_once $this->OUTPUT_REPRESENTATION_FILE;
+					include_once $this->outputRepresentationFile;
 					$streamContent = ob_get_clean();
 					$this->tempStream = Constant::$NULL;
 				}

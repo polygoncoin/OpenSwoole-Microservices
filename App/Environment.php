@@ -247,14 +247,7 @@ class Environment
             filename: ROOT . DIRECTORY_SEPARATOR . $envFile
         );
         foreach ($envDataArray as $envVarName => $envVarValue) {
-            if ($envVarName === 'OUTPUT_REPRESENTATION') {
-                $this->OUTPUT_REPRESENTATION = [
-                    'OUTPUT_REPRESENTATION' => $envVarValue,
-                    'OUTPUT_REPRESENTATION_FILE' => Constant::$FALSE
-                ];
-            } else {
-                $this->$envVarName = $envVarValue;
-            }
+            $this->$envVarName = $envVarValue;
         }
 	}
 }

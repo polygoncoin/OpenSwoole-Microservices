@@ -75,16 +75,16 @@ class Password implements CustomInterface
 	 */
 	public function process(): mixed
 	{
-		$payloadDataType = $this->httpObject->request->dataDecodeObject->dataType(
+		$payloadDataType = $this->httpObject->request->decodeObject->dataType(
 			keyString: Constant::$NULL
 		);
 
 		switch ($payloadDataType) {
 			case 'Array':
-				$payload = $this->httpObject->request->dataDecodeObject->getObject('0');
+				$payload = $this->httpObject->request->decodeObject->getObject('0');
 				break;
 			case 'Object':
-				$payload = $this->httpObject->request->dataDecodeObject->getObject();
+				$payload = $this->httpObject->request->decodeObject->getObject();
 				break;
 		}
 
@@ -137,7 +137,7 @@ class Password implements CustomInterface
 				)
 			);
 
-			$this->httpObject->response->dataEncodeObject->addKeyData(
+			$this->httpObject->response->encodeObject->addKeyData(
 				objectKey: 'Results',
 				data: 'Password changed successfully. Please login'
 			);

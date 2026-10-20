@@ -93,5 +93,5 @@ return [
 			],
 		]
 	],
-	'__HIERARCHY__' => Constant::$TRUE,
+	'__FOLLOW-SQL_CONFIG-THREAD__' => Constant::$TRUE,
 ];

@@ -12,15 +12,15 @@ xmlhttp . setRequestHeader('Content-type', 'text/plain; charset=utf-8');
 xmlhttp . onreadystatechange = function() {
 	if (this.readyState == 4 && this.status == 200) {
 		var responseJson = this.responseText;
-		var responseArr = JSON.parse(responseJson);
-		console.log(responseArr);
-		var token = responseArr['Output']['Results']['Token'];
+		var responseArray = JSON.parse(responseJson);
+		console.log(responseArray);
+		var token = responseArray['Output']['Results']['authId'];
 		console.log(token);
 	}
 };
 
 var payload = {
-	"username":"customer_1_user_1",
+	"username":"customer_user_1",
 	"password":"shames11"
 };
 
@@ -42,8 +42,8 @@ xmlhttp . setRequestHeader('Authorization', 'Bearer <Token-from-login-api>');
 xmlhttp . onreadystatechange = function() {
 	if (this.readyState == 4 && this.status == 200) {
 		var responseJson = this.responseText;
-		var responseArr = JSON.parse(responseJson);
-		console.log(responseArr);
+		var responseArray = JSON.parse(responseJson);
+		console.log(responseArray);
 	}
 };
 
@@ -63,8 +63,8 @@ xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
 xmlhttp . onreadystatechange = function() {
 	if (this.readyState == 4 && this.status == 200) {
 		var responseJson = this.responseText;
-		var responseArr = JSON.parse(responseJson);
-		console.log(responseArr);
+		var responseArray = JSON.parse(responseJson);
+		console.log(responseArray);
 	}
 };
 
@@ -89,8 +89,8 @@ xmlhttp . setRequestHeader('Authorization', ‘Bearer <Token-from-login-api>');
 xmlhttp . onreadystatechange = function() {
 	if (this.readyState == 4 && this.status == 200) {
 		var responseJson = this.responseText;
-		var responseArr = JSON.parse(responseJson);
-		console.log(responseArr);
+		var responseArray = JSON.parse(responseJson);
+		console.log(responseArray);
 	}
 };
 
@@ -105,12 +105,12 @@ xmlhttp . send( JSON.stringify(payload) );
 - XML request example
 
 ```javascript
-var handlerUrl = "http://127.0.0.1:9501?route=/registration-with-address&iRepresentation=XML&oRepresentation=XML";
+var handlerUrl = "http://127.0.0.1:9501?route=/registration-with-address&inputRepresentation=XML&outputRepresentation=XML";
 
 var payload = '<?xml version="1.0" encoding="UTF-8" ?>' +
 '<Payload>' +
-'	<Rows>' +
-'		<Row>' +
+'	<Records>' +
+'		<Record>' +
 '			<firstname>Ramesh-1</firstname>' +
 '			<lastname>Jangid</lastname>' +
 '			<email>ramesh@test.com</email>' +
@@ -119,8 +119,8 @@ var payload = '<?xml version="1.0" encoding="UTF-8" ?>' +
 '			<address>' +
 '				<address>A-203</address>' +
 '			</address>' +
-'		</Row>' +
-'		<Row>' +
+'		</Record>' +
+'		<Record>' +
 '			<firstname>Ramesh-2</firstname>' +
 '			<lastname>Jangid</lastname>' +
 '			<email>ramesh@test.com</email>' +
@@ -129,8 +129,8 @@ var payload = '<?xml version="1.0" encoding="UTF-8" ?>' +
 '			<address>' +
 '				<address>A-203</address>' +
 '			</address>' +
-'		</Row>' +
-'	</Rows>' +
+'		</Record>' +
+'	</Records>' +
 '</Payload>';
 
 var xmlhttp = new XMLHttpRequest();

@@ -70,7 +70,7 @@ return [
 			]
 		]
 	],
-	'__HIERARCHY__' => Constant::$TRUE,
+	'__FOLLOW-SQL_CONFIG-THREAD__' => Constant::$TRUE,
 	'__AFFECTED-CACHE-KEY__' => [
 		$this->httpObject->httpReqData['active']['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
 		$this->httpObject->httpReqData['active']['customerData'][DatabaseTable::$customerPrimaryKey] . ':category1'

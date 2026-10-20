@@ -98,7 +98,7 @@ return [
 	],
 	'rateLimitRequestCount' => 100,
 	'rateLimitRequestWindow' => 3600,
-	'__HIERARCHY__' => Constant::$TRUE,
+	'__FOLLOW-SQL_CONFIG-THREAD__' => Constant::$TRUE,
 	'__PAYLOAD-TYPE__' => 'Object',
 	'idempotentWindow' => 10,
 	'responseLagWindow' => 3600,

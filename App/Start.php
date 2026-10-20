@@ -166,9 +166,9 @@ class Start
 				$payload = [];
 				if (
 					isset($Microservices->httpObject->request)
-					&& isset($Microservices->httpObject->request->dataDecodeObject)
+					&& isset($Microservices->httpObject->request->decodeObject)
 				) {
-					$payload = $Microservices->httpObject->request->dataDecodeObject->get();
+					$payload = $Microservices->httpObject->request->decodeObject->get();
 				}
 				$logId = $logObject->log(
 					logData: $logData,
@@ -197,17 +197,20 @@ class Start
 				];
 			}
 
-			// $dataEncodeObject = new DataEncode(
-			// httpReqData: $httpReqData
+			// $encodeObject = new DataEncode(
+			// 	httpObject: $this->httpObject,
+			// 	outputRepresentation: CommonFunction::getOutputRepresentation(
+			// 		sqlConfig: [],
+			// 		httpObject: $this->httpObject
+			// 	)
 			// );
-			// $dataEncodeObject->init();
-			// $dataEncodeObject->startObject();
-			// $dataEncodeObject->addKeyData(
-			// objectKey: 'Error',
-			// data: $arr
+			// $encodeObject->init();
+			// $encodeObject->startObject();
+			// $encodeObject->addKeyData(
+			// 	objectKey: 'Error',
+			// 	data: $arr
 			// );
-
-			// $data = $dataEncodeObject->getData();
+			// $data = $encodeObject->getData();
 
 			if (
 				isset($Microservices->httpObject->request)

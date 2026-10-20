@@ -129,7 +129,7 @@ class Login
 	private function setPayload(): void
 	{
 		$this->httpObject->request->loadPayload();
-		$this->payload = $this->httpObject->request->dataDecodeObject->getObject();
+		$this->payload = $this->httpObject->request->decodeObject->getObject();
 
 		// Check for required conditions variables
 		$requiredParamData = [
@@ -644,7 +644,7 @@ class Login
 	 */
 	private function outputDetail(&$output): void
 	{
-		$this->httpObject->response->dataEncodeObject->addKeyData(
+		$this->httpObject->response->encodeObject->addKeyData(
 			objectKey: 'Results',
 			data: $output
 		);

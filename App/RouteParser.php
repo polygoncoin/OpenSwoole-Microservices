@@ -93,13 +93,6 @@ class RouteParser
 	public $configuredRoute = '';
 
 	/**
-	 * Sql config
-	 * 
-	 * @var null|string
-	 */
-	public $sqlConfig = null;
-
-	/**
 	 * HTTP object
 	 * 
 	 * @var null|Http
@@ -333,7 +326,7 @@ class RouteParser
 						mode: 'input'
 					)
 				) {
-					$this->httpObject->request->INPUT_REPRESENTATION = $routeConfig['__INPUT-REPRESENTATION__'];
+					$this->httpObject->request->inputRepresentation = $routeConfig['__INPUT-REPRESENTATION__'];
 				}
 			}
 		}
@@ -348,7 +341,7 @@ class RouteParser
 				mode: 'input'
 			)
 		) {
-			$this->httpObject->request->INPUT_REPRESENTATION = $this->httpObject->httpReqData['get']['inputRepresentation'];
+			$this->httpObject->request->inputRepresentation = $this->httpObject->httpReqData['get']['inputRepresentation'];
 		}
 
 		$this->configuredRoute = '/' . implode(
@@ -566,8 +559,7 @@ class RouteParser
 
 			// Output data representation over rides global
 			// Output data representation set in Query config file
-			$this->sqlConfig = include $routeConfig['__FILE__'];
-			$this->httpObject->httpReqData['active']['sqlConfigData'] = &$this->sqlConfig;
+			$this->httpObject->httpReqData['active']['sqlData']['Config'] = include $routeConfig['__FILE__'];
 		}
 	}
 

@@ -325,48 +325,54 @@ class CommonFunction
 	/**
 	 * Get Output Representation
 	 * 
-	 * @param array $sqlConfig   Sql config
-	 * @param array $httpReqData HTTP request data
-	 * @param int   $customerId  Customer id
+	 * @param array $sqlConfig  Sql config
+	 * @param Http  $httpObject HTTP request data
 	 * 
 	 * @return null|array
 	 */
 	public static function getOutputRepresentation(
 		$sqlConfig,
-		$httpReqData,
-		$customerId
+		$httpObject,
 	): null|array {
 		$returnOutputRepresentation = [];
 		switch (Constant::$TRUE) {
-			case isset($httpReqData['get']['OUTPUT_REPRESENTATION'])
+			case isset($httpObject->httpReqData['get']['outputRepresentation'])
 				&& in_array(
-					needle: $httpReqData['get']['OUTPUT_REPRESENTATION'],
+					needle: $httpObject->httpReqData['get']['outputRepresentation'],
 					haystack: ['JSON', 'XML'],
 					strict: Constant::$TRUE
 				):
 				$returnOutputRepresentation = [
-					'OUTPUT_REPRESENTATION' => $httpReqData['get']['OUTPUT_REPRESENTATION'],
-					'OUTPUT_REPRESENTATION_FILE' => Constant::$FALSE
+					'outputRepresentation' => $httpObject->httpReqData['get']['outputRepresentation'],
+					'outputRepresentationFile' => Constant::$FALSE
 				];
 				break;
-			case isset($sqlConfig['OUTPUT_REPRESENTATION'])
+			case isset($sqlConfig['__OUTPUT_REPRESENTATION__'])
 				&& Env::isValidDataRep(
-					dataRepresentation: $sqlConfig['OUTPUT_REPRESENTATION'],
+					dataRepresentation: $sqlConfig['__OUTPUT_REPRESENTATION__'],
 					mode: 'output'
 				)
 				&& in_array(
-					needle: $sqlConfig['OUTPUT_REPRESENTATION'],
+					needle: $sqlConfig['__OUTPUT_REPRESENTATION__'],
 					haystack: ['HTML', 'PHP', 'XSLT'],
 					strict: Constant::$TRUE
 				)
-				&& isset($sqlConfig['OUTPUT_REPRESENTATION_FILE']):
+				&& isset($sqlConfig['__OUTPUT_REPRESENTATION_FILE__']):
 				$returnOutputRepresentation = [
-					'OUTPUT_REPRESENTATION' => $sqlConfig['OUTPUT_REPRESENTATION'],
-					'OUTPUT_REPRESENTATION_FILE' => $sqlConfig['OUTPUT_REPRESENTATION_FILE']
+					'outputRepresentation' => $sqlConfig['__OUTPUT_REPRESENTATION__'],
+					'outputRepresentationFile' => $sqlConfig['__OUTPUT_REPRESENTATION_FILE__']
 				];
 				break;
+			case isset(Env::$config[$httpObject->httpReqData['active']['customerId']]->OUTPUT_REPRESENTATION):
+				$returnOutputRepresentation = [
+					'outputRepresentation' => Env::$config[$httpObject->httpReqData['active']['customerId']]->OUTPUT_REPRESENTATION,
+					'outputRepresentationFile' => Constant::$FALSE
+				];
 			default:
-				$returnOutputRepresentation = Env::$config[$customerId]->OUTPUT_REPRESENTATION;
+				$returnOutputRepresentation = [
+					'outputRepresentation' => Env::$SYSTEM_OUTPUT_REPRESENTATION,
+					'outputRepresentationFile' => Constant::$FALSE
+				];
 				break;
 		}
 

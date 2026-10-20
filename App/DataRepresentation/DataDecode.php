@@ -49,16 +49,16 @@ class DataDecode
 	/**
 	 * Constructor
 	 * 
-	 * @param string   $INPUT_REPRESENTATION Input Representation
+	 * @param string   $inputRepresentation Input Representation
 	 * @param resource $dataFileHandle      File handle
 	 */
 	public function __construct(
-		$INPUT_REPRESENTATION,
+		$inputRepresentation,
 		&$dataFileHandle
 	) {
 		$this->dataFileHandle = &$dataFileHandle;
 
-		if ($INPUT_REPRESENTATION === 'JSON') {
+		if ($inputRepresentation === 'JSON') {
 			$this->dataDecoderObject = new JsonDecode(
 				jsonFileHandle: $this->dataFileHandle
 			);
