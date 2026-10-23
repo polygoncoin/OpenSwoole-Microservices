@@ -83,8 +83,11 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 	public function getSession(
 		$sessionId
 	): bool|string {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		$filepath = $this->sessionSavePath . '/'
-			. $this->sessionFilePrefix . $sessionId;
+			. $this->sessionFilePrefix . $customerSessionId;
 
 		if (
 			file_exists(
@@ -118,8 +121,11 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		$filepath = $this->sessionSavePath . '/'
-			. $this->sessionFilePrefix . $sessionId;
+			. $this->sessionFilePrefix . $customerSessionId;
 		if (
 			!file_exists(
 				filename: $filepath
@@ -167,8 +173,11 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		$filepath = $this->sessionSavePath . '/'
-			. $this->sessionFilePrefix . $sessionId;
+			. $this->sessionFilePrefix . $customerSessionId;
 		return touch(
 			filename: $filepath
 		);
@@ -206,8 +215,11 @@ class FileBasedSessionContainer extends SessionContainerHelper implements
 	public function deleteSession(
 		$sessionId
 	): bool {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		$filepath = $this->sessionSavePath . '/'
-			. $this->sessionFilePrefix . $sessionId;
+			. $this->sessionFilePrefix . $customerSessionId;
 		if (
 			file_exists(
 				filename: $filepath

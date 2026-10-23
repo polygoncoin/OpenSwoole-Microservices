@@ -338,7 +338,7 @@ return [
 	'rateLimitRequestCount' => 1, // Allowed number of request in defined seconds window
 	'rateLimitRequestWindow' => 3600, // Seconds Window for restricting number of request
 
-	// Maintain responseLag for window
+	// Maintain responseLag for window (lagResponse())
 	'responseLagWindow' => 3600,
 
 	// Control response time as per number of hits by configuring lags in seconds as below
@@ -353,9 +353,9 @@ return [
 		]
 	],
 
-	// Enable referrer lag for current route
-	// To be configured in source route Sql config
-	'enableReferrerLag' => Constant::$YES,
+	// Set current Request access timestamp
+	// The set timestamp is to be used in next request sql config referrerLagWindow option to check for set window limits
+	'initReferrerWindow' => Constant::$YES,
 
 	// Minimum Lag time between current request and referrer/previous request
 	// To be configured in target route Sql config

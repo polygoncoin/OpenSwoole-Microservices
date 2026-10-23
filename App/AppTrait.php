@@ -946,22 +946,6 @@ trait AppTrait
 	}
 
 	/**
-	 * Rate Limiting request on basis of Sql config
-	 * 
-	 * @param array $sqlConfig Sql config
-	 * 
-	 * @return void
-	 * @throws \Exception
-	 */
-	private function rateLimitRoute(
-		&$sqlConfig
-	): void {
-		$this->httpObject->rateLimiter->rateLimitFeature(
-			feature: 'USER_ROUTE'
-		);
-	}
-
-	/**
 	 * Check Referrer Lag
 	 * 
 	 * @param array $sqlConfig Sql config
@@ -1039,8 +1023,8 @@ trait AppTrait
 		}
 
 		if (
-			isset($sqlConfig['enableReferrerLag'])
-			&& $sqlConfig['enableReferrerLag'] === Constant::$YES
+			isset($sqlConfig['initReferrerWindow'])
+			&& $sqlConfig['initReferrerWindow'] === Constant::$YES
 		) {
 			if (
 				!$this->httpObject->cache->cacheExist(
@@ -1152,50 +1136,46 @@ trait AppTrait
 	private function lagResponse(
 		&$sqlConfig
 	): void {
-		if (
-			$this->httpObject->request->isPublicRequest
-			|| !isset($sqlConfig['responseLag'])
-		) {
+		if (!isset($sqlConfig['responseLag'])) {
 			return;
 		}
 
+		// can be configured for each keys or combinations (presently all combinations combined)
 		$payloadSignature = [
-			'httpRequestIp' => $this->httpObject->httpReqData['server']['httpRequestIp'],
 			'customerId' => $this->httpObject->httpReqData['active']['customerId'],
 			'httpRequestMethod' => $this->httpObject->httpReqData['server']['httpRequestMethod'],
 			'Route' => $this->httpObject->httpReqData['get'][ROUTE_URL_PARAM],
 		];
 		if (isset($this->httpObject->httpReqData['active']['customerUserData'])) {
-			$payloadSignature['customerUserGroupId'] = ($this->httpObject->httpReqData['active']['customerUserData']['customer_user_group_id'] !== Constant::$NULL
-				? $this->httpObject->httpReqData['active']['customerUserData']['customer_user_group_id'] : 0);
 			$payloadSignature['customerUserId'] = ($this->httpObject->httpReqData['active']['customerUserId'] !== Constant::$NULL
 				? $this->httpObject->httpReqData['active']['customerUserId'] : 0);
 		}
 
-		$hash = json_encode(
-			value: $payloadSignature
-		);
-		$hashKey = 'LAG:' . md5(
-			string: $hash
+		$cacheKey = 'LAG:' . md5(
+			string: json_encode(
+				value: $payloadSignature
+			)
 		);
 
 		if (
 			$this->httpObject->cache->cacheExist(
-				cacheKey: $hashKey
+				cacheKey: $cacheKey
 			)
 		) {
-			$currentNoOfRequest = $this->httpObject->cache->cacheGet(
-				cacheKey: $hashKey
+			$requestCount = $this->httpObject->cache->cacheGet(
+				cacheKey: $cacheKey
+			);
+			$this->httpObject->cache->cacheIncrement(
+				cacheKey: $cacheKey
 			);
 		} else {
-			$currentNoOfRequest = 0;
+			$requestCount = 0;
+			$this->httpObject->cache->cacheSet(
+				cacheKey: $cacheKey,
+				cacheValue: $requestCount,
+				cacheExpire: $sqlConfig['responseLagWindow']
+			);
 		}
-
-		$this->httpObject->cache->cacheSet(
-			cacheKey: $hashKey,
-			cacheValue: ++$noOfRequest,
-			cacheExpire: $sqlConfig['responseLagWindow']
-		);
 
 		$lagResponse = 0;
 		$responseLagArray = &$sqlConfig['responseLag'];
@@ -1205,7 +1185,7 @@ trait AppTrait
 			)
 		) {
 			foreach ($responseLagArray as $responseLag) {
-				if ($currentNoOfRequest > $responseLag['requestCount']) {
+				if ($requestCount > $responseLag['requestCount']) {
 					$lagResponse = $responseLag['lagResponse'];
 				}
 			}
@@ -1570,8 +1550,8 @@ trait AppTrait
 		&$followSqlConfigThread
 	) {
 		// Rate Limiting request if configured for Route Sql.
-		$this->rateLimitRoute(
-			sqlConfig: $sqlConfig
+		$this->httpObject->rateLimiter->rateLimitFeature(
+			feature: 'USER_ROUTE'
 		);
 
 		// Check for configured referrer Lags
@@ -1621,8 +1601,8 @@ trait AppTrait
 		);
 
 		// Rate Limiting request if configured for Route Sql.
-		$this->rateLimitRoute(
-			sqlConfig: $sqlConfig
+		$this->httpObject->rateLimiter->rateLimitFeature(
+			feature: 'USER_ROUTE'
 		);
 
 		// Use results in where clause of sub queries recursively

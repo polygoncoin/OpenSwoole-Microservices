@@ -214,6 +214,7 @@ class Start
 
 			if (
 				isset($Microservices->httpObject->request)
+				&& isset($Microservices->httpObject->httpReqData['active']['customerId'])
 				&& isset(Env::$config[$Microservices->httpObject->httpReqData['active']['customerId']])
 				&& Env::$config[$Microservices->httpObject->httpReqData['active']['customerId']]->OUTPUT_PERFORMANCE_STATS
 			) {

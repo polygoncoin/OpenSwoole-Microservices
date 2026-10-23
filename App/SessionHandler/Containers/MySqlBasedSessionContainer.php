@@ -77,13 +77,16 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	public function getSession(
 		$sessionId
 	): bool|string {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		$sql = "
 			SELECT *
 			FROM `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
 			WHERE `session_id` = :session_id AND `last_accessed` > :last_accessed
 		";
 		$paramArray = [
-			':session_id' => $sessionId,
+			':session_id' => $customerSessionId,
 			':last_accessed' => (Env::$timestamp - $this->sessionOptions['cookie_lifetime'])
 		];
 		if (
@@ -115,6 +118,9 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		$sql = "
 			INSERT INTO `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
 			SET
@@ -123,7 +129,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 				`last_accessed` = :last_accessed
 		";
 		$paramArray = [
-			':session_id' => $sessionId,
+			':session_id' => $customerSessionId,
 			':session_data' => $this->encryptData(
 				plainText: $sessionData
 			),
@@ -148,6 +154,9 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		$sql = "
 			UPDATE `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
 			SET
@@ -157,7 +166,7 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 				`session_id` = :session_id
 		";
 		$paramArray = [
-			':session_id' => $sessionId,
+			':session_id' => $customerSessionId,
 			':session_data' => $this->encryptData(
 				plainText: $sessionData
 			),
@@ -182,13 +191,16 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		$sql = "
 			UPDATE `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
 			SET `last_accessed` = :last_accessed
 			WHERE `session_id` = :session_id
 		";
 		$paramArray = [
-			':session_id' => $sessionId,
+			':session_id' => $customerSessionId,
 			':last_accessed' => Env::$timestamp
 		];
 		return $this->execSql(
@@ -231,12 +243,15 @@ class MySqlBasedSessionContainer extends SessionContainerHelper implements
 	public function deleteSession(
 		$sessionId
 	): bool {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		$sql = "
 			DELETE FROM `{$this->sessionServerDb}`.`{$this->sessionServerTable}`
 			WHERE `session_id` = :session_id
 		";
 		$paramArray = [
-			':session_id' => $sessionId
+			':session_id' => $customerSessionId
 		];
 		return $this->execSql(
 			sql: $sql,

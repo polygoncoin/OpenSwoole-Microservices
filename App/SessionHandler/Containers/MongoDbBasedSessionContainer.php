@@ -83,14 +83,17 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	public function getSession(
 		$sessionId
 	): bool|string {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		try {
-			$filter = ['sessionId' => $sessionId];
+			$filter = ['session_id' => $customerSessionId];
 
 			if ($document = $this->collectionObject->findOne($filter)) {
 				$lastAccessed = Env::$timestamp - $this->sessionOptions['cookie_lifetime'];
-				if ($document['lastAccessed'] > $lastAccessed) {
+				if ($document['last_accessed'] > $lastAccessed) {
 					$sessionData = $this->decryptData(
-						cipherText: $document['sessionData']
+						cipherText: $document['session_data']
 					);
 					return $sessionData;
 				}
@@ -115,11 +118,14 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		try {
 			$document = [
-				"sessionId" => $sessionId,
-				"lastAccessed" => Env::$timestamp,
-				"sessionData" => $this->encryptData(
+				'session_id' => $customerSessionId,
+				'last_accessed' => Env::$timestamp,
+				'session_data' => $this->encryptData(
 					plainText: $sessionData
 				)
 			];
@@ -146,12 +152,15 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		try {
-			$filter = ['sessionId' => $sessionId];
+			$filter = ['session_id' => $customerSessionId];
 			$update = [
 				'$set' => [
-					'lastAccessed' => Env::$timestamp,
-					"sessionData" => $this->encryptData(
+					'last_accessed' => Env::$timestamp,
+					'session_data' => $this->encryptData(
 						plainText: $sessionData
 					)
 				]
@@ -184,11 +193,14 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		try {
-			$filter = ['sessionId' => $sessionId];
+			$filter = ['session_id' => $customerSessionId];
 			$update = [
 				'$set' => [
-					'lastAccessed' => Env::$timestamp
+					'last_accessed' => Env::$timestamp
 				]
 			];
 
@@ -231,8 +243,11 @@ class MongoDbBasedSessionContainer extends SessionContainerHelper implements
 	public function deleteSession(
 		$sessionId
 	): bool {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		try {
-			$filter = ['sessionId' => $sessionId];
+			$filter = ['session_id' => $customerSessionId];
 
 			if ($this->collectionObject->deleteOne($filter)) {
 				return Constant::$TRUE;

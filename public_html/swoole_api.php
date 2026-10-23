@@ -79,7 +79,7 @@ $server->on(
 		$httpReqData['active'] = [];
 
 		$httpReqData['streamData'] = Constant::$TRUE;
-		$httpReqData['server']['domainName'] = $DOMAIN_NAME;
+		$httpReqData['server']['domainName'] = $request->header['host'] ?? $DOMAIN_NAME;
 		$httpReqData['server']['httpRequestMethod'] = $request->server['request_method'];
 
 		if (

@@ -71,8 +71,11 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	public function getSession(
 		$sessionId
 	): bool|string {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		try {
-			if ($data = $this->webSession->get($sessionId)) {
+			if ($data = $this->webSession->get($customerSessionId)) {
 				$sessionData = $this->decryptData(
 					cipherText: $data
 				);
@@ -98,10 +101,13 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		try {
 			if (
 				$this->webSession->set(
-					$sessionId,
+					$customerSessionId,
 					$this->encryptData(
 						plainText: $sessionData
 					),
@@ -148,10 +154,13 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		try {
 			if (
 				$this->webSession->touch(
-					$sessionId,
+					$customerSessionId,
 					$this->sessionOptions['cookie_lifetime']
 				)
 			) {
@@ -188,8 +197,11 @@ class MemcachedBasedSessionContainer extends SessionContainerHelper implements
 	public function deleteSession(
 		$sessionId
 	): bool {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		try {
-			if ($this->webSession->delete($sessionId)) {
+			if ($this->webSession->delete($customerSessionId)) {
 				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {

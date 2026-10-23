@@ -62,7 +62,10 @@ class RateLimiter
 	public function check(
 		$rateLimitDetail
 	): array {
-		if (!$this->httpObject->Env->ENABLE_RATE_LIMITING) {
+		if (
+			!$this->httpObject->Env->ENABLE_RATE_LIMITING
+			|| $rateLimitDetail === null
+		) {
 			return [];
 		}
 
@@ -182,6 +185,17 @@ class RateLimiter
 		$customerData = &$this->httpObject->httpReqData['active']['customerData'];
 		$customerUserData = &$this->httpObject->httpReqData['active']['customerUserData'];
 		$customerUserGroupData = &$this->httpObject->httpReqData['active']['customerUserGroupData'];
+		
+		$sqlConfigData = null;
+		if (
+			isset($this->httpObject->httpReqData['active']['sqlData']['Config']['rateLimitRequestCount'])
+			&& isset($this->httpObject->httpReqData['active']['sqlData']['Config']['rateLimitRequestWindow'])
+		) {
+			$sqlConfigData = [
+				'rateLimitRequestCount' => $this->httpObject->httpReqData['active']['sqlData']['Config']['rateLimitRequestCount'],
+				'rateLimitRequestWindow' => $this->httpObject->httpReqData['active']['sqlData']['Config']['rateLimitRequestWindow']
+			];
+		}
 		$sqlConfigData = &$this->httpObject->httpReqData['active']['sqlData']['Config'];
 
         $customerId = &$this->httpObject->httpReqData['active']['customerId'];
@@ -205,7 +219,7 @@ class RateLimiter
 					'rateLimitRequestWindow' => $customerData['customer_limit_ip_window']
 				];
                 break;
-            case 'ROUTE':
+            case 'ROUTE' && $sqlConfigData !== null:
                 $rateLimitKey = "RL:C:{$customerId}:R:{$route}";
 				$rateLimitDetail = [
 					'rateLimitKey' => $rateLimitKey,
@@ -213,7 +227,7 @@ class RateLimiter
 					'rateLimitRequestWindow' => $sqlConfigData['rateLimitRequestWindow'],
 				];
                 break;
-            case 'ROUTE_IP':
+            case 'ROUTE_IP' && $sqlConfigData !== null:
                 $rateLimitKey = "RL:C:{$customerId}:R:{$route}:IP:{$httpRequestIp}";
 				$rateLimitDetail = [
 					'rateLimitKey' => $rateLimitKey,
@@ -237,7 +251,7 @@ class RateLimiter
 					'rateLimitRequestWindow' => $customerUserGroupData['customer_user_group_limit_ip_window']
 				];
                 break;
-            case 'GROUP_ROUTE':
+            case 'GROUP_ROUTE' && $sqlConfigData !== null:
                 $rateLimitKey = "RL:C:{$customerId}:G:{$customerUserGroupId}:R:{$route}";
 				$rateLimitDetail = [
 					'rateLimitKey' => $rateLimitKey,
@@ -245,7 +259,7 @@ class RateLimiter
 					'rateLimitRequestWindow' => $customerUserGroupData['customer_user_group_limit_route_window']
 				];
                 break;
-            case 'GROUP_ROUTE_IP':
+            case 'GROUP_ROUTE_IP' && $sqlConfigData !== null:
                 $rateLimitKey = "RL:C:{$customerId}:G:{$customerUserGroupId}::R:{$route}:IP:{$httpRequestIp}";
 				$rateLimitDetail = [
 					'rateLimitKey' => $rateLimitKey,
@@ -269,7 +283,7 @@ class RateLimiter
 					'rateLimitRequestWindow' => $customerUserData['customer_user_limit_ip_window']
 				];
                 break;
-            case 'USER_ROUTE':
+            case 'USER_ROUTE' && $sqlConfigData !== null:
                 $rateLimitKey = "RL:C:{$customerId}:U:{$customerUserId}:R:{$route}";
 				$rateLimitDetail = [
 					'rateLimitKey' => $rateLimitKey,
@@ -277,7 +291,7 @@ class RateLimiter
 					'rateLimitRequestWindow' => $customerUserData['customer_user_limit_route_window']
 				];
                 break;
-            case 'USER_ROUTE_IP':
+            case 'USER_ROUTE_IP' && $sqlConfigData !== null:
                 $rateLimitKey = "RL:C:{$customerId}:U:{$customerUserId}:R:{$route}:IP:{$httpRequestIp}";
 				$rateLimitDetail = [
 					'rateLimitKey' => $rateLimitKey,

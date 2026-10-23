@@ -77,13 +77,16 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public function getSession(
 		$sessionId
 	): bool|string {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		$sql = "
 			SELECT *
 			FROM {$this->sessionServerTable}
 			WHERE session_id = $1 AND last_accessed > $2
 		";
 		$paramArray = [
-			$sessionId,
+			$customerSessionId,
 			(Env::$timestamp - $this->sessionOptions['cookie_lifetime'])
 		];
 
@@ -112,12 +115,15 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		$sql = "
 			INSERT INTO {$this->sessionServerTable} (session_id, last_accessed, session_data)
 			VALUES ($1, $2, $3)
 		";
 		$paramArray = [
-			$sessionId,
+			$customerSessionId,
 			Env::$timestamp,
 			$this->encryptData(
 				plainText: $sessionData
@@ -142,6 +148,9 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		$sql = "
 			UPDATE {$this->sessionServerTable}
 			SET
@@ -155,7 +164,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 			$this->encryptData(
 				plainText: $sessionData
 			),
-			$sessionId
+			$customerSessionId
 		];
 
 		return $this->execSql(
@@ -176,6 +185,9 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		$sql = "
 			UPDATE {$this->sessionServerTable}
 			SET last_accessed = $1
@@ -183,7 +195,7 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 		";
 		$paramArray = [
 			Env::$timestamp,
-			$sessionId
+			$customerSessionId
 		];
 		return $this->execSql(
 			sql: $sql,
@@ -224,12 +236,15 @@ class PostgreSqlBasedSessionContainer extends SessionContainerHelper implements
 	public function deleteSession(
 		$sessionId
 	): bool {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		$sql = "
 			DELETE FROM {$this->sessionServerTable}
 			WHERE session_id = $1
 		";
 		$paramArray = [
-			$sessionId
+			$customerSessionId
 		];
 		return $this->execSql(
 			sql: $sql,

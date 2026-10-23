@@ -100,6 +100,7 @@ class Session
 
 		$this->sessionContainer->sessionName = $this->Env->SESSION_COOKIE_NAME;
 		$this->sessionContainer->Env = $this->Env;
+		$this->sessionContainer->httpObject = &$this->httpObject;
 
 		// Setting required parameters as per session Mode / Type
 		switch ($this->Env->SESSION_STORE_MODE) {

@@ -36,11 +36,6 @@ class Environment
     // ; Global DB level config (represented by zero))
     // ;
 
-    // ;; Domain enable settings
-    public $ENABLE_PUBLIC_DOMAIN = null;
-    public $ENABLE_PRIVATE_WEB_DOMAIN = null;
-    public $ENABLE_PRIVATE_API_DOMAIN = null;
-
     // ;; Domain name settings
     public $PUBLIC_DOMAIN_NAME = null;
     public $PRIVATE_WEB_DOMAIN_NAME = null;
@@ -148,7 +143,6 @@ class Environment
     public $ENABLE_RATE_LIMITING_LOGIN_IP = null;
     public $ENABLE_RATE_LIMITING_EACH_USER_LOGIN = null;
     public $ENABLE_RATE_LIMITING_EACH_USER_LOGIN_IP = null;
-
 
     // ;
     // ; --- Containers detail -------

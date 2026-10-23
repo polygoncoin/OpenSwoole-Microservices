@@ -16,6 +16,7 @@
 namespace Microservices\App\SessionHandler\Containers;
 
 use Microservices\App\Environment;
+use Microservices\App\Http;
 
 /**
  * Custom Session Handler Helper
@@ -31,6 +32,18 @@ use Microservices\App\Environment;
  */
 class SessionContainerHelper
 {
+	/**
+	 * HTTP object
+	 * 
+	 * @var null|Http
+	 */
+	public $httpObject = null;
+
+	/**
+	 * Environment data
+	 * 
+	 * @var null|Environment
+	 */
 	public $Env = null;
 
 	// Bitwise disjunction of the flags OPENSSL_RAW_DATA,
@@ -48,6 +61,19 @@ class SessionContainerHelper
 
 	// Session cookie name
 	public $sessionName = null;
+
+	/**
+	 * Customer Session Id
+	 * 
+	 * @param string $sessionId
+	 * 
+	 * @return string
+	 */
+	protected function getCustomerSessionId(
+		$sessionId
+	): string {
+		return "{$this->httpObject->httpReqData['active']['customerId']}.";
+	}
 
 	/**
 	 * Encryption

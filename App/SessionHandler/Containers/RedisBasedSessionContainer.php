@@ -74,10 +74,13 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	public function getSession(
 		$sessionId
 	): bool|string {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		try {
 			if (
-				$this->webSession->exists($sessionId)
-				&& ($data = $this->webSession->get($sessionId))
+				$this->webSession->exists($customerSessionId)
+				&& ($data = $this->webSession->get($customerSessionId))
 			) {
 				$sessionData = $this->decryptData(
 					cipherText: $data
@@ -104,10 +107,13 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool|int {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		try {
 			if (
 				$this->webSession->set(
-					$sessionId,
+					$customerSessionId,
 					$this->encryptData(
 						plainText: $sessionData
 					),
@@ -154,10 +160,13 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 		$sessionId,
 		$sessionData
 	): bool {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		try {
 			if (
 				$this->webSession->expire(
-					$sessionId,
+					$customerSessionId,
 					$this->sessionOptions['cookie_lifetime']
 				)
 			) {
@@ -194,8 +203,11 @@ class RedisBasedSessionContainer extends SessionContainerHelper implements
 	public function deleteSession(
 		$sessionId
 	): bool {
+		$customerSessionId = $this->getCustomerSessionId(
+			sessionId: $sessionId
+		);
 		try {
-			if ($this->webSession->del($sessionId)) {
+			if ($this->webSession->del($customerSessionId)) {
 				return Constant::$TRUE;
 			}
 		} catch (\Exception $e) {
