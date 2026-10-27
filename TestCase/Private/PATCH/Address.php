@@ -27,7 +27,7 @@ if ($proceed) {
 	return Web::trigger(
 		homeURL: $homeURL,
 		httpRequestMethod: Constant::$PATCH,
-		route: '/address/1',
+		route: '/address/1.json',
 		header: $privateHeaderArray,
 		payload: json_encode(value: $paramArray)
 	);

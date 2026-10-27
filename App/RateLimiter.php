@@ -55,7 +55,7 @@ class RateLimiter
 	/**
 	 * Check rate limit is valid
 	 * 
-	 * @param array $rateLimitDetail Rate Limit detail
+	 * @param null|array $rateLimitDetail Rate Limit detail
 	 * 
 	 * @return array
 	 */
@@ -135,6 +135,9 @@ class RateLimiter
 		$rateLimitDetail = $this->getRateLimitDetail(
 			feature: $feature
 		);
+		if ($rateLimitDetail === null) {
+			return;
+		}
 		try {
 			$result = $this->check(
 				rateLimitDetail: $rateLimitDetail
@@ -164,11 +167,11 @@ class RateLimiter
 	 * 
 	 * @param string $feature Feature
 	 * 
-	 * @return array
+	 * @return null|array
 	 */
 	public function getRateLimitDetail(
 		$feature
-	): array {
+	): null|array {
         $rateLimitDetail = null;
 
         $enableKey = "ENABLE_RATE_LIMITING_{$feature}";
@@ -196,7 +199,6 @@ class RateLimiter
 				'rateLimitRequestWindow' => $this->httpObject->httpReqData['active']['sqlData']['Config']['rateLimitRequestWindow']
 			];
 		}
-		$sqlConfigData = &$this->httpObject->httpReqData['active']['sqlData']['Config'];
 
         $customerId = &$this->httpObject->httpReqData['active']['customerId'];
         $customerUserId = &$this->httpObject->httpReqData['active']['customerUserId'];

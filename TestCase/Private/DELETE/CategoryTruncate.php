@@ -23,7 +23,7 @@ if ($proceed) {
 	return Web::trigger(
 		homeURL: $homeURL,
 		httpRequestMethod: Constant::$DELETE,
-		route: '/category/truncate',
+		route: '/category/truncate.json',
 		header: $privateHeaderArray,
 		payload: ''
 	);

@@ -319,35 +319,24 @@ class RouteParser
 						code: HttpStatus::$BadRequest
 					);
 				}
-				if (
-					isset($routeConfig['__INPUT-REPRESENTATION__'])
-					&& Env::isValidDataRep(
-						dataRepresentation: $routeConfig['__INPUT-REPRESENTATION__'],
-						mode: 'input'
-					)
-				) {
-					$this->httpObject->request->inputRepresentation = $routeConfig['__INPUT-REPRESENTATION__'];
-				}
 			}
-		}
-
-		// Input data representation over rides global and routes settings
-		// Switch Input data representation if set in URL param
-		if (
-			$this->httpObject->Env->ENABLE_INPUT_REPRESENTATION_IN_QUERY_STRING
-			&& isset($this->httpObject->httpReqData['get']['inputRepresentation'])
-			&& Env::isValidDataRep(
-				dataRepresentation: $this->httpObject->httpReqData['get']['inputRepresentation'],
-				mode: 'input'
-			)
-		) {
-			$this->httpObject->request->inputRepresentation = $this->httpObject->httpReqData['get']['inputRepresentation'];
 		}
 
 		$this->configuredRoute = '/' . implode(
 			separator: '/',
 			array: $configuredRoute
 		);
+		if (
+			in_array(
+				$this->httpObject->httpReqData['OUTPUT_REPRESENTATION'],
+				['XSLT', 'PHP', 'HTML']
+			)
+		) {
+			$outputRepresentationFile = $this->httpObject->httpReqData['server']['httpRequestMethod']
+				. DIRECTORY_SEPARATOR . str_replace(['{', '}'], ['', ''], $this->configuredRoute)
+				. '.' . strtolower($this->httpObject->httpReqData['OUTPUT_REPRESENTATION']);
+			$this->httpObject->response->encodeObject->outputRepresentationFile = $outputRepresentationFile;
+		}
 		$this->validateConfigFile(
 			routeConfig: $routeConfig
 		);

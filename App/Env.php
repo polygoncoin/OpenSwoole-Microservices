@@ -48,11 +48,8 @@ class Env
 	public static $SYSTEM_RELOAD_KEYWORD = null;
 	public static $SYSTEM_RELOAD_CACHE_CIDR = null;
 
-	public static $SYSTEM_INPUT_REPRESENTATION = null;
-	public static $SYSTEM_OUTPUT_REPRESENTATION = null;
-
 	public static $iAllowedRepresentation = ['JSON', 'XML'];
-	public static $oAllowedRepresentation = ['JSON', 'XML', 'XSLT', 'HTML', 'PHP'];
+	public static $oAllowedRepresentation = ['JSON', 'XML', 'HTML', 'PHP'];
 
 	public static $config = null;
 	public static $initialized = null;
@@ -80,9 +77,6 @@ class Env
 		self::$SYSTEM_ENABLE_RELOAD = getenv(name: 'SYSTEM_ENABLE_RELOAD');
 		self::$SYSTEM_RELOAD_KEYWORD = getenv(name: 'SYSTEM_RELOAD_KEYWORD');
 		self::$SYSTEM_RELOAD_CACHE_CIDR = getenv(name: 'SYSTEM_RELOAD_CACHE_CIDR');
-
-		self::$SYSTEM_INPUT_REPRESENTATION = getenv(name: 'SYSTEM_INPUT_REPRESENTATION');
-		self::$SYSTEM_OUTPUT_REPRESENTATION = getenv(name: 'SYSTEM_OUTPUT_REPRESENTATION');
 
 		self::$initialized = Constant::$TRUE;
 	}

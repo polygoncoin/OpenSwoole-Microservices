@@ -28,7 +28,7 @@ if ($proceed) {
 	return Web::trigger(
 		homeURL: $homeURL,
 		httpRequestMethod: Constant::$QUERY,
-		route: '/category',
+		route: '/category.json',
 		header: $privateHeaderArray,
 		payload: json_encode(
 			value: $paramArray

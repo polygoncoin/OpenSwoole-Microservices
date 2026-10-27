@@ -23,7 +23,7 @@ if ($proceed) {
 	return Web::trigger(
 		homeURL: $homeURL,
 		httpRequestMethod: Constant::$GET,
-		route: '/category&orderBy={"id":"DESC"}',
+		route: '/category.json&orderBy={"id":"DESC"}',
 		header: $privateHeaderArray,
 		payload: ''
 	);

@@ -16,8 +16,66 @@ namespace Microservices\Config\GlobalConfigSet\Private\Route\GroupId_1\DataRetri
 
 use Microservices\App\Constant;
 use Microservices\App\DatabaseServerDataType;
+use Microservices\App\Env;
 
-return array_merge(
-	require $this->httpObject->httpReqData['active']['commonRouteDir']
-		. DIRECTORY_SEPARATOR . 'GETroutes.php',
-);
+return [
+	'category' => [
+		'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
+			. DIRECTORY_SEPARATOR . 'Category-all.php',
+		'search' => [
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
+					. DIRECTORY_SEPARATOR . 'SearchCategory.php',
+		],
+		'{id:int}' => [
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
+					. DIRECTORY_SEPARATOR . 'Category-single.php',
+		]
+	],
+	'registration' => [
+		'{id:int}'  => [
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
+					. DIRECTORY_SEPARATOR . 'Registration-single.php',
+		],
+	],
+	'address' => [
+		'{id:int}'  => [
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
+					. DIRECTORY_SEPARATOR . 'Address-single.php',
+		],
+	],
+	'registration-with-address' => [
+		'{id:int}'  => [
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
+					. DIRECTORY_SEPARATOR . 'Registration-With-Address-single.php',
+		],
+	],
+	$this->httpObject->Env->ROUTES_KEYWORD => [
+		'__FILE__' => Constant::$FALSE,
+		'{method:string}' => [
+			'dataType' => DatabaseServerDataType::$HttpMethod,
+			'__FILE__' => Constant::$FALSE
+		]
+	],
+	'group' => [
+		'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
+			. DIRECTORY_SEPARATOR . 'groups.php',
+		'{customer_single_user_group_id:int}'  => [
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
+					. DIRECTORY_SEPARATOR . 'groups.php',
+		],
+	],
+	'customer' => [
+		'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
+			. DIRECTORY_SEPARATOR . 'customer.php',
+		'{customer_id:int}'  => [
+			'dataType' => DatabaseServerDataType::$PrimaryKey,
+			'__FILE__' => $this->httpObject->httpReqData['active']['commonSqlDir']
+					. DIRECTORY_SEPARATOR . 'customer.php',
+		],
+	]
+];

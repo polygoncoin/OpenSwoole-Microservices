@@ -58,7 +58,7 @@ if ($proceed) {
 	return Web::trigger(
 		homeURL: $homeURL,
 		httpRequestMethod: Constant::$POST,
-		route: '/custom/SupplementTest',
+		route: '/custom/SupplementTest.json',
 		header: $privateHeaderArray,
 		payload: json_encode(
 			value: $paramArray

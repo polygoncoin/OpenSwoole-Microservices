@@ -17,6 +17,7 @@ namespace Microservices\App\DataRepresentation;
 
 use Microservices\App\DataRepresentation\Decode\JsonDecode;
 use Microservices\App\DataRepresentation\Decode\XmlDecode;
+use Microservices\App\Http;
 
 /**
  * Creates Data Representation Output
@@ -47,26 +48,28 @@ class DataDecode
 	private $dataDecoderObject = null;
 
 	/**
+	 * HTTP object
+	 * 
+	 * @var null|Http
+	 */
+	private $httpObject = null;
+
+	/**
 	 * Constructor
 	 * 
-	 * @param string   $inputRepresentation Input Representation
-	 * @param resource $dataFileHandle      File handle
+	 * @param string   $httpObject     Input Representation
+	 * @param resource $dataFileHandle File handle
 	 */
 	public function __construct(
-		$inputRepresentation,
+		&$httpObject,
 		&$dataFileHandle
 	) {
+		$this->httpObject = &$httpObject;
 		$this->dataFileHandle = &$dataFileHandle;
 
-		if ($inputRepresentation === 'JSON') {
-			$this->dataDecoderObject = new JsonDecode(
-				jsonFileHandle: $this->dataFileHandle
-			);
-		} else {
-			$this->dataDecoderObject = new XmlDecode(
-				jsonFileHandle: $this->dataFileHandle
-			);
-		}
+		$this->dataDecoderObject = new JsonDecode(
+			jsonFileHandle: $this->dataFileHandle
+		);
 	}
 
 	/**

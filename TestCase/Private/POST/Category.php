@@ -49,7 +49,7 @@ if ($proceed) {
 	return Web::trigger(
 		homeURL: $homeURL,
 		httpRequestMethod: Constant::$POST,
-		route: '/category/import',
+		route: '/category/import.json',
 		header: $privateHeaderArray,
 		payload: '',//json_encode(value: $paramArray),
 		fileLocation: $curlFile

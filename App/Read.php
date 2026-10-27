@@ -110,11 +110,6 @@ class Read
 			return $return;
 		}
 
-		$outputRepresentation = CommonFunction::getOutputRepresentation(
-			sqlConfig: $sqlConfig,
-			httpObject: $this->httpObject
-		);
-
 		if (isset($sqlConfig['__EXPORT__'])) {
 			return $this->download(
 				readSqlConfig: $sqlConfig
@@ -135,8 +130,7 @@ class Read
 			&& $toBeCached
 		) {
 			$this->encodeObject = new DataEncode(
-				httpObject: $this->httpObject,
-				outputRepresentation: $outputRepresentation
+				httpObject: $this->httpObject
 			);
 			$this->encodeObject->init(
 				header: Constant::$FALSE
@@ -156,8 +150,6 @@ class Read
 
 		$this->read(
 			readSqlConfig: $sqlConfig,
-			readOutputRepresentation: $outputRepresentation,
-			readEncodeObject: $this->encodeObject,
 			readFollowSqlConfigThread: $followSqlConfigThread,
 		);
 
@@ -187,35 +179,14 @@ class Read
 	 * Perform read operation
 	 * 
 	 * @param array  $readSqlConfig             Sql config
-	 * @param array  $readOutputRepresentation  Output reepresentation
-	 * @param object $readEncodeObject          Read data encode object
 	 * @param bool   $readFollowSqlConfigThread Follow Sql Config Thread
 	 * 
 	 * @return void
 	 */
 	private function read(
 		&$readSqlConfig,
-		&$readOutputRepresentation,
-		&$readEncodeObject,
 		$readFollowSqlConfigThread,
 	): void {
-		$readToBeEncoded = false;
-		$outputRepresentation = CommonFunction::getOutputRepresentation(
-			sqlConfig: $readSqlConfig,
-			httpObject: $this->httpObject
-		);
-		if ($outputRepresentation !== $readOutputRepresentation) {
-			$encodeObject = new DataEncode(
-				httpObject: $this->httpObject,
-				outputRepresentation: $outputRepresentation
-			);
-			$encodeObject->init(
-				header: Constant::$FALSE
-			);
-			$readToBeEncoded = true;
-		} else {
-			$encodeObject = &$readEncodeObject;
-		}
 		// Set required fields
 		$this->httpObject->httpReqData['active']['requiredFieldArrayCollection'] = $this->getRequired(
 			sqlConfig: $readSqlConfig,
@@ -223,7 +194,7 @@ class Read
 			isFirstCall: Constant::$TRUE
 		);
 
-		$encodeObject->startObject(
+		$this->encodeObject->startObject(
 			objectKey: 'Results'
 		);
 
@@ -235,8 +206,8 @@ class Read
 		if ($readPayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $readOutputRepresentation['outputRepresentation'],
-					haystack: ['XML', 'XSLT', 'HTML'],
+					needle: $this->httpObject->httpReqData['OUTPUT_REPRESENTATION'],
+					haystack: ['XML', 'XSLT'],
 					strict: Constant::$TRUE
 				)
 			) {
@@ -245,7 +216,7 @@ class Read
 		}
 
 		if ($startArray) {
-			$encodeObject->startArray(
+			$this->encodeObject->startArray(
 				objectKey: 'Records'
 			);
 		}
@@ -266,7 +237,7 @@ class Read
 			if ($readPayloadDataType === 'Array') {
 				$readPayloadKeyArray = [];
 				$readPayloadKeyArray[] = "{$index}";
-				$encodeObject->startObject($index);
+				$this->encodeObject->startObject($index);
 			}
 
 			if ($this->httpObject->Env->ENABLE_PAYLOAD_IN_RESPONSE) {
@@ -274,7 +245,7 @@ class Read
 					payloadKeyArray: $readPayloadKeyArray
 				);
 
-				$encodeObject->addKeyData(
+				$this->encodeObject->addKeyData(
 					objectKey: $this->httpObject->Env->PAYLOAD_KEY_IN_RESPONSE,
 					data: $this->httpObject->request->decodeObject->getCompleteArray(
 						keyString: $readPayloadKey
@@ -284,8 +255,6 @@ class Read
 
 			$this->readParent(
 				readParentSqlConfig: $readSqlConfig,
-				readParentOutputRepresentation: $outputRepresentation,
-				readParentEncodeObject: $encodeObject,
 				readParentPayloadKeyArray: $readPayloadKeyArray,
 				readParentRequiredFieldArray: $this->httpObject->httpReqData['active']['requiredFieldArrayCollection'],
 				readParentFollowSqlConfigThread: $readFollowSqlConfigThread,
@@ -293,28 +262,19 @@ class Read
 			);
 
 			if ($readPayloadDataType === 'Array') {
-				$encodeObject->endObject();
+				$this->encodeObject->endObject();
 			}
 		}
 		if ($startArray) {
-			$encodeObject->endArray();
+			$this->encodeObject->endArray();
 		}
-		$encodeObject->endObject();
-		if ($readToBeEncoded) {
-			$data = $encodeObject->getData();
-			$encodeObject = null;
-			$readEncodeObject->appendData(
-				data: $data
-			);
-		}
+		$this->encodeObject->endObject();
 	}
 
 	/**
 	 * Process Read Parent Config Function
 	 * 
 	 * @param array  $readParentSqlConfig            Sql config
-	 * @param array  $readParentOutputRepresentation 
-	 * @param object $readParentEncodeObject.    
 	 * @param array  $readParentPayloadKeyArray.     
 	 * @param array  $readParentRequiredFieldArray.  
 	 * @param bool   $readFollowSqlConfigThread      Follow Sql Config Thread
@@ -324,30 +284,11 @@ class Read
 	 */
 	private function readParent(
 		&$readParentSqlConfig,
-	 	&$readParentOutputRepresentation,
-	 	&$readParentEncodeObject,
 		&$readParentPayloadKeyArray,
 		&$readParentRequiredFieldArray,
 		$readParentFollowSqlConfigThread,
 		$readParentIsFirstCall
 	): void {
-		$readToBeEncoded = false;
-		$outputRepresentation = CommonFunction::getOutputRepresentation(
-			sqlConfig: $readParentSqlConfig,
-			httpObject: $this->httpObject
-		);
-		if ($outputRepresentation !== $readParentOutputRepresentation) {
-			$encodeObject = new DataEncode(
-				httpObject: $this->httpObject,
-				outputRepresentation: $outputRepresentation
-			);
-			$encodeObject->init(
-				header: Constant::$FALSE
-			);
-			$readToBeEncoded = true;
-		} else {
-			$encodeObject = &$readParentEncodeObject;
-		}
 		// For payloadKey
 		$readParentPayloadKey = $this->getPayloadKey(
 			payloadKeyArray: $readParentPayloadKeyArray
@@ -474,23 +415,21 @@ class Read
 				// Query will return single dbFetchedRecord
 				case 'singleRecordFormat':
 					if ($readParentIsFirstCall) {
-						$encodeObject->startObject(
+						$this->encodeObject->startObject(
 							objectKey: 'PayloadResponse'
 						);
 					} else {
-						$encodeObject->startObject();
+						$this->encodeObject->startObject();
 					}
 
 					$this->fetchSingleRecord(
 						readSqlConfig: $readParentSqlConfig,
-						outputRepresentation: $outputRepresentation,
-						encodeObject: $encodeObject,
 						readPayload: $readParentPayload,
 						readPayloadKeyArray: $readParentCurrentPayloadKeyArray,
 						readFollowSqlConfigThread: $readParentCurrentFollowSqlConfigThread,
 						readIsFirstCall: $readParentIsFirstCall
 					);
-					$encodeObject->endObject();
+					$this->encodeObject->endObject();
 					break;
 				// Query will return multiple rows
 				case 'multipleRecordFormat':
@@ -498,11 +437,11 @@ class Read
 					$perPage = Constant::$NULL;
 					if ($readParentIsFirstCall) {
 						if (isset($readParentSqlConfig['__COUNT-SQL__'])) {
-							$encodeObject->startObject(
+							$this->encodeObject->startObject(
 								objectKey: 'PayloadResponse'
 							);
 						} else {
-							$encodeObject->startArray(
+							$this->encodeObject->startArray(
 								objectKey: 'PayloadResponse'
 							);
 						}
@@ -511,18 +450,16 @@ class Read
 							$perPage  = $readParentPayload['perPage'] ?? $this->httpObject->Env->DEFAULT_PER_PAGE_COUNT;
 							$start = $this->fetchRecordCount(
 								readSqlConfig: $readParentSqlConfig,
-								outputRepresentation: $outputRepresentation,
-								encodeObject: $encodeObject,
 								readPayload: $readParentPayload,
 								page: $page,
 								perPage: $perPage
 							);
-							$encodeObject->startArray(
+							$this->encodeObject->startArray(
 								objectKey: 'Data'
 							);
 						}
 					} else {
-						$encodeObject->startArray(
+						$this->encodeObject->startArray(
 							objectKey: $readParentPayloadKeyArray[
 								count(
 									value: $readParentPayloadKeyArray
@@ -532,8 +469,6 @@ class Read
 					}
 					$this->fetchMultipleRecords(
 						readSqlConfig: $readParentSqlConfig,
-						outputRepresentation: $outputRepresentation,
-						encodeObject: $encodeObject,
 						readPayload: $readParentPayload,
 						readPayloadKeyArray: $readParentCurrentPayloadKeyArray,
 						readFollowSqlConfigThread: $readParentCurrentFollowSqlConfigThread,
@@ -542,19 +477,19 @@ class Read
 						offset: $perPage
 
 					);
-					$encodeObject->endArray();
+					$this->encodeObject->endArray();
 					if (
 						$readParentIsFirstCall
 						&& isset($readParentSqlConfig['__COUNT-SQL__'])
 					) {
-						$encodeObject->endObject();
+						$this->encodeObject->endObject();
 					}
 					break;
 			}
 
 			// For Triggers
 			if (isset($readParentSqlConfig['__TRIGGER__'])) {
-				$encodeObject->addKeyData(
+				$this->encodeObject->addKeyData(
 					objectKey: '__TRIGGER__',
 					data: $this->getTriggerData(
 						triggerConfig: $readParentSqlConfig['__TRIGGER__'],
@@ -588,13 +523,6 @@ class Read
 				}
 			}
 		}
-		if ($readToBeEncoded) {
-			$data = $encodeObject->getData();
-			$encodeObject = null;
-			$readParentEncodeObject->appendData(
-				data: $data
-			);
-		}
 	}
 
 	/**
@@ -609,30 +537,10 @@ class Read
 	 */
 	private function readChild(
 		&$readChildSqlConfig,
-		&$readChildOutputRepresentation,
-		&$readChildEncodeObject,
 		&$readChildPayloadKeyArray,
 		&$dbFetchedRecord,
 		$readChildFollowSqlConfigThread
 	): void {
-		$readToBeEncoded = false;
-		$outputRepresentation = CommonFunction::getOutputRepresentation(
-			sqlConfig: $readChildSqlConfig,
-			httpObject: $this->httpObject
-		);
-		if ($outputRepresentation !== $readChildOutputRepresentation) {
-			$encodeObject = new DataEncode(
-				httpObject: $this->httpObject,
-				outputRepresentation: $outputRepresentation
-			);
-			$encodeObject->init(
-				header: Constant::$FALSE
-			);
-			$readToBeEncoded = true;
-		} else {
-			$encodeObject = &$readChildEncodeObject;
-		}
-
 		if (
 			isset($readChildPayloadKeyArray[0])
 			&& $readChildPayloadKeyArray[0] === ''
@@ -657,7 +565,7 @@ class Read
 		}
 
 		foreach ($readChildSqlConfig['__SUB-CONFIG__'] as $readModule => &$readChildModuleSqlConfig) {
-			$encodeObject->startObject(
+			$this->encodeObject->startObject(
 				objectKey: $readModule
 			);
 			// For payloadKeyArray
@@ -742,22 +650,13 @@ class Read
 				// For Parent
 				$this->readParent(
 					readParentSqlConfig: $readChildModuleSqlConfig,
-					readParentOutputRepresentation: $outputRepresentation,
-					readParentEncodeObject: $encodeObject,
 					readParentPayloadKeyArray: $readChildModulePayloadKeyArray,
 					readParentRequiredFieldArray: $readChildModuleCurrentPayloadKeyArray,
 					readParentFollowSqlConfigThread: $readChildModuleCurrentFollowSqlConfigThread,
 					readParentIsFirstCall: Constant::$FALSE
 				);
 			}
-			$encodeObject->endObject();
-		}
-		if ($readToBeEncoded) {
-			$data = $encodeObject->getData();
-			$encodeObject = null;
-			$readChildEncodeObject->appendData(
-				data: $data
-			);
+			$this->encodeObject->endObject();
 		}
 	}
 
@@ -765,8 +664,6 @@ class Read
 	 * Fetch dbFetchedRecord count
 	 * 
 	 * @param array  $readSqlConfig        Sql config
-	 * @param array  $outputRepresentation Output reepresentation
-	 * @param object $encodeObject         Read data encode object
 	 * @param array  $readPayload          Payload
 	 * @param int    $page                 Page Number
 	 * @param int    $perPage              Records Per Page
@@ -776,8 +673,6 @@ class Read
 	 */
 	private function fetchRecordCount(
 		$readSqlConfig,
-		&$outputRepresentation,
-		&$encodeObject,
 		&$readPayload,
 		$page,
 		$perPage
@@ -830,19 +725,19 @@ class Read
 			num: $totalRecordsCount / $perPage
 		);
 
-		$encodeObject->addKeyData(
+		$this->encodeObject->addKeyData(
 			objectKey: 'page',
 			data: $page
 		);
-		$encodeObject->addKeyData(
+		$this->encodeObject->addKeyData(
 			objectKey: 'perPage',
 			data: $perPage
 		);
-		$encodeObject->addKeyData(
+		$this->encodeObject->addKeyData(
 			objectKey: 'totalPages',
 			data: $totalPages
 		);
-		$encodeObject->addKeyData(
+		$this->encodeObject->addKeyData(
 			objectKey: 'totalRecords',
 			data: $totalRecordsCount
 		);
@@ -854,8 +749,6 @@ class Read
 	 * Fetch single record
 	 * 
 	 * @param array  $readSqlConfig             Sql config
-	 * @param array  $outputRepresentation      Output reepresentation
-	 * @param object $encodeObject              Read data encode object
 	 * @param array  $readPayload               Payload
 	 * @param array  $readPayloadKeyArray
 	 * @param bool   $readFollowSqlConfigThread Follow Sql Config Thread
@@ -866,8 +759,6 @@ class Read
 	 */
 	private function fetchSingleRecord(
 		&$readSqlConfig,
-		&$outputRepresentation,
-		&$encodeObject,
 		&$readPayload,
 		&$readPayloadKeyArray,
 		$readFollowSqlConfigThread,
@@ -900,7 +791,7 @@ class Read
 		);
 		if ($dbFetchedRecord = $this->httpObject->db->fetch()) {
 			foreach ($dbFetchedRecord as $objectKey => &$objectKeyValue) {
-				$encodeObject->addKeyData(
+				$this->encodeObject->addKeyData(
 					objectKey: $objectKey,
 					data: $objectKeyValue
 				);
@@ -938,8 +829,6 @@ class Read
 		if (isset($readSqlConfig['__SUB-CONFIG__'])) {
 			$this->readChild(
 				readChildSqlConfig: $readSqlConfig,
-				readChildOutputRepresentation: $outputRepresentation,
-				readChildEncodeObject: $encodeObject,
 				readChildPayloadKeyArray: $readPayloadKeyArray,
 				dbFetchedRecord: $dbFetchedRecord,
 				readChildFollowSqlConfigThread: $readFollowSqlConfigThread
@@ -951,8 +840,6 @@ class Read
 	 * Fetch multiple record
 	 * 
 	 * @param array  $readSqlConfig             Sql config
-	 * @param array  $outputRepresentation      Output reepresentation
-	 * @param object $encodeObject              Read data encode object
 	 * @param array  $readPayload               Payload
 	 * @param array  $readPayloadKeyArray
 	 * @param bool   $readFollowSqlConfigThread Follow Sql Config Thread
@@ -965,8 +852,6 @@ class Read
 	 */
 	private function fetchMultipleRecords(
 		&$readSqlConfig,
-		&$outputRepresentation,
-		&$encodeObject,
 		&$readPayload,
 		&$readPayloadKeyArray,
 		$readFollowSqlConfigThread,
@@ -1059,7 +944,7 @@ class Read
 					&& !isset($readSqlConfig['__SUB-CONFIG__']);
 			}
 			if ($singleColumn) {
-				$encodeObject->encode(
+				$this->encodeObject->encode(
 					data: $dbFetchedRecord[
 						key(
 							array: $dbFetchedRecord
@@ -1067,9 +952,9 @@ class Read
 					]
 				);
 			} elseif (isset($readSqlConfig['__SUB-CONFIG__'])) {
-				$encodeObject->startObject();
+				$this->encodeObject->startObject();
 				foreach ($dbFetchedRecord as $rowKey => &$rowKeyValue) {
-					$encodeObject->addKeyData(
+					$this->encodeObject->addKeyData(
 						objectKey: $rowKey,
 						data: $rowKeyValue
 					);
@@ -1078,15 +963,13 @@ class Read
 				// For Child
 				$this->readChild(
 					readChildSqlConfig: $readSqlConfig,
-					readChildOutputRepresentation: $outputRepresentation,
-					readChildEncodeObject: $encodeObject,
 					readChildPayloadKeyArray: $readPayloadKeyArray,
 					dbFetchedRecord: $dbFetchedRecord,
 					readChildFollowSqlConfigThread: $readFollowSqlConfigThread,
 				);
-				$encodeObject->endObject();
+				$this->encodeObject->endObject();
 			} else {
-				$encodeObject->encode(
+				$this->encodeObject->encode(
 					data: $dbFetchedRecord
 				);
 			}

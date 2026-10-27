@@ -148,11 +148,6 @@ class Write
 		$writeFollowSqlConfigThread,
 		$writeTransaction
 	): void {
-		$writeOutputRepresentation = CommonFunction::getOutputRepresentation(
-			sqlConfig: $writeSqlConfig,
-			httpObject: $this->httpObject
-		);
-
 		// Set required fields
 		$this->httpObject->httpReqData['active']['requiredFieldArrayCollection'] = $this->getRequired(
 			sqlConfig: $writeSqlConfig,
@@ -171,8 +166,8 @@ class Write
 		if ($writePayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $writeOutputRepresentation['outputRepresentation'],
-					haystack: ['XML', 'XSLT', 'HTML'],
+					needle: $this->httpObject->httpReqData['OUTPUT_REPRESENTATION'],
+					haystack: ['XML', 'XSLT'],
 					strict: Constant::$TRUE
 				)
 			) {
@@ -273,8 +268,8 @@ class Write
 			} else {
 				if (
 					in_array(
-						needle: $writeOutputRepresentation['outputRepresentation'],
-						haystack: ['XML', 'XSLT', 'HTML'],
+						needle: $this->httpObject->httpReqData['OUTPUT_REPRESENTATION'],
+						haystack: ['XML', 'XSLT'],
 						strict: Constant::$TRUE
 					)
 				) {
@@ -300,8 +295,8 @@ class Write
 		if ($writePayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $writeOutputRepresentation['outputRepresentation'],
-					haystack: ['XML', 'XSLT', 'HTML'],
+					needle: $this->httpObject->httpReqData['OUTPUT_REPRESENTATION'],
+					haystack: ['XML', 'XSLT'],
 					strict: Constant::$TRUE
 				)
 			) {

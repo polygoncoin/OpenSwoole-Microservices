@@ -73,23 +73,13 @@ class DataEncode
 	/**
 	 * Constructor
 	 * 
-	 * @param Http       $httpObject
-	 * @param null|array $outputRepresentation
+	 * @param Http $httpObject
 	 */
 	public function __construct(
-		Http &$httpObject,
-		$outputRepresentation = null
+		Http &$httpObject
 	) {
 		$this->httpObject = &$httpObject;
-
-		if ($outputRepresentation === Constant::$NULL) {
-			$outputRepresentation = [
-				'outputRepresentation' => 'JSON',
-				'outputRepresentationFile' => Constant::$FALSE
-			];
-		}
-		$this->outputRepresentation = $outputRepresentation['outputRepresentation'];
-		$this->outputRepresentationFile = $outputRepresentation['outputRepresentationFile'];
+		$this->outputRepresentation = $this->httpObject->httpReqData['OUTPUT_REPRESENTATION'];
 	}
 
 	/**
@@ -434,7 +424,7 @@ class DataEncode
 	}
 
 	/**
-	 * Generate XML(XSLT)/HTML data
+	 * Generate XML(XSLT) data
 	 * 
 	 * @param string $xmlFile XML file location
 	 * 

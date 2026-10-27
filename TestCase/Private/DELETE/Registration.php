@@ -23,7 +23,7 @@ if ($proceed) {
 	return Web::trigger(
 		homeURL: $homeURL,
 		httpRequestMethod: Constant::$DELETE,
-		route: '/registration/1',
+		route: '/registration/1.json',
 		header: $privateHeaderArray,
 		payload: ''
 	);

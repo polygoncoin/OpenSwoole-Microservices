@@ -198,11 +198,7 @@ class Start
 			}
 
 			// $encodeObject = new DataEncode(
-			// 	httpObject: $this->httpObject,
-			// 	outputRepresentation: CommonFunction::getOutputRepresentation(
-			// 		sqlConfig: [],
-			// 		httpObject: $this->httpObject
-			// 	)
+			// 	httpObject: $this->httpObject
 			// );
 			// $encodeObject->init();
 			// $encodeObject->startObject();

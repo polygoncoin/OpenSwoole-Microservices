@@ -93,13 +93,8 @@ class HttpResponse
 	{
 		$sqlConfig = $this->httpObject->httpReqData['active']['sqlData']['Config'] ?? [];
 
-		$outputRepresentation = CommonFunction::getOutputRepresentation(
-			sqlConfig: $sqlConfig,
-			httpObject: $this->httpObject
-		);
 		$this->encodeObject = new DataEncode(
-			httpObject: $this->httpObject,
-			outputRepresentation: $outputRepresentation
+			httpObject: $this->httpObject
 		);
 
 		$this->encodeObject->init();

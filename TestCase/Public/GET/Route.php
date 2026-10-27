@@ -22,7 +22,7 @@ use Microservices\App\Web;
 return Web::trigger(
 	homeURL: $homeURL,
 	httpRequestMethod: Constant::$GET,
-	route: '/routes',
+	route: '/routes.json',
 	header: $publicHeaderArray,
 	payload: ''
 );

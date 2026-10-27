@@ -91,9 +91,5 @@ return [
 	],
 	'__FOLLOW-SQL_CONFIG-THREAD__' => Constant::$TRUE,
 	'__FETCH-MODE__' => 'Master',
-	// '__CACHE-KEY__' => $this->httpObject->httpReqData['active']['customerData'][DatabaseTable::$customerPrimaryKey] . ':category',
-	'__OUTPUT_REPRESENTATION__' => 'PHP',
-	'__OUTPUT_REPRESENTATION_FILE__' => $this->httpObject->httpReqData['active']['commonServingFileDir']
-		. DIRECTORY_SEPARATOR . 'PHP'
-		. DIRECTORY_SEPARATOR . 'index.php'
+	// '__CACHE-KEY__' => $this->httpObject->httpReqData['active']['customerData'][DatabaseTable::$customerPrimaryKey] . ':category'
 ];

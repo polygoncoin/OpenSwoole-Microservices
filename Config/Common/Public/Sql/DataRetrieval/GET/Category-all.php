@@ -98,9 +98,5 @@ return [
 			'requestCount' => 1,
 			'lagResponse' => 0
 		]
-	],
-	'__OUTPUT_REPRESENTATION__' => 'XSLT',
-	'__OUTPUT_REPRESENTATION_FILE__' => $this->httpObject->httpReqData['active']['commonServingFileDir']
-		. DIRECTORY_SEPARATOR . 'XSLT'
-		. DIRECTORY_SEPARATOR . 'Category.xls'
+	]
 ];

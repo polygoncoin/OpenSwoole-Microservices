@@ -23,7 +23,7 @@ if ($proceed) {
 	return Web::trigger(
 		homeURL: $homeURL,
 		httpRequestMethod: Constant::$POST,
-		route: '/custom/SupplementTest/explain',
+		route: '/custom/SupplementTest/explain.json',
 		header: $privateHeaderArray,
 		payload: ''
 	);

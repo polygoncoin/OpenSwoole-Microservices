@@ -305,7 +305,7 @@ class Login
 	 */
 	private function outputTokenData(): void
 	{
-		if ($this->httpObject->Env->ENABLE_PRIVATE_WEB_DOMAIN) {
+		if ($this->httpObject->request->isPrivateWebRequest) {
 			$this->httpObject->webSession = new Session(
 				httpObject: $this->httpObject
 			);
@@ -366,7 +366,7 @@ class Login
 						continue;
 					}
 					if (
-						$this->httpObject->Env->ENABLE_PRIVATE_WEB_DOMAIN
+						$this->httpObject->request->isPrivateWebRequest
 						&& $authData['authMode'] === 'Web Session'
 					) {
 						$timeLeft = Env::$timestamp - $authData['authTimestamp'];

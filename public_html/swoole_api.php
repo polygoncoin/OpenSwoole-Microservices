@@ -79,7 +79,8 @@ $server->on(
 		$httpReqData['active'] = [];
 
 		$httpReqData['streamData'] = Constant::$TRUE;
-		$httpReqData['server']['domainName'] = $request->header['host'] ?? $DOMAIN_NAME;
+		$httpReqData['server']['domainName'] = $DOMAIN_NAME;
+		// $httpReqData['server']['domainName'] = $request->header['host'] ?? $DOMAIN_NAME;
 		$httpReqData['server']['httpRequestMethod'] = $request->server['request_method'];
 
 		if (
@@ -137,10 +138,47 @@ $server->on(
 				characters: '/'
 			);
 		} else {
-			$response->end('Missing route');
-			return;
+			$httpReqData['get'][ROUTE_URL_PARAM] = '/index.html';
 		}
-		// echo $httpReqData['get'][ROUTE_URL_PARAM] . PHP_EOL;
+		switch (
+			$extension = strtoupper(
+				trim(
+					substr(
+						string: $httpReqData['get'][ROUTE_URL_PARAM],
+						offset: strlen($httpReqData['get'][ROUTE_URL_PARAM]) - 4,
+						length: 4
+					),
+					'.'
+				)
+			)
+		) {
+				case 'JSON':
+					$httpReqData['OUTPUT_REPRESENTATION'] = 'JSON';
+					$httpReqData['INPUT_REPRESENTATION'] = 'JSON';
+					break;
+				case 'XML':
+					$httpReqData['OUTPUT_REPRESENTATION'] = 'XML';
+					$httpReqData['INPUT_REPRESENTATION'] = 'XML';
+					break;
+				case 'XSLT':
+					$httpReqData['OUTPUT_REPRESENTATION'] = 'XSLT';
+					$httpReqData['INPUT_REPRESENTATION'] = 'XML';
+					break;
+				case 'HTML':
+					$httpReqData['OUTPUT_REPRESENTATION'] = 'HTML';
+					$httpReqData['INPUT_REPRESENTATION'] = 'HTML';
+					break;
+				case 'PHP':
+					$httpReqData['OUTPUT_REPRESENTATION'] = 'PHP';
+					$httpReqData['INPUT_REPRESENTATION'] = 'HTML';
+					break;
+		}
+
+		$httpReqData['get'][ROUTE_URL_PARAM] = substr(
+			string: $httpReqData['get'][ROUTE_URL_PARAM],
+			offset: 0,
+			length: (strlen($httpReqData['get'][ROUTE_URL_PARAM]) - strlen($extension) - 1)
+		);
 
 		$httpReqData['post'] = $request->rawContent();
 		$httpReqData['files'] = parseMultipartInput($httpReqData);

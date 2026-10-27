@@ -33,7 +33,7 @@ if ($proceed) {
 	return Web::trigger(
 		homeURL: $homeURL,
 		httpRequestMethod: Constant::$PATCH,
-		route: '/registration-with-address/1',
+		route: '/registration-with-address/1.json',
 		header: $privateHeaderArray,
 		payload: json_encode(value: $paramArray)
 	);

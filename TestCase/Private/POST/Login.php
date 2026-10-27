@@ -25,7 +25,7 @@ $proceed = Constant::$FALSE;
 $webResponse = Web::trigger(
 	homeURL: $homeURL,
 	httpRequestMethod: Constant::$POST,
-	route: '/login',
+	route: '/login.json',
 	header: $publicHeaderArray,
 	payload: json_encode(
 		value: $payload

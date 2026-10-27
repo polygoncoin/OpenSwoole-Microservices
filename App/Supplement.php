@@ -154,11 +154,6 @@ class Supplement
 		$supplementFollowSqlConfigThread,
 		$supplementTransaction
 	): void {
-		$supplementOutputRepresentation = CommonFunction::getOutputRepresentation(
-			sqlConfig: $supplementSqlConfig,
-			httpObject: $this->httpObject
-		);
-
 		// Set required fields
 		$this->httpObject->httpReqData['active']['requiredFieldArrayCollection'] = $this->getRequired(
 			sqlConfig: $supplementSqlConfig,
@@ -177,8 +172,8 @@ class Supplement
 		if ($supplementPayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $supplementOutputRepresentation['outputRepresentation'],
-					haystack: ['XML', 'XSLT', 'HTML'],
+					needle: $this->httpObject->httpReqData['OUTPUT_REPRESENTATION'],
+					haystack: ['XML', 'XSLT'],
 					strict: Constant::$TRUE
 				)
 			) {
@@ -276,8 +271,8 @@ class Supplement
 			} else {
 				if (
 					in_array(
-						needle: $supplementOutputRepresentation['outputRepresentation'],
-						haystack: ['XML', 'XSLT', 'HTML'],
+						needle: $this->httpObject->httpReqData['OUTPUT_REPRESENTATION'],
+						haystack: ['XML', 'XSLT'],
 						strict: Constant::$TRUE
 					)
 				) {
@@ -303,8 +298,8 @@ class Supplement
 		if ($supplementPayloadDataType === 'Array') {
 			if (
 				in_array(
-					needle: $supplementOutputRepresentation['outputRepresentation'],
-					haystack: ['XML', 'XSLT', 'HTML'],
+					needle: $this->httpObject->httpReqData['OUTPUT_REPRESENTATION'],
+					haystack: ['XML', 'XSLT'],
 					strict: Constant::$TRUE
 				)
 			) {

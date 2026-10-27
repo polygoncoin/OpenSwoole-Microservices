@@ -27,7 +27,7 @@ $paramArray = [
 return Web::trigger(
 	homeURL: $homeURL,
 	httpRequestMethod: Constant::$POST,
-	route: '/address',
+	route: '/address.json',
 	header: $publicHeaderArray,
 	payload: json_encode(value: $paramArray)
 );

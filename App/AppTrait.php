@@ -1158,23 +1158,28 @@ trait AppTrait
 		);
 
 		if (
-			$this->httpObject->cache->cacheExist(
-				cacheKey: $cacheKey
-			)
+			$this->httpObject->request->isPrivateWebRequest
+			|| $this->httpObject->request->isPrivateApiRequest
 		) {
-			$requestCount = $this->httpObject->cache->cacheGet(
-				cacheKey: $cacheKey
-			);
-			$this->httpObject->cache->cacheIncrement(
-				cacheKey: $cacheKey
-			);
-		} else {
-			$requestCount = 0;
-			$this->httpObject->cache->cacheSet(
-				cacheKey: $cacheKey,
-				cacheValue: $requestCount,
-				cacheExpire: $sqlConfig['responseLagWindow']
-			);
+			if (
+				$this->httpObject->cache->cacheExist(
+					cacheKey: $cacheKey
+				)
+			) {
+				$requestCount = $this->httpObject->cache->cacheGet(
+					cacheKey: $cacheKey
+				);
+				$this->httpObject->cache->cacheIncrement(
+					cacheKey: $cacheKey
+				);
+			} else {
+				$requestCount = 0;
+				$this->httpObject->cache->cacheSet(
+					cacheKey: $cacheKey,
+					cacheValue: $requestCount,
+					cacheExpire: $sqlConfig['responseLagWindow']
+				);
+			}
 		}
 
 		$lagResponse = 0;
@@ -1550,9 +1555,14 @@ trait AppTrait
 		&$followSqlConfigThread
 	) {
 		// Rate Limiting request if configured for Route Sql.
-		$this->httpObject->rateLimiter->rateLimitFeature(
-			feature: 'USER_ROUTE'
-		);
+		if (
+			$this->httpObject->request->isPrivateWebRequest
+			|| $this->httpObject->request->isPrivateApiRequest
+		) {
+			$this->httpObject->rateLimiter->rateLimitFeature(
+				feature: 'USER_ROUTE'
+			);
+		}
 
 		// Check for configured referrer Lags
 		$this->checkReferrerLag(
@@ -1601,9 +1611,14 @@ trait AppTrait
 		);
 
 		// Rate Limiting request if configured for Route Sql.
-		$this->httpObject->rateLimiter->rateLimitFeature(
-			feature: 'USER_ROUTE'
-		);
+		if (
+			$this->httpObject->request->isPrivateWebRequest
+			|| $this->httpObject->request->isPrivateApiRequest
+		) {
+			$this->httpObject->rateLimiter->rateLimitFeature(
+				feature: 'USER_ROUTE'
+			);
+		}
 
 		// Use results in where clause of sub queries recursively
 		$followSqlConfigThread = $this->getFollowSqlConfigThread(

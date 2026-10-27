@@ -48,15 +48,6 @@ class Environment
     public $OUTPUT_PERFORMANCE_STATS = null;
     public $DISABLE_PROXY_REQUEST = null;
 
-    // ;; Data representation
-    // ; Supported: JSON/XML
-    public $INPUT_REPRESENTATION = null;
-    // ; Supported: JSON/XML/XSLT/HTML/PHP
-    public $OUTPUT_REPRESENTATION = null;
-
-    // ;; Enable - Data representation in query string
-    public $ENABLE_INPUT_REPRESENTATION_IN_QUERY_STRING = null;
-
     // ;; Encryption secret setting
     public $SECRET = null;
 

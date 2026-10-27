@@ -325,15 +325,6 @@ return [
 		'...'
 	],
 
-	// Input Data Representation
-	'__INPUT_REPRESENTATION__' => 'XML', // JSON/XML/XSLT/HTML/PHP - Defaults to JSON
-
-	// Output Data Representation
-	'__OUTPUT_REPRESENTATION__' => 'XML', // JSON/XML/XSLT/HTML/PHP - Defaults to JSON
-
-	// Respective Data Representation File (XSLT/HTML/PHP)
-	'__OUTPUT_REPRESENTATION_FILE__' => 'file-path',
-
 	// Rate Limiting Route access
 	'rateLimitRequestCount' => 1, // Allowed number of request in defined seconds window
 	'rateLimitRequestWindow' => 3600, // Seconds Window for restricting number of request

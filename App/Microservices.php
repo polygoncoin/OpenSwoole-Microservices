@@ -197,21 +197,7 @@ class Microservices
 			$methods = 'GET, QUERY, POST, PUT, PATCH, DELETE, OPTIONS';
 			$headerArray['Access-Control-Allow-Methods'] = $methods;
 		} else {
-			if (
-				$this->httpObject->response === Constant::$NULL
-				|| !isset($this->httpObject->httpReqData['active']['sqlData']['Config'])
-			) {
-				$outputRepresentation = [
-					'outputRepresentation' => Env::$SYSTEM_OUTPUT_REPRESENTATION,
-					'outputRepresentationFile' => Constant::$FALSE
-				];
-			} else {
-				$outputRepresentation = CommonFunction::getOutputRepresentation(
-					sqlConfig: $this->httpObject->httpReqData['active']['sqlData']['Config'],
-					httpObject: $this->httpObject
-				);
-			}
-			switch ($outputRepresentation['outputRepresentation']) {
+			switch ($this->httpObject->httpReqData['OUTPUT_REPRESENTATION']) {
 				case 'XML':
 				case 'XSLT':
 					$headerArray['Content-Type'] = 'text/xml; charset=utf-8';

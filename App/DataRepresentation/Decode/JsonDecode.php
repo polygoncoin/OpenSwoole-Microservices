@@ -18,7 +18,6 @@ namespace Microservices\App\DataRepresentation\Decode;
 use Generator;
 use Microservices\App\CommonFunction;
 use Microservices\App\Constant;
-use Microservices\App\DataRepresentation\Decode\DataDecodeInterface;
 use Microservices\App\DataRepresentation\Decode\JsonDecode\JsonDecodeEngine;
 use Microservices\App\HttpStatus;
 
@@ -34,7 +33,7 @@ use Microservices\App\HttpStatus;
  * @link      https://github.com/polygoncoin/Openswoole-Microservices
  * @since     Class available since Release 1.0.0
  */
-class JsonDecode implements DataDecodeInterface
+class JsonDecode
 {
 	/**
 	 * JSON File Handle

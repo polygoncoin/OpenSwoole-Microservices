@@ -47,13 +47,6 @@ class HttpRequest
 	 * 
 	 * @var null|string
 	 */
-	public $inputRepresentation = null;
-
-	/**
-	 * Input Representation
-	 * 
-	 * @var null|string
-	 */
 	public $SQL_DIRECTORY = null;
 
 	/**
@@ -135,7 +128,6 @@ class HttpRequest
 		Http &$httpObject
 	) {
 		$this->httpObject = &$httpObject;
-		$this->inputRepresentation = Env::$SYSTEM_INPUT_REPRESENTATION;
 
 		Env::loadEnv(
 			customerId: 0
@@ -387,7 +379,7 @@ class HttpRequest
 		$payloadJson = $this->setPayloadStream();
 
 		$this->decodeObject = new DataDecode(
-			inputRepresentation: $this->inputRepresentation,
+			httpObject: $this->httpObject,
 			dataFileHandle: $this->payloadStream
 		);
 
@@ -472,12 +464,23 @@ class HttpRequest
 							csvFile: $this->httpObject->httpReqData['files']['file']['tmp_name']
 						);
 						break;
-					case $this->inputRepresentation === 'XML':
+					case in_array(
+						needle: $this->httpObject->httpReqData['INPUT_REPRESENTATION'],
+						haystack: ['XML', 'XSLT']
+					):
 						$payloadJson = $this->convertXmlToJson(
 							xmlString: $this->httpObject->httpReqData['post']
 						);
 						break;
-					default:
+					case in_array(
+						needle: $this->httpObject->httpReqData['INPUT_REPRESENTATION'],
+						haystack: ['HTML', 'PHP']
+					):
+						$payloadJson = json_encode(
+							value: $this->httpObject->httpReqData['post']
+						);
+						break;
+					case $this->httpObject->httpReqData['INPUT_REPRESENTATION'] === 'JSON':
 						$payloadJson = $this->httpObject->httpReqData['post'];
 				}
 				break;

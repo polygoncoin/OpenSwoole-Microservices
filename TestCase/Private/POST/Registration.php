@@ -31,7 +31,7 @@ if ($proceed) {
 	return Web::trigger(
 		homeURL: $homeURL,
 		httpRequestMethod: Constant::$POST,
-		route: '/registration',
+		route: '/registration.json',
 		header: $privateHeaderArray,
 		payload: json_encode(value: $paramArray)
 	);

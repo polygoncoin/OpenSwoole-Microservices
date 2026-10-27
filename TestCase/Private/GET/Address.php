@@ -23,7 +23,7 @@ if ($proceed) {
 	return Web::trigger(
 		homeURL: $homeURL,
 		httpRequestMethod: Constant::$GET,
-		route: '/address',
+		route: '/address.json',
 		header: $privateHeaderArray,
 		payload: ''
 	);

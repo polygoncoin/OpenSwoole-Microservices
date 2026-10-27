@@ -27,7 +27,7 @@ $paramArray = [
 return Web::trigger(
 	homeURL: $homeURL,
 	httpRequestMethod: Constant::$QUERY,
-	route: '/category',
+	route: '/category.json',
 	header: $publicHeaderArray,
 	payload: json_encode(value: $paramArray)
 );
